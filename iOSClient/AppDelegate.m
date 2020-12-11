@@ -138,7 +138,7 @@
         [CCUtility setIntro:YES];
         
         if (self.account.length == 0) {
-            [self openLoginView:nil selector:k_intro_login openLoginWeb:false];
+            [self openLoginView:nil selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
         }
         
     } else {
@@ -301,7 +301,7 @@
     // check unauthorized server (401)
     if ([CCUtility getPassword:self.account].length == 0) {
         
-        [self openLoginView:self.window.rootViewController selector:k_intro_login openLoginWeb:true];
+        [self openLoginView:self.window.rootViewController selector:NCBrandGlobal.shared.introLogin openLoginWeb:true];
     }
     
     // check certificate untrusted (-1202)
@@ -353,13 +353,13 @@
     }
     
     // normal login
-    if (selector == k_intro_signup) {
+    if (selector == NCBrandGlobal.shared.introSignup) {
         
         if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
             
             self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
             
-            if (selector == k_intro_signup) {
+            if (selector == NCBrandGlobal.shared.introSignup) {
                 self.activeLoginWeb.urlBase = [[NCBrandOptions shared] linkloginPreferredProviders];
             } else {
                 self.activeLoginWeb.urlBase = self.urlBase;
@@ -478,7 +478,7 @@
             [self settingAccount:newAccount urlBase:tableAccount.urlBase user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]];
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
         } else {
-            [self openLoginView:self.window.rootViewController selector:k_intro_login openLoginWeb:false];
+            [self openLoginView:self.window.rootViewController selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
         }
     }
 }

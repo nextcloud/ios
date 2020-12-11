@@ -1012,7 +1012,7 @@
     [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:path error:nil];
     
     // create Directory User Data
-    path = [[dirGroup URLByAppendingPathComponent:k_appUserData] path];
+    path = [[dirGroup URLByAppendingPathComponent:NCBrandGlobal.shared.appUserData] path];
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
@@ -1022,7 +1022,7 @@
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
     // create Directory Scan
-    path = [[dirGroup URLByAppendingPathComponent:k_appScan] path];
+    path = [[dirGroup URLByAppendingPathComponent:NCBrandGlobal.shared.appScan] path];
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
@@ -1033,8 +1033,8 @@
     
     // Directory Excluded From Backup
     [CCUtility addSkipBackupAttributeToItemAtURL:[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject]];
-    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_DirectoryProviderStorage]];
-    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appUserData]];
+    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCBrandGlobal.shared.directoryProviderStorage]];
+    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCBrandGlobal.shared.appUserData]];
     
     #ifdef DEBUG
     NSLog(@"[LOG] Copy DB on Documents directory");
@@ -1094,7 +1094,7 @@
 // Return the path of directory Cetificates
 + (NSString *)getDirectoryCerificates
 {
-    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appCertificates] path];
+    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCBrandGlobal.shared.appCertificates] path];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
@@ -1104,7 +1104,7 @@
 
 + (NSString *)getDirectoryUserData
 {
-    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appUserData] path];
+    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCBrandGlobal.shared.appUserData] path];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
@@ -1114,7 +1114,7 @@
 
 + (NSString *)getDirectoryProviderStorage
 {
-    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_DirectoryProviderStorage] path];
+    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCBrandGlobal.shared.directoryProviderStorage] path];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
@@ -1188,7 +1188,7 @@
 + (void)removeGroupApplicationSupport
 {
     NSURL *dirGroup = [CCUtility getDirectoryGroup];
-    NSString *path = [[dirGroup URLByAppendingPathComponent:k_appApplicationSupport] path];
+    NSString *path = [[dirGroup URLByAppendingPathComponent:NCBrandGlobal.shared.appApplicationSupport] path];
     
     [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
 }
@@ -1340,7 +1340,7 @@
 
 + (NSString *)getDirectoryScan
 {
-    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appScan] path];
+    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCBrandGlobal.shared.appScan] path];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];

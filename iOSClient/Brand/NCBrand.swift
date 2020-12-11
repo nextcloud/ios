@@ -218,6 +218,11 @@ class NCBrandColor: NSObject {
 
     // Directory on Group
     @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"
+    @objc let appApplicationSupport                 = "Library/Application Support"
+    @objc let appUserData                           = "Library/Application Support/UserData"
+    @objc let appCertificates                       = "Library/Application Support/Certificates"
+    @objc let appScan                               = "Library/Application Support/Scan"
+    @objc let directoryProviderStorage              = "File Provider Storage"
 
     // Nextcloud version
     @objc let nextcloudVersion12: Int               =  12
@@ -229,6 +234,10 @@ class NCBrandColor: NSObject {
     // Database Realm
     let databaseDefault                             = "nextcloud.realm"
     let databaseSchemaVersion: UInt64               = 160
+    
+    // Intro selector
+    @objc let introLogin: Int                       = 0
+    @objc let introSignup: Int                      = 1
     
     // Avatar & Preview
     let avatarSize: Int                             = 128

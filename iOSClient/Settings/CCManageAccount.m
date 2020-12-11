@@ -328,7 +328,7 @@
     
     // Open Login
     if (accounts.count == 0) {
-        [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
+        [appDelegate openLoginView:self selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
     }
 }
 
@@ -381,7 +381,7 @@
 {
     [self deselectFormRow:sender];
     
-    [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
+    [appDelegate openLoginView:self selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
 }
 
 #pragma --------------------------------------------------------------------------------------------

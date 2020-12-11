@@ -50,17 +50,6 @@
 #define CALL_ORIGIN NSLog(@"Origin: [%@]", [[[[NSThread callStackSymbols] objectAtIndex:1] componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]] objectAtIndex:1])
 #endif
 
-// Directory on Group
-#define k_appApplicationSupport                         @"Library/Application Support"
-#define k_appUserData                                   @"Library/Application Support/UserData"
-#define k_appCertificates                               @"Library/Application Support/Certificates"
-#define k_appScan                                       @"Library/Application Support/Scan"
-#define k_DirectoryProviderStorage                      @"File Provider Storage"
-
-// Intro selector
-#define k_intro_login                                   0
-#define k_intro_signup                                  1
-
 // Constants to identify the different permissions of a file
 #define k_permission_shared                             @"S"
 #define k_permission_can_share                          @"R"
