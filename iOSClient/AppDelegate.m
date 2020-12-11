@@ -67,7 +67,6 @@
         [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Start session with level %lu %@", (unsigned long)logLevel, versionNextcloudiOS]];
     }
     
-    //
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:k_notificationCenter_initializeMain object:nil];
     
     // Set account, if no exists clear all
