@@ -224,6 +224,10 @@ class NCBrandColor: NSObject {
     @objc let appScan                               = "Library/Application Support/Scan"
     @objc let directoryProviderStorage              = "File Provider Storage"
 
+    // Service Key Share
+    @objc let serviceShareKeyChain                  = "Crypto Cloud"
+    @objc let metadataKeyedUnarchiver               = "it.twsweb.nextcloud.metadata"
+
     // Nextcloud version
     @objc let nextcloudVersion12: Int               =  12
     let nextcloudVersion15: Int                     =  15

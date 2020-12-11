@@ -791,7 +791,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 do {
                     let etagPasteboard = try NSKeyedArchiver.archivedData(withRootObject: metadata.ocId, requiringSecureCoding: false)
-                    items.append([k_metadataKeyedUnarchiver:etagPasteboard])
+                    items.append([NCBrandGlobal.shared.metadataKeyedUnarchiver:etagPasteboard])
                 } catch {
                     print("error")
                 }
@@ -815,7 +815,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             for object in item {
                 let contentType = object.key
                 let data = object.value
-                if contentType == k_metadataKeyedUnarchiver {
+                if contentType == NCBrandGlobal.shared.metadataKeyedUnarchiver {
                     do {
                         if let ocId = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data as! Data) as? String{
                             uploadPasteOcId(ocId)

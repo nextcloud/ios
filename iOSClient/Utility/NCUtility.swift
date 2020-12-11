@@ -163,7 +163,7 @@ class NCUtility: NSObject {
             keyStore = serverUrl
         }
         
-        UICKeyChainStore.setString(string, forKey: keyStore, service: k_serviceShareKeyChain)
+        UICKeyChainStore.setString(string, forKey: keyStore, service: NCBrandGlobal.shared.serviceShareKeyChain)
     }
     
     func setLayoutForView(key: String, serverUrl: String, layout: String) {
@@ -209,7 +209,7 @@ class NCUtility: NSObject {
             keyStore = serverUrl
         }
         
-        guard let string = UICKeyChainStore.string(forKey: keyStore, service: k_serviceShareKeyChain) else {
+        guard let string = UICKeyChainStore.string(forKey: keyStore, service: NCBrandGlobal.shared.serviceShareKeyChain) else {
             setLayoutForView(key: key, serverUrl: serverUrl, layout: NCBrandGlobal.shared.layoutList, sort: "fileName", ascending: true, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
             return (NCBrandGlobal.shared.layoutList, "fileName", true, "none", true, "_sorted_by_name_a_z_", 3)
         }

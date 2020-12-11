@@ -104,7 +104,7 @@ import Foundation
                         
                         do {
                             let etagPasteboard = try NSKeyedArchiver.archivedData(withRootObject: metadata.ocId, requiringSecureCoding: false)
-                            items.append([k_metadataKeyedUnarchiver:etagPasteboard])
+                            items.append([NCBrandGlobal.shared.metadataKeyedUnarchiver:etagPasteboard])
                         } catch {
                             print("error")
                         }

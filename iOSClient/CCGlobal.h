@@ -61,10 +61,6 @@
 #define k_permission_can_rename                         @"N"
 #define k_permission_can_move                           @"V"
 
-// Service Key Share
-#define k_serviceShareKeyChain                          @"Crypto Cloud"
-#define k_metadataKeyedUnarchiver                       @"it.twsweb.nextcloud.metadata"
-
 // Metadata : Status
 //
 // 1) wait download/upload

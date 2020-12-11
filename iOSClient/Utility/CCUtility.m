@@ -43,7 +43,7 @@
 + (void)deleteAllChainStore
 {
     [UICKeyChainStore removeAllItems];
-    [UICKeyChainStore removeAllItemsForService:k_serviceShareKeyChain];
+    [UICKeyChainStore removeAllItemsForService:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)storeAllChainInService
@@ -54,7 +54,7 @@
     
     for (NSDictionary *item in items) {
         
-        [UICKeyChainStore setString:[item objectForKey:@"value"] forKey:[item objectForKey:@"key"] service:k_serviceShareKeyChain];
+        [UICKeyChainStore setString:[item objectForKey:@"value"] forKey:[item objectForKey:@"key"] service:NCBrandGlobal.shared.serviceShareKeyChain];
         [UICKeyChainStore removeItemForKey:[item objectForKey:@"key"]];
     }
 }
@@ -63,28 +63,28 @@
 
 + (NSString *)getPasscode
 {
-    return [UICKeyChainStore stringForKey:@"passcodeBlock" service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:@"passcodeBlock" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setPasscode:(NSString *)passcode
 {
-    [UICKeyChainStore setString:passcode forKey:@"passcodeBlock" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:passcode forKey:@"passcodeBlock" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getNotPasscodeAtStart
 {
-    return [[UICKeyChainStore stringForKey:@"notPasscodeAtStart" service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:@"notPasscodeAtStart" service:NCBrandGlobal.shared.serviceShareKeyChain] boolValue];
 }
 
 + (void)setNotPasscodeAtStart:(BOOL)set
 {
     NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"notPasscodeAtStart" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sSet forKey:@"notPasscodeAtStart" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getEnableTouchFaceID
 {
-    NSString *valueString = [UICKeyChainStore stringForKey:@"enableTouchFaceID" service:k_serviceShareKeyChain];
+    NSString *valueString = [UICKeyChainStore stringForKey:@"enableTouchFaceID" service:NCBrandGlobal.shared.serviceShareKeyChain];
     
     // Default TRUE
     if (valueString == nil) {
@@ -98,12 +98,12 @@
 + (void)setEnableTouchFaceID:(BOOL)set
 {
     NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"enableTouchFaceID" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sSet forKey:@"enableTouchFaceID" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getGroupBySettings
 {
-    NSString *groupby = [UICKeyChainStore stringForKey:@"groupby" service:k_serviceShareKeyChain];
+    NSString *groupby = [UICKeyChainStore stringForKey:@"groupby" service:NCBrandGlobal.shared.serviceShareKeyChain];
     
     if (groupby == nil) {
         
@@ -118,120 +118,120 @@
 
 + (void)setGroupBySettings:(NSString *)groupby
 {
-    [UICKeyChainStore setString:groupby forKey:@"groupby" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:groupby forKey:@"groupby" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getIntro
 {
     // Set compatibility old version don't touch me
-    if ([[UICKeyChainStore stringForKey:[INTRO_MessageType stringByAppendingString:@"Intro"] service:k_serviceShareKeyChain] boolValue] == YES) {
+    if ([[UICKeyChainStore stringForKey:[INTRO_MessageType stringByAppendingString:@"Intro"] service:NCBrandGlobal.shared.serviceShareKeyChain] boolValue] == YES) {
         [CCUtility setIntro:YES];
         return YES;
     }
     
-    return [[UICKeyChainStore stringForKey:@"intro" service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:@"intro" service:NCBrandGlobal.shared.serviceShareKeyChain] boolValue];
 }
 
 + (BOOL)getIntroMessageOldVersion
 {
     NSString *key = [INTRO_MessageType stringByAppendingString:@"Intro"];
     
-    return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:key service:NCBrandGlobal.shared.serviceShareKeyChain] boolValue];
 }
 
 + (void)setIntro:(BOOL)set
 {
     NSString *sIntro = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sIntro forKey:@"intro" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sIntro forKey:@"intro" service:NCBrandGlobal.shared.serviceShareKeyChain];
 
 }
 
 + (NSString *)getIncrementalNumber
 {
-    long number = [[UICKeyChainStore stringForKey:@"incrementalnumber" service:k_serviceShareKeyChain] intValue];
+    long number = [[UICKeyChainStore stringForKey:@"incrementalnumber" service:NCBrandGlobal.shared.serviceShareKeyChain] intValue];
     
     number++;
     if (number >= 9999) number = 1;
     
-    [UICKeyChainStore setString:[NSString stringWithFormat:@"%ld", number] forKey:@"incrementalnumber" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:[NSString stringWithFormat:@"%ld", number] forKey:@"incrementalnumber" service:NCBrandGlobal.shared.serviceShareKeyChain];
     
     return [NSString stringWithFormat:@"%04ld", number];
 }
 
 + (NSString *)getAccountExt
 {
-    return [UICKeyChainStore stringForKey:@"accountExt" service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:@"accountExt" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setAccountExt:(NSString *)account
 {
-    [UICKeyChainStore setString:account forKey:@"accountExt" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:account forKey:@"accountExt" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getServerUrlExt
 {
-    return [UICKeyChainStore stringForKey:@"serverUrlExt" service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:@"serverUrlExt" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setServerUrlExt:(NSString *)serverUrl
 {
-    [UICKeyChainStore setString:serverUrl forKey:@"serverUrlExt" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:serverUrl forKey:@"serverUrlExt" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getTitleServerUrlExt
 {
-    return [UICKeyChainStore stringForKey:@"titleServerUrlExt" service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:@"titleServerUrlExt" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setTitleServerUrlExt:(NSString *)titleServerUrl
 {
-    [UICKeyChainStore setString:titleServerUrl forKey:@"titleServerUrlExt" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:titleServerUrl forKey:@"titleServerUrlExt" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getFileNameExt
 {
-    return [UICKeyChainStore stringForKey:@"fileNameExt" service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:@"fileNameExt" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setFileNameExt:(NSString *)fileName
 {
-    [UICKeyChainStore setString:fileName forKey:@"fileNameExt" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:fileName forKey:@"fileNameExt" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getEmail
 {
-    return [UICKeyChainStore stringForKey:@"email" service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:@"email" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setEmail:(NSString *)email
 {
-    [UICKeyChainStore setString:email forKey:@"email" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:email forKey:@"email" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getHint
 {
-    return [UICKeyChainStore stringForKey:@"hint" service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:@"hint" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setHint:(NSString *)hint
 {
-    [UICKeyChainStore setString:hint forKey:@"hint" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:hint forKey:@"hint" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getOriginalFileName:(NSString *)key
 {
-    return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:key service:NCBrandGlobal.shared.serviceShareKeyChain] boolValue];
 }
 
 + (void)setOriginalFileName:(BOOL)value key:(NSString *)key
 {
     NSString *sValue = (value) ? @"true" : @"false";
-    [UICKeyChainStore setString:sValue forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sValue forKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getFileNameMask:(NSString *)key
 {
-    NSString *mask = [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+    NSString *mask = [UICKeyChainStore stringForKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
     
     if (mask == nil)
         mask = @"";
@@ -241,56 +241,56 @@
 
 + (void)setFileNameMask:(NSString *)mask key:(NSString *)key
 {
-    [UICKeyChainStore setString:mask forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:mask forKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getFileNameType:(NSString *)key
 {
-    return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:key service:NCBrandGlobal.shared.serviceShareKeyChain] boolValue];
 }
 
 + (void)setFileNameType:(BOOL)prefix key:(NSString *)key
 {
     NSString *sPrefix = (prefix) ? @"true" : @"false";
-    [UICKeyChainStore setString:sPrefix forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sPrefix forKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getFavoriteOffline
 {
-    return [[UICKeyChainStore stringForKey:@"favoriteOffline" service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:@"favoriteOffline" service:NCBrandGlobal.shared.serviceShareKeyChain] boolValue];
 }
 
 + (void)setFavoriteOffline:(BOOL)offline
 {
     NSString *sFavoriteOffline = (offline) ? @"true" : @"false";
-    [UICKeyChainStore setString:sFavoriteOffline forKey:@"favoriteOffline" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sFavoriteOffline forKey:@"favoriteOffline" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getActivityVerboseHigh
 {
-    return [[UICKeyChainStore stringForKey:@"activityVerboseHigh" service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:@"activityVerboseHigh" service:NCBrandGlobal.shared.serviceShareKeyChain] boolValue];
 }
 
 + (void)setActivityVerboseHigh:(BOOL)high
 {
     NSString *sHigh = (high) ? @"true" : @"false";
-    [UICKeyChainStore setString:sHigh forKey:@"activityVerboseHigh" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sHigh forKey:@"activityVerboseHigh" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getShowHiddenFiles
 {
-    return [[UICKeyChainStore stringForKey:@"showHiddenFiles" service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:@"showHiddenFiles" service:NCBrandGlobal.shared.serviceShareKeyChain] boolValue];
 }
 
 + (void)setShowHiddenFiles:(BOOL)show
 {
     NSString *sShow = (show) ? @"true" : @"false";
-    [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getFormatCompatibility
 {
-    NSString *valueString = [UICKeyChainStore stringForKey:@"formatCompatibility" service:k_serviceShareKeyChain];
+    NSString *valueString = [UICKeyChainStore stringForKey:@"formatCompatibility" service:NCBrandGlobal.shared.serviceShareKeyChain];
     
     // Default TRUE
     if (valueString == nil) {
@@ -304,55 +304,55 @@
 + (void)setFormatCompatibility:(BOOL)set
 {
     NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"formatCompatibility" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sSet forKey:@"formatCompatibility" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getEndToEndPublicKey:(NSString *)account
 {
     NSString *key = [E2E_PublicKey stringByAppendingString:account];
-    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey
 {
     NSString *key = [E2E_PublicKey stringByAppendingString:account];
-    [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:publicKey forKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getEndToEndPrivateKey:(NSString *)account
 {
     NSString *key = [E2E_PrivateKey stringByAppendingString:account];
-    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey
 {
     NSString *key = [E2E_PrivateKey stringByAppendingString:account];
-    [UICKeyChainStore setString:privateKey forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:privateKey forKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getEndToEndPassphrase:(NSString *)account
 {
     NSString *key = [E2E_Passphrase stringByAppendingString:account];
-    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase
 {
     NSString *key = [E2E_Passphrase stringByAppendingString:account];
-    [UICKeyChainStore setString:passphrase forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:passphrase forKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getEndToEndPublicKeyServer:(NSString *)account
 {
     NSString *key = [E2E_PublicKeyServer stringByAppendingString:account];
-    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setEndToEndPublicKeyServer:(NSString *)account publicKey:(NSString *)publicKey
 {
     NSString *key = [E2E_PublicKeyServer stringByAppendingString:account];
-    [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:publicKey forKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)isEndToEndEnabled:(NSString *)account
@@ -385,85 +385,85 @@
 
 + (BOOL)getDisableFilesApp
 {
-    return [[UICKeyChainStore stringForKey:@"disablefilesapp" service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:@"disablefilesapp" service:NCBrandGlobal.shared.serviceShareKeyChain] boolValue];
 }
 
 + (void)setDisableFilesApp:(BOOL)disable
 {
     NSString *sDisable = (disable) ? @"true" : @"false";
-    [UICKeyChainStore setString:sDisable forKey:@"disablefilesapp" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sDisable forKey:@"disablefilesapp" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setPushNotificationPublicKey:(NSString *)account data:(NSData *)data
 {
     NSString *key = [@"PNPublicKey" stringByAppendingString:account];
-    [UICKeyChainStore setData:data forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setData:data forKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSData *)getPushNotificationPublicKey:(NSString *)account
 {
     NSString *key = [@"PNPublicKey" stringByAppendingString:account];
-    return [UICKeyChainStore dataForKey:key service:k_serviceShareKeyChain];
+    return [UICKeyChainStore dataForKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setPushNotificationSubscribingPublicKey:(NSString *)account publicKey:(NSString *)publicKey
 {
     NSString *key = [@"PNSubscribingPublicKey" stringByAppendingString:account];
-    [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:publicKey forKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getPushNotificationSubscribingPublicKey:(NSString *)account
 {
     NSString *key = [@"PNSubscribingPublicKey" stringByAppendingString:account];
-    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setPushNotificationPrivateKey:(NSString *)account data:(NSData *)data
 {
     NSString *key = [@"PNPrivateKey" stringByAppendingString:account];
-    [UICKeyChainStore setData:data forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setData:data forKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSData *)getPushNotificationPrivateKey:(NSString *)account
 {
     NSString *key = [@"PNPrivateKey" stringByAppendingString:account];
-    return [UICKeyChainStore dataForKey:key service:k_serviceShareKeyChain];
+    return [UICKeyChainStore dataForKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setPushNotificationToken:(NSString *)account token:(NSString *)token
 {
     NSString *key = [@"PNToken" stringByAppendingString:account];
-    [UICKeyChainStore setString:token forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:token forKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getPushNotificationToken:(NSString *)account
 {
     NSString *key = [@"PNToken" stringByAppendingString:account];
-    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setPushNotificationDeviceIdentifier:(NSString *)account deviceIdentifier:(NSString *)deviceIdentifier
 {
     NSString *key = [@"PNDeviceIdentifier" stringByAppendingString:account];
-    [UICKeyChainStore setString:deviceIdentifier forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:deviceIdentifier forKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getPushNotificationDeviceIdentifier:(NSString *)account
 {
     NSString *key = [@"PNDeviceIdentifier" stringByAppendingString:account];
-    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setPushNotificationDeviceIdentifierSignature:(NSString *)account deviceIdentifierSignature:(NSString *)deviceIdentifierSignature
 {
     NSString *key = [@"PNDeviceIdentifierSignature" stringByAppendingString:account];
-    [UICKeyChainStore setString:deviceIdentifierSignature forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:deviceIdentifierSignature forKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getPushNotificationDeviceIdentifierSignature:(NSString *)account
 {
     NSString *key = [@"PNDeviceIdentifierSignature" stringByAppendingString:account];
-    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)clearAllKeysPushNotification:(NSString *)account
@@ -478,7 +478,7 @@
 
 + (NSInteger)getMediaWidthImage
 {
-    NSString *width = [UICKeyChainStore stringForKey:@"mediaWidthImage" service:k_serviceShareKeyChain];
+    NSString *width = [UICKeyChainStore stringForKey:@"mediaWidthImage" service:NCBrandGlobal.shared.serviceShareKeyChain];
     
     if (width == nil) {
         return 80;
@@ -490,49 +490,49 @@
 + (void)setMediaWidthImage:(NSInteger)width
 {
     NSString *widthString = [@(width) stringValue];
-    [UICKeyChainStore setString:widthString forKey:@"mediaWidthImage" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:widthString forKey:@"mediaWidthImage" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getDisableCrashservice
 {
-    return [[UICKeyChainStore stringForKey:@"crashservice" service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:@"crashservice" service:NCBrandGlobal.shared.serviceShareKeyChain] boolValue];
 }
 
 + (void)setDisableCrashservice:(BOOL)disable
 {
     NSString *sDisable = (disable) ? @"true" : @"false";
-    [UICKeyChainStore setString:sDisable forKey:@"crashservice" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sDisable forKey:@"crashservice" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setPassword:(NSString *)account password:(NSString *)password
 {
     NSString *key = [@"password" stringByAppendingString:account];
-    [UICKeyChainStore setString:password forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:password forKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getPassword:(NSString *)account
 {
     NSString *key = [@"password" stringByAppendingString:account];
-    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setHCBusinessType:(NSString *)professions
 {
-    [UICKeyChainStore setString:professions forKey:@"businessType" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:professions forKey:@"businessType" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getHCBusinessType
 {
-    return [UICKeyChainStore stringForKey:@"businessType" service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:@"businessType" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSData *)getDatabaseEncryptionKey
 {
-    NSData *key = [UICKeyChainStore dataForKey:@"databaseEncryptionKey" service:k_serviceShareKeyChain];
+    NSData *key = [UICKeyChainStore dataForKey:@"databaseEncryptionKey" service:NCBrandGlobal.shared.serviceShareKeyChain];
     if (key == nil) {
         NSMutableData *key = [NSMutableData dataWithLength:64];
         (void)SecRandomCopyBytes(kSecRandomDefault, key.length, (uint8_t *)key.mutableBytes);
-        [UICKeyChainStore setData:key forKey:@"databaseEncryptionKey" service:k_serviceShareKeyChain];
+        [UICKeyChainStore setData:key forKey:@"databaseEncryptionKey" service:NCBrandGlobal.shared.serviceShareKeyChain];
         return key;
     } else {
         return key;
@@ -541,13 +541,13 @@
 
 + (void)setDatabaseEncryptionKey:(NSData *)data
 {
-    [UICKeyChainStore setData:data forKey:@"databaseEncryptionKey" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setData:data forKey:@"databaseEncryptionKey" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getCertificateError:(NSString *)account
 {
     NSString *key = [@"certificateError" stringByAppendingString:account];
-    NSString *error = [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+    NSString *error = [UICKeyChainStore stringForKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
     
     if (error == nil) {
         
@@ -569,23 +569,23 @@
     NSString *key = [@"certificateError" stringByAppendingString:account];
     NSString *sError = (error) ? @"true" : @"false";
     
-    [UICKeyChainStore setString:sError forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sError forKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getDisableLocalCacheAfterUpload
 {
-    return [[UICKeyChainStore stringForKey:@"disableLocalCacheAfterUpload" service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:@"disableLocalCacheAfterUpload" service:NCBrandGlobal.shared.serviceShareKeyChain] boolValue];
 }
 
 + (void)setDisableLocalCacheAfterUpload:(BOOL)disable
 {
     NSString *sDisable = (disable) ? @"true" : @"false";
-    [UICKeyChainStore setString:sDisable forKey:@"disableLocalCacheAfterUpload" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sDisable forKey:@"disableLocalCacheAfterUpload" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getDarkMode
 {
-    NSString *sDisable = [UICKeyChainStore stringForKey:@"darkMode" service:k_serviceShareKeyChain];
+    NSString *sDisable = [UICKeyChainStore stringForKey:@"darkMode" service:NCBrandGlobal.shared.serviceShareKeyChain];
     if(!sDisable){
         if (@available(iOS 13.0, *)) {
             if ([CCUtility getDarkModeDetect]) {
@@ -605,12 +605,12 @@
 + (void)setDarkMode:(BOOL)disable
 {
     NSString *sDisable = (disable) ? @"true" : @"false";
-    [UICKeyChainStore setString:sDisable forKey:@"darkMode" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sDisable forKey:@"darkMode" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getDarkModeDetect
 {
-    NSString *valueString = [UICKeyChainStore stringForKey:@"darkModeDetect" service:k_serviceShareKeyChain];
+    NSString *valueString = [UICKeyChainStore stringForKey:@"darkModeDetect" service:NCBrandGlobal.shared.serviceShareKeyChain];
     
     // Default TRUE
     if (valueString == nil) {
@@ -624,12 +624,12 @@
 + (void)setDarkModeDetect:(BOOL)disable
 {
     NSString *sDisable = (disable) ? @"true" : @"false";
-    [UICKeyChainStore setString:sDisable forKey:@"darkModeDetect" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sDisable forKey:@"darkModeDetect" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getLivePhoto
 {
-    NSString *valueString = [UICKeyChainStore stringForKey:@"livePhoto" service:k_serviceShareKeyChain];
+    NSString *valueString = [UICKeyChainStore stringForKey:@"livePhoto" service:NCBrandGlobal.shared.serviceShareKeyChain];
     
     // Default TRUE
     if (valueString == nil) {
@@ -643,12 +643,12 @@
 + (void)setLivePhoto:(BOOL)set
 {
     NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"livePhoto" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sSet forKey:@"livePhoto" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getMediaSortDate
 {
-    NSString *valueString = [UICKeyChainStore stringForKey:@"mediaSortDate" service:k_serviceShareKeyChain];
+    NSString *valueString = [UICKeyChainStore stringForKey:@"mediaSortDate" service:NCBrandGlobal.shared.serviceShareKeyChain];
     
     // Default TRUE
     if (valueString == nil) {
@@ -661,12 +661,12 @@
 
 + (void)setMediaSortDate:(NSString *)value
 {
-    [UICKeyChainStore setString:value forKey:@"mediaSortDate" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:value forKey:@"mediaSortDate" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSInteger)getTextRecognitionStatus
 {
-    NSString *value = [UICKeyChainStore stringForKey:@"textRecognitionStatus" service:k_serviceShareKeyChain];
+    NSString *value = [UICKeyChainStore stringForKey:@"textRecognitionStatus" service:NCBrandGlobal.shared.serviceShareKeyChain];
     
     if (value == nil) {
         return 0;
@@ -678,22 +678,22 @@
 + (void)setTextRecognitionStatus:(NSInteger)value
 {
     NSString *valueString = [@(value) stringValue];
-    [UICKeyChainStore setString:valueString forKey:@"textRecognitionStatus" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:valueString forKey:@"textRecognitionStatus" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getDirectoryScanDocuments
 {
-    return [UICKeyChainStore stringForKey:@"directoryScanDocuments" service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:@"directoryScanDocuments" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setDirectoryScanDocuments:(NSString *)value
 {
-    [UICKeyChainStore setString:value forKey:@"directoryScanDocuments" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:value forKey:@"directoryScanDocuments" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSInteger)getLogLevel
 {
-    NSString *value = [UICKeyChainStore stringForKey:@"logLevel" service:k_serviceShareKeyChain];
+    NSString *value = [UICKeyChainStore stringForKey:@"logLevel" service:NCBrandGlobal.shared.serviceShareKeyChain];
     
     if (value == nil) {
         return 1;
@@ -705,29 +705,29 @@
 + (void)setLogLevel:(NSInteger)value
 {
     NSString *valueString = [@(value) stringValue];
-    [UICKeyChainStore setString:valueString forKey:@"logLevel" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:valueString forKey:@"logLevel" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getAudioMute
 {
-    return [[UICKeyChainStore stringForKey:@"audioMute" service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:@"audioMute" service:NCBrandGlobal.shared.serviceShareKeyChain] boolValue];
 }
 
 + (void)setAudioMute:(BOOL)set
 {
     NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"audioMute" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sSet forKey:@"audioMute" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getAutomaticDownloadImage
 {
-    return [[UICKeyChainStore stringForKey:@"automaticDownloadImage" service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:@"automaticDownloadImage" service:NCBrandGlobal.shared.serviceShareKeyChain] boolValue];
 }
 
 + (void)setAutomaticDownloadImage:(BOOL)set
 {
     NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"automaticDownloadImage" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sSet forKey:@"automaticDownloadImage" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 
