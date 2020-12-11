@@ -356,7 +356,7 @@ class NCViewerImage: UIViewController {
             } else if ext == "SVG" {
                 if let svgImage = SVGKImage(contentsOfFile: imagePath) {
                     let scale = svgImage.size.height / svgImage.size.width
-                    svgImage.size = CGSize(width: CGFloat(k_sizePreview), height: (CGFloat(k_sizePreview) * scale))
+                    svgImage.size = CGSize(width: NCBrandGlobal.shared.sizePreview, height: (NCBrandGlobal.shared.sizePreview * scale))
                     if let image = svgImage.uiImage {
                         if !FileManager().fileExists(atPath: previewPath) {
                             do {
@@ -768,7 +768,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
             let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
             
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: CGFloat(k_sizePreview), heightPreview: CGFloat(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: CGFloat(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCBrandGlobal.shared.sizePreview, heightPreview: NCBrandGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCBrandGlobal.shared.sizeIcon) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
                 if errorCode == 0 && metadata.ocId == self.currentMetadata.ocId {
                     self.reloadCurrentPage()
                 }

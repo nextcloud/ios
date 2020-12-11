@@ -127,8 +127,8 @@
         originalImage = [self generateImageFromVideo:[NSTemporaryDirectory() stringByAppendingString:@"tempvideo.mp4"]];
     }
 
-    scaleImagePreview = [self scaleImage:originalImage toSize:CGSizeMake(k_sizePreview, k_sizePreview) isAspectRation:YES];
-    scaleImageIcon = [self scaleImage:originalImage toSize:CGSizeMake(k_sizeIcon, k_sizeIcon) isAspectRation:YES];
+    scaleImagePreview = [self scaleImage:originalImage toSize:CGSizeMake(NCBrandGlobal.shared.sizePreview, NCBrandGlobal.shared.sizePreview) isAspectRation:YES];
+    scaleImageIcon = [self scaleImage:originalImage toSize:CGSizeMake(NCBrandGlobal.shared.sizeIcon, NCBrandGlobal.shared.sizeIcon) isAspectRation:YES];
 
     scaleImagePreview = [UIImage imageWithData:UIImageJPEGRepresentation(scaleImagePreview, 0.5f)];
     scaleImageIcon = [UIImage imageWithData:UIImageJPEGRepresentation(scaleImageIcon, 0.5f)];

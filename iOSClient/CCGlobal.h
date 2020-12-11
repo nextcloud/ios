@@ -57,9 +57,6 @@
 #define k_appScan                                       @"Library/Application Support/Scan"
 #define k_DirectoryProviderStorage                      @"File Provider Storage"
 
-#define k_sizePreview                                   1024
-#define k_sizeIcon                                      512
-
 // Intro selector
 #define k_intro_login                                   0
 #define k_intro_signup                                  1
