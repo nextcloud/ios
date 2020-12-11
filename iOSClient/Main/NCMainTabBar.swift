@@ -137,35 +137,35 @@ class NCMainTabBar: UITabBar {
     private func createButtons() {
        
         // File
-        if let item = items?[Int(k_tabBarApplicationIndexFile)] {
+        if let item = items?[0] {
             item.title = NSLocalizedString("_home_", comment: "")
             item.image = CCGraphics.changeThemingColorImage(UIImage(named: "tabBarFiles"), width: 50, height: 50, color: NCBrandColor.shared.brandElement)
             item.selectedImage = item.image
         }
         
         // Favorite
-        if let item = items?[Int(k_tabBarApplicationIndexFavorite)] {
+        if let item = items?[1] {
             item.title = NSLocalizedString("_favorites_", comment: "")
             item.image = CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.shared.brandElement)
             item.selectedImage = item.image
         }
         
         // +
-        if let item = items?[Int(k_tabBarApplicationIndexPlusHide)] {
+        if let item = items?[2] {
             item.title = ""
             item.image = nil
             item.isEnabled = false
         }
         
         // Media
-        if let item = items?[Int(k_tabBarApplicationIndexMedia)] {
+        if let item = items?[3] {
             item.title = NSLocalizedString("_media_", comment: "")
             item.image = CCGraphics.changeThemingColorImage(UIImage(named: "media"), width: 50, height: 50, color: NCBrandColor.shared.brandElement)
             item.selectedImage = item.image
         }
         
         // More
-        if let item = items?[Int(k_tabBarApplicationIndexMore)] {
+        if let item = items?[4] {
             item.title = NSLocalizedString("_more_", comment: "")
             item.image = CCGraphics.changeThemingColorImage(UIImage(named: "tabBarMore"), width: 50, height: 50, color: NCBrandColor.shared.brandElement)
             item.selectedImage = item.image
