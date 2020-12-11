@@ -155,7 +155,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                          if let fileNameFolder = alertController.textFields?.first?.text {
                              NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, account: appDelegate.account, urlBase: appDelegate.urlBase, overwrite: false) { (errorCode, errorDescription) in
                                  if errorCode != 0 {
-                                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                  }
                              }
                          }

@@ -85,15 +85,15 @@ class NCPhotosPickerViewController: NSObject {
         }, didCancel: nil)
         
         viewController.didExceedMaximumNumberOfSelection = { (picker) in
-            NCContentPresenter.shared.messageNotification("_info_", description: "_limited_dimension_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+            NCContentPresenter.shared.messageNotification("_info_", description: "_limited_dimension_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
         }
         
         viewController.handleNoAlbumPermissions = { (picker) in
-            NCContentPresenter.shared.messageNotification("_info_", description: "_denied_album_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+            NCContentPresenter.shared.messageNotification("_info_", description: "_denied_album_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
         }
         
         viewController.handleNoCameraPermissions = { (picker) in
-            NCContentPresenter.shared.messageNotification("_info_", description: "_denied_camera_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+            NCContentPresenter.shared.messageNotification("_info_", description: "_denied_camera_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
         }
         
         viewController.configure = configure
@@ -178,10 +178,10 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                         }
                         
                     } catch {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_write_file_error_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_write_file_error_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
                     }
                 } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_read_file_error_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_read_file_error_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
                 }
             }
         }

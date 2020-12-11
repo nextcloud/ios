@@ -116,7 +116,7 @@ import Queuer
         } else {
             
             if lastReachability {
-                NCContentPresenter.shared.messageNotification("_network_not_available_", description: nil, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: -1009)
+                NCContentPresenter.shared.messageNotification("_network_not_available_", description: nil, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: -1009)
             }
             lastReachability = false
         }

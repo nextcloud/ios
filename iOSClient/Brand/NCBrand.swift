@@ -217,10 +217,10 @@ class NCBrandColor: NSObject {
     }()
 
     // Directory on Group
-    @objc let appDatabaseNextcloud: String          = "Library/Application Support/Nextcloud"
+    @objc let appDatabaseNextcloud                   = "Library/Application Support/Nextcloud"
 
     // Database Realm
-    let databaseDefault: String                     = "nextcloud.realm"
+    let databaseDefault                             = "nextcloud.realm"
     let databaseSchemaVersion: UInt64               = 160
     
     // Avatar
@@ -228,7 +228,7 @@ class NCBrandColor: NSObject {
     
     // E2EE
     let e2eeMaxFileSize: UInt64                     = 524288000   // 500 MB
-    @objc let e2eeVersion: String                   = "1.1"
+    @objc let e2eeVersion                           = "1.1"
     
     // Max Size Upload
     let uploadMaxFileSize: UInt64                   = 524288000   // 500 MB
@@ -264,4 +264,8 @@ class NCBrandColor: NSObject {
     
     // Rich Workspace
     let fileNameRichWorkspace                       = "Readme.md"
+    
+    @objc let dismissAfterSecond: TimeInterval      = 4
+    @objc let dismissAfterSecondLong: TimeInterval  = 10
+
 }

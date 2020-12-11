@@ -57,7 +57,7 @@ class NCService: NSObject {
                 
                     // Update User (+ userProfile.id) & active account & account network
                     guard let tableAccount = NCManageDatabase.shared.setAccountUserProfile(userProfile!) else {
-                        NCContentPresenter.shared.messageNotification("Account", description: "Internal error : account not found on DB",  delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                        NCContentPresenter.shared.messageNotification("Account", description: "Internal error : account not found on DB",  delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
                         return
                     }
                 
@@ -136,9 +136,9 @@ class NCService: NSObject {
                     
                     if extendedSupport == false {
                         if serverProductName == "owncloud" {
-                            NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_dismissAfterSecondLong))
+                            NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
                         } else if versionMajor <=  NCBrandGlobal.shared.nextcloud_unsupported_version {
-                            NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_unsupported_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_dismissAfterSecondLong))
+                            NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_unsupported_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
                         }
                     }
                 }
@@ -180,7 +180,7 @@ class NCService: NSObject {
                                 }
                                 
                             } else {
-                                NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                             }
                         }
                     }

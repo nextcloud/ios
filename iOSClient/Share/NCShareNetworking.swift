@@ -50,7 +50,7 @@ class NCShareNetworking: NSObject {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: shares!)
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
             }
             self.delegate?.readShareCompleted()
         }
@@ -65,7 +65,7 @@ class NCShareNetworking: NSObject {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share!])
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
             } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
             }
             self.delegate?.shareCompleted()
         }
@@ -82,7 +82,7 @@ class NCShareNetworking: NSObject {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share!])
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
             }
             self.delegate?.shareCompleted()
         }
@@ -96,7 +96,7 @@ class NCShareNetworking: NSObject {
                 NCManageDatabase.shared.deleteTableShare(account: account, idShare: idShare)
                 self.delegate?.unShareCompleted()
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
             }
         }
     }
@@ -110,7 +110,7 @@ class NCShareNetworking: NSObject {
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
                 self.delegate?.readShareCompleted()
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
                 self.delegate?.updateShareWithError(idShare: idShare)
             }
         }
@@ -123,7 +123,7 @@ class NCShareNetworking: NSObject {
             if errorCode == 0 {
                 self.delegate?.getSharees(sharees: sharees)
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
                 self.delegate?.getSharees(sharees: nil)
             }
         }

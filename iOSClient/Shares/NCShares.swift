@@ -91,7 +91,7 @@ class NCShares: NCCollectionViewCommon  {
             } else {
                     
                 self.collectionView?.reloadData()
-                NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
         }
     }

@@ -489,7 +489,7 @@
     if (serverUrl != nil) {
         
         if ([serverUrl isEqualToString:[[NCUtility shared] getHomeServerWithUrlBase:appDelegate.urlBase account:appDelegate.account]]) {
-            [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_autoupload_error_select_folder_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError forced:true];
+            [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_autoupload_error_select_folder_" delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:k_CCErrorInternalError forced:true];
             return;
         }
         

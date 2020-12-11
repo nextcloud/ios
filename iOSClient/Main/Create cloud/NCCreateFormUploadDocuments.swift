@@ -338,7 +338,7 @@ import NCCommunication
                     }
                     
                 } else if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: TimeInterval(k_dismissAfterSecond), type:NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCBrandGlobal.shared.dismissAfterSecond, type:NCContentPresenter.messageType.error, errorCode: errorCode)
                 } else {
                    print("[LOG] It has been changed user during networking process, error.")
                 }
@@ -360,7 +360,7 @@ import NCCommunication
                    
                     
                 } else if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 } else {
                     print("[LOG] It has been changed user during networking process, error.")
                 }

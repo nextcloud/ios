@@ -204,7 +204,7 @@ class NCMainTabBar: UITabBar {
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, appDelegate.activeServerUrl)) {
             
             if !directory.permissions.contains("CK") {
-                NCContentPresenter.shared.messageNotification("_warning_", description: "_no_permission_add_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
+                NCContentPresenter.shared.messageNotification("_warning_", description: "_no_permission_add_file_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
                 return
             }
         }

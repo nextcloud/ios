@@ -112,7 +112,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                 self.tableView.reloadData()
             } else {
                 if errorCode != k_CCErrorResourceNotFound {
-                    NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
         }
@@ -133,7 +133,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                 self.newCommentField.text = ""
                 self.reloadData()
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
         }
     }
@@ -165,7 +165,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                                     if errorCode == 0 {
                                         self.reloadData()
                                     } else {
-                                        NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                        NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                     }
                                 }
                             }
@@ -189,7 +189,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                         if errorCode == 0 {
                             self.reloadData()
                         } else {
-                            NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
                     }
                 }

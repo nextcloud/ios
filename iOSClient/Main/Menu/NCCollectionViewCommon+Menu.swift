@@ -114,7 +114,7 @@ extension NCCollectionViewCommon {
                 action: { menuAction in
                     NCNetworking.shared.favoriteMetadata(metadata, urlBase: appDelegate.urlBase) { (errorCode, errorDescription) in
                         if errorCode != 0 {
-                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
                     }
                 }
@@ -172,7 +172,7 @@ extension NCCollectionViewCommon {
                             if let fileNameNew = alertController.textFields?.first?.text {
                                 NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, urlBase: appDelegate.urlBase, viewController: self) { (errorCode, errorDescription) in
                                     if errorCode != 0 {
-                                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                     }
                                 }
                             }
@@ -287,7 +287,7 @@ extension NCCollectionViewCommon {
                                 
                                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_changeStatusFolderE2EE, userInfo: ["serverUrl":metadata.serverUrl])
                             } else {
-                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_mark_folder_", comment: ""), description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: .error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_mark_folder_", comment: ""), description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: .error, errorCode: errorCode)
                             }
                         }
                     }
@@ -312,7 +312,7 @@ extension NCCollectionViewCommon {
                                 
                                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_changeStatusFolderE2EE, userInfo: ["serverUrl":metadata.serverUrl])
                             } else {
-                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_delete_mark_folder_", comment: ""), description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: .error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_delete_mark_folder_", comment: ""), description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: .error, errorCode: errorCode)
                             }
                         }
                     }

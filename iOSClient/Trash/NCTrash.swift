@@ -585,7 +585,7 @@ extension NCTrash {
                 NCManageDatabase.shared.deleteTrash(filePath: self.trashPath, account: self.appDelegate.account)
                 NCManageDatabase.shared.addTrash(account: account, items: items)
             } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }
@@ -608,7 +608,7 @@ extension NCTrash {
                 NCManageDatabase.shared.deleteTrash(fileId: fileId, account: account)
                 self.reloadDataSource()
             }  else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }
@@ -623,7 +623,7 @@ extension NCTrash {
             if errorCode == 0 && account == self.appDelegate.account {
                 NCManageDatabase.shared.deleteTrash(fileId: nil, account: self.appDelegate.account)
             } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }
@@ -644,7 +644,7 @@ extension NCTrash {
                 NCManageDatabase.shared.deleteTrash(fileId: fileId, account: account)
                 self.reloadDataSource()
             } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }

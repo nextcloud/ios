@@ -365,15 +365,15 @@
             if (!_hud)
                 _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
         
-            [[NCContentPresenter shared] messageNotification:@"_attention_" description:@"_create_full_upload_" delay:k_dismissAfterSecondLong type:messageTypeInfo errorCode:0 forced:true];
+            [[NCContentPresenter shared] messageNotification:@"_attention_" description:@"_create_full_upload_" delay:[[NCBrandGlobal shared] dismissAfterSecondLong] type:messageTypeInfo errorCode:0 forced:true];
             [_hud visibleHudTitle:NSLocalizedString(@"_wait_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
         }
     });
     
     // Create the folder for auto upload & if request the subfolders
     if ([[NCNetworking shared] createFolderWithAssets:newAssetToUpload selector:selector useSubFolder:tableAccount.autoUploadCreateSubfolder account:appDelegate.account urlBase:appDelegate.urlBase]) {
-        if ([selector isEqualToString:selectorUploadAutoUploadAll]) {        
-            [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError forced:true];
+        if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
+            [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:k_CCErrorInternalError forced:true];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [_hud hideHud];
             });

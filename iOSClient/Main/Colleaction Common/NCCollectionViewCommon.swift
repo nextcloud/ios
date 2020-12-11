@@ -978,14 +978,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                             
                                             if !NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: self.serverUrl, account: account, urlBase: self.appDelegate.urlBase) {
                                                 
-                                                NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorDecodeMetadata), forced: true)
+                                                NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorDecodeMetadata), forced: true)
                                             } else {
                                                 self.reloadDataSource()
                                             }
                                             
                                         } else if errorCode != k_CCErrorResourceNotFound {
                                             
-                                            NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorDecodeMetadata), forced: true)
+                                            NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorDecodeMetadata), forced: true)
                                         }
                                         
                                         completion(metadatas, metadatasUpdate, errorCode, errorDescription)
@@ -1070,7 +1070,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
         
         if metadata.e2eEncrypted && !CCUtility.isEnd(toEndEnabled: appDelegate.account) {
-            NCContentPresenter.shared.messageNotification("_info_", description: "_e2e_goto_settings_for_enable_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorE2EENotEnabled), forced: true)
+            NCContentPresenter.shared.messageNotification("_info_", description: "_e2e_goto_settings_for_enable_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorE2EENotEnabled), forced: true)
             return
         }
         
@@ -1215,7 +1215,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 if NCCommunication.shared.isNetworkReachable() {
                     NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
                 } else {
-                    NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorOffline), forced: true)
+                    NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorOffline), forced: true)
                 }
                 return
             }
@@ -1224,7 +1224,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 if NCCommunication.shared.isNetworkReachable() {
                     NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
                 } else {
-                    NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorOffline), forced: true)
+                    NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorOffline), forced: true)
                 }
                 return
             }

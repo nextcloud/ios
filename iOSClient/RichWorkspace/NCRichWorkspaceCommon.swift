@@ -31,7 +31,7 @@ import NCCommunication
     @objc func createViewerNextcloudText(serverUrl: String,viewController: UIViewController) {
         
         if !NCCommunication.shared.isNetworkReachable() {
-            NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError), forced: true)
+            NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError), forced: true)
             return;
         }
         
@@ -55,7 +55,7 @@ import NCCommunication
                 }
                 
             } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: errorCode)
             }
         }
     }
@@ -64,7 +64,7 @@ import NCCommunication
         
         if !NCCommunication.shared.isNetworkReachable() {
             
-            NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError), forced: true)
+            NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError), forced: true)
             return;
         }
         
@@ -91,7 +91,7 @@ import NCCommunication
                         }
                         
                     } else if errorCode != 0 {
-                        NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: errorCode)
+                        NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: errorCode)
                     }
                 }
                 
