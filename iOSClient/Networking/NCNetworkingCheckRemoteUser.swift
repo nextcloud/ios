@@ -43,7 +43,7 @@ import NCCommunication
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
         
-        if serverVersionMajor >= k_nextcloud_version_17_0 {
+        if serverVersionMajor >= NCBrandGlobal.shared.nextcloudVersion17 {
             
             guard let token = CCUtility.getPassword(account) else { return }
             

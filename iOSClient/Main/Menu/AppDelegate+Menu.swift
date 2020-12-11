@@ -169,7 +169,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
             )
         )
 
-        if serverVersionMajor >= k_nextcloud_version_18_0 && directory?.richWorkspace == nil && !isEncrypted && NCCommunication.shared.isNetworkReachable() {
+        if serverVersionMajor >= NCBrandGlobal.shared.nextcloudVersion18 && directory?.richWorkspace == nil && !isEncrypted && NCCommunication.shared.isNetworkReachable() {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_add_folder_info_", comment: ""),

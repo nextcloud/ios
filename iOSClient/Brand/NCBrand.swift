@@ -217,8 +217,12 @@ class NCBrandColor: NSObject {
     }()
 
     // Directory on Group
-    @objc let appDatabaseNextcloud                   = "Library/Application Support/Nextcloud"
+    @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"
 
+    // Nextcloud version
+    let nextcloudVersion17: Int                     =  17
+    let nextcloudVersion18: Int                     =  18
+    
     // Database Realm
     let databaseDefault                             = "nextcloud.realm"
     let databaseSchemaVersion: UInt64               = 160

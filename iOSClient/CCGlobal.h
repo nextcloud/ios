@@ -217,10 +217,6 @@
 #define k_template_spreadsheet                          @"spreadsheet"
 #define k_template_presentation                         @"presentation"
 
-// Nextcloud version
-#define k_nextcloud_version_17_0                        17
-#define k_nextcloud_version_18_0                        18
-
 // Notification Center
 
 #define k_notificationCenter_applicationDidEnterBackground  @"applicationDidEnterBackground"

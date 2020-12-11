@@ -181,7 +181,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
                 
                 // EDITORS
                 let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-                if serverVersionMajor >= k_nextcloud_version_18_0 {
+                if serverVersionMajor >= NCBrandGlobal.shared.nextcloudVersion18 {
                     NCCommunication.shared.NCTextObtainEditorDetails() { (account, editors, creators, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.account {
                             NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
