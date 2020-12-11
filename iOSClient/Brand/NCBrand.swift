@@ -223,6 +223,9 @@ class NCBrandColor: NSObject {
     let databaseDefault: String                     = "nextcloud.realm"
     let databaseSchemaVersion: UInt64               = 160
     
+    // Avatar
+    let avatarSize: Int                             = 128
+    
     // E2EE
     let e2eeMaxFileSize: UInt64                     = 524288000   // 500 MB
     @objc let e2eeVersion: String                   = "1.1"
