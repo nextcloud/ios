@@ -31,7 +31,7 @@ class NCOffline: NCCollectionViewCommon  {
         
         appDelegate.activeOffline = self
         titleCurrentFolder = NSLocalizedString("_manage_file_offline_", comment: "")
-        layoutKey = k_layout_view_offline
+        layoutKey = NCBrandGlobal.shared.layoutViewOffline
         enableSearchBar = true
         emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.shared.brandElement)
         emptyTitle = "_files_no_files_"

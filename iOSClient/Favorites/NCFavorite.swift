@@ -31,7 +31,7 @@ class NCFavorite: NCCollectionViewCommon  {
         
         appDelegate.activeFavorite = self
         titleCurrentFolder = NSLocalizedString("_favorites_", comment: "")
-        layoutKey = k_layout_view_favorite
+        layoutKey = NCBrandGlobal.shared.layoutViewFavorite
         enableSearchBar = true
         emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 300, height: 300, color: NCBrandColor.shared.yellowFavorite)
         emptyTitle = "_favorite_no_files_"

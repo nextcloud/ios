@@ -237,7 +237,7 @@ extension NCCollectionViewCommon {
         //
         // VIEW IN FOLDER
         //
-        if layoutKey == k_layout_view_recent && appDelegate.activeFileViewInFolder == nil {
+        if layoutKey == NCBrandGlobal.shared.layoutViewRecent && appDelegate.activeFileViewInFolder == nil {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_view_in_folder_", comment: ""),

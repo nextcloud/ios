@@ -177,7 +177,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(itemForLine)
         
-        if layout == k_layout_list {
+        if layout == NCBrandGlobal.shared.layoutList {
             collectionView?.collectionViewLayout = listLayout
         } else {
             collectionView?.collectionViewLayout = gridLayout
@@ -629,7 +629,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.collectionView.reloadData()
                 })
             })
-            layout = k_layout_list
+            layout = NCBrandGlobal.shared.layoutList
             NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layout)
         } else {
             // grid layout
@@ -639,7 +639,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.collectionView.reloadData()
                 })
             })
-            layout = k_layout_grid
+            layout = NCBrandGlobal.shared.layoutGrid
             NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layout)
         }
     }
@@ -1023,7 +1023,7 @@ extension NCCollectionViewCommon: UIViewControllerPreviewingDelegate {
 
         viewController.metadata = metadata
 
-        if layout == k_layout_grid {
+        if layout == NCBrandGlobal.shared.layoutGrid {
             guard let cell = collectionView?.cellForItem(at: indexPath) as? NCGridCell else { return nil }
             previewingContext.sourceRect = cell.frame
             viewController.imageFile = cell.imageItem.image
@@ -1079,7 +1079,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadataTouch!.serverUrl, addFileName: metadataTouch!.fileName) else { return }
             
             // FILES
-            if layoutKey == k_layout_view_files {
+            if layoutKey == NCBrandGlobal.shared.layoutViewFiles {
                 
                 if let viewController = appDelegate.listFilesVC.value(forKey: serverUrlPush) {
                     guard let vcFiles = (viewController as? NCFiles) else { return }
@@ -1103,7 +1103,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
             
             // FAVORITE
-            if layoutKey == k_layout_view_favorite {
+            if layoutKey == NCBrandGlobal.shared.layoutViewFavorite {
             
                 if let viewController = appDelegate.listFavoriteVC.value(forKey: serverUrlPush) {
                     guard let vcFavorite = (viewController as? NCFavorite) else { return }
@@ -1126,7 +1126,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
             
             // OFFLINE
-            if layoutKey == k_layout_view_offline {
+            if layoutKey == NCBrandGlobal.shared.layoutViewOffline {
                 
                 if let viewController = appDelegate.listOfflineVC.value(forKey: serverUrlPush) {
                     guard let vcOffline = (viewController as? NCOffline) else { return }
@@ -1149,7 +1149,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
             
             // RECENT ( for push use Files ... he he he )
-            if layoutKey == k_layout_view_recent {
+            if layoutKey == NCBrandGlobal.shared.layoutViewRecent {
                 
                 if let viewController = appDelegate.listFilesVC.value(forKey: serverUrlPush) {
                     guard let vcFiles = (viewController as? NCFiles) else { return }
@@ -1173,7 +1173,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
             
             //VIEW IN FOLDER
-            if layoutKey == k_layout_view_viewInFolder {
+            if layoutKey == NCBrandGlobal.shared.layoutViewViewInFolder {
                 
                 let vcFileViewInFolder:NCFileViewInFolder = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as! NCFileViewInFolder
                 
@@ -1184,7 +1184,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
             
             // SHARES ( for push use Files ... he he he )
-            if layoutKey == k_layout_view_shares {
+            if layoutKey == NCBrandGlobal.shared.layoutViewShares {
                 
                 if let viewController = appDelegate.listFilesVC.value(forKey: serverUrlPush) {
                     guard let vcFiles = (viewController as? NCFiles) else { return }
@@ -1313,7 +1313,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
                 
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
-            if layout == k_layout_list {
+            if layout == NCBrandGlobal.shared.layoutList {
                 return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
             } else {
                 return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
@@ -1336,7 +1336,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         //
         // LAYOUT LIST
         //
-        if layout == k_layout_list {
+        if layout == NCBrandGlobal.shared.layoutList {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
             cell.delegate = self
@@ -1529,7 +1529,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         //
         // LAYOUT GRID
         //
-        if layout == k_layout_grid {
+        if layout == NCBrandGlobal.shared.layoutGrid {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
             cell.delegate = self

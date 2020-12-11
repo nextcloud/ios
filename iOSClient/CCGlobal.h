@@ -223,22 +223,6 @@
 #define k_default_file_remote_share_permission_no_support_share_option      3
 #define k_default_folder_remote_share_permission_no_support_share_option    15
 
-// Layout
-#define k_layout_list                                   @"typeLayoutList"
-#define k_layout_grid                                   @"typeLayoutGrid"
-
-#define k_layout_view_move                              @"LayoutMove"
-#define k_layout_view_richdocument                      @"LayoutRichdocument"
-#define k_layout_view_trash                             @"LayoutTrash"
-#define k_layout_view_offline                           @"LayoutOffline"
-#define k_layout_view_favorite                          @"LayoutFavorite"
-#define k_layout_view_files                             @"LayoutFiles"
-#define k_layout_view_viewInFolder                      @"ViewInFolder"
-#define k_layout_view_transfers                         @"LayoutTransfers"
-#define k_layout_view_media                             @"LayoutMedia"
-#define k_layout_view_recent                            @"LayoutRecent"
-#define k_layout_view_shares                            @"LayoutShares"
-
 // Button Type in Cell list/grid
 #define k_buttonMoreMore                                @"more"
 #define k_buttonMoreStop                                @"stop"

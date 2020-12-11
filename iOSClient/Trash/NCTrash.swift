@@ -98,10 +98,10 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         self.navigationItem.title = titleCurrentFolder
 
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash, serverUrl: "")
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: NCBrandGlobal.shared.layoutViewTrash, serverUrl: "")
         gridLayout.itemForLine = CGFloat(itemForLine)
         
-        if layout == k_layout_list {
+        if layout == NCBrandGlobal.shared.layoutList {
             collectionView.collectionViewLayout = listLayout
         } else {
             collectionView.collectionViewLayout = gridLayout
@@ -155,8 +155,8 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                     self.collectionView.reloadData()
                 })
             })
-            layout = k_layout_list
-            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, serverUrl: "", layout: layout)
+            layout = NCBrandGlobal.shared.layoutList
+            NCUtility.shared.setLayoutForView(key: NCBrandGlobal.shared.layoutViewTrash, serverUrl: "", layout: layout)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -165,15 +165,15 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                     self.collectionView.reloadData()
                 })
             })
-            layout = k_layout_grid
-            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, serverUrl: "", layout: layout)
+            layout = NCBrandGlobal.shared.layoutGrid
+            NCUtility.shared.setLayoutForView(key: NCBrandGlobal.shared.layoutViewTrash, serverUrl: "", layout: layout)
         }
     }
     
     func tapOrderHeaderMenu(sender: Any) {
         
         let sortMenu = NCSortMenu()
-        sortMenu.toggleMenu(viewController: self, key: k_layout_view_trash, sortButton: sender as? UIButton, serverUrl: "", hideDirectoryOnTop: true)
+        sortMenu.toggleMenu(viewController: self, key: NCBrandGlobal.shared.layoutViewTrash, sortButton: sender as? UIButton, serverUrl: "", hideDirectoryOnTop: true)
     }
     
     func tapMoreHeaderMenu(sender: Any) {
@@ -543,7 +543,7 @@ extension NCTrash {
 
     @objc func reloadDataSource() {
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash, serverUrl: "")
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: NCBrandGlobal.shared.layoutViewTrash, serverUrl: "")
         
         datasource.removeAll()
         

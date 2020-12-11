@@ -240,4 +240,18 @@ class NCBrandColor: NSObject {
     
     // Nextcloud unsupported
     let nextcloud_unsupported_version: Int          = 13
+    
+    // Layout
+    let layoutList                                  = "typeLayoutList"
+    let layoutGrid                                  = "typeLayoutGrid"
+    
+    let layoutViewMove                              = "LayoutMove"
+    let layoutViewTrash                             = "LayoutTrash"
+    let layoutViewOffline                           = "LayoutOffline"
+    let layoutViewFavorite                          = "LayoutFavorite"
+    let layoutViewFiles                             = "LayoutFiles"
+    let layoutViewViewInFolder                      = "ViewInFolder"
+    let layoutViewTransfers                         = "LayoutTransfers"
+    let layoutViewRecent                            = "LayoutRecent"
+    let layoutViewShares                            = "LayoutShares"
 }
