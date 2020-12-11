@@ -114,7 +114,7 @@
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
     // Start Timer
-    self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
+    self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
     [self startTimerErrorNetworking];
 
     // Store review
@@ -429,7 +429,7 @@
 
 - (void)startTimerErrorNetworking
 {
-    self.timerErrorNetworking = [NSTimer scheduledTimerWithTimeInterval:k_timerErrorNetworking target:self selector:@selector(checkErrorNetworking) userInfo:nil repeats:YES];
+    self.timerErrorNetworking = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(checkErrorNetworking) userInfo:nil repeats:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------

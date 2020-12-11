@@ -117,11 +117,6 @@
 #define k_metadataStatusUploadError                     10
 #define k_metadataStatusUploadForcedStart               11
 
-// Timer
-#define k_timerAutoUpload                               5
-#define k_timerUpdateApplicationIconBadgeNumber         5
-#define k_timerErrorNetworking                          3
-
 // Error
 #define k_CCErrorBadRequest                             400
 #define k_CCErrorResourceNotFound                       404
@@ -232,15 +227,8 @@
 #define k_template_presentation                         @"presentation"
 
 // Nextcloud version
-#define k_nextcloud_version_12_0                        12
-#define k_nextcloud_version_13_0                        13
-#define k_nextcloud_version_14_0                        14
-#define k_nextcloud_version_15_0                        15
-#define k_nextcloud_version_16_0                        16
 #define k_nextcloud_version_17_0                        17
 #define k_nextcloud_version_18_0                        18
-#define k_nextcloud_version_19_0                        19
-#define k_nextcloud_version_20_0                        20
 
 // Notification Center
 
