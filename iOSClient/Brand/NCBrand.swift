@@ -380,3 +380,10 @@ class NCBrandColor: NSObject {
     @objc let notificationCenterMenuSaveLivePhoto               = "menuSaveLivePhoto"                // userInfo: ocId, ocIdMov
     @objc let notificationCenterMenuDetailClose                 = "menuDetailClose"
 }
+
+//DispatchQueue.main.async
+//DispatchQueue.main.asyncAfter(deadline: .now() + 0.1)
+//DispatchQueue.global().async
+
+//#if targetEnvironment(simulator)
+//#endif

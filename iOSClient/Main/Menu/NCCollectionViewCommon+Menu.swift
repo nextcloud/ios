@@ -285,7 +285,7 @@ extension NCCollectionViewCommon {
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: true, richWorkspace: nil, account: metadata.account)
                                 NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: true)
                                 
-                                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_changeStatusFolderE2EE, userInfo: ["serverUrl":metadata.serverUrl])
+                                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl":metadata.serverUrl])
                             } else {
                                 NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_mark_folder_", comment: ""), description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: .error, errorCode: errorCode)
                             }
@@ -310,7 +310,7 @@ extension NCCollectionViewCommon {
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: false, richWorkspace: nil, account: metadata.account)
                                 NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
                                 
-                                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_changeStatusFolderE2EE, userInfo: ["serverUrl":metadata.serverUrl])
+                                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl":metadata.serverUrl])
                             } else {
                                 NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_delete_mark_folder_", comment: ""), description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: .error, errorCode: errorCode)
                             }

@@ -27,13 +27,6 @@
 //dispatch_async(dispatch_get_main_queue(), ^{
 //dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
 
-//DispatchQueue.main.async
-//DispatchQueue.main.asyncAfter(deadline: .now() + 0.1)
-//DispatchQueue.global().async
-
-//#if targetEnvironment(simulator)
-//#endif
-
 //#if TARGET_OS_SIMULATOR
 //#endif
 
@@ -95,27 +88,3 @@
 #define k_max_folder_share_permission                   31
 #define k_default_file_remote_share_permission_no_support_share_option      3
 #define k_default_folder_remote_share_permission_no_support_share_option    15
-
-// Notification Center
-
-#define k_notificationCenter_reloadDataSource               @"reloadDataSource"                 // userInfo: ocId?, serverUrl?
-#define k_notificationCenter_reloadDataSourceNetworkForced  @"reloadDataSourceNetworkForced"    // userInfo: serverUrl?
-
-#define k_notificationCenter_changeStatusFolderE2EE         @"changeStatusFolderE2EE"           // userInfo: serverUrl
-
-#define k_notificationCenter_downloadStartFile              @"downloadStartFile"                // userInfo: ocId
-#define k_notificationCenter_downloadedFile                 @"downloadedFile"                   // userInfo: ocId, selector, errorCode, errorDescription
-#define k_notificationCenter_downloadCancelFile             @"downloadCancelFile"               // userInfo: ocId
-
-#define k_notificationCenter_uploadStartFile                @"uploadStartFile"                  // userInfo: ocId
-#define k_notificationCenter_uploadedFile                   @"uploadedFile"                     // userInfo: ocId, ocIdTemp, errorCode, errorDescription
-#define k_notificationCenter_uploadCancelFile               @"uploadCancelFile"                 // userInfo: ocId
-
-#define k_notificationCenter_progressTask                   @"progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
-
-#define k_notificationCenter_createFolder                   @"createFolder"                     // userInfo: ocId
-#define k_notificationCenter_deleteFile                     @"deleteFile"                       // userInfo: ocId, fileNameView, typeFile, onlyLocal
-#define k_notificationCenter_renameFile                     @"renameFile"                       // userInfo: ocId, errorCode, errorDescription
-#define k_notificationCenter_moveFile                       @"moveFile"                         // userInfo: ocId, serverUrlTo
-#define k_notificationCenter_copyFile                       @"copyFile"                         // userInfo: ocId, serverUrlFrom
-#define k_notificationCenter_favoriteFile                   @"favoriteFile"                     // userInfo: ocId

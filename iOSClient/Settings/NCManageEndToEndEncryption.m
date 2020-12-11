@@ -399,7 +399,7 @@
 - (void)endToEndInitializeSuccess
 {
     // Reload All Datasource
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_reloadDataSource object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterReloadDataSource object:nil];
 
     [self initializeForm];
 }

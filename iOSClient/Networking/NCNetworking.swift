@@ -229,7 +229,7 @@ import Queuer
         } else {
             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 NCManageDatabase.shared.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCBrandGlobal.shared.metadataStatusNormal)
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadCancelFile, userInfo: ["ocId":metadata.ocId])
+                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId":metadata.ocId])
                 
             }
         }
@@ -253,13 +253,13 @@ import Queuer
             self.downloadRequest[fileNameLocalPath] = request
             
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, status: NCBrandGlobal.shared.metadataStatusDownloading)
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadStartFile, userInfo: ["ocId":metadata.ocId])
+            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterDownloadStartFile, userInfo: ["ocId":metadata.ocId])
             
         }, taskHandler: { (_) in
             
         }, progressHandler: { (progress) in
             
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCBrandGlobal.shared.metadataStatusInDownload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
+            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterProgressTask, object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCBrandGlobal.shared.metadataStatusInDownload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
             
         }) { (account, etag, date, length, allHeaderFields, error, errorCode, errorDescription) in
                        
@@ -295,9 +295,9 @@ import Queuer
             
             self.downloadRequest[fileNameLocalPath] = nil
             if error?.isExplicitlyCancelledError ?? false {
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadCancelFile, userInfo: ["ocId":metadata.ocId])
+                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId":metadata.ocId])
             } else {
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["ocId":metadata.ocId, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
+                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId":metadata.ocId, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
             }
             
             completion(errorCode)
@@ -393,11 +393,11 @@ import Queuer
             
             uploadTask = task
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCBrandGlobal.shared.metadataStatusUploading)
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadStartFile, userInfo: ["ocId":metadata.ocId])
+            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId":metadata.ocId])
             
         }, progressHandler: { (progress) in
             
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCBrandGlobal.shared.metadataStatusInUpload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
+            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterProgressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCBrandGlobal.shared.metadataStatusInUpload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
             
         }) { (account, ocId, etag, date, size, allHeaderFields, error, errorCode, errorDescription) in
          
@@ -425,7 +425,7 @@ import Queuer
                      
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCBrandGlobal.shared.metadataStatusUploading)
             
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadStartFile, userInfo: ["ocId":metadata.ocId])
+            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId":metadata.ocId])
             
             completion(0, "")
             
@@ -450,7 +450,7 @@ import Queuer
         }
         
         if metadata != nil {
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, userInfo: ["account":metadata!.account, "ocId":metadata!.ocId, "serverUrl":serverUrl, "status":NSNumber(value: NCBrandGlobal.shared.metadataStatusInUpload), "progress":NSNumber(value: progress), "totalBytes":NSNumber(value: totalBytes), "totalBytesExpected":NSNumber(value: totalBytesExpected)])
+            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterProgressTask, userInfo: ["account":metadata!.account, "ocId":metadata!.ocId, "serverUrl":serverUrl, "status":NSNumber(value: NCBrandGlobal.shared.metadataStatusInUpload), "progress":NSNumber(value: progress), "totalBytes":NSNumber(value: totalBytes), "totalBytesExpected":NSNumber(value: totalBytesExpected)])
         }
     }
     
@@ -507,7 +507,7 @@ import Queuer
                 #endif                
                 
                 NCCommunicationCommon.shared.writeLog("Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
+                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
                 
             } else {
                 
@@ -524,7 +524,7 @@ import Queuer
                         NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     }
                     
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadCancelFile, userInfo: ["ocId":metadata.ocId])
+                    NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId":metadata.ocId])
                 
                 } else if errorCode == 401 || errorCode == 403 {
                     
@@ -549,7 +549,7 @@ import Queuer
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCBrandGlobal.shared.metadataStatusUploadError)
                 }
                 
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
+                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
             }
             
             // Delete
@@ -653,7 +653,7 @@ import Queuer
             } else {
                 CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadCancelFile, userInfo: ["ocId":metadata.ocId])
+                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId":metadata.ocId])
             }
             
             completion()
@@ -668,7 +668,7 @@ import Queuer
         }
         if session == nil {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadCancelFile, userInfo: ["ocId":metadata.ocId])
+            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId":metadata.ocId])
             completion()
             return
         }
@@ -689,7 +689,7 @@ import Queuer
                     }
                     catch { }
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadCancelFile, userInfo: ["ocId":metadata.ocId])
+                    NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId":metadata.ocId])
                 }
             }
             completion()
@@ -855,7 +855,7 @@ import Queuer
                         }
                         
                         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadataFolder?.ocId) {
-                            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_createFolder, userInfo: ["ocId": metadata.ocId])
+                            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId])
                         }
                     }
                     
@@ -918,7 +918,7 @@ import Queuer
                 NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(metadataLivePhoto.ocId))
             }
             
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_deleteFile, userInfo: ["ocId": metadata.ocId, "fileNameView": metadata.fileNameView, "typeFile": metadata.typeFile, "onlyLocal": true])
+            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": metadata.ocId, "fileNameView": metadata.fileNameView, "typeFile": metadata.typeFile, "onlyLocal": true])
             completion(0, "")
             
             return
@@ -982,7 +982,7 @@ import Queuer
                     NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
                 }
                 
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_deleteFile, userInfo: ["ocId": metadata.ocId, "fileNameView": metadata.fileNameView, "typeFile": metadata.typeFile, "onlyLocal": true])
+                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": metadata.ocId, "fileNameView": metadata.fileNameView, "typeFile": metadata.typeFile, "onlyLocal": true])
             }
             
             completion(errorCode, errorDescription)
@@ -1033,7 +1033,7 @@ import Queuer
                 #endif
                 
                 if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_favoriteFile, userInfo: ["ocId": metadata.ocId])
+                    NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId])
                 }
             }
             
@@ -1145,7 +1145,7 @@ import Queuer
                 }
                 
                 if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_renameFile, userInfo: ["ocId": metadata.ocId])
+                    NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId])
                 }
             }
                     
@@ -1192,7 +1192,7 @@ import Queuer
                 
                 NCManageDatabase.shared.moveMetadata(ocId: metadata.ocId, serverUrlTo: serverUrlTo)
 
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_moveFile, userInfo: ["ocId": metadata.ocId, "serverUrlFrom": serverUrlFrom])
+                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": metadata.ocId, "serverUrlFrom": serverUrlFrom])
             }
             
             completion(errorCode, errorDescription)
@@ -1231,7 +1231,7 @@ import Queuer
                    
             if errorCode == 0 {
                 
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_copyFile, userInfo: ["ocId": metadata.ocId, "serverUrlTo": serverUrlTo])
+                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": metadata.ocId, "serverUrlTo": serverUrlTo])
             }
             
             completion(errorCode, errorDescription)
