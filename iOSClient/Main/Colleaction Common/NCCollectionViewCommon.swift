@@ -304,7 +304,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if let ocId = userInfo["ocId"] as? String, let fileNameView = userInfo["fileNameView"] as? String, let onlyLocal = userInfo["onlyLocal"] as? Bool {
                 if onlyLocal {
                     reloadDataSource()
-                } else if fileNameView.lowercased() == k_fileNameRichWorkspace.lowercased() {
+                } else if fileNameView.lowercased() == NCBrandGlobal.shared.fileNameRichWorkspace.lowercased() {
                     reloadDataSourceNetwork(forced: true)
                 } else {
                     if let row = dataSource.deleteMetadata(ocId: ocId) {
@@ -521,7 +521,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                             if progress > 0 {
                                 cell.progressView?.isHidden = false
                                 cell.progressView?.progress = progress
-                                cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
+                                cell.setButtonMore(named: NCBrandGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
                                 if status == k_metadataStatusInDownload {
                                     cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
                                 } else if status == k_metadataStatusInUpload {
@@ -533,7 +533,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                             if progress > 0 {
                                 cell.progressView?.isHidden = false
                                 cell.progressView?.progress = progress
-                                cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
+                                cell.setButtonMore(named: NCBrandGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
                                 if status == k_metadataStatusInDownload {
                                     cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
                                 } else if status == k_metadataStatusInUpload {
@@ -545,7 +545,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                             if progress > 0 {
                                 cell.progressView.isHidden = false
                                 cell.progressView.progress = progress
-                                cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
+                                cell.setButtonMore(named: NCBrandGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
                             }
                         }
                     }
@@ -677,9 +677,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
 
-        if namedButtonMore == k_buttonMoreMore {
+        if namedButtonMore == NCBrandGlobal.shared.buttonMoreMore {
             toggleMoreMenu(viewController: self, metadata: metadata)
-        } else if namedButtonMore == k_buttonMoreStop {
+        } else if namedButtonMore == NCBrandGlobal.shared.buttonMoreStop {
             NCNetworking.shared.cancelTransferMetadata(metadata) { }
         }
     }
@@ -1457,11 +1457,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
                 cell.progressView.isHidden = false
-                cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
+                cell.setButtonMore(named: NCBrandGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
             } else {
                 cell.progressView.isHidden = true
                 cell.progressView.progress = progress
-                cell.setButtonMore(named: k_buttonMoreMore, image: NCCollectionCommon.images.cellButtonMore)
+                cell.setButtonMore(named: NCBrandGlobal.shared.buttonMoreMore, image: NCCollectionCommon.images.cellButtonMore)
             }
             // Write status on Label Info
             switch metadata.status {
@@ -1609,11 +1609,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             // Transfer
             if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
                 cell.progressView.isHidden = false
-                cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
+                cell.setButtonMore(named: NCBrandGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
             } else {
                 cell.progressView.isHidden = true
                 cell.progressView.progress = 0.0
-                cell.setButtonMore(named: k_buttonMoreMore, image: NCCollectionCommon.images.cellButtonMore)
+                cell.setButtonMore(named: NCBrandGlobal.shared.buttonMoreMore, image: NCCollectionCommon.images.cellButtonMore)
             }
             
             // Live Photo

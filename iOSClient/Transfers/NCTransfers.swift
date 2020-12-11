@@ -188,7 +188,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         if pathText == "" { pathText = "/" }
         cell.labelPath.text = pathText
         
-        cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
+        cell.setButtonMore(named: NCBrandGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
 
         cell.progressView.progress = 0.0
         cell.separator.backgroundColor = NCBrandColor.shared.separator

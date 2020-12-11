@@ -254,4 +254,11 @@ class NCBrandColor: NSObject {
     let layoutViewTransfers                         = "LayoutTransfers"
     let layoutViewRecent                            = "LayoutRecent"
     let layoutViewShares                            = "LayoutShares"
+    
+    // Button Type in Cell list/grid
+    let buttonMoreMore                              = "more"
+    let buttonMoreStop                              = "stop"
+    
+    // Rich Workspace
+    let fileNameRichWorkspace                       = "Readme.md"
 }

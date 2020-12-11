@@ -223,13 +223,6 @@
 #define k_default_file_remote_share_permission_no_support_share_option      3
 #define k_default_folder_remote_share_permission_no_support_share_option    15
 
-// Button Type in Cell list/grid
-#define k_buttonMoreMore                                @"more"
-#define k_buttonMoreStop                                @"stop"
-
-// Rich Workspace
-#define k_fileNameRichWorkspace                         @"Readme.md"
-
 // Text -  OnlyOffice - Collabora
 #define k_editor_text                                   @"text"
 #define k_editor_onlyoffice                             @"onlyoffice"
