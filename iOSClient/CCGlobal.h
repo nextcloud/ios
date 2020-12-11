@@ -75,9 +75,6 @@
 #define k_sizePreview                                   1024
 #define k_sizeIcon                                      512
 
-// Database JSON
-#define k_databaseDefaultJSON                           @"nextcloud.json"
-
 // Intro selector
 #define k_intro_login                                   0
 #define k_intro_signup                                  1
@@ -130,12 +127,6 @@
 #define k_timerAutoUpload                               5
 #define k_timerUpdateApplicationIconBadgeNumber         5
 #define k_timerErrorNetworking                          3
-
-// Max Size Operation
-#define k_maxSizeOperationUpload                        524288000   // 500 MB
-
-// Max Cache Proxy Video
-#define k_maxHTTPCache                                  10737418240 // 10GB
 
 // Error
 #define k_CCErrorBadRequest                             400

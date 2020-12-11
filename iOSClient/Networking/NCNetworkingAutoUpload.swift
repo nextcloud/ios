@@ -58,7 +58,7 @@ class NCNetworkingAutoUpload: NSObject {
         for metadata in metadatasUpload {
             sizeUpload = sizeUpload + Int(metadata.size)
         }
-        if sizeUpload > k_maxSizeOperationUpload { return }
+        if sizeUpload > NCBrandGlobal.shared.uploadMaxFileSize { return }
         
         timerProcess?.invalidate()
         
@@ -108,7 +108,7 @@ class NCNetworkingAutoUpload: NSObject {
                                 NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
                             }
                             sizeUpload = sizeUpload + Int(metadata.size)
-                            if sizeUpload > k_maxSizeOperationUpload {
+                            if sizeUpload > NCBrandGlobal.shared.uploadMaxFileSize {
                                 self.startTimer()
                                 return
                             }

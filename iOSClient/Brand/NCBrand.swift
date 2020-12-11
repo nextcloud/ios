@@ -217,21 +217,27 @@ class NCBrandColor: NSObject {
     }()
 
     // Directory on Group
-    @objc public let appDatabaseNextcloud: String   = "Library/Application Support/Nextcloud"
+    @objc let appDatabaseNextcloud: String          = "Library/Application Support/Nextcloud"
 
     // Database Realm
-    public let databaseDefault: String              = "nextcloud.realm"
-    public let databaseSchemaVersion: UInt64        = 160
+    let databaseDefault: String                     = "nextcloud.realm"
+    let databaseSchemaVersion: UInt64               = 160
     
     // E2EE
-    public let e2eeMaxFileSize: UInt64              = 524288000   // 500 MB
-    @objc public let e2eeVersion: String            = "1.1"
+    let e2eeMaxFileSize: UInt64                     = 524288000   // 500 MB
+    @objc let e2eeVersion: String                   = "1.1"
+    
+    // Max Size Upload
+    let uploadMaxFileSize: UInt64                   = 524288000   // 500 MB
+    
+    // Max Cache Proxy Video
+    let maxHTTPCache: Int64                         = 10737418240 // 10 GB
     
     // NCSharePaging
-    public let indexPageActivity: Int               = 0
-    public let indexPageComments: Int               = 1
-    public let indexPageSharing: Int                = 2
+    let indexPageActivity: Int                      = 0
+    let indexPageComments: Int                      = 1
+    let indexPageSharing: Int                       = 2
     
     // Nextcloud unsupported
-    public let nextcloud_unsupported_version: Int   = 13
+    let nextcloud_unsupported_version: Int          = 13
 }

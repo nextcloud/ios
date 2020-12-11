@@ -104,7 +104,7 @@ class NCKTVHTTPCache: NSObject {
     
     private func setupHTTPCache() {
         
-        KTVHTTPCache.cacheSetMaxCacheLength(Int64(k_maxHTTPCache))
+        KTVHTTPCache.cacheSetMaxCacheLength(NCBrandGlobal.shared.maxHTTPCache)
         
         if ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil {
             KTVHTTPCache.logSetConsoleLogEnable(true)
