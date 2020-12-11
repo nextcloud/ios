@@ -202,7 +202,7 @@ class NCBrandColor: NSObject {
         
         DispatchQueue.main.async {
             NCCollectionCommon.shared.createImagesThemingColor()
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_changeTheming)
+            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterChangeTheming)
         }
     }
 #endif
@@ -341,5 +341,42 @@ class NCBrandColor: NSObject {
     @objc let metadataStatusUploading: Int          = 9
     @objc let metadataStatusUploadError: Int        = 10
     @objc let metadataStatusUploadForcedStart: Int  = 11
+    
+    // Notification Center
 
+    @objc let notificationCenterApplicationDidEnterBackground   = "applicationDidEnterBackground"
+    @objc let notificationCenterApplicationWillEnterForeground  = "applicationWillEnterForeground"
+
+    @objc let notificationCenterInitializeMain                  = "initializeMain"
+    @objc let notificationCenterChangeTheming                   = "changeTheming"
+    @objc let notificationCenterChangeUserProfile               = "changeUserProfile"
+    @objc let notificationCenterRichdocumentGrabFocus           = "richdocumentGrabFocus"
+    @objc let notificationCenterReloadDataNCShare               = "reloadDataNCShare"
+    @objc let notificationCenterCloseRichWorkspaceWebView       = "closeRichWorkspaceWebView"
+
+    @objc let notificationCenterReloadDataSource                = "reloadDataSource"                 // userInfo: ocId?, serverUrl?
+    @objc let notificationCenterReloadDataSourceNetworkForced   = "reloadDataSourceNetworkForced"    // userInfo: serverUrl?
+
+    @objc let notificationCenterChangeStatusFolderE2EE          = "changeStatusFolderE2EE"           // userInfo: serverUrl
+
+    @objc let notificationCenterDownloadStartFile               = "downloadStartFile"                // userInfo: ocId
+    @objc let notificationCenterDownloadedFile                  = "downloadedFile"                   // userInfo: ocId, selector, errorCode, errorDescription
+    @objc let notificationCenterDownloadCancelFile              = "downloadCancelFile"               // userInfo: ocId
+
+    @objc let notificationCenterUploadStartFile                 = "uploadStartFile"                  // userInfo: ocId
+    @objc let notificationCenterUploadedFile                    = "uploadedFile"                     // userInfo: ocId, ocIdTemp, errorCode, errorDescription
+    @objc let notificationCenterUploadCancelFile                = "uploadCancelFile"                 // userInfo: ocId
+
+    @objc let notificationCenterProgressTask                    = "progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
+    
+    @objc let notificationCenterCreateFolder                    = "createFolder"                     // userInfo: ocId
+    @objc let notificationCenterDeleteFile                      = "deleteFile"                       // userInfo: ocId, fileNameView, typeFile, onlyLocal
+    @objc let notificationCenterRenameFile                      = "renameFile"                       // userInfo: ocId, errorCode, errorDescription
+    @objc let notificationCenterMoveFile                        = "moveFile"                         // userInfo: ocId, serverUrlTo
+    @objc let notificationCenterCopyFile                        = "copyFile"                         // userInfo: ocId, serverUrlFrom
+    @objc let notificationCenterFavoriteFile                    = "favoriteFile"                     // userInfo: ocId
+
+    @objc let notificationCenterMenuSearchTextPDF               = "menuSearchTextPDF"
+    @objc let notificationCenterMenuSaveLivePhoto               = "menuSaveLivePhoto"                // userInfo: ocId, ocIdMov
+    @objc let notificationCenterMenuDetailClose                 = "menuDetailClose"
 }

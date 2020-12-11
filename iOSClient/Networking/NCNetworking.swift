@@ -121,7 +121,6 @@ import Queuer
             lastReachability = false
         }
         
-        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_setTitleMain)
         #endif
     }
     

@@ -194,8 +194,8 @@
     self.title = NSLocalizedString(@"_settings_", nil);
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground) name:k_notificationCenter_applicationDidEnterBackground object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:NCBrandGlobal.shared.notificationCenterChangeTheming object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground) name:NCBrandGlobal.shared.notificationCenterApplicationDidEnterBackground object:nil];
 
     [self changeTheming];
 }
@@ -318,7 +318,7 @@
             [CCUtility setDarkMode:false];
         }
         
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_changeTheming object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterChangeTheming object:nil];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"darkModeDetect"]) {
@@ -339,7 +339,7 @@
             [CCUtility setDarkMode:false];
         }
         
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_changeTheming object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterChangeTheming object:nil];
     }
 }
 

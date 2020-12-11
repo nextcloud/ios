@@ -81,24 +81,6 @@
 #define k_keyFileNameOriginal                           @"fileNameOriginal"
 #define k_keyFileNameOriginalAutoUpload                 @"fileNameOriginalAutoUpload"
 
-/*
-#define k_activityDebugActionUpload                     @"Upload"
-#define k_activityDebugActionUploadPicker               @"Upload Picker"
-#define k_activityDebugActionUploadShare                @"Upload Share"
-#define k_activityDebugActionAutoUpload                 @"Auto Upload"
-#define k_activityDebugActionReadFolder                 @"Read Folder"
-#define k_activityDebugActionListingFavorites           @"Listing Favorites"
-#define k_activityDebugActionCreateFolder               @"Create Folder"
-#define k_activityDebugActionDeleteFileFolder           @"Delete File-Folder"
-#define k_activityDebugActionGetNotification            @"Get Notification Server"
-#define k_activityDebugActionSubscribingServerPush      @"Subscribing Server Push"
-#define k_activityDebugActionUnsubscribingServerPush    @"Unsubscribing Server Push"
-#define k_activityDebugActionSubscribingPushProxy       @"Subscribing Push Proxy"
-#define k_activityDebugActionUnsubscribingPushProxy     @"Unsubscribing Push Proxy"
-#define k_activityDebugActionCapabilities               @"Capabilities Of Server"
-#define k_activityDebugActionEndToEndEncryption         @"End To End Encryption "
-*/
-
 //Share permission
 //permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
 #define k_read_share_permission                         1
@@ -115,17 +97,6 @@
 #define k_default_folder_remote_share_permission_no_support_share_option    15
 
 // Notification Center
-
-#define k_notificationCenter_applicationDidEnterBackground  @"applicationDidEnterBackground"
-#define k_notificationCenter_applicationWillEnterForeground @"applicationWillEnterForeground"
-
-#define k_notificationCenter_initializeMain                 @"initializeMain"
-#define k_notificationCenter_setTitleMain                   @"setTitleMain"
-#define k_notificationCenter_changeTheming                  @"changeTheming"
-#define k_notificationCenter_changeUserProfile              @"changeUserProfile"
-#define k_notificationCenter_richdocumentGrabFocus          @"richdocumentGrabFocus"
-#define k_notificationCenter_reloadDataNCShare              @"reloadDataNCShare"
-#define k_notificationCenter_closeRichWorkspaceWebView      @"closeRichWorkspaceWebView"
 
 #define k_notificationCenter_reloadDataSource               @"reloadDataSource"                 // userInfo: ocId?, serverUrl?
 #define k_notificationCenter_reloadDataSourceNetworkForced  @"reloadDataSourceNetworkForced"    // userInfo: serverUrl?
@@ -148,7 +119,3 @@
 #define k_notificationCenter_moveFile                       @"moveFile"                         // userInfo: ocId, serverUrlTo
 #define k_notificationCenter_copyFile                       @"copyFile"                         // userInfo: ocId, serverUrlFrom
 #define k_notificationCenter_favoriteFile                   @"favoriteFile"                     // userInfo: ocId
-
-#define k_notificationCenter_menuSearchTextPDF              @"menuSearchTextPDF"
-#define k_notificationCenter_menuSaveLivePhoto              @"menuSaveLivePhoto"                // userInfo: ocId, ocIdMov
-#define k_notificationCenter_menuDetailClose                @"menuDetailClose"

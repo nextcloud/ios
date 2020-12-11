@@ -67,7 +67,7 @@
         [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Start session with level %lu %@", (unsigned long)logLevel, versionNextcloudiOS]];
     }
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:k_notificationCenter_initializeMain object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil];
     
     // Set account, if no exists clear all
     tableAccount *tableAccount = [[NCManageDatabase shared] getAccountActive];
@@ -153,7 +153,7 @@
     }
 
     // init home
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
 
     // Passcode
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -190,7 +190,7 @@
 {
     if (self.account.length == 0) { return; }
     
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationWillEnterForeground object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterApplicationWillEnterForeground object:nil];
     
     // Request Passcode
     [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
@@ -205,7 +205,7 @@
     [self pushNotification];
     
     // RichDocument
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_richdocumentGrabFocus object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterRichdocumentGrabFocus object:nil];
     
     // Request Service Server Nextcloud
     [[NCService shared] startRequestServicesServer];
@@ -240,7 +240,7 @@
 {
     if (self.account.length == 0) { return; }
 
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationDidEnterBackground object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterApplicationDidEnterBackground object:nil];
     
     [self passcodeWithAutomaticallyPromptForBiometricValidation:false];
 }
@@ -265,7 +265,7 @@
     [[NCBrandColor shared] settingThemingColorWithAccount:self.account];
     
     // close detail
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_menuDetailClose object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterMenuDetailClose object:nil];
     
     // Not Photos Video in library ? then align and Init Auto Upload
     NSArray *recordsPhotoLibrary = [[NCManageDatabase shared] getPhotoLibraryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", self.account]];
@@ -476,7 +476,7 @@
             NSString *newAccount = listAccount[0];
             tableAccount *tableAccount = [[NCManageDatabase shared] setAccountActive:newAccount];
             [self settingAccount:newAccount urlBase:tableAccount.urlBase user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]];
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
         } else {
             [self openLoginView:self.window.rootViewController selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
         }
@@ -793,7 +793,7 @@
                             if ([link containsString:accountURL.host] && [user isEqualToString:accountUser]) {
                                 matchedAccount = [[NCManageDatabase shared] setAccountActive:account.account];
                                 [self settingAccount:matchedAccount.account urlBase:matchedAccount.urlBase user:matchedAccount.user userID:matchedAccount.userID password:[CCUtility getPassword:matchedAccount.account]];
-                                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
+                                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
                             }
                         }
                     }

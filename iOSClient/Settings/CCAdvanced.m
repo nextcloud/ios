@@ -262,7 +262,7 @@
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:NCBrandGlobal.shared.notificationCenterChangeTheming object:nil];
     [self changeTheming];
 }
 
@@ -355,7 +355,7 @@
     [[NCAutoUpload shared] alignPhotoLibrary];
 
     // Inizialized home
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
     
     // Clear Media
     [appDelegate.activeMedia reloadDataSource];

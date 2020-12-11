@@ -246,7 +246,7 @@ extension NCViewer {
                 NCMenuAction(title: NSLocalizedString("_search_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "search"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                     action: { menuAction in
-                        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuSearchTextPDF)
+                        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterMenuSearchTextPDF)
                     }
                 )
             )
@@ -275,7 +275,7 @@ extension NCViewer {
                         NCMenuAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
                             icon: CCGraphics.changeThemingColorImage(UIImage(named: "livePhoto"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                             action: { menuAction in
-                                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuSaveLivePhoto, userInfo: ["ocId": metadata.ocId, "ocIdMov": metadataLive.ocId])
+                                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterMenuSaveLivePhoto, userInfo: ["ocId": metadata.ocId, "ocIdMov": metadataLive.ocId])
                             }
                         )
                     )
