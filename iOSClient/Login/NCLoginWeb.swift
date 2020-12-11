@@ -62,12 +62,12 @@ class NCLoginWeb: UIViewController {
         webView!.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
         webView!.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
         
-        // ADD k_flowEndpoint for Web Flow
+        // ADD end point for Web Flow
         if urlBase != NCBrandOptions.shared.linkloginPreferredProviders {
             if loginFlowV2Available {
                 urlBase = loginFlowV2Login
             } else {
-                urlBase = urlBase + k_flowEndpoint
+                urlBase = urlBase + "/index.php/login/flow"
             }
         }
         

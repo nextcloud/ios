@@ -228,6 +228,7 @@ class NCBrandColor: NSObject {
     
     // E2EE
     let e2eeMaxFileSize: UInt64                     = 524288000   // 500 MB
+    let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
     @objc let e2eeVersion                           = "1.1"
     
     // Max Size Upload
@@ -267,5 +268,4 @@ class NCBrandColor: NSObject {
     
     @objc let dismissAfterSecond: TimeInterval      = 4
     @objc let dismissAfterSecondLong: TimeInterval  = 10
-
 }

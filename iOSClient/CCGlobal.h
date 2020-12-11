@@ -57,15 +57,6 @@
 #define k_appScan                                       @"Library/Application Support/Scan"
 #define k_DirectoryProviderStorage                      @"File Provider Storage"
 
-// Server Status
-#define k_serverStatus                                  @"/status.php"
-
-// Login Flow
-#define k_flowEndpoint                                  @"/index.php/login/flow"
-
-// Passphrase test EndToEnd Encryption
-#define k_passphrase_test                               @"more over television factory tendency independence international intellectual impress interest sentence pony"
-
 #define k_sizePreview                                   1024
 #define k_sizeIcon                                      512
 
