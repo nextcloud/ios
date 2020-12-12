@@ -260,7 +260,9 @@ class NCViewerImage: UIViewController {
     // Detect for LIVE
     //
     @objc func didLongpressGestureEvent(gestureRecognizer: UITapGestureRecognizer) {
-                
+          
+        if !currentMetadata.livePhoto { return }
+        
         if gestureRecognizer.state == .began {
             
             currentViewerImageZoom?.centreConstraints()
@@ -309,11 +311,7 @@ class NCViewerImage: UIViewController {
             
             currentViewerImageZoom?.statusViewImage.isHidden = false
             currentViewerImageZoom?.statusLabel.isHidden = false
-            
-            let fileName = (currentMetadata.fileNameView as NSString).deletingPathExtension + ".mov"
-            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentMetadata.account, currentMetadata.serverUrl, fileName)) != nil {
-                videoStop()
-            }
+            videoStop()
         }
     }
     
