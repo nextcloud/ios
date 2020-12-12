@@ -1,5 +1,5 @@
 //
-//  CryptoCloud.pch
+//  Nextcloud.pch
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 17/09/15.
@@ -21,13 +21,13 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef CryptoCloud_pch
-#define CryptoCloud_pch
+#ifndef Nextcloud_pch
+#define Nextcloud_pch
 
 // Include any system framework and library headers here that should be included in all compilation units.
 // You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
 
-#endif /* CryptoCloud_pch */
+#endif /* Nextcloud_pch */
 
 #ifdef __OBJC__
 
