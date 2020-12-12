@@ -34,7 +34,6 @@
 + (UIColor *)colorFromHexString:(NSString *)hexString;
 + (UIImage *)changeThemingColorImage:(UIImage *)image multiplier:(NSInteger)multiplier color:(UIColor *)color;
 + (UIImage *)changeThemingColorImage:(UIImage *)image width:(CGFloat)width height:(CGFloat)height color:(UIColor *)color;
-+ (BOOL)isLight:(UIColor *)color;
 + (void)settingThemingColor:(NSString *)themingColor themingColorElement:(NSString *)themingColorElement themingColorText:(NSString *)themingColorText;
 
 @end
