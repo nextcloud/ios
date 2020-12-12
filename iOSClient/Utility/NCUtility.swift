@@ -275,7 +275,7 @@ class NCUtility: NSObject {
                             return closure(nil)
                         }
                         
-                        CCUtility.write(pngImageData, fileNamePath: imageNamePath)
+                        try? pngImageData.write(to: URL(fileURLWithPath:imageNamePath))
                         
                         return closure(imageNamePath)
                         
@@ -297,8 +297,8 @@ class NCUtility: NSObject {
                             return closure(nil)
                         }
                             
-                        CCUtility.write(pngImageData, fileNamePath: imageNamePath)
-                            
+                        try? pngImageData.write(to: URL(fileURLWithPath:imageNamePath))
+                                                    
                         return closure(imageNamePath)
                     }
                 } else {

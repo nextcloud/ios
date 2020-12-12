@@ -176,16 +176,6 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         }
     }
     
-    override func textFieldDidBeginEditing(_ textField: UITextField) {
-        
-        let cell = textField.formDescriptorCell()
-        let tag = cell?.rowDescriptor.tag
-        
-        if tag == "fileName" {
-            CCUtility.selectFileName(from: textField)
-        }
-    }
-    
     //MARK: TableViewDelegate
 
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {

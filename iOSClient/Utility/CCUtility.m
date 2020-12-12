@@ -785,24 +785,6 @@
     }
 }
 
-
-+ (NSDate *)dateEnUsPosixFromCloud:(NSString *)dateString
-{
-    NSDate *date = [NSDate date];
-    NSError *error;
-    NSDateFormatter *dateFormatter = [NSDateFormatter new];
-    NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-    [dateFormatter setLocale:enUSPOSIXLocale];
-    [dateFormatter setDateFormat:@"EEE, dd MMM y HH:mm:ss zzz"];
-
-    if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
-        NSLog(@"[LOG] Date '%@' could not be parsed: %@", dateString, error);
-        date = [NSDate date];
-    }
-
-    return date;
-}
-
 + (NSString *)transformedSize:(int64_t)value
 {
     NSString *string = [NSByteCountFormatter stringFromByteCount:value countStyle:NSByteCountFormatterCountStyleBinary];
@@ -1348,26 +1330,6 @@
     return path;
 }
 
-+ (void)writeData:(NSData *)data fileNamePath:(NSString *)fileNamePath
-{
-    [data writeToFile:fileNamePath atomically:YES];
-}
-
-+ (void)selectFileNameFrom:(UITextField *)textField
-{
-    UITextPosition *endPosition;
-    NSRange rangeDot = [textField.text rangeOfString:@"." options:NSBackwardsSearch];
-    
-    if (rangeDot.location != NSNotFound) {
-        endPosition = [textField positionFromPosition:textField.beginningOfDocument offset:rangeDot.location];
-    } else {
-        endPosition = textField.endOfDocument;
-    }
-    
-    UITextRange *textRange = [textField textRangeFromPosition:textField.beginningOfDocument toPosition:endPosition];
-    textField.selectedTextRange = textRange;
-}
-
 + (NSString *)getTimeIntervalSince197
 {
     return [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
@@ -1826,34 +1788,6 @@
 #pragma mark ===== Third parts =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (NSString *)stringValueForKey:(id)key conDictionary:(NSDictionary *)dictionary
-{
-    id obj = [dictionary objectForKey:key];
-    
-    if ([obj isEqual:[NSNull null]]) return @"";
-    
-    if ([obj isKindOfClass:[NSString class]]) {
-        return obj;
-    }
-    else if ([obj isKindOfClass:[NSNumber class]]) {
-        return [obj stringValue];
-    }
-    else {
-        return [obj description];
-    }
-}
-
-+ (NSString *)currentDevice
-{
-    struct utsname systemInfo;
-    uname(&systemInfo);
-    
-    NSString *deviceName=[NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
-    //NSLog(@"[LOG] Device Name :%@",deviceName);
-    
-    return deviceName;
-}
-
 + (NSString *)getExtension:(NSString*)fileName
 {
     NSMutableArray *fileNameArray =[[NSMutableArray alloc] initWithArray: [fileName componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"."]]];
@@ -1872,28 +1806,6 @@
     return extension;
 }
 
-/*
- * Util method to make a NSDate object from a string from xml
- * @dateString -> Data string from xml
- */
-+ (NSDate*)parseDateString:(NSString*)dateString
-{
-    //Parse the date in all the formats
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    /*In most cases the best locale to choose is "en_US_POSIX", a locale that's specifically designed to yield US English results regardless of both user and system preferences. "en_US_POSIX" is also invariant in time (if the US, at some point in the future, changes the way it formats dates, "en_US" will change to reflect the new behaviour, but "en_US_POSIX" will not). It will behave consistently for all users.*/
-    [dateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"]];
-    //This is the format for the concret locale used
-    [dateFormatter setDateFormat:@"EEE, dd MMM y HH:mm:ss zzz"];
-    
-    NSDate *theDate = nil;
-    NSError *error = nil;
-    if (![dateFormatter getObjectValue:&theDate forString:dateString range:nil error:&error]) {
-        NSLog(@"[LOG] Date '%@' could not be parsed: %@", dateString, error);
-    }
-    
-    return theDate;
-}
-
 + (NSDate *)datetimeWithOutTime:(NSDate *)datDate
 {
     if (datDate == nil) return nil;
@@ -1902,52 +1814,6 @@
     datDate = [[NSCalendar currentCalendar] dateFromComponents:comps];
     
     return datDate;
-}
-
-+ (NSDate *)datetimeWithOutDate:(NSDate *)datDate
-{
-    if (datDate == nil) return nil;
-    
-    NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond fromDate:datDate];
-    return [[NSCalendar currentCalendar] dateFromComponents:comps];
-}
-
-+ (BOOL)isValidEmail:(NSString *)checkString
-{
-    checkString = [checkString lowercaseString];
-    BOOL stricterFilter = YES;
-    NSString *stricterFilterString = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}";
-    NSString *laxString = @".+@.+\\.[A-Za-z]{2}[A-Za-z]*";
-    
-    NSString *emailRegex = stricterFilter ? stricterFilterString : laxString;
-    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
-    
-    return [emailTest evaluateWithObject:checkString];
-}
-
-+ (NSString*)hexRepresentation:(NSData *)data spaces:(BOOL)spaces
-{
-    const unsigned char* bytes = (const unsigned char*)[data bytes];
-    NSUInteger nbBytes = [data length];
-    //If spaces is true, insert a space every this many input bytes (twice this many output characters).
-    static const NSUInteger spaceEveryThisManyBytes = 4UL;
-    //If spaces is true, insert a line-break instead of a space every this many spaces.
-    static const NSUInteger lineBreakEveryThisManySpaces = 4UL;
-    const NSUInteger lineBreakEveryThisManyBytes = spaceEveryThisManyBytes * lineBreakEveryThisManySpaces;
-    NSUInteger strLen = 2*nbBytes + (spaces ? nbBytes/spaceEveryThisManyBytes : 0);
-    
-    NSMutableString* hex = [[NSMutableString alloc] initWithCapacity:strLen];
-    for(NSUInteger i=0; i<nbBytes; ) {
-        [hex appendFormat:@"%02X", bytes[i]];
-        //We need to increment here so that the every-n-bytes computations are right.
-        ++i;
-        
-        if (spaces) {
-            if (i % lineBreakEveryThisManyBytes == 0) [hex appendString:@"\n"];
-            else if (i % spaceEveryThisManyBytes == 0) [hex appendString:@" "];
-        }
-    }
-    return hex;
 }
 
 + (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems

@@ -337,16 +337,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         self.form.delegate = self
     }
     
-    override func textFieldDidBeginEditing(_ textField: UITextField) {
-        
-        let cell = textField.formDescriptorCell()
-        let tag = cell?.rowDescriptor.tag
-        
-        if tag == "fileName" {
-            CCUtility.selectFileName(from: textField)
-        }
-    }
-    
     func createFileName(_ fileName: String?) -> String {
         
         var name: String = ""

@@ -184,7 +184,6 @@
 + (NSString *)getUserAgent;
 
 + (NSString *)dateDiff:(NSDate *) convertedDate;
-+ (NSDate *)dateEnUsPosixFromCloud:(NSString *)dateString;
 + (NSString *)transformedSize:(int64_t)value;
 
 + (NSString *)removeForbiddenCharactersServer:(NSString *)fileName;
@@ -236,10 +235,6 @@
 
 + (NSString *)getMimeType:(NSString *)fileNameView;
 
-+ (void)writeData:(NSData *)data fileNamePath:(NSString *)fileNamePath;
-
-+ (void)selectFileNameFrom:(UITextField *)textField;
-
 + (NSString *)getTimeIntervalSince197;
 
 + (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadataForUpload notification:(BOOL)notification completion:(void(^)(tableMetadata *newMetadata, NSString* fileNamePath))completion;
@@ -267,14 +262,8 @@
 
 // ===== Third parts =====
 
-+ (NSString *)stringValueForKey:(id)key conDictionary:(NSDictionary *)dictionary;
-+ (NSString *)currentDevice;
 + (NSString *)getExtension:(NSString*)fileName;
-+ (NSDate*)parseDateString:(NSString*)dateString;
 + (NSDate *)datetimeWithOutTime:(NSDate *)datDate;
-+ (NSDate *)datetimeWithOutDate:(NSDate *)datDate;
-+ (BOOL)isValidEmail:(NSString *)checkString;
-+ (NSString *)hexRepresentation:(NSData *)data spaces:(BOOL)spaces;
 + (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems;
 
 @end

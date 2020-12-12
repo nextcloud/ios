@@ -170,8 +170,9 @@ import Queuer
     
     @objc func wrtiteCertificate(directoryCertificate: String) {
         
+        let stringDate: String = String(Date().timeIntervalSince1970)
         let certificateAtPath = directoryCertificate + "/tmp.der"
-        let certificateToPath = directoryCertificate + "/" + CCUtility.getTimeIntervalSince197() + ".der"
+        let certificateToPath = directoryCertificate + "/" + stringDate + ".der"
         
         do {
             try FileManager.default.moveItem(atPath: certificateAtPath, toPath: certificateToPath)
