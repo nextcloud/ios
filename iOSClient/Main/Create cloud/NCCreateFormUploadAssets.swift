@@ -365,7 +365,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             
             let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
             if autoUploadPath == self.serverUrl {
-                if NCNetworking.shared.createFolder(assets: self.assets, selector: selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase) {
+                if NCNetworking.shared.createFolder(assets: self.assets, selector: NCBrandGlobal.shared.selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase) {
                     NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
                     return
                 }
@@ -406,7 +406,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 
                 metadataForUpload.assetLocalIdentifier = asset.localIdentifier
                 metadataForUpload.session = self.session
-                metadataForUpload.sessionSelector = selectorUploadFile
+                metadataForUpload.sessionSelector = NCBrandGlobal.shared.selectorUploadFile
                 metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(asset: asset)
                 metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
                 
@@ -426,7 +426,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                             metadataMOVForUpload.livePhoto = true
                             
                             metadataMOVForUpload.session = self.session
-                            metadataMOVForUpload.sessionSelector = selectorUploadFile
+                            metadataMOVForUpload.sessionSelector = NCBrandGlobal.shared.selectorUploadFile
                             metadataMOVForUpload.size = fileSize
                             metadataMOVForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
                             metadataMOVForUpload.typeFile = NCBrandGlobal.shared.metadataTypeFileVideo

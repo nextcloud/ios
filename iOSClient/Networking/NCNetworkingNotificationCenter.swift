@@ -53,7 +53,7 @@ import Foundation
                     documentController?.delegate = self
 
                     switch selector {
-                    case selectorLoadFileQuickLook:
+                    case NCBrandGlobal.shared.selectorLoadFileQuickLook:
                         
                         let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
                         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
@@ -61,7 +61,7 @@ import Foundation
                         viewerQuickLook = NCViewerQuickLook.init()
                         viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath))
                         
-                    case selectorLoadFileView:
+                    case NCBrandGlobal.shared.selectorLoadFileView:
                         
                         if UIApplication.shared.applicationState == UIApplication.State.active {
                                                         
@@ -89,7 +89,7 @@ import Foundation
                             }
                         }
                         
-                    case selectorOpenIn:
+                    case NCBrandGlobal.shared.selectorOpenIn:
                         
                         if UIApplication.shared.applicationState == UIApplication.State.active {
                             
@@ -98,7 +98,7 @@ import Foundation
                             }
                         }
                         
-                    case selectorLoadCopy:
+                    case NCBrandGlobal.shared.selectorLoadCopy:
                         
                         var items = UIPasteboard.general.items
                         
@@ -111,11 +111,11 @@ import Foundation
                         
                         UIPasteboard.general.setItems(items, options: [:])
                         
-                    case selectorLoadOffline:
+                    case NCBrandGlobal.shared.selectorLoadOffline:
                         
                         NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: true)
                        
-                    case selectorSaveAlbum:
+                    case NCBrandGlobal.shared.selectorSaveAlbum:
                         
                         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                         let status = PHPhotoLibrary.authorizationStatus()

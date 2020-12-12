@@ -104,7 +104,7 @@ extension NCViewer {
                 NCMenuAction(title: NSLocalizedString("_open_in_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                     action: { menuAction in
-                        NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: selectorOpenIn)
+                        NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn)
                     }
                 )
             )
@@ -184,7 +184,7 @@ extension NCViewer {
                     action: { menuAction in
                         if ((localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) && metadata.session == "") {
                             
-                            NCNetworking.shared.download(metadata: metadata, selector: selectorLoadOffline) { (_) in }
+                            NCNetworking.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadOffline) { (_) in }
                         } else {
                             NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
                         }

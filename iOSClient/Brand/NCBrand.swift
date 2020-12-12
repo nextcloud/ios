@@ -336,6 +336,21 @@ class NCBrandColor: NSObject {
     @objc let keyFileNameOriginal                   = "fileNameOriginal"
     @objc let keyFileNameOriginalAutoUpload         = "fileNameOriginalAutoUpload"
 
+    // Selector
+    @objc let selectorDownloadFile                  = "downloadFile"
+    @objc let selectorDownloadAllFile               = "downloadAllFile"
+    @objc let selectorReadFile                      = "readFile"
+    @objc let selectorListingFavorite               = "listingFavorite"
+    @objc let selectorLoadFileView                  = "loadFileView"
+    @objc let selectorLoadFileQuickLook             = "loadFileQuickLook"
+    @objc let selectorLoadCopy                      = "loadCopy"
+    @objc let selectorLoadOffline                   = "loadOffline"
+    @objc let selectorOpenIn                        = "openIn"
+    @objc let selectorUploadAutoUpload              = "uploadAutoUpload"
+    @objc let selectorUploadAutoUploadAll           = "uploadAutoUploadAll"
+    @objc let selectorUploadFile                    = "uploadFile"
+    @objc let selectorSaveAlbum                     = "saveAlbum"
+
     // Metadata : Status
     //
     // 1) wait download/upload

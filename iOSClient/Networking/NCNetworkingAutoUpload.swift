@@ -51,7 +51,7 @@ class NCNetworkingAutoUpload: NSObject {
         var counterUpload: Int = 0
         var sizeUpload = 0
         var maxConcurrentOperationUpload = 5
-        let sessionSelectors = [selectorUploadFile, selectorUploadAutoUpload, selectorUploadAutoUploadAll]
+        let sessionSelectors = [NCBrandGlobal.shared.selectorUploadFile, NCBrandGlobal.shared.selectorUploadAutoUpload, NCBrandGlobal.shared.selectorUploadAutoUploadAll]
         
         let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCBrandGlobal.shared.metadataStatusInUpload, NCBrandGlobal.shared.metadataStatusUploading))
         counterUpload = metadatasUpload.count
@@ -131,7 +131,7 @@ class NCNetworkingAutoUpload: NSObject {
              
             // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
             if (counterUpload == 0 && self.appDelegate.passcodeViewController == nil) {
-                NCUtility.shared.deleteAssetLocalIdentifiers(account: self.appDelegate.account, sessionSelector: selectorUploadAutoUpload) {
+                NCUtility.shared.deleteAssetLocalIdentifiers(account: self.appDelegate.account, sessionSelector: NCBrandGlobal.shared.selectorUploadAutoUpload) {
                     self.startTimer()
                 }
             } else {

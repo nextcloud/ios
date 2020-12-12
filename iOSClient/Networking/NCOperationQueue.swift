@@ -248,7 +248,7 @@ class NCOperationSynchronization: ConcurrentOperation {
     init(metadata: tableMetadata, selector: String) {
         self.metadata = tableMetadata.init(value: metadata)
         self.selector = selector
-        if selector == selectorDownloadFile {
+        if selector == NCBrandGlobal.shared.selectorDownloadFile {
             self.download = true
         } else {
             self.download = false
@@ -276,7 +276,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                                     
                                     let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCBrandGlobal.shared.metadataStatusNormal))
                                     
-                                    if self.selector == selectorDownloadAllFile {
+                                    if self.selector == NCBrandGlobal.shared.selectorDownloadAllFile {
                                         
                                         NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
 

@@ -796,7 +796,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     print("error")
                 }
             } else {
-                NCNetworking.shared.download(metadata: metadata, selector: selectorLoadCopy, setFavorite: false) { (_) in }
+                NCNetworking.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadCopy, setFavorite: false) { (_) in }
             }
         }
         
@@ -859,7 +859,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: contentType, livePhoto: false)
             
             metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
-            metadataForUpload.sessionSelector = selectorUploadFile
+            metadataForUpload.sessionSelector = NCBrandGlobal.shared.selectorUploadFile
             metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
             metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
             
@@ -878,7 +878,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
                 
                 metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
-                metadataForUpload.sessionSelector = selectorUploadFile
+                metadataForUpload.sessionSelector = NCBrandGlobal.shared.selectorUploadFile
                 metadataForUpload.size = metadata.size
                 metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
                 
@@ -891,9 +891,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let metadata = metadataTouch else { return }
                 
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": selectorLoadFileQuickLook, "errorCode": 0, "errorDescription": "" ])
+            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCBrandGlobal.shared.selectorLoadFileQuickLook, "errorCode": 0, "errorDescription": "" ])
         } else {
-            NCNetworking.shared.download(metadata: metadata, selector: selectorLoadFileQuickLook) { (_) in }
+            NCNetworking.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadFileQuickLook) { (_) in }
         }
     }
     
@@ -901,9 +901,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let metadata = metadataTouch else { return }
                 
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": selectorOpenIn, "errorCode": 0, "errorDescription": "" ])
+            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCBrandGlobal.shared.selectorOpenIn, "errorCode": 0, "errorDescription": "" ])
         } else {
-            NCNetworking.shared.download(metadata: metadata, selector: selectorOpenIn) { (_) in }
+            NCNetworking.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn) { (_) in }
         }
     }
     
@@ -1243,7 +1243,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             if CCUtility.fileProviderStorageExists(metadataTouch.ocId, fileNameView: metadataTouch.fileNameView) {
                 NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
             } else {
-                NCNetworking.shared.download(metadata: metadataTouch, selector: selectorLoadFileView) { (_) in }
+                NCNetworking.shared.download(metadata: metadataTouch, selector: NCBrandGlobal.shared.selectorLoadFileView) { (_) in }
             }
         }
     }

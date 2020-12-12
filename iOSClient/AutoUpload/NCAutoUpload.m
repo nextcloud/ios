@@ -321,14 +321,14 @@
 - (void)uploadNewAssets
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        [self uploadAssetsNewAndFull:selectorUploadAutoUpload];
+        [self uploadAssetsNewAndFull:NCBrandGlobal.shared.selectorUploadAutoUpload];
     });
 }
 
 - (void)uploadFullAssets
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        [self uploadAssetsNewAndFull:selectorUploadAutoUploadAll];
+        [self uploadAssetsNewAndFull:NCBrandGlobal.shared.selectorUploadAutoUploadAll];
     });
 }
 
@@ -361,7 +361,7 @@
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
+        if ([selector isEqualToString:NCBrandGlobal.shared.selectorUploadAutoUploadAll]) {
             if (!_hud)
                 _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
         
@@ -372,7 +372,7 @@
     
     // Create the folder for auto upload & if request the subfolders
     if ([[NCNetworking shared] createFolderWithAssets:newAssetToUpload selector:selector useSubFolder:tableAccount.autoUploadCreateSubfolder account:appDelegate.account urlBase:appDelegate.urlBase]) {
-        if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
+        if ([selector isEqualToString:NCBrandGlobal.shared.selectorUploadAutoUploadAll]) {
             [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:NCBrandGlobal.shared.ErrorInternalError forced:true];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [_hud hideHud];
@@ -397,7 +397,7 @@
         }
         
         // Select type of session
-        if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
+        if ([selector isEqualToString:NCBrandGlobal.shared.selectorUploadAutoUploadAll]) {
             session = NCCommunicationCommon.shared.sessionIdentifierUpload;
         } else {
             if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto == NO) session = NCNetworking.shared.sessionIdentifierBackground;
@@ -423,7 +423,7 @@
         tableMetadata *metadata = [[NCManageDatabase shared] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.account, serverUrl, fileName]];
         if (metadata) {
             
-            if ([selector isEqualToString:selectorUploadAutoUpload]) {
+            if ([selector isEqualToString:NCBrandGlobal.shared.selectorUploadAutoUpload]) {
                 [[NCManageDatabase shared] addPhotoLibrary:@[asset] account:appDelegate.account];
             }
             
@@ -444,13 +444,13 @@
                 metadataForUpload.typeFile = NCBrandGlobal.shared.metadataTypeFileImage;
             }
             
-            if ([selector isEqualToString:selectorUploadAutoUpload]) {
+            if ([selector isEqualToString:NCBrandGlobal.shared.selectorUploadAutoUpload]) {
                
                 [[NCManageDatabase shared] addMetadataForAutoUpload:metadataForUpload];
                 [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Automatic upload added %@ (%lu bytes) with Identifier %@", metadata.fileNameView, (unsigned long)metadata.size, metadata.assetLocalIdentifier]];
                 [[NCManageDatabase shared] addPhotoLibrary:@[asset] account:appDelegate.account];
                 
-            } else if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
+            } else if ([selector isEqualToString:NCBrandGlobal.shared.selectorUploadAutoUploadAll]) {
                 
                 [metadataFull addObject:metadataForUpload];
             }
@@ -476,19 +476,19 @@
                         metadataMOVForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload;
                         metadataMOVForUpload.typeFile = NCBrandGlobal.shared.metadataTypeFileVideo;
 
-                        if ([selector isEqualToString:selectorUploadAutoUpload]) {
+                        if ([selector isEqualToString:NCBrandGlobal.shared.selectorUploadAutoUpload]) {
                             
                             [[NCManageDatabase shared] addMetadataForAutoUpload:metadataMOVForUpload];
                             [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Automatic upload added Live Photo %@ (%llu bytes)", fileNameMove, fileSize]];
                             
-                        } else if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
+                        } else if ([selector isEqualToString:NCBrandGlobal.shared.selectorUploadAutoUploadAll]) {
                             
                             [metadataFull addObject:metadataMOVForUpload];
                         }
                     }
                     counterLivePhoto--;
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        if (endForAssetToUpload && counterLivePhoto == 0 && [selector isEqualToString:selectorUploadAutoUploadAll]) {
+                        if (endForAssetToUpload && counterLivePhoto == 0 && [selector isEqualToString:NCBrandGlobal.shared.selectorUploadAutoUploadAll]) {
                             [[NCManageDatabase shared] addMetadatas:metadataFull];
                             [_hud hideHud];
                         }
@@ -500,7 +500,7 @@
     endForAssetToUpload = true;
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (counterLivePhoto == 0 && [selector isEqualToString:selectorUploadAutoUploadAll]) {
+        if (counterLivePhoto == 0 && [selector isEqualToString:NCBrandGlobal.shared.selectorUploadAutoUploadAll]) {
             [[NCManageDatabase shared] addMetadatas:metadataFull];
             [_hud hideHud];
         }
@@ -552,7 +552,7 @@
             
             PHFetchResult *assets = [PHAsset fetchAssetsInAssetCollection:collection options:fetchOptions];
             
-            if ([selector isEqualToString:selectorUploadAutoUpload]) {
+            if ([selector isEqualToString:NCBrandGlobal.shared.selectorUploadAutoUpload]) {
             
                 NSString *creationDate;
                 NSString *idAsset;
@@ -589,7 +589,7 @@
 {
     tableAccount *account = [[NCManageDatabase shared] getAccountActive];
 
-    NSArray *assets = [self getCameraRollAssets:account selector:selectorUploadAutoUploadAll alignPhotoLibrary:YES];
+    NSArray *assets = [self getCameraRollAssets:account selector:NCBrandGlobal.shared.selectorUploadAutoUploadAll alignPhotoLibrary:YES];
    
     [[NCManageDatabase shared] clearTable:[tablePhotoLibrary class] account:appDelegate.account];
     if (assets != nil) {

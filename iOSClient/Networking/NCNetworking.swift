@@ -484,7 +484,7 @@ import Queuer
                 metadata.status = NCBrandGlobal.shared.metadataStatusNormal
                 
                 // Delete Asset on Photos album
-                if tableAccount.autoUploadDeleteAssetLocalIdentifier && metadata.assetLocalIdentifier != "" && metadata.sessionSelector == selectorUploadAutoUpload {
+                if tableAccount.autoUploadDeleteAssetLocalIdentifier && metadata.assetLocalIdentifier != "" && metadata.sessionSelector == NCBrandGlobal.shared.selectorUploadAutoUpload {
                     metadata.deleteAssetLocalIdentifier = true;
                 }
                 
@@ -1025,9 +1025,9 @@ import Queuer
                 #if !EXTENSION
                 if favorite {
                     if CCUtility.getFavoriteOffline() {
-                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadAllFile)
+                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorDownloadAllFile)
                     } else {
-                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorReadFile)
+                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorReadFile)
                     }
                 }
                 #endif
@@ -1046,7 +1046,7 @@ import Queuer
             if errorCode == 0 {
                 NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (_, _, metadatas) in
                     NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
-                    if selector != selectorListingFavorite {
+                    if selector != NCBrandGlobal.shared.selectorListingFavorite {
                         #if !EXTENSION
                         for metadata in metadatas {
                             NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selector)

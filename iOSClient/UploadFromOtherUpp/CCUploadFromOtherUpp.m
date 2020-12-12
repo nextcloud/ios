@@ -178,7 +178,7 @@
     tableMetadata *metadataForUpload = [[NCManageDatabase shared] createMetadataWithAccount:appDelegate.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrlLocal urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:false];
     
     metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground;
-    metadataForUpload.sessionSelector = selectorUploadFile;
+    metadataForUpload.sessionSelector = NCBrandGlobal.shared.selectorUploadFile;
     metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload;
     
     // Prepare file and directory

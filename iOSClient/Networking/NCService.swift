@@ -68,9 +68,9 @@ class NCService: NSObject {
                     self.appDelegate.settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userID: tableAccount.userID, password: CCUtility.getPassword(tableAccount.account))
                        
                     // Synchronize favorite
-                    var selector = selectorReadFile
+                    var selector = NCBrandGlobal.shared.selectorReadFile
                     if CCUtility.getFavoriteOffline() {
-                        selector = selectorDownloadFile
+                        selector = NCBrandGlobal.shared.selectorDownloadFile
                     }
                     NCNetworking.shared.listingFavoritescompletion(selector: selector) { (_, _, _, _) in }
                 
@@ -80,7 +80,7 @@ class NCService: NSObject {
                             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) else {
                                 continue
                             }
-                            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadFile)
+                            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
                         }
                     }
                 
@@ -90,7 +90,7 @@ class NCService: NSObject {
                         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(file.ocId) else {
                             continue
                         }
-                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadFile)
+                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
                     }
                              
                     // Get Avatar

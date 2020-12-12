@@ -73,14 +73,14 @@
  
     if (self.showOpenIn && !self.metadata.directory) {
         UIPreviewAction *item = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
-            [[NCNetworkingNotificationCenter shared] downloadOpenWithMetadata:self.metadata selector:selectorOpenIn];
+            [[NCNetworkingNotificationCenter shared] downloadOpenWithMetadata:self.metadata selector:NCBrandGlobal.shared.selectorOpenIn];
         }];
         [items addObject:item];
     }
     
     if (self.showOpenQuickLook) {
         UIPreviewAction *item = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_quicklook_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
-            [[NCNetworkingNotificationCenter shared] downloadOpenWithMetadata:self.metadata selector:selectorLoadFileQuickLook];
+            [[NCNetworkingNotificationCenter shared] downloadOpenWithMetadata:self.metadata selector:NCBrandGlobal.shared.selectorLoadFileQuickLook];
         }];
         [items addObject:item];
     }

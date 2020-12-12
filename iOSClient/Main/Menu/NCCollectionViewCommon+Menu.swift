@@ -145,7 +145,7 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_open_in_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                     action: { menuAction in
-                        NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: selectorOpenIn)
+                        NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn)
                     }
                 )
             )
@@ -220,11 +220,11 @@ extension NCCollectionViewCommon {
                         } else {
                             if metadata.directory {
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: self.appDelegate.account)
-                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadAllFile)
+                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorDownloadAllFile)
                             } else {
-                                NCNetworking.shared.download(metadata: metadata, selector: selectorLoadOffline) { (_) in }
+                                NCNetworking.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadOffline) { (_) in }
                                 if let metadataLivePhoto = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
-                                    NCNetworking.shared.download(metadata: metadataLivePhoto, selector: selectorLoadOffline) { (_) in }
+                                    NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCBrandGlobal.shared.selectorLoadOffline) { (_) in }
                                 }
                             }
                         }
@@ -383,7 +383,7 @@ extension NCCollectionViewCommon {
                     for ocId in selectOcId {
                         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                             if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorSaveAlbum, setFavorite: false)
+                                NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)
                             }
                         }
                     }

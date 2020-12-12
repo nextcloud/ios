@@ -41,21 +41,6 @@
 #define k_permission_can_rename                         @"N"
 #define k_permission_can_move                           @"V"
 
-// Selector
-#define selectorDownloadFile                            @"downloadFile"
-#define selectorDownloadAllFile                         @"downloadAllFile"
-#define selectorReadFile                                @"readFile"
-#define selectorListingFavorite                         @"listingFavorite"
-#define selectorLoadFileView                            @"loadFileView"
-#define selectorLoadFileQuickLook                       @"loadFileQuickLook"
-#define selectorLoadCopy                                @"loadCopy"
-#define selectorLoadOffline                             @"loadOffline"
-#define selectorOpenIn                                  @"openIn"
-#define selectorUploadAutoUpload                        @"uploadAutoUpload"
-#define selectorUploadAutoUploadAll                     @"uploadAutoUploadAll"
-#define selectorUploadFile                              @"uploadFile"
-#define selectorSaveAlbum                               @"saveAlbum"
-
 //Share permission
 //permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
 #define k_read_share_permission                         1
