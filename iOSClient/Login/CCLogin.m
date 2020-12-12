@@ -24,6 +24,7 @@
 #import "CCLogin.h"
 #import "AppDelegate.h"
 #import "CCUtility.h"
+#import "NSNotificationCenter+MainThread.h"
 #import "NCBridgeSwift.h"
 
 @interface CCLogin () <NCLoginQRCodeDelegate>

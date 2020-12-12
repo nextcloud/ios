@@ -27,6 +27,7 @@
 #import "CCManageAccount.h"
 #import "NCManageEndToEndEncryption.h"
 #import "NCBridgeSwift.h"
+#import "NSNotificationCenter+MainThread.h"
 #import <TOPasscodeViewController/TOPasscodeViewController.h>
 
 

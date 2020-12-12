@@ -24,6 +24,7 @@
 #import "CCUtility.h"
 #import "CCGraphics.h"
 #import "NCBridgeSwift.h"
+#import "NSNotificationCenter+MainThread.h"
 #import <OpenSSL/OpenSSL.h>
 #import <CoreLocation/CoreLocation.h>
 

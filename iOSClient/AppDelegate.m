@@ -26,6 +26,7 @@
 #import "NCBridgeSwift.h"
 #import "NCAutoUpload.h"
 #import "NCPushNotificationEncryption.h"
+#import "NSNotificationCenter+MainThread.h"
 #import <QuartzCore/QuartzCore.h>
 
 @import Firebase;

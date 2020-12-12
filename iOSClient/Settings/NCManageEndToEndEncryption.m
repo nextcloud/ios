@@ -23,8 +23,8 @@
 
 #import "NCManageEndToEndEncryption.h"
 #import "AppDelegate.h"
+#import "NSNotificationCenter+MainThread.h"
 #import <TOPasscodeViewController/TOPasscodeViewController.h>
-
 #import "NCBridgeSwift.h"
 
 @interface NCManageEndToEndEncryption () <NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate>

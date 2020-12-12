@@ -25,6 +25,7 @@
 #import "AppDelegate.h"
 #import "CCLogin.h"
 #import "NCAutoUpload.h"
+#import "NSNotificationCenter+MainThread.h"
 #import "NCBridgeSwift.h"
 
 #define actionSheetCancellaAccount 1
