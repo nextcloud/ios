@@ -56,7 +56,6 @@
 		F710D2022405826100A6033D /* NCViewer+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D2012405826100A6033D /* NCViewer+Menu.swift */; };
 		F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */; };
 		F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */; };
-		F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
 		F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C0F46F1C8880540059EC54 /* ShareViewController.m */; };
 		F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
@@ -197,7 +196,6 @@
 		F77B0E4F1D118A16002130FE /* CCManageAutoUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42F1BAC0268006C0017 /* CCManageAutoUpload.m */; };
 		F77B0E5F1D118A16002130FE /* NCSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE4311BAC0268006C0017 /* NCSettings.m */; };
 		F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42D1BAC0268006C0017 /* CCManageAccount.m */; };
-		F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
 		F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */; };
 		F77B0ED51D118A16002130FE /* PHAsset+Utility.m in Sources */ = {isa = PBXBuildFile; fileRef = F777F0311C29717F00CE81CB /* PHAsset+Utility.m */; };
 		F77B0ED91D118A16002130FE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F67BAD1A24D27800EE80DA /* main.m */; };
@@ -448,8 +446,6 @@
 		F72D1006210B6882009C96B7 /* NCPushNotificationEncryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCPushNotificationEncryption.h; sourceTree = "<group>"; };
 		F72D404823D2082500A97FD0 /* NCViewerNextcloudText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerNextcloudText.swift; sourceTree = "<group>"; };
 		F72E0B9C21AD60BC00898D7B /* WeScan.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WeScan.framework; path = Carthage/Build/iOS/WeScan.framework; sourceTree = "<group>"; };
-		F73049B81CB567F000C7C320 /* NSString+TruncateToWidth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+TruncateToWidth.h"; sourceTree = "<group>"; };
-		F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+TruncateToWidth.m"; sourceTree = "<group>"; };
 		F7320934201B812F008A0888 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F732093B201B81E4008A0888 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TLPhotoPicker.framework; path = Carthage/Build/iOS/TLPhotoPicker.framework; sourceTree = "<group>"; };
@@ -1297,8 +1293,6 @@
 				F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */,
 				F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */,
 				F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */,
-				F73049B81CB567F000C7C320 /* NSString+TruncateToWidth.h */,
-				F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */,
 				F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */,
 				F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */,
 				F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */,
@@ -2004,7 +1998,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */,
 				F7A76DAF256A654D00119AB3 /* String+Extensions.swift in Sources */,
 				F73D5E48246DE09200DF6467 /* NCElementsJSON.swift in Sources */,
 				F70460532499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
@@ -2145,7 +2138,6 @@
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
 				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
 				F7B7504B2397D38F004E13EC /* UIImage+Extensions.swift in Sources */,
-				F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */,
 				F7EFC0CD256BF8DD00461AAD /* NCUserStatus.swift in Sources */,
 				F7DFB7F4219C5CA800680748 /* NCCreateFormUploadScanDocument.swift in Sources */,
 				F710D1FF24057E5E00A6033D /* NCActionSheetHeaderView.swift in Sources */,

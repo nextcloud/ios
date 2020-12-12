@@ -24,7 +24,6 @@
 #import "CCGraphics.h"
 
 #import "CCUtility.h"
-#import "NSString+TruncateToWidth.h"
 #import "NCBridgeSwift.h"
 
 @implementation CCGraphics
