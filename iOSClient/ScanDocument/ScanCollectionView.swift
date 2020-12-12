@@ -354,7 +354,7 @@ class DragDropViewController: UIViewController {
         
         if pasteboard.hasImages {
             
-            let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
+            let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: NCBrandGlobal.shared.keyFileNameMask, keyFileNameType: NCBrandGlobal.shared.keyFileNameType, keyFileNameOriginal: NCBrandGlobal.shared.keyFileNameOriginal)!
             let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
             
             guard let image = pasteboard.image else {

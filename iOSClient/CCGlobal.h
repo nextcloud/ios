@@ -56,14 +56,6 @@
 #define selectorUploadFile                              @"uploadFile"
 #define selectorSaveAlbum                               @"saveAlbum"
 
-// Filename Mask and Type
-#define k_keyFileNameMask                               @"fileNameMask"
-#define k_keyFileNameType                               @"fileNameType"
-#define k_keyFileNameAutoUploadMask                     @"fileNameAutoUploadMask"
-#define k_keyFileNameAutoUploadType                     @"fileNameAutoUploadType"
-#define k_keyFileNameOriginal                           @"fileNameOriginal"
-#define k_keyFileNameOriginalAutoUpload                 @"fileNameOriginalAutoUpload"
-
 //Share permission
 //permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
 #define k_read_share_permission                         1

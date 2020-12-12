@@ -389,7 +389,7 @@
         NSDate *assetDate = asset.creationDate;
         PHAssetMediaType assetMediaType = asset.mediaType;
         NSString *session;
-        NSString *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameAutoUploadMask keyFileNameType:k_keyFileNameAutoUploadType keyFileNameOriginal:k_keyFileNameOriginalAutoUpload];
+        NSString *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:NCBrandGlobal.shared.keyFileNameAutoUploadMask keyFileNameType:NCBrandGlobal.shared.keyFileNameAutoUploadType keyFileNameOriginal:NCBrandGlobal.shared.keyFileNameOriginalAutoUpload];
 
         // Detect LivePhoto Upload
         if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getLivePhoto) {

@@ -327,6 +327,14 @@ class NCBrandColor: NSObject {
     @objc let metadataTypeFileUnknown               = "unknow"
     @objc let metadataTypeFileVideo                 = "video"
     @objc let metadataTypeFileImagemeter            = "imagemeter"
+    
+    // Filename Mask and Type
+    @objc let keyFileNameMask                       = "fileNameMask"
+    @objc let keyFileNameType                       = "fileNameType"
+    @objc let keyFileNameAutoUploadMask             = "fileNameAutoUploadMask"
+    @objc let keyFileNameAutoUploadType             = "fileNameAutoUploadType"
+    @objc let keyFileNameOriginal                   = "fileNameOriginal"
+    @objc let keyFileNameOriginalAutoUpload         = "fileNameOriginalAutoUpload"
 
     // Metadata : Status
     //
