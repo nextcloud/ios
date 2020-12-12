@@ -2841,8 +2841,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/ios-communication-library/";
 			requirement = {
-				kind = revision;
-				revision = 675a903f6ef47f624947f6dd2dd3eefccd491334;
+				kind = exactVersion;
+				version = 0.86.0;
 			};
 		};
 		F7C4D88B2534887E00C142DA /* XCRemoteSwiftPackageReference "Parchment" */ = {
