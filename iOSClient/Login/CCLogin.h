@@ -23,8 +23,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UIImage+animatedGIF.h"
-
 @class NCLoginWeb;
 @class NCLoginQRCode;
 
