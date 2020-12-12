@@ -22,7 +22,6 @@
 //
 
 #import "CCGraphics.h"
-
 #import "CCUtility.h"
 #import "NCBridgeSwift.h"
 
@@ -180,47 +179,6 @@
     return [UIImage imageWithCGImage:img.CGImage scale:UIScreen.mainScreen.scale orientation: UIImageOrientationDownMirrored];
 }
 
-+ (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image colorText:(UIColor *)colorText sizeOfFont:(CGFloat)sizeOfFont
-{
-    NSDictionary* attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:sizeOfFont], NSForegroundColorAttributeName:colorText};
-    NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString:text attributes:attributes];
-    
-    int x = image.size.width/2 - attributedString.size.width/2;
-    int y = image.size.height/2 - attributedString.size.height/2;
-    
-    UIGraphicsBeginImageContext(image.size);
-    
-    [image drawInRect:CGRectMake(0,0,image.size.width,image.size.height)];
-    CGRect rect = CGRectMake(x, y, image.size.width, image.size.height);
-    [[UIColor whiteColor] set];
-    [text drawInRect:CGRectIntegral(rect) withAttributes:attributes];
-    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
-    newImage = [UIImage imageWithCGImage:newImage.CGImage scale:2 orientation:UIImageOrientationUp];
-    
-    UIGraphicsEndImageContext();
-    
-    return newImage;
-}
-
-// ------------------------------------------------------------------------------------------------------
-// MARK: Blur Image
-// ------------------------------------------------------------------------------------------------------
-
-+ (UIImage *)blurryImage:(UIImage *)image withBlurLevel:(CGFloat)blur toSize:(CGSize)toSize
-{
-    CIImage *inputImage = [CIImage imageWithCGImage:image.CGImage];
-    
-    CIFilter *filter = [CIFilter filterWithName:@"CIGaussianBlur" keysAndValues:kCIInputImageKey, inputImage, @"inputRadius", @(blur), nil];
-    
-    CIImage *outputImage = filter.outputImage;
-    CIContext *context = [CIContext contextWithOptions:nil];
-    CGImageRef outImage = [context createCGImage:outputImage fromRect:[outputImage extent]];
-    
-    UIImage *blurImage = [UIImage imageWithCGImage:outImage];
-    
-    return [CCGraphics scaleImage:blurImage toSize:toSize isAspectRation:YES];
-}
-
 // ------------------------------------------------------------------------------------------------------
 // MARK: Is Light Color
 // ------------------------------------------------------------------------------------------------------
@@ -285,60 +243,6 @@ Color difference is determined by the following formula:
     CGContextRelease(bmContext);
     
     return grayscaled;
-}
-
-+ (UIImage *)generateSinglePixelImageWithColor:(UIColor *)color
-{
-    CGSize imageSize = CGSizeMake(1.0f, 1.0f);
-    UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0.0f);
-    
-    CGContextRef theContext = UIGraphicsGetCurrentContext();
-    CGContextSetFillColorWithColor(theContext, color.CGColor);
-    CGContextFillRect(theContext, CGRectMake(0.0f, 0.0f, imageSize.width, imageSize.height));
-    
-    CGImageRef theCGImage = CGBitmapContextCreateImage(theContext);
-    UIImage *theImage;
-    if ([[UIImage class] respondsToSelector:@selector(imageWithCGImage:scale:orientation:)]) {
-        theImage = [UIImage imageWithCGImage:theCGImage scale:[UIScreen mainScreen].scale orientation:UIImageOrientationUp];
-    } else {
-        theImage = [UIImage imageWithCGImage:theCGImage];
-    }
-    CGImageRelease(theCGImage);
-    
-    return theImage;
-}
-
-+ (void)addImageToTitle:(NSString *)title colorTitle:(UIColor *)colorTitle imageTitle:(UIImage *)imageTitle imageRight:(BOOL)imageRight navigationItem:(UINavigationItem *)navigationItem
-{
-    UIView *navView = [UIView new];
-    
-    UILabel *label = [UILabel new];
-    if (imageRight)
-        title = [NSString stringWithFormat:@"     %@", title];
-    label.text = title;
-    [label sizeToFit];
-    label.center = navView.center;
-    label.textColor = colorTitle;
-    label.textAlignment = NSTextAlignmentCenter;
-    
-    CGFloat correct = 6;
-    UIImageView *image = [UIImageView new];
-    image.image = imageTitle;
-    CGFloat imageAspect = image.image.size.width/image.image.size.height;
-    
-    if (imageRight) {
-        image.frame = CGRectMake(label.intrinsicContentSize.width+label.frame.origin.x+correct, label.frame.origin.y+correct/2, label.frame.size.height*imageAspect-correct, label.frame.size.height-correct);
-    } else {
-        image.frame = CGRectMake(label.frame.origin.x-label.frame.size.height*imageAspect, label.frame.origin.y+correct/2, label.frame.size.height*imageAspect-correct, label.frame.size.height-correct);
-    }
-    
-    image.contentMode = UIViewContentModeScaleAspectFit;
-    
-    [navView addSubview:label];
-    [navView addSubview:image];
-    
-    navigationItem.titleView = navView;
-    [navView sizeToFit];
 }
 
 + (void)settingThemingColor:(NSString *)themingColor themingColorElement:(NSString *)themingColorElement themingColorText:(NSString *)themingColorText
