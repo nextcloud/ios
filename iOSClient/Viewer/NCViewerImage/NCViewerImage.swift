@@ -325,7 +325,7 @@ class NCViewerImage: UIViewController {
             return image
         }
         
-        if metadata.typeFile == k_metadataTypeFile_video && !metadata.hasPreview {
+        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && !metadata.hasPreview {
             CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
         }
         
@@ -343,7 +343,7 @@ class NCViewerImage: UIViewController {
         let ext = CCUtility.getExtension(metadata.fileNameView)
         var image: UIImage?
         
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.typeFile == k_metadataTypeFile_image {
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage {
            
             let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -677,7 +677,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             return
         }
         
-        if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {
+        if currentMetadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || currentMetadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio {
             
             if pictureInPictureOcId != currentMetadata.ocId {
                                 
@@ -737,7 +737,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         currentViewerImageZoom = viewerImageZoom
         toolBar.isHidden = true
         
-        if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {
+        if (currentMetadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || currentMetadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio) {
             videoPlay(metadata: metadata)
             toolBar.isHidden = false
         }
@@ -757,7 +757,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         }
         
         // DOWNLOAD FILE
-        if ((metadata.typeFile == k_metadataTypeFile_image && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+        if ((metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)
         }
             

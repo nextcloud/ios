@@ -318,6 +318,16 @@ class NCBrandColor: NSObject {
     @objc let ErrorCharactersForbidden: Int         = -99993
     @objc let ErrorCreationFile: Int                = -99992
     
+    // Metadata : FileType
+    @objc let metadataTypeFileAudio                 = "audio"
+    @objc let metadataTypeFileCompress              = "compress"
+    @objc let metadataTypeFileDirectory             = "directory"
+    @objc let metadataTypeFileDocument              = "document"
+    @objc let metadataTypeFileImage                 = "image"
+    @objc let metadataTypeFileUnknown               = "unknow"
+    @objc let metadataTypeFileVideo                 = "video"
+    @objc let metadataTypeFileImagemeter            = "imagemeter"
+
     // Metadata : Status
     //
     // 1) wait download/upload

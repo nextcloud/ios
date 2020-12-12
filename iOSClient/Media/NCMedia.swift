@@ -587,7 +587,7 @@ extension NCMedia: UICollectionViewDataSource {
             }
             cell.date = metadata.date as Date
 
-            if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
+            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio {
                 cell.imageStatus.image = cacheImages.cellPlayImage
             } else if metadata.livePhoto && livePhoto {
                 cell.imageStatus.image = cacheImages.cellLivePhotoImage
@@ -649,12 +649,12 @@ extension NCMedia {
         }
         let startServerUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) + mediaPath
         
-        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, k_metadataTypeFile_image, k_metadataTypeFile_video)
+        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NCBrandGlobal.shared.metadataTypeFileImage, NCBrandGlobal.shared.metadataTypeFileVideo)
         
         if filterTypeFileImage {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, k_metadataTypeFile_video)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NCBrandGlobal.shared.metadataTypeFileVideo)
         } else if filterTypeFileVideo {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, k_metadataTypeFile_image)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NCBrandGlobal.shared.metadataTypeFileImage)
         } else {
             predicate = predicateDefault
         }

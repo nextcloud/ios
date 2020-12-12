@@ -71,13 +71,13 @@ import Foundation
                                     documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
                                 }
                                 
-                            } else if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
+                            } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileCompress || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileUnknown {
 
                                 if let view = appDelegate.window?.rootViewController?.view {
                                     documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
                                 }
                                 
-                            } else if metadata.typeFile == k_metadataTypeFile_imagemeter {
+                            } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImagemeter {
                                 
                                 if let view = appDelegate.window?.rootViewController?.view {
                                     documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
@@ -120,7 +120,7 @@ import Foundation
                         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                         let status = PHPhotoLibrary.authorizationStatus()
 
-                        if metadata.typeFile == k_metadataTypeFile_image && status == PHAuthorizationStatus.authorized {
+                        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && status == PHAuthorizationStatus.authorized {
                             
                             if let image = UIImage.init(contentsOfFile: fileNamePath) {
                                 UIImageWriteToSavedPhotosAlbum(image, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
@@ -128,7 +128,7 @@ import Foundation
                                 NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorFileNotSaved)
                             }
                             
-                        } else if metadata.typeFile == k_metadataTypeFile_video && status == PHAuthorizationStatus.authorized {
+                        } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && status == PHAuthorizationStatus.authorized {
                             
                             if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath) {
                                 UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)

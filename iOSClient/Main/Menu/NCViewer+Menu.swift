@@ -241,7 +241,7 @@ extension NCViewer {
         //
         // PDF
         //
-        if (metadata.typeFile == k_metadataTypeFile_document && metadata.contentType == "application/pdf" ) {
+        if (metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileDocument && metadata.contentType == "application/pdf" ) {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_search_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "search"), width: 50, height: 50, color: NCBrandColor.shared.icon),
@@ -256,7 +256,7 @@ extension NCViewer {
         // IMAGE - VIDEO - AUDIO
         //
         if metadata.session == "" {
-            if metadata.typeFile == k_metadataTypeFile_image && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "" {
+            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "" {
                 actions.append(
                     NCMenuAction(title: NSLocalizedString("_download_image_max_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "downloadImageFullRes"), width: 50, height: 50, color: NCBrandColor.shared.icon),
@@ -268,7 +268,7 @@ extension NCViewer {
             }
         }
         
-        if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
+        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio {
             if let metadataLive = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
                 if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataLive.ocId, fileNameView: metadataLive.fileNameView) {
                     actions.append(

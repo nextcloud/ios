@@ -1683,7 +1683,7 @@
     int pixelX = 0;
     NSString *lensModel;
 
-    if (![metadata.typeFile isEqualToString:k_metadataTypeFile_image] || ![CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
+    if (![metadata.typeFile isEqualToString:NCBrandGlobal.shared.metadataTypeFileImage] || ![CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
         completition(latitude, longitude, location, date, lensModel);
         return;
     }

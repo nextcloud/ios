@@ -1211,7 +1211,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             guard let metadataTouch = metadataTouch else { return }
             
-            if metadata.typeFile == k_metadataTypeFile_document && NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil {
+            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileDocument && NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil {
                 if NCCommunication.shared.isNetworkReachable() {
                     NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
                 } else {
@@ -1220,7 +1220,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 return
             }
             
-            if metadata.typeFile == k_metadataTypeFile_document && NCUtility.shared.isRichDocument(metadata) {
+            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileDocument && NCUtility.shared.isRichDocument(metadata) {
                 if NCCommunication.shared.isNetworkReachable() {
                     NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
                 } else {
@@ -1229,10 +1229,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 return
             }
             
-            if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
+            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio {
                 var metadatas: [tableMetadata] = []
                 for metadata in dataSource.metadatas {
-                    if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
+                    if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio {
                         metadatas.append(metadata)
                     }
                 }

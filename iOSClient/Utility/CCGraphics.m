@@ -110,15 +110,15 @@
     if (![CCUtility fileProviderStorageExists:ocId fileNameView:fileName]) return;
     
     // only viedo / image
-    if (![typeFile isEqualToString: k_metadataTypeFile_image] && ![typeFile isEqualToString: k_metadataTypeFile_video]) return;
+    if (![typeFile isEqualToString: NCBrandGlobal.shared.metadataTypeFileImage] && ![typeFile isEqualToString: NCBrandGlobal.shared.metadataTypeFileVideo]) return;
     
-    if ([typeFile isEqualToString: k_metadataTypeFile_image]) {
+    if ([typeFile isEqualToString: NCBrandGlobal.shared.metadataTypeFileImage]) {
         
         originalImage = [UIImage imageWithContentsOfFile:fileNamePath];
         if (originalImage == nil) { return; }
     }
     
-    if ([typeFile isEqualToString: k_metadataTypeFile_video]) {
+    if ([typeFile isEqualToString: NCBrandGlobal.shared.metadataTypeFileVideo]) {
         
         // create symbolik link for read video file in temp
         [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:@"tempvideo.mp4"] error:nil];

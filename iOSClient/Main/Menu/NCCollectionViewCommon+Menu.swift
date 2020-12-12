@@ -382,7 +382,7 @@ extension NCCollectionViewCommon {
                 action: { menuAction in
                     for ocId in selectOcId {
                         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                            if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                                 NCOperationQueue.shared.download(metadata: metadata, selector: selectorSaveAlbum, setFavorite: false)
                             }
                         }

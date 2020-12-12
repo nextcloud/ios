@@ -76,8 +76,8 @@ class NCViewerImageZoom: UIViewController {
         
         if image == nil {
             var named = "noPreview"
-            if metadata.typeFile == k_metadataTypeFile_audio { named = "noPreviewAudio" }
-            if metadata.typeFile == k_metadataTypeFile_video { named = "noPreviewVideo" }
+            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio { named = "noPreviewAudio" }
+            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo { named = "noPreviewVideo" }
             image = CCGraphics.changeThemingColorImage(UIImage.init(named: named), width: view.frame.width, height: view.frame.width, color: .gray)
             self.noPreview = true
         }

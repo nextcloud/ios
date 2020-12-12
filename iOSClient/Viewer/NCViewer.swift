@@ -41,7 +41,7 @@ class NCViewer: NSObject {
         self.metadatas = metadatas
         
         // IMAGE AUDIO VIDEO
-        if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_audio || metadata.typeFile == k_metadataTypeFile_video {
+        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
             
             if let navigationController = viewController.navigationController {
                             
@@ -62,7 +62,7 @@ class NCViewer: NSObject {
         }
         
         // DOCUMENTS
-        if metadata.typeFile == k_metadataTypeFile_document {
+        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileDocument {
                 
             // PDF
             if metadata.contentType == "application/pdf" {

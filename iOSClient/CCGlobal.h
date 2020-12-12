@@ -56,16 +56,6 @@
 #define selectorUploadFile                              @"uploadFile"
 #define selectorSaveAlbum                               @"saveAlbum"
 
-// Metadata : FileType
-#define k_metadataTypeFile_audio                        @"audio"
-#define k_metadataTypeFile_compress                     @"compress"
-#define k_metadataTypeFile_directory                    @"directory"
-#define k_metadataTypeFile_document                     @"document"
-#define k_metadataTypeFile_image                        @"image"
-#define k_metadataTypeFile_unknown                      @"unknow"
-#define k_metadataTypeFile_video                        @"video"
-#define k_metadataTypeFile_imagemeter                   @"imagemeter"
-
 // Filename Mask and Type
 #define k_keyFileNameMask                               @"fileNameMask"
 #define k_keyFileNameType                               @"fileNameType"

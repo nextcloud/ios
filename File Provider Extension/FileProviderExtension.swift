@@ -118,7 +118,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             metadata.fileName = "root"
             metadata.fileNameView = "root"
             metadata.serverUrl = fileProviderData.shared.homeServerUrl
-            metadata.typeFile = k_metadataTypeFile_directory
+            metadata.typeFile = NCBrandGlobal.shared.metadataTypeFileDirectory
             
             return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
             

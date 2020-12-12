@@ -373,7 +373,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             } else if FileManager().fileExists(atPath: filePathNewFile) {
                 
                 do {
-                    if metadataNewFile.typeFile == k_metadataTypeFile_image {
+                    if metadataNewFile.typeFile == NCBrandGlobal.shared.metadataTypeFileImage {
                         let data = try Data(contentsOf: URL(fileURLWithPath: filePathNewFile))
                         if let image = UIImage(data: data) {
                             cell.imageNewFile.image = image
