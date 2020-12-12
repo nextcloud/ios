@@ -60,7 +60,7 @@
         if (avatar) {
             
             avatar = [CCGraphics scaleImage:avatar toSize:CGSizeMake(35, 35) isAspectRation:YES];
-            NCAvatar *avatarImageView = [[NCAvatar alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
+            NCAvatar *avatarImageView = [[NCAvatar alloc] initWithImage:avatar borderColor:[UIColor whiteColor] borderWidth:1];
                         
             CGSize imageSize = avatarImageView.bounds.size;
             UIGraphicsBeginImageContextWithOptions(imageSize, NO, UIScreen.mainScreen.scale);
