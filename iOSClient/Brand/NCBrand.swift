@@ -318,6 +318,32 @@ class NCBrandColor: NSObject {
     @objc let ErrorCharactersForbidden: Int         = -99993
     @objc let ErrorCreationFile: Int                = -99992
     
+    // Constants to identify the different permissions of a file
+    @objc let permissionShared                      = "S"
+    @objc let permissionCanShare                    = "R"
+    @objc let permissionMounted                     = "M"
+    @objc let permissionFileCanWrite                = "W"
+    @objc let permissionCanCreateFile               = "C"
+    @objc let permissionCanCreateFolder             = "K"
+    @objc let permissionCanDelete                   = "D"
+    @objc let permissionCanRename                   = "N"
+    @objc let permissionCanMove                     = "V"
+    
+    //Share permission
+    //permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
+    @objc let permissionReadShare: Int              = 1
+    @objc let permissionUpdateShare: Int            = 2
+    @objc let permissionCreateShare: Int            = 4
+    @objc let permissionDeleteShare: Int            = 8
+    @objc let permissionShareShare: Int             = 16
+    
+    @objc let permissionMinFileShare: Int           = 1
+    @objc let permissionMaxFileShare: Int           = 19
+    @objc let permissionMinFolderShare: Int         = 1
+    @objc let permissionMaxFolderShare: Int         = 31
+    @objc let permissionDefaultFileRemoteShareNoSupportShareOption: Int     = 3
+    @objc let permissionDefaultFolderRemoteShareNoSupportShareOption: Int   = 15
+    
     // Metadata : FileType
     @objc let metadataTypeFileAudio                 = "audio"
     @objc let metadataTypeFileCompress              = "compress"
@@ -419,4 +445,12 @@ class NCBrandColor: NSObject {
 //DispatchQueue.global().async
 
 //#if targetEnvironment(simulator)
+//#endif
+
+
+//dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//dispatch_async(dispatch_get_main_queue(), ^{
+//dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+
+//#if TARGET_OS_SIMULATOR
 //#endif

@@ -1589,44 +1589,44 @@
 
 + (NSInteger) getPermissionsValueByCanEdit:(BOOL)canEdit andCanCreate:(BOOL)canCreate andCanChange:(BOOL)canChange andCanDelete:(BOOL)canDelete andCanShare:(BOOL)canShare andIsFolder:(BOOL) isFolder
 {    
-    NSInteger permissionsValue = k_read_share_permission;
+    NSInteger permissionsValue = NCBrandGlobal.shared.permissionReadShare;
     
     if (canEdit && !isFolder) {
-        permissionsValue = permissionsValue + k_update_share_permission;
+        permissionsValue = permissionsValue + NCBrandGlobal.shared.permissionUpdateShare;
     }
     if (canCreate & isFolder) {
-        permissionsValue = permissionsValue + k_create_share_permission;
+        permissionsValue = permissionsValue + NCBrandGlobal.shared.permissionCreateShare;
     }
     if (canChange && isFolder) {
-        permissionsValue = permissionsValue + k_update_share_permission;
+        permissionsValue = permissionsValue + NCBrandGlobal.shared.permissionUpdateShare;
     }
     if (canDelete & isFolder) {
-        permissionsValue = permissionsValue + k_delete_share_permission;
+        permissionsValue = permissionsValue + NCBrandGlobal.shared.permissionDeleteShare;
     }
     if (canShare) {
-        permissionsValue = permissionsValue + k_share_share_permission;
+        permissionsValue = permissionsValue + NCBrandGlobal.shared.permissionShareShare;
     }
     
     return permissionsValue;
 }
 
 + (BOOL) isPermissionToCanCreate:(NSInteger) permissionValue {
-    BOOL canCreate = ((permissionValue & k_create_share_permission) > 0);
+    BOOL canCreate = ((permissionValue & NCBrandGlobal.shared.permissionCreateShare) > 0);
     return canCreate;
 }
 
 + (BOOL) isPermissionToCanChange:(NSInteger) permissionValue {
-    BOOL canChange = ((permissionValue & k_update_share_permission) > 0);
+    BOOL canChange = ((permissionValue & NCBrandGlobal.shared.permissionUpdateShare) > 0);
     return canChange;
 }
 
 + (BOOL) isPermissionToCanDelete:(NSInteger) permissionValue {
-    BOOL canDelete = ((permissionValue & k_delete_share_permission) > 0);
+    BOOL canDelete = ((permissionValue & NCBrandGlobal.shared.permissionDeleteShare) > 0);
     return canDelete;
 }
 
 + (BOOL) isPermissionToCanShare:(NSInteger) permissionValue {
-    BOOL canShare = ((permissionValue & k_share_share_permission) > 0);
+    BOOL canShare = ((permissionValue & NCBrandGlobal.shared.permissionShareShare) > 0);
     return canShare;
 }
 
@@ -1644,7 +1644,7 @@
 }
 
 + (BOOL) isPermissionToRead:(NSInteger) permissionValue {
-    BOOL canRead = ((permissionValue & k_read_share_permission) > 0);
+    BOOL canRead = ((permissionValue & NCBrandGlobal.shared.permissionReadShare) > 0);
     return canRead;
 }
 

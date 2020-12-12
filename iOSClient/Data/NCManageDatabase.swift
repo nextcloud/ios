@@ -2351,13 +2351,13 @@ class NCManageDatabase: NSObject {
         
         if metadataFolder != nil {
             
-            isShare = metadata.permissions.contains(k_permission_shared) && !metadataFolder!.permissions.contains(k_permission_shared)
-            isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder!.permissions.contains(k_permission_mounted)
+            isShare = metadata.permissions.contains(NCBrandGlobal.shared.permissionShared) && !metadataFolder!.permissions.contains(NCBrandGlobal.shared.permissionShared)
+            isMounted = metadata.permissions.contains(NCBrandGlobal.shared.permissionMounted) && !metadataFolder!.permissions.contains(NCBrandGlobal.shared.permissionMounted)
             
         } else if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))  {
                 
-            isShare = metadata.permissions.contains(k_permission_shared) && !directory.permissions.contains(k_permission_shared)
-            isMounted = metadata.permissions.contains(k_permission_mounted) && !directory.permissions.contains(k_permission_mounted)
+            isShare = metadata.permissions.contains(NCBrandGlobal.shared.permissionShared) && !directory.permissions.contains(NCBrandGlobal.shared.permissionShared)
+            isMounted = metadata.permissions.contains(NCBrandGlobal.shared.permissionMounted) && !directory.permissions.contains(NCBrandGlobal.shared.permissionMounted)
         }
         
         if isShare || isMounted {

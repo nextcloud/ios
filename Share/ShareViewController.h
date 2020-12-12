@@ -23,7 +23,6 @@
 
 #import <MBProgressHUD/MBProgressHUD.h>
 
-#import "CCGlobal.h"
 #import "CCGraphics.h"
 #import "CCCellShareExt.h"
 #import "NCSelectDestination.h"

@@ -959,7 +959,7 @@ import Queuer
     func deleteMetadataPlain(_ metadata: tableMetadata, addCustomHeaders: [String: String]?, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         // verify permission
-        let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: k_permission_can_delete)
+        let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCBrandGlobal.shared.permissionCanDelete)
         if metadata.permissions != "" && permission == false {
             
             completion(NCBrandGlobal.shared.ErrorInternalError, "_no_permission_delete_file_")
@@ -1100,7 +1100,7 @@ import Queuer
     
     private func renameMetadataPlain(_ metadata: tableMetadata, fileNameNew: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
-        let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: k_permission_can_rename)
+        let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCBrandGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {
             completion(NCBrandGlobal.shared.ErrorInternalError, "_no_permission_modify_file_")
             return
@@ -1172,7 +1172,7 @@ import Queuer
 
     private func moveMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
     
-        let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: k_permission_can_rename)
+        let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCBrandGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {
             completion(NCBrandGlobal.shared.ErrorInternalError, "_no_permission_modify_file_")
             return
@@ -1218,7 +1218,7 @@ import Queuer
 
     private func copyMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
     
-        let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: k_permission_can_rename)
+        let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCBrandGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {
             completion(NCBrandGlobal.shared.ErrorInternalError, "_no_permission_modify_file_")
             return
