@@ -62,9 +62,7 @@ import Foundation
         super.init(image: image)
         
         self.borderColor = borderColor
-        self.borderWidth = borderWidth
-        
-        layoutSubviews()
+        self.borderWidth = borderWidth        
     }
 
     override func layoutSubviews() {
