@@ -248,27 +248,3 @@
 }
 
 @end
-
-// ------------------------------------------------------------------------------------------------------
-// MARK: Avatar
-// ------------------------------------------------------------------------------------------------------
-
-@implementation CCAvatar
-
-- (id)initWithImage:(UIImage *)image borderColor:(UIColor*)borderColor borderWidth:(float)borderWidth
-{
-    self = [super initWithImage:image];
-    
-    float cornerRadius = self.frame.size.height/2.0f;
-    CALayer *layer = [self layer];
-        
-    [layer setMasksToBounds:YES];
-    [layer setCornerRadius: cornerRadius];
-    [layer setBorderWidth: borderWidth];
-    [layer setBorderColor:[borderColor CGColor]];
-    
-    return self;
-}
-
-@end
-

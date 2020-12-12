@@ -37,9 +37,3 @@
 + (void)settingThemingColor:(NSString *)themingColor themingColorElement:(NSString *)themingColorElement themingColorText:(NSString *)themingColorText;
 
 @end
-
-@interface CCAvatar : UIImageView
-
-- (id)initWithImage:(UIImage *)image borderColor:(UIColor*)borderColor borderWidth:(float)borderWidth;
-
-@end

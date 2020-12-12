@@ -448,9 +448,9 @@ class NCUtility: NSObject {
         UIGraphicsEndImageContext()
 
         UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, UIScreen.main.scale)
-        let avatarImageView = CCAvatar.init(image: image, borderColor: .lightGray, borderWidth: Float(1 * UIScreen.main.scale))
+        let avatarImageView = NCAvatar.init(image: image, borderColor: .lightGray, borderWidth: UIScreen.main.scale)
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
-        avatarImageView?.layer.render(in: context)
+        avatarImageView.layer.render(in: context)
         guard let imageAvatar = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
         UIGraphicsEndImageContext()
         
