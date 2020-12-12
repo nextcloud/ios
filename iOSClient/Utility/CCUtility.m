@@ -1330,11 +1330,6 @@
     return path;
 }
 
-+ (NSString *)getTimeIntervalSince197
-{
-    return [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
-}
-
 + (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadataForUpload notification:(BOOL)notification completion:(void(^)(tableMetadata *metadata, NSString* fileNamePath))completion
 {
     if (metadataForUpload == nil) {
