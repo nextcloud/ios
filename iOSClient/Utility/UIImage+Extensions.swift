@@ -119,4 +119,25 @@ extension UIImage {
         guard let newCGImage = ctx.makeImage() else { return nil }
         return UIImage.init(cgImage: newCGImage, scale: 1, orientation: .up)
     }
+    
+    @objc func image(color: UIColor, size: CGSize) -> UIImage {
+        
+        UIGraphicsBeginImageContextWithOptions(size, false, self.scale)
+        color.setFill()
+
+        let context = UIGraphicsGetCurrentContext()
+        context?.translateBy(x: 0, y: size.height)
+        context?.scaleBy(x: 1.0, y: -1.0)
+        context?.setBlendMode(CGBlendMode.normal)
+
+        let rect = CGRect(origin: .zero, size: CGSize(width: size.width, height: size.height))
+        guard let cgImage = self.cgImage else { return self }
+        context?.clip(to: rect, mask: cgImage)
+        context?.fill(rect)
+
+        let newImage = UIGraphicsGetImageFromCurrentImageContext() ?? self
+        UIGraphicsEndImageContext()
+        
+        return newImage
+    }
 }

@@ -179,41 +179,6 @@
     return [UIImage imageWithCGImage:img.CGImage scale:UIScreen.mainScreen.scale orientation: UIImageOrientationDownMirrored];
 }
 
-+ (UIImage *)grayscale:(UIImage *)sourceImage
-{
-    /* const UInt8 luminance = (red * 0.2126) + (green * 0.7152) + (blue * 0.0722); // Good luminance value */
-    /// Create a gray bitmap context
-    const size_t width = (size_t)sourceImage.size.width;
-    const size_t height = (size_t)sourceImage.size.height;
-    
-    const int kNyxNumberOfComponentsPerGreyPixel = 3;
-    
-    CGRect imageRect = CGRectMake(0, 0, sourceImage.size.width, sourceImage.size.height);
-    
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
-    CGContextRef bmContext = CGBitmapContextCreate(NULL, width, height, 8/*Bits per component*/, width * kNyxNumberOfComponentsPerGreyPixel, colorSpace, kCGImageAlphaNone);
-    CGColorSpaceRelease(colorSpace);
-    if (!bmContext)
-        return nil;
-    
-    /// Image quality
-    CGContextSetShouldAntialias(bmContext, false);
-    CGContextSetInterpolationQuality(bmContext, kCGInterpolationHigh);
-    
-    /// Draw the image in the bitmap context
-    CGContextDrawImage(bmContext, imageRect, sourceImage.CGImage);
-    
-    /// Create an image object from the context
-    CGImageRef grayscaledImageRef = CGBitmapContextCreateImage(bmContext);
-    UIImage *grayscaled = [UIImage imageWithCGImage:grayscaledImageRef scale:sourceImage.scale orientation:sourceImage.imageOrientation];
-    
-    /// Cleanup
-    CGImageRelease(grayscaledImageRef);
-    CGContextRelease(bmContext);
-    
-    return grayscaled;
-}
-
 + (void)settingThemingColor:(NSString *)themingColor themingColorElement:(NSString *)themingColorElement themingColorText:(NSString *)themingColorText
 {
     UIColor *newColor, *newColorElement, *newColorText;
