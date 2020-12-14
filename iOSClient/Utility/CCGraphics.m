@@ -66,36 +66,6 @@
     return image;
 }
 
-+ (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)targetSize isAspectRation:(BOOL)aspect
-{
-    CGFloat originRatio = image.size.width / image.size.height;
-    CGFloat newRatio = targetSize.width / targetSize.height;
-    CGSize sz;
-    CGFloat scale = 1.0;
-    
-    if (!aspect) {
-        sz = targetSize;
-    }else {
-        if (originRatio < newRatio) {
-            sz.height = targetSize.height;
-            sz.width = targetSize.height * originRatio;
-        }else {
-            sz.width = targetSize.width;
-            sz.height = targetSize.width / originRatio;
-        }
-    }
-    
-    sz.width /= scale;
-    sz.height /= scale;
-    
-    UIGraphicsBeginImageContextWithOptions(sz, NO, UIScreen.mainScreen.scale);
-    [image drawInRect:CGRectMake(0, 0, sz.width, sz.height)];
-    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    return newImage;
-}
-
 + (void)createNewImageFrom:(NSString *)fileName ocId:(NSString *)ocId etag:(NSString *)etag typeFile:(NSString *)typeFile
 {
     UIImage *originalImage;
@@ -125,9 +95,10 @@
         originalImage = [self generateImageFromVideo:[NSTemporaryDirectory() stringByAppendingString:@"tempvideo.mp4"]];
     }
 
-    scaleImagePreview = [self scaleImage:originalImage toSize:CGSizeMake(NCBrandGlobal.shared.sizePreview, NCBrandGlobal.shared.sizePreview) isAspectRation:YES];
-    scaleImageIcon = [self scaleImage:originalImage toSize:CGSizeMake(NCBrandGlobal.shared.sizeIcon, NCBrandGlobal.shared.sizeIcon) isAspectRation:YES];
-
+    scaleImagePreview = [NCUtility.shared resizeImage:originalImage size:CGSizeMake(NCBrandGlobal.shared.sizePreview, NCBrandGlobal.shared.sizePreview)];
+    
+    scaleImageIcon = [NCUtility.shared resizeImage:originalImage size:CGSizeMake(NCBrandGlobal.shared.sizeIcon, NCBrandGlobal.shared.sizeIcon)];
+    
     scaleImagePreview = [UIImage imageWithData:UIImageJPEGRepresentation(scaleImagePreview, 0.5f)];
     scaleImageIcon = [UIImage imageWithData:UIImageJPEGRepresentation(scaleImageIcon, 0.5f)];
     
