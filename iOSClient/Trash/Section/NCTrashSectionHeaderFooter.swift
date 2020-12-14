@@ -36,12 +36,12 @@ class NCTrashSectionHeaderMenu: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), width: 50, height: 50, color: NCBrandColor.shared.icon), for: .normal)
+        buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
         
         buttonOrder.setTitle("", for: .normal)
         buttonOrder.setTitleColor(NCBrandColor.shared.brandElement, for: .normal)
         
-        buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.shared.icon), for: .normal)
+        buttonMore.setImage(UIImage.init(named: "more")!.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
         
         separator.backgroundColor = NCBrandColor.shared.separator
         backgroundColor = NCBrandColor.shared.backgroundView

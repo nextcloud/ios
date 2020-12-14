@@ -316,7 +316,7 @@ class NCShareCommentsCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.lightGray), for: .normal)
+        buttonMenu.setImage(UIImage.init(named: "shareMenu")!.image(color: .lightGray, size: 50), for: .normal)
     }
     
     @IBAction func touchUpInsideMenu(_ sender: Any) {

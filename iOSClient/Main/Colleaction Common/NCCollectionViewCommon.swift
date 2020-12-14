@@ -1276,9 +1276,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
             
             if collectionView.collectionViewLayout == gridLayout {
-                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), width: 100, height: 100, color: NCBrandColor.shared.icon), for: .normal)
+                header.buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.icon, size: 50), for: .normal)
             } else {
-                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), width: 100, height: 100, color: NCBrandColor.shared.icon), for: .normal)
+                header.buttonSwitch.setImage(UIImage.init(named: "switchGrid")!.image(color: NCBrandColor.shared.icon, size: 50), for: .normal)
             }
             
             header.delegate = self

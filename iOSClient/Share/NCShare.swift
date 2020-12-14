@@ -458,8 +458,8 @@ class NCShareLinkCell: UITableViewCell {
         super.awakeFromNib()
         
         imageItem.image = NCShareCommon.shared.createLinkAvatar(imageName: "sharebylink", colorCircle: NCBrandColor.shared.brandElement)
-        buttonCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width:100, height: 100, color: UIColor.gray), for: .normal)
-        buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.gray), for: .normal)
+        buttonCopy.setImage(UIImage.init(named: "shareCopy")!.image(color: .gray, size: 50), for: .normal)
+        buttonMenu.setImage(UIImage.init(named: "shareMenu")!.image(color: .gray, size: 50), for: .normal)
     }
     
     @IBAction func touchUpInsideCopy(_ sender: Any) {
@@ -496,7 +496,7 @@ class NCShareUserCell: UITableViewCell {
         
         switchCanEdit.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
         switchCanEdit.onTintColor = NCBrandColor.shared.brandElement
-        buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.gray), for: .normal)
+        buttonMenu.setImage(UIImage.init(named: "shareMenu")!.image(color: .gray, size: 50), for: .normal)
     }
     
     @IBAction func switchCanEditChanged(sender: UISwitch) {
