@@ -63,7 +63,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     struct cacheImages {
         static var cellLivePhotoImage = UIImage()
         static var cellPlayImage = UIImage()
-        static var cellFavouriteImage = UIImage()
     }
 
     // MARK: - View Life Cycle
@@ -396,9 +395,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         collectionView.backgroundColor = NCBrandColor.shared.backgroundView
         collectionView.reloadData()
         
-        cacheImages.cellLivePhotoImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: .white)
-        cacheImages.cellPlayImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .white)
-        cacheImages.cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 100, height: 100, color: NCBrandColor.shared.yellowFavorite)
+        cacheImages.cellLivePhotoImage = UIImage.init(named: "livePhoto")!.image(color: .white, size: 50)
+        cacheImages.cellPlayImage = UIImage.init(named: "play")!.image(color: .white, size: 50)
     }
 
     @objc func deleteFile(_ notification: NSNotification) {

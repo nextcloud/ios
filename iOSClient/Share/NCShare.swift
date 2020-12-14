@@ -61,17 +61,17 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         viewContainerConstraint.constant = height
         searchFieldTopConstraint.constant = 10
-        
+                
         searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
         
         shareLinkImage.image = NCShareCommon.shared.createLinkAvatar(imageName: "sharebylink", colorCircle: NCBrandColor.shared.brandElement)
         shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
-        buttonCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width: 100, height: 100, color: .gray), for: .normal)
+        buttonCopy.setImage(UIImage.init(named: "shareCopy")?.image(color: .gray, size: 50), for: .normal)
 
         shareInternalLinkImage.image = NCShareCommon.shared.createLinkAvatar(imageName: "shareInternalLink", colorCircle: .gray)
         shareInternalLinkLabel.text = NSLocalizedString("_share_internal_link_", comment: "")
         shareInternalLinkDescription.text = NSLocalizedString("_share_internal_link_des_", comment: "")
-        buttonInternalCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width: 100, height: 100, color: .gray), for: .normal)
+        buttonInternalCopy.setImage(UIImage.init(named: "shareCopy")?.image(color: .gray, size: 50), for: .normal)
 
         tableView.dataSource = self
         tableView.delegate = self
@@ -128,10 +128,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     @objc func reloadData() {
         let shares = NCManageDatabase.shared.getTableShares(metadata: metadata!)
         if shares.firstShareLink == nil {
-            buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareAdd"), width: 100, height: 100, color: UIColor.gray), for: .normal)
+            buttonMenu.setImage(UIImage.init(named: "shareAdd")?.image(color: .gray, size: 50), for: .normal)
             buttonCopy.isHidden = true
         } else {
-            buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width: 100, height: 100, color: UIColor.gray), for: .normal)
+            buttonMenu.setImage(UIImage.init(named: "shareMenu")?.image(color: .gray, size: 50), for: .normal)
             buttonCopy.isHidden = false
         }
         tableView.reloadData()
