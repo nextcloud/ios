@@ -25,7 +25,7 @@ import Foundation
 
 class NCActionSheetHeader: NSObject {
     
-    @objc static let sharedInstance: NCActionSheetHeader = {
+    @objc static let shared: NCActionSheetHeader = {
         let instance = NCActionSheetHeader()
         return instance
     }()
@@ -38,7 +38,7 @@ class NCActionSheetHeader: NSObject {
         
         // Header
         if isDirectory {
-            image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+            image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.shared.brandElement)
         } else if iconName.count > 0 {
             image = UIImage.init(named: iconName)
         } else {
@@ -50,10 +50,10 @@ class NCActionSheetHeader: NSObject {
         
         let headerView = UINib(nibName: "NCActionSheetHeaderView", bundle: nil).instantiate(withOwner: self, options: nil).first as! NCActionSheetHeaderView
         
-        headerView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        headerView.backgroundColor = NCBrandColor.shared.backgroundForm
         headerView.imageItem.image = image
         headerView.label.text = text
-        headerView.label.textColor = NCBrandColor.sharedInstance.icon
+        headerView.label.textColor = NCBrandColor.shared.icon
         
         return headerView
     }

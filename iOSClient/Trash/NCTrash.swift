@@ -89,7 +89,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
-
+       
         changeTheming()
     }
     
@@ -129,7 +129,9 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
+        view.backgroundColor = NCBrandColor.shared.backgroundView
+        collectionView.backgroundColor = NCBrandColor.shared.backgroundView
+        collectionView.reloadData()
     }
     
     // MARK: - Empty
@@ -183,7 +185,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_trash_delete_selected_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                     action: { menuAction in
                         let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
@@ -204,7 +206,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_trash_delete_all_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                     action: { menuAction in
                         let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_", comment: ""), message: "", preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
@@ -246,7 +248,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
 
             var actions: [NCMenuAction] = []
 
-            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: objectId, account: appDelegate.account) else {
+            guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: appDelegate.account) else {
                 return
             }
 
@@ -255,7 +257,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 iconHeader = icon
             } else {
                 if(tableTrash.directory) {
-                    iconHeader = CCGraphics.changeThemingColorImage(UIImage(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
+                    iconHeader = CCGraphics.changeThemingColorImage(UIImage(named: "folder"), width: 50, height: 50, color: NCBrandColor.shared.icon)
                 } else {
                     iconHeader = UIImage(named: tableTrash.iconName)
                 }
@@ -272,7 +274,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_delete_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                     action: { menuAction in
                         self.deleteItem(with: objectId)
                     }
@@ -301,7 +303,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
 
             var actions: [NCMenuAction] = []
 
-            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: objectId, account: appDelegate.account) else {
+            guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: appDelegate.account) else {
                 return
             }
 
@@ -310,7 +312,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 iconHeader = icon
             } else {
                 if(tableTrash.directory) {
-                    iconHeader = CCGraphics.changeThemingColorImage(UIImage(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
+                    iconHeader = CCGraphics.changeThemingColorImage(UIImage(named: "folder"), width: 50, height: 50, color: NCBrandColor.shared.icon)
                 } else {
                     iconHeader = UIImage(named: tableTrash.iconName)
                 }
@@ -327,7 +329,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_restore_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "restore"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "restore"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                     action: { menuAction in
                         self.restoreItem(with: objectId)
                     }
@@ -337,7 +339,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_delete_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                     action: { menuAction in
                         self.deleteItem(with: objectId)
                     }
@@ -407,14 +409,14 @@ extension NCTrash: UICollectionViewDataSource {
             let trashHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCTrashSectionHeaderMenu
             
             if collectionView.collectionViewLayout == gridLayout {
-                trashHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
+                trashHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.shared.icon), for: .normal)
             } else {
-                trashHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
+                trashHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.shared.icon), for: .normal)
             }
             
             trashHeader.delegate = self
-            trashHeader.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-            trashHeader.separator.backgroundColor = NCBrandColor.sharedInstance.separator
+            trashHeader.backgroundColor = NCBrandColor.shared.backgroundView
+            trashHeader.separator.backgroundColor = NCBrandColor.shared.separator
             trashHeader.setStatusButton(datasource: datasource)
             trashHeader.setTitleSorted(datasourceTitleButton: titleButton)
             
@@ -467,11 +469,11 @@ extension NCTrash: UICollectionViewDataSource {
             cell.objectId = tableTrash.fileId
             cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
-            cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
-            cell.separator.backgroundColor = NCBrandColor.sharedInstance.separator
+            cell.labelTitle.textColor = NCBrandColor.shared.textView
+            cell.separator.backgroundColor = NCBrandColor.shared.separator
 
             if tableTrash.directory {
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.shared.brandElement)
                 cell.labelInfo.text = CCUtility.dateDiff(tableTrash.date as Date)
             } else {
                 cell.imageItem.image = image
@@ -500,10 +502,10 @@ extension NCTrash: UICollectionViewDataSource {
             cell.objectId = tableTrash.fileId
             cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
-            cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
+            cell.labelTitle.textColor = NCBrandColor.shared.textView
             
             if tableTrash.directory {
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.shared.brandElement)
             } else {
                 cell.imageItem.image = image
             }
@@ -545,7 +547,7 @@ extension NCTrash {
         
         datasource.removeAll()
         
-        guard let tashItems = NCManageDatabase.sharedInstance.getTrash(filePath: trashPath, sort: sort, ascending: ascending, account: appDelegate.account) else {
+        guard let tashItems = NCManageDatabase.shared.getTrash(filePath: trashPath, sort: sort, ascending: ascending, account: appDelegate.account) else {
             return
         }
         
@@ -580,8 +582,8 @@ extension NCTrash {
             self.refreshControl.endRefreshing()
          
             if errorCode == 0 && account == self.appDelegate.account {
-                NCManageDatabase.sharedInstance.deleteTrash(filePath: self.trashPath, account: self.appDelegate.account)
-                NCManageDatabase.sharedInstance.addTrash(account: account, items: items)
+                NCManageDatabase.shared.deleteTrash(filePath: self.trashPath, account: self.appDelegate.account)
+                NCManageDatabase.shared.addTrash(account: account, items: items)
             } else if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
@@ -594,7 +596,7 @@ extension NCTrash {
     
     func restoreItem(with fileId: String) {
         
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: fileId, account: appDelegate.account) else {
+        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: appDelegate.account) else {
             return
         }
         
@@ -603,7 +605,7 @@ extension NCTrash {
         
         NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true) { (account, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.account {
-                NCManageDatabase.sharedInstance.deleteTrash(fileId: fileId, account: account)
+                NCManageDatabase.shared.deleteTrash(fileId: fileId, account: account)
                 self.reloadDataSource()
             }  else if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
@@ -619,7 +621,7 @@ extension NCTrash {
 
         NCCommunication.shared.deleteFileOrFolder(serverUrlFileName) { (account, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.account {
-                NCManageDatabase.sharedInstance.deleteTrash(fileId: nil, account: self.appDelegate.account)
+                NCManageDatabase.shared.deleteTrash(fileId: nil, account: self.appDelegate.account)
             } else if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
@@ -631,7 +633,7 @@ extension NCTrash {
     
     func deleteItem(with fileId: String) {
         
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: fileId, account: appDelegate.account) else {
+        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: appDelegate.account) else {
             return
         }
         
@@ -639,7 +641,7 @@ extension NCTrash {
         
         NCCommunication.shared.deleteFileOrFolder(serverUrlFileName) { (account, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.account {
-                NCManageDatabase.sharedInstance.deleteTrash(fileId: fileId, account: account)
+                NCManageDatabase.shared.deleteTrash(fileId: fileId, account: account)
                 self.reloadDataSource()
             } else if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)

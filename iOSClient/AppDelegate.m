@@ -29,6 +29,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 @import Firebase;
+
 @class NCViewerRichdocument;
 
 @interface AppDelegate() <TOPasscodeViewControllerDelegate>
@@ -45,7 +46,7 @@
 {
     BOOL isSimulatorOrTestFlight = [[NCUtility shared] isSimulatorOrTestFlight];
     
-    if (![CCUtility getDisableCrashservice] && NCBrandOptions.sharedInstance.disable_crash_service == false) {
+    if (![CCUtility getDisableCrashservice] && NCBrandOptions.shared.disable_crash_service == false) {
         [FIRApp configure];
     }
     
@@ -59,7 +60,7 @@
     NSInteger logLevel = [CCUtility getLogLevel];
     [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel];
     NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
-    NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions sharedInstance].textCopyrightNextcloudiOS, versionApp];
+    NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, versionApp];
     if (isSimulatorOrTestFlight) {
         [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Start session with level %lu %@ (Simulator / TestFlight)", (unsigned long)logLevel, versionNextcloudiOS]];
     } else {
@@ -70,7 +71,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:k_notificationCenter_initializeMain object:nil];
     
     // Set account, if no exists clear all
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableAccount *tableAccount = [[NCManageDatabase shared] getAccountActive];
     if (tableAccount == nil) {
         // remove all the keys Chain
         [CCUtility deleteAllChainStore];
@@ -82,22 +83,21 @@
             NSString *user = [tableAccount.user stringByAppendingString:@" "];
             NSString *urlBase = [tableAccount.account stringByReplacingOccurrencesOfString:user withString:@""];
             tableAccount.urlBase = urlBase;
-            [[NCManageDatabase sharedInstance] updateAccount:tableAccount];
+            [[NCManageDatabase shared] updateAccount:tableAccount];
             
-            tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+            tableAccount = [[NCManageDatabase shared] getAccountActive];
         }
         [self settingAccount:tableAccount.account urlBase:tableAccount.urlBase user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]];
     }
     
     // UserDefaults
-    self.ncUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:[NCBrandOptions sharedInstance].capabilitiesGroups];
+    self.ncUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:[NCBrandOptions shared].capabilitiesGroups];
         
     // Background Fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
     self.listProgressMetadata = [NSMutableDictionary new];
     self.listFilesVC = [NSMutableDictionary new];
-    self.listMainVC = [NSMutableDictionary new];
     self.listFavoriteVC = [NSMutableDictionary new];
     self.listOfflineVC = [NSMutableDictionary new];
 
@@ -112,21 +112,7 @@
     //AV Session
     [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:nil];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-
-    // ProgressView Detail
-    self.progressViewDetail = [[UIProgressView alloc] initWithProgressViewStyle: UIProgressViewStyleBar];
     
-    // Quick Actions
-    if([[UIApplicationShortcutItem class] respondsToSelector:@selector(new)]) {
-    
-        [self configDynamicShortcutItems];
-        
-        UIApplicationShortcutItem *shortcutItem = [launchOptions objectForKeyedSubscript:UIApplicationLaunchOptionsShortcutItemKey];
-        
-        if (shortcutItem)
-            [self handleShortCutItem:shortcutItem];
-    }
-        
     // Start Timer
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
     [self startTimerErrorNetworking];
@@ -148,8 +134,8 @@
             }
         }
     }
-    
-    if ([NCBrandOptions sharedInstance].disable_intro) {
+        
+    if ([NCBrandOptions shared].disable_intro) {
         [CCUtility setIntro:YES];
         
         if (self.account.length == 0) {
@@ -178,8 +164,6 @@
     // Auto upload
     self.networkingAutoUpload = [NCNetworkingAutoUpload new];
     
-    [[NCCommunicationCommon shared] writeLog:@"Application did finish launching"];
-
     return YES;
 }
 
@@ -213,10 +197,10 @@
     [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
     
     // Initialize Auto upload
-    [[NCAutoUpload sharedInstance] initStateAutoUpload];
+    [[NCAutoUpload shared] initStateAutoUpload];
     
     // Read active directory
-    [self.activeFiles reloadDataSourceNetworkWithForced:true];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_reloadDataSourceNetworkForced object:nil];
     
     // Required unsubscribing / subscribing
     [self pushNotification];
@@ -226,8 +210,6 @@
     
     // Request Service Server Nextcloud
     [[NCService shared] startRequestServicesServer];
-    
-    [[NCCommunicationCommon shared] writeLog:@"The application Will enter in foreground"];
 }
 
 //
@@ -239,7 +221,7 @@
         
     // Brand
     #if defined(HC)
-    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableAccount *account = [[NCManageDatabase shared] getAccountActive];
     if (account.hcIsTrial == true || account.hcTrialExpired == true || account.hcNextGroupExpirationGroupExpired == true) {
         
         HCTrial *vc = [[UIStoryboard storyboardWithName:@"HCTrial" bundle:nil] instantiateInitialViewController];
@@ -250,8 +232,6 @@
     #endif
     
     [[NCNetworking shared] verifyUploadZombie];
-    
-    [[NCCommunicationCommon shared] writeLog:@"The application did become active"];
 }
 
 //
@@ -277,39 +257,33 @@
 // NotificationCenter
 - (void)initializeMain:(NSNotification *)notification
 {
-    if (self.account.length == 0) return;
+    if (self.account.length == 0) { return; }
     
     // Clear error certificate
     [CCUtility setCertificateError:self.account error:NO];
     
     // Setting Theming
-    [self settingThemingColorBrand];
-    
-    // If AVPlayer in play -> Stop
-    if (self.player != nil && self.player.rate != 0) {
-        [self.player pause];
-    }
+    [[NCBrandColor shared] settingThemingColorWithAccount:self.account];
     
     // close detail
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_menuDetailClose object:nil];
     
     // Not Photos Video in library ? then align and Init Auto Upload
-    NSArray *recordsPhotoLibrary = [[NCManageDatabase sharedInstance] getPhotoLibraryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", self.account]];
+    NSArray *recordsPhotoLibrary = [[NCManageDatabase shared] getPhotoLibraryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", self.account]];
     if ([recordsPhotoLibrary count] == 0) {
-        [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+        [[NCAutoUpload shared] alignPhotoLibrary];
     }
     
     // Start Auto Upload
-    [[NCAutoUpload sharedInstance] initStateAutoUpload];
+    [[NCAutoUpload shared] initStateAutoUpload];
     
     // Start services
-    [[NCCommunicationCommon shared] writeLog:@"Request Service Server Nextcloud"];
     [[NCService shared] startRequestServicesServer];
     
     // Registeration push notification
     [self pushNotification];
     
-    //Registeration domain File Provider
+    // Registeration domain File Provider
     //FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
     //[fileProviderDomain removeAllDomains];
     //[fileProviderDomain registerDomains];
@@ -323,7 +297,6 @@
 
 - (void)checkErrorNetworking
 {
-    // test
     if (self.account.length == 0) { return; }
     
     // check unauthorized server (401)
@@ -354,7 +327,7 @@
 - (void)openLoginView:(UIViewController *)viewController selector:(NSInteger)selector openLoginWeb:(BOOL)openLoginWeb
 {
     // use appConfig [MDM]
-    if ([NCBrandOptions sharedInstance].use_configuration) {
+    if ([NCBrandOptions shared].use_configuration) {
         
         if (!(_appConfigView.isViewLoaded && _appConfigView.view.window)) {
         
@@ -367,12 +340,12 @@
     }
     
     // only for personalized LoginWeb [customer]
-    if ([NCBrandOptions sharedInstance].use_login_web_personalized) {
+    if ([NCBrandOptions shared].use_login_web_personalized) {
         
         if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
             
             self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
-            self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
+            self.activeLoginWeb.urlBase = [[NCBrandOptions shared] loginBaseUrl];
 
             [self showLoginViewController:self.activeLoginWeb forContext:viewController];
         }
@@ -388,7 +361,7 @@
             self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
             
             if (selector == k_intro_signup) {
-                self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] linkloginPreferredProviders];
+                self.activeLoginWeb.urlBase = [[NCBrandOptions shared] linkloginPreferredProviders];
             } else {
                 self.activeLoginWeb.urlBase = self.urlBase;
             }
@@ -396,10 +369,10 @@
            [self showLoginViewController:self.activeLoginWeb forContext:viewController];
         }
         
-    } else if ([NCBrandOptions sharedInstance].disable_intro && [NCBrandOptions sharedInstance].disable_request_login_url) {
+    } else if ([NCBrandOptions shared].disable_intro && [NCBrandOptions shared].disable_request_login_url) {
         
         self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
-        self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
+        self.activeLoginWeb.urlBase = [[NCBrandOptions shared] loginBaseUrl];
         
         [self showLoginViewController:self.activeLoginWeb forContext:viewController];
         
@@ -426,26 +399,31 @@
 -(void)showLoginViewController:(UIViewController *)viewController forContext:(UIViewController *)contextViewController
 {
     if (contextViewController == NULL) {
-        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        navController.navigationBar.barStyle =  UIBarStyleBlack;
-        navController.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText;
-        navController.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer;
-        [navController.navigationBar setTranslucent:false];
-        self.window.rootViewController = navController;
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        navigationController.navigationBar.barStyle =  UIBarStyleBlack;
+        navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText;
+        navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer;
+        [navigationController.navigationBar setTranslucent:false];
+        self.window.rootViewController = navigationController;
+        
         [self.window makeKeyAndVisible];
         
     } else if ([contextViewController isKindOfClass:[UINavigationController class]]) {
-        UINavigationController *navController = ((UINavigationController *)contextViewController);
-        [navController pushViewController:viewController animated:true];
+        
+        UINavigationController *navigationController = ((UINavigationController *)contextViewController);
+        [navigationController pushViewController:viewController animated:true];
         
     } else {
-        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        navController.modalPresentationStyle = UIModalPresentationFullScreen;
-        navController.navigationBar.barStyle =  UIBarStyleBlack;
-        navController.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText;
-        navController.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer;
-        [navController.navigationBar setTranslucent:false];
-        [contextViewController presentViewController:navController animated:true completion:nil];
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
+        navigationController.navigationBar.barStyle =  UIBarStyleBlack;
+        navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText;
+        navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer;
+        [navigationController.navigationBar setTranslucent:false];
+        
+        [contextViewController presentViewController:navigationController animated:true completion:nil];
     }
 }
 
@@ -475,18 +453,18 @@
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe
 {
     // Push Notification
-    tableAccount *accountPN = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    tableAccount *accountPN = [[NCManageDatabase shared] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
     [self unsubscribingNextcloudServerPushNotification:accountPN.account urlBase:accountPN.urlBase user:accountPN.user withSubscribing:false];
 
     [self settingAccount:nil urlBase:nil user:nil userID:nil password:nil];
     
     /* DELETE ALL FILES LOCAL FS */
-    NSArray *results = [[NCManageDatabase sharedInstance] getTableLocalFilesWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account] sorted:@"ocId" ascending:NO];
+    NSArray *results = [[NCManageDatabase shared] getTableLocalFilesWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account] sorted:@"ocId" ascending:NO];
     for (tableLocalFile *result in results) {
         [CCUtility removeFileAtPath:[CCUtility getDirectoryProviderStorageOcId:result.ocId]];
     }
     // Clear database
-    [[NCManageDatabase sharedInstance] clearDatabaseWithAccount:account removeAccount:true];
+    [[NCManageDatabase shared] clearDatabaseWithAccount:account removeAccount:true];
 
     [CCUtility clearAllKeysEndToEnd:account];
     [CCUtility clearAllKeysPushNotification:account];
@@ -494,10 +472,10 @@
     [CCUtility setPassword:account password:nil];
        
     if (wipe) {
-        NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
+        NSArray *listAccount = [[NCManageDatabase shared] getAccounts];
         if ([listAccount count] > 0) {
             NSString *newAccount = listAccount[0];
-            tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:newAccount];
+            tableAccount *tableAccount = [[NCManageDatabase shared] setAccountActive:newAccount];
             [self settingAccount:newAccount urlBase:tableAccount.urlBase user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]];
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
         } else {
@@ -508,7 +486,7 @@
 
 - (void)settingSetupCommunication:(NSString *)account
 {
-    NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
+    NSInteger serverVersionMajor = [[NCManageDatabase shared] getCapabilitiesServerIntWithAccount:account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
     if (serverVersionMajor > 0) {
         [[NCCommunicationCommon shared] setupWithNextcloudVersion:serverVersionMajor];
     }
@@ -525,7 +503,7 @@
 {
     if (self.account.length == 0 || self.pushKitToken.length == 0) { return; }
     
-    for (tableAccount *result in [[NCManageDatabase sharedInstance] getAllAccount]) {
+    for (tableAccount *result in [[NCManageDatabase shared] getAllAccount]) {
         
         NSString *token = [CCUtility getPushNotificationToken:result.account];
         
@@ -544,12 +522,12 @@
 {
     if (self.account.length == 0 || self.pushKitToken.length == 0) { return; }
     
-    [[NCPushNotificationEncryption sharedInstance] generatePushNotificationsKeyPair:account];
+    [[NCPushNotificationEncryption shared] generatePushNotificationsKeyPair:account];
 
     NSString *pushTokenHash = [[NCEndToEndEncryption sharedManager] createSHA512:self.pushKitToken];
     NSData *pushPublicKey = [CCUtility getPushNotificationPublicKey:account];
     NSString *pushDevicePublicKey = [[NSString alloc] initWithData:pushPublicKey encoding:NSUTF8StringEncoding];
-    NSString *proxyServerPath = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
+    NSString *proxyServerPath = [NCBrandOptions shared].pushNotificationServerProxy;
     
     [[NCCommunication shared] subscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[CCUtility getPassword:account] pushTokenHash:pushTokenHash devicePublicKey:pushDevicePublicKey proxyServerUrl:proxyServerPath customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSString *deviceIdentifier, NSString *signature, NSString *publicKey, NSInteger errorCode, NSString *errorDescription) {
         if (errorCode == 0) {
@@ -580,7 +558,7 @@
     [[NCCommunication shared] unsubscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[CCUtility getPassword:account] customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
         if (errorCode == 0) {
             NSString *userAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [CCUtility getUserAgent]];
-            NSString *proxyServerPath = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
+            NSString *proxyServerPath = [NCBrandOptions shared].pushNotificationServerProxy;
             [[NCCommunication shared] unsubscribingPushProxyWithProxyServerUrl:proxyServerPath deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent completionHandler:^(NSInteger errorCode, NSString *errorDescription) {
                 if (errorCode == 0) {
                 
@@ -624,11 +602,11 @@
 {
     NSString *message = [userInfo objectForKey:@"subject"];
     if (message) {
-        NSArray *results = [[NCManageDatabase sharedInstance] getAllAccount];
+        NSArray *results = [[NCManageDatabase shared] getAllAccount];
         for (tableAccount *result in results) {
             if ([CCUtility getPushNotificationPrivateKey:result.account]) {
                 NSData *decryptionKey = [CCUtility getPushNotificationPrivateKey:result.account];
-                NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey:decryptionKey];
+                NSString *decryptedMessage = [[NCPushNotificationEncryption shared] decryptPushNotification:message withDevicePrivateKey:decryptionKey];
                 if (decryptedMessage) {
                     NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
                     NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
@@ -658,7 +636,7 @@
     [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
         for (UNNotificationRequest *notificationRequest in requests) {
             NSString *message = [notificationRequest.content.userInfo objectForKey:@"subject"];
-            NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey:key];
+            NSString *decryptedMessage = [[NCPushNotificationEncryption shared] decryptPushNotification:message withDevicePrivateKey:key];
             if (decryptedMessage) {
                 NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
                 NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
@@ -673,7 +651,7 @@
     [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
         for (UNNotification *notification in notifications) {
             NSString *message = [notification.request.content.userInfo objectForKey:@"subject"];
-            NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey:key];
+            NSString *decryptedMessage = [[NCPushNotificationEncryption shared] decryptPushNotification:message withDevicePrivateKey:key];
             if (decryptedMessage) {
                 NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
                 NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
@@ -699,75 +677,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Quick Actions - ShotcutItem =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)configDynamicShortcutItems
-{
-    NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
-    
-    UIApplicationShortcutIcon *shortcutMediaIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"media"];
-    UIApplicationShortcutItem *shortcutMedia = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.media", bundleId] localizedTitle:NSLocalizedString(@"_media_", nil) localizedSubtitle:nil icon:shortcutMediaIcon userInfo:nil];
-   
-    // add the array to our app
-    if (shortcutMedia)
-        [UIApplication sharedApplication].shortcutItems = @[shortcutMedia];
-}
-
-- (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler
-{
-    BOOL handledShortCutItem = [self handleShortCutItem:shortcutItem];
-    
-    completionHandler(handledShortCutItem);
-}
-
-- (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem
-{
-    BOOL handled = NO;
-    
-    NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
-    NSString *shortcutMedia = [NSString stringWithFormat:@"%@.media", bundleId];
-    
-    if ([shortcutItem.type isEqualToString:shortcutMedia] && self.account) {
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-
-            UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-            if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
-                UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
-                if ([navigationControllerMaster isKindOfClass:[UINavigationController class]]) {
-                    UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
-                     if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                         
-                         if (splitViewController.isCollapsed) {
-                                         
-                             [navigationControllerMaster popToRootViewControllerAnimated:false];
-                             UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
-                             if ([navigationControllerMaster isKindOfClass:[UINavigationController class]]) {
-                                 UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
-                                 if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                                     [tabBarController setSelectedIndex: k_tabBarApplicationIndexMedia];
-                                 }
-                             }
-                        
-                         } else {
-                         
-                             if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                                 [tabBarController setSelectedIndex: k_tabBarApplicationIndexMedia];
-                             }
-                         }
-                     }
-                }
-            }
-        });
-        
-        handled = YES;
-    }
-    
-    return handled;
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== ApplicationIconBadgeNumber =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -776,222 +685,19 @@
     if (self.account.length == 0) { return; }
             
     NSInteger counterDownload = [[NCOperationQueue shared] downloadCount];
-    NSInteger counterUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d OR status == %d", k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading]].count;
+    NSInteger counterUpload = [[NCManageDatabase shared] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d OR status == %d", k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading]].count;
     NSInteger total = counterDownload + counterUpload;
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
     
-    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
-        UINavigationController *navigationController = (UINavigationController *)[splitViewController.viewControllers firstObject];
-        if ([navigationController isKindOfClass:[UINavigationController class]]) {
-            UITabBarController *tabBarController = (UITabBarController *)navigationController.topViewController;
-            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                UITabBarItem *tabBarItem = [tabBarController.tabBar.items objectAtIndex:0];
-                    
-                if (total > 0) {
-                    [tabBarItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
-                } else {
-                    [tabBarItem setBadgeValue:nil];
-                }
-            }
-        }
-    }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== TabBarController =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)createTabBarController:(UITabBarController *)tabBarController
-{
-    UITabBarItem *item;
-    NSLayoutConstraint *constraint;
-    CGFloat safeAreaBottom = safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
-   
-    // File
-    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
-    [item setTitle:NSLocalizedString(@"_home_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] width:50 height:50 color:NCBrandColor.sharedInstance.brandElement];
-    item.selectedImage = item.image;
-    
-    // Favorites
-    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFavorite];
-    [item setTitle:NSLocalizedString(@"_favorites_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] width:50 height:50 color:NCBrandColor.sharedInstance.brandElement];
-    item.selectedImage = item.image;
-    
-    // (PLUS INVISIBLE)
-    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPlusHide];
-    item.title = @"";
-    item.image = nil;
-    item.enabled = false;
-    
-    // Media
-    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMedia];
-    [item setTitle:NSLocalizedString(@"_media_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"media"] width:50 height:50 color:NCBrandColor.sharedInstance.brandElement];
-    item.selectedImage = item.image;
-    
-    // More
-    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMore];
-    [item setTitle:NSLocalizedString(@"_more_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] width:50 height:50 color:NCBrandColor.sharedInstance.brandElement];
-    item.selectedImage = item.image;
-    
-    // Plus Button
-    int buttonSize = 57;
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] width:120 height:120 color:UIColor.whiteColor];
-    UIButton *buttonPlus = [UIButton buttonWithType:UIButtonTypeCustom];
-    buttonPlus.tag = 99;
-    buttonPlus.accessibilityLabel = NSLocalizedString(@"_accessibility_add_upload_", nil);
-    [buttonPlus setImage:buttonImage forState:UIControlStateNormal];
-    buttonPlus.backgroundColor = NCBrandColor.sharedInstance.brandElement;
-    buttonPlus.layer.cornerRadius = buttonSize / 2;
-    buttonPlus.layer.masksToBounds = NO;
-    buttonPlus.layer.shadowOffset = CGSizeMake(0, 0);
-    buttonPlus.layer.shadowRadius = 3.0f;
-    buttonPlus.layer.shadowOpacity = 0.5;
-    
-
-    [buttonPlus addTarget:self action:@selector(handleTouchTabbarCenter:) forControlEvents:UIControlEventTouchUpInside];
-    
-    [buttonPlus setTranslatesAutoresizingMaskIntoConstraints:NO];
-    [tabBarController.tabBar addSubview:buttonPlus];
-    
-
-    if (safeAreaBottom > 0) {
-        
-        // X
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
-        [tabBarController.view addConstraint:constraint];
-        // Y
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeTop multiplier:1.0 constant:-(buttonSize / 2)];
-        [tabBarController.view addConstraint:constraint];
-        // Width
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:buttonSize];
-        [tabBarController.view addConstraint:constraint];
-        // Height
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:buttonSize];
-        [tabBarController.view addConstraint:constraint];
-        
-    } else {
-        
-        // X
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
-        [tabBarController.view addConstraint:constraint];
-        // Y
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:-(buttonSize / 2)];
-        [tabBarController.view addConstraint:constraint];
-        // Width
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:buttonSize];
-        [tabBarController.view addConstraint:constraint];
-        // Height
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:buttonSize];
-        [tabBarController.view addConstraint:constraint];
-    }
-}
-
-- (void)handleTouchTabbarCenter:(id)sender
-{
-    tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", self.account, self.activeServerUrl]];
-    
-    if ([tableDirectory.permissions containsString:@"CK"]) {
-        [self showMenuInViewController:self.window.rootViewController];
-    } else {
-        [[NCContentPresenter shared] messageNotification:@"_warning_" description:@"_no_permission_add_file_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorInternalError forced:false];
-    }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Theming Color =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)settingThemingColorBrand
-{
-    if (self.account.length == 0) { return; }
-    
-    if ([NCBrandOptions sharedInstance].use_themingColor) {
-        
-        NSString *themingColor = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColor];
-        NSString *themingColorElement = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColorElement];
-        NSString *themingColorText = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColorText];
-
-        [CCGraphics settingThemingColor:themingColor themingColorElement:themingColorElement themingColorText:themingColorText];
-        
-        BOOL isTooLight = NCBrandColor.sharedInstance.brandElement.isTooLight;
-        BOOL isTooDark = NCBrandColor.sharedInstance.brandElement.isTooDark;
-        
-        if (isTooLight) {
-            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.brandElement darkerBy:30];
-        } else if (isTooDark) {
-            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.brandElement lighterBy:30];
-        }
-    
-    } else {
-    
-        BOOL isTooLight = NCBrandColor.sharedInstance.customer.isTooLight;
-        BOOL isTooDark = NCBrandColor.sharedInstance.customer.isTooDark;
-        
-        if (isTooLight) {
-            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.customer darkerBy:30];
-        } else if (isTooDark) {
-            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.customer lighterBy:30];
+    UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
+    if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+        UITabBarItem *tabBarItem = [tabBarController.tabBar.items objectAtIndex:0];
+        if (total > 0) {
+            [tabBarItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
         } else {
-            NCBrandColor.sharedInstance.brandElement = NCBrandColor.sharedInstance.customer;
+            [tabBarItem setBadgeValue:nil];
         }
-        
-        NCBrandColor.sharedInstance.brand = NCBrandColor.sharedInstance.customer;
-        NCBrandColor.sharedInstance.brandText = NCBrandColor.sharedInstance.customerText;
-    }
-        
-    [NCBrandColor.sharedInstance setDarkMode];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [[NCCollectionCommon shared] createImagesThemingColor];
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_changeTheming object:nil];
-    });
-}
-
-- (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form
-{
-    [NCBrandColor.sharedInstance setDarkMode];
-    [self.window setTintColor:NCBrandColor.sharedInstance.textView];
-
-    //Tab bar
-    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
-        UINavigationController *masterNavigationController = [splitViewController.viewControllers firstObject];
-        if ([masterNavigationController isKindOfClass:[UINavigationController class]]) {
-            UITabBarController *tabBarController = [masterNavigationController.viewControllers firstObject];
-            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.backgroundView;
-                tabBarController.tabBar.backgroundColor = NCBrandColor.sharedInstance.tabBar;
-                tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
-                [tabBarController.tabBar viewWithTag:99].backgroundColor = NCBrandColor.sharedInstance.brandElement;
-            }
-        }
-    }
-    
-    // Nav bar
-    [self configureNavBarForViewController:viewController];
-
-    // View
-    if (form) viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
-    else viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-            
-    // TableView
-    if (tableView) {
-        if (form) tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
-        else tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-        tableView.separatorColor = NCBrandColor.sharedInstance.separator;
-        [tableView reloadData];
-    }
-    
-    // CollectionView
-    if (collectionView) {
-        if (form) collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
-        else collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-        [collectionView reloadData];
     }
 }
 
@@ -1009,7 +715,7 @@
     [[NCCommunicationCommon shared] writeLog:@"Start perform Fetch With Completion Handler"];
     
     // Verify new photo
-    [[NCAutoUpload sharedInstance] initStateAutoUpload];
+    [[NCAutoUpload shared] initStateAutoUpload];
     
     // after 20 sec
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
@@ -1074,19 +780,19 @@
                 
             } else {
             
-                tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+                tableAccount *account = [[NCManageDatabase shared] getAccountActive];
                 if (account) {
                     NSURL *accountURL = [NSURL URLWithString:account.urlBase];
                     NSString *accountUser = account.user;
                     if ([link containsString:accountURL.host] && [user isEqualToString:accountUser]) {
                         matchedAccount = account;
                     } else {
-                        NSArray *accounts = [[NCManageDatabase sharedInstance] getAllAccount];
+                        NSArray *accounts = [[NCManageDatabase shared] getAllAccount];
                         for (tableAccount *account in accounts) {
                             NSURL *accountURL = [NSURL URLWithString:account.urlBase];
                             NSString *accountUser = account.user;
                             if ([link containsString:accountURL.host] && [user isEqualToString:accountUser]) {
-                                matchedAccount = [[NCManageDatabase sharedInstance] setAccountActive:account.account];
+                                matchedAccount = [[NCManageDatabase shared] setAccountActive:account.account];
                                 [self settingAccount:matchedAccount.account urlBase:matchedAccount.urlBase user:matchedAccount.user userID:matchedAccount.userID password:[CCUtility getPassword:matchedAccount.account]];
                                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
                             }
@@ -1134,24 +840,16 @@
     NSArray *splitedUrl = [url.path componentsSeparatedByString:@"/"];
     self.fileNameUpload = [NSString stringWithFormat:@"%@",[splitedUrl objectAtIndex:([splitedUrl count]-1)]];
     
-    if (self.account) {
+    if (self.account && [[NSFileManager defaultManager] fileExistsAtPath:url.path]) {
         
-        [[NSFileManager defaultManager]removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:self.fileNameUpload] error:nil];
-        [[NSFileManager defaultManager]moveItemAtPath:url.path toPath:[NSTemporaryDirectory() stringByAppendingString:self.fileNameUpload] error:&error];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:self.fileNameUpload] error:nil];
+        [[NSFileManager defaultManager] moveItemAtPath:url.path toPath:[NSTemporaryDirectory() stringByAppendingString:self.fileNameUpload] error:&error];
         
         if (error == nil) {
-            
-            UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-            if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
-                UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
-                if ([navigationControllerMaster isKindOfClass:[UINavigationController class]]) {
-                    UIViewController *uploadNavigationViewController = [[UIStoryboard storyboardWithName:@"CCUploadFromOtherUpp" bundle:nil] instantiateViewControllerWithIdentifier:@"CCUploadNavigationViewController"];
-                    
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                        [navigationControllerMaster presentViewController:uploadNavigationViewController animated:YES completion:nil];
-                    });
-                }
-            }
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                UIViewController *uploadNavigationViewController = [[UIStoryboard storyboardWithName:@"CCUploadFromOtherUpp" bundle:nil] instantiateViewControllerWithIdentifier:@"CCUploadNavigationViewController"];
+                [self.window.rootViewController presentViewController:uploadNavigationViewController animated:YES completion:nil];
+            });
         }
     }
     
@@ -1225,7 +923,7 @@
 
 - (void)didPerformBiometricValidationRequestInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
 {
-    [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
+    [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions shared] brand] reply:^(BOOL success, NSError * _Nullable error) {
         if (success) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                 [passcodeViewController dismissViewControllerAnimated:YES completion:^{
@@ -1239,7 +937,7 @@
 - (void)enableTouchFaceID:(BOOL)automaticallyPromptForBiometricValidation
 {
     if (CCUtility.getEnableTouchFaceID && automaticallyPromptForBiometricValidation && self.passcodeViewController.view.window) {
-        [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
+        [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions shared] brand] reply:^(BOOL success, NSError * _Nullable error) {
             if (success) {
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                     [self.passcodeViewController dismissViewControllerAnimated:YES completion:^{

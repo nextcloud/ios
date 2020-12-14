@@ -47,7 +47,7 @@
 {
     [super viewDidLoad];
     
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableAccount *tableAccount = [[NCManageDatabase shared] getAccountActive];
     
     if (tableAccount) {
         
@@ -79,7 +79,7 @@
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0,0, self.navigationItem.titleView.frame.size.width, 40)];
         label.text = self.passMetadata.fileNameView;
         
-        label.textColor = NCBrandColor.sharedInstance.brandText;
+        label.textColor = NCBrandColor.shared.brandText;
         
         label.backgroundColor =[UIColor clearColor];
         label.textAlignment = NSTextAlignmentCenter;
@@ -88,11 +88,11 @@
     
     // TableView : at the end of rows nothing
     self.tableView.tableFooterView = [UIView new];
-    self.tableView.separatorColor =  NCBrandColor.sharedInstance.separator;
+    self.tableView.separatorColor =  NCBrandColor.shared.separator;
 
     // get auto upload folder
-    _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectoryWithUrlBase:urlBase account:account];
+    _autoUploadFileName = [[NCManageDatabase shared] getAccountAutoUploadFileName];
+    _autoUploadDirectory = [[NCManageDatabase shared] getAccountAutoUploadDirectoryWithUrlBase:urlBase account:account];
     
     [self readFolder];
 }
@@ -102,10 +102,10 @@
 {
     [super viewWillAppear:animated];
     
-    self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brandElement;
-    self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
+    self.navigationController.navigationBar.barTintColor = NCBrandColor.shared.brandElement;
+    self.navigationController.navigationBar.tintColor = NCBrandColor.shared.brandText;
     
-    self.navigationController.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
+    self.navigationController.toolbar.barTintColor = NCBrandColor.shared.tabBar;
     self.navigationController.toolbar.tintColor = [UIColor grayColor];
     
     if (self.hideCreateFolder) {
@@ -118,8 +118,8 @@
         [self.move setTintColor: [UIColor clearColor]];
     }
     
-    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+    self.view.backgroundColor = NCBrandColor.shared.backgroundView;
+    self.tableView.backgroundColor = NCBrandColor.shared.backgroundView;
 }
 
 // MARK: - IBAction
@@ -225,7 +225,7 @@
         }
     }
     
-    NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicateDataSource];
+    NSArray *result = [[NCManageDatabase shared] getMetadatasWithPredicate:predicateDataSource];
     
     if (result)
         return [result count];
@@ -242,24 +242,24 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
     
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicateDataSource sorted:@"fileName" ascending:YES index:indexPath.row];
+    tableMetadata *metadata = [[NCManageDatabase shared] getMetadataAtIndexWithPredicate:predicateDataSource sorted:@"fileName" ascending:YES index:indexPath.row];
     
     // Create Directory Provider Storage ocId
     [CCUtility getDirectoryProviderStorageOcId:metadata.ocId];
     
     // colors
-    cell.textLabel.textColor = NCBrandColor.sharedInstance.textView;
+    cell.textLabel.textColor = NCBrandColor.shared.textView;
     
     cell.detailTextLabel.text = @"";
     
     if (metadata.directory) {
     
         if (metadata.e2eEncrypted)
-            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] multiplier:2 color:NCBrandColor.shared.brandElement];
         else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory])
-            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderAutomaticUpload"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderAutomaticUpload"] multiplier:2 color:NCBrandColor.shared.brandElement];
         else
-            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
+            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:NCBrandColor.shared.brandElement];
         
     } else {
         
@@ -284,7 +284,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicateDataSource sorted:@"fileName" ascending:YES index:indexPath.row ];
+    tableMetadata *metadata = [[NCManageDatabase shared] getMetadataAtIndexWithPredicate:predicateDataSource sorted:@"fileName" ascending:YES index:indexPath.row ];
     
     if (metadata.directory) {
         

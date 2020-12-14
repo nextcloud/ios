@@ -83,7 +83,11 @@ import NCCommunication
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: tableView, collectionView: collectionView, form: false)
+        view.backgroundColor = NCBrandColor.shared.backgroundForm
+        collectionView.backgroundColor = NCBrandColor.shared.backgroundForm
+        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
+        collectionView.reloadData()
+        tableView.reloadData()
         initializeForm()
     }
     
@@ -105,13 +109,13 @@ import NCCommunication
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: fileNameFolder)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         row.value = fileNameFolder
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
 
-        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
+        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, width: 50, height: 50, color: NCBrandColor.shared.brandElement) as UIImage
         
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
 
         section.addFormRow(row)
         
@@ -122,15 +126,15 @@ import NCCommunication
         
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         row.value = fileName
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
         
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textField.textColor"] = NCBrandColor.shared.textView
         
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
         
         section.addFormRow(row)
         
@@ -141,7 +145,7 @@ import NCCommunication
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         header.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
         header.textLabel?.textColor = .gray
-        header.tintColor = NCBrandColor.sharedInstance.backgroundForm
+        header.tintColor = NCBrandColor.shared.backgroundForm
     }
 
     // MARK: - CollectionView
@@ -183,16 +187,16 @@ import NCCommunication
         // name
         let name = cell.viewWithTag(200) as! UILabel
         name.text = template.name
-        name.textColor = NCBrandColor.sharedInstance.backgroundView
+        name.textColor = NCBrandColor.shared.backgroundView
         
         // select
         let imageSelect = cell.viewWithTag(300) as! UIImageView
         if selectTemplate != nil && selectTemplate?.name == template.name {
-            cell.backgroundColor = NCBrandColor.sharedInstance.textView
+            cell.backgroundColor = NCBrandColor.shared.textView
             imageSelect.image = UIImage(named: "plus100")
             imageSelect.isHidden = false
         } else {
-            cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            cell.backgroundColor = NCBrandColor.shared.backgroundView
             imageSelect.isHidden = true
         }
         
@@ -273,7 +277,7 @@ import NCCommunication
             
             if NCUtility.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: String(describing: fileNameForm)) != nil {
                 
-                let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.account, fileName: String(describing: fileNameForm), ocId: "", serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: String(describing: fileNameForm), ocId: "", serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
                 
                 guard let conflictViewController = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
                 conflictViewController.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
@@ -327,9 +331,9 @@ import NCCommunication
                         let result = NCCommunicationCommon.shared.getInternalContenType(fileName: fileName, contentType: "", directory: false)
                         
                         self.dismiss(animated: true, completion: {
-                            let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url ?? "", contentType: result.contentType, livePhoto: false)
+                            let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, fileName: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url ?? "", contentType: result.contentType, livePhoto: false)
                             
-                            NCNetworkingNotificationCenter.shared.segueMetadata(metadata)
+                            NCViewer.shared.view(viewController: self.appDelegate.activeViewController, metadata: metadata, metadatas: [metadata])
                         })
                     }
                     
@@ -349,9 +353,9 @@ import NCCommunication
                    
                     self.dismiss(animated: true, completion: {
                     
-                        let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url!, contentType: "", livePhoto: false)
+                        let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url!, contentType: "", livePhoto: false)
                     
-                        NCNetworkingNotificationCenter.shared.segueMetadata(metadata)
+                        NCViewer.shared.view(viewController: self.appDelegate.activeViewController, metadata: metadata, metadatas: [metadata])
                    })
                    
                     
@@ -373,18 +377,15 @@ import NCCommunication
     
     func getTemplate() {
      
-        indicator.color = NCBrandColor.sharedInstance.brandElement
+        indicator.color = NCBrandColor.shared.brandElement
         indicator.startAnimating()
         
         if self.editorId == k_editor_text || self.editorId == k_editor_onlyoffice {
-            
-            fileNameExtension = "md"
+                        
             var customUserAgent: String?
-                       
             if self.editorId == k_editor_onlyoffice {
                 customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
             }
-            
             NCCommunication.shared.NCTextGetListOfTemplates(customUserAgent: customUserAgent) { (account, templates, errorCode, errorMessage) in
                 
                 self.indicator.stopAnimating()
@@ -503,7 +504,7 @@ import NCCommunication
 
         NCCommunication.shared.download(serverUrlFileName: preview, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
             
-        }, taskHandler: { (task) in
+        }, taskHandler: { (_) in
             
         }, progressHandler: { (_) in
             

@@ -118,7 +118,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         
         if gestureRecognizer.state != .began { return }
         
-        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) {
+        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) {
             metadataTemp = metadata
             let touchPoint = gestureRecognizer.location(in: collectionView)
             becomeFirstResponder()
@@ -138,7 +138,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         metadata.status = Int(k_metadataStatusInUpload)
         metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
         
-        NCManageDatabase.sharedInstance.addMetadata(metadata)
+        NCManageDatabase.shared.addMetadata(metadata)
         NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
     }
     
@@ -181,7 +181,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         cell.imageItem.backgroundColor = nil
         
         cell.labelTitle.text = metadata.fileNameView
-        cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
+        cell.labelTitle.textColor = NCBrandColor.shared.textView
         
         let serverUrlHome = NCUtility.shared.getHomeServer(urlBase: metadata.urlBase, account: metadata.account)
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
@@ -191,7 +191,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
 
         cell.progressView.progress = 0.0
-        cell.separator.backgroundColor = NCBrandColor.sharedInstance.separator
+        cell.separator.backgroundColor = NCBrandColor.shared.separator
                 
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
@@ -268,7 +268,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
     override func reloadDataSource() {
         super.reloadDataSource()
                 
-        metadatasSource = NCManageDatabase.sharedInstance.getAdvancedMetadatas(predicate: NSPredicate(format: "(session CONTAINS 'upload') OR (session CONTAINS 'download')"), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
+        metadatasSource = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "(session CONTAINS 'upload') OR (session CONTAINS 'download')"), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
         self.dataSource = NCDataSource.init(metadatasSource: metadatasSource)
         
         refreshControl.endRefreshing()

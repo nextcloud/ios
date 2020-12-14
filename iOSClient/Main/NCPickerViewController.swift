@@ -69,7 +69,7 @@ class NCPhotosPickerViewController: NSObject {
         if maxSelectedAssets > 0 {
             configure.maxSelectedAssets = maxSelectedAssets
         }
-        configure.selectedColor = NCBrandColor.sharedInstance.brandElement
+        configure.selectedColor = NCBrandColor.shared.brandElement
         configure.singleSelectedMode = singleSelectedMode
         
         let viewController = customPhotoPickerViewController(withTLPHAssets: { (assets) in
@@ -111,8 +111,8 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
     override func makeUI() {
         super.makeUI()
         
-        self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.sharedInstance.brandElement
-        self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.sharedInstance.brandElement
+        self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.shared.brandElement
+        self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.shared.brandElement
     }
 }
 
@@ -154,7 +154,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                     
                     do {
                         try data?.write(to: path)
-                        let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.account, fileName: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
+                        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
                         
                         metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
                         metadataForUpload.sessionSelector = selectorUploadFile
@@ -173,7 +173,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                         
                         } else {
                             
-                            NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
+                            NCManageDatabase.shared.addMetadata(metadataForUpload)
                             appDelegate.networkingAutoUpload.startProcess()
                         }
                         

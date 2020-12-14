@@ -33,7 +33,7 @@ class NCFavorite: NCCollectionViewCommon  {
         titleCurrentFolder = NSLocalizedString("_favorites_", comment: "")
         layoutKey = k_layout_view_favorite
         enableSearchBar = true
-        emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 300, height: 300, color: NCBrandColor.sharedInstance.yellowFavorite)
+        emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 300, height: 300, color: NCBrandColor.shared.yellowFavorite)
         emptyTitle = "_favorite_no_files_"
         emptyDescription = "_tutorial_favorite_view_"
     }
@@ -48,9 +48,9 @@ class NCFavorite: NCCollectionViewCommon  {
             if !self.isSearching {
            
                 if self.serverUrl == "" {
-                    self.metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", self.appDelegate.account))
+                    self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", self.appDelegate.account))
                 } else {
-                    self.metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+                    self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
                 }
             }
             
@@ -80,9 +80,9 @@ class NCFavorite: NCCollectionViewCommon  {
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory && CCUtility.getFavoriteOffline() {
-                            let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                            let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             if localFile == nil || localFile?.etag != metadata.etag {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false, forceDownload: true)
+                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
                             }
                         }
                     }
@@ -101,9 +101,9 @@ class NCFavorite: NCCollectionViewCommon  {
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory {
-                            let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                            let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             if (CCUtility.getFavoriteOffline() && localFile == nil) || (localFile != nil && localFile?.etag != metadata.etag) {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false, forceDownload: true)
+                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
                             }
                         }
                     }

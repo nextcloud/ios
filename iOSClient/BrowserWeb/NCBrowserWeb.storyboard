@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="OOi-qQ-BCK">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="OOi-qQ-BCK">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -11,7 +11,7 @@
         <!--Browser Web-->
         <scene sceneID="qXu-Mk-wdV">
             <objects>
-                <viewController id="OOi-qQ-BCK" customClass="NCBrowserWeb" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController hidesBottomBarWhenPushed="YES" id="OOi-qQ-BCK" customClass="NCBrowserWeb" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Aai-ip-ntL">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -28,12 +28,12 @@
                                 </connections>
                             </button>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="fTU-bd-6qR"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="Lht-2f-Ep4" firstAttribute="top" secondItem="fTU-bd-6qR" secondAttribute="top" constant="10" id="Qy7-ho-gnO"/>
                             <constraint firstItem="fTU-bd-6qR" firstAttribute="trailing" secondItem="Lht-2f-Ep4" secondAttribute="trailing" constant="10" id="brR-Ag-YH0"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="fTU-bd-6qR"/>
                     </view>
                     <connections>
                         <outlet property="buttonExit" destination="Lht-2f-Ep4" id="dsx-PX-MaQ"/>

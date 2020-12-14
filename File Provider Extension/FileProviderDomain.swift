@@ -31,7 +31,7 @@ class FileProviderDomain: NSObject {
             
             var domains:[String] = []
             let pathRelativeToDocumentStorage = NSFileProviderManager.default.documentStorageURL.absoluteString
-            let accounts = NCManageDatabase.sharedInstance.getAllAccount()
+            let accounts = NCManageDatabase.shared.getAllAccount()
             
             for domain in fileProviderDomain {
                 domains.append(domain.identifier.rawValue)

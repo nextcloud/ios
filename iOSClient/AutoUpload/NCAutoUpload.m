@@ -24,6 +24,7 @@
 #import "NCAutoUpload.h"
 #import "AppDelegate.h"
 #import "NCBridgeSwift.h"
+#import "CCHud.h"
 
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 
@@ -31,23 +32,24 @@
 {
     AppDelegate *appDelegate;
     CCHud *_hud;
+    BOOL endForAssetToUpload;
 }
 @end
 
 @implementation NCAutoUpload
 
-+ (NCAutoUpload *)sharedInstance {
++ (NCAutoUpload *)shared {
     
-    static NCAutoUpload *sharedInstance;
+    static NCAutoUpload *shared;
     
     @synchronized(self)
     {
-        if (!sharedInstance) {
+        if (!shared) {
             
-            sharedInstance = [NCAutoUpload new];
-            sharedInstance->appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+            shared = [NCAutoUpload new];
+            shared->appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         }
-        return sharedInstance;
+        return shared;
     }
 }
 
@@ -57,7 +59,7 @@
 
 - (void)initStateAutoUpload
 {
-    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableAccount *account = [[NCManageDatabase shared] getAccountActive];
     
     if (account.autoUpload) {
         
@@ -70,7 +72,7 @@
         
     } else {
         
-        [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
+        [[CCManageLocation shared] stopSignificantChangeUpdates];
     }
 }
 
@@ -86,12 +88,12 @@
         
     } else {
         
-        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+        tableAccount *account = [[NCManageDatabase shared] getAccountActive];
 
         if (account.autoUpload == YES)
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUpload" state:NO];
+            [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUpload" state:NO];
         
-        [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
+        [[CCManageLocation shared] stopSignificantChangeUpdates];
         
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
@@ -110,12 +112,12 @@
         
     } else {
         
-        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+        tableAccount *account = [[NCManageDatabase shared] getAccountActive];
 
         if (account.autoUpload == YES)
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUpload" state:NO];
+            [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUpload" state:NO];
         
-        [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
+        [[CCManageLocation shared] stopSignificantChangeUpdates];
         
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
@@ -131,9 +133,9 @@
 
 - (BOOL)checkIfLocationIsEnabled
 {
-    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableAccount *account = [[NCManageDatabase shared] getAccountActive];
     
-    [CCManageLocation sharedInstance].delegate = self;
+    [CCManageLocation shared].delegate = self;
     
     if ([CLLocationManager locationServicesEnabled]) {
         
@@ -144,14 +146,14 @@
             if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined ) {
                 
                 [[NCCommunicationCommon shared] writeLog:@"Check if location is enabled: Location services not determined"];
-                [[CCManageLocation sharedInstance] startSignificantChangeUpdates];
+                [[CCManageLocation shared] startSignificantChangeUpdates];
                 
             } else {
                 
                 if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
                     
                     if (account.autoUploadBackground == YES)
-                        [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
+                        [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
                     
                     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_location_not_enabled_", nil) message:NSLocalizedString(@"_location_not_enabled_msg_", nil) preferredStyle:UIAlertControllerStyleAlert];
                     UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
@@ -174,16 +176,16 @@
             if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
                 
                 if (account.autoUploadBackground == NO)
-                    [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadBackground" state:YES];
+                    [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:YES];
                 
-                [[CCManageLocation sharedInstance] startSignificantChangeUpdates];
+                [[CCManageLocation shared] startSignificantChangeUpdates];
                 
             } else {
                 
                 if (account.autoUploadBackground == YES)
-                    [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
+                    [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
                 
-                [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
+                [[CCManageLocation shared] stopSignificantChangeUpdates];
                 
                 UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) preferredStyle:UIAlertControllerStyleAlert];
                 UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
@@ -196,9 +198,9 @@
     } else {
         
         if (account.autoUploadBackground == YES)
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
+            [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
         
-        [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
+        [[CCManageLocation shared] stopSignificantChangeUpdates];
         
         if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
             
@@ -218,13 +220,13 @@
         }
     }
     
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableAccount *tableAccount = [[NCManageDatabase shared] getAccountActive];
     return tableAccount.autoUploadBackground;
 }
 
 - (void)statusAuthorizationLocationChanged
 {
-    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableAccount *account = [[NCManageDatabase shared] getAccountActive];
     
     if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusNotDetermined){
         
@@ -232,12 +234,12 @@
             
             if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
                 
-                if ([CCManageLocation sharedInstance].firstChangeAuthorizationDone) {
+                if ([CCManageLocation shared].firstChangeAuthorizationDone) {
                     
                     if (account.autoUploadBackground == YES)
-                        [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
+                        [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
                     
-                    [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
+                    [[CCManageLocation shared] stopSignificantChangeUpdates];
                 }
                 
             } else {
@@ -253,9 +255,9 @@
             
             if (account.autoUploadBackground == YES) {
                 
-                [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
+                [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
                 
-                [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
+                [[CCManageLocation shared] stopSignificantChangeUpdates];
                 
                 if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
                     
@@ -276,9 +278,9 @@
             }
         }
         
-        if (![CCManageLocation sharedInstance].firstChangeAuthorizationDone) {
+        if (![CCManageLocation shared].firstChangeAuthorizationDone) {
             
-            [CCManageLocation sharedInstance].firstChangeAuthorizationDone = YES;
+            [CCManageLocation shared].firstChangeAuthorizationDone = YES;
         }
     }
 }
@@ -286,7 +288,7 @@
 - (void)changedLocation
 {
     // Only in background
-    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableAccount *account = [[NCManageDatabase shared] getAccountActive];
     
     if (account.autoUpload && account.autoUploadBackground && [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
         
@@ -302,12 +304,12 @@
         } else {
             
             if (account.autoUpload == YES)
-                [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUpload" state:NO];
+                [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUpload" state:NO];
             
             if (account.autoUploadBackground == YES)
-                [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
+                [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
             
-            [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
+            [[CCManageLocation shared] stopSignificantChangeUpdates];
         }
     }
 }
@@ -332,17 +334,18 @@
 
 - (void)uploadAssetsNewAndFull:(NSString *)selector
 {
-    if (!appDelegate.account) { return; }
+    if (!appDelegate.account) return;
     
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableAccount *tableAccount = [[NCManageDatabase shared] getAccountActive];
     if (tableAccount == nil) {
         return;
     }
     
     NSMutableArray *metadataFull = [NSMutableArray new];
-    NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPathWithUrlBase:appDelegate.urlBase account:appDelegate.account];
+    NSString *autoUploadPath = [[NCManageDatabase shared] getAccountAutoUploadPathWithUrlBase:appDelegate.urlBase account:appDelegate.account];
     NSString *serverUrl;
-    
+    __block NSInteger counterLivePhoto = 0;
+
     // Check Asset : NEW or FULL
     NSArray *newAssetToUpload = [self getCameraRollAssets:tableAccount selector:selector alignPhotoLibrary:NO];
     
@@ -379,6 +382,7 @@
         return;
     }
     
+    endForAssetToUpload = false;
     for (PHAsset *asset in newAssetToUpload) {
         
         BOOL livePhoto = false;
@@ -393,7 +397,6 @@
         }
         
         // Select type of session
-        
         if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
             session = NCCommunicationCommon.shared.sessionIdentifierUpload;
         } else {
@@ -417,12 +420,20 @@
         else
             serverUrl = autoUploadPath;
         
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.account, serverUrl, fileName]];
-        if (!metadata) {
+        tableMetadata *metadata = [[NCManageDatabase shared] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.account, serverUrl, fileName]];
+        if (metadata) {
+            
+            if ([selector isEqualToString:selectorUploadAutoUpload]) {
+                [[NCManageDatabase shared] addPhotoLibrary:@[asset] account:appDelegate.account];
+            }
+            
+        } else {
         
-            tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:livePhoto];
+            /* INSERT METADATA FOR UPLOAD */
+            tableMetadata *metadataForUpload = [[NCManageDatabase shared] createMetadataWithAccount:appDelegate.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:livePhoto];
             
             metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
+            metadataForUpload.livePhoto = livePhoto;
             metadataForUpload.session = session;
             metadataForUpload.sessionSelector = selector;
             metadataForUpload.size = [[NCUtilityFileSystem shared] getFileSizeWithAsset:asset];
@@ -432,82 +443,68 @@
             } else if (assetMediaType == PHAssetMediaTypeImage) {
                 metadataForUpload.typeFile = k_metadataTypeFile_image;
             }
+            
+            if ([selector isEqualToString:selectorUploadAutoUpload]) {
+               
+                [[NCManageDatabase shared] addMetadataForAutoUpload:metadataForUpload];
+                [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Automatic upload added %@ (%lu bytes) with Identifier %@", metadata.fileNameView, (unsigned long)metadata.size, metadata.assetLocalIdentifier]];
+                [[NCManageDatabase shared] addPhotoLibrary:@[asset] account:appDelegate.account];
+                
+            } else if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
+                
+                [metadataFull addObject:metadataForUpload];
+            }
 
-            // Add Medtadata MOV LIVE PHOTO for upload
+            /* INSERT METADATA MOV LIVE PHOTO FOR UPLOAD */
             if (livePhoto) {
                 
+                counterLivePhoto++;
                 NSString *fileNameMove = [NSString stringWithFormat:@"%@.mov", fileName.stringByDeletingPathExtension];
                 NSString *ocId = [[NSUUID UUID] UUIDString];
                 NSString *filePath = [CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameMove];
-                
-                dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-                
+                                
                 [CCUtility extractLivePhotoAsset:asset filePath:filePath withCompletion:^(NSURL *url) {
                     if (url != nil) {
+                        
                         unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:url.path error:nil] fileSize];
-                        
-                        tableMetadata *metadataMOVForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.account fileName:fileNameMove ocId:ocId serverUrl:serverUrl urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:livePhoto];
-                        
-                        metadataForUpload.livePhoto = true;
+                        tableMetadata *metadataMOVForUpload = [[NCManageDatabase shared] createMetadataWithAccount:appDelegate.account fileName:fileNameMove ocId:ocId serverUrl:serverUrl urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:livePhoto];
+                       
                         metadataMOVForUpload.livePhoto = true;
-                        
                         metadataMOVForUpload.session = session;
                         metadataMOVForUpload.sessionSelector = selector;
                         metadataMOVForUpload.size = fileSize;
                         metadataMOVForUpload.status = k_metadataStatusWaitUpload;
                         metadataMOVForUpload.typeFile = k_metadataTypeFile_video;
 
-                        [metadataFull addObject:metadataMOVForUpload];
-                                                
-                        // Update database Auto Upload
                         if ([selector isEqualToString:selectorUploadAutoUpload]) {
-                            [[NCManageDatabase sharedInstance] addMetadataForAutoUpload:metadataMOVForUpload];
+                            
+                            [[NCManageDatabase shared] addMetadataForAutoUpload:metadataMOVForUpload];
                             [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Automatic upload added Live Photo %@ (%llu bytes)", fileNameMove, fileSize]];
+                            
+                        } else if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
+                            
+                            [metadataFull addObject:metadataMOVForUpload];
                         }
                     }
-                    
-                    dispatch_semaphore_signal(semaphore);
+                    counterLivePhoto--;
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (endForAssetToUpload && counterLivePhoto == 0 && [selector isEqualToString:selectorUploadAutoUploadAll]) {
+                            [[NCManageDatabase shared] addMetadatas:metadataFull];
+                            [_hud hideHud];
+                        }
+                    });
                 }];
-                
-                while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
-                       [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:30]];
-            }
-            
-            [metadataFull addObject:metadataForUpload];
-                       
-            // Update database Auto Upload
-            if ([selector isEqualToString:selectorUploadAutoUpload]) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self addQueueUploadAndPhotoLibrary:metadataForUpload asset:asset];
-                });
             }
         }
     }
+    endForAssetToUpload = true;
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        // Insert all assets (Full) in tableQueueUpload
-        if ([selector isEqualToString:selectorUploadAutoUploadAll] && [metadataFull count] > 0) {
-            [[NCManageDatabase sharedInstance] addMetadatas:metadataFull];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (counterLivePhoto == 0 && [selector isEqualToString:selectorUploadAutoUploadAll]) {
+            [[NCManageDatabase shared] addMetadatas:metadataFull];
+            [_hud hideHud];
         }
-        // end loadingcand reload
-        [_hud hideHud];
-        // START
-        [[appDelegate networkingAutoUpload] startProcess];
     });
-}
-
-- (void)addQueueUploadAndPhotoLibrary:(tableMetadata *)metadata asset:(PHAsset *)asset
-{
-    @synchronized(self) {
-        
-        [[NCManageDatabase sharedInstance] addMetadataForAutoUpload:metadata];
-        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Automatic upload added %@ (%lu bytes) with Identifier %@", metadata.fileNameView, (unsigned long)metadata.size, metadata.assetLocalIdentifier]];
-        
-        // Add asset in table Photo Library
-        if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
-            (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset] account:appDelegate.account];
-        }
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -560,7 +557,7 @@
                 NSString *creationDate;
                 NSString *idAsset;
 
-                NSArray *idsAsset = [[NCManageDatabase sharedInstance] getPhotoLibraryIdAssetWithImage:account.autoUploadImage video:account.autoUploadVideo account:account.account];
+                NSArray *idsAsset = [[NCManageDatabase shared] getPhotoLibraryIdAssetWithImage:account.autoUploadImage video:account.autoUploadVideo account:account.account];
                 
                 for (PHAsset *asset in assets) {
                     
@@ -590,13 +587,13 @@
 
 - (void)alignPhotoLibrary
 {
-    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableAccount *account = [[NCManageDatabase shared] getAccountActive];
 
     NSArray *assets = [self getCameraRollAssets:account selector:selectorUploadAutoUploadAll alignPhotoLibrary:YES];
    
-    [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:appDelegate.account];
+    [[NCManageDatabase shared] clearTable:[tablePhotoLibrary class] account:appDelegate.account];
     if (assets != nil) {
-        (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:assets account:account.account];
+        (void)[[NCManageDatabase shared] addPhotoLibrary:assets account:account.account];
 
         [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Align Photo Library %lu", (unsigned long)[assets count]]];
     }

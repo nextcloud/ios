@@ -49,6 +49,7 @@ import MarkdownKit
         self.navigationItem.rightBarButtonItem = editItem
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        
         changeTheming()
     }
     
@@ -59,7 +60,7 @@ import MarkdownKit
             
             if errorCode == 0 && account == self.appDelegate.account {
                 guard let metadata = metadata else { return }
-                NCManageDatabase.sharedInstance.setDirectory(richWorkspace: metadata.richWorkspace, serverUrl: self.serverUrl, account: account)
+                NCManageDatabase.shared.setDirectory(richWorkspace: metadata.richWorkspace, serverUrl: self.serverUrl, account: account)
                 if self.richWorkspaceText != metadata.richWorkspace && metadata.richWorkspace != nil {
                     self.appDelegate.activeFiles.richWorkspaceText = self.richWorkspaceText
                     self.richWorkspaceText = metadata.richWorkspace!
@@ -69,24 +70,17 @@ import MarkdownKit
         }
     }
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        if let splitViewController = appDelegate.window.rootViewController as? NCSplitViewController {
-            splitViewController.traitCollectionDidChange(previousTraitCollection)
-        }
-    }
-    
     public func presentationControllerWillDismiss(_ presentationController: UIPresentationController) {
         self.viewWillAppear(true)
     }
     
     @objc func changeTheming() {
-        
-        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
-        if textViewColor != NCBrandColor.sharedInstance.textView {
-            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
+        view.backgroundColor = NCBrandColor.shared.backgroundView
+        if textViewColor != NCBrandColor.shared.textView {
+            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.textView)
             markdownParser.header.font = UIFont.systemFont(ofSize: 25)
             textView.attributedText = markdownParser.parse(richWorkspaceText)
-            textViewColor = NCBrandColor.sharedInstance.textView
+            textViewColor = NCBrandColor.shared.textView
         }
     }
     

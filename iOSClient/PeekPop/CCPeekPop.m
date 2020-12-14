@@ -44,7 +44,7 @@
     UIImage *image = self.imageFile;
 
     self.fileName.text = self.metadata.fileNameView;
-    self.fileName.textColor = NCBrandColor.sharedInstance.textView;
+    self.fileName.textColor = NCBrandColor.shared.textView;
     highLabelFileName = self.fileName.bounds.size.height + 5;
     
     if (self.metadata.hasPreview) {
@@ -62,7 +62,7 @@
         }
     }
     
-    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
+    self.view.backgroundColor = NCBrandColor.shared.backgroundForm;
     self.imagePreview.image = [CCGraphics scaleImage:image toSize:CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height) isAspectRation:true];
     self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width,  self.imagePreview.image.size.height + highLabelFileName);
 }

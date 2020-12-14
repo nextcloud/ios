@@ -21,12 +21,12 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
 import Foundation
-import WeScan
 import NCCommunication
 import Vision
+import VisionKit
 
+@available(iOS 13.0, *)
 class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NCCreateFormUploadConflictDelegate {
     
     enum typeQuality {
@@ -74,7 +74,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         //        self.tableView.sectionHeaderHeight = 10
         //        self.tableView.sectionFooterHeight = 10
-        //        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        //        self.tableView.backgroundColor = NCBrandColor.shared.backgroundView
         
         
         //        let row : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
@@ -85,14 +85,14 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         changeTheming()
         
-        if #available(iOS 13.0, *) {
-            let value = CCUtility.getTextRecognitionStatus()
-            SetTextRecognition(newValue: value)
-        }
+        let value = CCUtility.getTextRecognitionStatus()
+        SetTextRecognition(newValue: value)
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: true)
+        view.backgroundColor = NCBrandColor.shared.backgroundForm
+        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
+        tableView.reloadData()
         initializeForm()
     }
     
@@ -113,13 +113,13 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
 
-        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
+        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, width: 50, height: 50, color: NCBrandColor.shared.brandElement) as UIImage
         
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
 
         section.addFormRow(row)
         
@@ -131,9 +131,9 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         row = XLFormRowDescriptor(tag: "compressionQuality", rowType: XLFormRowDescriptorTypeSlider)
         row.value = 0.5
         row.title = NSLocalizedString("_quality_medium_", comment: "")
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
 
-        row.cellConfig["slider.minimumTrackTintColor"] = NCBrandColor.sharedInstance.brandElement
+        row.cellConfig["slider.minimumTrackTintColor"] = NCBrandColor.shared.brandElement
         
         row.cellConfig["slider.maximumValue"] = 1
         row.cellConfig["slider.minimumValue"] = 0
@@ -141,7 +141,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.center.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
         
         section.addFormRow(row)
         
@@ -151,34 +151,32 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         form.addFormSection(section)
         
         row = XLFormRowDescriptor(tag: "password", rowType: XLFormRowDescriptorTypePassword, title: NSLocalizedString("_password_", comment: ""))
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
         
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textField.textColor"] = NCBrandColor.shared.textView
         
         section.addFormRow(row)
         
         // Section: Text recognition
         
-        if #available(iOS 13.0, *) {
-            section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_text_recognition_", comment: ""))
-            form.addFormSection(section)
-                
-            row = XLFormRowDescriptor(tag: "textRecognition", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_text_recognition_", comment: ""))
-            row.value = 0
-            row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
-
-            row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "textRecognition")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
+        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_text_recognition_", comment: ""))
+        form.addFormSection(section)
             
-            row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-            row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row = XLFormRowDescriptor(tag: "textRecognition", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_text_recognition_", comment: ""))
+        row.value = 0
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
 
-            section.addFormRow(row)
-        }
+        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "textRecognition")!, width: 50, height: 50, color: NCBrandColor.shared.brandElement) as UIImage
+        
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
+
+        section.addFormRow(row)
         
         // Section: File
         
@@ -192,25 +190,25 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             row.selectorOptions = ["PDF"]
         }
         row.value = "PDF"
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
 
-        row.cellConfig["tintColor"] = NCBrandColor.sharedInstance.brandElement
+        row.cellConfig["tintColor"] = NCBrandColor.shared.brandElement
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
         
         section.addFormRow(row)
         
         
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         row.value = self.fileName
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
 
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textField.textColor"] = NCBrandColor.shared.textView
 
         section.addFormRow(row)
         
@@ -413,7 +411,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         }
         
         //Create metadata for upload
-        let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.account, fileName: fileNameSave, ocId: UUID().uuidString, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
+        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileNameSave, ocId: UUID().uuidString, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
         
         metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
         metadataForUpload.sessionSelector = selectorUploadFile
@@ -465,29 +463,26 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             var textFile = ""
             for image in self.arrayImages {
                 
-                if #available(iOS 13.0, *) {
-                    
-                    let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
-                    
-                    let request = VNRecognizeTextRequest { (request, error) in
-                        guard let observations = request.results as? [VNRecognizedTextObservation] else {
-                            NCUtility.shared.stopActivityIndicator()
-                            return
-                        }
-                        for observation in observations {
-                            guard let textLine = observation.topCandidates(1).first else {
-                                continue
-                            }
-                               
-                            textFile += textLine.string
-                            textFile += "\n"
-                        }
+                let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
+                
+                let request = VNRecognizeTextRequest { (request, error) in
+                    guard let observations = request.results as? [VNRecognizedTextObservation] else {
+                        NCUtility.shared.stopActivityIndicator()
+                        return
                     }
-                    
-                    request.recognitionLevel = .accurate
-                    request.usesLanguageCorrection = true
-                    try? requestHandler.perform([request])
+                    for observation in observations {
+                        guard let textLine = observation.topCandidates(1).first else {
+                            continue
+                        }
+                           
+                        textFile += textLine.string
+                        textFile += "\n"
+                    }
                 }
+                
+                request.recognitionLevel = .accurate
+                request.usesLanguageCorrection = true
+                try? requestHandler.perform([request])
             }
             
             do {
@@ -520,47 +515,39 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                 
                 let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
                 
-                if #available(iOS 13.0, *) {
+                if self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
                     
-                    if self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
-                        
-                        UIGraphicsBeginPDFPageWithInfo(bounds, nil)
-                        image.draw(in: bounds)
+                    UIGraphicsBeginPDFPageWithInfo(bounds, nil)
+                    image.draw(in: bounds)
 
-                        let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
-                        
-                        let request = VNRecognizeTextRequest { (request, error) in
-                            guard let observations = request.results as? [VNRecognizedTextObservation] else {
-                                NCUtility.shared.stopActivityIndicator()
-                                return
-                            }
-                            for observation in observations {
-                                guard let textLine = observation.topCandidates(1).first else {
-                                    continue
-                                }
-                                
-                                var t: CGAffineTransform = CGAffineTransform.identity
-                                t = t.scaledBy(x: image.size.width, y: -image.size.height)
-                                t = t.translatedBy(x: 0, y: -1)
-                                let rect = observation.boundingBox.applying(t)
-                                let text = textLine.string
-
-                                let font = UIFont.systemFont(ofSize: rect.size.height, weight: .regular)
-                                let attributes = self.bestFittingFont(for: text, in: rect, fontDescriptor: font.fontDescriptor, fontColor: fontColor)
-                            
-                                text.draw(with: rect, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
-                            }
+                    let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
+                    
+                    let request = VNRecognizeTextRequest { (request, error) in
+                        guard let observations = request.results as? [VNRecognizedTextObservation] else {
+                            NCUtility.shared.stopActivityIndicator()
+                            return
                         }
+                        for observation in observations {
+                            guard let textLine = observation.topCandidates(1).first else {
+                                continue
+                            }
+                            
+                            var t: CGAffineTransform = CGAffineTransform.identity
+                            t = t.scaledBy(x: image.size.width, y: -image.size.height)
+                            t = t.translatedBy(x: 0, y: -1)
+                            let rect = observation.boundingBox.applying(t)
+                            let text = textLine.string
+
+                            let font = UIFont.systemFont(ofSize: rect.size.height, weight: .regular)
+                            let attributes = self.bestFittingFont(for: text, in: rect, fontDescriptor: font.fontDescriptor, fontColor: fontColor)
                         
-                        request.recognitionLevel = .accurate
-                        request.usesLanguageCorrection = true
-                        try? requestHandler.perform([request])
-                        
-                    } else {
-                        
-                        UIGraphicsBeginPDFPageWithInfo(bounds, nil)
-                        image.draw(in: bounds)
+                            text.draw(with: rect, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
+                        }
                     }
+                    
+                    request.recognitionLevel = .accurate
+                    request.usesLanguageCorrection = true
+                    try? requestHandler.perform([request])
                     
                 } else {
                     
@@ -599,7 +586,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         NCUtility.shared.stopActivityIndicator()
 
-        NCManageDatabase.sharedInstance.addMetadata(metadata)
+        NCManageDatabase.shared.addMetadata(metadata)
         
         appDelegate.networkingAutoUpload.startProcess()
                         
@@ -659,49 +646,47 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     func changeCompressionImage(_ image: UIImage) -> UIImage {
         
         var compressionQuality: CGFloat = 0.5
-        var maxHeight: Float = 595.2    // A4
-        var maxWidth: Float = 841.8     // A4
+        var baseHeight: Float = 595.2    // A4
+        var baseWidth: Float = 841.8     // A4
 
         switch quality {
         case .low:
-            maxHeight *= 1
-            maxWidth *= 1
-            compressionQuality = 0.1
+            baseHeight *= 1
+            baseWidth *= 1
+            compressionQuality = 0.3
         case .medium:
-            maxHeight *= 2
-            maxWidth *= 2
-            compressionQuality = 0.5
+            baseHeight *= 2
+            baseWidth *= 2
+            compressionQuality = 0.6
         case .high:
-            maxHeight *= 4
-            maxWidth *= 4
+            baseHeight *= 4
+            baseWidth *= 4
             compressionQuality = 0.9
         }
         
-        var actualHeight = Float(image.size.height)
-        var actualWidth = Float(image.size.width)
-        var imgRatio: Float = actualWidth / actualHeight
-        let maxRatio: Float = maxWidth / maxHeight
+        var newHeight = Float(image.size.height)
+        var newWidth = Float(image.size.width)
+        var imgRatio: Float = newWidth / newHeight
+        let baseRatio: Float = baseWidth / baseHeight
 
-        if actualHeight > maxHeight || actualWidth > maxWidth {
-            if imgRatio < maxRatio {
-                //adjust width according to maxHeight
-                imgRatio = maxHeight / actualHeight
-                actualWidth = imgRatio * actualWidth
-                actualHeight = maxHeight
+        if newHeight > baseHeight || newWidth > baseWidth {
+            if imgRatio < baseRatio {
+                imgRatio = baseHeight / newHeight
+                newWidth = imgRatio * newWidth
+                newHeight = baseHeight
             }
-            else if imgRatio > maxRatio {
-                //adjust height according to maxWidth
-                imgRatio = maxWidth / actualWidth
-                actualHeight = imgRatio * actualHeight
-                actualWidth = maxWidth
+            else if imgRatio > baseRatio {
+                imgRatio = baseWidth / newWidth
+                newHeight = imgRatio * newHeight
+                newWidth = baseWidth
             }
             else {
-                actualHeight = maxHeight
-                actualWidth = maxWidth
+                newHeight = baseHeight
+                newWidth = baseWidth
             }
         }
         
-        let rect = CGRect(x: 0.0, y: 0.0, width: CGFloat(actualWidth), height: CGFloat(actualHeight))
+        let rect = CGRect(x: 0.0, y: 0.0, width: CGFloat(newWidth), height: CGFloat(newHeight))
         UIGraphicsBeginImageContext(rect.size)
         image.draw(in: rect)
         let img = UIGraphicsGetImageFromCurrentImageContext()
@@ -750,9 +735,10 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
 }
 
-class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
+@available(iOS 13.0, *)
+class NCCreateScanDocument : NSObject, VNDocumentCameraViewControllerDelegate {
     
-    @objc static let sharedInstance: NCCreateScanDocument = {
+    @objc static let shared: NCCreateScanDocument = {
         let instance = NCCreateScanDocument()
         return instance
     }()
@@ -764,31 +750,26 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         
         self.viewController = viewController
         
-        let scannerVC = ImageScannerController()
-        scannerVC.imageScannerDelegate = self
-        
-        self.viewController?.present(scannerVC, animated: true, completion: nil)
+        guard VNDocumentCameraViewController.isSupported else { return }
+            
+        let controller = VNDocumentCameraViewController()
+        controller.delegate = self
+
+        self.viewController?.present(controller, animated: true)
     }
     
-    func imageScannerController(_ scanner: ImageScannerController, didFinishScanningWithResults results: ImageScannerResults) {
+    func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
         
-        let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
-        let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
-        let image: UIImage?
-        
-        if results.doesUserPreferEnhancedScan {
-            image = results.enhancedScan?.image
-        } else {
-            image = results.croppedScan.image
-        }
-        
-        if image != nil {
+        for pageNumber in 0..<scan.pageCount {
+            let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
+            let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
+            let image = scan.imageOfPage(at: pageNumber)
             do {
-                try image!.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath))
+                try image.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath))
             } catch { }
         }
-
-        scanner.dismiss(animated: true, completion: {
+        
+        controller.dismiss(animated: true) {
             if self.viewController is DragDropViewController {
                 (self.viewController as! DragDropViewController).loadImage()
             } else {
@@ -798,15 +779,11 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
                 controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
                 self.viewController?.present(controller, animated: true, completion: nil)
             }
-        })
+        }
     }
-    
-    func imageScannerControllerDidCancel(_ scanner: ImageScannerController) {
-        scanner.dismiss(animated: true, completion: nil)
-    }
-    
-    func imageScannerController(_ scanner: ImageScannerController, didFailWithError error: Error) {
-        NCContentPresenter.shared.messageNotification("_error_", description: error.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+        
+    func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
+        controller.dismiss(animated: true, completion: nil)
     }
 }
 

@@ -56,7 +56,7 @@ class NCService: NSObject {
                 DispatchQueue.global().async {
                 
                     // Update User (+ userProfile.id) & active account & account network
-                    guard let tableAccount = NCManageDatabase.sharedInstance.setAccountUserProfile(userProfile!) else {
+                    guard let tableAccount = NCManageDatabase.shared.setAccountUserProfile(userProfile!) else {
                         NCContentPresenter.shared.messageNotification("Account", description: "Internal error : account not found on DB",  delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
                         return
                     }
@@ -75,9 +75,9 @@ class NCService: NSObject {
                     NCNetworking.shared.listingFavoritescompletion(selector: selector) { (_, _, _, _) in }
                 
                     // Synchronize Offline Directory
-                    if let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "serverUrl", ascending: true) {
+                    if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "serverUrl", ascending: true) {
                         for directory: tableDirectory in directories {
-                            guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(directory.ocId) else {
+                            guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) else {
                                 continue
                             }
                             NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadFile)
@@ -85,9 +85,9 @@ class NCService: NSObject {
                     }
                 
                     // Synchronize Offline Files
-                    let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "fileName", ascending: true)
+                    let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "fileName", ascending: true)
                     for file: tableLocalFile in files {
-                        guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(file.ocId) else {
+                        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(file.ocId) else {
                             continue
                         }
                         NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadFile)
@@ -137,7 +137,7 @@ class NCService: NSObject {
                     if extendedSupport == false {
                         if serverProductName == "owncloud" {
                             NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_dismissAfterSecondLong))
-                        } else if versionMajor <= k_nextcloud_unsupported {
+                        } else if versionMajor <=  NCBrandGlobal.shared.nextcloud_unsupported_version {
                             NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_unsupported_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_dismissAfterSecondLong))
                         }
                     }
@@ -156,27 +156,27 @@ class NCService: NSObject {
                 
                 DispatchQueue.global().async {
                 
-                    NCManageDatabase.sharedInstance.addCapabilitiesJSon(data!, account: account)
+                    NCManageDatabase.shared.addCapabilitiesJSon(data!, account: account)
                 
                     // Setup communication
                     self.appDelegate.settingSetupCommunication(account)
                 
                     // Theming
-                    self.appDelegate.settingThemingColorBrand()
+                    NCBrandColor.shared.settingThemingColor(account: account)
                 
                     // File Sharing
-                    let isFilesSharingEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
+                    let isFilesSharingEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
                     if isFilesSharingEnabled {
                         NCCommunication.shared.readShares { (account, shares, errorCode, ErrorDescription) in
                             if errorCode == 0 {
                                 
                                 DispatchQueue.global().async {
                                     
-                                    NCManageDatabase.sharedInstance.deleteTableShare(account: account)
+                                    NCManageDatabase.shared.deleteTableShare(account: account)
                                     if shares != nil {
-                                        NCManageDatabase.sharedInstance.addShare(urlBase: self.appDelegate.urlBase, account: account, shares: shares!)
+                                        NCManageDatabase.shared.addShare(urlBase: self.appDelegate.urlBase, account: account, shares: shares!)
                                     }
-                                    self.appDelegate.shares = NCManageDatabase.sharedInstance.getTableShares(account: account)
+                                    self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: account)
                                 }
                                 
                             } else {
@@ -184,16 +184,25 @@ class NCService: NSObject {
                             }
                         }
                     }
+                    
+                    let comments = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
+                    let activity = NCManageDatabase.shared.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesActivity)
+                    
+                    if !isFilesSharingEnabled && !comments && activity == nil {
+                        self.appDelegate.disableSharesView = true
+                    } else {
+                        self.appDelegate.disableSharesView = false
+                    }
                 
                     // Text direct editor detail
-                    let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+                    let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
                     if serverVersionMajor >= k_nextcloud_version_18_0 {
                         NCCommunication.shared.NCTextObtainEditorDetails() { (account, editors, creators, errorCode, errorMessage) in
                             if errorCode == 0 && account == self.appDelegate.account {
                                 
                                 DispatchQueue.global().async {
                                 
-                                    NCManageDatabase.sharedInstance.addDirectEditing(account: account, editors: editors, creators: creators)
+                                    NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
                                     
                                 }
                             }
@@ -201,43 +210,56 @@ class NCService: NSObject {
                     }
                     
                     // External file Server
-                    let isExternalSitesServerEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true)
+                    let isExternalSitesServerEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true)
                     if (isExternalSitesServerEnabled) {
                         NCCommunication.shared.getExternalSite() { (account, externalSites, errorCode, errorDescription) in
                             if errorCode == 0 && account == self.appDelegate.account {
                                 
                                 DispatchQueue.global().async {
                                 
-                                    NCManageDatabase.sharedInstance.deleteExternalSites(account: account)
+                                    NCManageDatabase.shared.deleteExternalSites(account: account)
                                     for externalSite in externalSites {
-                                        NCManageDatabase.sharedInstance.addExternalSites(externalSite, account: account)
+                                        NCManageDatabase.shared.addExternalSites(externalSite, account: account)
                                     }
                                 }
                             }
                         }
                         
                     } else {
-                        NCManageDatabase.sharedInstance.deleteExternalSites(account: account)
+                        NCManageDatabase.shared.deleteExternalSites(account: account)
+                    }
+                    
+                    // User Status
+                    let userStatus = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false)
+                    if userStatus {
+                        NCCommunication.shared.getUserStatus { (account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, errorCode, errorDescription) in
+                            if errorCode == 0 && account == self.appDelegate.account && userId == self.appDelegate.userID {
+                                
+                                DispatchQueue.global().async {
+                                
+                                    NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
+                                }
+                            }
+                        }
                     }
                 
                     // Handwerkcloud
-                    let isHandwerkcloudEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesHWCEnabled, exists: false)
+                    let isHandwerkcloudEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesHWCEnabled, exists: false)
                     if (isHandwerkcloudEnabled) {
                         self.requestHC()
                     }
-                    
                 }
                 
             } else if errorCode != 0 {
                 
-                self.appDelegate.settingThemingColorBrand()
+                NCBrandColor.shared.settingThemingColor(account: account)
                 
                 if errorCode == 401 || errorCode == 403 {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account)
                 }
                 
             } else {
-                self.appDelegate.settingThemingColorBrand()
+                NCBrandColor.shared.settingThemingColor(account: account)
             }
         }
     }

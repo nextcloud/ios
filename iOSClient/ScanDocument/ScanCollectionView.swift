@@ -23,6 +23,7 @@
 
 import UIKit
 
+@available(iOS 13.0, *)
 class DragDropViewController: UIViewController {
     
     //Data Source for collectionViewSource
@@ -77,31 +78,30 @@ class DragDropViewController: UIViewController {
         segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 1)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_bn_", comment: ""), forSegmentAt: 2)
 
-        add.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "add"), multiplier:2, color: NCBrandColor.sharedInstance.brandElement), for: .normal)
-        transferDown.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "transferDown"), multiplier:2, color: NCBrandColor.sharedInstance.brandElement), for: .normal)
+        add.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "add"), multiplier:2, color: NCBrandColor.shared.brandElement), for: .normal)
+        transferDown.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "transferDown"), multiplier:2, color: NCBrandColor.shared.brandElement), for: .normal)
         
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
         add.addGestureRecognizer(longPressRecognizer)
         
         // changeTheming
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        
         changeTheming()
         
         loadImage()
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: true)
-        
-        collectionViewSource.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        collectionViewDestination.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        
-        labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.textView
-        if #available(iOS 13.0, *) {
-            labelTitlePDFzone.backgroundColor = .systemBackground
-        } else {
-            labelTitlePDFzone.backgroundColor = .systemGray
-        }
+        view.backgroundColor = NCBrandColor.shared.backgroundForm
+
+        collectionViewSource.backgroundColor = NCBrandColor.shared.backgroundForm
+        collectionViewDestination.backgroundColor = NCBrandColor.shared.backgroundForm
+        collectionViewSource.reloadData()
+        collectionViewDestination.reloadData()
+
+        labelTitlePDFzone.textColor = NCBrandColor.shared.textView
+        labelTitlePDFzone.backgroundColor = .systemBackground
     }
     
     //MARK: Button Action
@@ -132,7 +132,7 @@ class DragDropViewController: UIViewController {
     
     @IBAction func add(sender: UIButton) {
         
-        NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: self)
+        NCCreateScanDocument.shared.openScannerDocument(viewController: self)
     }
     
     @IBAction func transferDown(sender: UIButton) {
@@ -374,6 +374,7 @@ class DragDropViewController: UIViewController {
 
 // MARK: - UICollectionViewDataSource Methods
 
+@available(iOS 13.0, *)
 extension DragDropViewController : UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -501,6 +502,7 @@ extension UIImage {
 
 // MARK: - UICollectionViewDragDelegate Methods
 
+@available(iOS 13.0, *)
 extension DragDropViewController : UICollectionViewDragDelegate
 {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
@@ -562,6 +564,7 @@ extension DragDropViewController : UICollectionViewDragDelegate
 
 // MARK: - UICollectionViewDropDelegate Methods
 
+@available(iOS 13.0, *)
 extension DragDropViewController : UICollectionViewDropDelegate {
     
     func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {

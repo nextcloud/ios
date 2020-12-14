@@ -45,12 +45,12 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), for: .normal)
+        buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), width: 50, height: 50, color: NCBrandColor.shared.icon), for: .normal)
         
         buttonOrder.setTitle("", for: .normal)
-        buttonOrder.setTitleColor(NCBrandColor.sharedInstance.brandElement, for: .normal)
+        buttonOrder.setTitleColor(NCBrandColor.shared.brandElement, for: .normal)
         
-        buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), for: .normal)
+        buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.shared.icon), for: .normal)
                 
         // Gradient
         gradient.startPoint = CGPoint(x: 0, y: 0.60)
@@ -62,6 +62,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         viewRichWorkspace?.addGestureRecognizer(tap)
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        
         changeTheming()
     }
     
@@ -72,16 +73,17 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     
     @objc func changeTheming() {
         
-        backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        separator.backgroundColor = NCBrandColor.sharedInstance.separator
+        backgroundColor = NCBrandColor.shared.backgroundView
+        separator.backgroundColor = NCBrandColor.shared.separator
+        buttonOrder.setTitleColor(NCBrandColor.shared.brandElement, for: .normal)
         
-        if textViewColor != NCBrandColor.sharedInstance.textView {
-            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
+        if textViewColor != NCBrandColor.shared.textView {
+            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.textView)
             markdownParser.header.font = UIFont.systemFont(ofSize: 25)
             if let richWorkspaceText = richWorkspaceText {
                 textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
             }
-            textViewColor = NCBrandColor.sharedInstance.textView
+            textViewColor = NCBrandColor.shared.textView
             
             if CCUtility.getDarkMode() {
                 gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
@@ -153,7 +155,7 @@ class NCSectionFooter: UICollectionReusableView {
         super.awakeFromNib()
         
         self.backgroundColor = UIColor.clear
-        labelSection.textColor = NCBrandColor.sharedInstance.icon
+        labelSection.textColor = NCBrandColor.shared.icon
     }
     
     func setTitleLabel(directories: Int, files: Int, size: Double) {

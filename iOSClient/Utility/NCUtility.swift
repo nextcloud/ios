@@ -36,7 +36,7 @@ class NCUtility: NSObject {
     let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
     
     @objc func getWebDAV(account: String) -> String {
-        return NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesWebDavRoot) ?? "remote.php/webdav"
+        return NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesWebDavRoot) ?? "remote.php/webdav"
     }
     
     @objc func getDAV() -> String {
@@ -47,6 +47,13 @@ class NCUtility: NSObject {
         return urlBase + "/" + self.getWebDAV(account: account)
     }
     
+    @objc func deletingLastPathComponent(serverUrl: String, urlBase: String, account: String) -> String {
+        if getHomeServer(urlBase: urlBase, account: account) == serverUrl { return serverUrl }
+        let fileName = (serverUrl as NSString).lastPathComponent
+        let serverUrl = serverUrl.replacingOccurrences(of: "/"+fileName, with: "", options: String.CompareOptions.backwards, range: nil)
+        return serverUrl
+    }
+    
     @objc func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {
         
         var resultFileName = fileName
@@ -54,7 +61,7 @@ class NCUtility: NSObject {
             
             while exitLoop == false {
                 
-                if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileNameView == %@ AND serverUrl == %@ AND account == %@", resultFileName, serverUrl, account)) != nil {
+                if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "fileNameView == %@ AND serverUrl == %@ AND account == %@", resultFileName, serverUrl, account)) != nil {
                     
                     var name = NSString(string: resultFileName).deletingPathExtension
                     let ext = NSString(string: resultFileName).pathExtension
@@ -142,7 +149,7 @@ class NCUtility: NSObject {
         
         blurEffectView.frame = frame
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        blurEffectView.backgroundColor = NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.2)
+        blurEffectView.backgroundColor = NCBrandColor.shared.brandElement.withAlphaComponent(0.2)
         
         return blurEffectView
     }
@@ -357,7 +364,7 @@ class NCUtility: NSObject {
             return false
         }
         
-        guard let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes) else {
+        guard let richdocumentsMimetypes = NCManageDatabase.shared.getCapabilitiesServerArray(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes) else {
             return false
         }
         
@@ -380,7 +387,7 @@ class NCUtility: NSObject {
         
         var editor: String?
         
-        guard let results = NCManageDatabase.sharedInstance.getDirectEditingEditors(account: account) else {
+        guard let results = NCManageDatabase.shared.getDirectEditingEditors(account: account) else {
             return editor
         }
         
@@ -416,7 +423,7 @@ class NCUtility: NSObject {
         URLCache.shared.diskCapacity = 0
         KTVHTTPCache.cacheDeleteAllCaches()
         
-        NCManageDatabase.sharedInstance.clearDatabase(account: nil, removeAccount: true)
+        NCManageDatabase.shared.clearDatabase(account: nil, removeAccount: true)
         
         CCUtility.removeGroupDirectoryProviderStorage()
         CCUtility.removeGroupLibraryDirectory()
@@ -531,7 +538,7 @@ class NCUtility: NSObject {
         if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
             fileNameConflict = fileNameWithoutExtension + ".jpg"
         }
-        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
+        return NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
     }
     
     @objc func isQuickLookDisplayable(metadata: tableMetadata) -> Bool {
@@ -559,12 +566,12 @@ class NCUtility: NSObject {
             completition()
             return
         }
-        let metadatasSessionUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload"))
+        let metadatasSessionUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload"))
         if metadatasSessionUpload.count > 0 {
             completition()
             return
         }
-        let localIdentifiers = NCManageDatabase.sharedInstance.getAssetLocalIdentifiersUploaded(account: account, sessionSelector: sessionSelector)
+        let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account, sessionSelector: sessionSelector)
         if localIdentifiers.count == 0 {
             completition()
             return
@@ -575,7 +582,7 @@ class NCUtility: NSObject {
             PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
         }, completionHandler: { success, error in
             DispatchQueue.main.async {
-                NCManageDatabase.sharedInstance.clearAssetLocalIdentifiers(localIdentifiers, account: account)
+                NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: account)
                 completition()
             }
         })
@@ -589,6 +596,43 @@ class NCUtility: NSObject {
         if items.count < 2 { return nil }
         guard let intFileId = Int(items[0]) else { return nil }
         return String(intFileId)
+    }
+    
+    func getUserStatus(userIcon: String?, userStatus: String?, userMessage: String?) -> (onlineStatus: UIImage?, statusMessage: String) {
+        
+        var onlineStatus: UIImage?
+        var statusMessage: String = ""
+        var messageUserDefined: String = ""
+        
+        if userStatus?.lowercased() == "online" {
+            onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusOnline"), width: 100, height: 100, color: UIColor(red: 103.0/255.0, green: 176.0/255.0, blue: 134.0/255.0, alpha: 1.0))
+            messageUserDefined = NSLocalizedString("_online_", comment: "")
+        }
+        if userStatus?.lowercased() == "away" {
+            onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusAway"), width: 100, height: 100, color: UIColor(red: 233.0/255.0, green: 166.0/255.0, blue: 75.0/255.0, alpha: 1.0))
+            messageUserDefined = NSLocalizedString("_away_", comment: "")
+        }
+        if userStatus?.lowercased() == "dnd" {
+            onlineStatus = UIImage.init(named: "userStatusDnd")?.resizeImageUsingVImage(size: CGSize(width: 100, height: 100))
+            messageUserDefined = NSLocalizedString("_dnd_", comment: "")
+        }
+        if userStatus?.lowercased() == "offline" || userStatus?.lowercased() == "invisible"  {
+            onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusOffline"), width: 100, height: 100, color: .black)
+            messageUserDefined = NSLocalizedString("_invisible_", comment: "")
+        }
+        
+        if let userIcon = userIcon {
+            statusMessage = userIcon + " "
+        }
+        if let userMessage = userMessage {
+            statusMessage = statusMessage + userMessage
+        }
+        statusMessage = statusMessage.trimmingCharacters(in: .whitespaces)
+        if statusMessage == "" {
+            statusMessage = messageUserDefined
+        }
+                
+        return(onlineStatus, statusMessage)
     }
 }
 

@@ -35,21 +35,23 @@ import Foundation
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var viewerQuickLook: NCViewerQuickLook?
-    var docController: UIDocumentInteractionController?
+    var documentController: UIDocumentInteractionController?
     
     //MARK: - Download
 
     @objc func downloadedFile(_ notification: NSNotification) {
             
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let selector = userInfo["selector"] as? String, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-            
+            if let ocId = userInfo["ocId"] as? String, let selector = userInfo["selector"] as? String, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                
                 if metadata.account != appDelegate.account { return }
                 
                 if errorCode == 0 {
                     
                     let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                    
+                    documentController = UIDocumentInteractionController(url: fileURL)
+                    documentController?.delegate = self
+
                     switch selector {
                     case selectorLoadFileQuickLook:
                         
@@ -65,27 +67,35 @@ import Foundation
                                                         
                             if metadata.contentType.contains("opendocument") && !NCUtility.shared.isRichDocument(metadata) {
                                 
-                                openIn(fileURL: fileURL, selector: selector)
+                                if let view = appDelegate.window?.rootViewController?.view {
+                                    documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
+                                }
                                 
                             } else if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
 
-                                openIn(fileURL: fileURL, selector: selector)
+                                if let view = appDelegate.window?.rootViewController?.view {
+                                    documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
+                                }
                                 
                             } else if metadata.typeFile == k_metadataTypeFile_imagemeter {
                                 
-                                openIn(fileURL: fileURL, selector: selector)
+                                if let view = appDelegate.window?.rootViewController?.view {
+                                    documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
+                                }
                                 
                             } else {
                                 
-                                segueMetadata(metadata)
+                                NCViewer.shared.view(viewController: self.appDelegate.activeViewController, metadata: metadata, metadatas: [metadata])
                             }
                         }
                         
-                    case selectorOpenIn, selectorOpenInDetail:
+                    case selectorOpenIn:
                         
                         if UIApplication.shared.applicationState == UIApplication.State.active {
                             
-                            openIn(fileURL: fileURL, selector: selector)
+                            if let view = appDelegate.window?.rootViewController?.view {
+                                documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
+                            }
                         }
                         
                     case selectorLoadCopy:
@@ -103,8 +113,8 @@ import Foundation
                         
                     case selectorLoadOffline:
                         
-                        NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: true)
-                        
+                        NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: true)
+                       
                     case selectorSaveAlbum:
                         
                         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -130,7 +140,7 @@ import Foundation
                             
                             NCContentPresenter.shared.messageNotification("_access_photo_not_enabled_", description: "_access_photo_not_enabled_msg_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorFileNotSaved))
                         }
-                       
+                        
                     default:
                         
                         break
@@ -145,8 +155,8 @@ import Foundation
                             try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                         } catch { }
                         
-                        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                        NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                        NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                        NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                         
                     } else {
                         
@@ -154,25 +164,6 @@ import Foundation
                     }
                 }
             }
-        }
-    }
-    
-    func openIn(fileURL: URL, selector: String?) {
-        
-        docController = UIDocumentInteractionController(url: fileURL)
-        docController?.delegate = self
-        
-        if selector == selectorOpenInDetail {
-            guard let barButtonItem = appDelegate.activeDetail.navigationItem.rightBarButtonItem else { return }
-            guard let buttonItemView = barButtonItem.value(forKey: "view") as? UIView else { return }
-            
-            docController?.presentOptionsMenu(from: buttonItemView.frame, in: buttonItemView, animated: true)
-            
-        } else {
-            guard let splitViewController = appDelegate.window?.rootViewController as? UISplitViewController, let view = splitViewController.viewControllers.first?.view, let frame = splitViewController.viewControllers.first?.view.frame else {
-                return }
-    
-            docController?.presentOptionsMenu(from: frame, in: view, animated: true)
         }
     }
     
@@ -200,20 +191,6 @@ import Foundation
         }
     }
     
-    @objc func segueMetadata(_ metadata: tableMetadata) {
-        if self.appDelegate.activeViewController is NCFiles {
-            (self.appDelegate.activeViewController as! NCFiles).segue(metadata: metadata)
-        } else if self.appDelegate.activeViewController is NCFavorite {
-            (self.appDelegate.activeViewController as! NCFavorite).segue(metadata: metadata)
-        } else if self.appDelegate.activeViewController is NCOffline {
-            (self.appDelegate.activeViewController as! NCOffline).segue(metadata: metadata)
-        } else if self.appDelegate.activeViewController is NCRecent {
-            (self.appDelegate.activeViewController as! NCRecent).segue(metadata: metadata)
-        } else if self.appDelegate.activeViewController is NCFileViewInFolder {
-            (self.appDelegate.activeViewController as! NCFileViewInFolder).segue(metadata: metadata)
-        }
-    }
-    
     @objc func SaveAlbum(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
         
         if error != nil {
@@ -226,7 +203,8 @@ import Foundation
     @objc func uploadedFile(_ notification: NSNotification) {
     
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId)  {
+            if let ocId = userInfo["ocId"] as? String, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                
                 if metadata.account == appDelegate.account {
                     if errorCode != 0 {
                         if errorCode != -999 && errorCode != 401 && errorDescription != "" {

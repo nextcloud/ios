@@ -41,8 +41,8 @@ class NCLoginWeb: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if (NCBrandOptions.sharedInstance.use_login_web_personalized) {
-            if let accountCount = NCManageDatabase.sharedInstance.getAccounts()?.count {
+        if (NCBrandOptions.shared.use_login_web_personalized) {
+            if let accountCount = NCManageDatabase.shared.getAccounts()?.count {
                 if(accountCount > 0) {
                     self.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
                 }
@@ -55,6 +55,7 @@ class NCLoginWeb: UIViewController {
         webView = WKWebView(frame: CGRect.zero, configuration: config)
         webView!.navigationDelegate = self
         view.addSubview(webView!)
+        
         webView!.translatesAutoresizingMaskIntoConstraints = false
         webView!.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         webView!.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
@@ -62,7 +63,7 @@ class NCLoginWeb: UIViewController {
         webView!.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
         
         // ADD k_flowEndpoint for Web Flow
-        if urlBase != NCBrandOptions.sharedInstance.linkloginPreferredProviders {
+        if urlBase != NCBrandOptions.shared.linkloginPreferredProviders {
             if loginFlowV2Available {
                 urlBase = loginFlowV2Login
             } else {
@@ -122,7 +123,7 @@ extension NCLoginWeb: WKNavigationDelegate {
         
         let urlString: String = url.absoluteString.lowercased()
         
-        if (urlString.hasPrefix(NCBrandOptions.sharedInstance.webLoginAutenticationProtocol) == true && urlString.contains("login") == true) {
+        if (urlString.hasPrefix(NCBrandOptions.shared.webLoginAutenticationProtocol) == true && urlString.contains("login") == true) {
             
             var server: String = ""
             var user: String = ""
@@ -164,7 +165,7 @@ extension NCLoginWeb: WKNavigationDelegate {
             return
         }
         
-        if String(describing: url).hasPrefix(NCBrandOptions.sharedInstance.webLoginAutenticationProtocol) {
+        if String(describing: url).hasPrefix(NCBrandOptions.shared.webLoginAutenticationProtocol) {
             decisionHandler(.allow)
             return
         } else if navigationAction.request.httpMethod != "GET" || navigationAction.request.value(forHTTPHeaderField: "OCS-APIRequest") != nil {
@@ -211,7 +212,7 @@ extension NCLoginWeb: WKNavigationDelegate {
         var urlBase = server
         
         // NO account found, clear all
-        if NCManageDatabase.sharedInstance.getAccounts() == nil { NCUtility.shared.removeAllSettings() }
+        if NCManageDatabase.shared.getAccounts() == nil { NCUtility.shared.removeAllSettings() }
             
         // Normalized
         if (urlBase.last == "/") {
@@ -222,10 +223,10 @@ extension NCLoginWeb: WKNavigationDelegate {
         let account: String = "\(username) \(urlBase)"
 
         // Add new account
-        NCManageDatabase.sharedInstance.deleteAccount(account)
-        NCManageDatabase.sharedInstance.addAccount(account, urlBase: urlBase, user: username, password: password)
+        NCManageDatabase.shared.deleteAccount(account)
+        NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: username, password: password)
             
-        guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
+        guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else {
             self.dismiss(animated: true, completion: nil)
             return
         }
@@ -241,14 +242,15 @@ extension NCLoginWeb: WKNavigationDelegate {
             
             CCUtility.setIntro(true)
             if (self.presentingViewController == nil) {
-                let splitController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
-                splitController?.modalPresentationStyle = .fullScreen
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_initializeMain)
-                splitController!.view.alpha = 0
-                appDelegate.window.rootViewController = splitController!
-                appDelegate.window.makeKeyAndVisible()
-                UIView.animate(withDuration: 0.5) {
-                    splitController!.view.alpha = 1
+                if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
+                    viewController.modalPresentationStyle = .fullScreen
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_initializeMain)
+                    viewController.view.alpha = 0
+                    appDelegate.window.rootViewController = viewController
+                    appDelegate.window.makeKeyAndVisible()
+                    UIView.animate(withDuration: 0.5) {
+                        viewController.view.alpha = 1
+                    }
                 }
             } else {
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_initializeMain)

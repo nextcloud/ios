@@ -74,30 +74,30 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         layer.shadowOpacity = 0.2
         
         switchCanReshare.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchCanReshare.onTintColor = NCBrandColor.sharedInstance.brandElement
+        switchCanReshare.onTintColor = NCBrandColor.shared.brandElement
         switchCanCreate?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchCanCreate?.onTintColor = NCBrandColor.sharedInstance.brandElement
+        switchCanCreate?.onTintColor = NCBrandColor.shared.brandElement
         switchCanChange?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchCanChange?.onTintColor = NCBrandColor.sharedInstance.brandElement
+        switchCanChange?.onTintColor = NCBrandColor.shared.brandElement
         switchCanDelete?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchCanDelete?.onTintColor = NCBrandColor.sharedInstance.brandElement
+        switchCanDelete?.onTintColor = NCBrandColor.shared.brandElement
         switchSetExpirationDate.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchSetExpirationDate.onTintColor = NCBrandColor.sharedInstance.brandElement
+        switchSetExpirationDate.onTintColor = NCBrandColor.shared.brandElement
         
         labelCanReshare?.text = NSLocalizedString("_share_can_reshare_", comment: "")
-        labelCanReshare?.textColor = NCBrandColor.sharedInstance.textView
+        labelCanReshare?.textColor = NCBrandColor.shared.textView
         labelCanCreate?.text = NSLocalizedString("_share_can_create_", comment: "")
-        labelCanCreate?.textColor = NCBrandColor.sharedInstance.textView
+        labelCanCreate?.textColor = NCBrandColor.shared.textView
         labelCanChange?.text = NSLocalizedString("_share_can_change_", comment: "")
-        labelCanChange?.textColor = NCBrandColor.sharedInstance.textView
+        labelCanChange?.textColor = NCBrandColor.shared.textView
         labelCanDelete?.text = NSLocalizedString("_share_can_delete_", comment: "")
-        labelCanDelete?.textColor = NCBrandColor.sharedInstance.textView
+        labelCanDelete?.textColor = NCBrandColor.shared.textView
         labelSetExpirationDate?.text = NSLocalizedString("_share_expiration_date_", comment: "")
-        labelSetExpirationDate?.textColor = NCBrandColor.sharedInstance.textView
+        labelSetExpirationDate?.textColor = NCBrandColor.shared.textView
         labelNoteToRecipient?.text = NSLocalizedString("_share_note_recipient_", comment: "")
-        labelNoteToRecipient?.textColor = NCBrandColor.sharedInstance.textView
+        labelNoteToRecipient?.textColor = NCBrandColor.shared.textView
         labelUnshare?.text = NSLocalizedString("_share_unshare_", comment: "")
-        labelUnshare?.textColor = NCBrandColor.sharedInstance.textView
+        labelUnshare?.textColor = NCBrandColor.shared.textView
         
         fieldSetExpirationDate.inputView = UIView()
         
@@ -128,7 +128,7 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     func reloadData(idShare: Int) {
         
         guard let metadata = self.metadata else { return }
-        tableShare = NCManageDatabase.sharedInstance.getTableShare(account: metadata.account, idShare: idShare)
+        tableShare = NCManageDatabase.shared.getTableShare(account: metadata.account, idShare: idShare)
         guard let tableShare = self.tableShare else { return }
 
         // Can reshare (file)
@@ -279,7 +279,7 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     @IBAction func fieldSetExpirationDate(sender: UITextField) {
         
-        let calendar = NCShareCommon.sharedInstance.openCalendar(view: self, width: width, height: height)
+        let calendar = NCShareCommon.shared.openCalendar(view: self, width: width, height: height)
         calendar.calendarView.delegate = self
         self.calendar = calendar.calendarView
         viewWindowCalendar = calendar.viewWindow

@@ -27,16 +27,16 @@
 
 @implementation CCManageLocation
 
-+ (CCManageLocation *)sharedInstance
++ (CCManageLocation *)shared
 {
-    static CCManageLocation *sharedInstance;
+    static CCManageLocation *shared;
 
     @synchronized(self)
     {
-        if (!sharedInstance){
-            sharedInstance = [CCManageLocation new];
+        if (!shared){
+            shared = [CCManageLocation new];
         }
-        return sharedInstance;
+        return shared;
     }
 }
 
@@ -62,14 +62,10 @@
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     CLLocation* location = [locations lastObject];
     
     [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"update location manager: latitude %+.6f, longitude %+.6f", location.coordinate.latitude, location.coordinate.longitude]];
-    
-    appDelegate.currentLatitude = location.coordinate.latitude;
-    appDelegate.currentLongitude = location.coordinate.longitude;
-    
+        
     [self.delegate changedLocation];
 }
 

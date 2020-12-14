@@ -1,0 +1,129 @@
+//
+//  NCKTVHTTPCache.swift
+//  Nextcloud
+//
+//  Created by Marino Faggiana on 28/10/2020.
+//  Copyright © 2020 Marino Faggiana. All rights reserved.
+//
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+import Foundation
+import KTVHTTPCache
+
+class NCKTVHTTPCache: NSObject {
+    @objc static let shared: NCKTVHTTPCache = {
+        let instance = NCKTVHTTPCache()
+        instance.setupHTTPCache()
+        return instance
+    }()
+    
+    func getVideoURL(metadata: tableMetadata) -> URL? {
+        
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            
+            return URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+            
+        } else {
+            
+            guard let stringURL = (metadata.serverUrl + "/" + metadata.fileName).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
+            
+            return NCKTVHTTPCache.shared.getProxyURL(stringURL: stringURL)
+        }
+    }
+    
+    func startProxy(user: String, password: String, metadata: tableMetadata) {
+        
+        guard let authData = (user + ":" + password).data(using: .utf8) else { return }
+        
+        let authValue = "Basic " + authData.base64EncodedString(options: [])
+        KTVHTTPCache.downloadSetAdditionalHeaders(["Authorization":authValue, "User-Agent":CCUtility.getUserAgent()])
+        
+        if !KTVHTTPCache.proxyIsRunning() {
+            do {
+                try KTVHTTPCache.proxyStart()
+            } catch let error {
+                print("Proxy Start error : \(error)")
+            }
+        }
+        
+        saveCache(metadata: metadata)
+    }
+    
+    func stopProxy() {
+        
+        if KTVHTTPCache.proxyIsRunning() {
+            KTVHTTPCache.proxyStop()
+        }
+    }
+    
+    func getProxyURL(stringURL: String) -> URL {
+        
+        return KTVHTTPCache.proxyURL(withOriginalURL: URL(string: stringURL))
+    }
+    
+    func getCacheCompleteFileURL(videoURL: URL?) -> URL? {
+        
+        return KTVHTTPCache.cacheCompleteFileURL(with: videoURL)
+    }
+    
+    func deleteCache(videoURL: URL?) {
+        
+        KTVHTTPCache.cacheDelete(with: videoURL)
+    }
+    
+    func saveCache(metadata: tableMetadata) {
+        
+        if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView:metadata.fileNameView) {
+            
+            guard let stringURL = (metadata.serverUrl + "/" + metadata.fileName).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return }
+            
+            let videoURL = URL(string: stringURL)
+            guard let url = KTVHTTPCache.cacheCompleteFileURL(with: videoURL) else { return }
+            
+            CCUtility.copyFile(atPath: url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+            NCManageDatabase.shared.addLocalFile(metadata: metadata)
+            KTVHTTPCache.cacheDelete(with: videoURL)
+            
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+        }
+    }
+    
+    private func setupHTTPCache() {
+        
+        KTVHTTPCache.cacheSetMaxCacheLength(Int64(k_maxHTTPCache))
+        
+        if ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil {
+            KTVHTTPCache.logSetConsoleLogEnable(true)
+        }
+        
+        do {
+            try KTVHTTPCache.proxyStart()
+        } catch let error {
+            print("Proxy Start error : \(error)")
+        }
+        
+        KTVHTTPCache.encodeSetURLConverter { (url) -> URL? in
+            print("URL Filter reviced URL : " + String(describing: url))
+            return url
+        }
+        
+        KTVHTTPCache.downloadSetUnacceptableContentTypeDisposer { (url, contentType) -> Bool in
+            print("Unsupport Content-Type Filter reviced URL : " + String(describing: url) + " " + String(describing: contentType))
+            return false
+        }
+    }
+}

@@ -8,5 +8,4 @@
 #import "NCAutoUpload.h"
 #import "NCEndToEndEncryption.h"
 #import "NYMnemonic.h"
-#import "PKStopDownloadButton.h"
 #import "CCPeekPop.h"

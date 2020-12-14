@@ -23,12 +23,48 @@
 
 import Foundation
 
-@IBDesignable class NCMainTabBar: UITabBar {
+class NCMainTabBar: UITabBar {
 
-    override var traitCollection: UITraitCollection {
-        return UITraitCollection(horizontalSizeClass: .compact)
+    private var fillColor: UIColor!
+    private var shapeLayer: CALayer?
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
+//    override var traitCollection: UITraitCollection {
+//        return UITraitCollection(horizontalSizeClass: .compact)
+//    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        
+        changeTheming()
     }
-
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if #available(iOS 13.0, *) {
+            if CCUtility.getDarkModeDetect() {
+                if traitCollection.userInterfaceStyle == .dark {
+                    CCUtility.setDarkMode(true)
+                } else {
+                    CCUtility.setDarkMode(false)
+                }
+            }
+            NCBrandColor.shared.settingThemingColor(account: appDelegate.account)
+        }
+    }
+    
+    @objc func changeTheming() {
+        barTintColor = NCBrandColor.shared.backgroundView
+        backgroundColor = NCBrandColor.shared.tabBar
+        tintColor = NCBrandColor.shared.brandElement
+        if let centerButton = self.viewWithTag(99) {
+            centerButton.backgroundColor = NCBrandColor.shared.brandElement
+        }
+    }
+    
     override var backgroundColor: UIColor? {
         get {
             return self.fillColor
@@ -38,15 +74,36 @@ import Foundation
             self.setNeedsDisplay()
         }
     }
-    
-    private var fillColor: UIColor!
-    private var shapeLayer: CALayer?
+        
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        let button = self.viewWithTag(99)
+        if self.bounds.contains(point) || (button != nil && button!.frame.contains(point)) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        layer.shadowPath = createPath()
+        layer.shadowRadius = 5
+        layer.shadowOffset = .zero
+        layer.shadowOpacity = 0.25
+    }
+
+    override func draw(_ rect: CGRect) {
+        addShape()
+        createButtons()
+    }
 
     private func addShape() {
+        
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = createPath()
         shapeLayer.fillColor = backgroundColor?.cgColor
-
+        shapeLayer.strokeColor = UIColor.clear.cgColor
 
         if let oldShapeLayer = self.shapeLayer {
             self.layer.replaceSublayer(oldShapeLayer, with: shapeLayer)
@@ -56,20 +113,9 @@ import Foundation
 
         self.shapeLayer = shapeLayer
     }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        self.layer.shadowPath = createPath()
-        self.layer.shadowRadius = 5
-        self.layer.shadowOffset = .zero
-        self.layer.shadowOpacity = 0.25
-    }
-
-    override func draw(_ rect: CGRect) {
-        self.addShape()
-    }
-
-    func createPath() -> CGPath {
+    
+    private func createPath() -> CGPath {
+        
         let height: CGFloat = 28
         let margin: CGFloat = 8
         let path = UIBezierPath()
@@ -87,19 +133,85 @@ import Foundation
 
         return path.cgPath
     }
-
-    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        let button = self.viewWithTag(99)
-        if self.bounds.contains(point) || (button != nil && button!.frame.contains(point)) {
-            return true
-        } else {
-            return false
+    
+    private func createButtons() {
+       
+        // File
+        if let item = items?[Int(k_tabBarApplicationIndexFile)] {
+            item.title = NSLocalizedString("_home_", comment: "")
+            item.image = CCGraphics.changeThemingColorImage(UIImage(named: "tabBarFiles"), width: 50, height: 50, color: NCBrandColor.shared.brandElement)
+            item.selectedImage = item.image
+        }
+        
+        // Favorite
+        if let item = items?[Int(k_tabBarApplicationIndexFavorite)] {
+            item.title = NSLocalizedString("_favorites_", comment: "")
+            item.image = CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.shared.brandElement)
+            item.selectedImage = item.image
+        }
+        
+        // +
+        if let item = items?[Int(k_tabBarApplicationIndexPlusHide)] {
+            item.title = ""
+            item.image = nil
+            item.isEnabled = false
+        }
+        
+        // Media
+        if let item = items?[Int(k_tabBarApplicationIndexMedia)] {
+            item.title = NSLocalizedString("_media_", comment: "")
+            item.image = CCGraphics.changeThemingColorImage(UIImage(named: "media"), width: 50, height: 50, color: NCBrandColor.shared.brandElement)
+            item.selectedImage = item.image
+        }
+        
+        // More
+        if let item = items?[Int(k_tabBarApplicationIndexMore)] {
+            item.title = NSLocalizedString("_more_", comment: "")
+            item.image = CCGraphics.changeThemingColorImage(UIImage(named: "tabBarMore"), width: 50, height: 50, color: NCBrandColor.shared.brandElement)
+            item.selectedImage = item.image
+        }
+        
+        // Center button
+        
+        if let centerButton = self.viewWithTag(99) {
+            centerButton.removeFromSuperview()
+        }
+        let centerButtonHeight: CGFloat = 57
+        let centerButtonY: CGFloat = -28
+        
+        let centerButton = UIButton(frame: CGRect(x: (self.bounds.width / 2)-(centerButtonHeight/2), y: centerButtonY, width: centerButtonHeight, height: centerButtonHeight))
+        
+        centerButton.setTitle("", for: .normal)
+        centerButton.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "tabBarPlus"), width: 100, height: 100, color: .white), for: .normal)
+        centerButton.backgroundColor = NCBrandColor.shared.brandElement
+        centerButton.tintColor = UIColor.white
+        centerButton.tag = 99
+        centerButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")
+        centerButton.layer.cornerRadius = centerButton.frame.size.width / 2.0
+        centerButton.layer.masksToBounds = false
+        centerButton.layer.shadowOffset = CGSize(width: 0, height: 0)
+        centerButton.layer.shadowRadius = 3.0
+        centerButton.layer.shadowOpacity = 0.5
+        
+        centerButton.addTarget(self, action: #selector(self.centerButtonAction), for: .touchUpInside)
+        
+        self.addSubview(centerButton)
+    }
+    
+    // Menu Button Touch Action
+    @objc func centerButtonAction(sender: UIButton) {
+        
+        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, appDelegate.activeServerUrl)) {
+            
+            if !directory.permissions.contains("CK") {
+                NCContentPresenter.shared.messageNotification("_warning_", description: "_no_permission_add_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
+                return
+            }
+        }
+        
+        if let viewController = self.window?.rootViewController {
+            appDelegate.showMenuIn(viewController: viewController)
         }
     }
-
 }
 
-extension CGFloat {
-    var degreesToRadians: CGFloat { return self * .pi / 180 }
-    var radiansToDegrees: CGFloat { return self * 180 / .pi }
-}

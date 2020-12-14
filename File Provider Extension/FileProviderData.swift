@@ -52,7 +52,7 @@ class fileProviderData: NSObject {
     var fileProviderSignalUpdateWorkingSetItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
    
     // UserDefaults
-    var ncUserDefaults = UserDefaults(suiteName: NCBrandOptions.sharedInstance.capabilitiesGroups)
+    var ncUserDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroups)
     
     // Error
     enum FileProviderError: Error {
@@ -64,7 +64,7 @@ class fileProviderData: NSObject {
     
     func setupAccount(domain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
                 
-        if CCUtility.getDisableFilesApp() || NCBrandOptions.sharedInstance.disable_openin_file {
+        if CCUtility.getDisableFilesApp() || NCBrandOptions.shared.disable_openin_file {
             return nil
         }
         
@@ -78,8 +78,8 @@ class fileProviderData: NSObject {
         // NO DOMAIN -> Set default account
         if domain == nil {
             
-            guard let accountActive = NCManageDatabase.sharedInstance.getAccountActive() else { return nil }
-            let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: accountActive.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+            guard let accountActive = NCManageDatabase.shared.getAccountActive() else { return nil }
+            let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: accountActive.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
             let webDav = NCUtility.shared.getWebDAV(account: accountActive.account)
             
             account = accountActive.account
@@ -93,7 +93,7 @@ class fileProviderData: NSObject {
         }
         
         // DOMAIN
-        let accounts = NCManageDatabase.sharedInstance.getAllAccount()
+        let accounts = NCManageDatabase.shared.getAllAccount()
         if accounts.count == 0 { return nil }
         
         for accountActive in accounts {
@@ -102,7 +102,7 @@ class fileProviderData: NSObject {
             let accountDomain = accountActive.userID + " (" + host + ")"
             if accountDomain == domain!.identifier.rawValue {
                 
-                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: accountActive.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+                let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: accountActive.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
                 let webDav = NCUtility.shared.getWebDAV(account: accountActive.account)
                 
                 account = accountActive.account
@@ -124,7 +124,7 @@ class fileProviderData: NSObject {
     @discardableResult
     func signalEnumerator(ocId: String, delete: Bool = false, update: Bool = false) -> FileProviderItem? {
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) else { return nil }
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return nil }
                 
         guard let parentItemIdentifier = fileProviderUtility.shared.getParentItemIdentifier(metadata: metadata) else { return nil }
         
@@ -159,12 +159,12 @@ class fileProviderData: NSObject {
          
          var updateWorkingSet = false
          let oldListFavoriteIdentifierRank = listFavoriteIdentifierRank
-         listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank(account: account)
+         listFavoriteIdentifierRank = NCManageDatabase.shared.getTableMetadatasDirectoryFavoriteIdentifierRank(account: account)
          
          // (ADD)
          for (identifier, _) in listFavoriteIdentifierRank {
              
-             guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
+             guard let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
              guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: homeServerUrl) else { continue }
              let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                  
@@ -177,7 +177,7 @@ class fileProviderData: NSObject {
              
              if !listFavoriteIdentifierRank.keys.contains(identifier) {
                  
-                 guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
+                 guard let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
                  let itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
                  
                  fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier

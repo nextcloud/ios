@@ -50,11 +50,7 @@ import NCCommunication
     
     // Download file
     
-    @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool, forceDownload: Bool) {
-        if !forceDownload && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["ocId":metadata.ocId, "selector":selector, "errorCode":0, "errorDescription":""])
-            return
-        }
+    @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool) {
         for operation in downloadQueue.operations as! [NCOperationDownload]  {
             if operation.metadata.ocId == metadata.ocId {
                 return
@@ -265,59 +261,84 @@ class NCOperationSynchronization: ConcurrentOperation {
         } else {
             if metadata.directory {
                 
-                let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                
-                NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
-                    
-                    if errorCode == 0 {
-                    
-                        NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
-                            
-                            let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrlFileName, k_metadataStatusNormal))
-                            
-                            if self.selector == selectorDownloadAllFile {
-                                
-                                NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
+                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
 
-                                for metadata in metadatas {
-                                    if metadata.directory {
-                                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
+                NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
+
+                    if (errorCode == 0) && (directory?.etag != files.first?.etag || directory?.synchronized == false) {
+                        
+                        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
+                            
+                            if errorCode == 0 {
+                            
+                                NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                                    
+                                    let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal))
+                                    
+                                    if self.selector == selectorDownloadAllFile {
+                                        
+                                        NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
+
+                                        for metadata in metadatas {
+                                            if metadata.directory {
+                                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
+                                            } else {
+                                                let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                                                if localFile == nil || localFile?.etag != metadata.etag {
+                                                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
+                                                }
+                                            }
+                                        }
+                                        
                                     } else {
-                                        let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                                        if localFile == nil || localFile?.etag != metadata.etag {
-                                            NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false, forceDownload: true)
+                                    
+                                        let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addExistsInLocal: self.download, addCompareEtagLocal: true, addDirectorySynchronized: true)
+
+                                        for metadata in metadatasChanged.metadatasUpdate {
+                                            if metadata.directory {
+                                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
+                                            }
+                                        }
+                                        
+                                        for metadata in metadatasChanged.metadatasLocalUpdate {
+                                            NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
                                         }
                                     }
+                                    
+                                    // Update etag directory
+                                    NCManageDatabase.shared.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, richWorkspace: metadataFolder.richWorkspace, account: metadataFolder.account)
+                                    // Update
+                                    NCManageDatabase.shared.setDirectory(synchronized: true, serverUrl: serverUrl, account: account)
                                 }
-                                
-                            } else {
                             
-                                let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, addExistsInLocal: self.download, addCompareEtagLocal: true)
-
-                                for metadata in metadatasChanged.metadatasUpdate {
-                                    if metadata.directory {
-                                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
-                                    }
-                                }
-                                
-                                for metadata in metadatasChanged.metadatasLocalUpdate {
-                                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false, forceDownload: true)
-                                }
+                            } else if errorCode == k_CCErrorResourceNotFound && self.metadata.directory {
+                                NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
                             }
-                            // Update etag directory
-                            NCManageDatabase.sharedInstance.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrlFileName, richWorkspace: metadataFolder.richWorkspace, account: metadataFolder.account)
+                            
+                            self.finish()
                         }
-                    
-                    } else if errorCode == k_CCErrorResourceNotFound && self.metadata.directory {
-                        NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
+                        
+                    } else {
+                        
+                        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", account, serverUrl))
+                        for metadata in metadatas {
+                            let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                            let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
+                            if directory?.synchronized == false {
+                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
+                            }
+                        }
+                        
+                        self.finish()
                     }
-                    self.finish()
                 }
+                
             } else {
                 if self.download {
-                    let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     if localFile == nil || localFile?.etag != metadata.etag {
-                        NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false, forceDownload: true)
+                        NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
                     }
                 }
                 self.finish()

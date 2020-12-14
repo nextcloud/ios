@@ -29,13 +29,12 @@
 #import <TOPasscodeViewController/TOPasscodeViewController.h>
 
 #import "CCUtility.h"
-#import "CCSettings.h"
 #import "CCLogin.h"
 
 @class NCFiles;
 @class NCFileViewInFolder;
 @class NCRecent;
-@class CCMore;
+@class NCMore;
 @class NCMedia;
 @class NCOffline;
 @class NCTransfers;
@@ -44,10 +43,10 @@
 @class NCTrash;
 @class NCAppConfigView;
 @class IMImagemeterViewer;
-@class NCDetailViewController;
 @class NCNetworkingAutoUpload;
 @class NCDocumentPickerViewController;
 @class FileProviderDomain;
+@class NCViewerVideo;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>
 
@@ -65,10 +64,6 @@
 @property (nonatomic, strong) NSString *userID;
 @property (nonatomic, strong) NSString *password;
 
-// next version ... ? ...
-@property double currentLatitude;
-@property double currentLongitude;
-
 // Networking 
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
 
@@ -78,16 +73,8 @@
 // Passcode lockDirectory
 @property (nonatomic, strong) NSDate *sessionePasscodeLock;
 
-// Audio Video
-@property (nonatomic, strong) AVPlayer *player;
-@property (nonatomic, strong) AVPlayerViewController *playerController;
-@property BOOL isMediaObserver;
-
 // Push Norification Token
 @property (nonatomic, strong) NSString *pushKitToken;
-
-// ProgressView Detail
-@property (nonatomic, strong) UIProgressView *progressViewDetail;
 
 @property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
 
@@ -100,27 +87,26 @@
 @property (nonatomic, retain) NCRecent *activeRecent;
 @property (nonatomic, retain) NCShares *activeShares;
 @property (nonatomic, retain) NCMedia *activeMedia;
-@property (nonatomic, retain) NCDetailViewController *activeDetail;
 @property (nonatomic, retain) NCTransfers *activeTransfers;
 @property (nonatomic, retain) CCLogin *activeLogin;
 @property (nonatomic, retain) NCLoginWeb *activeLoginWeb;
-@property (nonatomic, retain) CCMore *activeMore;
+@property (nonatomic, retain) NCMore *activeMore;
 @property (nonatomic, retain) NCOffline *activeOffline;
 @property (nonatomic, retain) NCTrash *activeTrash;
 @property (nonatomic, retain) NCAppConfigView *appConfigView;
 @property (nonatomic, retain) IMImagemeterViewer *activeImagemeterView;
+@property (nonatomic, retain) NCViewerVideo *activeViewerVideo;
 
-@property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listFilesVC;
 @property (nonatomic, strong) NSMutableDictionary *listFavoriteVC;
 @property (nonatomic, strong) NSMutableDictionary *listOfflineVC;
-
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
 
 @property (nonatomic) UIUserInterfaceStyle preferredUserInterfaceStyle API_AVAILABLE(ios(12.0));
 
 // Shares
 @property (nonatomic, strong) NSArray *shares;
+@property BOOL disableSharesView;
 
 // UserDefaults
 @property (nonatomic, strong) NSUserDefaults *ncUserDefaults;
@@ -137,19 +123,8 @@
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe;
 - (void)settingSetupCommunication:(NSString *)account;
 
-// Quick Actions - ShotcutItem
-- (void)configDynamicShortcutItems;
-- (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
-
-// TabBarController
-- (void)createTabBarController:(UITabBarController *)tabBarController;
-
 // Push Notification
 - (void)pushNotification;
-
-// Theming Color
-- (void)settingThemingColorBrand;
-- (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form;
 
 @end
 

@@ -29,7 +29,7 @@
 
 @interface NCAutoUpload : NSObject <CCManageLocationDelegate>
 
-+ (NCAutoUpload *)sharedInstance;
++ (NCAutoUpload *)shared;
 
 - (void)initStateAutoUpload;
 - (BOOL)checkIfLocationIsEnabled;

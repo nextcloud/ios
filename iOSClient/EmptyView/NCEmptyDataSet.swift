@@ -93,7 +93,7 @@ public class NCEmptyView: UIView {
     }
     
     @objc func changeTheming() {
-        emptyTitle.textColor = NCBrandColor.sharedInstance.textView
+        emptyTitle.textColor = NCBrandColor.shared.textView
     }
 }
 

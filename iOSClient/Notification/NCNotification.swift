@@ -45,6 +45,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         emptyDataSet = NCEmptyDataSet.init(view: tableView, offset: 0, delegate: self)
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        
         changeTheming()
     }
     
@@ -59,7 +60,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: false)
+        view.backgroundColor = NCBrandColor.shared.backgroundView
+        tableView.backgroundColor = NCBrandColor.shared.backgroundView
+        tableView.reloadData()        
     }
 
     @objc func viewClose() {
@@ -101,9 +104,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         }
         
         if let image = image {
-            cell.icon.image = CCGraphics.changeThemingColorImage(image, multiplier: 2, color: NCBrandColor.sharedInstance.brandElement)
+            cell.icon.image = CCGraphics.changeThemingColorImage(image, multiplier: 2, color: NCBrandColor.shared.brandElement)
         } else {
-            cell.icon.image = CCGraphics.changeThemingColorImage(#imageLiteral(resourceName: "notification"), multiplier:2, color: NCBrandColor.sharedInstance.brandElement)
+            cell.icon.image = CCGraphics.changeThemingColorImage(#imageLiteral(resourceName: "notification"), multiplier:2, color: NCBrandColor.shared.brandElement)
         }
         
         // Avatar
@@ -151,7 +154,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.date.text = CCUtility.dateDiff(notification.date as Date)
         cell.date.textColor = .gray
         cell.subject.text = notification.subject
-        cell.subject.textColor = NCBrandColor.sharedInstance.textView
+        cell.subject.textColor = NCBrandColor.shared.textView
         cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
         cell.message.textColor = .gray
         
@@ -163,7 +166,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.primary.setTitleColor(.white, for: .normal)
         cell.primary.layer.cornerRadius = 15
         cell.primary.layer.masksToBounds = true
-        cell.primary.layer.backgroundColor = NCBrandColor.sharedInstance.brandElement.cgColor
+        cell.primary.layer.backgroundColor = NCBrandColor.shared.brandElement.cgColor
         
         cell.secondary.isEnabled = false
         cell.secondary.isHidden = true
@@ -171,7 +174,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.secondary.setTitleColor(.gray, for: .normal)
         cell.secondary.layer.cornerRadius = 15
         cell.secondary.layer.masksToBounds = true
-        cell.secondary.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.1).cgColor
+        cell.secondary.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.1).cgColor
         cell.secondary.layer.borderWidth = 0.3
         cell.secondary.layer.borderColor = UIColor.gray.cgColor
         

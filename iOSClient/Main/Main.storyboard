@@ -1,60 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="4IE-mo-rkp">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FkP-Lh-8zt">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
-        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Split View Controller-->
-        <scene sceneID="B1o-fj-nYn">
-            <objects>
-                <splitViewController id="4IE-mo-rkp" customClass="NCSplitViewController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
-                    <extendedEdge key="edgesForExtendedLayout"/>
-                    <connections>
-                        <segue destination="mtc-lf-PRo" kind="relationship" relationship="detailViewController" id="W5b-lw-8O1"/>
-                        <segue destination="k86-ao-8mQ" kind="relationship" relationship="masterViewController" id="JcJ-dS-r1m"/>
-                    </connections>
-                </splitViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="6BR-HM-b4e" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="4457" y="-709"/>
-        </scene>
-        <!--Settings-->
-        <scene sceneID="8L1-Aq-u4E">
-            <objects>
-                <viewController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="amx-XG-NId" customClass="CCSettings" sceneMemberID="viewController">
-                    <view key="view" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="qPP-0c-bH9">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="RbN-9l-HP2">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
-                                <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            </tableView>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="UsN-KI-3bQ"/>
-                        <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstItem="RbN-9l-HP2" firstAttribute="top" secondItem="UsN-KI-3bQ" secondAttribute="top" id="PQF-xh-bxZ"/>
-                            <constraint firstItem="RbN-9l-HP2" firstAttribute="leading" secondItem="UsN-KI-3bQ" secondAttribute="leading" id="exJ-dx-QyW"/>
-                            <constraint firstItem="UsN-KI-3bQ" firstAttribute="bottom" secondItem="RbN-9l-HP2" secondAttribute="bottom" id="gMy-ww-Gd1"/>
-                            <constraint firstItem="UsN-KI-3bQ" firstAttribute="trailing" secondItem="RbN-9l-HP2" secondAttribute="trailing" id="oal-6v-evn"/>
-                        </constraints>
-                    </view>
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
-                    <navigationItem key="navigationItem" id="1CO-Ie-Aaj"/>
-                    <connections>
-                        <segue destination="eZl-ut-xpC" kind="presentation" identifier="AcknowledgementsSegue" modalPresentationStyle="formSheet" id="J9C-Ex-Q6i"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="wVn-RD-GD2" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="10545" y="1217"/>
-        </scene>
         <!--NCMedia.storyboard-->
         <scene sceneID="udp-lL-CYh">
             <objects>
@@ -63,71 +15,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6gG-SV-Hvv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="8572" y="887"/>
-        </scene>
-        <!--Acknowledgements-->
-        <scene sceneID="h9y-Lj-jxB">
-            <objects>
-                <viewController extendedLayoutIncludesOpaqueBars="YES" id="Wu3-ow-y4h" customClass="Acknowledgements" sceneMemberID="viewController">
-                    <view key="view" opaque="NO" contentMode="scaleToFill" id="HYE-hK-m2I">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="786"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" delaysContentTouches="NO" canCancelContentTouches="NO" bouncesZoom="NO" editable="NO" usesAttributedText="YES" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vYq-of-LmL">
-                                <rect key="frame" x="7" y="0.0" width="400" height="786"/>
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <attributedString key="attributedText">
-                                    <fragment content="Copyright (C)">
-                                        <attributes>
-                                            <font key="NSFont" size="14" name="HelveticaNeue"/>
-                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
-                                        </attributes>
-                                    </fragment>
-                                </attributedString>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                                <connections>
-                                    <outlet property="delegate" destination="Wu3-ow-y4h" id="RHw-TA-1yQ"/>
-                                </connections>
-                            </textView>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="vFx-Qx-nx8"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstItem="vYq-of-LmL" firstAttribute="leading" secondItem="HYE-hK-m2I" secondAttribute="leadingMargin" constant="-13" id="RHX-O3-otO"/>
-                            <constraint firstItem="vYq-of-LmL" firstAttribute="top" secondItem="vFx-Qx-nx8" secondAttribute="top" id="SwN-pK-RVe"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="vYq-of-LmL" secondAttribute="trailing" constant="-13" id="iao-EZ-391"/>
-                            <constraint firstItem="vFx-Qx-nx8" firstAttribute="bottom" secondItem="vYq-of-LmL" secondAttribute="bottom" id="rjG-Mo-psH"/>
-                        </constraints>
-                    </view>
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
-                    <navigationItem key="navigationItem" id="NXp-TT-qTB"/>
-                    <connections>
-                        <outlet property="txtTermini" destination="vYq-of-LmL" id="hA3-bm-4ke"/>
-                        <outlet property="view" destination="HYE-hK-m2I" id="lTc-Ug-HO0"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="TUv-7S-62D" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="12154" y="1217"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="eDq-6m-h8d">
-            <objects>
-                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="eZl-ut-xpC" sceneMemberID="viewController">
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="rJe-3o-bpZ">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="Wu3-ow-y4h" kind="relationship" relationship="rootViewController" id="Xpr-tm-bWy"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="38M-dR-dlY" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="11403" y="1217"/>
+            <point key="canvasLocation" x="7770" y="899"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="gY3-Ur-rTC">
@@ -152,60 +40,12 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d2B-Yg-rp2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7073" y="-709"/>
-        </scene>
-        <!--Detail View Controller-->
-        <scene sceneID="zJM-E9-jgK">
-            <objects>
-                <viewController storyboardIdentifier="CCDetailVC" extendedLayoutIncludesOpaqueBars="YES" id="zg6-hy-EbU" customClass="NCDetailViewController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" tag="900" contentMode="scaleToFill" id="cUA-lB-tGG">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <imageView tag="999" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
-                                <rect key="frame" x="0.0" y="88" width="414" height="808"/>
-                            </imageView>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="3ph-Od-2hO"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="zlU-MP-ZVs" secondAttribute="trailing" id="GuY-bH-GIn"/>
-                            <constraint firstAttribute="bottom" secondItem="zlU-MP-ZVs" secondAttribute="bottom" id="hvN-HY-D9V"/>
-                            <constraint firstItem="zlU-MP-ZVs" firstAttribute="leading" secondItem="3ph-Od-2hO" secondAttribute="leading" id="sVy-C6-hu1"/>
-                            <constraint firstItem="zlU-MP-ZVs" firstAttribute="top" secondItem="3ph-Od-2hO" secondAttribute="top" id="tUS-Af-SE7"/>
-                        </constraints>
-                    </view>
-                    <navigationItem key="navigationItem" id="cJm-UN-Dvj" userLabel="Detail"/>
-                    <connections>
-                        <outlet property="backgroundView" destination="zlU-MP-ZVs" id="yVd-Vz-gsJ"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="IJ0-oL-QKv" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="5749.275362318841" y="2406.6964285714284"/>
-        </scene>
-        <!--Detail Navigation Controller-->
-        <scene sceneID="Xur-XN-mjy">
-            <objects>
-                <navigationController storyboardIdentifier="CCDetailNC" extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="mtc-lf-PRo" customClass="NCDetailNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="vxw-dW-rgx">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="zg6-hy-EbU" kind="relationship" relationship="rootViewController" id="qIX-Hw-L2i"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="1l7-Aj-XxZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="4546" y="2407"/>
+            <point key="canvasLocation" x="7071" y="-556"/>
         </scene>
         <!--File-->
         <scene sceneID="dMv-43-hWy">
             <objects>
-                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="bSZ-tE-FEj" sceneMemberID="viewController">
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="bSZ-tE-FEj" customClass="NCMainNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="File" id="Zxv-aS-HGF"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="cj6-rT-wnB">
@@ -219,12 +59,12 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="k95-tV-JJx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5215" y="327"/>
+            <point key="canvasLocation" x="5662" y="327"/>
         </scene>
         <!--Favorites-->
         <scene sceneID="YSr-JF-a0V">
             <objects>
-                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="hwM-4d-Afb" sceneMemberID="viewController">
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="hwM-4d-Afb" customClass="NCMainNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Favorites" id="o09-67-hwf"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="MJw-Bn-5le">
@@ -238,12 +78,12 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NME-vT-pfd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5857" y="327"/>
+            <point key="canvasLocation" x="6367" y="327"/>
         </scene>
         <!--Media-->
         <scene sceneID="IuY-Iu-oAm">
             <objects>
-                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Npr-vu-PSD" userLabel="Media" sceneMemberID="viewController">
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Npr-vu-PSD" customClass="NCMainNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Media" id="5cw-bP-7It"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="ixg-Pw-TNO">
@@ -257,12 +97,12 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cZf-pk-3Bd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="8572" y="327"/>
+            <point key="canvasLocation" x="7771" y="327"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Main Navigation Controller-->
         <scene sceneID="cip-AF-Ks2">
             <objects>
-                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Cc7-4O-z6Q" sceneMemberID="viewController">
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Cc7-4O-z6Q" customClass="NCMainNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" enabled="NO" title="" image="tabBarPlus" id="vIy-cM-ojV"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="jCU-so-Np6">
@@ -273,12 +113,12 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ohd-Sv-ssv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7935" y="327"/>
+            <point key="canvasLocation" x="7072" y="327"/>
         </scene>
         <!--More-->
         <scene sceneID="4RE-f1-SKU">
             <objects>
-                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="1Z8-Bx-Dqo" sceneMemberID="viewController">
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="1Z8-Bx-Dqo" customClass="NCMainNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="More" id="U4f-qS-cgh"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="yVo-p8-ApS">
@@ -287,20 +127,20 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="amx-XG-NId" kind="show" identifier="segueSettings" id="iJw-qx-dwJ"/>
                         <segue destination="WTp-0D-Gpe" kind="show" identifier="segueTrash" id="bPq-YD-SUy"/>
                         <segue destination="biz-Qc-WHi" kind="show" identifier="segueOffline" id="Pdi-HO-f4O"/>
-                        <segue destination="Frr-j9-xav" kind="relationship" relationship="rootViewController" id="1rp-YB-fT4"/>
                         <segue destination="2JP-H5-EI3" kind="show" identifier="segueActivity" id="aVb-Aj-gSf"/>
                         <segue destination="yit-8P-Oea" kind="show" identifier="segueNotification" id="JSA-8l-ixD"/>
                         <segue destination="2L6-L3-iRl" kind="show" identifier="segueTransfers" id="oIQ-Yx-Gmt"/>
                         <segue destination="zzk-gS-FKl" kind="show" identifier="segueRecent" id="Snj-Bw-Ce2"/>
-                        <segue destination="ihw-xM-dL6" kind="show" identifier="segueShares" id="uPi-sd-NcI"/>
+                        <segue destination="z7i-Sl-6Di" kind="show" identifier="segueShares" id="c59-fC-R3W"/>
+                        <segue destination="3YH-o1-17m" kind="relationship" relationship="rootViewController" id="les-zO-92u"/>
+                        <segue destination="rhU-g7-7AK" kind="show" identifier="segueSettings" id="jMB-ji-wIR"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D7n-Z1-9wU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="9212" y="326"/>
+            <point key="canvasLocation" x="8458" y="327"/>
         </scene>
         <!--NCTrash.storyboard-->
         <scene sceneID="361-ZH-Lss">
@@ -310,7 +150,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WGZ-c6-AXe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10836" y="35"/>
+            <point key="canvasLocation" x="10178" y="35"/>
         </scene>
         <!--NCOffline.storyboard-->
         <scene sceneID="mwv-1V-aJg">
@@ -320,7 +160,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d9n-lT-FK4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10841" y="135"/>
+            <point key="canvasLocation" x="10185" y="134"/>
         </scene>
         <!--NCActivity.storyboard-->
         <scene sceneID="NqQ-oK-JeC">
@@ -330,7 +170,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rXq-Ww-4Zx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10844" y="232"/>
+            <point key="canvasLocation" x="10188" y="210"/>
         </scene>
         <!--NCNotification.storyboard-->
         <scene sceneID="1sy-aN-34T">
@@ -340,7 +180,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="EoH-78-6Yh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10862" y="323"/>
+            <point key="canvasLocation" x="10209" y="291"/>
         </scene>
         <!--NCTransfers.storyboard-->
         <scene sceneID="IDy-4E-Qqv">
@@ -350,7 +190,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="X5c-xg-peQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10841" y="408"/>
+            <point key="canvasLocation" x="10201" y="366"/>
         </scene>
         <!--NCRecent.storyboard-->
         <scene sceneID="nO2-dy-n7J">
@@ -360,17 +200,27 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rsS-r1-oFg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10831" y="502"/>
+            <point key="canvasLocation" x="10190" y="445"/>
         </scene>
         <!--NCShares.storyboard-->
-        <scene sceneID="oYz-9l-9Mr">
+        <scene sceneID="eRk-6B-fMu">
             <objects>
-                <viewControllerPlaceholder storyboardName="NCShares" referencedIdentifier="NCShares.storyboard" id="ihw-xM-dL6" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="yhi-Jq-Rs7"/>
+                <viewControllerPlaceholder storyboardName="NCShares" referencedIdentifier="NCShares.storyboard" id="z7i-Sl-6Di" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="h1l-zn-SNX"/>
                 </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="6GE-Ov-UAe" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="olY-7a-lXK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10831" y="594"/>
+            <point key="canvasLocation" x="10190" y="538"/>
+        </scene>
+        <!--NCSettings.storyboard-->
+        <scene sceneID="FRF-y9-mZJ">
+            <objects>
+                <viewControllerPlaceholder storyboardName="NCSettings" referencedIdentifier="NCSettings.storyboard" id="rhU-g7-7AK" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="HYx-6Q-lFs"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bcK-1B-gxh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="10190" y="619"/>
         </scene>
         <!--NCFiles.storyboard-->
         <scene sceneID="xwl-IR-lkD">
@@ -380,7 +230,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Vst-OD-Y5z" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5214" y="899"/>
+            <point key="canvasLocation" x="5661" y="899"/>
         </scene>
         <!--NCFavorite.storyboard-->
         <scene sceneID="zqD-Jj-h2w">
@@ -390,159 +240,20 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gnf-oc-B60" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5857" y="899"/>
+            <point key="canvasLocation" x="6367" y="899"/>
         </scene>
-        <!--More-->
-        <scene sceneID="50a-pn-1yx">
+        <!--NCMore.storyboard-->
+        <scene sceneID="OXv-NF-UnP">
             <objects>
-                <viewController extendedLayoutIncludesOpaqueBars="YES" id="Frr-j9-xav" customClass="CCMore" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="hLP-ql-OiA">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" rowHeight="50" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="aKC-5k-tLM">
-                                <rect key="frame" x="0.0" y="88" width="414" height="643"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <inset key="separatorInset" minX="56" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                <view key="tableFooterView" contentMode="scaleToFill" id="xPg-6F-Qcc">
-                                    <rect key="frame" x="0.0" y="123.5" width="414" height="44"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </view>
-                                <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="V1G-2M-Q0I" customClass="CCCellMore" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="55.5" width="414" height="50"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" multipleTouchEnabled="YES" contentMode="center" tableViewCell="V1G-2M-Q0I" id="mMB-QG-hoe">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="50"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6dd-uC-EQT">
-                                                    <rect key="frame" x="20" y="10" width="30" height="30"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="30" id="Jg6-vD-zNJ"/>
-                                                        <constraint firstAttribute="height" constant="30" id="KbT-nO-u8E"/>
-                                                    </constraints>
-                                                </imageView>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jgw-HO-Z7g">
-                                                    <rect key="frame" x="68" y="15" width="326" height="20"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstItem="6dd-uC-EQT" firstAttribute="centerY" secondItem="mMB-QG-hoe" secondAttribute="centerY" id="NPR-w8-iBl"/>
-                                                <constraint firstItem="Jgw-HO-Z7g" firstAttribute="centerY" secondItem="mMB-QG-hoe" secondAttribute="centerY" id="a99-4Z-U3l"/>
-                                                <constraint firstAttribute="leadingMargin" secondItem="6dd-uC-EQT" secondAttribute="leading" id="gvy-5o-Tjj"/>
-                                                <constraint firstItem="Jgw-HO-Z7g" firstAttribute="leading" secondItem="mMB-QG-hoe" secondAttribute="leadingMargin" constant="48" id="p2C-hH-tlI"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="Jgw-HO-Z7g" secondAttribute="trailing" id="txS-1N-OyJ"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                        <connections>
-                                            <outlet property="imageIcon" destination="6dd-uC-EQT" id="qA4-nr-Bhn"/>
-                                            <outlet property="labelText" destination="Jgw-HO-Z7g" id="a6C-Zj-NIz"/>
-                                        </connections>
-                                    </tableViewCell>
-                                </prototypes>
-                                <connections>
-                                    <outlet property="dataSource" destination="Frr-j9-xav" id="Gw2-Sg-BAb"/>
-                                    <outlet property="delegate" destination="Frr-j9-xav" id="46E-kI-GUB"/>
-                                </connections>
-                            </tableView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="J2k-UZ-XQQ" userLabel="View Quota">
-                                <rect key="frame" x="0.0" y="731" width="414" height="66"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DAP-np-Q1J">
-                                        <rect key="frame" x="35" y="8" width="344" height="20"/>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="20" id="o78-Yq-dPq"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="calibratedWhite"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="uGf-Fa-QQ3">
-                                        <rect key="frame" x="35" y="31" width="344" height="4"/>
-                                    </progressView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vfl-ZC-XFd">
-                                        <rect key="frame" x="35" y="37" width="344" height="20"/>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="20" id="B11-kS-b2d"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="calibratedWhite"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="66" id="Cch-sg-vfH"/>
-                                    <constraint firstItem="uGf-Fa-QQ3" firstAttribute="top" secondItem="DAP-np-Q1J" secondAttribute="bottom" constant="3" id="DmS-I9-ex2"/>
-                                    <constraint firstItem="vfl-ZC-XFd" firstAttribute="leading" secondItem="J2k-UZ-XQQ" secondAttribute="leading" constant="35" id="F1b-zE-5hN"/>
-                                    <constraint firstAttribute="trailing" secondItem="DAP-np-Q1J" secondAttribute="trailing" constant="35" id="KIR-Gg-7ty"/>
-                                    <constraint firstItem="DAP-np-Q1J" firstAttribute="leading" secondItem="J2k-UZ-XQQ" secondAttribute="leading" constant="35" id="MWW-b2-p9J"/>
-                                    <constraint firstItem="vfl-ZC-XFd" firstAttribute="top" secondItem="uGf-Fa-QQ3" secondAttribute="bottom" constant="2" id="Tbu-4L-brV"/>
-                                    <constraint firstItem="DAP-np-Q1J" firstAttribute="top" secondItem="J2k-UZ-XQQ" secondAttribute="top" constant="8" id="jKE-pS-hcH"/>
-                                    <constraint firstAttribute="trailing" secondItem="vfl-ZC-XFd" secondAttribute="trailing" constant="35" id="q1x-Mf-7lg"/>
-                                    <constraint firstAttribute="trailing" secondItem="uGf-Fa-QQ3" secondAttribute="trailing" constant="35" id="toK-Xd-ifL"/>
-                                    <constraint firstItem="uGf-Fa-QQ3" firstAttribute="leading" secondItem="J2k-UZ-XQQ" secondAttribute="leading" constant="35" id="w2K-Il-yFz"/>
-                                </constraints>
-                            </view>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="2rd-9k-q51"/>
-                        <constraints>
-                            <constraint firstItem="aKC-5k-tLM" firstAttribute="trailing" secondItem="hLP-ql-OiA" secondAttribute="trailing" id="09d-e0-Lbe"/>
-                            <constraint firstItem="aKC-5k-tLM" firstAttribute="leading" secondItem="hLP-ql-OiA" secondAttribute="leading" id="VDo-ak-TEq"/>
-                            <constraint firstItem="2rd-9k-q51" firstAttribute="bottom" secondItem="J2k-UZ-XQQ" secondAttribute="bottom" constant="16" id="bRS-IM-13l"/>
-                            <constraint firstItem="aKC-5k-tLM" firstAttribute="top" secondItem="2rd-9k-q51" secondAttribute="top" id="hWq-1x-oDU"/>
-                            <constraint firstItem="J2k-UZ-XQQ" firstAttribute="trailing" secondItem="hLP-ql-OiA" secondAttribute="trailing" id="i8w-Kx-CNe"/>
-                            <constraint firstItem="J2k-UZ-XQQ" firstAttribute="leading" secondItem="hLP-ql-OiA" secondAttribute="leading" id="j44-Hn-Qa3"/>
-                            <constraint firstItem="J2k-UZ-XQQ" firstAttribute="top" secondItem="aKC-5k-tLM" secondAttribute="bottom" id="zy7-iS-wLE"/>
-                        </constraints>
-                    </view>
-                    <navigationItem key="navigationItem" id="UOD-r3-Kgi"/>
-                    <connections>
-                        <outlet property="labelQuota" destination="DAP-np-Q1J" id="d1L-oC-pxP"/>
-                        <outlet property="labelQuotaExternalSite" destination="vfl-ZC-XFd" id="Zdx-nY-00O"/>
-                        <outlet property="progressQuota" destination="uGf-Fa-QQ3" id="cAN-mW-Ckd"/>
-                        <outlet property="tableView" destination="aKC-5k-tLM" id="XrN-XG-w8l"/>
-                        <outlet property="viewQuota" destination="J2k-UZ-XQQ" id="I2M-eR-p56"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="aLH-sy-tiz" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewControllerPlaceholder storyboardName="NCMore" referencedIdentifier="NCMore.storyboard" id="3YH-o1-17m" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="kVD-Ed-Voa"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="CL1-x1-23E" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="9212" y="1216.9950738916257"/>
-        </scene>
-        <!--Master Navigation Controller-->
-        <scene sceneID="vvl-da-xtI">
-            <objects>
-                <navigationController id="k86-ao-8mQ" customClass="NCMasterNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translucent="NO" id="yOS-hc-yM4">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <connections>
-                        <segue destination="FkP-Lh-8zt" kind="relationship" relationship="rootViewController" id="X0W-jo-GrL"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Uq6-72-639" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="5670" y="-709"/>
+            <point key="canvasLocation" x="8458" y="899"/>
         </scene>
     </scenes>
-    <designables>
-        <designable name="72f-jP-cei">
-            <size key="intrinsicContentSize" width="-1" height="83"/>
-        </designable>
-    </designables>
     <resources>
-        <image name="logo" width="223" height="157.5"/>
         <image name="tabBarPlus" width="80" height="80"/>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
     </resources>
 </document>

@@ -69,6 +69,13 @@ class tableAccount: Object {
     @objc dynamic var urlBase = ""
     @objc dynamic var user = ""
     @objc dynamic var userID = ""
+    @objc dynamic var userStatusClearAt: NSDate? = nil
+    @objc dynamic var userStatusIcon: String?
+    @objc dynamic var userStatusMessage: String?
+    @objc dynamic var userStatusMessageId: String?
+    @objc dynamic var userStatusMessageIsPredefined: Bool = false
+    @objc dynamic var userStatusStatus: String?
+    @objc dynamic var userStatusStatusIsUserDefined: Bool = false
     @objc dynamic var webpage = ""
     @objc dynamic var zip = ""
     // HC
@@ -214,7 +221,8 @@ class tableDirectory: Object {
     @objc dynamic var permissions = ""
     @objc dynamic var richWorkspace: String?
     @objc dynamic var serverUrl = ""
-    
+    @objc dynamic var synchronized: Bool = false
+
     override static func primaryKey() -> String {
         return "ocId"
     }
@@ -396,6 +404,10 @@ class tableShare: Object {
     @objc dynamic var uidFileOwner = ""
     @objc dynamic var uidOwner = ""
     @objc dynamic var url = ""
+    @objc dynamic var userClearAt: NSDate? = nil
+    @objc dynamic var userIcon = ""
+    @objc dynamic var userMessage = ""
+    @objc dynamic var userStatus = ""
 
     override static func primaryKey() -> String {
         return "idShare"
@@ -433,6 +445,20 @@ class tableTrash: Object {
     override static func primaryKey() -> String {
         return "fileId"
     }
+}
+
+class tableUserStatus: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var clearAt: NSDate?
+    @objc dynamic var clearAtTime: String?
+    @objc dynamic var clearAtType: String?
+    @objc dynamic var icon: String?
+    @objc dynamic var id: String?
+    @objc dynamic var message: String?
+    @objc dynamic var predefined: Bool = false
+    @objc dynamic var status: String?
+    @objc dynamic var userId: String?
 }
 
 class tableVideo: Object {

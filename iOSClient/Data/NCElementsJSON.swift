@@ -59,4 +59,7 @@ import Foundation
     @objc public let capabilitiesPaginationEndpoint:            Array = ["ocs","data","capabilities","files","pagination","endpoint"]
 
     @objc public let capabilitiesHWCEnabled:                    Array = ["ocs","data","capabilities","handwerkcloud","enabled"]
+    
+    @objc public let capabilitiesUserStatusEnabled:             Array = ["ocs","data","capabilities","user_status","enabled"]
+    @objc public let capabilitiesUserStatusSupportsEmoji:       Array = ["ocs","data","capabilities","user_status","supports_emoji"]
 }

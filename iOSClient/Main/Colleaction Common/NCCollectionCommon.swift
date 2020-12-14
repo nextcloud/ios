@@ -31,6 +31,8 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         return instance
     }()
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     struct images {
         static var cellFileImage = UIImage()
 
@@ -64,29 +66,29 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
     @objc func createImagesThemingColor() {
         images.cellFileImage = UIImage.init(named: "file")!
         
-        images.cellSharedImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
-        images.cellCanShareImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
-        images.cellShareByLinkImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
+        images.cellSharedImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.shared.graySoft)
+        images.cellCanShareImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.shared.graySoft)
+        images.cellShareByLinkImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.shared.graySoft)
         
-        images.cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite)
-        images.cellCommentImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "comment"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
-        images.cellLivePhotoImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView)
+        images.cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 50, height: 50, color: NCBrandColor.shared.yellowFavorite)
+        images.cellCommentImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "comment"), width: 50, height: 50, color: NCBrandColor.shared.graySoft)
+        images.cellLivePhotoImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 50, height: 50, color: NCBrandColor.shared.textView)
         images.cellOfflineFlag = UIImage.init(named: "offlineFlag")!
         images.cellLocal = UIImage.init(named: "local")!
             
-        images.cellFolderEncryptedImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderEncrypted"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
-        images.cellFolderSharedWithMeImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_shared_with_me"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
-        images.cellFolderPublicImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_public"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
-        images.cellFolderGroupImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_group"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
-        images.cellFolderExternalImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_external"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
-        images.cellFolderAutomaticUploadImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
-        images.cellFolderImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
+        images.cellFolderEncryptedImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderEncrypted"), width: 600, height: 600, color: NCBrandColor.shared.brandElement)
+        images.cellFolderSharedWithMeImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_shared_with_me"), width: 600, height: 600, color: NCBrandColor.shared.brandElement)
+        images.cellFolderPublicImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_public"), width: 600, height: 600, color: NCBrandColor.shared.brandElement)
+        images.cellFolderGroupImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_group"), width: 600, height: 600, color: NCBrandColor.shared.brandElement)
+        images.cellFolderExternalImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_external"), width: 600, height: 600, color: NCBrandColor.shared.brandElement)
+        images.cellFolderAutomaticUploadImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), width: 600, height: 600, color: NCBrandColor.shared.brandElement)
+        images.cellFolderImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 600, height: 600, color: NCBrandColor.shared.brandElement)
         
         images.cellCheckedYes = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), width: 50, height: 50, color: .darkGray)
-        images.cellCheckedNo = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
+        images.cellCheckedNo = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), width: 50, height: 50, color: NCBrandColor.shared.graySoft)
         
-        images.cellButtonMore = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
-        images.cellButtonStop = CCGraphics.changeThemingColorImage(UIImage.init(named: "stop"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
+        images.cellButtonMore = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.shared.graySoft)
+        images.cellButtonStop = CCGraphics.changeThemingColorImage(UIImage.init(named: "stop"), width: 50, height: 50, color: NCBrandColor.shared.graySoft)
     }
     
     // MARK: - NCSelect + Delegate
@@ -102,42 +104,104 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         }
     }
 
-    func openSelectView(viewController: UIViewController, items: [Any]) {
+    func openSelectView(items: [Any]) {
         
         let navigationController = UIStoryboard.init(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
-        let vc = navigationController.topViewController as! NCSelect
+        let topViewController = navigationController.topViewController as! NCSelect
+        var listViewController = [NCSelect]()
+        
         var copyItems: [Any] = []
         for item in items {
             copyItems.append(item)
         }
         
-        vc.delegate = self
-        vc.hideButtonCreateFolder = false
-        vc.selectFile = false
-        vc.includeDirectoryE2EEncryption = false
-        vc.includeImages = false
-        vc.type = ""
-        vc.titleButtonDone = NSLocalizedString("_move_", comment: "")
-        vc.titleButtonDone1 = NSLocalizedString("_copy_",comment: "")
-        vc.isButtonDone1Hide = false
-        vc.isOverwriteHide = false
-        vc.items = copyItems
+        let homeUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        var serverUrl = (copyItems[0] as! Nextcloud.tableMetadata).serverUrl
         
-        navigationController.modalPresentationStyle = .fullScreen
-        viewController.present(navigationController, animated: true, completion: nil)
+        // Setup view controllers such that the current view is of the same directory the items to be copied are in
+        while true {
+            // If not in the topmost directory, create a new view controller and set correct title.
+            // If in the topmost directory, use the default view controller as the base.
+            var viewController: NCSelect?
+            if serverUrl != homeUrl {
+                viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect
+                if viewController == nil {
+                    return
+                }
+                viewController!.titleCurrentFolder = (serverUrl as NSString).lastPathComponent
+            } else {
+                viewController = topViewController
+            }
+            guard let vc = viewController else { return }
+
+            vc.delegate = self
+            vc.hideButtonCreateFolder = false
+            vc.selectFile = false
+            vc.includeDirectoryE2EEncryption = false
+            vc.includeImages = false
+            vc.type = ""
+            vc.titleButtonDone = NSLocalizedString("_move_", comment: "")
+            vc.titleButtonDone1 = NSLocalizedString("_copy_",comment: "")
+            vc.isButtonDone1Hide = false
+            vc.isOverwriteHide = false
+            vc.items = copyItems
+            vc.serverUrl = serverUrl
+            
+            vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
+            listViewController.insert(vc, at: 0)
+            
+            if serverUrl != homeUrl {
+                serverUrl = NCUtility.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)
+            } else {
+                break
+            }
+        }
+        
+        navigationController.setViewControllers(listViewController, animated: false)
+        navigationController.modalPresentationStyle = .formSheet
+        
+        appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
     
     @objc func openFileViewInFolder(serverUrl: String, fileName: String) {
         
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
         let viewController = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as! NCFileViewInFolder
         let navigationController = UINavigationController.init(rootViewController: viewController)
 
-        viewController.serverUrl = serverUrl
-        viewController.fileName = fileName
-                
-        navigationController.presentationController?.delegate = viewController
+        let topViewController = viewController
+        var listViewController = [NCFileViewInFolder]()
+        var serverUrl = serverUrl
+        let homeUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        
+        while true {
+            
+            var viewController: NCFileViewInFolder?
+            if serverUrl != homeUrl {
+                viewController = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as? NCFileViewInFolder
+                if viewController == nil {
+                    return
+                }
+                viewController!.titleCurrentFolder = (serverUrl as NSString).lastPathComponent
+            } else {
+                viewController = topViewController
+            }
+            guard let vc = viewController else { return }
+            
+            vc.serverUrl = serverUrl
+            vc.fileName = fileName
+            
+            vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
+            listViewController.insert(vc, at: 0)
+            
+            if serverUrl != homeUrl {
+                serverUrl = NCUtility.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)
+            } else {
+                break
+            }
+        }
+        
+        navigationController.setViewControllers(listViewController, animated: false)
+        navigationController.modalPresentationStyle = .formSheet
         
         appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
     }

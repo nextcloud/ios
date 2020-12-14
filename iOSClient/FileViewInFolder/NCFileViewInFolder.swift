@@ -32,9 +32,10 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         super.init(coder: aDecoder)
         
         appDelegate.activeFileViewInFolder = self
+        titleCurrentFolder = NCBrandOptions.shared.brand
         layoutKey = k_layout_view_viewInFolder
         enableSearchBar = false
-        emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
+        emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.shared.brandElement)
         emptyTitle = "_files_no_files_"
         emptyDescription = "_no_file_pull_down_"
     }
@@ -42,7 +43,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
     override func viewWillAppear(_ animated: Bool) {
                 
         if serverUrl == NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
-            self.navigationItem.title = NCBrandOptions.sharedInstance.brand
+            self.navigationItem.title = NCBrandOptions.shared.brand
         } else {
             self.navigationItem.title = (serverUrl as NSString).lastPathComponent
         }
@@ -79,9 +80,9 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         DispatchQueue.global().async {
             
             if !self.isSearching {
-                self.metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+                self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
                 if self.metadataFolder == nil {
-                    self.metadataFolder = NCManageDatabase.sharedInstance.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl:  self.serverUrl)
+                    self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl:  self.serverUrl)
                 }
             }
             
@@ -94,7 +95,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
                 
                 // Blink file
                 if self.fileName != nil {
-                    if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, self.serverUrl, self.fileName!)) {
+                    if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, self.serverUrl, self.fileName!)) {
                         if let row = self.dataSource.getIndexMetadata(ocId: metadata.ocId) {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                 UIView.animate(withDuration: 0.3) {
@@ -131,9 +132,9 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
             if errorCode == 0 {
                 for metadata in metadatas ?? [] {
                     if !metadata.directory {
-                        let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                        let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                         if (CCUtility.getFavoriteOffline() && localFile == nil) || (localFile != nil && localFile?.etag != metadata.etag) {
-                            NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false, forceDownload: true)
+                            NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
                         }
                     }
                 }

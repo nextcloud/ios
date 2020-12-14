@@ -357,8 +357,8 @@
 
 + (BOOL)isEndToEndEnabled:(NSString *)account
 {
-    BOOL isE2EEEnabled = [[NCManageDatabase sharedInstance] getCapabilitiesServerBoolWithAccount:account elements:NCElementsJSON.shared.capabilitiesE2EEEnabled exists:false];
-    NSString* versionE2EE = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:account elements:NCElementsJSON.shared.capabilitiesE2EEApiVersion];
+    BOOL isE2EEEnabled = [[NCManageDatabase shared] getCapabilitiesServerBoolWithAccount:account elements:NCElementsJSON.shared.capabilitiesE2EEEnabled exists:false];
+    NSString* versionE2EE = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:account elements:NCElementsJSON.shared.capabilitiesE2EEApiVersion];
     
     NSString *publicKey = [self getEndToEndPublicKey:account];
     NSString *privateKey = [self getEndToEndPrivateKey:account];
@@ -751,7 +751,7 @@
 + (NSString *)getUserAgent
 {
     NSString *appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    NSString *userAgent = [[NCBrandOptions sharedInstance] userAgent];
+    NSString *userAgent = [[NCBrandOptions shared] userAgent];
     
     return [NSString stringWithFormat:@"Mozilla/5.0 (iOS) %@/%@", userAgent, appVersion];
 }
@@ -1006,7 +1006,7 @@
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
     // create Directory database Nextcloud
-    path = [[dirGroup URLByAppendingPathComponent:k_appDatabaseNextcloud] path];
+    path = [[dirGroup URLByAppendingPathComponent:[[NCBrandGlobal shared] appDatabaseNextcloud]] path];
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:path error:nil];
@@ -1038,7 +1038,7 @@
     
     #ifdef DEBUG
     NSLog(@"[LOG] Copy DB on Documents directory");
-    NSString *atPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [[dirGroup URLByAppendingPathComponent:k_appDatabaseNextcloud] path]];
+    NSString *atPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [[dirGroup URLByAppendingPathComponent:[[NCBrandGlobal shared] appDatabaseNextcloud]] path]];
     NSString *toPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [CCUtility getDirectoryDocuments]];
     [[NSFileManager defaultManager] removeItemAtPath:toPathDB error:nil];
     [[NSFileManager defaultManager] copyItemAtPath:atPathDB toPath:toPathDB error:nil];
@@ -1047,7 +1047,7 @@
 
 + (NSURL *)getDirectoryGroup
 {
-    NSURL *path = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
+    NSURL *path = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions shared].capabilitiesGroups];
     return path;
 }
 
@@ -1269,14 +1269,6 @@
     [[NSFileManager defaultManager] createDirectoryAtPath:atPath withIntermediateDirectories:true attributes:nil error:nil];
 }
 
-+ (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl
-{
-    NSURL *url = [[NSURL URLWithString:[serverUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]] URLByDeletingLastPathComponent];
-    NSString *pather = [[url absoluteString] stringByRemovingPercentEncoding];
-    
-    return [pather substringToIndex: [pather length] - 1];
-}
-
 + (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase account:(NSString *)account
 {
     NSString *homeServer = [[NCUtility shared] getHomeServerWithUrlBase:urlBase account:account];
@@ -1388,7 +1380,7 @@
         return;
     }
     
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadataForUpload];
+    tableMetadata *metadata = [[NCManageDatabase shared] copyObjectWithMetadata:metadataForUpload];
     
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
     if (!result.count) {
@@ -1577,14 +1569,14 @@
 
     } else {
        
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
+        tableDirectory *directory = [[NCManageDatabase shared] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
         
-        while (directory != nil) {
+        while (directory != nil && ![directory.serverUrl isEqualToString:home]) {
             if (directory.e2eEncrypted == true) {
                 return true;
             }
-            serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
-            directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
+            serverUrl = [[NCUtility shared] deletingLastPathComponentWithServerUrl:serverUrl urlBase:urlBase account:account];
+            directory = [[NCManageDatabase shared] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
         }
         
         return false;
@@ -1776,11 +1768,11 @@
 
     // Wite data EXIF in DB
     if (tiff || gps) {
-        [[NCManageDatabase sharedInstance] setLocalFileWithOcId:metadata.ocId exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude exifLensModel:lensModel];
+        [[NCManageDatabase shared] setLocalFileWithOcId:metadata.ocId exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude exifLensModel:lensModel];
         if ([stringLatitude doubleValue] != 0 || [stringLongitude doubleValue] != 0) {
             
             // If exists already geocoder data in TableGPS exit
-            location = [[NCManageDatabase sharedInstance] getLocationFromGeoLatitude:stringLatitude longitude:stringLongitude];
+            location = [[NCManageDatabase shared] getLocationFromGeoLatitude:stringLatitude longitude:stringLongitude];
             if (location != nil) {
                 completition(latitude, longitude, location, date, lensModel);
                 return;
@@ -1813,7 +1805,7 @@
                     // GPS
                     if ([location length] > 0) {
                         
-                        [[NCManageDatabase sharedInstance] addGeocoderLocation:location placemarkAdministrativeArea:placemark.administrativeArea placemarkCountry:placemark.country placemarkLocality:placemark.locality placemarkPostalCode:placemark.postalCode placemarkThoroughfare:placemark.thoroughfare latitude:stringLatitude longitude:stringLongitude];
+                        [[NCManageDatabase shared] addGeocoderLocation:location placemarkAdministrativeArea:placemark.administrativeArea placemarkCountry:placemark.country placemarkLocality:placemark.locality placemarkPostalCode:placemark.postalCode placemarkThoroughfare:placemark.thoroughfare latitude:stringLatitude longitude:stringLongitude];
                     }
                     
                     completition(latitude, longitude, location, date, lensModel);

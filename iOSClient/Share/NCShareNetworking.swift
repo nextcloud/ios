@@ -47,8 +47,8 @@ class NCShareNetworking: NSObject {
         NCCommunication.shared.readShares(path: filenamePath) { (account, shares, errorCode, errorDescription) in
             NCUtility.shared.stopActivityIndicator()
              if errorCode == 0 && shares != nil {
-                NCManageDatabase.sharedInstance.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: shares!)
-                self.appDelegate.shares = NCManageDatabase.sharedInstance.getTableShares(account: self.metadata.account)
+                NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: shares!)
+                self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
             } else {
                 NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
             }
@@ -62,8 +62,8 @@ class NCShareNetworking: NSObject {
         NCCommunication.shared.createShareLink(path: filenamePath, password: password) { (account, share, errorCode, errorDescription) in
             NCUtility.shared.stopActivityIndicator()
             if errorCode == 0 && share != nil {
-                NCManageDatabase.sharedInstance.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share!])
-                self.appDelegate.shares = NCManageDatabase.sharedInstance.getTableShares(account: self.metadata.account)
+                NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share!])
+                self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
             } else if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
             }
@@ -79,8 +79,8 @@ class NCShareNetworking: NSObject {
         NCCommunication.shared.createShare(path: filenamePath, shareType: shareType, shareWith: shareWith, permissions: permission) { (account, share, errorCode, errorDescription) in
             NCUtility.shared.stopActivityIndicator()
             if errorCode == 0 && share != nil {
-                NCManageDatabase.sharedInstance.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share!])
-                self.appDelegate.shares = NCManageDatabase.sharedInstance.getTableShares(account: self.metadata.account)
+                NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share!])
+                self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
             } else {
                 NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
             }
@@ -93,7 +93,7 @@ class NCShareNetworking: NSObject {
         NCCommunication.shared.deleteShare(idShare: idShare) { (account, errorCode, errorDescription) in
             NCUtility.shared.stopActivityIndicator()
             if errorCode == 0 {
-                NCManageDatabase.sharedInstance.deleteTableShare(account: account, idShare: idShare)
+                NCManageDatabase.shared.deleteTableShare(account: account, idShare: idShare)
                 self.delegate?.unShareCompleted()
             } else {
                 NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
@@ -106,8 +106,8 @@ class NCShareNetworking: NSObject {
         NCCommunication.shared.updateShare(idShare: idShare, password: password, expireDate: expirationDate, permissions: permission, note: note, hideDownload: hideDownload) { (account, share, errorCode, errorDescription) in
             NCUtility.shared.stopActivityIndicator()
             if errorCode == 0 && share != nil {
-                NCManageDatabase.sharedInstance.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share!])
-                self.appDelegate.shares = NCManageDatabase.sharedInstance.getTableShares(account: self.metadata.account)
+                NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share!])
+                self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
                 self.delegate?.readShareCompleted()
             } else {
                 NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)

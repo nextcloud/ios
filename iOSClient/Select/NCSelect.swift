@@ -28,7 +28,7 @@ import NCCommunication
     @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool)
 }
 
-class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
+class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
     @IBOutlet fileprivate weak var toolbar: UIView!
@@ -58,14 +58,14 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     @objc var isOverwriteHide = true
     @objc var items: [Any] = []
     
-    var titleCurrentFolder = NCBrandOptions.sharedInstance.brand
+    var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
     // -------------------------------------------------------------
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     private var emptyDataSet: NCEmptyDataSet?
-
+    
     private let keyLayout = k_layout_view_move
     private var serverUrlPush = ""
     private var metadataTouch: tableMetadata?
@@ -105,6 +105,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         super.viewDidLoad()
         
         self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.navigationController?.presentationController?.delegate = self
         
         // Cell
         collectionView.register(UINib.init(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
@@ -123,8 +124,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         
         // Add Refresh Control
         collectionView.addSubview(refreshControl)
-        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brandElement
+        refreshControl.tintColor = NCBrandColor.shared.brandText
+        refreshControl.backgroundColor = NCBrandColor.shared.brandElement
         refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
         // Empty
@@ -138,17 +139,17 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         // button
         buttonCreateFolder.layer.cornerRadius = 15
         buttonCreateFolder.layer.masksToBounds = true
-        buttonCreateFolder.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.5).cgColor
+        buttonCreateFolder.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
         buttonCreateFolder.setTitleColor(.black, for: .normal)
 
         buttonDone.layer.cornerRadius = 15
         buttonDone.layer.masksToBounds = true
-        buttonDone.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.5).cgColor
+        buttonDone.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
         buttonDone.setTitleColor(.black, for: .normal)
         
         buttonDone1.layer.cornerRadius = 15
         buttonDone1.layer.masksToBounds = true
-        buttonDone1.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.5).cgColor
+        buttonDone1.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
         buttonDone1.setTitleColor(.black, for: .normal)
                 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
@@ -183,8 +184,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         }
                 
         // get auto upload folder
-        autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
+        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
         
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(itemForLine)
@@ -197,7 +198,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         
         loadDatasource(withLoadFolder: true)
 
-        shares = NCManageDatabase.sharedInstance.getTableShares(account: appDelegate.account, serverUrl: serverUrl)
+        shares = NCManageDatabase.shared.getTableShares(account: appDelegate.account, serverUrl: serverUrl)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -209,10 +210,16 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        toolbar.backgroundColor = NCBrandColor.sharedInstance.tabBar
+        view.backgroundColor = NCBrandColor.shared.backgroundView
+        collectionView.backgroundColor = NCBrandColor.shared.backgroundView
+        collectionView.reloadData()
+        refreshControl.backgroundColor = NCBrandColor.shared.backgroundView
+        toolbar.backgroundColor = NCBrandColor.shared.tabBar
         //toolbar.tintColor = .gray
+    }
+    
+    func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
+        delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type, items: items, buttonType: "cancel", overwrite: overwrite)
     }
     
     // MARK: - Empty
@@ -224,7 +231,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
             view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
             view.emptyDescription.text = ""
         } else {
-            view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
+            view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.shared.brandElement)
             if includeImages {
                 view.emptyTitle.text = NSLocalizedString("_files_no_files_", comment: "")
             } else {
@@ -232,10 +239,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
             }
             view.emptyDescription.text = ""
         }
-    }
-    
-    func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
-        return true
     }
     
     // MARK: ACTION
@@ -409,9 +412,9 @@ extension NCSelect: UICollectionViewDataSource {
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
             
             if collectionView.collectionViewLayout == gridLayout {
-                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
+                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.shared.icon), for: .normal)
             } else {
-                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
+                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.shared.icon), for: .normal)
             }
             
             header.delegate = self
@@ -478,8 +481,8 @@ extension NCSelect: UICollectionViewDataSource {
             cell.objectId = metadata.ocId
             cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
-            cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
-            cell.separator.backgroundColor = NCBrandColor.sharedInstance.separator
+            cell.labelTitle.textColor = NCBrandColor.shared.textView
+            cell.separator.backgroundColor = NCBrandColor.shared.separator
             
             cell.imageSelect.image = nil
             cell.imageStatus.image = nil
@@ -516,7 +519,7 @@ extension NCSelect: UICollectionViewDataSource {
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
-                let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, lockServerUrl))
+                let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, lockServerUrl))
                 
                 // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {
@@ -612,7 +615,7 @@ extension NCSelect: UICollectionViewDataSource {
             cell.objectId = metadata.ocId
             cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
-            cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
+            cell.labelTitle.textColor = NCBrandColor.shared.textView
             
             cell.imageSelect.image = nil
             cell.imageStatus.image = nil
@@ -645,7 +648,7 @@ extension NCSelect: UICollectionViewDataSource {
                 }
     
                 let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
-                let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, lockServerUrl))
+                let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, lockServerUrl))
                                 
                 // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {
@@ -746,7 +749,7 @@ extension NCSelect {
             }
         }
         
-        let metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate!)
+        let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: predicate!)
         self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
         
         if withLoadFolder {
@@ -755,7 +758,7 @@ extension NCSelect {
             self.refreshControl.endRefreshing()
         }
         
-        let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account,serverUrl))
+        let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account,serverUrl))
         richWorkspaceText = directory?.richWorkspace
         
         collectionView.reloadData()

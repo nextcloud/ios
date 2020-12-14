@@ -85,40 +85,40 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         layer.shadowOpacity = 0.2
         
         switchAllowEditing?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchAllowEditing?.onTintColor = NCBrandColor.sharedInstance.brandElement
+        switchAllowEditing?.onTintColor = NCBrandColor.shared.brandElement
         switchReadOnly?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchReadOnly?.onTintColor = NCBrandColor.sharedInstance.brandElement
+        switchReadOnly?.onTintColor = NCBrandColor.shared.brandElement
         switchAllowUploadAndEditing?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchAllowUploadAndEditing?.onTintColor = NCBrandColor.sharedInstance.brandElement
+        switchAllowUploadAndEditing?.onTintColor = NCBrandColor.shared.brandElement
         switchFileDrop?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchFileDrop?.onTintColor = NCBrandColor.sharedInstance.brandElement
+        switchFileDrop?.onTintColor = NCBrandColor.shared.brandElement
         switchHideDownload.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchHideDownload.onTintColor = NCBrandColor.sharedInstance.brandElement
+        switchHideDownload.onTintColor = NCBrandColor.shared.brandElement
         switchPasswordProtect.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchPasswordProtect.onTintColor = NCBrandColor.sharedInstance.brandElement
+        switchPasswordProtect.onTintColor = NCBrandColor.shared.brandElement
         switchSetExpirationDate.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchSetExpirationDate.onTintColor = NCBrandColor.sharedInstance.brandElement
+        switchSetExpirationDate.onTintColor = NCBrandColor.shared.brandElement
         
         labelAllowEditing?.text = NSLocalizedString("_share_allow_editing_", comment: "")
-        labelAllowEditing?.textColor = NCBrandColor.sharedInstance.textView
+        labelAllowEditing?.textColor = NCBrandColor.shared.textView
         labelReadOnly?.text = NSLocalizedString("_share_read_only_", comment: "")
-        labelReadOnly?.textColor = NCBrandColor.sharedInstance.textView
+        labelReadOnly?.textColor = NCBrandColor.shared.textView
         labelAllowUploadAndEditing?.text = NSLocalizedString("_share_allow_upload_", comment: "")
-        labelAllowUploadAndEditing?.textColor = NCBrandColor.sharedInstance.textView
+        labelAllowUploadAndEditing?.textColor = NCBrandColor.shared.textView
         labelFileDrop?.text = NSLocalizedString("_share_file_drop_", comment: "")
-        labelFileDrop?.textColor = NCBrandColor.sharedInstance.textView
+        labelFileDrop?.textColor = NCBrandColor.shared.textView
         labelHideDownload?.text = NSLocalizedString("_share_hide_download_", comment: "")
-        labelHideDownload?.textColor = NCBrandColor.sharedInstance.textView
+        labelHideDownload?.textColor = NCBrandColor.shared.textView
         labelPasswordProtect?.text = NSLocalizedString("_share_password_protect_", comment: "")
-        labelPasswordProtect?.textColor = NCBrandColor.sharedInstance.textView
+        labelPasswordProtect?.textColor = NCBrandColor.shared.textView
         labelSetExpirationDate?.text = NSLocalizedString("_share_expiration_date_", comment: "")
-        labelSetExpirationDate?.textColor = NCBrandColor.sharedInstance.textView
+        labelSetExpirationDate?.textColor = NCBrandColor.shared.textView
         labelNoteToRecipient?.text = NSLocalizedString("_share_note_recipient_", comment: "")
-        labelNoteToRecipient?.textColor = NCBrandColor.sharedInstance.textView
+        labelNoteToRecipient?.textColor = NCBrandColor.shared.textView
         labelDeleteShareLink?.text = NSLocalizedString("_share_delete_sharelink_", comment: "")
-        labelDeleteShareLink?.textColor = NCBrandColor.sharedInstance.textView
+        labelDeleteShareLink?.textColor = NCBrandColor.shared.textView
         labelAddAnotherLink?.text = NSLocalizedString("_share_add_sharelink_", comment: "")
-        labelAddAnotherLink?.textColor = NCBrandColor.sharedInstance.textView
+        labelAddAnotherLink?.textColor = NCBrandColor.shared.textView
         
         fieldSetExpirationDate.inputView = UIView()
         
@@ -150,7 +150,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     func reloadData(idShare: Int) {
         
         guard let metadata = self.metadata else { return }
-        tableShare = NCManageDatabase.sharedInstance.getTableShare(account: metadata.account, idShare: idShare)
+        tableShare = NCManageDatabase.shared.getTableShare(account: metadata.account, idShare: idShare)
         guard let tableShare = self.tableShare else { return }
 
         if metadata.directory {
@@ -341,7 +341,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     @IBAction func fieldSetExpirationDate(sender: UITextField) {
         
-        let calendar = NCShareCommon.sharedInstance.openCalendar(view: self, width: width, height: height)
+        let calendar = NCShareCommon.shared.openCalendar(view: self, width: width, height: height)
         calendar.calendarView.delegate = self
         self.calendar = calendar.calendarView
         viewWindowCalendar = calendar.viewWindow

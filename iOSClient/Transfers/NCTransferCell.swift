@@ -57,7 +57,7 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImage
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
         
-        progressView.tintColor = NCBrandColor.sharedInstance.brandElement
+        progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.transform = CGAffineTransform(scaleX: 1.0, y: 0.5)
         progressView.trackTintColor = .clear
 

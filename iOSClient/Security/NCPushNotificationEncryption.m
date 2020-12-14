@@ -33,14 +33,14 @@
 
 @implementation NCPushNotificationEncryption
 
-+ (NCPushNotificationEncryption *)sharedInstance
++ (NCPushNotificationEncryption *)shared
 {
     static dispatch_once_t once;
-    static NCPushNotificationEncryption *sharedInstance;
+    static NCPushNotificationEncryption *shared;
     dispatch_once(&once, ^{
-        sharedInstance = [[self alloc] init];
+        shared = [[self alloc] init];
     });
-    return sharedInstance;
+    return shared;
 }
 
 - (id)init

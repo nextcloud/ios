@@ -26,7 +26,7 @@ import UIKit
 //MARK: - Configuration
 
 @objc class NCBrandConfiguration: NSObject {
-    @objc static let sharedInstance: NCBrandConfiguration = {
+    @objc static let shared: NCBrandConfiguration = {
         let instance = NCBrandConfiguration()
         return instance
     }()
@@ -40,7 +40,7 @@ import UIKit
 //MARK: - Options
 
 @objc class NCBrandOptions: NSObject {
-    @objc static let sharedInstance: NCBrandOptions = {
+    @objc static let shared: NCBrandOptions = {
         let instance = NCBrandOptions()
         return instance
     }()
@@ -96,7 +96,7 @@ import UIKit
 //MARK: - Color
 
 class NCBrandColor: NSObject {
-    @objc static let sharedInstance: NCBrandColor = {
+    @objc static let shared: NCBrandColor = {
         let instance = NCBrandColor()
         instance.setDarkMode()
         return instance
@@ -153,4 +153,81 @@ class NCBrandColor: NSObject {
             select = self.brandElement.withAlphaComponent(0.1)
         }
     }
+    
+#if !EXTENSION
+    @objc public func settingThemingColor(account: String) {
+        
+        let darker: CGFloat = 30    // %
+        let lighter: CGFloat = 30   // %
+
+        if NCBrandOptions.shared.use_themingColor {
+            
+            let themingColor = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColor)
+            
+            let themingColorElement = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorElement)
+            
+            let themingColorText = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorText)
+            
+            CCGraphics.settingThemingColor(themingColor, themingColorElement: themingColorElement, themingColorText: themingColorText)
+                        
+            if NCBrandColor.shared.brandElement.isTooLight() {
+                if let color = NCBrandColor.shared.brandElement.darker(by: darker) {
+                    NCBrandColor.shared.brandElement = color
+                }
+            } else if NCBrandColor.shared.brandElement.isTooDark() {
+                if let color = NCBrandColor.shared.brandElement.lighter(by: lighter) {
+                    NCBrandColor.shared.brandElement = color
+                }
+            }           
+            
+        } else {
+            
+            if NCBrandColor.shared.customer.isTooLight() {
+                if let color = NCBrandColor.shared.customer.darker(by: darker) {
+                    NCBrandColor.shared.brandElement = color
+                }
+            } else if NCBrandColor.shared.customer.isTooDark() {
+                if let color = NCBrandColor.shared.customer.lighter(by: lighter) {
+                    NCBrandColor.shared.brandElement = color
+                }
+            } else {
+                NCBrandColor.shared.brandElement = NCBrandColor.shared.customer
+            }
+            
+            NCBrandColor.shared.brand = NCBrandColor.shared.customer
+            NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
+        }
+        
+        setDarkMode()
+        
+        DispatchQueue.main.async {
+            NCCollectionCommon.shared.createImagesThemingColor()
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_changeTheming)
+        }
+    }
+#endif
+}
+
+//MARK: - Global
+
+@objc class NCBrandGlobal: NSObject {
+    @objc static let shared: NCBrandGlobal = {
+        let instance = NCBrandGlobal()
+        return instance
+    }()
+
+    // Directory on Group
+    @objc public let appDatabaseNextcloud: String   = "Library/Application Support/Nextcloud"
+
+    // Database Realm
+    public let databaseDefault: String              = "nextcloud.realm"
+    public let databaseSchemaVersion: UInt64        = 153
+    
+    // NCSharePaging
+    public let indexPageActivity: Int               = 0
+    public let indexPageComments: Int               = 1
+    public let indexPageSharing: Int                = 2
+    
+    // Nextcloud unsupported
+    public let nextcloud_unsupported_version: Int   = 13
 }

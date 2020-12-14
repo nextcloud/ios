@@ -45,14 +45,13 @@
 //#if TARGET_OS_SIMULATOR
 //#endif
 
-//if indexPath.section <  collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) 
+//if indexPath.section <  collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)
 
 #define CALL_ORIGIN NSLog(@"Origin: [%@]", [[[[NSThread callStackSymbols] objectAtIndex:1] componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]] objectAtIndex:1])
 #endif
 
 // Directory on Group
 #define k_appApplicationSupport                         @"Library/Application Support"
-#define k_appDatabaseNextcloud                          @"Library/Application Support/Nextcloud"
 #define k_appUserData                                   @"Library/Application Support/UserData"
 #define k_appCertificates                               @"Library/Application Support/Certificates"
 #define k_appScan                                       @"Library/Application Support/Scan"
@@ -77,10 +76,6 @@
 
 #define k_sizePreview                                   1024
 #define k_sizeIcon                                      512
-
-// Database Realm
-#define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         149
 
 // Database JSON
 #define k_databaseDefaultJSON                           @"nextcloud.json"
@@ -168,7 +163,6 @@
 #define selectorLoadCopy                                @"loadCopy"
 #define selectorLoadOffline                             @"loadOffline"
 #define selectorOpenIn                                  @"openIn"
-#define selectorOpenInDetail                            @"openInDetail"
 #define selectorUploadAutoUpload                        @"uploadAutoUpload"
 #define selectorUploadAutoUploadAll                     @"uploadAutoUploadAll"
 #define selectorUploadFile                              @"uploadFile"
@@ -292,9 +286,6 @@
 #define k_template_spreadsheet                          @"spreadsheet"
 #define k_template_presentation                         @"presentation"
 
-// Nextcloud unsupported
-#define k_nextcloud_unsupported                         13
-
 // Nextcloud version
 #define k_nextcloud_version_12_0                        12
 #define k_nextcloud_version_13_0                        13
@@ -311,36 +302,36 @@
 #define k_notificationCenter_applicationDidEnterBackground  @"applicationDidEnterBackground"
 #define k_notificationCenter_applicationWillEnterForeground @"applicationWillEnterForeground"
 
-#define k_notificationCenter_initializeMain             @"initializeMain"
-#define k_notificationCenter_setTitleMain               @"setTitleMain"
-#define k_notificationCenter_changeTheming              @"changeTheming"
-#define k_notificationCenter_splitViewChangeDisplayMode @"splitViewChangeDisplayMode"
-#define k_notificationCenter_changeUserProfile          @"changeUserProfile"
-#define k_notificationCenter_richdocumentGrabFocus      @"richdocumentGrabFocus"
-#define k_notificationCenter_reloadDataNCShare          @"reloadDataNCShare"
-#define k_notificationCenter_closeRichWorkspaceWebView  @"closeRichWorkspaceWebView"
+#define k_notificationCenter_initializeMain                 @"initializeMain"
+#define k_notificationCenter_setTitleMain                   @"setTitleMain"
+#define k_notificationCenter_changeTheming                  @"changeTheming"
+#define k_notificationCenter_changeUserProfile              @"changeUserProfile"
+#define k_notificationCenter_richdocumentGrabFocus          @"richdocumentGrabFocus"
+#define k_notificationCenter_reloadDataNCShare              @"reloadDataNCShare"
+#define k_notificationCenter_closeRichWorkspaceWebView      @"closeRichWorkspaceWebView"
 
-#define k_notificationCenter_reloadDataSource           @"reloadDataSource"                 // userInfo: ocId?, serverUrl?
-#define k_notificationCenter_changeStatusFolderE2EE     @"changeStatusFolderE2EE"           // userInfo: serverUrl
+#define k_notificationCenter_reloadDataSource               @"reloadDataSource"                 // userInfo: ocId?, serverUrl?
+#define k_notificationCenter_reloadDataSourceNetworkForced  @"reloadDataSourceNetworkForced"    // userInfo: serverUrl?
 
-#define k_notificationCenter_downloadStartFile          @"downloadStartFile"                // userInfo: ocId
-#define k_notificationCenter_downloadedFile             @"downloadedFile"                   // userInfo: ocId, selector, errorCode, errorDescription
-#define k_notificationCenter_downloadCancelFile         @"downloadCancelFile"               // userInfo: ocId
+#define k_notificationCenter_changeStatusFolderE2EE         @"changeStatusFolderE2EE"           // userInfo: serverUrl
 
-#define k_notificationCenter_uploadStartFile            @"uploadStartFile"                  // userInfo: ocId
-#define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: ocId, ocIdTemp, errorCode, errorDescription
-#define k_notificationCenter_uploadCancelFile           @"uploadCancelFile"                 // userInfo: ocId
+#define k_notificationCenter_downloadStartFile              @"downloadStartFile"                // userInfo: ocId
+#define k_notificationCenter_downloadedFile                 @"downloadedFile"                   // userInfo: ocId, selector, errorCode, errorDescription
+#define k_notificationCenter_downloadCancelFile             @"downloadCancelFile"               // userInfo: ocId
 
-#define k_notificationCenter_progressTask               @"progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
+#define k_notificationCenter_uploadStartFile                @"uploadStartFile"                  // userInfo: ocId
+#define k_notificationCenter_uploadedFile                   @"uploadedFile"                     // userInfo: ocId, ocIdTemp, errorCode, errorDescription
+#define k_notificationCenter_uploadCancelFile               @"uploadCancelFile"                 // userInfo: ocId
 
-#define k_notificationCenter_createFolder               @"createFolder"                     // userInfo: ocId
-#define k_notificationCenter_deleteFile                 @"deleteFile"                       // userInfo: ocId, fileNameView, typeFile, onlyLocal
-#define k_notificationCenter_renameFile                 @"renameFile"                       // userInfo: ocId, errorCode, errorDescription
-#define k_notificationCenter_moveFile                   @"moveFile"                         // userInfo: ocId, metadataNew
-#define k_notificationCenter_copyFile                   @"copyFile"                         // userInfo: ocId, serverUrlTo
-#define k_notificationCenter_favoriteFile               @"favoriteFile"                     // userInfo: ocId
+#define k_notificationCenter_progressTask                   @"progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
 
-#define k_notificationCenter_menuSearchTextPDF          @"menuSearchTextPDF"
-#define k_notificationCenter_menuDownloadImage          @"menuDownloadImage"                // userInfo: ocId
-#define k_notificationCenter_menuSaveLivePhoto          @"menuSaveLivePhoto"                // userInfo: ocId, ocIdMov
-#define k_notificationCenter_menuDetailClose            @"menuDetailClose"
+#define k_notificationCenter_createFolder                   @"createFolder"                     // userInfo: ocId
+#define k_notificationCenter_deleteFile                     @"deleteFile"                       // userInfo: ocId, fileNameView, typeFile, onlyLocal
+#define k_notificationCenter_renameFile                     @"renameFile"                       // userInfo: ocId, errorCode, errorDescription
+#define k_notificationCenter_moveFile                       @"moveFile"                         // userInfo: ocId, serverUrlTo
+#define k_notificationCenter_copyFile                       @"copyFile"                         // userInfo: ocId, serverUrlFrom
+#define k_notificationCenter_favoriteFile                   @"favoriteFile"                     // userInfo: ocId
+
+#define k_notificationCenter_menuSearchTextPDF              @"menuSearchTextPDF"
+#define k_notificationCenter_menuSaveLivePhoto              @"menuSaveLivePhoto"                // userInfo: ocId, ocIdMov
+#define k_notificationCenter_menuDetailClose                @"menuDetailClose"

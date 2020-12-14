@@ -2,7 +2,7 @@
 //  NCViewerImage.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 18/02/20.
+//  Created by Marino Faggiana on 24/10/2020.
 //  Copyright © 2020 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
@@ -21,136 +21,166 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
+import SVGKit
 import NCCommunication
 
-class NCViewerImage: NSObject {
+class NCViewerImage: UIViewController {
 
-    private weak var metadata: tableMetadata?
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
-    private var viewerImageViewController: NCViewerImageViewController?
-    private var metadatas = [tableMetadata]()
-      
-    private var favoriteFilterImage: Bool = false
-    private var mediaFilterImage: Bool = false
-    private var offlineFilterImage: Bool = false
+    @IBOutlet weak var progressView: UIProgressView!
+    @IBOutlet weak var toolBar: UIToolbar!
 
-    private weak var detailViewController: NCDetailViewController?
-    
-    private var videoLayer: AVPlayerLayer?
-    private var viewerImageViewControllerLongPressInProgress = false
-
-    init(_ metadata: tableMetadata, metadatas: [tableMetadata], detailViewController: NCDetailViewController, favoriteFilterImage: Bool, mediaFilterImage: Bool, offlineFilterImage: Bool) {
-        
-        self.metadata = metadata
-        self.metadatas = metadatas
-        self.detailViewController = detailViewController
-        self.favoriteFilterImage = favoriteFilterImage
-        self.mediaFilterImage = mediaFilterImage
-        self.offlineFilterImage = offlineFilterImage
+    enum ScreenMode {
+        case full, normal
     }
+    var currentMode: ScreenMode = .full
         
-    func viewImage() {
-        guard let detailViewController = detailViewController else { return }
-        viewerImageViewController = NCViewerImageViewController(index: 0, dataSource: self, delegate: self)
-                
-        for view in detailViewController.backgroundView.subviews { view.removeFromSuperview() }
-        
-        if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
-                            
-            var index = 0
-            if let indexFound = metadatas.firstIndex(where: { $0.ocId == self.metadata?.ocId }) { index = indexFound }
-            self.metadatas = metadatas
-            
-            self.viewerImageViewController = NCViewerImageViewController(index: index, dataSource: self, delegate: self)
-            if viewerImageViewController != nil {
-                           
-                detailViewController.backgroundView.image = nil
+    var pageViewController: UIPageViewController {
+        return self.children[0] as! UIPageViewController
+    }
+    
+    var currentViewController: NCViewerImageZoom {
+        return self.pageViewController.viewControllers![0] as! NCViewerImageZoom
+    }
+    
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-                viewerImageViewController!.view.isHidden = true
+    var metadatas: [tableMetadata] = []
+    var currentMetadata: tableMetadata = tableMetadata()
+    var currentIndex = 0
+    var nextIndex: Int?
+       
+    var currentViewerImageZoom: NCViewerImageZoom?
+    var panGestureRecognizer: UIPanGestureRecognizer!
+    var singleTapGestureRecognizer: UITapGestureRecognizer!
+    var longtapGestureRecognizer: UILongPressGestureRecognizer!
+    
+    private var player: AVPlayer?
+    private var videoLayer: AVPlayerLayer?
+    private var timeObserverToken: Any?
+    private var rateObserverToken: Any?
+    var pictureInPictureOcId: String = ""
+    var textColor: UIColor = NCBrandColor.shared.textView
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
+        panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
+        longtapGestureRecognizer = UILongPressGestureRecognizer()
+        longtapGestureRecognizer.delaysTouchesBegan = true
+        longtapGestureRecognizer.minimumPressDuration = 0.3
+        longtapGestureRecognizer.delegate = self
+        longtapGestureRecognizer.addTarget(self, action: #selector(didLongpressGestureEvent(gestureRecognizer:)))
+        
+        pageViewController.delegate = self
+        pageViewController.dataSource = self
+        pageViewController.view.addGestureRecognizer(panGestureRecognizer)
+        pageViewController.view.addGestureRecognizer(singleTapGestureRecognizer)
+        pageViewController.view.addGestureRecognizer(longtapGestureRecognizer)
+        
+        let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
                 
-                viewerImageViewController!.enableInteractiveDismissal = true
-                
-                detailViewController.addChild(viewerImageViewController!)
-                detailViewController.backgroundView.addSubview(viewerImageViewController!.view)
-                
-                viewerImageViewController!.view.frame = CGRect(x: 0, y: 0, width: detailViewController.backgroundView.frame.width, height: detailViewController.backgroundView.frame.height)
-                viewerImageViewController!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                
-                viewerImageViewController!.didMove(toParent: detailViewController)
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                    self.viewerImageViewController!.changeInViewSize(to: detailViewController.backgroundView.frame.size)
-                    self.viewerImageViewController!.view.isHidden = false
-                }
+        viewerImageZoom.index = currentIndex
+        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
+        viewerImageZoom.metadata = metadatas[currentIndex]
+        viewerImageZoom.delegate = self
+        viewerImageZoom.viewerImage = self
+
+        singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
+        
+        pageViewController.setViewControllers([viewerImageZoom], direction: .forward, animated: true, completion: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_progressTask), object:nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(saveLivePhoto(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_menuSaveLivePhoto), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: k_notificationCenter_menuDetailClose), object: nil)
+        
+        progressView.tintColor = NCBrandColor.shared.brandElement
+        progressView.trackTintColor = .clear
+        progressView.progress = 0
+        
+        setToolBar()
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.shared.textView), style: .plain, target: self, action: #selector(self.openMenuMore))
+        
+        navigationController?.setNavigationBarHidden(false, animated: true)
+        navigationController?.navigationBar.prefersLargeTitles = false
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if let navigationController = self.navigationController {
+            if !navigationController.viewControllers.contains(self) {
+                videoStop()
             }
         }
+    }
+    
+    @objc func viewUnload() {
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.synchronizationMedia(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_synchronizationMedia), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeDisplayMode), name: NSNotification.Name(rawValue: k_notificationCenter_splitViewChangeDisplayMode), object: nil)
+        navigationController?.popViewController(animated: true)
+    }
+    
+    @objc func openMenuMore() {
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.downloadFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
+        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: currentMetadata, webView: false)
     }
     
     //MARK: - NotificationCenter
 
-    @objc func changeDisplayMode() {
-        guard let detailViewController = detailViewController else { return }
-        NCViewerImageCommon.shared.imageChangeSizeView(viewerImageViewController: viewerImageViewController, size: detailViewController.backgroundView.frame.size, metadata: metadata)
+    @objc func downloadedFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
+                if errorCode == 0  && metadata.ocId == currentMetadata.ocId {
+                    self.reloadCurrentPage()
+                }
+                if self.metadatas.first(where: { $0.ocId == metadata.ocId }) != nil {
+                    progressView.progress = 0
+                }
+            }
+        }
     }
     
-    @objc func synchronizationMedia(_ notification: NSNotification) {
+    @objc func triggerProgressTask(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let type = userInfo["type"] as? String {
-                
-                if self.mediaFilterImage {
-                    
-                    if let metadatas = appDelegate.activeMedia.sectionDatasource.metadatas as? [tableMetadata] {
-                        self.metadatas = metadatas
-                    }
-                    
-                    if type == "delete" {
-                        if metadatas.count > 0 {
-                            var index = viewerImageViewController!.index - 1
-                            if index < 0 { index = 0}
-                            self.metadata = metadatas[index]
-                            viewImage()
-                            
-                        } else {
-                            
-                            detailViewController?.viewUnload()
-                        }
-                    }
-                    
-                    if type == "rename" || type == "move"   {
-                        viewerImageViewController?.reloadContentViews()
+            if let ocId = userInfo["ocId"] as? String {
+                if self.metadatas.first(where: { $0.ocId == ocId }) != nil {
+                    let progressNumber = userInfo["progress"] as? NSNumber ?? 0
+                    let progress = progressNumber.floatValue
+                    if progress == 1 {
+                        self.progressView.progress = 0
+                    } else {
+                        self.progressView.progress = progress
                     }
                 }
             }
         }
     }
-
-    @objc func moveFile(_ notification: NSNotification) {
-        deleteFile(notification)
-    }
     
     @objc func deleteFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode != 0 || metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
+            if let ocId = userInfo["ocId"] as? String {
                 
-                if !mediaFilterImage {
-                    if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
-                        var index = viewerImageViewController!.index - 1
-                        if index < 0 { index = 0}
-                        self.metadata = metadatas[index]
-                        viewImage()
-                    } else {
-                        detailViewController?.viewUnload()
+                let metadatas = self.metadatas.filter { $0.ocId != ocId }
+                if self.metadatas.count == metadatas.count { return }
+                self.metadatas = metadatas
+                
+                if ocId == currentViewerImageZoom?.metadata.ocId {
+                    if !shiftCurrentPage() {
+                        self.viewUnload()
                     }
                 }
             }
@@ -158,280 +188,607 @@ class NCViewerImage: NSObject {
     }
     
     @objc func renameFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode != 0 || metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 
-                if !mediaFilterImage {
-                    
-                    if NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) != nil {
-                        viewImage()
-                    } else {
-                        detailViewController?.viewUnload()
+                if let index = metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) {
+                    metadatas[index] = metadata
+                    if index == currentIndex {
+                        navigationItem.title = metadata.fileNameView
+                        currentViewerImageZoom?.metadata = metadata
+                        self.currentMetadata = metadata
                     }
                 }
             }
         }
     }
     
-    @objc func downloadFile(_ notification: NSNotification) {
+    @objc func moveFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                if metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                
+                if metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) != nil {
+                    deleteFile(notification)
+                }
+            }
+        }
+    }
+    
+    @objc func saveLivePhoto(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let ocId = userInfo["ocId"] as? String, let ocIdMov = userInfo["ocIdMov"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let metadataMov = NCManageDatabase.shared.getMetadataFromOcId(ocIdMov) {
+                
+                let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
+                let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
+                
+                NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
+                    DispatchQueue.main.async {
+                        self.progressView.progress = Float(progress)
+                    }
+                }, completion: { livePhoto, resources in
+                    self.progressView.progress = 0
+                    if resources != nil {
+                        NCLivePhoto.saveToLibrary(resources!) { (result) in
+                            if !result {
+                                NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                            }
+                        }
+                    } else {
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                    }
+                })
+            }
+        }
+    }
+    
+    @objc func changeTheming() {
+        
+        if currentMode == .normal {
+            view.backgroundColor = NCBrandColor.shared.backgroundView
+            textColor = NCBrandColor.shared.textView
+        }
+        toolBar.tintColor = NCBrandColor.shared.brandElement
+    }
+    
+    //
+    // Detect for LIVE
+    //
+    @objc func didLongpressGestureEvent(gestureRecognizer: UITapGestureRecognizer) {
+                
+        if gestureRecognizer.state == .began {
+            
+            currentViewerImageZoom?.centreConstraints()
+            currentViewerImageZoom?.statusViewImage.isHidden = true
+            currentViewerImageZoom?.statusLabel.isHidden = true
+            
+            let fileName = (currentMetadata.fileNameView as NSString).deletingPathExtension + ".mov"
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentMetadata.account, currentMetadata.serverUrl, fileName)) {
+                
+                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                    
+                    AudioServicesPlaySystemSound(1519) // peek feedback
+                    self.videoPlay(metadata: metadata)
+                    
+                } else {
+                    
+                    let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileNameView
+                    let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                                    
+                    NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
+                        
+                    }, taskHandler: { (_) in
+                        
+                    }, progressHandler: { (progress) in
+                                        
+                        self.progressView.progress = Float(progress.fractionCompleted)
+                        
+                    }) { (account, etag, date, length, allHeaderFields, error, errorCode, errorDescription) in
+                        
+                        self.progressView.progress = 0
+                        
+                        if errorCode == 0 && account == metadata.account {
+                            
+                            NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                            
+                            if gestureRecognizer.state == .changed || gestureRecognizer.state == .began {
+                                AudioServicesPlaySystemSound(1519) // peek feedback
+                                self.videoPlay(metadata: metadata)
+                            }
+                        }
+                    }
+                }
+            }
+            
+        } else if gestureRecognizer.state == .ended {
+            
+            currentViewerImageZoom?.statusViewImage.isHidden = false
+            currentViewerImageZoom?.statusLabel.isHidden = false
+            
+            let fileName = (currentMetadata.fileNameView as NSString).deletingPathExtension + ".mov"
+            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentMetadata.account, currentMetadata.serverUrl, fileName)) != nil {
+                videoStop()
+            }
+        }
+    }
+    
+    //MARK: - Image
+    
+    func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
+                
+        if let image = getImage(metadata: metadata) {
+            return image
+        }
+        
+        if metadata.typeFile == k_metadataTypeFile_video && !metadata.hasPreview {
+            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
+        }
+        
+        if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+            if let imagePreviewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag) {
+                return UIImage.init(contentsOfFile: imagePreviewPath)
+            } 
+        }
+        
+        return nil
+    }
+    
+    private func getImage(metadata: tableMetadata) -> UIImage? {
+        
+        let ext = CCUtility.getExtension(metadata.fileNameView)
+        var image: UIImage?
+        
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.typeFile == k_metadataTypeFile_image {
+           
+            let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+            let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            
+            if ext == "GIF" {
+                if !FileManager().fileExists(atPath: previewPath) {
+                    CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
+                }
+                image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
+            } else if ext == "SVG" {
+                if let svgImage = SVGKImage(contentsOfFile: imagePath) {
+                    let scale = svgImage.size.height / svgImage.size.width
+                    svgImage.size = CGSize(width: CGFloat(k_sizePreview), height: (CGFloat(k_sizePreview) * scale))
+                    if let image = svgImage.uiImage {
+                        if !FileManager().fileExists(atPath: previewPath) {
+                            do {
+                                try image.pngData()?.write(to: URL(fileURLWithPath: previewPath), options: .atomic)
+                            } catch { }
+                        }
+                        return image
+                    } else {
+                        return nil
+                    }
+                } else {
+                    return nil
+                }
+            } else {
+                if !FileManager().fileExists(atPath: previewPath) {
+                    CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
+                }
+                image = UIImage.init(contentsOfFile: imagePath)
+            }
+        }
+        
+        return image
+    }
+        
+    //MARK: - Video
+    
+    func videoPlay(metadata: tableMetadata) {
                                 
-                if  errorCode == 0  {
-                    viewerImageViewController?.reloadContentViews()
+        NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
+
+        if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
+            
+            player = AVPlayer(url: url)
+            player?.isMuted = CCUtility.getAudioMute()
+            videoLayer = AVPlayerLayer(player: player)
+            
+            if videoLayer != nil && currentViewerImageZoom != nil {
+            
+                videoLayer!.frame = currentViewerImageZoom!.imageView.bounds
+                videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
+                
+                currentViewerImageZoom!.imageView.layer.addSublayer(videoLayer!)
+                
+                /*
+                if let duration = playerVideo?.currentItem?.asset.duration {
+                    durationVideo = Float(CMTimeGetSeconds(duration))
+                }
+               
+                let timeScale = CMTimeScale(NSEC_PER_SEC)
+                let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
+                timeObserverToken = playerVideo?.addPeriodicTimeObserver(forInterval: time, queue: .main) { [weak self] time in
+                    print(time)
+                }
+               
+                let timeScale = CMTimeScale(NSEC_PER_SEC)
+                let time = CMTime(seconds: 1, preferredTimescale: timeScale)
+                timeObserverToken = player?.addPeriodicTimeObserver(forInterval: time, queue: .main) { time in
+                    NCManageDatabase.shared.addVideo(account:metadata.account, ocId: metadata.ocId, time: time)
+                }
+                */
+                
+                // At end go back to start
+                NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
+                    if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
+                        self.player?.seek(to: CMTime.zero)
+                        NCManageDatabase.shared.addVideoTime(metadata: self.currentMetadata, time: CMTime.zero)
+                    }
+                }
+                            
+                rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+                
+                if pictureInPictureOcId != metadata.ocId {
+                    player?.play()
+                }
+            }
+        }
+    }
+    
+    func videoStop() {
+        
+        player?.pause()
+        player?.seek(to: CMTime.zero)
+        
+        if rateObserverToken != nil {
+            player?.removeObserver(self, forKeyPath: "rate")
+            NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+            NCKTVHTTPCache.shared.stopProxy()
+            self.rateObserverToken = nil
+        }
+        
+        if let timeObserverToken = timeObserverToken {
+            player?.removeTimeObserver(timeObserverToken)
+            self.timeObserverToken = nil
+        }
+        
+        videoLayer?.removeFromSuperlayer()
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        
+        if keyPath != nil && keyPath == "rate" {
+            
+            setToolBar()
+            
+            if ((player?.rate) == 1) {
+                if let time = NCManageDatabase.shared.getVideoTime(metadata: self.currentMetadata) {
+                    player?.seek(to: time)
+                    player?.isMuted = CCUtility.getAudioMute()
+                }
+            } else {
+                NCManageDatabase.shared.addVideoTime(metadata: self.currentMetadata, time: player?.currentTime())
+                print("Pause")
+            }
+        }
+    }
+    
+    //MARK: - Tool Bar
+
+    func setToolBar() {
+        
+        let mute = CCUtility.getAudioMute()
+        
+        var itemPlay = toolBar.items![0]
+        let itemFlexibleSpace = toolBar.items![1]
+        var itemMute = toolBar.items![2]
+        
+        if player?.rate == 1 {
+            itemPlay = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.pause, target: self, action: #selector(playerPause))
+        } else {
+            itemPlay = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.play, target: self, action: #selector(playerPlay))
+        }
+        /*
+        if currentMetadata.favorite {
+            itemFavorite = UIBarButtonItem(image: UIImage(named: "videoFavoriteOn"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(SetFavorite))
+        } else {
+            itemFavorite = UIBarButtonItem(image: UIImage(named: "videoFavoriteOff"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(SetFavorite))
+        }
+        */
+        if mute {
+            itemMute = UIBarButtonItem(image: UIImage(named: "audioOff"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(SetMute))
+        } else {
+            itemMute = UIBarButtonItem(image: UIImage(named: "audioOn"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(SetMute))
+        }
+        
+        toolBar.setItems([itemPlay, itemFlexibleSpace, itemMute], animated: true)
+        toolBar.tintColor = NCBrandColor.shared.brandElement
+        toolBar.barTintColor = view.backgroundColor
+    }
+
+    @objc func playerPause() {
+        player?.pause()
+    }
+    @objc func playerPlay() {
+        player?.play()
+    }
+    @objc func SetMute() {
+        let mute = CCUtility.getAudioMute()
+        CCUtility.setAudioMute(!mute)
+        player?.isMuted = !mute
+        setToolBar()
+    }
+    /*
+    @objc func SetFavorite() {
+        NCNetworking.shared.favoriteMetadata(currentMetadata, urlBase: self.appDelegate.urlBase) { (errorCode, errorDescription) in }
+    }
+    */
+}
+
+
+//MARK: - UIPageViewController Delegate Datasource
+
+extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
+    
+    func shiftCurrentPage() -> Bool {
+        if metadatas.count == 0 { return false }
+        
+        var direction: UIPageViewController.NavigationDirection = .forward
+        if currentIndex == metadatas.count {
+            currentIndex -= 1
+            direction = .reverse
+        }
+        
+        let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
+        
+        viewerImageZoom.index = currentIndex
+        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
+        viewerImageZoom.metadata = metadatas[currentIndex]
+        viewerImageZoom.delegate = self
+        viewerImageZoom.viewerImage = self
+        
+        singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
+        
+        pageViewController.setViewControllers([viewerImageZoom], direction: direction, animated: true, completion: nil)
+        
+        return true
+    }
+    
+    func reloadCurrentPage() {
+        
+        if currentViewerImageZoom?.metadata.ocId == currentMetadata.ocId {
+            // Disable pan gesture for strange gui results
+            panGestureRecognizer.isEnabled = false
+            let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
+            
+            viewerImageZoom.index = currentIndex
+            viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
+            viewerImageZoom.metadata = metadatas[currentIndex]
+            viewerImageZoom.delegate = self
+            viewerImageZoom.viewerImage = self
+            
+            singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
+            
+            pageViewController.setViewControllers([viewerImageZoom], direction: .forward, animated: false, completion: nil)
+            panGestureRecognizer.isEnabled = true
+        }
+    }
+    
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+        if currentIndex == 0 { return nil }
+        
+        let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
+                
+        viewerImageZoom.index = currentIndex - 1
+        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex - 1])
+        viewerImageZoom.metadata = metadatas[currentIndex - 1]
+        viewerImageZoom.delegate = self
+        viewerImageZoom.viewerImage = self
+        
+        self.singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
+        
+        return viewerImageZoom
+    }
+    
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+        if currentIndex == metadatas.count - 1 { return nil }
+                
+        let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
+        
+        viewerImageZoom.index = currentIndex + 1
+        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex + 1])
+        viewerImageZoom.metadata = metadatas[currentIndex + 1]
+        viewerImageZoom.delegate = self
+        viewerImageZoom.viewerImage = self
+        
+        singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
+
+        return viewerImageZoom
+    }
+    
+    func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
+        
+        guard let nextViewController = pendingViewControllers.first as? NCViewerImageZoom else { return }
+        nextIndex = nextViewController.index
+    }
+    
+    func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
+        
+        if (completed && nextIndex != nil) {
+            previousViewControllers.forEach { viewController in
+                let viewerImageZoom = viewController as! NCViewerImageZoom
+                viewerImageZoom.scrollView.zoomScale = viewerImageZoom.scrollView.minimumZoomScale
+            }
+            currentIndex = nextIndex!
+        }
+        
+        self.nextIndex = nil
+    }
+}
+
+//MARK: - UIGestureRecognizerDelegate
+
+extension NCViewerImage: UIGestureRecognizerDelegate {
+
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        
+        if let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
+            let velocity = gestureRecognizer.velocity(in: self.view)
+            
+            var velocityCheck : Bool = false
+            
+            if UIDevice.current.orientation.isLandscape {
+                velocityCheck = velocity.x < 0
+            }
+            else {
+                velocityCheck = velocity.y < 0
+            }
+            if velocityCheck {
+                return false
+            }
+        }
+        
+        return true
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        
+        if otherGestureRecognizer == currentViewController.scrollView.panGestureRecognizer {
+            if self.currentViewController.scrollView.contentOffset.y == 0 {
+                return true
+            }
+        }
+        
+        return false
+    }
+
+    @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
+        
+        currentViewerImageZoom?.didPanWith(gestureRecognizer: gestureRecognizer)
+    }
+    
+    @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
+             
+        if currentViewerImageZoom?.detailView.isShow() ?? false {
+            
+            UIView.animate(withDuration: 0.2) {
+                self.currentViewerImageZoom?.centreConstraints()
+            }
+            return
+        }
+        
+        if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {
+            
+            if pictureInPictureOcId != currentMetadata.ocId {
+                                
+                // Kill PIP
+                appDelegate.activeViewerVideo?.player?.replaceCurrentItem(with: nil)
+                // --------
+                
+                appDelegate.activeViewerVideo = NCViewerVideo()
+                appDelegate.activeViewerVideo?.metadata = currentMetadata
+                appDelegate.activeViewerVideo?.delegateViewerVideo = self
+                if let currentViewerVideo = appDelegate.activeViewerVideo {
+                    present(currentViewerVideo, animated: false) { }
+                    self.videoStop()
+                }
+            }
+            
+            currentMode = .full
+        }
+                    
+        if currentMode == .full {
+            
+            navigationController?.setNavigationBarHidden(false, animated: false)
+            view.backgroundColor = NCBrandColor.shared.backgroundView
+            textColor = NCBrandColor.shared.textView
+            progressView.isHidden = false
+            
+            currentMode = .normal
+            
+        } else {
+            
+            navigationController?.setNavigationBarHidden(true, animated: false)
+            view.backgroundColor = .black
+            textColor = .white
+            progressView.isHidden = true
+            
+            currentMode = .full
+        }
+    }
+}
+
+//MARK: - NCViewerImageZoomDelegate
+
+extension NCViewerImage: NCViewerImageZoomDelegate {
+   
+    func dismissImageZoom() {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    func willAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
+        videoStop()
+    }
+    
+    func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
+                
+        navigationItem.title = metadata.fileNameView
+        currentMetadata = metadata
+        currentViewerImageZoom = viewerImageZoom
+        toolBar.isHidden = true
+        
+        if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {
+            videoPlay(metadata: metadata)
+            toolBar.isHidden = false
+        }
+            
+        if !NCOperationQueue.shared.downloadExists(metadata: metadata) {
+            self.progressView.progress = 0
+        }
+        
+        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        let ext = CCUtility.getExtension(metadata.fileNameView)
+        
+        // NO PREVIEW [RETRAY]
+        if viewerImageZoom.noPreview {
+            if let image = getImageMetadata(metadata) {
+                viewerImageZoom.image = image
+            }
+        }
+        
+        // DOWNLOAD FILE
+        if ((metadata.typeFile == k_metadataTypeFile_image && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)
+        }
+            
+        // DOWNLOAD preview
+        if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) && metadata.hasPreview {
+            
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+            
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: CGFloat(k_sizePreview), heightPreview: CGFloat(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: CGFloat(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
+                if errorCode == 0 && metadata.ocId == self.currentMetadata.ocId {
+                    self.reloadCurrentPage()
                 }
             }
         }
     }
 }
 
-//MARK: - viewerImageViewController - Delegate/DataSource
+//MARK: - NCViewerVideoDelegate
 
-extension NCViewerImage: NCViewerImageViewControllerDelegate, NCViewerImageViewControllerDataSource {
+extension NCViewerImage: NCViewerVideoDelegate {
     
-    func numberOfItems(in viewerImageViewController: NCViewerImageViewController) -> Int {
-        return metadatas.count
-    }
-
-    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, imageAt index: Int, completion: @escaping (_ index: Int, _ image: UIImage?, _ metadata: tableMetadata, _ zoomScale: ZoomScale?, _ error: Error?) -> Void) {
-        
-        if index >= metadatas.count { return }
-        guard let detailViewController = detailViewController else { return }
-
-        let metadata = metadatas[index]
-        let isPreview = CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileNameView)
-        let isImage = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0
-        
-        // Refresh self metadata && title
-        if viewerImageViewController.index < metadatas.count {
-            self.metadata = metadatas[viewerImageViewController.index]
-            detailViewController.metadata = self.metadata
-            detailViewController.navigationController?.navigationBar.topItem?.title = self.metadata!.fileNameView
-            
-        }
-        
-        // Status Current
-        if index == viewerImageViewController.currentItemIndex {
-            statusViewImage(metadata: metadata, viewerImageViewController: viewerImageViewController)
-        }
-        
-        // Preview for Video
-        if metadata.typeFile == k_metadataTypeFile_video && !isPreview && isImage {
-            
-            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
-        }
-        
-        // Original only for actual
-        if metadata.typeFile == k_metadataTypeFile_image && isImage && index == viewerImageViewController.index {
-                
-            if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
-                completion(index, image, metadata, ZoomScale.default, nil)
-            } else {
-                completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: detailViewController.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
-            }
-                
-        // HEIC
-        } else if metadata.contentType == "image/heic" && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 && metadata.hasPreview == false {
-            
-            let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
-            
-            _ = NCCommunication.sharedInstance.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, progressHandler: { (progress) in }) { (account, etag, date, length, errorCode, errorDescription) in
-                                
-                if errorCode == 0 && account == metadata.account {
-                    
-                    _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                    
-                    if let image = UIImage.init(contentsOfFile: fileNameLocalPath) {
-                        
-                        CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
-                        
-                        completion(index, image, metadata, ZoomScale.default, nil)
-                    } else {
-                        completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: detailViewController.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
-                    }
-                } else if errorCode != 0 {
-                    completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: detailViewController.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
-                }
-            }
-        
-        // Preview
-        } else if isPreview {
-                
-            if let image = NCViewerImageCommon.shared.getThumbnailImage(metadata: metadata) {
-                completion(index, image, metadata, ZoomScale.default, nil)
-            } else {
-                completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: detailViewController.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
-            }
-    
-        } else if metadata.hasPreview {
-                
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                    
-            NCCommunication.sharedInstance.downloadPreview(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: CGFloat(k_sizePreview), height: CGFloat(k_sizePreview), account: metadata.account) { (account, data, errorCode, errorMessage) in
-                if errorCode == 0 && data != nil {
-                    completion(index, UIImage.init(data: data!), metadata, ZoomScale.default, nil)
-                } else {
-                    completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: detailViewController.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
-                }
-            }
-        } else {
-            completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: detailViewController.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
-        }
+    func startPictureInPicture(metadata: tableMetadata) {
+        pictureInPictureOcId = metadata.ocId
     }
     
-    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata) {
-                
-        if metadata.typeFile == k_metadataTypeFile_image {
-            DispatchQueue.global().async {
-                if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
-                        view.image = image
-                    }
-                }
-            }
-        }
-        
-        statusViewImage(metadata: metadata, viewerImageViewController: viewerImageViewController)
-    }
-    
-    func viewerImageViewControllerTap(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
-        
-        guard let detailViewController = detailViewController else { return }
-        guard let navigationController = detailViewController.navigationController else { return }
-        
-        if metadata.typeFile == k_metadataTypeFile_image {
-        
-            if navigationController.isNavigationBarHidden {
-                detailViewController.navigateControllerBarHidden(false)
-                viewerImageViewController.statusView.isHidden = false
-            } else {
-                detailViewController.navigateControllerBarHidden(true)
-                viewerImageViewController.statusView.isHidden = true
-            }
-            
-            NCViewerImageCommon.shared.imageChangeSizeView(viewerImageViewController: viewerImageViewController, size: detailViewController.backgroundView.frame.size, metadata: metadata)
-            
-        } else {
-            
-            if let viewerImageVideo = UIStoryboard(name: "NCViewerImageVideo", bundle: nil).instantiateInitialViewController() as? NCViewerImageVideo {
-                viewerImageVideo.metadata = metadata
-                detailViewController.present(viewerImageVideo, animated: false) { }
-            }
-        }
-        
-        statusViewImage(metadata: metadata, viewerImageViewController: viewerImageViewController)
-    }
-    
-    func viewerImageViewControllerLongPressBegan(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
-        
-        viewerImageViewControllerLongPressInProgress = true
-        
-        let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)) {
-            
-            if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
-                
-                viewMOV(viewerImageViewController: viewerImageViewController, metadata: metadata)
-                
-            } else {
-                
-                let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
-                                
-                _ = NCCommunication.sharedInstance.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, progressHandler: { (progress) in
-                                                        
-                }) { (account, etag, date, length, errorCode, errorDescription) in
-                                        
-                    if errorCode == 0 && account == metadata.account {
-                        
-                        _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                        self.viewMOV(viewerImageViewController: viewerImageViewController, metadata: metadata)
-                    }
-                }
-            }
-        }
-    }
-    
-    func viewerImageViewControllerLongPressEnded(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
-        
-        viewerImageViewControllerLongPressInProgress = false
-        
-        appDelegate.player?.pause()
-        videoLayer?.removeFromSuperlayer()
-    }
-    
-    func viewerImageViewControllerDismiss() {
-        detailViewController?.viewUnload()
-    }
-    
-    @objc func downloadImage() {
-        
-        guard let metadata = self.metadata else {return }
-        
-        metadata.session = k_download_session
-        metadata.sessionError = ""
-        metadata.sessionSelector = ""
-        metadata.status = Int(k_metadataStatusWaitDownload)
-        
-        self.metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
-        
-        if let index = metadatas.firstIndex(where: { $0.ocId == metadata.ocId }) {
-            metadatas[index] = self.metadata!
-        }
-        
-        appDelegate.startLoadAutoDownloadUpload()
-    }
-    
-    func saveLivePhoto(metadata: tableMetadata, metadataMov: tableMetadata) {
-        
-        let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
-        let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
-        
-        NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
-            self.detailViewController?.progress(Float(progress))
-        }, completion: { livePhoto, resources in
-            self.detailViewController?.progress(0)
-            if resources != nil {
-                NCLivePhoto.saveToLibrary(resources!) { (result) in
-                    if !result {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
-                    }
-                }
-            } else {
-                NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
-            }
-        })
-    }
-    
-    func statusViewImage(metadata: tableMetadata, viewerImageViewController: NCViewerImageViewController) {
-        
-        var colorStatus: UIColor = UIColor.white.withAlphaComponent(0.8)
-        if detailViewController?.view.backgroundColor?.isLight() ?? true { colorStatus = UIColor.black.withAlphaComponent(0.8) }
-        
-        if NCUtility.sharedInstance.hasMOV(metadata: metadata) != nil {
-            viewerImageViewController.statusView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: colorStatus)
-        } else if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
-            viewerImageViewController.statusView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: colorStatus)
-        } else {
-            viewerImageViewController.statusView.image = nil
-        }
-    }
-    
-    func viewMOV(viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
-        
-        if !viewerImageViewControllerLongPressInProgress { return }
-        
-        appDelegate.player = AVPlayer(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!))
-        videoLayer = AVPlayerLayer(player: appDelegate.player)
-        if  videoLayer != nil {
-            videoLayer!.frame = viewerImageViewController.view.frame
-            videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspect
-            viewerImageViewController.view.layer.addSublayer(videoLayer!)
-            appDelegate.player?.play()
+    func stopPictureInPicture(metadata: tableMetadata, playing: Bool) {
+        pictureInPictureOcId = ""
+        if playing && currentMetadata.ocId == metadata.ocId {
+            playerPlay()
         }
     }
 }
