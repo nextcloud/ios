@@ -120,7 +120,9 @@ extension UIImage {
         return UIImage.init(cgImage: newCGImage, scale: 1, orientation: .up)
     }
     
-    @objc func image(color: UIColor, size: CGSize) -> UIImage {
+    @objc func image(color: UIColor, size: CGFloat) -> UIImage {
+        
+        let size = CGSize(width: size, height: size)
         
         UIGraphicsBeginImageContextWithOptions(size, false, self.scale)
         color.setFill()
@@ -130,7 +132,7 @@ extension UIImage {
         context?.scaleBy(x: 1.0, y: -1.0)
         context?.setBlendMode(CGBlendMode.normal)
 
-        let rect = CGRect(origin: .zero, size: CGSize(width: size.width, height: size.height))
+        let rect = CGRect(origin: .zero, size: size)
         guard let cgImage = self.cgImage else { return self }
         context?.clip(to: rect, mask: cgImage)
         context?.fill(rect)

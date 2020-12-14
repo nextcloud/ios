@@ -139,14 +139,14 @@ class NCMainTabBar: UITabBar {
         // File
         if let item = items?[0] {
             item.title = NSLocalizedString("_home_", comment: "")
-            item.image = UIImage(named: "tabBarFiles")?.image(color: NCBrandColor.shared.brandElement, size: CGSize(width: 25, height: 25))
+            item.image = UIImage(named: "tabBarFiles")?.image(color: NCBrandColor.shared.brandElement, size: 25)
             item.selectedImage = item.image
         }
         
         // Favorite
         if let item = items?[1] {
             item.title = NSLocalizedString("_favorites_", comment: "")
-            item.image = UIImage(named: "favorite")?.image(color: NCBrandColor.shared.brandElement, size: CGSize(width: 25, height: 25))
+            item.image = UIImage(named: "favorite")?.image(color: NCBrandColor.shared.brandElement, size: 25)
             item.selectedImage = item.image
         }
         
@@ -160,14 +160,14 @@ class NCMainTabBar: UITabBar {
         // Media
         if let item = items?[3] {
             item.title = NSLocalizedString("_media_", comment: "")
-            item.image = UIImage(named: "media")?.image(color: NCBrandColor.shared.brandElement, size: CGSize(width: 25, height: 25))
+            item.image = UIImage(named: "media")?.image(color: NCBrandColor.shared.brandElement, size: 25)
             item.selectedImage = item.image
         }
         
         // More
         if let item = items?[4] {
             item.title = NSLocalizedString("_more_", comment: "")
-            item.image = UIImage(named: "tabBarMore")?.image(color: NCBrandColor.shared.brandElement, size: CGSize(width: 25, height: 25))
+            item.image = UIImage(named: "tabBarMore")?.image(color: NCBrandColor.shared.brandElement, size: 25)
             item.selectedImage = item.image
         }
         
@@ -182,7 +182,7 @@ class NCMainTabBar: UITabBar {
         let centerButton = UIButton(frame: CGRect(x: (self.bounds.width / 2)-(centerButtonHeight/2), y: centerButtonY, width: centerButtonHeight, height: centerButtonHeight))
         
         centerButton.setTitle("", for: .normal)
-        centerButton.setImage(UIImage(named: "tabBarPlus")?.image(color: .white, size: CGSize(width: 100, height: 100)), for: .normal)
+        centerButton.setImage(UIImage(named: "tabBarPlus")?.image(color: .white, size: 100), for: .normal)
         centerButton.backgroundColor = NCBrandColor.shared.brandElement
         centerButton.tintColor = UIColor.white
         centerButton.tag = 99
