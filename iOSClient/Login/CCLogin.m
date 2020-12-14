@@ -83,7 +83,7 @@
     cancelButton.tintColor = textColor;
     
     // Base URL
-    _imageBaseUrl.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginURL"] multiplier:2 color:textColor];
+    _imageBaseUrl.image = [[UIImage imageNamed:@"loginURL"] imageWithColor:textColor size:50];
     _baseUrl.textColor = textColor;
     _baseUrl.tintColor = textColor;
     _baseUrl.placeholder = NSLocalizedString(@"_login_url_", nil);
@@ -93,7 +93,7 @@
     [self.baseUrl setDelegate:self];
     
     // User
-    _imageUser.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginUser"] multiplier:2 color:textColor];
+    _imageUser.image = [[UIImage imageNamed:@"loginUser"] imageWithColor:textColor size:50];
     _user.textColor = textColor;
     _user.tintColor = textColor;
     _user.placeholder = NSLocalizedString(@"_username_", nil);
@@ -104,7 +104,7 @@
     [self.user setDelegate:self];
 
     // Password
-    _imagePassword.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginPassword"] multiplier:2 color:textColor];
+    _imagePassword.image = [[UIImage imageNamed:@"loginPassword"] imageWithColor:textColor size:50];
     _password.textColor = textColor;
     _password.tintColor = textColor;
     _password.placeholder = NSLocalizedString(@"_password_", nil);
@@ -113,7 +113,7 @@
     [self.password setFont:[UIFont systemFontOfSize:13]];
     [self.password setDelegate:self];
 
-    [self.toggleVisiblePassword setImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"visiblePassword"] multiplier:2 color:textColor] forState:UIControlStateNormal];
+    [self.toggleVisiblePassword setImage:[[UIImage imageNamed:@"visiblePassword"] imageWithColor:textColor size:25] forState:UIControlStateNormal];
     
     // Login
     [self.login setTitle:NSLocalizedString(@"_login_", nil) forState:UIControlStateNormal] ;
@@ -134,7 +134,7 @@
     }
     
     // QrCode image
-    [self.qrCode setImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"qrcode"] width:100 height:100 color:textColor] forState:UIControlStateNormal];
+    [self.qrCode setImage:[[UIImage imageNamed:@"qrcode"] imageWithColor:textColor size:100] forState:UIControlStateNormal];
     
     NSArray *listAccount = [[NCManageDatabase shared] getAccounts];
     if ([listAccount count] == 0) {
