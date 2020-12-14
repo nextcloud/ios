@@ -73,7 +73,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     
     func emptyDataSetView(_ view: NCEmptyView) {
         
-        view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "notification"), width: 300, height: 300, color: .gray)
+        view.emptyImage.image = UIImage.init(named: "notification")?.image(color: .gray, size: UIScreen.main.bounds.width)
         view.emptyTitle.text = NSLocalizedString("_no_notification_", comment: "")
         view.emptyDescription.text = ""
     }

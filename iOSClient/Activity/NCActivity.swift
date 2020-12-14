@@ -94,7 +94,7 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
     
     func emptyDataSetView(_ view: NCEmptyView) {
         
-        view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "activity"), width: 300, height: 300, color: .gray)
+        view.emptyImage.image = UIImage.init(named: "activity")?.image(color: .gray, size: UIScreen.main.bounds.width)
         view.emptyTitle.text = NSLocalizedString("_no_activity_", comment: "")
         view.emptyDescription.text = ""
     }

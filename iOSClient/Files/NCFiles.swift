@@ -35,7 +35,7 @@ class NCFiles: NCCollectionViewCommon  {
         titleCurrentFolder = NCBrandOptions.shared.brand
         layoutKey = NCBrandGlobal.shared.layoutViewFiles
         enableSearchBar = true
-        emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.shared.brandElement)
+        emptyImage = UIImage.init(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = "_no_file_pull_down_"
     }
