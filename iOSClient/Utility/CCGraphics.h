@@ -32,7 +32,6 @@
 + (void)createNewImageFrom:(NSString *)fileName ocId:(NSString *)ocId etag:(NSString *)etag typeFile:(NSString *)typeFile;
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)targetSize isAspectRation:(BOOL)aspect;
 + (UIColor *)colorFromHexString:(NSString *)hexString;
-+ (UIImage *)changeThemingColorImage:(UIImage *)image multiplier:(NSInteger)multiplier color:(UIColor *)color;
 + (UIImage *)changeThemingColorImage:(UIImage *)image width:(CGFloat)width height:(CGFloat)height color:(UIColor *)color;
 + (void)settingThemingColor:(NSString *)themingColor themingColorElement:(NSString *)themingColorElement themingColorText:(NSString *)themingColorText;
 

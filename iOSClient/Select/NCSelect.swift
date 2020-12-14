@@ -412,9 +412,9 @@ extension NCSelect: UICollectionViewDataSource {
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
             
             if collectionView.collectionViewLayout == gridLayout {
-                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.shared.icon), for: .normal)
+                header.buttonSwitch.setImage(UIImage.init(named: "switchList")?.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
             } else {
-                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.shared.icon), for: .normal)
+                header.buttonSwitch.setImage(UIImage.init(named: "switchGrid")?.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
             }
             
             header.delegate = self

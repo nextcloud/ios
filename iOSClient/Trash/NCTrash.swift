@@ -409,9 +409,9 @@ extension NCTrash: UICollectionViewDataSource {
             let trashHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCTrashSectionHeaderMenu
             
             if collectionView.collectionViewLayout == gridLayout {
-                trashHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.shared.icon), for: .normal)
+                trashHeader.buttonSwitch.setImage(UIImage.init(named: "switchList")?.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
             } else {
-                trashHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.shared.icon), for: .normal)
+                trashHeader.buttonSwitch.setImage(UIImage.init(named: "switchGrid")?.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
             }
             
             trashHeader.delegate = self
@@ -473,7 +473,7 @@ extension NCTrash: UICollectionViewDataSource {
             cell.separator.backgroundColor = NCBrandColor.shared.separator
 
             if tableTrash.directory {
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.shared.brandElement)
+                cell.imageItem.image = NCCollectionCommon.images.cellFolderImage
                 cell.labelInfo.text = CCUtility.dateDiff(tableTrash.date as Date)
             } else {
                 cell.imageItem.image = image
@@ -505,7 +505,7 @@ extension NCTrash: UICollectionViewDataSource {
             cell.labelTitle.textColor = NCBrandColor.shared.textView
             
             if tableTrash.directory {
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.shared.brandElement)
+                cell.imageItem.image = NCCollectionCommon.images.cellFolderImage
             } else {
                 cell.imageItem.image = image
             }

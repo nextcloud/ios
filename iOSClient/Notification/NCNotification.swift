@@ -104,9 +104,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         }
         
         if let image = image {
-            cell.icon.image = CCGraphics.changeThemingColorImage(image, multiplier: 2, color: NCBrandColor.shared.brandElement)
+            cell.icon.image = image.image(color:  NCBrandColor.shared.brandElement, size: 25)
         } else {
-            cell.icon.image = CCGraphics.changeThemingColorImage(#imageLiteral(resourceName: "notification"), multiplier:2, color: NCBrandColor.shared.brandElement)
+            cell.icon.image = #imageLiteral(resourceName: "notification").image(color: NCBrandColor.shared.brandElement, size: 25)
         }
         
         // Avatar
