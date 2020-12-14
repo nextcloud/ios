@@ -280,7 +280,7 @@ class NCSharePagingView: PagingView {
         } else {
             if metadata!.directory {
                 let image = UIImage.init(named: "folder")!
-                headerView.imageView.image = CCGraphics.changeThemingColorImage(image, width: image.size.width*2, height: image.size.height*2, color: NCBrandColor.shared.brandElement)
+                headerView.imageView.image = image.image(color: NCBrandColor.shared.brandElement, size: image.size.width)
             } else if metadata!.iconName.count > 0 {
                 headerView.imageView.image = UIImage.init(named: metadata!.iconName)
             } else {
