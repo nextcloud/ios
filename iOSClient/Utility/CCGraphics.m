@@ -150,21 +150,6 @@
     return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
 }
 
-+ (UIImage *)changeThemingColorImage:(UIImage *)image width:(CGFloat)width height:(CGFloat)height color:(UIColor *)color
-{
-    CGRect rect = CGRectMake(0, 0, width / (2 / UIScreen.mainScreen.scale), height / (2 / UIScreen.mainScreen.scale));
-    UIGraphicsBeginImageContext(rect.size);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextClipToMask(context, rect, image.CGImage);
-    if (color)
-        CGContextSetFillColorWithColor(context, [color CGColor]);
-    CGContextFillRect(context, rect);
-    UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    return [UIImage imageWithCGImage:img.CGImage scale:UIScreen.mainScreen.scale orientation: UIImageOrientationDownMirrored];
-}
-
 + (void)settingThemingColor:(NSString *)themingColor themingColorElement:(NSString *)themingColorElement themingColorText:(NSString *)themingColorText
 {
     UIColor *newColor, *newColorElement, *newColorText;
