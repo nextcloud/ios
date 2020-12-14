@@ -88,7 +88,7 @@ class NCContentPresenter: NSObject {
         DispatchQueue.main.async {
             switch errorCode {
             case Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue):
-                let image = CCGraphics.changeThemingColorImage(UIImage(named: "networkInProgress")!, width: 40, height: 40, color: .white)
+                let image = UIImage(named: "networkInProgress")!.image(color: .white, size: 20)
                 self.noteTop(text:  NSLocalizedString(title, comment: ""), image: image, color: .lightGray, delay: delay, name: "\(errorCode)")
             //case Int(kOCErrorServerUnauthorized), Int(kOCErrorServerForbidden):
             //    break

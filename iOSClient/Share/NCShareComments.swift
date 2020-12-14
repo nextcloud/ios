@@ -146,7 +146,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_edit_comment_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "edit"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                icon: UIImage(named: "edit")!.image(color: NCBrandColor.shared.icon, size: 50),
                 action: { menuAction in
                     guard let metadata = self.metadata else { return }
                     guard let tableComments = tableComments else { return }
@@ -180,7 +180,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_comment_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
                 action: { menuAction in
                     guard let metadata = self.metadata else { return }
                     guard let tableComments = tableComments else { return }
@@ -199,7 +199,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_cancel_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                icon: UIImage(named: "cancel")!.image(color: NCBrandColor.shared.icon, size: 50),
                 action: { menuAction in
                 }
             )

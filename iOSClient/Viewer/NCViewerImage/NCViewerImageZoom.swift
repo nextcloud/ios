@@ -78,7 +78,7 @@ class NCViewerImageZoom: UIViewController {
             var named = "noPreview"
             if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio { named = "noPreviewAudio" }
             if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo { named = "noPreviewVideo" }
-            image = CCGraphics.changeThemingColorImage(UIImage.init(named: named), width: view.frame.width, height: view.frame.width, color: .gray)
+            image = UIImage.init(named: named)!.image(color: .gray, size: view.frame.width)
             self.noPreview = true
         }
         
@@ -88,7 +88,7 @@ class NCViewerImageZoom: UIViewController {
         }
         
         if NCManageDatabase.shared.isLivePhoto(metadata: metadata) != nil {
-            statusViewImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: .gray)
+            statusViewImage.image = UIImage.init(named: "livePhoto")!.image(color: .gray, size: 50)
             statusLabel.text = "LIVE"
         }  else {
             statusViewImage.image = nil
