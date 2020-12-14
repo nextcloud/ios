@@ -58,6 +58,13 @@ import Foundation
         super.init(frame: frame)
     }
     
+    @objc init(image: UIImage?, borderColor: UIColor, borderWidth: CGFloat) {
+        super.init(image: image)
+        
+        self.borderColor = borderColor
+        self.borderWidth = borderWidth        
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
         

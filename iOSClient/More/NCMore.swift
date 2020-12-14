@@ -64,8 +64,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         labelQuotaExternalSite.addGestureRecognizer(tapQuota)
 
         // Notification
-        NotificationCenter.default.addObserver(self, selector: #selector(changeUserProfile), name: NSNotification.Name(rawValue: k_notificationCenter_changeUserProfile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeUserProfile), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeUserProfile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
         
         changeTheming()
     }
@@ -138,7 +138,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         // ITEM : Trash
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-        if serverVersionMajor >= Int(k_trash_version_available) {
+        if serverVersionMajor >= NCBrandGlobal.shared.nextcloudVersion15 {
 
             item = NCCommunicationExternalSite()
             item.name = "_trash_view_"
@@ -214,18 +214,18 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             progressQuota.progress = 0
         }
 
-        switch Double(tabAccount.quotaTotal) {
-        case Double(-1):
+        switch tabAccount.quotaTotal {
+        case -1:
             quota = "0"
-        case Double(-2):
+        case -2:
             quota = NSLocalizedString("_quota_space_unknown_", comment: "")
-        case Double(-3):
+        case -3:
             quota = NSLocalizedString("_quota_space_unlimited_", comment: "")
         default:
-            quota = CCUtility.transformedSize(Double(tabAccount.quotaTotal))
+            quota = CCUtility.transformedSize(tabAccount.quotaTotal)
         }
 
-        let quotaUsed: String = CCUtility.transformedSize(Double(tabAccount.quotaUsed))
+        let quotaUsed: String = CCUtility.transformedSize(tabAccount.quotaUsed)
 
         labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
         
@@ -417,7 +417,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 let manageAccount = CCManageAccount()
                 manageAccount.delete(self.appDelegate.account)
 
-                self.appDelegate.openLoginView(self, selector: Int(k_intro_login), openLoginWeb: false)
+                self.appDelegate.openLoginView(self, selector: NCBrandGlobal.shared.introLogin, openLoginWeb: false)
             }
 
             let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action: UIAlertAction) in

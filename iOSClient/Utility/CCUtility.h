@@ -29,8 +29,6 @@
 #import <MessageUI/MessageUI.h>
 #import <UICKeyChainStore/UICKeyChainStore.h>
 #import <Photos/Photos.h>
-
-#import "CCGlobal.h"
 #import "CCGraphics.h"
 
 @class tableMetadata;
@@ -186,8 +184,7 @@
 + (NSString *)getUserAgent;
 
 + (NSString *)dateDiff:(NSDate *) convertedDate;
-+ (NSDate *)dateEnUsPosixFromCloud:(NSString *)dateString;
-+ (NSString *)transformedSize:(double)value;
++ (NSString *)transformedSize:(int64_t)value;
 
 + (NSString *)removeForbiddenCharactersServer:(NSString *)fileName;
 + (NSString *)removeForbiddenCharactersFileSystem:(NSString *)fileName;
@@ -213,7 +210,7 @@
 + (NSString *)getDirectoryProviderStorageIconOcId:(NSString *)ocId etag:(NSString *)etag;
 + (NSString *)getDirectoryProviderStoragePreviewOcId:(NSString *)ocId etag:(NSString *)etag;
 + (BOOL)fileProviderStorageExists:(NSString *)ocId fileNameView:(NSString *)fileNameView;
-+ (double)fileProviderStorageSize:(NSString *)ocId fileNameView:(NSString *)fileNameView;
++ (int64_t)fileProviderStorageSize:(NSString *)ocId fileNameView:(NSString *)fileNameView;
 + (BOOL)fileProviderStoragePreviewIconExists:(NSString *)ocId etag:(NSString *)etag;
 
 + (void)removeGroupApplicationSupport;
@@ -237,12 +234,6 @@
 + (NSString *)getDirectoryScan;
 
 + (NSString *)getMimeType:(NSString *)fileNameView;
-
-+ (void)writeData:(NSData *)data fileNamePath:(NSString *)fileNamePath;
-
-+ (void)selectFileNameFrom:(UITextField *)textField;
-
-+ (NSString *)getTimeIntervalSince197;
 
 + (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadataForUpload notification:(BOOL)notification completion:(void(^)(tableMetadata *newMetadata, NSString* fileNamePath))completion;
 + (void)extractLivePhotoAsset:(PHAsset*)asset filePath:(NSString *)filePath withCompletion:(void (^)(NSURL* url))completion;
@@ -269,14 +260,8 @@
 
 // ===== Third parts =====
 
-+ (NSString *)stringValueForKey:(id)key conDictionary:(NSDictionary *)dictionary;
-+ (NSString *)currentDevice;
 + (NSString *)getExtension:(NSString*)fileName;
-+ (NSDate*)parseDateString:(NSString*)dateString;
 + (NSDate *)datetimeWithOutTime:(NSDate *)datDate;
-+ (NSDate *)datetimeWithOutDate:(NSDate *)datDate;
-+ (BOOL)isValidEmail:(NSString *)checkString;
-+ (NSString *)hexRepresentation:(NSData *)data spaces:(BOOL)spaces;
 + (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems;
 
 @end

@@ -163,11 +163,11 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     }
 
     @IBAction func login(_ sender: Any) {
-        (UIApplication.shared.delegate as! AppDelegate).openLoginView(navigationController, selector: Int(k_intro_login), openLoginWeb: false)
+        (UIApplication.shared.delegate as! AppDelegate).openLoginView(navigationController, selector: NCBrandGlobal.shared.introLogin, openLoginWeb: false)
     }
 
     @IBAction func signup(_ sender: Any) {
-        (UIApplication.shared.delegate as! AppDelegate).openLoginView(navigationController, selector: Int(k_intro_signup), openLoginWeb: false)
+        (UIApplication.shared.delegate as! AppDelegate).openLoginView(navigationController, selector: NCBrandGlobal.shared.introSignup, openLoginWeb: false)
     }
 
     @IBAction func host(_ sender: Any) {

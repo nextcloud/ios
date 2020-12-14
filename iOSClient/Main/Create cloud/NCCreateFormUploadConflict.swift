@@ -148,7 +148,7 @@ extension NCCreateFormUploadConflictDelegate {
             }
             
             switchAlreadyExistingFiles.isOn = true
-            NCContentPresenter.shared.messageNotification("_info_", description: "_file_not_rewite_doc_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError), forced: true)
+            NCContentPresenter.shared.messageNotification("_info_", description: "_file_not_rewite_doc_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
         }
         
         tableView.reloadData()
@@ -331,7 +331,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                         }
                         
                         let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath)
-                        let fileSize = fileDictionary[FileAttributeKey.size] as! Double
+                        let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
                         
                         cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
                         
@@ -360,7 +360,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                                     }
                                     
                                     let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath!)
-                                    let fileSize = fileDictionary[FileAttributeKey.size] as! Double
+                                    let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
                                     
                                     cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
                                     
@@ -373,7 +373,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             } else if FileManager().fileExists(atPath: filePathNewFile) {
                 
                 do {
-                    if metadataNewFile.typeFile == k_metadataTypeFile_image {
+                    if metadataNewFile.typeFile == NCBrandGlobal.shared.metadataTypeFileImage {
                         let data = try Data(contentsOf: URL(fileURLWithPath: filePathNewFile))
                         if let image = UIImage(data: data) {
                             cell.imageNewFile.image = image
@@ -381,7 +381,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                     }
                     
                     let fileDictionary = try FileManager.default.attributesOfItem(atPath: filePathNewFile)
-                    let fileSize = fileDictionary[FileAttributeKey.size] as! Double
+                    let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
                     
                     cell.labelDetailNewFile.text = CCUtility.dateDiff(metadataNewFile.date as Date) + "\n" + CCUtility.transformedSize(fileSize)
                     

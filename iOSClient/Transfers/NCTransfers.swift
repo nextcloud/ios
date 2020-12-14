@@ -33,7 +33,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         
         appDelegate.activeTransfers = self
         titleCurrentFolder = NSLocalizedString("_transfers_", comment: "")
-        layoutKey = k_layout_view_transfers
+        layoutKey = NCBrandGlobal.shared.layoutViewTransfers
         enableSearchBar = false
         emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "load"), width: 300, height: 300, color: .gray)
         emptyTitle = "_no_transfer_"
@@ -135,7 +135,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         
         guard let metadata = metadataTemp else { return }
             
-        metadata.status = Int(k_metadataStatusInUpload)
+        metadata.status = NCBrandGlobal.shared.metadataStatusInUpload
         metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
         
         NCManageDatabase.shared.addMetadata(metadata)
@@ -148,7 +148,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         guard let metadata = metadataTemp else { return false }
         if metadata.e2eEncrypted { return false }
         
-        if metadata.status == k_metadataStatusWaitUpload || metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading {
+        if metadata.status == NCBrandGlobal.shared.metadataStatusWaitUpload || metadata.status == NCBrandGlobal.shared.metadataStatusInUpload || metadata.status == NCBrandGlobal.shared.metadataStatusUploading {
             return true
         }
         
@@ -188,14 +188,14 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         if pathText == "" { pathText = "/" }
         cell.labelPath.text = pathText
         
-        cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
+        cell.setButtonMore(named: NCBrandGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
 
         cell.progressView.progress = 0.0
         cell.separator.backgroundColor = NCBrandColor.shared.separator
                 
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-        } else if metadata.typeFile == k_metadataTypeFile_image && FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
+        } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
             cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
         }
         
@@ -207,14 +207,14 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         
         // Transfer
         var progress: Float = 0.0
-        var totalBytes: Double = 0.0
+        var totalBytes: Int64 = 0
         let progressArray = appDelegate.listProgressMetadata.object(forKey: metadata.ocId) as? NSArray
         if progressArray != nil && progressArray?.count == 3 {
             progress = progressArray?.object(at: 0) as? Float ?? 0
-            totalBytes = progressArray?.object(at: 1) as? Double ?? 0
+            totalBytes = progressArray?.object(at: 1) as? Int64 ?? 0
         }
         
-        if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
+        if metadata.status == NCBrandGlobal.shared.metadataStatusInDownload || metadata.status == NCBrandGlobal.shared.metadataStatusDownloading ||  metadata.status >= NCBrandGlobal.shared.metadataStatusTypeUpload {
             cell.progressView.isHidden = false
         } else {
             cell.progressView.isHidden = true
@@ -223,27 +223,27 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
 
         // Write status on Label Info
         switch metadata.status {
-        case Int(k_metadataStatusWaitDownload):
+        case NCBrandGlobal.shared.metadataStatusWaitDownload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_download_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
             break
-        case Int(k_metadataStatusInDownload):
+        case NCBrandGlobal.shared.metadataStatusInDownload:
             cell.labelStatus.text = NSLocalizedString("_status_in_download_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
             break
-        case Int(k_metadataStatusDownloading):
+        case NCBrandGlobal.shared.metadataStatusDownloading:
             cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↓ " + CCUtility.transformedSize(totalBytes)
             break
-        case Int(k_metadataStatusWaitUpload):
+        case NCBrandGlobal.shared.metadataStatusWaitUpload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
             break
-        case Int(k_metadataStatusInUpload):
+        case NCBrandGlobal.shared.metadataStatusInUpload:
             cell.labelStatus.text = NSLocalizedString("_status_in_upload_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
             break
-        case Int(k_metadataStatusUploading):
+        case NCBrandGlobal.shared.metadataStatusUploading:
             cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
             break

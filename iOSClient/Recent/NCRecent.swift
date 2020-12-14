@@ -31,7 +31,7 @@ class NCRecent: NCCollectionViewCommon  {
         
         appDelegate.activeRecent = self
         titleCurrentFolder = NSLocalizedString("_recent_", comment: "")
-        layoutKey = k_layout_view_recent
+        layoutKey = NCBrandGlobal.shared.layoutViewRecent
         enableSearchBar = false
         emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "recent"), width: 300, height: 300, color: NCBrandColor.shared.brandElement)
         emptyTitle = "_files_no_files_"

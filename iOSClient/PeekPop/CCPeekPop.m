@@ -73,14 +73,14 @@
  
     if (self.showOpenIn && !self.metadata.directory) {
         UIPreviewAction *item = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
-            [[NCNetworkingNotificationCenter shared] downloadOpenWithMetadata:self.metadata selector:selectorOpenIn];
+            [[NCNetworkingNotificationCenter shared] downloadOpenWithMetadata:self.metadata selector:NCBrandGlobal.shared.selectorOpenIn];
         }];
         [items addObject:item];
     }
     
     if (self.showOpenQuickLook) {
         UIPreviewAction *item = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_quicklook_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
-            [[NCNetworkingNotificationCenter shared] downloadOpenWithMetadata:self.metadata selector:selectorLoadFileQuickLook];
+            [[NCNetworkingNotificationCenter shared] downloadOpenWithMetadata:self.metadata selector:NCBrandGlobal.shared.selectorLoadFileQuickLook];
         }];
         [items addObject:item];
     }
@@ -105,7 +105,7 @@
     NSString *fileNamePreviewLocalPath = [CCUtility getDirectoryProviderStoragePreviewOcId:self.metadata.ocId etag:self.metadata.etag];
     NSString *fileNameIconLocalPath = [CCUtility getDirectoryProviderStorageIconOcId:self.metadata.ocId etag:self.metadata.etag];
     
-    [[NCCommunication shared] downloadPreviewWithFileNamePathOrFileId:fileNamePath fileNamePreviewLocalPath:fileNamePreviewLocalPath widthPreview:k_sizePreview heightPreview:k_sizePreview fileNameIconLocalPath:fileNameIconLocalPath sizeIcon:k_sizeIcon customUserAgent:nil addCustomHeaders:nil endpointTrashbin:false useInternalEndpoint:true completionHandler:^(NSString *account, UIImage *imagePreview, UIImage *imageIcon, NSInteger errorCode,  NSString *errorDescription) {
+    [[NCCommunication shared] downloadPreviewWithFileNamePathOrFileId:fileNamePath fileNamePreviewLocalPath:fileNamePreviewLocalPath widthPreview:NCBrandGlobal.shared.sizePreview heightPreview:NCBrandGlobal.shared.sizePreview fileNameIconLocalPath:fileNameIconLocalPath sizeIcon:NCBrandGlobal.shared.sizeIcon customUserAgent:nil addCustomHeaders:nil endpointTrashbin:false useInternalEndpoint:true completionHandler:^(NSString *account, UIImage *imagePreview, UIImage *imageIcon, NSInteger errorCode,  NSString *errorDescription) {
         
         if (errorCode == 0 && imagePreview != nil) {
             self.imagePreview.image = [CCGraphics scaleImage:imagePreview toSize:CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height) isAspectRation:true];

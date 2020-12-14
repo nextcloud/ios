@@ -41,7 +41,7 @@ class NCNetworkingAutoUpload: NSObject {
     }
     
     func startTimer() {
-        timerProcess = Timer.scheduledTimer(timeInterval: TimeInterval(k_timerAutoUpload), target: self, selector: #selector(process), userInfo: nil, repeats: true)
+        timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(process), userInfo: nil, repeats: true)
     }
 
     @objc private func process() {
@@ -51,14 +51,14 @@ class NCNetworkingAutoUpload: NSObject {
         var counterUpload: Int = 0
         var sizeUpload = 0
         var maxConcurrentOperationUpload = 5
-        let sessionSelectors = [selectorUploadFile, selectorUploadAutoUpload, selectorUploadAutoUploadAll]
+        let sessionSelectors = [NCBrandGlobal.shared.selectorUploadFile, NCBrandGlobal.shared.selectorUploadAutoUpload, NCBrandGlobal.shared.selectorUploadAutoUploadAll]
         
-        let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading))
+        let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCBrandGlobal.shared.metadataStatusInUpload, NCBrandGlobal.shared.metadataStatusUploading))
         counterUpload = metadatasUpload.count
         for metadata in metadatasUpload {
             sizeUpload = sizeUpload + Int(metadata.size)
         }
-        if sizeUpload > k_maxSizeOperationUpload { return }
+        if sizeUpload > NCBrandGlobal.shared.uploadMaxFileSize { return }
         
         timerProcess?.invalidate()
         
@@ -71,9 +71,9 @@ class NCNetworkingAutoUpload: NSObject {
                     let limit = maxConcurrentOperationUpload - counterUpload
                     var predicate = NSPredicate()
                     if UIApplication.shared.applicationState == .background {
-                        predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d AND (typeFile != %@ || livePhoto == true)", sessionSelector, k_metadataStatusWaitUpload, k_metadataTypeFile_video)
+                        predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d AND (typeFile != %@ || livePhoto == true)", sessionSelector, NCBrandGlobal.shared.metadataStatusWaitUpload, NCBrandGlobal.shared.metadataTypeFileVideo)
                     } else {
-                        predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, k_metadataStatusWaitUpload)
+                        predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, NCBrandGlobal.shared.metadataStatusWaitUpload)
                     }
                     let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: predicate, page: 1, limit: limit, sorted: "date", ascending: true)
                     if metadatas.count > 0 {
@@ -97,18 +97,18 @@ class NCNetworkingAutoUpload: NSObject {
                             if UIApplication.shared.applicationState == .background { break }
                             maxConcurrentOperationUpload = 1
                             counterUpload += 1
-                            if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: Int(k_metadataStatusInUpload)) {
+                            if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCBrandGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
                             }
                             self.startTimer()
                             return
                         } else {
                             counterUpload += 1
-                            if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: Int(k_metadataStatusInUpload)) {
+                            if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCBrandGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
                             }
                             sizeUpload = sizeUpload + Int(metadata.size)
-                            if sizeUpload > k_maxSizeOperationUpload {
+                            if sizeUpload > NCBrandGlobal.shared.uploadMaxFileSize {
                                 self.startTimer()
                                 return
                             }
@@ -123,15 +123,15 @@ class NCNetworkingAutoUpload: NSObject {
             
             // No upload available ? --> Retry Upload in Error
             if counterUpload == 0 {
-                let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d", k_metadataStatusUploadError))
+                let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d", NCBrandGlobal.shared.metadataStatusUploadError))
                 for metadata in metadatas {
-                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCNetworking.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0 ,status: Int(k_metadataStatusWaitUpload))
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCNetworking.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0 ,status: NCBrandGlobal.shared.metadataStatusWaitUpload)
                 }
             }
              
             // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
             if (counterUpload == 0 && self.appDelegate.passcodeViewController == nil) {
-                NCUtility.shared.deleteAssetLocalIdentifiers(account: self.appDelegate.account, sessionSelector: selectorUploadAutoUpload) {
+                NCUtility.shared.deleteAssetLocalIdentifiers(account: self.appDelegate.account, sessionSelector: NCBrandGlobal.shared.selectorUploadAutoUpload) {
                     self.startTimer()
                 }
             } else {

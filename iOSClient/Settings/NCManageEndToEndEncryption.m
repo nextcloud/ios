@@ -23,8 +23,8 @@
 
 #import "NCManageEndToEndEncryption.h"
 #import "AppDelegate.h"
+#import "NSNotificationCenter+MainThread.h"
 #import <TOPasscodeViewController/TOPasscodeViewController.h>
-
 #import "NCBridgeSwift.h"
 
 @interface NCManageEndToEndEncryption () <NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate>
@@ -46,11 +46,11 @@
     BOOL isE2EEEnabled = [[NCManageDatabase shared] getCapabilitiesServerBoolWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesE2EEEnabled exists:false];
     NSString *versionE2EE = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesE2EEApiVersion];
     
-    if (![versionE2EE isEqual:k_E2EE_API] && isE2EEEnabled) {
-        [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_err_e2ee_app_version_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError forced:true];
+    if (![versionE2EE isEqual:[[NCBrandGlobal shared] e2eeVersion]] && isE2EEEnabled) {
+        [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_err_e2ee_app_version_" delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:NCBrandGlobal.shared.ErrorInternalError forced:true];
     }
     
-    if (isE2EEEnabled == NO || ![versionE2EE isEqual:k_E2EE_API]) {
+    if (isE2EEEnabled == NO || ![versionE2EE isEqual:[[NCBrandGlobal shared] e2eeVersion]]) {
         
         // Section SERVICE NOT AVAILABLE -------------------------------------------------
         
@@ -178,8 +178,8 @@
     self.endToEndInitialize.delegate = self;
     
     // changeTheming
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground) name:k_notificationCenter_applicationDidEnterBackground object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:NCBrandGlobal.shared.notificationCenterChangeTheming object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground) name:NCBrandGlobal.shared.notificationCenterApplicationDidEnterBackground object:nil];
 
     [self changeTheming];
 }
@@ -372,9 +372,9 @@
     
     [[NCCommunication shared] deleteE2EEPublicKeyWithCustomUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
        if (errorCode == 0 && [account isEqualToString:appDelegate.account]) {
-            [[NCContentPresenter shared] messageNotification:@"E2E delete publicKey" description:@"Success" delay:k_dismissAfterSecond type:messageTypeSuccess errorCode:k_CCErrorInternalError forced:true];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete publicKey" description:@"Success" delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeSuccess errorCode:NCBrandGlobal.shared.ErrorInternalError forced:true];
         } else {
-            [[NCContentPresenter shared] messageNotification:@"E2E delete publicKey" description:errorDescription  delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:true];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete publicKey" description:errorDescription  delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:errorCode forced:true];
         }
     }];
 }
@@ -385,9 +385,9 @@
     
     [[NCCommunication shared] deleteE2EEPrivateKeyWithCustomUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
         if (errorCode == 0 && [account isEqualToString:appDelegate.account]) {
-            [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:@"Success" delay:k_dismissAfterSecond type:messageTypeSuccess errorCode:k_CCErrorInternalError forced:true];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:@"Success" delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeSuccess errorCode:NCBrandGlobal.shared.ErrorInternalError forced:true];
         } else {
-            [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:true];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:errorDescription delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:errorCode forced:true];
         }
     }];
 }
@@ -399,7 +399,7 @@
 - (void)endToEndInitializeSuccess
 {
     // Reload All Datasource
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_reloadDataSource object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterReloadDataSource object:nil];
 
     [self initializeForm];
 }

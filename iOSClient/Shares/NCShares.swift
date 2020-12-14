@@ -31,7 +31,7 @@ class NCShares: NCCollectionViewCommon  {
         
         appDelegate.activeShares = self
         titleCurrentFolder = NSLocalizedString("_list_shares_", comment: "")
-        layoutKey = k_layout_view_shares
+        layoutKey = NCBrandGlobal.shared.layoutViewShares 
         enableSearchBar = false
         emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 300, height: 300, color: .gray)
         emptyTitle = "_list_shares_no_files_"
@@ -91,7 +91,7 @@ class NCShares: NCCollectionViewCommon  {
             } else {
                     
                 self.collectionView?.reloadData()
-                NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
         }
     }

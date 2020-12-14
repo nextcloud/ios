@@ -33,7 +33,7 @@ class NCFiles: NCCollectionViewCommon  {
         
         appDelegate.activeFiles = self
         titleCurrentFolder = NCBrandOptions.shared.brand
-        layoutKey = k_layout_view_files
+        layoutKey = NCBrandGlobal.shared.layoutViewFiles
         enableSearchBar = true
         emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.shared.brandElement)
         emptyTitle = "_files_no_files_"
@@ -101,7 +101,7 @@ class NCFiles: NCCollectionViewCommon  {
                     if !metadata.directory {
                         let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                         if (CCUtility.getFavoriteOffline() && localFile == nil) || (localFile != nil && localFile?.etag != metadata.etag) {
-                            NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
+                            NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorDownloadFile, setFavorite: false)
                         }
                     }
                 }

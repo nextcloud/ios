@@ -25,6 +25,7 @@
 #import "AppDelegate.h"
 #import "CCLogin.h"
 #import "NCAutoUpload.h"
+#import "NSNotificationCenter+MainThread.h"
 #import "NCBridgeSwift.h"
 
 #define actionSheetCancellaAccount 1
@@ -60,9 +61,8 @@
         if (avatar) {
             
             avatar = [CCGraphics scaleImage:avatar toSize:CGSizeMake(35, 35) isAspectRation:YES];
-            
-            CCAvatar *avatarImageView = [[CCAvatar alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
-            
+            NCAvatar *avatarImageView = [[NCAvatar alloc] initWithImage:avatar borderColor:[UIColor whiteColor] borderWidth:1];
+                        
             CGSize imageSize = avatarImageView.bounds.size;
             UIGraphicsBeginImageContextWithOptions(imageSize, NO, UIScreen.mainScreen.scale);
             CGContextRef context = UIGraphicsGetCurrentContext();
@@ -328,7 +328,7 @@
     
     // Open Login
     if (accounts.count == 0) {
-        [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
+        [appDelegate openLoginView:self selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
     }
 }
 
@@ -340,7 +340,7 @@
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     // changeTheming
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:NCBrandGlobal.shared.notificationCenterChangeTheming object:nil];
     
     [self changeTheming];
 }
@@ -381,7 +381,7 @@
 {
     [self deselectFormRow:sender];
     
-    [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
+    [appDelegate openLoginView:self selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -446,7 +446,7 @@
         [appDelegate settingAccount:tableAccount.account urlBase:tableAccount.urlBase user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]];
  
         // Init home
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
     }
     
     [self initializeForm];

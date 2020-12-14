@@ -62,12 +62,12 @@ class NCLoginWeb: UIViewController {
         webView!.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
         webView!.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
         
-        // ADD k_flowEndpoint for Web Flow
+        // ADD end point for Web Flow
         if urlBase != NCBrandOptions.shared.linkloginPreferredProviders {
             if loginFlowV2Available {
                 urlBase = loginFlowV2Login
             } else {
-                urlBase = urlBase + k_flowEndpoint
+                urlBase = urlBase + "/index.php/login/flow"
             }
         }
         
@@ -79,7 +79,7 @@ class NCLoginWeb: UIViewController {
         if let url = URL(string: urlBase) {
             loadWebPage(webView: webView!, url: url)
         } else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "_login_url_error_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
+            NCContentPresenter.shared.messageNotification("_error_", description: "_login_url_error_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
         }
     }
     
@@ -235,7 +235,7 @@ extension NCLoginWeb: WKNavigationDelegate {
             
         if (CCUtility.getIntro()) {
             
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_initializeMain)
+            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
             self.dismiss(animated: true)
                 
         } else {
@@ -244,7 +244,7 @@ extension NCLoginWeb: WKNavigationDelegate {
             if (self.presentingViewController == nil) {
                 if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
                     viewController.modalPresentationStyle = .fullScreen
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_initializeMain)
+                    NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
                     viewController.view.alpha = 0
                     appDelegate.window.rootViewController = viewController
                     appDelegate.window.makeKeyAndVisible()
@@ -253,7 +253,7 @@ extension NCLoginWeb: WKNavigationDelegate {
                     }
                 }
             } else {
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_initializeMain)
+                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
                 self.dismiss(animated: true)
             }
         }

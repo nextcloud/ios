@@ -26,6 +26,7 @@
 #import "NCBridgeSwift.h"
 #import "NCAutoUpload.h"
 #import "NCPushNotificationEncryption.h"
+#import "NSNotificationCenter+MainThread.h"
 #import <QuartzCore/QuartzCore.h>
 
 @import Firebase;
@@ -67,8 +68,7 @@
         [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Start session with level %lu %@", (unsigned long)logLevel, versionNextcloudiOS]];
     }
     
-    //
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:k_notificationCenter_initializeMain object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil];
     
     // Set account, if no exists clear all
     tableAccount *tableAccount = [[NCManageDatabase shared] getAccountActive];
@@ -114,7 +114,7 @@
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
     // Start Timer
-    self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
+    self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
     [self startTimerErrorNetworking];
 
     // Store review
@@ -139,7 +139,7 @@
         [CCUtility setIntro:YES];
         
         if (self.account.length == 0) {
-            [self openLoginView:nil selector:k_intro_login openLoginWeb:false];
+            [self openLoginView:nil selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
         }
         
     } else {
@@ -154,7 +154,7 @@
     }
 
     // init home
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
 
     // Passcode
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -191,7 +191,7 @@
 {
     if (self.account.length == 0) { return; }
     
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationWillEnterForeground object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterApplicationWillEnterForeground object:nil];
     
     // Request Passcode
     [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
@@ -200,13 +200,13 @@
     [[NCAutoUpload shared] initStateAutoUpload];
     
     // Read active directory
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_reloadDataSourceNetworkForced object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterReloadDataSourceNetworkForced object:nil];
     
     // Required unsubscribing / subscribing
     [self pushNotification];
     
     // RichDocument
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_richdocumentGrabFocus object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterRichdocumentGrabFocus object:nil];
     
     // Request Service Server Nextcloud
     [[NCService shared] startRequestServicesServer];
@@ -241,7 +241,7 @@
 {
     if (self.account.length == 0) { return; }
 
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationDidEnterBackground object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterApplicationDidEnterBackground object:nil];
     
     [self passcodeWithAutomaticallyPromptForBiometricValidation:false];
 }
@@ -266,7 +266,7 @@
     [[NCBrandColor shared] settingThemingColorWithAccount:self.account];
     
     // close detail
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_menuDetailClose object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterMenuDetailClose object:nil];
     
     // Not Photos Video in library ? then align and Init Auto Upload
     NSArray *recordsPhotoLibrary = [[NCManageDatabase shared] getPhotoLibraryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", self.account]];
@@ -302,7 +302,7 @@
     // check unauthorized server (401)
     if ([CCUtility getPassword:self.account].length == 0) {
         
-        [self openLoginView:self.window.rootViewController selector:k_intro_login openLoginWeb:true];
+        [self openLoginView:self.window.rootViewController selector:NCBrandGlobal.shared.introLogin openLoginWeb:true];
     }
     
     // check certificate untrusted (-1202)
@@ -354,13 +354,13 @@
     }
     
     // normal login
-    if (selector == k_intro_signup) {
+    if (selector == NCBrandGlobal.shared.introSignup) {
         
         if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
             
             self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
             
-            if (selector == k_intro_signup) {
+            if (selector == NCBrandGlobal.shared.introSignup) {
                 self.activeLoginWeb.urlBase = [[NCBrandOptions shared] linkloginPreferredProviders];
             } else {
                 self.activeLoginWeb.urlBase = self.urlBase;
@@ -429,7 +429,7 @@
 
 - (void)startTimerErrorNetworking
 {
-    self.timerErrorNetworking = [NSTimer scheduledTimerWithTimeInterval:k_timerErrorNetworking target:self selector:@selector(checkErrorNetworking) userInfo:nil repeats:YES];
+    self.timerErrorNetworking = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(checkErrorNetworking) userInfo:nil repeats:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -477,9 +477,9 @@
             NSString *newAccount = listAccount[0];
             tableAccount *tableAccount = [[NCManageDatabase shared] setAccountActive:newAccount];
             [self settingAccount:newAccount urlBase:tableAccount.urlBase user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]];
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
         } else {
-            [self openLoginView:self.window.rootViewController selector:k_intro_login openLoginWeb:false];
+            [self openLoginView:self.window.rootViewController selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
         }
     }
 }
@@ -685,7 +685,7 @@
     if (self.account.length == 0) { return; }
             
     NSInteger counterDownload = [[NCOperationQueue shared] downloadCount];
-    NSInteger counterUpload = [[NCManageDatabase shared] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d OR status == %d", k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading]].count;
+    NSInteger counterUpload = [[NCManageDatabase shared] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d OR status == %d", NCBrandGlobal.shared.metadataStatusWaitUpload, NCBrandGlobal.shared.metadataStatusInUpload, NCBrandGlobal.shared.metadataStatusUploading]].count;
     NSInteger total = counterDownload + counterUpload;
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
@@ -794,7 +794,7 @@
                             if ([link containsString:accountURL.host] && [user isEqualToString:accountUser]) {
                                 matchedAccount = [[NCManageDatabase shared] setAccountActive:account.account];
                                 [self settingAccount:matchedAccount.account urlBase:matchedAccount.urlBase user:matchedAccount.user userID:matchedAccount.userID password:[CCUtility getPassword:matchedAccount.account]];
-                                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
+                                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
                             }
                         }
                     }

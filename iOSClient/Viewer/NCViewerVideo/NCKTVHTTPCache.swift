@@ -98,13 +98,13 @@ class NCKTVHTTPCache: NSObject {
             NCManageDatabase.shared.addLocalFile(metadata: metadata)
             KTVHTTPCache.cacheDelete(with: videoURL)
             
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
         }
     }
     
     private func setupHTTPCache() {
         
-        KTVHTTPCache.cacheSetMaxCacheLength(Int64(k_maxHTTPCache))
+        KTVHTTPCache.cacheSetMaxCacheLength(NCBrandGlobal.shared.maxHTTPCache)
         
         if ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil {
             KTVHTTPCache.logSetConsoleLogEnable(true)

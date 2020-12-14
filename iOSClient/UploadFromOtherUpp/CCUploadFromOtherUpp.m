@@ -48,7 +48,7 @@
     destinationTitle = @"/";
     
     // changeTheming
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:NCBrandGlobal.shared.notificationCenterChangeTheming object:nil];
     [self changeTheming];
     
     [self.tableView reloadData];
@@ -178,8 +178,8 @@
     tableMetadata *metadataForUpload = [[NCManageDatabase shared] createMetadataWithAccount:appDelegate.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrlLocal urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:false];
     
     metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground;
-    metadataForUpload.sessionSelector = selectorUploadFile;
-    metadataForUpload.status = k_metadataStatusWaitUpload;
+    metadataForUpload.sessionSelector = NCBrandGlobal.shared.selectorUploadFile;
+    metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload;
     
     // Prepare file and directory
     [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:appDelegate.fileNameUpload] toPath:[CCUtility getDirectoryProviderStorageOcId:metadataForUpload.ocId fileNameView:fileName]];

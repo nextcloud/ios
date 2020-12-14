@@ -61,7 +61,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         tap.delegate = self
         viewRichWorkspace?.addGestureRecognizer(tap)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
         
         changeTheming()
     }
@@ -158,7 +158,7 @@ class NCSectionFooter: UICollectionReusableView {
         labelSection.textColor = NCBrandColor.shared.icon
     }
     
-    func setTitleLabel(directories: Int, files: Int, size: Double) {
+    func setTitleLabel(directories: Int, files: Int, size: Int64) {
         
         var foldersText = ""
         var filesText = ""
