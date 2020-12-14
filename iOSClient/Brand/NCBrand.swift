@@ -168,7 +168,7 @@ class NCBrandColor: NSObject {
             
             let themingColorText = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorText)
             
-            CCGraphics.settingThemingColor(themingColor, themingColorElement: themingColorElement, themingColorText: themingColorText)
+            NCUtility.shared.settingThemingColor(themingColor, themingColorElement: themingColorElement, themingColorText: themingColorText)
                         
             if NCBrandColor.shared.brandElement.isTooLight() {
                 if let color = NCBrandColor.shared.brandElement.darker(by: darker) {

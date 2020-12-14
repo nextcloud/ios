@@ -180,8 +180,9 @@
         NSString *themingColor = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColor];
         NSString *themingColorElement = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColorElement];
         NSString *themingColorText = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColorText];
-        [CCGraphics settingThemingColor:themingColor themingColorElement:themingColorElement themingColorText:themingColorText];
+        [NCUtility.shared settingThemingColor:themingColor themingColorElement:themingColorElement themingColorText:themingColorText];
     }
+    
     self.navigationController.navigationBar.barTintColor = NCBrandColor.shared.brand;
     self.navigationController.navigationBar.tintColor = NCBrandColor.shared.brandText;
     

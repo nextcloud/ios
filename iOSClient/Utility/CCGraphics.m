@@ -112,6 +112,7 @@
     return;
 }
 
+/*
 + (UIColor *)colorFromHexString:(NSString *)hexString
 {
     unsigned rgbValue = 0;
@@ -153,5 +154,6 @@
     NCBrandColor.shared.brandElement = newColorElement;
     NCBrandColor.shared.brandText = newColorText;
 }
+*/
 
 @end

@@ -636,5 +636,39 @@ class NCUtility: NSObject {
                 
         return(onlineStatus, statusMessage)
     }
+    
+    @objc func settingThemingColor(_ themingColor: String?, themingColorElement: String?, themingColorText: String?) {
+                
+        // COLOR
+        if themingColor?.first == "#" {
+            if let color = UIColor(hex: themingColor!) {
+                NCBrandColor.shared.brand = color
+            }
+        } else {
+            NCBrandColor.shared.brand = NCBrandColor.shared.customer
+        }
+        
+        // COLOR TEXT
+        if themingColorText?.first == "#" {
+            if let color = UIColor(hex: themingColorText!) {
+                NCBrandColor.shared.brandText = color
+            }
+        } else {
+            NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
+        }
+        
+        // COLOR ELEMENT
+        if themingColorElement?.first == "#" {
+            if let color = UIColor(hex: themingColorElement!) {
+                NCBrandColor.shared.brandElement = color
+            }
+        } else {
+            if themingColorText == "#000000" {
+                NCBrandColor.shared.brandElement = .black
+            } else {
+                NCBrandColor.shared.brandElement = NCBrandColor.shared.brand
+            }
+        }
+    }
 }
 
