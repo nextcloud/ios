@@ -185,7 +185,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_trash_delete_selected_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
@@ -206,7 +206,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_trash_delete_all_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_", comment: ""), message: "", preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
@@ -257,7 +257,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 iconHeader = icon
             } else {
                 if(tableTrash.directory) {
-                    iconHeader = CCGraphics.changeThemingColorImage(UIImage(named: "folder"), width: 50, height: 50, color: NCBrandColor.shared.icon)
+                    iconHeader = UIImage(named: "folder")!.image(color: NCBrandColor.shared.icon, size: 50)
                 } else {
                     iconHeader = UIImage(named: tableTrash.iconName)
                 }
@@ -274,7 +274,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_delete_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         self.deleteItem(with: objectId)
                     }
@@ -312,7 +312,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 iconHeader = icon
             } else {
                 if(tableTrash.directory) {
-                    iconHeader = CCGraphics.changeThemingColorImage(UIImage(named: "folder"), width: 50, height: 50, color: NCBrandColor.shared.icon)
+                    iconHeader = UIImage(named: "folder")!.image(color: NCBrandColor.shared.icon, size: 50)
                 } else {
                     iconHeader = UIImage(named: tableTrash.iconName)
                 }
@@ -329,7 +329,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_restore_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "restore"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "restore")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         self.restoreItem(with: objectId)
                     }
@@ -339,7 +339,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_delete_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         self.deleteItem(with: objectId)
                     }

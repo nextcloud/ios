@@ -212,7 +212,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_select_", comment: ""),
-                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "selectFull"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                        icon: UIImage(named: "selectFull")!.image(color: NCBrandColor.shared.icon, size: 50),
                         action: { menuAction in
                             self.isEditMode = true
                         }
@@ -223,7 +223,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString(filterTypeFileImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: filterTypeFileImage ? "imageno" : "imageyes"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: filterTypeFileImage ? "imageno" : "imageyes")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         self.filterTypeFileImage = !self.filterTypeFileImage
                         self.filterTypeFileVideo = false
@@ -235,7 +235,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString(filterTypeFileVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: filterTypeFileVideo ? "videono" : "videoyes"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: filterTypeFileVideo ? "videono" : "videoyes")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         self.filterTypeFileVideo = !self.filterTypeFileVideo
                         self.filterTypeFileImage = false
@@ -247,7 +247,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_select_media_folder_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "folderAutomaticUpload"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "folderAutomaticUpload")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
                         let viewController = navigationController.topViewController as! NCSelect
@@ -269,7 +269,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_modified_date_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortModifiedDate"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "sortModifiedDate")!.image(color: NCBrandColor.shared.icon, size: 50),
                     selected: CCUtility.getMediaSortDate() == "date",
                     on: true,
                     action: { menuAction in
@@ -282,7 +282,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_created_date_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortCreatedDate"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "sortCreatedDate")!.image(color: NCBrandColor.shared.icon, size: 50),
                     selected: CCUtility.getMediaSortDate() == "creationDate",
                     on: true,
                     action: { menuAction in
@@ -295,7 +295,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_upload_date_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortUploadDate"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "sortUploadDate")!.image(color: NCBrandColor.shared.icon, size: 50),
                     selected: CCUtility.getMediaSortDate() == "uploadDate",
                     on: true,
                     action: { menuAction in
@@ -310,7 +310,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_cancel_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "cancel")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         self.isEditMode = false
                         self.selectOcId.removeAll()
@@ -325,7 +325,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "move")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         self.isEditMode = false
                         var meradatasSelect = [tableMetadata]()
@@ -348,7 +348,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_delete_selected_files_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         self.isEditMode = false
                         for ocId in self.selectOcId {

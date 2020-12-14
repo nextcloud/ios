@@ -78,7 +78,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         
         self.title = NSLocalizedString("_capabilities_", comment: "")
                
-        let shareImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareFill"), width: 50, height: 50, color: .gray)
+        let shareImage = UIImage.init(named: "shareFill")!.image(color: .gray, size: 25)
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: shareImage, style: UIBarButtonItem.Style.plain, target: self, action: #selector(share))
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(close))
 
@@ -140,17 +140,17 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         statusComments.layer.borderColor = NCBrandColor.shared.textView.cgColor
         statusComments.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
-        imageFileSharing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .gray)
-        imageExternalSite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "externalsites"), width: 100, height: 100, color: .gray)
-        imageEndToEndEncryption.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "lock"), width: 100, height: 100, color: .gray)        
-        imageActivity.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "activity"), width: 100, height: 100, color: .gray)
-        imageNotification.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "notification"), width: 100, height: 100, color: .gray)
-        imageDeletedFiles.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "delete"), width: 100, height: 100, color: .gray)
-        imageText.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "text"), width: 100, height: 100, color: .gray)
-        imageCollabora.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "collabora"), width: 100, height: 100, color: .gray)
-        imageOnlyOffice.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "onlyoffice"), width: 100, height: 100, color: .gray)
-        imageUserStatus.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusAway"), width: 100, height: 100, color: .gray)
-        imageComments.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "comments"), width: 100, height: 100, color: .gray)
+        imageFileSharing.image = UIImage.init(named: "share")!.image(color: .gray, size: 50)
+        imageExternalSite.image = UIImage.init(named: "externalsites")!.image(color: .gray, size: 50)
+        imageEndToEndEncryption.image = UIImage.init(named: "lock")!.image(color: .gray, size: 50)
+        imageActivity.image = UIImage.init(named: "activity")!.image(color: .gray, size: 50)
+        imageNotification.image = UIImage.init(named: "notification")!.image(color: .gray, size: 50)
+        imageDeletedFiles.image = UIImage.init(named: "delete")!.image(color: .gray, size: 50)
+        imageText.image = UIImage.init(named: "text")!.image(color: .gray, size: 50)
+        imageCollabora.image = UIImage.init(named: "collabora")!.image(color: .gray, size: 50)
+        imageOnlyOffice.image = UIImage.init(named: "onlyoffice")!.image(color: .gray, size: 50)
+        imageUserStatus.image = UIImage.init(named: "userStatusAway")!.image(color: .gray, size: 50)
+        imageComments.image = UIImage.init(named: "comments")!.image(color: .gray, size: 50)
 
         guard let account = NCManageDatabase.shared.getAccountActive() else { return }
         self.account = account.account
@@ -166,10 +166,10 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             }
         }
         
-        homeImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "home"), width: 100, height: 100, color: .gray)
+        homeImage.image = UIImage.init(named: "home")!.image(color: .gray, size: 50)
         homeServer.text = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) + "/"
         
-        davImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "dav"), width: 100, height: 100, color: .gray)
+        davImage.image = UIImage.init(named: "dav")!.image(color: .gray, size: 50)
         davFiles.text = appDelegate.urlBase + "/" + NCUtility.shared.getDAV() + "/files/" + appDelegate.user + "/"
     }
 
