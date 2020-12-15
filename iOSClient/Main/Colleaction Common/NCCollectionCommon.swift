@@ -279,6 +279,23 @@ class NCGridLayout: UICollectionViewFlowLayout {
         get {
             if let collectionView = collectionView {
                 
+                switch collectionView.frame.width {
+                case 0..<400:
+                    itemForLine = 3
+                case 400..<600:
+                    itemForLine = 4
+                case 600..<800:
+                    itemForLine = 5
+                case 800..<1000:
+                    itemForLine = 6
+                case 1000..<1200:
+                    itemForLine = 7
+                case 1200...:
+                    itemForLine = 8
+                default:
+                    itemForLine = 3
+                }
+                
                 let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
                 let itemHeight: CGFloat = itemWidth + heightLabelPlusButton
                 
