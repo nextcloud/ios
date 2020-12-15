@@ -60,7 +60,7 @@
         UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
         if (avatar) {
             
-            avatar = [NCUtility.shared resizeImage:avatar size:CGSizeMake(35, 35)];
+            avatar = [avatar resizeImageWithSize:CGSizeMake(35, 35)];
             NCAvatar *avatarImageView = [[NCAvatar alloc] initWithImage:avatar borderColor:[UIColor whiteColor] borderWidth:1];
                         
             CGSize imageSize = avatarImageView.bounds.size;
@@ -71,7 +71,7 @@
             UIGraphicsEndImageContext();
             
         } else {
-            avatar = [NCUtility.shared resizeImage:[UIImage imageNamed:@"avatarBN"] size:CGSizeMake(35, 35)];
+            avatar = [[UIImage imageNamed:@"avatarBN"] resizeImageWithSize:CGSizeMake(35, 35)];
         }
         
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundCell;

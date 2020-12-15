@@ -95,9 +95,9 @@
         originalImage = [self generateImageFromVideo:[NSTemporaryDirectory() stringByAppendingString:@"tempvideo.mp4"]];
     }
 
-    scaleImagePreview = [NCUtility.shared resizeImage:originalImage size:CGSizeMake(NCBrandGlobal.shared.sizePreview, NCBrandGlobal.shared.sizePreview)];
+    scaleImagePreview = [originalImage resizeImageWithSize:CGSizeMake(NCBrandGlobal.shared.sizePreview, NCBrandGlobal.shared.sizePreview)];
     
-    scaleImageIcon = [NCUtility.shared resizeImage:originalImage size:CGSizeMake(NCBrandGlobal.shared.sizeIcon, NCBrandGlobal.shared.sizeIcon)];
+    scaleImageIcon = [originalImage resizeImageWithSize:CGSizeMake(NCBrandGlobal.shared.sizeIcon, NCBrandGlobal.shared.sizeIcon)];
     
     scaleImagePreview = [UIImage imageWithData:UIImageJPEGRepresentation(scaleImagePreview, 0.5f)];
     scaleImageIcon = [UIImage imageWithData:UIImageJPEGRepresentation(scaleImageIcon, 0.5f)];
@@ -111,49 +111,5 @@
     
     return;
 }
-
-/*
-+ (UIColor *)colorFromHexString:(NSString *)hexString
-{
-    unsigned rgbValue = 0;
-    NSScanner *scanner = [NSScanner scannerWithString:hexString];
-    [scanner setScanLocation:1]; // bypass '#' character
-    [scanner scanHexInt:&rgbValue];
-    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
-}
-
-+ (void)settingThemingColor:(NSString *)themingColor themingColorElement:(NSString *)themingColorElement themingColorText:(NSString *)themingColorText
-{
-    UIColor *newColor, *newColorElement, *newColorText;
-    
-    // COLOR
-    if (themingColor.length == 7) {
-        newColor = [CCGraphics colorFromHexString:themingColor];
-    } else {
-        newColor = NCBrandColor.shared.customer;
-    }
-            
-    // COLOR TEXT
-    if (themingColorText.length == 7) {
-        newColorText = [CCGraphics colorFromHexString:themingColorText];
-    } else {
-        newColorText = NCBrandColor.shared.customerText;
-    }
-            
-    // COLOR ELEMENT
-    if (themingColorElement.length == 7) {
-        newColorElement = [CCGraphics colorFromHexString:themingColorElement];
-    } else {
-        if ([themingColorText isEqualToString:@"#000000"])
-            newColorElement = [UIColor blackColor];
-        else
-            newColorElement = newColor;
-    }
-            
-    NCBrandColor.shared.brand = newColor;
-    NCBrandColor.shared.brandElement = newColorElement;
-    NCBrandColor.shared.brandText = newColorText;
-}
-*/
 
 @end

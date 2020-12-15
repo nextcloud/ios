@@ -62,7 +62,7 @@
     }
     
     self.view.backgroundColor = NCBrandColor.shared.backgroundForm;
-    self.imagePreview.image = [NCUtility.shared resizeImage:image size:CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height)];
+    self.imagePreview.image = [image resizeImageWithSize:CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height)];
     self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width,  self.imagePreview.image.size.height + highLabelFileName);
 }
 
@@ -107,7 +107,7 @@
     [[NCCommunication shared] downloadPreviewWithFileNamePathOrFileId:fileNamePath fileNamePreviewLocalPath:fileNamePreviewLocalPath widthPreview:NCBrandGlobal.shared.sizePreview heightPreview:NCBrandGlobal.shared.sizePreview fileNameIconLocalPath:fileNameIconLocalPath sizeIcon:NCBrandGlobal.shared.sizeIcon customUserAgent:nil addCustomHeaders:nil endpointTrashbin:false useInternalEndpoint:true completionHandler:^(NSString *account, UIImage *imagePreview, UIImage *imageIcon, NSInteger errorCode,  NSString *errorDescription) {
         
         if (errorCode == 0 && imagePreview != nil) {
-            self.imagePreview.image = [NCUtility.shared resizeImage:imagePreview size:CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height)];
+            self.imagePreview.image = [imagePreview resizeImageWithSize:CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height)];
             self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width, self.imagePreview.image.size.height + highLabelFileName);
         }
     }];
