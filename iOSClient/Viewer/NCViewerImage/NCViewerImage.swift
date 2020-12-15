@@ -324,7 +324,7 @@ class NCViewerImage: UIViewController {
         }
         
         if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && !metadata.hasPreview {
-            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
+            NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
         }
         
         if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
@@ -348,7 +348,7 @@ class NCViewerImage: UIViewController {
             
             if ext == "GIF" {
                 if !FileManager().fileExists(atPath: previewPath) {
-                    CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
+                    NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
                 }
                 image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
             } else if ext == "SVG" {
@@ -370,7 +370,7 @@ class NCViewerImage: UIViewController {
                 }
             } else {
                 if !FileManager().fileExists(atPath: previewPath) {
-                    CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
+                    NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
                 }
                 image = UIImage.init(contentsOfFile: imagePath)
             }

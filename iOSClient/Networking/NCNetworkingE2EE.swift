@@ -308,8 +308,8 @@ import Alamofire
                         NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
                         NCManageDatabase.shared.addLocalFile(metadata: metadata)
                         
-                        CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
-                        
+                        NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
+                                                
                         NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp ,"errorCode":errorCode, "errorDescription":""])
                                                                                     
                     } else {

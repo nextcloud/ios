@@ -325,7 +325,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                                 cell.imageNewFile.image = image
                             }
                         } else if mediaType == PHAssetMediaType.video {
-                            if let image = CCGraphics.thumbnailImage(forVideo: URL(fileURLWithPath: fileNamePath), atTime: 1) {
+                            if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: fileNamePath), at: 1) {
                                 cell.imageNewFile.image = image
                             }
                         }
@@ -340,7 +340,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 } else {
                     
                     CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadataNewFile, notification: false) { (metadataNew, fileNamePath) in
-                        DispatchQueue.main.async {
+                        DispatchQueue.global(qos: .background).async {
                             if metadataNew != nil {
                                 self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
                                 do {
@@ -352,7 +352,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                                             }
                                         }
                                     } else if mediaType == PHAssetMediaType.video {
-                                        if let image = CCGraphics.thumbnailImage(forVideo: URL(fileURLWithPath: fileNamePath!), atTime: 1) {
+                                        if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: fileNamePath!), at: 1) {
                                             DispatchQueue.main.async {
                                                 cell.imageNewFile.image = image
                                             }

@@ -22,7 +22,6 @@
 //
 
 #import "AppDelegate.h"
-#import "CCGraphics.h"
 #import "NCBridgeSwift.h"
 #import "NCAutoUpload.h"
 #import "NCPushNotificationEncryption.h"

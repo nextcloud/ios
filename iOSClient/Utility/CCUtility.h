@@ -29,7 +29,6 @@
 #import <MessageUI/MessageUI.h>
 #import <UICKeyChainStore/UICKeyChainStore.h>
 #import <Photos/Photos.h>
-#import "CCGraphics.h"
 
 @class tableMetadata;
 

@@ -117,5 +117,11 @@ class NCUtilityFileSystem: NSObject {
             try? FileManager.default.removeItem(atPath: atPath)
         }
     }
+    
+    @objc func linkItem(atPath: String, toPath: String) {
+    
+        try? FileManager.default.removeItem(atPath: toPath)
+        try? FileManager.default.linkItem(atPath: atPath, toPath: toPath)
+    }
 }
 

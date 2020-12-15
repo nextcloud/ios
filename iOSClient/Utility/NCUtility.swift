@@ -640,5 +640,54 @@ class NCUtility: NSObject {
             NCBrandColor.shared.brandElement = NCBrandColor.shared.brand
         }
     }
+    
+    func imageFromVideo(url: URL, at time: TimeInterval) -> UIImage? {
+        
+        let asset = AVURLAsset(url: url)
+        let assetIG = AVAssetImageGenerator(asset: asset)
+        
+        assetIG.appliesPreferredTrackTransform = true
+        assetIG.apertureMode = AVAssetImageGenerator.ApertureMode.encodedPixels
+
+        let cmTime = CMTime(seconds: time, preferredTimescale: 60)
+        let thumbnailImageRef: CGImage
+        do {
+            thumbnailImageRef = try assetIG.copyCGImage(at: cmTime, actualTime: nil)
+        } catch let error {
+            print("Error: \(error)")
+            return nil
+        }
+
+        return UIImage(cgImage: thumbnailImageRef)
+    }
+    
+    func createImageFrom(fileName: String, ocId: String, etag: String, typeFile: String) {
+        
+        var originalImage: UIImage?
+        
+        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+        let fileNamePathPreview = CCUtility.getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)!
+        let fileNamePathIcon = CCUtility.getDirectoryProviderStorageIconOcId(ocId, etag: etag)!
+        
+        if !CCUtility.fileProviderStorageExists(ocId, fileNameView: fileName) { return }
+        if typeFile != NCBrandGlobal.shared.metadataTypeFileImage && typeFile != NCBrandGlobal.shared.metadataTypeFileVideo { return }
+        
+        if typeFile == NCBrandGlobal.shared.metadataTypeFileImage {
+            originalImage = UIImage.init(contentsOfFile: fileNamePath)
+        } else if typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
+            let videoPath = NSTemporaryDirectory()+"tempvideo.mp4"
+            NCUtilityFileSystem.shared.linkItem(atPath: fileNamePath, toPath: videoPath)
+            originalImage = imageFromVideo(url: URL(fileURLWithPath: videoPath), at: 1)
+        }
+        
+        if let image = originalImage {
+            if let scaleImagePreview = image.resizeImage(size: CGSize(width: NCBrandGlobal.shared.sizePreview, height: NCBrandGlobal.shared.sizePreview)) {
+                try? scaleImagePreview.jpegData(compressionQuality: 0.5)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
+            }
+            if let scaleImageIcon = image.resizeImage(size: CGSize(width: NCBrandGlobal.shared.sizeIcon, height: NCBrandGlobal.shared.sizeIcon)) {
+                try? scaleImageIcon.jpegData(compressionQuality: 0.5)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
+            }
+        }
+    }
 }
 
