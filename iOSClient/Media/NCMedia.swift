@@ -47,7 +47,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     private var filterTypeFileImage = false
     private var filterTypeFileVideo = false
             
-    private let kMaxImageGrid: CGFloat = 7
+    private let maxImageGrid: CGFloat = 7
     private var cellHeigth: CGFloat = 0
 
     private var oldInProgress = false
@@ -106,8 +106,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         mediaCommandView = Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as? NCMediaCommandView
         self.view.addSubview(mediaCommandView!)
         mediaCommandView?.mediaView = self
-        mediaCommandView?.zoomInButton.isEnabled = !(self.gridLayout.itemForLine == 1)
-        mediaCommandView?.zoomOutButton.isEnabled = !(self.gridLayout.itemForLine == self.kMaxImageGrid - 1)
+        mediaCommandView?.zoomInButton.isEnabled = !(gridLayout.itemForLine == 1)
+        mediaCommandView?.zoomOutButton.isEnabled = !(gridLayout.itemForLine == maxImageGrid - 1)
         mediaCommandView?.collapseControlButtonView(true)
         mediaCommandView?.translatesAutoresizingMaskIntoConstraints = false
         mediaCommandView?.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
@@ -175,11 +175,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     
     @objc func zoomOutGrid() {
         UIView.animate(withDuration: 0.0, animations: {
-            if(self.gridLayout.itemForLine + 1 < self.kMaxImageGrid) {
+            if(self.gridLayout.itemForLine + 1 < self.maxImageGrid) {
                 self.gridLayout.itemForLine += 1
                 self.mediaCommandView?.zoomInButton.isEnabled = true
             }
-            if(self.gridLayout.itemForLine == self.kMaxImageGrid - 1) {
+            if(self.gridLayout.itemForLine == self.maxImageGrid - 1) {
                 self.mediaCommandView?.zoomOutButton.isEnabled = false
             }
 
