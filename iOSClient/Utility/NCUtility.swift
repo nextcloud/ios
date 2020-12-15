@@ -669,6 +669,7 @@ class NCUtility: NSObject {
         let fileNamePathPreview = CCUtility.getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)!
         let fileNamePathIcon = CCUtility.getDirectoryProviderStorageIconOcId(ocId, etag: etag)!
         
+        if FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
         if !CCUtility.fileProviderStorageExists(ocId, fileNameView: fileName) { return }
         if typeFile != NCBrandGlobal.shared.metadataTypeFileImage && typeFile != NCBrandGlobal.shared.metadataTypeFileVideo { return }
         
@@ -677,17 +678,11 @@ class NCUtility: NSObject {
         } else if typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
             let videoPath = NSTemporaryDirectory()+"tempvideo.mp4"
             NCUtilityFileSystem.shared.linkItem(atPath: fileNamePath, toPath: videoPath)
-            originalImage = imageFromVideo(url: URL(fileURLWithPath: videoPath), at: 1)
+            originalImage = imageFromVideo(url: URL(fileURLWithPath: videoPath), at: 0)
         }
         
-        if let image = originalImage {
-            if let scaleImagePreview = image.resizeImage(size: CGSize(width: NCBrandGlobal.shared.sizePreview, height: NCBrandGlobal.shared.sizePreview)) {
-                try? scaleImagePreview.jpegData(compressionQuality: 0.5)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
-            }
-            if let scaleImageIcon = image.resizeImage(size: CGSize(width: NCBrandGlobal.shared.sizeIcon, height: NCBrandGlobal.shared.sizeIcon)) {
-                try? scaleImageIcon.jpegData(compressionQuality: 0.5)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
-            }
-        }
+        try? originalImage?.jpegData(compressionQuality: 0.9)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
+        try? originalImage?.jpegData(compressionQuality: 0.9)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
     }
 }
 
