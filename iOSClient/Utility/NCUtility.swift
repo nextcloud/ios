@@ -663,7 +663,7 @@ class NCUtility: NSObject {
     
     func createImageFrom(fileName: String, ocId: String, etag: String, typeFile: String) {
         
-        var originalImage: UIImage?
+        var originalImage, scaleImagePreview, scaleImageIcon: UIImage?
         
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
         let fileNamePathPreview = CCUtility.getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)!
@@ -674,15 +674,25 @@ class NCUtility: NSObject {
         if typeFile != NCBrandGlobal.shared.metadataTypeFileImage && typeFile != NCBrandGlobal.shared.metadataTypeFileVideo { return }
         
         if typeFile == NCBrandGlobal.shared.metadataTypeFileImage {
+            
             originalImage = UIImage.init(contentsOfFile: fileNamePath)
+            
+            scaleImagePreview = originalImage?.resizeImage(size: CGSize(width: NCBrandGlobal.shared.sizePreview, height: NCBrandGlobal.shared.sizePreview), isAspectRation: true)
+            scaleImageIcon = originalImage?.resizeImage(size: CGSize(width: NCBrandGlobal.shared.sizeIcon, height: NCBrandGlobal.shared.sizeIcon), isAspectRation: true)
+            
+            try? scaleImagePreview?.jpegData(compressionQuality: 0.9)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
+            try? scaleImageIcon?.jpegData(compressionQuality: 0.9)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
+            
         } else if typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
+            
             let videoPath = NSTemporaryDirectory()+"tempvideo.mp4"
             NCUtilityFileSystem.shared.linkItem(atPath: fileNamePath, toPath: videoPath)
+            
             originalImage = imageFromVideo(url: URL(fileURLWithPath: videoPath), at: 0)
+            
+            try? originalImage?.jpegData(compressionQuality: 0.9)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
+            try? originalImage?.jpegData(compressionQuality: 0.9)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
         }
-        
-        try? originalImage?.jpegData(compressionQuality: 0.9)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
-        try? originalImage?.jpegData(compressionQuality: 0.9)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
     }
 }
 
