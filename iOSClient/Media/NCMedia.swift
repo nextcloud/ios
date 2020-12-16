@@ -1005,11 +1005,9 @@ class NCGridMediaLayout: UICollectionViewFlowLayout {
                         let diff = collectionView.frame.width - collectionView.frame.height
                         
                         itemDiff = Int(diff / itemWidth)
-                        frameWidth = collectionView.frame.width
-                        
                         itemForLine += CGFloat(itemDiff)
                     }
-                    
+                                        
                 } else if collectionView.frame.width < frameWidth {
                     
                     if itemDiff > 0 {
@@ -1022,13 +1020,12 @@ class NCGridMediaLayout: UICollectionViewFlowLayout {
                         let diff = collectionView.frame.height - collectionView.frame.width
                         
                         itemDiff = Int(diff / itemWidth)
-                        frameWidth = collectionView.frame.width
-                        
                         itemForLine -= CGFloat(itemDiff)
                     }
                 }
                 
-                itemWidth = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
+                frameWidth = collectionView.frame.width
+                itemWidth = (frameWidth - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
                 
                 return CGSize(width: itemWidth, height: itemWidth)
             }
