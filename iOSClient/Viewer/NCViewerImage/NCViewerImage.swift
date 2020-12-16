@@ -369,9 +369,7 @@ class NCViewerImage: UIViewController {
                     return nil
                 }
             } else {
-                if !FileManager().fileExists(atPath: previewPath) {
-                    NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
-                }
+                NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
                 image = UIImage.init(contentsOfFile: imagePath)
             }
         }
