@@ -476,21 +476,21 @@
     [self setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:nil];
 }
 
-+ (NSInteger)getMediaItemImage
++ (NSInteger)getMediaWidthImage
 {
-    NSString *item = [UICKeyChainStore stringForKey:@"mediaItemImage" service:NCBrandGlobal.shared.serviceShareKeyChain];
+    NSString *width = [UICKeyChainStore stringForKey:@"mediaWidthImage" service:NCBrandGlobal.shared.serviceShareKeyChain];
     
-    if (item == nil) {
-        return 5;
+    if (width == nil) {
+        return 80;
     } else {
-        return [item integerValue];
+        return [width integerValue];
     }
 }
 
-+ (void)setMediaItemImage:(NSInteger)item
++ (void)setMediaWidthImage:(NSInteger)width
 {
-    NSString *widthString = [@(item) stringValue];
-    [UICKeyChainStore setString:widthString forKey:@"mediaItemImage" service:NCBrandGlobal.shared.serviceShareKeyChain];
+    NSString *widthString = [@(width) stringValue];
+    [UICKeyChainStore setString:widthString forKey:@"mediaWidthImage" service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getDisableCrashservice

@@ -130,8 +130,8 @@
 + (NSString *)getPushNotificationDeviceIdentifierSignature:(NSString *)account;
 + (void)clearAllKeysPushNotification:(NSString *)account;
 
-+ (NSInteger)getMediaItemImage;
-+ (void)setMediaItemImage:(NSInteger)item;
++ (NSInteger)getMediaWidthImage;
++ (void)setMediaWidthImage:(NSInteger)width;
 
 + (BOOL)getDisableCrashservice;
 + (void)setDisableCrashservice:(BOOL)disable;
