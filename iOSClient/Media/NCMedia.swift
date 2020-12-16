@@ -1025,6 +1025,7 @@ class NCGridMediaLayout: UICollectionViewFlowLayout {
                 }
                 
                 frameWidth = collectionView.frame.width
+                if itemForLine <= 0 { itemForLine = 1 }
                 itemWidth = (frameWidth - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
                 
                 return CGSize(width: itemWidth, height: itemWidth)
