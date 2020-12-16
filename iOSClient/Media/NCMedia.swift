@@ -962,8 +962,10 @@ class NCMediaCommandView: UIView {
 
 class NCGridMediaLayout: UICollectionViewFlowLayout {
     
-    var marginLeftRight: CGFloat = 6
+    let marginLeftRight: CGFloat = 6
     var itemForLine: CGFloat = 3
+    var itemWidth: CGFloat = 0
+    var frameWidth: CGFloat = 0
     
     override init() {
         super.init()
@@ -985,10 +987,23 @@ class NCGridMediaLayout: UICollectionViewFlowLayout {
         get {
             if let collectionView = collectionView {
                 
-                let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
-                let itemHeight: CGFloat = itemWidth
+                if frameWidth == 0 {
+                    frameWidth = collectionView.frame.width
+                } else if collectionView.frame.width > frameWidth {
+                    let diffWidth = collectionView.frame.width - collectionView.frame.height
+                    let itemAdded = Int(diffWidth / itemWidth)
+                    frameWidth = collectionView.frame.width
+                    itemForLine += CGFloat(itemAdded)
+                } else if collectionView.frame.width < frameWidth {
+                    let diffWidth = collectionView.frame.height - collectionView.frame.width
+                    let itemAdded = Int(diffWidth / itemWidth)
+                    frameWidth = collectionView.frame.width
+                    itemForLine -= CGFloat(itemAdded)
+                }
                 
-                return CGSize(width: itemWidth, height: itemHeight)
+                itemWidth = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
+                
+                return CGSize(width: itemWidth, height: itemWidth)
             }
             
             // Default fallback
