@@ -964,8 +964,10 @@ class NCGridMediaLayout: UICollectionViewFlowLayout {
     
     let marginLeftRight: CGFloat = 6
     var itemForLine: CGFloat = 3
+    
     var itemWidth: CGFloat = 0
     var frameWidth: CGFloat = 0
+    var itemDiff: Int = 0
     
     override init() {
         super.init()
@@ -988,17 +990,42 @@ class NCGridMediaLayout: UICollectionViewFlowLayout {
             if let collectionView = collectionView {
                 
                 if frameWidth == 0 {
+                    
                     frameWidth = collectionView.frame.width
+                   
                 } else if collectionView.frame.width > frameWidth {
-                    let diffWidth = collectionView.frame.width - collectionView.frame.height
-                    let itemAdded = Int(diffWidth / itemWidth)
-                    frameWidth = collectionView.frame.width
-                    itemForLine += CGFloat(itemAdded)
+                    
+                    if itemDiff < 0 {
+                        
+                        itemForLine += CGFloat(itemDiff)
+                        itemDiff = 0
+                        
+                    } else if itemDiff == 0 {
+                        
+                        let diff = collectionView.frame.width - collectionView.frame.height
+                        
+                        itemDiff = Int(diff / itemWidth)
+                        frameWidth = collectionView.frame.width
+                        
+                        itemForLine += CGFloat(itemDiff)
+                    }
+                    
                 } else if collectionView.frame.width < frameWidth {
-                    let diffWidth = collectionView.frame.height - collectionView.frame.width
-                    let itemAdded = Int(diffWidth / itemWidth)
-                    frameWidth = collectionView.frame.width
-                    itemForLine -= CGFloat(itemAdded)
+                    
+                    if itemDiff > 0 {
+                    
+                        itemForLine -= CGFloat(itemDiff)
+                        itemDiff = 0
+                        
+                    } else {
+                        
+                        let diff = collectionView.frame.height - collectionView.frame.width
+                        
+                        itemDiff = Int(diff / itemWidth)
+                        frameWidth = collectionView.frame.width
+                        
+                        itemForLine -= CGFloat(itemDiff)
+                    }
                 }
                 
                 itemWidth = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
