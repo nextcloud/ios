@@ -680,8 +680,8 @@ class NCUtility: NSObject {
             scaleImagePreview = originalImage?.resizeImage(size: CGSize(width: NCBrandGlobal.shared.sizePreview, height: NCBrandGlobal.shared.sizePreview), isAspectRation: true)
             scaleImageIcon = originalImage?.resizeImage(size: CGSize(width: NCBrandGlobal.shared.sizeIcon, height: NCBrandGlobal.shared.sizeIcon), isAspectRation: true)
             
-            try? scaleImagePreview?.jpegData(compressionQuality: 0.9)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
-            try? scaleImageIcon?.jpegData(compressionQuality: 0.9)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
+            try? scaleImagePreview?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
+            try? scaleImageIcon?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
             
         } else if typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
             
@@ -690,8 +690,8 @@ class NCUtility: NSObject {
             
             originalImage = imageFromVideo(url: URL(fileURLWithPath: videoPath), at: 0)
             
-            try? originalImage?.jpegData(compressionQuality: 0.9)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
-            try? originalImage?.jpegData(compressionQuality: 0.9)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
+            try? originalImage?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
+            try? originalImage?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
         }
     }
 }
