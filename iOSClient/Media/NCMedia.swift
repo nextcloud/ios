@@ -48,6 +48,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     private var filterTypeFileVideo = false
             
     private let maxImageGrid: CGFloat = 7
+    private let minImageWidth: CGFloat = 70
     private var cellHeigth: CGFloat = 0
 
     private var oldInProgress = false
@@ -84,7 +85,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         collectionView.contentInset = UIEdgeInsets(top: 75, left: 0, bottom: 50, right: 0);
                 
         gridLayout = NCGridMediaLayout()
-        gridLayout.itemForLine = CGFloat(min(CCUtility.getMediaWidthImage(), 5))
+        gridLayout.itemForLine = CGFloat(CCUtility.getMediaItemImage())
         gridLayout.sectionHeadersPinToVisibleBounds = true
 
         collectionView.collectionViewLayout = gridLayout
@@ -106,8 +107,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         mediaCommandView = Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as? NCMediaCommandView
         self.view.addSubview(mediaCommandView!)
         mediaCommandView?.mediaView = self
+        
+        let newItemWidth = self.gridLayout.getItemWidth(itemForLine: gridLayout.itemForLine + 1)
+        mediaCommandView?.zoomOutButton.isEnabled = (newItemWidth > minImageWidth)
         mediaCommandView?.zoomInButton.isEnabled = !(gridLayout.itemForLine == 1)
-        mediaCommandView?.zoomOutButton.isEnabled = !(gridLayout.itemForLine == maxImageGrid - 1)
+
         mediaCommandView?.collapseControlButtonView(true)
         mediaCommandView?.translatesAutoresizingMaskIntoConstraints = false
         mediaCommandView?.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
@@ -175,16 +179,15 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     
     @objc func zoomOutGrid() {
         UIView.animate(withDuration: 0.0, animations: {
-            if(self.gridLayout.itemForLine + 1 < self.maxImageGrid) {
+            let newItemWidth = self.gridLayout.getItemWidth(itemForLine: self.gridLayout.itemForLine + 1)
+            if newItemWidth > self.minImageWidth {
                 self.gridLayout.itemForLine += 1
                 self.mediaCommandView?.zoomInButton.isEnabled = true
-            }
-            if(self.gridLayout.itemForLine == self.maxImageGrid - 1) {
+            } else {
                 self.mediaCommandView?.zoomOutButton.isEnabled = false
             }
-
+        
             self.collectionView.collectionViewLayout.invalidateLayout()
-            CCUtility.setMediaWidthImage(Int(self.gridLayout.itemForLine))
         })
     }
 
@@ -199,7 +202,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             }
 
             self.collectionView.collectionViewLayout.invalidateLayout()
-            CCUtility.setMediaWidthImage(Int(self.gridLayout.itemForLine))
         })
     }
     
@@ -962,7 +964,7 @@ class NCMediaCommandView: UIView {
 
 class NCGridMediaLayout: UICollectionViewFlowLayout {
     
-    let marginLeftRight: CGFloat = 6
+    var marginLeftRight: CGFloat = 6
     var itemForLine: CGFloat = 3
     
     var itemWidth: CGFloat = 0
@@ -1026,8 +1028,10 @@ class NCGridMediaLayout: UICollectionViewFlowLayout {
                 
                 frameWidth = collectionView.frame.width
                 if itemForLine <= 0 { itemForLine = 1 }
-                itemWidth = (frameWidth - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
+                itemWidth = getItemWidth(itemForLine: itemForLine)
                 
+                CCUtility.setMediaItemImage(Int(itemForLine))
+
                 return CGSize(width: itemWidth, height: itemWidth)
             }
             
@@ -1041,6 +1045,12 @@ class NCGridMediaLayout: UICollectionViewFlowLayout {
     
     override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
         return proposedContentOffset
+    }
+    
+    public func getItemWidth(itemForLine: CGFloat) -> CGFloat {
+        
+        let itemWidth = (frameWidth - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
+        return itemWidth
     }
 }
 
