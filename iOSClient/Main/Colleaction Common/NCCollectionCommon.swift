@@ -258,6 +258,7 @@ class NCGridLayout: UICollectionViewFlowLayout {
     var heightLabelPlusButton: CGFloat = 45
     var marginLeftRight: CGFloat = 6
     var itemForLine: CGFloat = 3
+    var itemWidthDefault: CGFloat = 120
 
     override init() {
         super.init()
@@ -279,21 +280,10 @@ class NCGridLayout: UICollectionViewFlowLayout {
         get {
             if let collectionView = collectionView {
                 
-                switch collectionView.frame.width {
-                case 0..<400:
+                if collectionView.frame.width < 400 {
                     itemForLine = 3
-                case 400..<600:
-                    itemForLine = 4
-                case 600..<800:
-                    itemForLine = 5
-                case 800..<1000:
-                    itemForLine = 6
-                case 1000..<1200:
-                    itemForLine = 7
-                case 1200...:
-                    itemForLine = 8
-                default:
-                    itemForLine = 3
+                } else {
+                    itemForLine = collectionView.frame.width / itemWidthDefault
                 }
                 
                 let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
@@ -303,7 +293,7 @@ class NCGridLayout: UICollectionViewFlowLayout {
             }
             
             // Default fallback
-            return CGSize(width: 100, height: 100)
+            return CGSize(width: itemWidthDefault, height: itemWidthDefault)
         }
         set {
             super.itemSize = newValue
