@@ -32,6 +32,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
     @IBOutlet fileprivate weak var toolbar: UIView!
+    @IBOutlet fileprivate weak var separator: UIView!
     @IBOutlet fileprivate weak var overwriteView: UIView!
 
     @IBOutlet fileprivate weak var buttonCancel: UIBarButtonItem!
@@ -163,7 +164,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         
         self.navigationItem.title = titleCurrentFolder
         
-        toolBarTop.constant = -100
+        toolBarTop.constant = -100 + CGFloat(UIApplication.shared.keyWindow?.rootViewController!.view.safeAreaInsets.bottom ?? 0)
         buttonDone.setTitle(titleButtonDone, for: .normal)
         buttonDone1.setTitle(titleButtonDone1, for: .normal)
         buttonDone1.isHidden = isButtonDone1Hide
@@ -215,7 +216,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         collectionView.reloadData()
         refreshControl.backgroundColor = NCBrandColor.shared.backgroundView
         toolbar.backgroundColor = NCBrandColor.shared.tabBar
-        //toolbar.tintColor = .gray
+        separator.backgroundColor = NCBrandColor.shared.graySoft
     }
     
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
