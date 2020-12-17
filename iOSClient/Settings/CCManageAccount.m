@@ -71,7 +71,7 @@
             UIGraphicsEndImageContext();
             
         } else {
-            avatar = [[UIImage imageNamed:@"avatarBN"] resizeImageWithSize:CGSizeMake(35, 35) isAspectRation:false];
+            avatar = [UIImage imageNamed:@"avatarCredentials"];
         }
         
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundCell;
