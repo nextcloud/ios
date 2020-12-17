@@ -43,8 +43,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     @IBOutlet fileprivate weak var overwriteSwitch: UISwitch!
     @IBOutlet fileprivate weak var overwriteLabel: UILabel!
     
-    @IBOutlet fileprivate weak var toolBarTop: NSLayoutConstraint!
-
     // ------ external settings ------------------------------------
     @objc var delegate: NCSelectDelegate?
     
@@ -164,7 +162,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         
         self.navigationItem.title = titleCurrentFolder
         
-        toolBarTop.constant = -100 + CGFloat(UIApplication.shared.keyWindow?.rootViewController!.view.safeAreaInsets.bottom ?? 0)
         buttonDone.setTitle(titleButtonDone, for: .normal)
         buttonDone1.setTitle(titleButtonDone1, for: .normal)
         buttonDone1.isHidden = isButtonDone1Hide
