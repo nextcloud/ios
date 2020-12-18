@@ -405,12 +405,16 @@ extension NCShare: UITableViewDataSource {
                 
                 let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + tableShare.shareWith + ".png"
                 if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                    if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
+                    if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                        cell.imageItem.enableAvatar = true
+                        cell.imageItem.image = image
+                    }
                 } else {
                     DispatchQueue.global().async {
                         NCCommunication.shared.downloadAvatar(userID: tableShare.shareWith, fileNameLocalPath: fileNameLocalPath, size: NCBrandGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
                             if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
                                 if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                                    cell.imageItem.enableAvatar = true
                                     cell.imageItem.image = image
                                 }
                             }
@@ -480,7 +484,7 @@ protocol NCShareLinkCellDelegate {
 
 class NCShareUserCell: UITableViewCell {
     
-    @IBOutlet weak var imageItem: UIImageView!
+    @IBOutlet weak var imageItem: NCAvatar!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelCanEdit: UILabel!
     @IBOutlet weak var switchCanEdit: UISwitch!
