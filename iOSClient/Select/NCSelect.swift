@@ -128,7 +128,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
         // Empty
-        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -200, delegate: self)
+        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 0, delegate: self)
         
         // title button
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
