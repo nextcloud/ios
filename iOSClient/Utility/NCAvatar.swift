@@ -50,7 +50,7 @@ import Foundation
         }
     }
     
-    @IBInspectable var enableAvatar: Bool = true {
+    @IBInspectable var disableAvatar: Bool = false {
         didSet{
             layoutSubviews()
         }
@@ -74,7 +74,7 @@ import Foundation
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        if !enableAvatar { return }
+        if disableAvatar { return }
         
         layer.cornerRadius = bounds.width / roundness
         layer.borderWidth = borderWidth

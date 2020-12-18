@@ -23,7 +23,7 @@
                             <constraint firstAttribute="width" constant="40" id="GNY-Va-SIJ"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
-                            <userDefinedRuntimeAttribute type="boolean" keyPath="enableAvatar" value="NO"/>
+                            <userDefinedRuntimeAttribute type="boolean" keyPath="disableAvatar" value="YES"/>
                             <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
                                 <integer key="value" value="1"/>
                             </userDefinedRuntimeAttribute>
