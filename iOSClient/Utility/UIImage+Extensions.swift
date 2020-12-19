@@ -163,4 +163,8 @@ extension UIImage {
         
         return newImage
     }
+    
+    func imageColor(_ color: UIColor) -> UIImage {
+        return image(color: color, size: size.width)
+    }
 }

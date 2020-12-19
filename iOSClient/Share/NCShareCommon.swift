@@ -208,27 +208,27 @@ class NCShareCommon: NSObject {
         
         switch shareType {
         case SHARE_TYPE_USER:
-            return UIImage(named: "shareTypeUser")
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_GROUP:
-            return UIImage(named: "shareTypeGroup")
+            return UIImage(named: "shareTypeGroup")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_LINK:
-            return UIImage(named: "shareTypeLink")
+            return UIImage(named: "shareTypeLink")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_EMAIL:
-            return UIImage(named: "shareTypeEmail")
+            return UIImage(named: "shareTypeEmail")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_CONTACT:
-            return UIImage(named: "shareTypeUser")
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_REMOTE:
-            return UIImage(named: "shareTypeUser")
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_CIRCLE:
-            return UIImage(named: "shareTypeCircles")
+            return UIImage(named: "shareTypeCircles")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_GUEST:
-            return UIImage(named: "shareTypeUser")
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_REMOTE_GROUP:
-            return UIImage(named: "shareTypeGroup")
+            return UIImage(named: "shareTypeGroup")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_ROOM:
-            return UIImage(named: "shareTypeRoom")
+            return UIImage(named: "shareTypeRoom")?.imageColor(NCBrandColor.shared.textView)
         default:
-            return UIImage(named: "shareTypeUser")
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
         }
     }
 }
