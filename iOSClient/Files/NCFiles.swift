@@ -68,7 +68,7 @@ class NCFiles: NCCollectionViewCommon  {
         
         DispatchQueue.global(qos: .background).async {
                         
-            if !self.isSearching {
+            if !self.isSearching && self.appDelegate.account != nil {
                 self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
                 if self.metadataFolder == nil {
                     self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl:  self.serverUrl)
@@ -77,9 +77,9 @@ class NCFiles: NCCollectionViewCommon  {
             
             self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort: self.sort, ascending: self.ascending, directoryOnTop: self.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
             
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()                
+            DispatchQueue.main.async { [weak self] in
+                self?.refreshControl.endRefreshing()
+                self?.collectionView.reloadData()                
             }
         }
     }
