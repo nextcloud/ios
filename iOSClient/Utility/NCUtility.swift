@@ -677,8 +677,8 @@ class NCUtility: NSObject {
             
             originalImage = UIImage.init(contentsOfFile: fileNamePath)
             
-            scaleImagePreview = originalImage?.resizeImage(size: CGSize(width: NCBrandGlobal.shared.sizePreview, height: NCBrandGlobal.shared.sizePreview), isAspectRation: true)
-            scaleImageIcon = originalImage?.resizeImage(size: CGSize(width: NCBrandGlobal.shared.sizeIcon, height: NCBrandGlobal.shared.sizeIcon), isAspectRation: true)
+            scaleImagePreview = originalImage?.resizeImage(size: CGSize(width: NCBrandGlobal.shared.sizePreview, height: NCBrandGlobal.shared.sizePreview), isAspectRation: false)
+            scaleImageIcon = originalImage?.resizeImage(size: CGSize(width: NCBrandGlobal.shared.sizeIcon, height: NCBrandGlobal.shared.sizeIcon), isAspectRation: false)
             
             try? scaleImagePreview?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
             try? scaleImageIcon?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
