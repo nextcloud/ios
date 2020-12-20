@@ -422,18 +422,27 @@ import Queuer
             session = sessionManagerBackgroundWWan
         }
         
-        if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, description: metadata.ocId, session: session!) {
-                     
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCBrandGlobal.shared.metadataStatusUploading)
-            
-            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId":metadata.ocId])
-            
-            completion(0, "")
-            
-        } else {
-            
+        // Check file dim > 0
+        if NCUtilityFileSystem.shared.getFileSize(filePath: fileNameLocalPath) == 0 {
+        
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            completion(NCBrandGlobal.shared.ErrorInternalError, "task null")
+            completion(404, NSLocalizedString("_error_not_found_", value: "The requested resource could not be found", comment: ""))
+        
+        } else {
+        
+            if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, description: metadata.ocId, session: session!) {
+                         
+                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCBrandGlobal.shared.metadataStatusUploading)
+                
+                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId":metadata.ocId])
+                
+                completion(0, "")
+                
+            } else {
+                
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                completion(NCBrandGlobal.shared.ErrorInternalError, "task null")
+            }
         }
     }
     
