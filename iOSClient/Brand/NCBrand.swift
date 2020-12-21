@@ -244,7 +244,7 @@ class NCBrandColor: NSObject {
     @objc let introSignup: Int                      = 1
     
     // Avatar & Preview
-    let avatarSize: Int                             = 512
+    let avatarSize: CGFloat                         = 512
     @objc let sizePreview: CGFloat                  = 1024
     @objc let sizeIcon: CGFloat                     = 512
     
