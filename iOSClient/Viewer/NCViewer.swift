@@ -79,7 +79,7 @@ class NCViewer: NSObject {
             }
             
             // DirectEditinf: Nextcloud Text - OnlyOffice
-            if NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil &&  NCCommunication.shared.isNetworkReachable() {
+            if NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil && NCCommunication.shared.isNetworkReachable() {
                 
                 guard let editor = NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) else { return }
                 if editor == NCBrandGlobal.shared.editorText || editor == NCBrandGlobal.shared.editorOnlyoffice {
@@ -140,7 +140,7 @@ class NCViewer: NSObject {
             }
             
             // RichDocument: Collabora
-            if NCUtility.shared.isRichDocument(metadata) &&  NCCommunication.shared.isNetworkReachable() {
+            if NCUtility.shared.isRichDocument(metadata) && NCCommunication.shared.isNetworkReachable() {
                                 
                 if metadata.url == "" {
                     

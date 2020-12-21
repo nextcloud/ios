@@ -1211,24 +1211,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             guard let metadataTouch = metadataTouch else { return }
             
-            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileDocument && NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil {
-                if NCCommunication.shared.isNetworkReachable() {
-                    NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
-                } else {
-                    NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorOffline, forced: true)
-                }
-                return
-            }
-            
-            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileDocument && NCUtility.shared.isRichDocument(metadata) {
-                if NCCommunication.shared.isNetworkReachable() {
-                    NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
-                } else {
-                    NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorOffline, forced: true)
-                }
-                return
-            }
-            
             if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio {
                 var metadatas: [tableMetadata] = []
                 for metadata in dataSource.metadatas {
@@ -1242,8 +1224,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             if CCUtility.fileProviderStorageExists(metadataTouch.ocId, fileNameView: metadataTouch.fileNameView) {
                 NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
-            } else {
+            } else if NCCommunication.shared.isNetworkReachable() {
                 NCNetworking.shared.download(metadata: metadataTouch, selector: NCBrandGlobal.shared.selectorLoadFileView) { (_) in }
+            } else {
+                NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorOffline, forced: true)
             }
         }
     }
