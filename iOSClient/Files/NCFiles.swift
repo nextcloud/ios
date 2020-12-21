@@ -68,10 +68,10 @@ class NCFiles: NCCollectionViewCommon  {
         
         DispatchQueue.global(qos: .background).async {
                         
-            if !self.isSearching && self.appDelegate.account != nil {
+            if !self.isSearching && self.appDelegate.account != nil && self.appDelegate.urlBase != nil {
                 self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
                 if self.metadataFolder == nil {
-                    self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl:  self.serverUrl)
+                    self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl: self.serverUrl)
                 }
             }
             
