@@ -98,6 +98,8 @@
 
 - (NSString *)decryptPushNotification:(NSString *)message withDevicePrivateKey:(NSData *)privateKey
 {
+    if (message == nil || privateKey == nil) { return nil; }
+    
     NSString *privateKeyString = [[NSString alloc] initWithData:privateKey encoding:NSUTF8StringEncoding];
     NSData *decodedData = [[NSData alloc] initWithBase64EncodedString:message options:0];
     char *privKey = (char *)[privateKeyString UTF8String];
