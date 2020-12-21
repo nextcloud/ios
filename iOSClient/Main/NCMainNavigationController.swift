@@ -25,12 +25,28 @@ import Foundation
 
 class NCMainNavigationController: UINavigationController {
     
+    var isPushing = false
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
         
         changeTheming()
+    }
+    
+    // https://stackoverflow.com/questions/37829721/pushing-view-controller-twice
+    override func pushViewController(_ viewController: UIViewController, animated: Bool) {
+        
+        if !isPushing {
+            isPushing = true
+            CATransaction.begin()
+            CATransaction.setCompletionBlock {
+                self.isPushing = false
+            }
+            super.pushViewController(viewController, animated: animated)
+            CATransaction.commit()
+        }
     }
     
     @objc func changeTheming() {
