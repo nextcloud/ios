@@ -572,11 +572,11 @@ extension NCSelect: UICollectionViewDataSource {
                 if FileManager.default.fileExists(atPath: fileNameSourceAvatar) {
                     cell.imageShared.image = UIImage(contentsOfFile: fileNameSourceAvatar)
                 } else if FileManager.default.fileExists(atPath: fileNameSource) {
-                    cell.imageShared.image = NCUtility.shared.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar, borderColor: .white, borderWidth: 1)
+                    cell.imageShared.image = NCUtility.shared.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar, size: cell.imageShared.frame.width, borderColor: .white, borderWidth: 1)
                 } else {
                     NCCommunication.shared.downloadAvatar(userID: metadata.ownerId, fileNameLocalPath: fileNameSource, size: NCBrandGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.account {
-                            cell.imageShared.image = NCUtility.shared.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar, borderColor: .white, borderWidth: 1)
+                            cell.imageShared.image = NCUtility.shared.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar, size: cell.imageShared.frame.width, borderColor: .white, borderWidth: 1)
                         }
                     }
                 }

@@ -407,10 +407,9 @@ class NCUtility: NSObject {
     }
     
     #if !EXTENSION
-    @objc func createAvatar(fileNameSource: String, fileNameSourceAvatar: String, borderColor: UIColor, borderWidth: CGFloat) -> UIImage? {
+    @objc func createAvatar(fileNameSource: String, fileNameSourceAvatar: String, size: CGFloat, borderColor: UIColor, borderWidth: CGFloat) -> UIImage? {
         
         guard let imageFile = UIImage(contentsOfFile: fileNameSource) else { return nil }
-        let size = NCBrandGlobal.shared.avatarSize
         guard let imageSource = imageFile.resizeImage(size: CGSize(width: size, height: size), isAspectRation: true) else { return nil }
         
         UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, UIScreen.main.scale)
@@ -433,32 +432,6 @@ class NCUtility: NSObject {
         } catch { }
         
         return imageAvatar
-        
-        /*
-        guard let imageSource = UIImage(contentsOfFile: fileNameSource) else { return nil }
-        let size = NCBrandGlobal.shared.avatarSize
-        
-        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, UIScreen.main.scale)
-        imageSource.draw(in: CGRect(x: 0, y: 0, width: size, height: size))
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-
-        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, UIScreen.main.scale)
-        let avatarImageView = NCAvatar.init(image: image, borderColor: borderColor, borderWidth: borderWidth)
-        guard let context = UIGraphicsGetCurrentContext() else { return nil }
-        avatarImageView.layer.render(in: context)
-        guard let imageAvatar = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
-        UIGraphicsEndImageContext()
-        
-        guard let data = imageAvatar.pngData() else {
-            return nil
-        }
-        do {
-            try data.write(to: NSURL(fileURLWithPath: fileNameSourceAvatar) as URL, options: .atomic)
-        } catch { }
-        
-        return imageAvatar
-        */
     }
     #endif
     
