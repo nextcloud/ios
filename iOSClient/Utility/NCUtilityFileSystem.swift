@@ -123,5 +123,74 @@ class NCUtilityFileSystem: NSObject {
         try? FileManager.default.removeItem(atPath: toPath)
         try? FileManager.default.linkItem(atPath: atPath, toPath: toPath)
     }
+    
+    // MARK: - 
+    
+    @objc func getWebDAV(account: String) -> String {
+        return NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesWebDavRoot) ?? "remote.php/webdav"
+    }
+    
+    @objc func getDAV() -> String {
+        return "remote.php/dav"
+    }
+    
+    @objc func getHomeServer(urlBase: String, account: String) -> String {
+        return urlBase + "/" + self.getWebDAV(account: account)
+    }
+    
+    @objc func deletingLastPathComponent(serverUrl: String, urlBase: String, account: String) -> String {
+        if getHomeServer(urlBase: urlBase, account: account) == serverUrl { return serverUrl }
+        let fileName = (serverUrl as NSString).lastPathComponent
+        let serverUrl = serverUrl.replacingOccurrences(of: "/"+fileName, with: "", options: String.CompareOptions.backwards, range: nil)
+        return serverUrl
+    }
+    
+    @objc func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {
+        
+        var resultFileName = fileName
+        var exitLoop = false
+            
+            while exitLoop == false {
+                
+                if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "fileNameView == %@ AND serverUrl == %@ AND account == %@", resultFileName, serverUrl, account)) != nil {
+                    
+                    var name = NSString(string: resultFileName).deletingPathExtension
+                    let ext = NSString(string: resultFileName).pathExtension
+                    let characters = Array(name)
+                    
+                    if characters.count < 2 {
+                        if ext == "" {
+                            resultFileName = name + " " + "1"
+                        } else {
+                            resultFileName = name + " " + "1" + "." + ext
+                        }
+                    } else {
+                        let space = characters[characters.count-2]
+                        let numChar = characters[characters.count-1]
+                        var num = Int(String(numChar))
+                        if (space == " " && num != nil) {
+                            name = String(name.dropLast())
+                            num = num! + 1
+                            if ext == "" {
+                                resultFileName = name + "\(num!)"
+                            } else {
+                                resultFileName = name + "\(num!)" + "." + ext
+                            }
+                        } else {
+                            if ext == "" {
+                                resultFileName = name + " " + "1"
+                            } else {
+                                resultFileName = name + " " + "1" + "." + ext
+                            }
+                        }
+                    }
+                    
+                } else {
+                    exitLoop = true
+                }
+        }
+        
+        return resultFileName
+    }
 }
 

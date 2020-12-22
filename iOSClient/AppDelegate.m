@@ -490,8 +490,8 @@
         [[NCCommunicationCommon shared] setupWithNextcloudVersion:serverVersionMajor];
     }
     
-    [[NCCommunicationCommon shared] setupWithWebDav:[[NCUtility shared] getWebDAVWithAccount:account]];
-    [[NCCommunicationCommon shared] setupWithDav:[[NCUtility shared] getDAV]];
+    [[NCCommunicationCommon shared] setupWithWebDav:[[NCUtilityFileSystem shared] getWebDAVWithAccount:account]];
+    [[NCCommunicationCommon shared] setupWithDav:[[NCUtilityFileSystem shared] getDAV]];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -800,7 +800,7 @@
                     
                     if (matchedAccount) {
                         
-                        NSString *webDAV = [[NCUtility shared] getWebDAVWithAccount:self.account];
+                        NSString *webDAV = [[NCUtilityFileSystem shared] getWebDAVWithAccount:self.account];
 
                         if ([path containsString:@"/"]) {
 

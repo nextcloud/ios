@@ -1253,7 +1253,7 @@
 
 + (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase account:(NSString *)account
 {
-    NSString *homeServer = [[NCUtility shared] getHomeServerWithUrlBase:urlBase account:account];
+    NSString *homeServer = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase account:account];
     NSString *path = [serverUrl stringByReplacingOccurrencesOfString:homeServer withString:@""];
     return path;
 }
@@ -1264,7 +1264,7 @@
         return @"";
     }
     
-    NSString *homeServer = [[NCUtility shared] getHomeServerWithUrlBase:urlBase account:account];
+    NSString *homeServer = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase account:account];
     NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:homeServer withString:@""], metadataFileName];
     
     if ([fileName hasPrefix:@"/"]) fileName = [fileName substringFromIndex:1];
@@ -1514,7 +1514,7 @@
 
 + (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account urlBase:(NSString *)urlBase
 {
-    NSString *home = [[NCUtility shared] getHomeServerWithUrlBase:urlBase account:account];
+    NSString *home = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase account:account];
         
     if (e2eEncrypted) {
     
@@ -1532,7 +1532,7 @@
             if (directory.e2eEncrypted == true) {
                 return true;
             }
-            serverUrl = [[NCUtility shared] deletingLastPathComponentWithServerUrl:serverUrl urlBase:urlBase account:account];
+            serverUrl = [[NCUtilityFileSystem shared] deletingLastPathComponentWithServerUrl:serverUrl urlBase:urlBase account:account];
             directory = [[NCManageDatabase shared] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
         }
         

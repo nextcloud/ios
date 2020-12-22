@@ -36,73 +36,6 @@ class NCUtility: NSObject {
     
     let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
     
-    @objc func getWebDAV(account: String) -> String {
-        return NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesWebDavRoot) ?? "remote.php/webdav"
-    }
-    
-    @objc func getDAV() -> String {
-        return "remote.php/dav"
-    }
-    
-    @objc func getHomeServer(urlBase: String, account: String) -> String {
-        return urlBase + "/" + self.getWebDAV(account: account)
-    }
-    
-    @objc func deletingLastPathComponent(serverUrl: String, urlBase: String, account: String) -> String {
-        if getHomeServer(urlBase: urlBase, account: account) == serverUrl { return serverUrl }
-        let fileName = (serverUrl as NSString).lastPathComponent
-        let serverUrl = serverUrl.replacingOccurrences(of: "/"+fileName, with: "", options: String.CompareOptions.backwards, range: nil)
-        return serverUrl
-    }
-    
-    @objc func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {
-        
-        var resultFileName = fileName
-        var exitLoop = false
-            
-            while exitLoop == false {
-                
-                if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "fileNameView == %@ AND serverUrl == %@ AND account == %@", resultFileName, serverUrl, account)) != nil {
-                    
-                    var name = NSString(string: resultFileName).deletingPathExtension
-                    let ext = NSString(string: resultFileName).pathExtension
-                    let characters = Array(name)
-                    
-                    if characters.count < 2 {
-                        if ext == "" {
-                            resultFileName = name + " " + "1"
-                        } else {
-                            resultFileName = name + " " + "1" + "." + ext
-                        }
-                    } else {
-                        let space = characters[characters.count-2]
-                        let numChar = characters[characters.count-1]
-                        var num = Int(String(numChar))
-                        if (space == " " && num != nil) {
-                            name = String(name.dropLast())
-                            num = num! + 1
-                            if ext == "" {
-                                resultFileName = name + "\(num!)"
-                            } else {
-                                resultFileName = name + "\(num!)" + "." + ext
-                            }
-                        } else {
-                            if ext == "" {
-                                resultFileName = name + " " + "1"
-                            } else {
-                                resultFileName = name + " " + "1" + "." + ext
-                            }
-                        }
-                    }
-                    
-                } else {
-                    exitLoop = true
-                }
-        }
-        
-        return resultFileName
-    }
-    
     @objc func isEncryptedMetadata(_ metadata: tableMetadata) -> Bool {
         
         if metadata.fileName != metadata.fileNameView && metadata.fileName.count == 32 && metadata.fileName.contains(".") == false {
@@ -110,18 +43,6 @@ class NCUtility: NSObject {
         }
         
         return false
-    }
-    
-    func cellBlurEffect(with frame: CGRect) -> UIView {
-        
-        let blurEffect = UIBlurEffect(style: .extraLight)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        
-        blurEffectView.frame = frame
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        blurEffectView.backgroundColor = NCBrandColor.shared.brandElement.withAlphaComponent(0.2)
-        
-        return blurEffectView
     }
     
     func setLayoutForView(key: String, serverUrl: String, layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
@@ -406,33 +327,6 @@ class NCUtility: NSObject {
         CCUtility.deleteAllChainStore()
     }
     
-    @objc func UIColorFromRGB(rgbValue: UInt32) -> UIColor {
-        return UIColor(
-            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
-            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
-            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
-            alpha: CGFloat(1.0)
-        )
-    }
-    
-    @objc func RGBFromUIColor(uicolorValue: UIColor) -> UInt32 {
-        
-        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
-
-        if uicolorValue.getRed(&red, green: &green, blue: &blue, alpha: &alpha) {
-
-            var colorAsUInt : UInt32 = 0
-
-            colorAsUInt += UInt32(red * 255.0) << 16 +
-                           UInt32(green * 255.0) << 8 +
-                           UInt32(blue * 255.0)
-
-            return colorAsUInt
-        }
-        
-        return 0
-    }
-    
     @objc func permissionsContainsString(_ metadataPermissions: String, permissions: String) -> Bool {
         
         for char in permissions {
@@ -576,41 +470,7 @@ class NCUtility: NSObject {
         return(onlineStatus, statusMessage)
     }
     
-    @objc func settingThemingColor(_ themingColor: String?, themingColorElement: String?, themingColorText: String?) {
-                
-        // COLOR
-        if themingColor?.first == "#" {
-            if let color = UIColor(hex: themingColor!) {
-                NCBrandColor.shared.brand = color
-            } else {
-                NCBrandColor.shared.brand = NCBrandColor.shared.customer
-            }
-        } else {
-            NCBrandColor.shared.brand = NCBrandColor.shared.customer
-        }
-        
-        // COLOR TEXT
-        if themingColorText?.first == "#" {
-            if let color = UIColor(hex: themingColorText!) {
-                NCBrandColor.shared.brandText = color
-            } else {
-                NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
-            }
-        } else {
-            NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
-        }
-        
-        // COLOR ELEMENT
-        if themingColorElement?.first == "#" {
-            if let color = UIColor(hex: themingColorElement!) {
-                NCBrandColor.shared.brandElement = color
-            } else {
-                NCBrandColor.shared.brandElement = NCBrandColor.shared.brand
-            }
-        } else {
-            NCBrandColor.shared.brandElement = NCBrandColor.shared.brand
-        }
-    }
+   
     
     func imageFromVideo(url: URL, at time: TimeInterval) -> UIImage? {
         

@@ -62,7 +62,7 @@
     } else {
         
         NSInteger serverVersionMajor = [[NCManageDatabase shared] getCapabilitiesServerIntWithAccount:tableAccount.account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
-        NSString *webDav = [[NCUtility shared] getWebDAVWithAccount:tableAccount.account];
+        NSString *webDav = [[NCUtilityFileSystem shared] getWebDAVWithAccount:tableAccount.account];
         
         // Networking
         [[NCCommunicationCommon shared] setupWithAccount:tableAccount.account user:tableAccount.user userId:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] urlBase:tableAccount.urlBase userAgent:[CCUtility getUserAgent] webDav:webDav dav:nil nextcloudVersion:serverVersionMajor delegate:[NCNetworking shared]];
@@ -84,7 +84,7 @@
             
             [CCUtility setAccountExt:self.account];
 
-            _serverUrl  = [[NCUtility shared] getHomeServerWithUrlBase:tableAccount.urlBase account:tableAccount.account];
+            _serverUrl  = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:tableAccount.urlBase account:tableAccount.account];
             [CCUtility setServerUrlExt:_serverUrl];
 
             _destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), NSLocalizedString(@"_home_", nil)];
@@ -180,7 +180,7 @@
         NSString *themingColor = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColor];
         NSString *themingColorElement = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColorElement];
         NSString *themingColorText = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColorText];
-        [NCUtility.shared settingThemingColor:themingColor themingColorElement:themingColorElement themingColorText:themingColorText];
+        [NCBrandColor.shared settingBrandColor:themingColor themingColorElement:themingColorElement themingColorText:themingColorText];
     }
     
     self.navigationController.navigationBar.barTintColor = NCBrandColor.shared.brand;
@@ -270,7 +270,7 @@
         
         // <--
         
-        NSString *fileNameForUpload = [[NCUtility shared] createFileName:fileName serverUrl:self.serverUrl account:self.account];
+        NSString *fileNameForUpload = [[NCUtilityFileSystem shared] createFileName:fileName serverUrl:self.serverUrl account:self.account];
         NSString *fileNameServer = [NSString stringWithFormat:@"%@/%@", self.serverUrl, fileNameForUpload];
         
         [[NCCommunication shared] uploadWithServerUrlFileName:fileNameServer fileNameLocalPath:fileNameLocal dateCreationFile:nil dateModificationFile:nil customUserAgent:nil addCustomHeaders:nil taskHandler:^(NSURLSessionTask *task) {

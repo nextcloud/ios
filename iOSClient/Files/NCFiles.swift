@@ -43,7 +43,7 @@ class NCFiles: NCCollectionViewCommon  {
     override func viewWillAppear(_ animated: Bool) {
         
         if isRoot {
-            serverUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+            serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         }
         
         super.viewWillAppear(animated)
@@ -54,7 +54,7 @@ class NCFiles: NCCollectionViewCommon  {
     override func initializeMain() {
         
         if isRoot {
-            serverUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+            serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
             reloadDataSourceNetwork(forced: true)
         }
         

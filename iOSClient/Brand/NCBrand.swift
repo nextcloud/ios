@@ -168,7 +168,7 @@ class NCBrandColor: NSObject {
             
             let themingColorText = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorText)
             
-            NCUtility.shared.settingThemingColor(themingColor, themingColorElement: themingColorElement, themingColorText: themingColorText)
+            settingBrandColor(themingColor, themingColorElement: themingColorElement, themingColorText: themingColorText)
                         
             if NCBrandColor.shared.brandElement.isTooLight() {
                 if let color = NCBrandColor.shared.brandElement.darker(by: darker) {
@@ -206,6 +206,42 @@ class NCBrandColor: NSObject {
         }
     }
 #endif
+    
+    @objc func settingBrandColor(_ themingColor: String?, themingColorElement: String?, themingColorText: String?) {
+                
+        // COLOR
+        if themingColor?.first == "#" {
+            if let color = UIColor(hex: themingColor!) {
+                NCBrandColor.shared.brand = color
+            } else {
+                NCBrandColor.shared.brand = NCBrandColor.shared.customer
+            }
+        } else {
+            NCBrandColor.shared.brand = NCBrandColor.shared.customer
+        }
+        
+        // COLOR TEXT
+        if themingColorText?.first == "#" {
+            if let color = UIColor(hex: themingColorText!) {
+                NCBrandColor.shared.brandText = color
+            } else {
+                NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
+            }
+        } else {
+            NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
+        }
+        
+        // COLOR ELEMENT
+        if themingColorElement?.first == "#" {
+            if let color = UIColor(hex: themingColorElement!) {
+                NCBrandColor.shared.brandElement = color
+            } else {
+                NCBrandColor.shared.brandElement = NCBrandColor.shared.brand
+            }
+        } else {
+            NCBrandColor.shared.brandElement = NCBrandColor.shared.brand
+        }
+    }
 }
 
 //MARK: - Global

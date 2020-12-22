@@ -400,7 +400,7 @@ class NCManageDatabase: NSObject {
         if result.autoUploadDirectory.count > 0 {
             return result.autoUploadDirectory
         } else {
-            return NCUtility.shared.getHomeServer(urlBase: urlBase, account: account)
+            return NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, account: account)
         }
     }
 
@@ -2223,13 +2223,13 @@ class NCManageDatabase: NSObject {
         var serverUrl = serverUrl
         var fileName = ""
         
-        let serverUrlHome = NCUtility.shared.getHomeServer(urlBase: urlBase, account: account)
+        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, account: account)
         if serverUrlHome == serverUrl {
             fileName = "."
             serverUrl = ".."
         } else {
             fileName = (serverUrl as NSString).lastPathComponent
-            serverUrl = NCUtility.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: urlBase, account: account)
+            serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: urlBase, account: account)
         }
         
         guard let result = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).first else { return nil }
@@ -2457,8 +2457,8 @@ class NCManageDatabase: NSObject {
         for share in shares {
             
             let addObject = tableShare()
-            let fullPath = NCUtility.shared.getHomeServer(urlBase: urlBase, account: account) + share.path
-            let serverUrl = NCUtility.shared.deletingLastPathComponent(serverUrl:fullPath, urlBase: urlBase, account: account)
+            let fullPath = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, account: account) + share.path
+            let serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(serverUrl:fullPath, urlBase: urlBase, account: account)
             let fileName = NSString(string: fullPath).lastPathComponent
                         
             addObject.account = account
