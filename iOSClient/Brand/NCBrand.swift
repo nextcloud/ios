@@ -126,7 +126,7 @@ class NCBrandColor: NSObject {
     @objc public let yellowFavorite:        UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
     @objc public let textInfo:              UIColor = UIColor(red: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 1.0)
     @objc public var select:                UIColor = .white
-    @objc public var avatarBorder:          UIColor = UIColor(red: 104.0/255.0, green: 104.0/255.0, blue: 104.0/255.0, alpha: 1.0)
+    @objc public var avatarBorder:          UIColor = .white
 
     override init() {
         self.brand = self.customer
@@ -144,6 +144,7 @@ class NCBrandColor: NSObject {
             textView = .white
             separator = UIColor(red: 60.0/255.0, green: 60.0/255.0, blue: 60.0/255.0, alpha: 1.0)
             select = UIColor.white.withAlphaComponent(0.2)
+            avatarBorder = .black
         } else {
             tabBar = .white
             backgroundView = .white
@@ -152,6 +153,7 @@ class NCBrandColor: NSObject {
             textView = .black
             separator = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
             select = self.brandElement.withAlphaComponent(0.1)
+            avatarBorder = .white
         }
     }
     
