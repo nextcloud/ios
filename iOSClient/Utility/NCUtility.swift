@@ -360,21 +360,7 @@ class NCUtility: NSObject {
     @objc func isQuickLookDisplayable(metadata: tableMetadata) -> Bool {
         return true
     }
-    
-    @objc func fromColor(color: UIColor) -> UIImage {
         
-        let rect = CGRect(x: 0, y: 0, width: 1, height: 1)
-        
-        UIGraphicsBeginImageContext(rect.size)
-        let context: CGContext? = UIGraphicsGetCurrentContext()
-        context?.setFillColor(color.cgColor)
-        context?.fill(rect)
-        let image: UIImage? = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return image ?? UIImage()
-    }
-    
     // Delete Asset on Photos album
     @objc func deleteAssetLocalIdentifiers(account: String, sessionSelector: String, completition: @escaping () -> ()) {
         
