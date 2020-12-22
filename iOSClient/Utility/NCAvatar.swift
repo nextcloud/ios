@@ -38,7 +38,7 @@ import Foundation
         }
     }
     
-    @IBInspectable var borderColor: UIColor = UIColor.blue {
+    @IBInspectable var borderColor: UIColor = NCBrandColor.shared.avatarBorder {
         didSet{
             layoutSubviews()
         }

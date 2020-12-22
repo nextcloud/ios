@@ -62,7 +62,7 @@
             
             avatar = [avatar resizeImageWithSize:CGSizeMake(35, 35) isAspectRation:false];
             UIImageView *avatarImageView = [[UIImageView alloc] initWithImage:avatar];
-            [avatarImageView avatarWithRoundness:2 borderWidth:1 borderColor:NCBrandColor.shared.icon backgroundColor:[UIColor clearColor]];
+            [avatarImageView avatarWithRoundness:2 borderWidth:1 borderColor:NCBrandColor.shared.avatarBorder backgroundColor:[UIColor clearColor]];
             
             CGSize imageSize = avatarImageView.bounds.size;
             UIGraphicsBeginImageContextWithOptions(imageSize, NO, UIScreen.mainScreen.scale);
@@ -74,7 +74,7 @@
         } else {
             
             UIImage *image = [UIImage imageNamed:@"avatarCredentials"];
-            avatar = [image imageWithColor:NCBrandColor.shared.icon size:35];
+            avatar = [image imageWithColor:NCBrandColor.shared.avatarBorder size:35];
         }
         
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundCell;
