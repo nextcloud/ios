@@ -72,7 +72,13 @@
             UIGraphicsEndImageContext();
             
         } else {
-            avatar = [UIImage imageNamed:@"avatarCredentials"];
+            
+            UIImage *image = [UIImage imageNamed:@"avatarCredentials"];
+            UIGraphicsBeginImageContextWithOptions(CGSizeMake(35, 35), NO, 0.0);
+            [image drawInRect:CGRectMake(0, 0, 35, 35)];
+            UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            avatar = newImage;
         }
         
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundCell;
