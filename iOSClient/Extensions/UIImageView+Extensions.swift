@@ -26,7 +26,7 @@ import Foundation
 
 extension UIImageView {
     
-    @objc func avatar(roundness: CGFloat = 2, borderWidth: CGFloat = 1, borderColor: UIColor = .lightGray, backgroundColor: UIColor = .clear) {
+    @objc func avatar(roundness: CGFloat = 2, borderWidth: CGFloat = 1, borderColor: UIColor = NCBrandColor.shared.icon, backgroundColor: UIColor = .clear) {
         
         layer.cornerRadius = bounds.width / roundness
         layer.borderWidth = borderWidth
@@ -46,7 +46,7 @@ extension UIImageView {
         
         layer.cornerRadius = 0
         layer.borderWidth = 0
-        layer.borderColor = UIColor.black.cgColor
+        layer.borderColor = nil
         layer.backgroundColor = nil
         
         clipsToBounds = false

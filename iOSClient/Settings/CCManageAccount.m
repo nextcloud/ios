@@ -62,7 +62,7 @@
             
             avatar = [avatar resizeImageWithSize:CGSizeMake(35, 35) isAspectRation:false];
             UIImageView *avatarImageView = [[UIImageView alloc] initWithImage:avatar];
-            [avatarImageView avatarWithRoundness:2 borderWidth:1 borderColor:[UIColor lightGrayColor] backgroundColor:[UIColor clearColor]];
+            [avatarImageView avatarWithRoundness:2 borderWidth:1 borderColor:NCBrandColor.shared.icon backgroundColor:[UIColor clearColor]];
             
             CGSize imageSize = avatarImageView.bounds.size;
             UIGraphicsBeginImageContextWithOptions(imageSize, NO, UIScreen.mainScreen.scale);
