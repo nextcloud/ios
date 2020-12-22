@@ -1139,6 +1139,7 @@
 		F7A0D14E259229FA008F8A13 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */,
 				F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */,
 				F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */,
 				F7A0D1342591FBC5008F8A13 /* String+Extensions.swift */,
@@ -1290,7 +1291,6 @@
 				F7053E3D1C639DF500741EA5 /* CCUtility.m */,
 				F78E7064219F096B006F23E4 /* NCAvatar.swift */,
 				F765608E23BF813500765969 /* NCContentPresenter.swift */,
-				F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */,
 				F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */,
 				F707C26421A2DC5200F6181E /* NCStoreReview.swift */,
 				F70BFC7320E0FA7C00C67599 /* NCUtility.swift */,
