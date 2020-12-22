@@ -1417,16 +1417,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userID {
                 let fileNameUser = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + metadata.ownerId + ".png"
                 if FileManager.default.fileExists(atPath: fileNameUser) {
-                    cell.imageShared.disableAvatar = false
                     cell.imageShared.image = UIImage(contentsOfFile: fileNameUser)
                 } else {
                     NCCommunication.shared.downloadAvatar(userID: metadata.ownerId, fileNameLocalPath: fileNameUser, size: NCBrandGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.account {
-                            cell.imageShared.disableAvatar = false
                             cell.imageShared.image = UIImage(contentsOfFile: fileNameUser)
                         }
                     }
                 }
+            } else {
+                cell.imageShared.borderColor = .clear
             }
             
             // Transfer
