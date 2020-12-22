@@ -1336,6 +1336,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.imageLocal.image = nil
             cell.imageFavorite.image = nil
             cell.imageShared.image = nil
+            cell.imageShared.clearLayerMask()
             cell.imageMore.image = nil
             
             cell.imageItem.image = nil
@@ -1427,8 +1428,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         }
                     }
                 }
-            } else {
-                cell.imageShared.clearLayerMask()
             }
             
             // Transfer

@@ -301,6 +301,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         dropDown.customCellConfiguration = { (index: Index, item: String, cell: DropDownCell) -> Void in
             guard let cell = cell as? NCShareUserDropDownCell else { return }
             let sharee = sharees[index]
+            cell.imageItem.clearLayerMask()
             cell.imageItem.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
             let status = NCUtility.shared.getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
             cell.imageStatus.image = status.onlineStatus
@@ -313,7 +314,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
 
             let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(self.appDelegate.user, urlBase: self.appDelegate.urlBase) + "-" + sharee.label + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
+                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                    cell.imageItem.image = image
+                    cell.imageItem.avatar()
+                }
             } else {
                 DispatchQueue.global().async {
                     NCCommunication.shared.downloadAvatar(userID: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, size: NCBrandGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
@@ -321,6 +325,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                                 DispatchQueue.main.async {
                                     cell.imageItem.image = image
+                                    cell.imageItem.avatar()
                                 }
                             }
                         } 
