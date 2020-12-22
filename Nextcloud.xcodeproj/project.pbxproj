@@ -1136,6 +1136,21 @@
 			path = Select;
 			sourceTree = "<group>";
 		};
+		F7A0D14E259229FA008F8A13 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */,
+				F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */,
+				F7A0D1342591FBC5008F8A13 /* String+Extensions.swift */,
+				F70CEF5523E9C7E50007035B /* UIColor+Extensions.swift */,
+				F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */,
+				F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */,
+				F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */,
+				F7A0D1452592256F008F8A13 /* UIImageView+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		F7A3214D1E9E2A070069AD1B /* Favorites */ = {
 			isa = PBXGroup;
 			children = (
@@ -1280,14 +1295,6 @@
 				F707C26421A2DC5200F6181E /* NCStoreReview.swift */,
 				F70BFC7320E0FA7C00C67599 /* NCUtility.swift */,
 				F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */,
-				F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */,
-				F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */,
-				F7A0D1452592256F008F8A13 /* UIImageView+Extensions.swift */,
-				F7A0D1342591FBC5008F8A13 /* String+Extensions.swift */,
-				F70CEF5523E9C7E50007035B /* UIColor+Extensions.swift */,
-				F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */,
-				F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */,
-				F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -1481,6 +1488,7 @@
 				F78F74322163753B00C2ADAD /* Trash */,
 				F70784811A2C8A0D00AC9FFF /* UploadFromOtherUpp */,
 				F7EFC0CB256BF89300461AAD /* UserStatus */,
+				F7A0D14E259229FA008F8A13 /* Extensions */,
 				F7BFFA991A24D7BB0044ED85 /* Utility */,
 				F79630EC215526B60015EEA5 /* Viewer */,
 			);
