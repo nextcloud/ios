@@ -1427,6 +1427,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         }
                     }
                 }
+            } else {
+                cell.imageShared.clearLayerMask()
             }
             
             // Transfer

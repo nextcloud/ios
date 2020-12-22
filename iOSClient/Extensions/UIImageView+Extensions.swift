@@ -41,4 +41,17 @@ extension UIImageView {
         mask.path = path.cgPath
         layer.mask = mask
     }
+    
+    func clearLayerMask() {
+        
+        layer.cornerRadius = 0
+        layer.borderWidth = 0
+        layer.borderColor = UIColor.black.cgColor
+        layer.backgroundColor = nil
+        
+        clipsToBounds = false
+        
+        mask = nil
+        layer.mask = nil
+    }
 }
