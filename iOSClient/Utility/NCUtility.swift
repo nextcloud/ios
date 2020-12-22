@@ -406,8 +406,9 @@ class NCUtility: NSObject {
         CCUtility.deleteAllChainStore()
     }
     
+    
     #if !EXTENSION
-    @objc func createAvatar(fileNameSource: String, fileNameSourceAvatar: String, size: CGFloat, borderColor: UIColor, borderWidth: CGFloat) -> UIImage? {
+    @objc func createAvatard(fileNameSource: String, fileNameSourceAvatar: String, size: CGFloat, borderColor: UIColor, borderWidth: CGFloat) -> UIImage? {
         
         guard let imageFile = UIImage(contentsOfFile: fileNameSource) else { return nil }
         guard let imageSource = imageFile.resizeImage(size: CGSize(width: size, height: size), isAspectRation: true) else { return nil }
