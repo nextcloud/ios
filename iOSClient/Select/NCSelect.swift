@@ -576,8 +576,6 @@ extension NCSelect: UICollectionViewDataSource {
                         }
                     }
                 }
-            } else {
-                cell.imageShared.borderColor = .clear
             }
             
             cell.imageSelect.isHidden = true

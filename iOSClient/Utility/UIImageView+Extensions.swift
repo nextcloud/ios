@@ -26,25 +26,19 @@ import Foundation
 
 extension UIImageView {
     
-    func avatar(roundness: CGFloat, borderWidth: CGFloat, borderColor: UIColor, backgroundColor: UIColor, disable: Bool = false) {
-     
-        if disable {
-            
-            layer.mask = nil
-            
-        } else {
+    func avatar(roundness: CGFloat = 2, borderWidth: CGFloat = 1, borderColor: UIColor = .lightGray, backgroundColor: UIColor = .clear) {
         
-            layer.cornerRadius = bounds.width / roundness
-            layer.borderWidth = borderWidth
-            layer.borderColor = borderColor.cgColor
-            layer.backgroundColor = backgroundColor.cgColor
-            clipsToBounds = true
-            
-            let path = UIBezierPath(roundedRect: bounds.insetBy(dx: 0.5, dy: 0.5), cornerRadius: bounds.width / roundness)
-            let mask = CAShapeLayer()
-            
-            mask.path = path.cgPath
-            layer.mask = mask
-        }
+        layer.cornerRadius = bounds.width / roundness
+        layer.borderWidth = borderWidth
+        layer.borderColor = borderColor.cgColor
+        layer.backgroundColor = backgroundColor.cgColor
+
+        clipsToBounds = true
+        
+        let path = UIBezierPath(roundedRect: bounds.insetBy(dx: 0.5, dy: 0.5), cornerRadius: bounds.width / roundness)
+        let mask = CAShapeLayer()
+        
+        mask.path = path.cgPath
+        layer.mask = mask
     }
 }

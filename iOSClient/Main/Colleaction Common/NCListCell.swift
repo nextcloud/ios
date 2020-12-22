@@ -38,7 +38,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
 
     @IBOutlet weak var labelInfo: UILabel!
 
-    @IBOutlet weak var imageShared: NCAvatar!
+    @IBOutlet weak var imageShared: UIImageView!
     @IBOutlet weak var buttonShared: UIButton!
 
     @IBOutlet weak var imageMore: UIImageView!
