@@ -51,7 +51,7 @@ extension NCCollectionViewCommon {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let serverUrl = metadata.serverUrl+"/"+metadata.fileName
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
-        let serverUrlHome = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         var isOffline = false
         
         var titleDelete = NSLocalizedString("_delete_", comment: "")

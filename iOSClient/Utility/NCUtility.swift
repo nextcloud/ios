@@ -36,15 +36,6 @@ class NCUtility: NSObject {
     
     let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
     
-    @objc func isEncryptedMetadata(_ metadata: tableMetadata) -> Bool {
-        
-        if metadata.fileName != metadata.fileNameView && metadata.fileName.count == 32 && metadata.fileName.contains(".") == false {
-            return true
-        }
-        
-        return false
-    }
-    
     func setLayoutForView(key: String, serverUrl: String, layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
         
         let string =  layout + "|" + sort + "|" + "\(ascending)" + "|" + groupBy + "|" + "\(directoryOnTop)" + "|" + titleButton + "|" + "\(itemForLine)"
@@ -239,16 +230,6 @@ class NCUtility: NSObject {
         return path.contains("CoreSimulator") || path.contains("sandboxReceipt")
     }
 
-    @objc func formatSecondsToString(_ seconds: TimeInterval) -> String {
-        if seconds.isNaN {
-            return "00:00:00"
-        }
-        let sec = Int(seconds.truncatingRemainder(dividingBy: 60))
-        let min = Int(seconds.truncatingRemainder(dividingBy: 3600) / 60)
-        let hour = Int(seconds / 3600)
-        return String(format: "%02d:%02d:%02d", hour, min, sec)
-    }
-    
     @objc func isRichDocument(_ metadata: tableMetadata) -> Bool {
         
         guard let mimeType = CCUtility.getMimeType(metadata.fileNameView) else {
@@ -469,8 +450,6 @@ class NCUtility: NSObject {
                 
         return(onlineStatus, statusMessage)
     }
-    
-   
     
     func imageFromVideo(url: URL, at time: TimeInterval) -> UIImage? {
         

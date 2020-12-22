@@ -117,7 +117,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             copyItems.append(item)
         }
         
-        let homeUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        let homeUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         var serverUrl = (copyItems[0] as! Nextcloud.tableMetadata).serverUrl
         
         // Setup view controllers such that the current view is of the same directory the items to be copied are in
@@ -153,7 +153,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             listViewController.insert(vc, at: 0)
             
             if serverUrl != homeUrl {
-                serverUrl = NCUtility.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)
+                serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)
             } else {
                 break
             }
@@ -173,7 +173,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         let topViewController = viewController
         var listViewController = [NCFileViewInFolder]()
         var serverUrl = serverUrl
-        let homeUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        let homeUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         
         while true {
             
@@ -196,7 +196,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             listViewController.insert(vc, at: 0)
             
             if serverUrl != homeUrl {
-                serverUrl = NCUtility.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)
+                serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)
             } else {
                 break
             }

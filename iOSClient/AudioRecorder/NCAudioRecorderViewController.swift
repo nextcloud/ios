@@ -131,7 +131,7 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
         voiceRecordHUD.update(CGFloat(rate))
         voiceRecordHUD.fillColor = UIColor.green
         recordDuration += 1
-        durationLabel.text = NCUtility.shared.formatSecondsToString(recordDuration/60)
+        durationLabel.text =  String.init().formatSecondsToString(recordDuration/60)
     }
 }
 
