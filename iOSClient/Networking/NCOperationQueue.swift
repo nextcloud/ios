@@ -321,12 +321,20 @@ class NCOperationSynchronization: ConcurrentOperation {
                         
                     } else {
                         
-                        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", account, serverUrl))
+                        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
                         for metadata in metadatas {
-                            let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                            let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
-                            if directory?.synchronized == false {
-                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
+                            if metadata.directory {
+                                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                                let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
+                                if directory?.synchronized == false {
+                                    NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
+                                }
+                            } else {
+                                let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                                let fileSize = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
+                                if localFile == nil || localFile?.etag != metadata.etag || fileSize == 0 {
+                                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
+                                }
                             }
                         }
                         
