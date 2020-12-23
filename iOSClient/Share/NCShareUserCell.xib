@@ -16,7 +16,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="600" height="90"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="qDs-UG-Mn7" userLabel="ImageItem">
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="qDs-UG-Mn7" userLabel="ImageItem">
                         <rect key="frame" x="5" y="25" width="40" height="40"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="40" id="8et-YH-T1D"/>
@@ -119,7 +119,6 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="avatar" width="25" height="25"/>
         <image name="shareMenu" width="329" height="329"/>
     </resources>
 </document>

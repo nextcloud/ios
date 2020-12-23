@@ -91,7 +91,7 @@
                                                 <action selector="touchUpInsideSecondary:" destination="R1c-h5-BOp" eventType="touchUpInside" id="Vy9-uI-sth"/>
                                             </connections>
                                         </button>
-                                        <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="j3P-Mn-NRk" userLabel="avatar" customClass="NCAvatar" customModule="Nextcloud" customModuleProvider="target">
+                                        <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="j3P-Mn-NRk" userLabel="avatar" customClass="NCAvatar" customModule="Nextcloud" customModuleProvider="target">
                                             <rect key="frame" x="10" y="40" width="25" height="25"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="25" id="Lzx-AE-IwQ"/>
@@ -158,7 +158,6 @@
         </designable>
     </designables>
     <resources>
-        <image name="avatar" width="25" height="25"/>
         <image name="exit" width="300" height="300"/>
     </resources>
 </document>

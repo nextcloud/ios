@@ -33,7 +33,7 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="LQ8-cO-794" userLabel="avatar" customClass="NCAvatar" customModule="Nextcloud" customModuleProvider="target">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="LQ8-cO-794" userLabel="avatar" customClass="NCAvatar" customModule="Nextcloud" customModuleProvider="target">
                                                     <rect key="frame" x="50" y="0.0" width="30" height="30"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="30" id="OKz-e8-DzD"/>
@@ -136,7 +136,4 @@
             <size key="intrinsicContentSize" width="25" height="25"/>
         </designable>
     </designables>
-    <resources>
-        <image name="avatar" width="25" height="25"/>
-    </resources>
 </document>
