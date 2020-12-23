@@ -131,13 +131,41 @@ class NCNetworkingAutoUpload: NSObject {
              
             // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
             if (counterUpload == 0 && self.appDelegate.passcodeViewController == nil) {
-                NCUtility.shared.deleteAssetLocalIdentifiers(account: self.appDelegate.account, sessionSelector: NCBrandGlobal.shared.selectorUploadAutoUpload) {
+                self.deleteAssetLocalIdentifiers(account: self.appDelegate.account, sessionSelector: NCBrandGlobal.shared.selectorUploadAutoUpload) {
                     self.startTimer()
                 }
             } else {
                 self.startTimer()
             }
         }
+    }
+    
+    private func deleteAssetLocalIdentifiers(account: String, sessionSelector: String, completition: @escaping () -> ()) {
+        
+        if UIApplication.shared.applicationState != .active {
+            completition()
+            return
+        }
+        let metadatasSessionUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload"))
+        if metadatasSessionUpload.count > 0 {
+            completition()
+            return
+        }
+        let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account, sessionSelector: sessionSelector)
+        if localIdentifiers.count == 0 {
+            completition()
+            return
+        }
+        let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
+        
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
+        }, completionHandler: { success, error in
+            DispatchQueue.main.async {
+                NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: account)
+                completition()
+            }
+        })
     }
 }
 
