@@ -275,7 +275,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         dropDown = DropDown()
         let appearance = DropDown.appearance()
         
-        appearance.backgroundColor = .white
+        appearance.backgroundColor = NCBrandColor.shared.backgroundForm
         appearance.cornerRadius = 10
         appearance.shadowColor = UIColor(white: 0.5, alpha: 1)
         appearance.shadowOpacity = 0.9
