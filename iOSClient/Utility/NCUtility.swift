@@ -344,19 +344,6 @@ class NCUtility: NSObject {
         return page.thumbnail(of: screenSize, for: .mediaBox)
     }
     
-    @objc func getMetadataConflict(account: String, serverUrl: String, fileName: String) -> tableMetadata? {
-        
-        // verify exists conflict
-        let fileNameExtension = (fileName as NSString).pathExtension.lowercased()
-        let fileNameWithoutExtension = (fileName as NSString).deletingPathExtension
-        var fileNameConflict = fileName
-        
-        if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
-            fileNameConflict = fileNameWithoutExtension + ".jpg"
-        }
-        return NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
-    }
-    
     @objc func isQuickLookDisplayable(metadata: tableMetadata) -> Bool {
         return true
     }

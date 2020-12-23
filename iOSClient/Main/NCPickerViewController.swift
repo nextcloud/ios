@@ -161,7 +161,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                         metadataForUpload.size = Int64(data?.count ?? 0)
                         metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
                         
-                        if NCUtility.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {
+                        if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {
                             
                             if let conflict = UIStoryboard.init(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
                                 

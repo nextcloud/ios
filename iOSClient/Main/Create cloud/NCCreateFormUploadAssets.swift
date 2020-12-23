@@ -438,7 +438,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                     semaphore.wait()
                 }
                 
-                if NCUtility.shared.getMetadataConflict(account: self.appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {
+                if NCManageDatabase.shared.getMetadataConflict(account: self.appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {
                     metadatasUploadInConflict.append(metadataForUpload)
                 } else {
                     metadatasNOConflict.append(metadataForUpload)
