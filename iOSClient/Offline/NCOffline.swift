@@ -101,7 +101,8 @@ class NCOffline: NCCollectionViewCommon  {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory {
                             let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                            if localFile == nil || localFile?.etag != metadata.etag {
+                            let fileSize = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
+                            if localFile == nil || localFile?.etag != metadata.etag || fileSize == 0 {
                                 NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorDownloadFile, setFavorite: false)
                             }
                         }

@@ -1034,11 +1034,7 @@ import Queuer
                 
                 #if !EXTENSION
                 if favorite {
-                    if CCUtility.getFavoriteOffline() {
-                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorDownloadAllFile)
-                    } else {
-                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorReadFile)
-                    }
+                    NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorReadFile)
                 }
                 #endif
                 

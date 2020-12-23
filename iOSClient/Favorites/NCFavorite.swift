@@ -77,16 +77,7 @@ class NCFavorite: NCCollectionViewCommon  {
         if serverUrl == "" {
             
             NCNetworking.shared.listingFavoritescompletion(selector: NCBrandGlobal.shared.selectorListingFavorite) { (account, metadatas, errorCode, errorDescription) in
-                if errorCode == 0 {
-                    for metadata in metadatas ?? [] {
-                        if !metadata.directory && CCUtility.getFavoriteOffline() {
-                            let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                            if localFile == nil || localFile?.etag != metadata.etag {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorDownloadFile, setFavorite: false)
-                            }
-                        }
-                    }
-                } else {
+                if errorCode != 0 {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
                 
@@ -102,7 +93,8 @@ class NCFavorite: NCCollectionViewCommon  {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory {
                             let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                            if (CCUtility.getFavoriteOffline() && localFile == nil) || (localFile != nil && localFile?.etag != metadata.etag) {
+                            let fileSize = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
+                            if localFile != nil && (localFile?.etag != metadata.etag || fileSize == 0) {
                                 NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorDownloadFile, setFavorite: false)
                             }
                         }

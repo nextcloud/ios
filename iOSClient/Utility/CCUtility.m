@@ -255,17 +255,6 @@
     [UICKeyChainStore setString:sPrefix forKey:key service:NCBrandGlobal.shared.serviceShareKeyChain];
 }
 
-+ (BOOL)getFavoriteOffline
-{
-    return [[UICKeyChainStore stringForKey:@"favoriteOffline" service:NCBrandGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setFavoriteOffline:(BOOL)offline
-{
-    NSString *sFavoriteOffline = (offline) ? @"true" : @"false";
-    [UICKeyChainStore setString:sFavoriteOffline forKey:@"favoriteOffline" service:NCBrandGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getActivityVerboseHigh
 {
     return [[UICKeyChainStore stringForKey:@"activityVerboseHigh" service:NCBrandGlobal.shared.serviceShareKeyChain] boolValue];

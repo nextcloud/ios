@@ -66,18 +66,6 @@
     row.action.viewControllerClass = [CCManageAutoUpload class];
     [section addFormRow:row];
 
-    // Section FOLDERS FAVORITES OFFLINE ------------------------------------
-    
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"favoriteoffline" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_favorite_offline_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundCell;
-    [row.cellConfig setObject:[[UIImage imageNamed:@"favorite"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
-    [section addFormRow:row];
-    
     // Section : LOCK --------------------------------------------------------------
     
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_lock_", nil)];
@@ -233,7 +221,6 @@
     XLFormRowDescriptor *rowBloccoPasscode = [self.form formRowWithTag:@"bloccopasscode"];
     XLFormRowDescriptor *rowNotPasscodeAtStart = [self.form formRowWithTag:@"notPasscodeAtStart"];
     XLFormRowDescriptor *rowEnableTouchDaceID = [self.form formRowWithTag:@"enableTouchDaceID"];
-    XLFormRowDescriptor *rowFavoriteOffline = [self.form formRowWithTag:@"favoriteoffline"];
     XLFormRowDescriptor *rowDarkModeDetect = [self.form formRowWithTag:@"darkModeDetect"];
     XLFormRowDescriptor *rowDarkMode = [self.form formRowWithTag:@"darkMode"];
 
@@ -249,7 +236,6 @@
     
     if ([CCUtility getEnableTouchFaceID]) [rowEnableTouchDaceID setValue:@1]; else [rowEnableTouchDaceID setValue:@0];
     if ([CCUtility getNotPasscodeAtStart]) [rowNotPasscodeAtStart setValue:@1]; else [rowNotPasscodeAtStart setValue:@0];
-    if ([CCUtility getFavoriteOffline]) [rowFavoriteOffline setValue:@1]; else [rowFavoriteOffline setValue:@0];
     if ([CCUtility getDarkModeDetect]) [rowDarkModeDetect setValue:@1]; else [rowDarkModeDetect setValue:@0];
     if ([CCUtility getDarkMode]) [rowDarkMode setValue:@1]; else [rowDarkMode setValue:@0];
 
@@ -279,35 +265,6 @@
             [CCUtility setEnableTouchFaceID:true];
         } else {
             [CCUtility setEnableTouchFaceID:false];
-        }
-    }
-    
-    if ([rowDescriptor.tag isEqualToString:@"favoriteoffline"]) {
-        
-        if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:NSLocalizedString(@"_continue_request_", nil) preferredStyle:UIAlertControllerStyleActionSheet];
-            
-            [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-                [CCUtility setFavoriteOffline:true];
-                [[NCManageDatabase shared] removeAllDirectoriesSynchronizedWithAccount:appDelegate.account];
-                [[NCNetworking shared] listingFavoritescompletionWithSelector:(NCBrandGlobal.shared.selectorDownloadAllFile) completion:^(NSString *account, NSArray *metadatas, NSInteger errorCode, NSString *errorDescription) { }];                    
-            }]];
-            
-            [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                [self reloadForm];
-            }]];
-            
-            alertController.popoverPresentationController.sourceView = self.view;
-            NSIndexPath *indexPath = [self.form indexPathOfFormRow:rowDescriptor];
-            CGRect cellRect = [self.tableView rectForRowAtIndexPath:indexPath];
-            alertController.popoverPresentationController.sourceRect = CGRectOffset(cellRect, -self.tableView.contentOffset.x, -self.tableView.contentOffset.y);
-            
-            [self presentViewController:alertController animated:YES completion:nil];
-            
-        } else {
-            
-            [CCUtility setFavoriteOffline:false];
         }
     }
     
@@ -451,10 +408,6 @@
     switch (section)
     {
         case 1: {
-            sectionName = NSLocalizedString(@"_favorite_offline_footer_", nil);
-        }
-        break;
-        case 2: {
             sectionName = NSLocalizedString(@"_lock_protection_no_screen_footer_", nil);
         }
         break;
@@ -471,7 +424,7 @@
             
             NSString *nameSlogan = [NSString stringWithFormat:@"%@ - %@", themingName, themingSlogan];
             
-            sectionName = [NSString stringWithFormat:@"%@\n\n%@\n%@", versionNextcloudiOS, versionNextcloud, nameSlogan];
+            sectionName = [NSString stringWithFormat:@"\n%@\n\n%@\n%@", versionNextcloudiOS, versionNextcloud, nameSlogan];
         }
         break;
     }

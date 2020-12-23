@@ -67,12 +67,8 @@ class NCService: NSObject {
                     
                     self.appDelegate.settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userID: tableAccount.userID, password: CCUtility.getPassword(tableAccount.account))
                        
-                    // Synchronize favorite
-                    var selector = NCBrandGlobal.shared.selectorReadFile
-                    if CCUtility.getFavoriteOffline() {
-                        selector = NCBrandGlobal.shared.selectorDownloadFile
-                    }
-                    NCNetworking.shared.listingFavoritescompletion(selector: selector) { (_, _, _, _) in }
+                    // Synchronize favorite                    
+                    NCNetworking.shared.listingFavoritescompletion(selector: NCBrandGlobal.shared.selectorReadFile) { (_, _, _, _) in }
                 
                     // Synchronize Offline Directory
                     if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "serverUrl", ascending: true) {

@@ -333,7 +333,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                             } else {
                                 let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                                 let fileSize = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
-                                if localFile == nil || localFile?.etag != metadata.etag || fileSize == 0 {
+                                if localFile == nil && (localFile?.etag != metadata.etag || fileSize == 0) {
                                     NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
                                 }
                             }
@@ -346,7 +346,8 @@ class NCOperationSynchronization: ConcurrentOperation {
             } else {
                 if self.download {
                     let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    if localFile == nil || localFile?.etag != metadata.etag {
+                    let fileSize = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
+                    if localFile == nil || localFile?.etag != metadata.etag || fileSize == 0 {
                         NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
                     }
                 }

@@ -85,9 +85,6 @@
 + (BOOL)getFileNameType:(NSString *)key;
 + (void)setFileNameType:(BOOL)prefix key:(NSString *)key;
 
-+ (BOOL)getFavoriteOffline;
-+ (void)setFavoriteOffline:(BOOL)offline;
-
 + (BOOL)getActivityVerboseHigh;
 + (void)setActivityVerboseHigh:(BOOL)debug;
 
