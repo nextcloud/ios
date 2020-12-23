@@ -248,7 +248,7 @@ class NCOperationSynchronization: ConcurrentOperation {
     init(metadata: tableMetadata, selector: String) {
         self.metadata = tableMetadata.init(value: metadata)
         self.selector = selector
-        if selector == NCBrandGlobal.shared.selectorDownloadFile {
+        if selector == NCBrandGlobal.shared.selectorDownloadFile || selector == NCBrandGlobal.shared.selectorDownloadAllFile {
             self.download = true
         } else {
             self.download = false
@@ -266,7 +266,7 @@ class NCOperationSynchronization: ConcurrentOperation {
 
                 NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
 
-                    if (errorCode == 0) && (directory?.etag != files.first?.etag) {
+                    if (errorCode == 0) && (directory?.etag != files.first?.etag || self.selector == NCBrandGlobal.shared.selectorDownloadAllFile) {
                         
                         NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
                             
