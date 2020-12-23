@@ -1260,6 +1260,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    /*
     @objc func setDirectory(synchronized: Bool, serverUrl: String, account: String) {
         
         let realm = try! Realm()
@@ -1299,7 +1300,8 @@ class NCManageDatabase: NSObject {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
-
+    */
+    
     //MARK: -
     //MARK: Table e2e Encryption
     
@@ -1936,8 +1938,6 @@ class NCManageDatabase: NSObject {
                     if metadata.directory && !ocIdsUdate.contains(metadata.ocId) {
                         let table = realm.objects(tableDirectory.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first
                         if table?.etag != metadata.etag {
-                            ocIdsUdate.append(metadata.ocId)
-                        } else if addDirectorySynchronized && table?.synchronized == false {
                             ocIdsUdate.append(metadata.ocId)
                         }
                     }

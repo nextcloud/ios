@@ -276,7 +276,7 @@ class NCBrandColor: NSObject {
 
     // Database Realm
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 160
+    let databaseSchemaVersion: UInt64               = 161
     
     // Intro selector
     @objc let introLogin: Int                       = 0

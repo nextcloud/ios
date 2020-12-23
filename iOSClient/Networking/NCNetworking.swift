@@ -1027,11 +1027,7 @@ import Queuer
             if errorCode == 0 && metadata.account == account {
                 
                 NCManageDatabase.shared.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
-                if !favorite && metadata.directory {
-                    let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                    NCManageDatabase.shared.removeDirectoriesSynchronized(serverUrl: serverUrl, account: account)
-                }
-                
+               
                 #if !EXTENSION
                 if favorite {
                     NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorReadFile)

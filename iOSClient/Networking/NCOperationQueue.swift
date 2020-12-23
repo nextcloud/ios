@@ -266,7 +266,7 @@ class NCOperationSynchronization: ConcurrentOperation {
 
                 NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
 
-                    if (errorCode == 0) && (directory?.etag != files.first?.etag || directory?.synchronized == false) {
+                    if (errorCode == 0) && (directory?.etag != files.first?.etag) {
                         
                         NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
                             
@@ -309,8 +309,6 @@ class NCOperationSynchronization: ConcurrentOperation {
                                     
                                     // Update etag directory
                                     NCManageDatabase.shared.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, richWorkspace: metadataFolder.richWorkspace, account: metadataFolder.account)
-                                    // Update
-                                    NCManageDatabase.shared.setDirectory(synchronized: true, serverUrl: serverUrl, account: account)
                                 }
                             
                             } else if errorCode == NCBrandGlobal.shared.ErrorResourceNotFound && self.metadata.directory {
@@ -325,11 +323,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
                         for metadata in metadatas {
                             if metadata.directory {
-                                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                                let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
-                                if directory?.synchronized == false {
-                                    NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
-                                }
+                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
                             } else {
                                 let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                                 let fileSize = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)

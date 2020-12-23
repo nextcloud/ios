@@ -221,7 +221,6 @@ class tableDirectory: Object {
     @objc dynamic var permissions = ""
     @objc dynamic var richWorkspace: String?
     @objc dynamic var serverUrl = ""
-    @objc dynamic var synchronized: Bool = false
 
     override static func primaryKey() -> String {
         return "ocId"
