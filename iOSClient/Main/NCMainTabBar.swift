@@ -213,5 +213,24 @@ class NCMainTabBar: UITabBar {
             appDelegate.showMenuIn(viewController: viewController)
         }
     }
+    
+    @objc func updateBadgeNumber() {
+        
+        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
+        
+        let counterDownload = NCOperationQueue.shared.downloadCount()
+        let counterUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d OR status == %d", NCBrandGlobal.shared.metadataStatusWaitUpload, NCBrandGlobal.shared.metadataStatusInUpload, NCBrandGlobal.shared.metadataStatusUploading)).count
+        let total = counterDownload + counterUpload
+        
+        UIApplication.shared.applicationIconBadgeNumber = total
+        
+        if let item = items?[0] {
+            if total > 0 {
+                item.badgeValue = String(total)
+            } else {
+                item.badgeValue = nil
+            }
+        }
+    }
 }
 

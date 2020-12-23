@@ -681,22 +681,9 @@
 
 - (void)updateApplicationIconBadgeNumber
 {
-    if (self.account.length == 0) { return; }
-            
-    NSInteger counterDownload = [[NCOperationQueue shared] downloadCount];
-    NSInteger counterUpload = [[NCManageDatabase shared] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d OR status == %d", NCBrandGlobal.shared.metadataStatusWaitUpload, NCBrandGlobal.shared.metadataStatusInUpload, NCBrandGlobal.shared.metadataStatusUploading]].count;
-    NSInteger total = counterDownload + counterUpload;
-    
-    [UIApplication sharedApplication].applicationIconBadgeNumber = total;
-    
     UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
     if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-        UITabBarItem *tabBarItem = [tabBarController.tabBar.items objectAtIndex:0];
-        if (total > 0) {
-            [tabBarItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
-        } else {
-            [tabBarItem setBadgeValue:nil];
-        }
+        [(NCMainTabBar *)tabBarController.tabBar updateBadgeNumber];
     }
 }
 
