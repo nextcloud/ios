@@ -152,11 +152,6 @@
             <point key="canvasLocation" x="608.79999999999995" y="162.3688155922039"/>
         </scene>
     </scenes>
-    <designables>
-        <designable name="j3P-Mn-NRk">
-            <size key="intrinsicContentSize" width="25" height="25"/>
-        </designable>
-    </designables>
     <resources>
         <image name="exit" width="300" height="300"/>
     </resources>

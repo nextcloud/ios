@@ -89,11 +89,6 @@
             <point key="canvasLocation" x="97.599999999999994" y="290.55472263868069"/>
         </tableViewCell>
     </objects>
-    <designables>
-        <designable name="qDs-UG-Mn7">
-            <size key="intrinsicContentSize" width="25" height="25"/>
-        </designable>
-    </designables>
     <resources>
         <image name="shareMenu" width="329" height="329"/>
     </resources>

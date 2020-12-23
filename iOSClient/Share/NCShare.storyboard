@@ -303,14 +303,6 @@
             <point key="canvasLocation" x="2689.8550724637685" y="-167.41071428571428"/>
         </scene>
     </scenes>
-    <designables>
-        <designable name="Oca-tA-DgS">
-            <size key="intrinsicContentSize" width="25" height="25"/>
-        </designable>
-        <designable name="fKv-xM-rVY">
-            <size key="intrinsicContentSize" width="25" height="25"/>
-        </designable>
-    </designables>
     <resources>
         <image name="shareCopy" width="329" height="329"/>
         <image name="shareMenu" width="329" height="329"/>
