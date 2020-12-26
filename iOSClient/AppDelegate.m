@@ -113,7 +113,6 @@
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
     // Start Timer
-    self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
     [self startTimerErrorNetworking];
 
     // Store review

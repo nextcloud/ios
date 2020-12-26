@@ -28,6 +28,7 @@ class NCMainTabBar: UITabBar {
     private var fillColor: UIColor!
     private var shapeLayer: CALayer?
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private var timer: Timer?
     
 //    override var traitCollection: UITraitCollection {
 //        return UITraitCollection(horizontalSizeClass: .compact)
@@ -36,6 +37,8 @@ class NCMainTabBar: UITabBar {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
+        timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(updateBadgeNumber)), userInfo: nil, repeats: true)
+            
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
         
         changeTheming()

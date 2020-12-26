@@ -51,7 +51,6 @@
 @interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>
 
 // Timer Process
-@property (nonatomic, strong) NSTimer *timerUpdateApplicationIconBadgeNumber;
 @property (nonatomic, strong) NSTimer *timerErrorNetworking;
 
 @property (nonatomic, strong) UIWindow *window;
