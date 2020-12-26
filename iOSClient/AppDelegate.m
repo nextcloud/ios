@@ -178,8 +178,6 @@
             self.activeFileViewInFolder = nil;
         }];
     }
-    
-    [self updateApplicationIconBadgeNumber];
 }
 
 //
@@ -675,18 +673,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== ApplicationIconBadgeNumber =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)updateApplicationIconBadgeNumber
-{
-    UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
-    if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-        [(NCMainTabBar *)tabBarController.tabBar updateBadgeNumber];
-    }
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Fetch =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -719,9 +705,7 @@
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)(void))completionHandler
 {
     [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Start handle Events For Background URLSession: %@", identifier]];
-    
-    [self updateApplicationIconBadgeNumber];
-    
+        
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         self.backgroundSessionCompletionHandler = completionHandler;
         void (^completionHandler)() = self.backgroundSessionCompletionHandler;
