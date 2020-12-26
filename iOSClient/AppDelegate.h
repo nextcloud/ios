@@ -72,9 +72,6 @@
 // Passcode lockDirectory
 @property (nonatomic, strong) NSDate *sessionePasscodeLock;
 
-// Push Norification Token
-@property (nonatomic, strong) NSString *pushKitToken;
-
 @property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
 
 @property (nonatomic, retain) NSString *activeServerUrl;
@@ -121,9 +118,6 @@
 - (void)settingAccount:(NSString *)account urlBase:(NSString *)urlBase user:(NSString *)user userID:(NSString *)userID password:(NSString *)password;
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe;
 - (void)settingSetupCommunication:(NSString *)account;
-
-// Push Notification
-- (void)pushNotification;
 
 @end
 

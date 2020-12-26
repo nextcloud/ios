@@ -24,8 +24,8 @@
 #import "AppDelegate.h"
 #import "NCBridgeSwift.h"
 #import "NCAutoUpload.h"
-#import "NCPushNotificationEncryption.h"
 #import "NSNotificationCenter+MainThread.h"
+#import "NCPushNotification.h"
 #import <QuartzCore/QuartzCore.h>
 
 @import Firebase;
@@ -199,7 +199,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterReloadDataSourceNetworkForced object:nil];
     
     // Required unsubscribing / subscribing
-    [self pushNotification];
+    [[NCPushNotification shared] pushNotification];
     
     // RichDocument
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterRichdocumentGrabFocus object:nil];
@@ -277,7 +277,7 @@
     [[NCService shared] startRequestServicesServer];
     
     // Registeration push notification
-    [self pushNotification];
+    [[NCPushNotification shared] pushNotification];
     
     // Registeration domain File Provider
     //FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
@@ -287,9 +287,7 @@
     [[NCCommunicationCommon shared] writeLog:@"initialize Main"];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Login / checkErrorNetworking =====
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark Login / checkErrorNetworking
 
 - (void)checkErrorNetworking
 {
@@ -428,9 +426,7 @@
     self.timerErrorNetworking = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(checkErrorNetworking) userInfo:nil repeats:YES];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Account & Communication =====
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark Account & Communication
 
 - (void)settingAccount:(NSString *)account urlBase:(NSString *)urlBase user:(NSString *)user userID:(NSString *)userID password:(NSString *)password
 {
@@ -450,7 +446,7 @@
 {
     // Push Notification
     tableAccount *accountPN = [[NCManageDatabase shared] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    [self unsubscribingNextcloudServerPushNotification:accountPN.account urlBase:accountPN.urlBase user:accountPN.user withSubscribing:false];
+    [[NCPushNotification shared] unsubscribingNextcloudServerPushNotification:accountPN.account urlBase:accountPN.urlBase user:accountPN.user withSubscribing:false];
 
     [self settingAccount:nil urlBase:nil user:nil userID:nil password:nil];
     
@@ -491,94 +487,10 @@
     [[NCCommunicationCommon shared] setupWithDav:[[NCUtilityFileSystem shared] getDAV]];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Push Notifications =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)pushNotification
-{
-    if (self.account.length == 0 || self.pushKitToken.length == 0) { return; }
-    
-    for (tableAccount *result in [[NCManageDatabase shared] getAllAccount]) {
-        
-        NSString *token = [CCUtility getPushNotificationToken:result.account];
-        
-        if (![token isEqualToString:self.pushKitToken]) {
-            if (token != nil) {
-                // unsubscribing + subscribing
-                [self unsubscribingNextcloudServerPushNotification:result.account urlBase:result.urlBase user:result.user withSubscribing:true];
-            } else {
-                [self subscribingNextcloudServerPushNotification:result.account urlBase:result.urlBase user:result.user];
-            }
-        }
-    }
-}
-
-- (void)subscribingNextcloudServerPushNotification:(NSString *)account urlBase:(NSString *)urlBase user:(NSString *)user
-{
-    if (self.account.length == 0 || self.pushKitToken.length == 0) { return; }
-    
-    [[NCPushNotificationEncryption shared] generatePushNotificationsKeyPair:account];
-
-    NSString *pushTokenHash = [[NCEndToEndEncryption sharedManager] createSHA512:self.pushKitToken];
-    NSData *pushPublicKey = [CCUtility getPushNotificationPublicKey:account];
-    NSString *pushDevicePublicKey = [[NSString alloc] initWithData:pushPublicKey encoding:NSUTF8StringEncoding];
-    NSString *proxyServerPath = [NCBrandOptions shared].pushNotificationServerProxy;
-    
-    [[NCCommunication shared] subscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[CCUtility getPassword:account] pushTokenHash:pushTokenHash devicePublicKey:pushDevicePublicKey proxyServerUrl:proxyServerPath customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSString *deviceIdentifier, NSString *signature, NSString *publicKey, NSInteger errorCode, NSString *errorDescription) {
-        if (errorCode == 0) {
-            NSString *userAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [CCUtility getUserAgent]];
-            [[NCCommunication shared] subscribingPushProxyWithProxyServerUrl:proxyServerPath pushToken:self.pushKitToken deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent completionHandler:^(NSInteger errorCode, NSString *errorDescription) {
-                if (errorCode == 0) {
-                    
-                    [[NCCommunicationCommon shared] writeLog:@"Subscribed to Push Notification server & proxy successfully"];
-
-                    [CCUtility setPushNotificationToken:account token:self.pushKitToken];
-                    [CCUtility setPushNotificationDeviceIdentifier:account deviceIdentifier:deviceIdentifier];
-                    [CCUtility setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:signature];
-                    [CCUtility setPushNotificationSubscribingPublicKey:account publicKey:publicKey];
-                }
-            }];
-        }
-    }];
-}
-
-- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account urlBase:(NSString *)urlBase user:(NSString *)user withSubscribing:(BOOL)subscribing
-{
-    if (self.account.length == 0) { return; }
-    
-    NSString *deviceIdentifier = [CCUtility getPushNotificationDeviceIdentifier:account];
-    NSString *signature = [CCUtility getPushNotificationDeviceIdentifierSignature:account];
-    NSString *publicKey = [CCUtility getPushNotificationSubscribingPublicKey:account];
-
-    [[NCCommunication shared] unsubscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[CCUtility getPassword:account] customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
-        if (errorCode == 0) {
-            NSString *userAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [CCUtility getUserAgent]];
-            NSString *proxyServerPath = [NCBrandOptions shared].pushNotificationServerProxy;
-            [[NCCommunication shared] unsubscribingPushProxyWithProxyServerUrl:proxyServerPath deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent completionHandler:^(NSInteger errorCode, NSString *errorDescription) {
-                if (errorCode == 0) {
-                
-                    [[NCCommunicationCommon shared] writeLog:@"Unsubscribed to Push Notification server & proxy successfully."];
-                    
-                    [CCUtility setPushNotificationPublicKey:account data:nil];
-                    [CCUtility setPushNotificationSubscribingPublicKey:account publicKey:nil];
-                    [CCUtility setPushNotificationPrivateKey:account data:nil];
-                    [CCUtility setPushNotificationToken:account token:nil];
-                    [CCUtility setPushNotificationDeviceIdentifier:account deviceIdentifier:nil];
-                    [CCUtility setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:nil];
-                    
-                    if (self.pushKitToken != nil && subscribing) {
-                        [self subscribingNextcloudServerPushNotification:account urlBase:urlBase user:user];
-                    }
-                }
-            }];
-        }
-    }];
-}
+#pragma mark Push Notifications
 
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
-    //Called when a notification is delivered to a foreground app.
     completionHandler(UNNotificationPresentationOptionAlert);
 }
 
@@ -589,92 +501,17 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    self.pushKitToken = [self stringWithDeviceToken:deviceToken];
-
-    [self pushNotification];
+    [[NCPushNotification shared] registerForRemoteNotificationsWithDeviceToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    NSString *message = [userInfo objectForKey:@"subject"];
-    if (message) {
-        NSArray *results = [[NCManageDatabase shared] getAllAccount];
-        for (tableAccount *result in results) {
-            if ([CCUtility getPushNotificationPrivateKey:result.account]) {
-                NSData *decryptionKey = [CCUtility getPushNotificationPrivateKey:result.account];
-                NSString *decryptedMessage = [[NCPushNotificationEncryption shared] decryptPushNotification:message withDevicePrivateKey:decryptionKey];
-                if (decryptedMessage) {
-                    NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
-                    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                    NSInteger nid = [[json objectForKey:@"nid"] integerValue];
-                    BOOL delete = [[json objectForKey:@"delete"] boolValue];
-                    BOOL deleteAll = [[json objectForKey:@"delete-all"] boolValue];
-                    if (delete) {
-                        [self removeNotificationWithNotificationId:nid usingDecryptionKey:decryptionKey];
-                    } else if (deleteAll) {
-                        [self cleanAllNotifications];
-                    }
-                }
-            }
-        }
-    }
-    completionHandler(UIBackgroundFetchResultNoData);
-}
-
-- (void)cleanAllNotifications
-{
-    [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
-}
-
-- (void)removeNotificationWithNotificationId:(NSInteger)notificationId usingDecryptionKey:(NSData *)key
-{
-    // Check in pending notifications
-    [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
-        for (UNNotificationRequest *notificationRequest in requests) {
-            NSString *message = [notificationRequest.content.userInfo objectForKey:@"subject"];
-            NSString *decryptedMessage = [[NCPushNotificationEncryption shared] decryptPushNotification:message withDevicePrivateKey:key];
-            if (decryptedMessage) {
-                NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
-                NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                NSInteger nid = [[json objectForKey:@"nid"] integerValue];
-                if (nid == notificationId) {
-                    [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[notificationRequest.identifier]];
-                }
-            }
-        }
-    }];
-    // Check in delivered notifications
-    [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
-        for (UNNotification *notification in notifications) {
-            NSString *message = [notification.request.content.userInfo objectForKey:@"subject"];
-            NSString *decryptedMessage = [[NCPushNotificationEncryption shared] decryptPushNotification:message withDevicePrivateKey:key];
-            if (decryptedMessage) {
-                NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
-                NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                NSInteger nid = [[json objectForKey:@"nid"] integerValue];
-                if (nid == notificationId) {
-                    [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[notification.request.identifier]];
-                }
-            }
-        }
+    [[NCPushNotification shared] applicationdidReceiveRemoteNotification:userInfo fetchCompletionHandler:^(UIBackgroundFetchResult result) {
+        completionHandler(result);
     }];
 }
 
-- (NSString *)stringWithDeviceToken:(NSData *)deviceToken
-{
-    const char *data = [deviceToken bytes];
-    NSMutableString *token = [NSMutableString string];
-    
-    for (NSUInteger i = 0; i < [deviceToken length]; i++) {
-        [token appendFormat:@"%02.2hhX", data[i]];
-    }
-    
-    return [token copy];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Fetch =====
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark Fetch
 
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
@@ -695,9 +532,7 @@
     });
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Operation Networking & Session =====
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark Operation Networking & Session
 
 //
 // Method called by the system when all the background task has end
@@ -714,9 +549,7 @@
     });
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== OpenURL  =====
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark OpenURL
 
 // Method called from iOS system to send a file from other app.
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
@@ -825,9 +658,7 @@
     return YES;
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Passcode + Delegate =====
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark Passcode + Delegate
 
 - (void)passcodeWithAutomaticallyPromptForBiometricValidation:(BOOL)automaticallyPromptForBiometricValidation
 {
