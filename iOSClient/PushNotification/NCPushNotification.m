@@ -34,7 +34,8 @@
 
 @implementation NCPushNotification
 
-+ (instancetype)shared {
++ (instancetype)shared
+{
     static NCPushNotification *pushNotification = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
