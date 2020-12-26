@@ -66,9 +66,6 @@
 // UploadFromOtherUpp
 @property (nonatomic, strong) NSString *fileNameUpload;
 
-// Passcode lockDirectory
-@property (nonatomic, strong) NSDate *sessionePasscodeLock;
-
 @property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
 
 @property (nonatomic, retain) NSString *activeServerUrl;
