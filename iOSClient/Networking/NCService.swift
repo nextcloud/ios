@@ -154,9 +154,15 @@ class NCService: NSObject {
                 
                     NCManageDatabase.shared.addCapabilitiesJSon(data!, account: account)
                 
+                    let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+                    
                     // Setup communication
-                    self.appDelegate.settingSetupCommunication(account)
-                
+                    if serverVersionMajor > 0 {
+                        NCCommunicationCommon.shared.setup(nextcloudVersion: serverVersionMajor)
+                    }
+                    NCCommunicationCommon.shared.setup(webDav: NCUtilityFileSystem.shared.getWebDAV(account: account))
+                    NCCommunicationCommon.shared.setup(dav: NCUtilityFileSystem.shared.getDAV())
+                    
                     // Theming
                     NCBrandColor.shared.settingThemingColor(account: account)
                 
@@ -191,7 +197,6 @@ class NCService: NSObject {
                     }
                 
                     // Text direct editor detail
-                    let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
                     if serverVersionMajor >= NCBrandGlobal.shared.nextcloudVersion18 {
                         NCCommunication.shared.NCTextObtainEditorDetails() { (account, editors, creators, errorCode, errorMessage) in
                             if errorCode == 0 && account == self.appDelegate.account {

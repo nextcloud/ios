@@ -439,7 +439,14 @@
     (void)[NCNetworkingNotificationCenter shared];
 
     [[NCCommunicationCommon shared] setupWithAccount:account user:user userId:userID password:password urlBase:urlBase];
-    [self settingSetupCommunication:account];
+    
+    NSInteger serverVersionMajor = [[NCManageDatabase shared] getCapabilitiesServerIntWithAccount:account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
+    if (serverVersionMajor > 0) {
+        [[NCCommunicationCommon shared] setupWithNextcloudVersion:serverVersionMajor];
+    }
+    
+    [[NCCommunicationCommon shared] setupWithWebDav:[[NCUtilityFileSystem shared] getWebDAVWithAccount:account]];
+    [[NCCommunicationCommon shared] setupWithDav:[[NCUtilityFileSystem shared] getDAV]];
 }
 
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe
@@ -474,17 +481,6 @@
             [self openLoginView:self.window.rootViewController selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
         }
     }
-}
-
-- (void)settingSetupCommunication:(NSString *)account
-{
-    NSInteger serverVersionMajor = [[NCManageDatabase shared] getCapabilitiesServerIntWithAccount:account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
-    if (serverVersionMajor > 0) {
-        [[NCCommunicationCommon shared] setupWithNextcloudVersion:serverVersionMajor];
-    }
-    
-    [[NCCommunicationCommon shared] setupWithWebDav:[[NCUtilityFileSystem shared] getWebDAVWithAccount:account]];
-    [[NCCommunicationCommon shared] setupWithDav:[[NCUtilityFileSystem shared] getDAV]];
 }
 
 #pragma mark Push Notifications

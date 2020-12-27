@@ -111,7 +111,6 @@
 // Setting Account & Communication
 - (void)settingAccount:(NSString *)account urlBase:(NSString *)urlBase user:(NSString *)user userID:(NSString *)userID password:(NSString *)password;
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe;
-- (void)settingSetupCommunication:(NSString *)account;
 
 @end
 
