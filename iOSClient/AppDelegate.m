@@ -27,6 +27,7 @@
 #import "NSNotificationCenter+MainThread.h"
 #import "NCPushNotification.h"
 #import <QuartzCore/QuartzCore.h>
+#import "CCUploadFromOtherUpp.h"
 
 @import Firebase;
 
@@ -636,17 +637,23 @@
     NSLog(@"[LOG] the path is: %@", url.path);
         
     NSArray *splitedUrl = [url.path componentsSeparatedByString:@"/"];
-    self.fileNameUpload = [NSString stringWithFormat:@"%@",[splitedUrl objectAtIndex:([splitedUrl count]-1)]];
+    NSString *fileNameUpload = [NSString stringWithFormat:@"%@",[splitedUrl objectAtIndex:([splitedUrl count]-1)]];
     
     if (self.account && [[NSFileManager defaultManager] fileExistsAtPath:url.path]) {
         
-        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:self.fileNameUpload] error:nil];
-        [[NSFileManager defaultManager] moveItemAtPath:url.path toPath:[NSTemporaryDirectory() stringByAppendingString:self.fileNameUpload] error:&error];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:fileNameUpload] error:nil];
+        [[NSFileManager defaultManager] moveItemAtPath:url.path toPath:[NSTemporaryDirectory() stringByAppendingString:fileNameUpload] error:&error];
         
         if (error == nil) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                UIViewController *uploadNavigationViewController = [[UIStoryboard storyboardWithName:@"CCUploadFromOtherUpp" bundle:nil] instantiateViewControllerWithIdentifier:@"CCUploadNavigationViewController"];
-                [self.window.rootViewController presentViewController:uploadNavigationViewController animated:YES completion:nil];
+                
+                UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"CCUploadFromOtherUpp" bundle:nil] instantiateInitialViewController];
+                
+                CCUploadFromOtherUpp *uploadFromOtherUpp = (CCUploadFromOtherUpp *)[navigationController topViewController];
+                
+                uploadFromOtherUpp.fileNameUpload = fileNameUpload;
+                
+                [self.window.rootViewController presentViewController:uploadFromOtherUpp animated:YES completion:nil];
             });
         }
     }

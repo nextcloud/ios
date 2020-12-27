@@ -24,8 +24,10 @@
 #import <UIKit/UIKit.h>
 
 @interface CCUploadFromOtherUpp : UITableViewController <UITableViewDelegate, UITableViewDataSource>
+
 @property (weak, nonatomic) IBOutlet UILabel *fileSizeLabel;
 @property (weak, nonatomic) IBOutlet UITextField *fileNameTextfield;
 @property (weak, nonatomic) IBOutlet UILabel *destinationLabel;
+@property (nonatomic, strong) NSString *fileNameUpload;
 
 @end

@@ -47,11 +47,11 @@
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>
 
-// Timer Process
-@property (nonatomic, strong) NSTimer *timerErrorNetworking;
-
 @property (nonatomic, strong) UIWindow *window;
-@property (nonatomic, strong) NCDocumentPickerViewController *documentPickerViewController;
+@property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
+
+// Timer Process
+
 
 // Parameter account
 @property (nonatomic, strong) NSString *account;
@@ -59,14 +59,6 @@
 @property (nonatomic, strong) NSString *user;
 @property (nonatomic, strong) NSString *userID;
 @property (nonatomic, strong) NSString *password;
-
-// Networking 
-@property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
-
-// UploadFromOtherUpp
-@property (nonatomic, strong) NSString *fileNameUpload;
-
-@property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
 
 @property (nonatomic, retain) NSString *activeServerUrl;
 @property (nonatomic, retain) UIViewController *activeViewController;
@@ -92,17 +84,14 @@
 @property (nonatomic, strong) NSMutableDictionary *listOfflineVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
 
+@property (nonatomic, strong) NSTimer *timerErrorNetworking;
+@property (nonatomic, strong) NCDocumentPickerViewController *documentPickerViewController;
 @property (nonatomic) UIUserInterfaceStyle preferredUserInterfaceStyle API_AVAILABLE(ios(12.0));
-
-// Shares
 @property (nonatomic, strong) NSArray *shares;
 @property BOOL disableSharesView;
-
-// UserDefaults
 @property (nonatomic, strong) NSUserDefaults *ncUserDefaults;
-
-// Network Auto Upload
 @property (nonatomic, strong) NCNetworkingAutoUpload *networkingAutoUpload;
+@property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
 
 // Login
 - (void)startTimerErrorNetworking;

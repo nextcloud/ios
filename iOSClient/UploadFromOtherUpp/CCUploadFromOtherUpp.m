@@ -88,9 +88,9 @@
         case 0:
             if (row == 0) {
                                 
-                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSTemporaryDirectory() stringByAppendingString:appDelegate.fileNameUpload] error:nil];
+                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSTemporaryDirectory() stringByAppendingString:self.fileNameUpload] error:nil];
                 NSString *fileSize = [CCUtility transformedSize:[[fileAttributes objectForKey:NSFileSize] longValue]];
-                self.fileNameTextfield.text = appDelegate.fileNameUpload;
+                self.fileNameTextfield.text = self.fileNameUpload;
                 self.fileSizeLabel.text = fileSize;
             }
             break;
@@ -182,7 +182,7 @@
     metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload;
     
     // Prepare file and directory
-    [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:appDelegate.fileNameUpload] toPath:[CCUtility getDirectoryProviderStorageOcId:metadataForUpload.ocId fileNameView:fileName]];
+    [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:self.fileNameUpload] toPath:[CCUtility getDirectoryProviderStorageOcId:metadataForUpload.ocId fileNameView:fileName]];
     
     // Add Medtadata for upload
     [[NCManageDatabase shared] addMetadata:metadataForUpload];
