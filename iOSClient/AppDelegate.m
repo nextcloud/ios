@@ -136,7 +136,7 @@
     if ([NCBrandOptions shared].disable_intro) {
         [CCUtility setIntro:YES];
         
-        if (self.account.length == 0) {
+        if (self.account == nil || self.account.length == 0) {
             [self openLoginView:nil selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
         }
         
@@ -170,7 +170,7 @@
 //
 - (void)applicationWillResignActive:(UIApplication *)application
 {
-    if (self.account.length == 0) { return; }
+    if (self.account == nil || self.account.length == 0) { return; }
     
     // Dismiss FileViewInFolder
     if (self.activeFileViewInFolder != nil ) {
@@ -185,7 +185,7 @@
 //
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    if (self.account.length == 0) { return; }
+    if (self.account == nil || self.account.length == 0) { return; }
     
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterApplicationWillEnterForeground object:nil];
     
@@ -213,7 +213,7 @@
 //
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    if (self.account.length == 0) { return; }
+    if (self.account == nil || self.account.length == 0) { return; }
         
     // Brand
     #if defined(HC)
@@ -235,7 +235,7 @@
 //
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    if (self.account.length == 0) { return; }
+    if (self.account == nil || self.account.length == 0) { return; }
 
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterApplicationDidEnterBackground object:nil];
     
@@ -253,7 +253,7 @@
 // NotificationCenter
 - (void)initializeMain:(NSNotification *)notification
 {
-    if (self.account.length == 0) { return; }
+    if (self.account == nil || self.account.length == 0) { return; }
     
     // Clear error certificate
     [CCUtility setCertificateError:self.account error:NO];
@@ -291,7 +291,7 @@
 
 - (void)checkErrorNetworking
 {
-    if (self.account.length == 0) { return; }
+    if (self.account == nil || self.account.length == 0) { return; }
     
     // check unauthorized server (401)
     if ([CCUtility getPassword:self.account].length == 0) {
@@ -515,7 +515,7 @@
 
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    if (self.account.length == 0) {
+    if (self.account == nil || self.account.length == 0) {
         completionHandler(UIBackgroundFetchResultNoData);
         return;
     }
@@ -554,7 +554,7 @@
 // Method called from iOS system to send a file from other app.
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
 {
-    if (self.account.length == 0) { return YES; }
+    if (self.account == nil || self.account.length == 0) { return YES; }
     
     NSString *scheme = url.scheme;
     NSString *fileName;

@@ -48,7 +48,7 @@
 
 - (void)pushNotification
 {
-    if (appDelegate.account.length == 0 || self.pushKitToken.length == 0) { return; }
+    if (appDelegate.account == nil || appDelegate.account.length == 0 || self.pushKitToken.length == 0) { return; }
     
     for (tableAccount *result in [[NCManageDatabase shared] getAllAccount]) {
         
@@ -95,7 +95,7 @@
 
 - (void)subscribingNextcloudServerPushNotification:(NSString *)account urlBase:(NSString *)urlBase user:(NSString *)user
 {
-    if (appDelegate.account.length == 0 || self.pushKitToken.length == 0) { return; }
+    if (appDelegate.account == nil || appDelegate.account.length == 0 || self.pushKitToken.length == 0) { return; }
     
     [[NCPushNotificationEncryption shared] generatePushNotificationsKeyPair:account];
 
@@ -124,7 +124,7 @@
 
 - (void)unsubscribingNextcloudServerPushNotification:(NSString *)account urlBase:(NSString *)urlBase user:(NSString *)user withSubscribing:(BOOL)subscribing
 {
-    if (appDelegate.account.length == 0) { return; }
+    if (appDelegate.account == nil || appDelegate.account.length == 0) { return; }
     
     NSString *deviceIdentifier = [CCUtility getPushNotificationDeviceIdentifier:account];
     NSString *signature = [CCUtility getPushNotificationDeviceIdentifierSignature:account];
