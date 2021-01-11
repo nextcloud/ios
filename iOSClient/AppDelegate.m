@@ -633,6 +633,7 @@
         return YES;
     }
     
+    /*
     NSError *error;
     NSLog(@"[LOG] the path is: %@", url.path);
         
@@ -657,6 +658,7 @@
             });
         }
     }
+    */
     
     return YES;
 }
