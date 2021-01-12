@@ -343,7 +343,12 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                         DispatchQueue.global(qos: .background).async {
                             if metadataNew != nil {
                                 self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
+                                
                                 do {
+                                    
+                                    let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath!)
+                                    let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
+                                    
                                     if mediaType == PHAssetMediaType.image {
                                         let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath!))
                                         if let image = UIImage(data: data) {
@@ -359,10 +364,9 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                                         }
                                     }
                                     
-                                    let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath!)
-                                    let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
-                                    
-                                    cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
+                                    DispatchQueue.main.async {
+                                        cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
+                                    }
                                     
                                 } catch { print("Error: \(error)") }
                             }
