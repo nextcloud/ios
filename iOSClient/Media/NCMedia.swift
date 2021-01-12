@@ -519,6 +519,14 @@ extension NCMedia: UICollectionViewDelegate {
          */
         
         
+        let moveCopy = UIAction(title: NSLocalizedString("_move_or_copy_", comment: ""), image: UIImage(systemName: "move")) { action in
+            NCCollectionCommon.shared.openSelectView(items: [metadata])
+        }
+        
+        let save = UIAction(title: NSLocalizedString("_save_selected_files_", comment: ""), image: UIImage(systemName: "saveSelectedFiles")) { action in
+            NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)
+        }
+        
         let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "openFile")) { action in
             NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn)
         }
@@ -526,16 +534,19 @@ extension NCMedia: UICollectionViewDelegate {
 //        let openQuickLook = UIAction(title: NSLocalizedString("_open_quicklook_", comment: ""), image: UIImage(systemName: "openFile")) { action in
 //            NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadFileQuickLook)
 //        }
-        
-        let delete = UIAction(title: NSLocalizedString("_delete_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { action in
+                
+        let deleteFile = UIAction(title: NSLocalizedString("_delete_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { action in
+            
             NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
                 if errorCode != 0 {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
         }
-
-        return UIMenu(title: "", children: [openIn, delete])
+        
+        let delete = UIMenu(title: NSLocalizedString("_delete_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteFile])
+        
+        return UIMenu(title: "", children: [save, moveCopy, openIn, delete])
     }
 }
 
