@@ -122,11 +122,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Empty
         emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 0, delegate: self)
         
-        // 3D Touch peek and pop
-        if traitCollection.forceTouchCapability == .available {
-            registerForPreviewing(with: self, sourceView: view)
-        }
-        
         // Long Press on CollectionView
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(_:)))
         longPressedGesture.minimumPressDuration = 0.5
@@ -1012,6 +1007,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
 // MARK: - 3D Touch peek and pop
 
+/*
 extension NCCollectionViewCommon: UIViewControllerPreviewingDelegate {
     
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
@@ -1019,18 +1015,16 @@ extension NCCollectionViewCommon: UIViewControllerPreviewingDelegate {
         guard let point = collectionView?.convert(location, from: collectionView?.superview) else { return nil }
         guard let indexPath = collectionView?.indexPathForItem(at: point) else { return nil }
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
-        guard let viewController = UIStoryboard(name: "CCPeekPop", bundle: nil).instantiateViewController(withIdentifier: "PeekPopImagePreview") as? CCPeekPop else { return nil }
+        guard let viewController = UIStoryboard(name: "NCPeekPop", bundle: nil).instantiateInitialViewController() as? NCPeekPop else { return nil }
 
         viewController.metadata = metadata
 
         if layout == NCBrandGlobal.shared.layoutGrid {
             guard let cell = collectionView?.cellForItem(at: indexPath) as? NCGridCell else { return nil }
             previewingContext.sourceRect = cell.frame
-            viewController.imageFile = cell.imageItem.image
         } else {
             guard let cell = collectionView?.cellForItem(at: indexPath) as? NCListCell else { return nil }
             previewingContext.sourceRect = cell.frame
-            viewController.imageFile = cell.imageItem.image
         }
         
         viewController.showOpenIn = true
@@ -1047,6 +1041,7 @@ extension NCCollectionViewCommon: UIViewControllerPreviewingDelegate {
         collectionView(collectionView, didSelectItemAt: indexPath)
     }
 }
+*/
 
 // MARK: - Collection View
 

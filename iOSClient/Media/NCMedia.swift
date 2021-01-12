@@ -91,12 +91,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         
         // Empty
         emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 0, delegate: self)
-                
-        // 3D Touch peek and pop
-        if traitCollection.forceTouchCapability == .available {
-            registerForPreviewing(with: self, sourceView: view)
-        }
-        
+      
         // Notification
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
@@ -473,35 +468,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     }
 }
 
-// MARK: - 3D Touch peek and pop
-
-extension NCMedia: UIViewControllerPreviewingDelegate {
-    
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
-        
-        guard let point = collectionView?.convert(location, from: collectionView?.superview) else { return nil }
-        guard let indexPath = collectionView?.indexPathForItem(at: point) else { return nil }
-        let metadata = metadatas[indexPath.row]
-        guard let cell = collectionView?.cellForItem(at: indexPath) as? NCGridMediaCell  else { return nil }
-        guard let viewController = UIStoryboard(name: "CCPeekPop", bundle: nil).instantiateViewController(withIdentifier: "PeekPopImagePreview") as? CCPeekPop else { return nil }
-        
-        previewingContext.sourceRect = cell.frame
-        viewController.metadata = metadata
-        viewController.imageFile = cell.imageItem.image
-        viewController.showOpenIn = true
-        viewController.showShare = false
-        viewController.showOpenQuickLook = false
-
-        return viewController
-    }
-    
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
-        
-        guard let indexPath = collectionView?.indexPathForItem(at: previewingContext.sourceRect.origin) else { return }
-        collectionView(collectionView, didSelectItemAt: indexPath)
-    }
-}
-
 // MARK: - Collection View
 
 extension NCMedia: UICollectionViewDelegate {
@@ -526,6 +492,50 @@ extension NCMedia: UICollectionViewDelegate {
             appDelegate.activeServerUrl = metadataTouch!.serverUrl
             NCViewer.shared.view(viewController: self, metadata: metadataTouch!, metadatas: metadatas)
         }
+    }
+    
+    @available(iOS 13.0, *)
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let metadata = metadatas[indexPath.row]
+
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: {
+            return NCViewerPeekPop(metadata: metadata)
+        }, actionProvider: { suggestedActions in
+            return self.makeContextMenu(for: metadata)
+        })
+    }
+    
+    @available(iOS 13.0, *)
+    func makeContextMenu(for metadata: tableMetadata) -> UIMenu {
+
+        /*
+         
+         if (self.showShare) {
+             UIPreviewAction *item = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
+                 [[NCNetworkingNotificationCenter shared] openShareWithViewController:appDelegate.activeFiles metadata:self.metadata indexPage:2];
+             }];
+             [items addObject:item];
+         }
+         */
+        
+        
+        let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "openFile")) { action in
+            NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn)
+        }
+
+//        let openQuickLook = UIAction(title: NSLocalizedString("_open_quicklook_", comment: ""), image: UIImage(systemName: "openFile")) { action in
+//            NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadFileQuickLook)
+//        }
+        
+        let delete = UIAction(title: NSLocalizedString("_delete_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { action in
+            NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
+                if errorCode != 0 {
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                }
+            }
+        }
+
+        return UIMenu(title: "", children: [openIn, delete])
     }
 }
 
