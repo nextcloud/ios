@@ -27,7 +27,6 @@
 #import "NSNotificationCenter+MainThread.h"
 #import "NCPushNotification.h"
 #import <QuartzCore/QuartzCore.h>
-#import "CCUploadFromOtherUpp.h"
 
 @import Firebase;
 
@@ -632,33 +631,6 @@
         }
         return YES;
     }
-    
-    /*
-    NSError *error;
-    NSLog(@"[LOG] the path is: %@", url.path);
-        
-    NSArray *splitedUrl = [url.path componentsSeparatedByString:@"/"];
-    NSString *fileNameUpload = [NSString stringWithFormat:@"%@",[splitedUrl objectAtIndex:([splitedUrl count]-1)]];
-    
-    if (self.account && [[NSFileManager defaultManager] fileExistsAtPath:url.path]) {
-        
-        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:fileNameUpload] error:nil];
-        [[NSFileManager defaultManager] moveItemAtPath:url.path toPath:[NSTemporaryDirectory() stringByAppendingString:fileNameUpload] error:&error];
-        
-        if (error == nil) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                
-                UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"CCUploadFromOtherUpp" bundle:nil] instantiateInitialViewController];
-                
-                CCUploadFromOtherUpp *uploadFromOtherUpp = (CCUploadFromOtherUpp *)[navigationController topViewController];
-                
-                uploadFromOtherUpp.fileNameUpload = fileNameUpload;
-                
-                [self.window.rootViewController presentViewController:uploadFromOtherUpp animated:YES completion:nil];
-            });
-        }
-    }
-    */
     
     return YES;
 }

@@ -8,33 +8,6 @@
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
 	<string>Nextcloud</string>
-	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeIconFiles</key>
-			<array>
-				<string></string>
-			</array>
-			<key>CFBundleTypeName</key>
-			<string>All files</string>
-			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
-			<key>LSHandlerRank</key>
-			<string>Default</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>public.data</string>
-				<string>public.content</string>
-				<string>public.text</string>
-				<string>public.movie</string>
-				<string>public.audio</string>
-				<string>public.image</string>
-				<string>public.presentation</string>
-				<string>public.video</string>
-				<string>com.adobe.pdf</string>
-			</array>
-		</dict>
-	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -68,12 +41,6 @@
 	<true/>
 	<key>ITSEncryptionExportComplianceCode</key>
 	<string>3b2bb0b1-fa12-43cb-a78f-0f7e1afd33df</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>dbapi-1</string>
-		<string>dbapi-2</string>
-		<string>dbapi-3</string>
-	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
