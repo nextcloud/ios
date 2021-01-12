@@ -547,7 +547,6 @@
 
 #pragma mark OpenURL
 
-// Method called from iOS system to send a file from other app.
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
 {
     if (self.account == nil || self.account.length == 0) { return YES; }
