@@ -39,29 +39,41 @@ class NCViewerPeekPop: UIViewController  {
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
         
-        if metadata.hasPreview {
+        if metadata.directory {
+
+            imageView.image = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width / 2)
+            preferredContentSize = CGSize(width: imageView.image?.size.width ?? 0,  height: imageView.image?.size.height ?? 0)
+
+        } else {
             
-            if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+            imageView.image = UIImage.init(named: metadata.iconName)
+            preferredContentSize = CGSize(width: imageView.image?.size.width ?? 0,  height: imageView.image?.size.height ?? 0)
+        
+            if metadata.hasPreview {
                 
-                if let fullImage = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
-                    imageView.image = fullImage.resizeImage(size: CGSize(width: view.bounds.size.width, height: view.bounds.size.height), isAspectRation: true)
-                    preferredContentSize = CGSize(width: imageView.image?.size.width ?? 0,  height: imageView.image?.size.height ?? 0)
-                }
-                
-            } else {
-                
-                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
-                let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-                let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
-                
-                NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCBrandGlobal.shared.sizePreview, heightPreview: NCBrandGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCBrandGlobal.shared.sizeIcon) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
-                    if errorCode == 0 && imagePreview != nil {
-                        self.imageView.image = imagePreview!.resizeImage(size: CGSize(width: self.view.bounds.size.width, height: self.view.bounds.size.height), isAspectRation: true)
-                        self.preferredContentSize = CGSize(width: self.imageView.image?.size.width ?? 0,  height: self.imageView.image?.size.height ?? 0)
+                if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+                    
+                    if let fullImage = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
+                        imageView.image = fullImage.resizeImage(size: CGSize(width: view.bounds.size.width, height: view.bounds.size.height), isAspectRation: true)
+                        preferredContentSize = CGSize(width: imageView.image?.size.width ?? 0,  height: imageView.image?.size.height ?? 0)
+                    }
+                    
+                } else {
+                    
+                    let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+                    let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+                    let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
+                    
+                    NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCBrandGlobal.shared.sizePreview, heightPreview: NCBrandGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCBrandGlobal.shared.sizeIcon) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
+                        if errorCode == 0 && imagePreview != nil {
+                            self.imageView.image = imagePreview!.resizeImage(size: CGSize(width: self.view.bounds.size.width, height: self.view.bounds.size.height), isAspectRation: true)
+                            self.preferredContentSize = CGSize(width: self.imageView.image?.size.width ?? 0,  height: self.imageView.image?.size.height ?? 0)
+                        }
                     }
                 }
             }
         }
+        
     }
 
     required init?(coder: NSCoder) {
