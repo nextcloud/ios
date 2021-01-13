@@ -54,7 +54,7 @@ class NCViewerProviderContextMenu: UIViewController  {
                 if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
                     
                     if let image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
-                        imageView.image = image.resizeImage(size: CGSize(width: view.frame.size.width, height: view.frame.size.height), isAspectRation: true)
+                        imageView.image = image.resizeImage(size: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height), isAspectRation: true)
                     }
                     
                 } else {
@@ -66,8 +66,10 @@ class NCViewerProviderContextMenu: UIViewController  {
                     NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCBrandGlobal.shared.sizePreview, heightPreview: NCBrandGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCBrandGlobal.shared.sizeIcon) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
                         if errorCode == 0 {
                             if let image = imagePreview {
-                                self.imageView.image = image.resizeImage(size: CGSize(width: self.view.frame.size.width, height: self.view.frame.size.height), isAspectRation: true)
-                                self.preferredContentSize = CGSize(width: self.imageView.image?.size.width ?? 0,  height: self.imageView.image?.size.height ?? 0)
+                                self.imageView.image = image.resizeImage(size: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height), isAspectRation: true)
+                                if let size = self.imageView.image?.size {
+                                    self.preferredContentSize = size
+                                }
                             }
                         }
                     }
@@ -75,10 +77,17 @@ class NCViewerProviderContextMenu: UIViewController  {
             }
         }
         
-        preferredContentSize = CGSize(width: imageView.image?.size.width ?? 0,  height: imageView.image?.size.height ?? 0)
+        if let size = imageView.image?.size {
+            preferredContentSize = size
+        }
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
     }
 }
