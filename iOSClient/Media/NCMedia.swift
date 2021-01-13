@@ -500,7 +500,9 @@ extension NCMedia: UICollectionViewDelegate {
         let metadata = metadatas[indexPath.row]
 
         return UIContextMenuConfiguration(identifier: nil, previewProvider: {
-            return NCViewerPeekPop(metadata: metadata)
+            
+            return NCViewerProviderContextMenu(metadata: metadata)
+            
         }, actionProvider: { suggestedActions in
             
             let save = UIAction(title: NSLocalizedString("_save_selected_files_", comment: ""), image: UIImage(systemName: "square.and.arrow.down")) { action in

@@ -1052,7 +1052,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         metadataTouch = metadata
         
         return UIContextMenuConfiguration(identifier: nil, previewProvider: {
-            return NCViewerPeekPop(metadata: metadata)
+            
+            return NCViewerProviderContextMenu(metadata: metadata)
+            
         }, actionProvider: { suggestedActions in
             
             let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc") ) { action in

@@ -1,5 +1,5 @@
 //
-//  NCViewerPeekPop.swift
+//  NCViewerProviderContextMenu.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 12/01/21.
@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCViewerPeekPop: UIViewController  {
+class NCViewerProviderContextMenu: UIViewController  {
 
     private let imageView = UIImageView()
     private let standardSizeWidth = UIScreen.main.bounds.width / 2
@@ -40,16 +40,15 @@ class NCViewerPeekPop: UIViewController  {
 
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
+        view.backgroundColor = NCBrandColor.shared.backgroundView
                 
         if metadata.directory {
 
             imageView.image = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: standardSizeWidth)
-            preferredContentSize = imageView.frame.size
 
         } else {
             
             imageView.image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: standardSizeWidth, height: standardSizeHeight), isAspectRation: true)
-            preferredContentSize = imageView.frame.size
         
             if metadata.hasPreview {
                 
@@ -57,7 +56,6 @@ class NCViewerPeekPop: UIViewController  {
                     
                     if let image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
                         imageView.image = image.resizeImage(size: CGSize(width: view.frame.size.width, height: view.frame.size.height), isAspectRation: true)
-                        if let image = imageView.image { preferredContentSize = CGSize(width: image.size.width,  height: image.size.height-50) } // -50 white line bottom
                     }
                     
                 } else {
@@ -70,13 +68,15 @@ class NCViewerPeekPop: UIViewController  {
                         if errorCode == 0 {
                             if let image = imagePreview {
                                 self.imageView.image = image.resizeImage(size: CGSize(width: self.view.frame.size.width, height: self.view.frame.size.height), isAspectRation: true)
-                                self.preferredContentSize = CGSize(width: image.size.width,  height: image.size.height-50) // -50 white line bottom
+                                self.preferredContentSize = CGSize(width: self.imageView.image?.size.width ?? 0,  height: self.imageView.image?.size.height ?? 0)
                             }
                         }
                     }
                 }
             }
         }
+        
+        preferredContentSize = CGSize(width: imageView.image?.size.width ?? 0,  height: imageView.image?.size.height ?? 0)
     }
 
     required init?(coder: NSCoder) {
