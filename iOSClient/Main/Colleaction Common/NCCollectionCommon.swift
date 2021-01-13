@@ -207,7 +207,119 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         
         appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
+    
+    // MARK: - Copy & Paste
+
+    func copyFile(ocIds: [String]) {
+        var metadatas: [tableMetadata] = []
+        var items = [[String : Any]]()
+
+        
+        for ocId in ocIds {
+            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                metadatas.append(metadata)
+            }
+        }
+        
+        for metadata in metadatas {
+            
+            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                do {
+                    let etagPasteboard = try NSKeyedArchiver.archivedData(withRootObject: metadata.ocId, requiringSecureCoding: false)
+                    items.append([NCBrandGlobal.shared.metadataKeyedUnarchiver:etagPasteboard])
+                } catch {
+                    print("error")
+                }
+            } else {
+                NCNetworking.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadCopy, setFavorite: false) { (_) in }
+            }
+        }
+        
+        UIPasteboard.general.setItems(items, options: [:])
+    }
+
+    func pasteFiles(serverUrl: String) {
+        
+        var listData: [String] = []
+        
+        for item in UIPasteboard.general.items {
+            for object in item {
+                let contentType = object.key
+                let data = object.value
+                if contentType == NCBrandGlobal.shared.metadataKeyedUnarchiver {
+                    do {
+                        if let ocId = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data as! Data) as? String{
+                            uploadPasteOcId(ocId, serverUrl: serverUrl)
+                        }
+                    } catch {
+                        print("error")
+                    }
+                    continue
+                }
+                if data is String {
+                    if listData.contains(data as! String) {
+                        continue
+                    } else {
+                        listData.append(data as! String)
+                    }
+                }
+                let type = NCCommunicationCommon.shared.convertUTItoResultType(fileUTI: contentType as CFString)
+                if type.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue && type.resultExtension != "" {
+                    uploadPasteFile(fileName: type.resultFilename, ext: type.resultExtension, contentType: contentType, serverUrl: serverUrl, data: data)
+                }
+            }
+        }
+    }
+
+    private func uploadPasteFile(fileName: String, ext: String, contentType: String, serverUrl: String, data: Any) {
+        do {
+            let fileNameView = fileName + "_" + CCUtility.getIncrementalNumber() + "." + ext
+            let ocId = UUID().uuidString
+            let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)!
+            
+            if data is UIImage {
+                try (data as? UIImage)?.jpegData(compressionQuality: 1)?.write(to: URL(fileURLWithPath: filePath))
+            } else if data is Data {
+                try (data as? Data)?.write(to: URL(fileURLWithPath: filePath))
+            } else if data is String {
+                try (data as? String)?.write(to: URL(fileURLWithPath: filePath), atomically: true, encoding: .utf8)
+            } else {
+                return
+            }
+            
+            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: contentType, livePhoto: false)
+            
+            metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
+            metadataForUpload.sessionSelector = NCBrandGlobal.shared.selectorUploadFile
+            metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
+            metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
+            
+            NCManageDatabase.shared.addMetadata(metadataForUpload)
+            
+        } catch { }
+    }
+
+    private func uploadPasteOcId(_ ocId: String, serverUrl: String) {
+        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                let fileNameView = NCUtilityFileSystem.shared.createFileName(metadata.fileNameView, serverUrl: serverUrl, account: appDelegate.account)
+                let ocId = NSUUID().uuidString
+                
+                CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView))
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
+                
+                metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
+                metadataForUpload.sessionSelector = NCBrandGlobal.shared.selectorUploadFile
+                metadataForUpload.size = metadata.size
+                metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
+                
+                NCManageDatabase.shared.addMetadata(metadataForUpload)
+            }
+        }
+    }
+
 }
+
 
 // MARK: - List Layout
 

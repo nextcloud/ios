@@ -340,6 +340,9 @@ extension NCCollectionViewCommon {
     private func initMenuSelect(viewController: UIViewController, selectOcId: [String]) -> [NCMenuAction] {
         var actions = [NCMenuAction]()
        
+        //
+        // SELECT ALL
+        //
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_select_all_", comment: ""),
@@ -349,6 +352,22 @@ extension NCCollectionViewCommon {
                 }
             )
         )
+        
+        //
+        // COPY
+        //
+        if #available(iOS 13.0, *) {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_copy_file_", comment: ""),
+                    icon: UIImage(systemName: "doc.on.doc")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    action: { menuAction in
+                        NCCollectionCommon.shared.copyFile(ocIds: selectOcId)
+                        self.tapSelect(sender: self)
+                    }
+                )
+            )
+        }
         
         //
         // COPY - MOVE
