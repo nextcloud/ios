@@ -1234,6 +1234,50 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
         collectionView.reloadData()
     }
+    
+    @available(iOS 13.0, *)
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
+
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: {
+            return NCViewerPeekPop(metadata: metadata)
+        }, actionProvider: { suggestedActions in
+            
+            let save = UIAction(title: NSLocalizedString("_save_selected_files_", comment: ""), image: UIImage(systemName: "square.and.arrow.down")) { action in
+                NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)
+            }
+            
+            let moveCopy = UIAction(title: NSLocalizedString("_move_or_copy_", comment: ""), image: UIImage(systemName: "arrow.up.right.square")) { action in
+                NCCollectionCommon.shared.openSelectView(items: [metadata])
+            }
+            
+            let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { action in
+                NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn)
+            }
+            
+            let share = UIAction(title: NSLocalizedString("_share_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { action in
+                NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 2)
+            }
+            
+            let openQuickLook = UIAction(title: NSLocalizedString("_open_quicklook_", comment: ""), image: UIImage(systemName: "eye")) { action in
+                NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadFileQuickLook)
+            }
+
+            let deleteFile = UIAction(title: NSLocalizedString("_delete_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { action in
+                
+                NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
+                    if errorCode != 0 {
+                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    }
+                }
+            }
+            
+            let delete = UIMenu(title: NSLocalizedString("_delete_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteFile])
+            
+            return UIMenu(title: "", children: [save, moveCopy, share, openIn, openQuickLook, delete])
+        })
+    }
 }
 
 extension NCCollectionViewCommon: UICollectionViewDataSource {
