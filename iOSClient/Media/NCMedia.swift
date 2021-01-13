@@ -507,15 +507,15 @@ extension NCMedia: UICollectionViewDelegate {
                 NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)
             }
             
+            let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { action in
+                NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn)
+            }
+            
             let moveCopy = UIAction(title: NSLocalizedString("_move_or_copy_", comment: ""), image: UIImage(systemName: "arrow.up.right.square")) { action in
                 NCCollectionCommon.shared.openSelectView(items: [metadata])
             }
             
-            let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { action in
-                NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn)
-            }
-
-            let deleteFile = UIAction(title: NSLocalizedString("_delete_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { action in
+            let deleteConfirm = UIAction(title: NSLocalizedString("_delete_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { action in
                 
                 NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
                     if errorCode != 0 {
@@ -524,9 +524,9 @@ extension NCMedia: UICollectionViewDelegate {
                 }
             }
             
-            let delete = UIMenu(title: NSLocalizedString("_delete_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteFile])
-            
-            return UIMenu(title: "", children: [save, moveCopy, openIn, delete])
+            let delete = UIMenu(title: NSLocalizedString("_delete_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirm])
+                        
+            return UIMenu(title: "", children: [save, openIn, moveCopy, delete])
         })
     }
 }
