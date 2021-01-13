@@ -40,7 +40,6 @@ class NCViewerProviderContextMenu: UIViewController  {
 
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
-        view.backgroundColor = NCBrandColor.shared.backgroundView
                 
         if metadata.directory {
 
