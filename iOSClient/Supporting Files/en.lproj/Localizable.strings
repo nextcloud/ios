@@ -492,10 +492,9 @@
 
 "_file_del_only_local_"         = "File not present on server";
 
+"_copy_paste_"                  = "Copy & Paste";
 "_copy_file_"                   = "Copy file";
-"_copy_files_"                  = "Copy files";
 "_paste_file_"                  = "Paste file";
-"_paste_files_"                 = "Paste files";
 "_open_quicklook_"              = "Open with Quick Look";
 
 "_search_this_folder_"          = "Search in this folder";

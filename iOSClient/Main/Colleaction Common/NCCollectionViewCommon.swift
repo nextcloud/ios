@@ -693,11 +693,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
-        openMenuItems(with: objectId, gestureRecognizer: gestureRecognizer)
     }
     
     func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
-        openMenuItems(with: objectId, gestureRecognizer: gestureRecognizer)
     }
     
     func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
@@ -726,18 +724,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         becomeFirstResponder()
                 
-        if metadataTouch != nil {
-            listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_copy_file_", comment: ""), action: #selector(copyFileMenu(_:))))
-        }
-        
         listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu(_:))))
-        
-        if metadataTouch != nil {
-            listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_open_quicklook_", comment: ""), action: #selector(openQuickLookMenu(_:))))
-            if !NCBrandOptions.shared.disable_openin_file {
-                listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_open_in_", comment: ""), action: #selector(openInMenu(_:))))
-            }
-        }
         
         if listMenuItems.count > 0 {
             UIMenuController.shared.menuItems = listMenuItems
@@ -756,13 +743,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
         
-        if (#selector(openQuickLookMenu(_:)) == action || #selector(openInMenu(_:)) == action || #selector(copyFileMenu(_:)) == action) {
-            guard let metadata = metadataTouch else { return false }
-            if !metadata.directory && metadata.status == NCBrandGlobal.shared.metadataStatusNormal {
-                return true
-            }
-        }
-
         return false
     }
     
@@ -1005,44 +985,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 }
 
-// MARK: - 3D Touch peek and pop
-
-/*
-extension NCCollectionViewCommon: UIViewControllerPreviewingDelegate {
-    
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
-        
-        guard let point = collectionView?.convert(location, from: collectionView?.superview) else { return nil }
-        guard let indexPath = collectionView?.indexPathForItem(at: point) else { return nil }
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
-        guard let viewController = UIStoryboard(name: "NCPeekPop", bundle: nil).instantiateInitialViewController() as? NCPeekPop else { return nil }
-
-        viewController.metadata = metadata
-
-        if layout == NCBrandGlobal.shared.layoutGrid {
-            guard let cell = collectionView?.cellForItem(at: indexPath) as? NCGridCell else { return nil }
-            previewingContext.sourceRect = cell.frame
-        } else {
-            guard let cell = collectionView?.cellForItem(at: indexPath) as? NCListCell else { return nil }
-            previewingContext.sourceRect = cell.frame
-        }
-        
-        viewController.showOpenIn = true
-        viewController.showOpenQuickLook = NCUtility.shared.isQuickLookDisplayable(metadata: metadata)
-        viewController.showShare = false
-        
-        return viewController
-    }
-    
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
-        
-        guard let indexPath = collectionView?.indexPathForItem(at: previewingContext.sourceRect.origin) else { return }
-        
-        collectionView(collectionView, didSelectItemAt: indexPath)
-    }
-}
-*/
-
 // MARK: - Collection View
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
@@ -1239,10 +1181,19 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
-
+        metadataTouch = metadata
+        
         return UIContextMenuConfiguration(identifier: nil, previewProvider: {
             return NCViewerPeekPop(metadata: metadata)
         }, actionProvider: { suggestedActions in
+            
+            let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc") ) { action in
+            }
+            
+            let paste = UIAction(title: NSLocalizedString("_paste_file_", comment: ""), image: UIImage(systemName: "doc.on.clipboard") ) { action in
+            }
+                        
+            let copyPaste = UIMenu(title: NSLocalizedString("_copy_paste_", comment: ""), image: UIImage(systemName: "doc"), children: [copy, paste])
             
             let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info") ) { action in
                 NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
@@ -1255,7 +1206,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             let openQuickLook = UIAction(title: NSLocalizedString("_open_quicklook_", comment: ""), image: UIImage(systemName: "eye")) { action in
                 NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadFileQuickLook)
             }
-            
             
             let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { action in
                 NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn)
@@ -1277,11 +1227,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             let delete = UIMenu(title: NSLocalizedString("_delete_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirm])
 
             if metadata.directory {
-                return UIMenu(title: "", children: [detail, moveCopy, delete])
+                return UIMenu(title: "", children: [copyPaste, detail, moveCopy, delete])
             } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
-                return UIMenu(title: "", children: [detail, save, openQuickLook, openIn, moveCopy, delete])
+                return UIMenu(title: "", children: [copyPaste, detail, save, openQuickLook, openIn, moveCopy, delete])
             } else {
-                return UIMenu(title: "", children: [detail, openQuickLook, openIn, moveCopy, delete])
+                return UIMenu(title: "", children: [copyPaste, detail, openQuickLook, openIn, moveCopy, delete])
             }
         })
     }
