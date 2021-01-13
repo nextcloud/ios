@@ -40,6 +40,7 @@ class NCViewerPeekPop: UIViewController  {
 
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
+        imageView.backgroundColor = .clear
                 
         if metadata.directory {
 
@@ -53,8 +54,8 @@ class NCViewerPeekPop: UIViewController  {
                 
                 if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
                     
-                    if let fullImage = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
-                        imageView.image = fullImage.resizeImage(size: CGSize(width: view.bounds.size.width, height: view.bounds.size.height), isAspectRation: true)
+                    if let image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
+                        imageView.image = image.resizeImage(size: CGSize(width: view.frame.size.width, height: view.frame.size.height), isAspectRation: true)
                     }
                     
                 } else {
@@ -64,16 +65,22 @@ class NCViewerPeekPop: UIViewController  {
                     let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
                     
                     NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCBrandGlobal.shared.sizePreview, heightPreview: NCBrandGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCBrandGlobal.shared.sizeIcon) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
-                        if errorCode == 0 && imagePreview != nil {
-                            self.imageView.image = imagePreview!.resizeImage(size: CGSize(width: self.view.bounds.size.width, height: self.view.bounds.size.height), isAspectRation: true)
-                            self.preferredContentSize = self.imageView.frame.size
+                        if errorCode == 0 {
+                            if let image = imagePreview {
+                                self.imageView.image = image.resizeImage(size: CGSize(width: self.view.frame.size.width, height: self.view.frame.size.height), isAspectRation: true)
+                                self.preferredContentSize = CGSize(width: image.size.width,  height: image.size.height-50) // -50 white line bottom
+                            }
                         }
                     }
                 }
             }
         }
         
-        preferredContentSize = imageView.frame.size
+        if let image = imageView.image {
+            preferredContentSize = CGSize(width: image.size.width,  height: image.size.height-50) // -50 white line bottom
+        }
+        
+        view.backgroundColor = .clear
     }
 
     required init?(coder: NSCoder) {
