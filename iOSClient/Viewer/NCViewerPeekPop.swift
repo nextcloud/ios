@@ -66,14 +66,14 @@ class NCViewerPeekPop: UIViewController  {
                     NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCBrandGlobal.shared.sizePreview, heightPreview: NCBrandGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCBrandGlobal.shared.sizeIcon) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
                         if errorCode == 0 && imagePreview != nil {
                             self.imageView.image = imagePreview!.resizeImage(size: CGSize(width: self.view.bounds.size.width, height: self.view.bounds.size.height), isAspectRation: true)
-                            self.preferredContentSize = CGSize(width: self.imageView.image?.size.width ?? 0,  height: self.imageView.image?.size.height ?? 0)
+                            self.preferredContentSize = self.imageView.frame.size
                         }
                     }
                 }
             }
         }
         
-        preferredContentSize = CGSize(width: imageView.image?.size.width ?? 0,  height: imageView.image?.size.height ?? 0)
+        preferredContentSize = imageView.frame.size
     }
 
     required init?(coder: NSCoder) {
