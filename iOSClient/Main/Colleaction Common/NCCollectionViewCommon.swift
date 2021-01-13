@@ -724,7 +724,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         becomeFirstResponder()
                 
-        listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu(_:))))
+        listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu)))
         
         if listMenuItems.count > 0 {
             UIMenuController.shared.menuItems = listMenuItems
@@ -737,7 +737,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         
-        if (#selector(pasteFilesMenu(_:)) == action) {
+        if (#selector(pasteFilesMenu) == action) {
             if UIPasteboard.general.items.count > 0 {
                 return true
             }
@@ -746,7 +746,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return false
     }
     
-    @objc func copyFileMenu(_ notification: Any) {
+    @objc func copyFileMenu() {
         var metadatas: [tableMetadata] = []
         var items = [[String : Any]]()
 
@@ -782,7 +782,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
     
-    @objc func pasteFilesMenu(_ notification: Any) {
+    @objc func pasteFilesMenu() {
         
         var listData: [String] = []
         
@@ -1188,12 +1188,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }, actionProvider: { suggestedActions in
             
             let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc") ) { action in
+                self.copyFileMenu()
             }
-            
-            let paste = UIAction(title: NSLocalizedString("_paste_file_", comment: ""), image: UIImage(systemName: "doc.on.clipboard") ) { action in
-            }
-                        
-            let copyPaste = UIMenu(title: NSLocalizedString("_copy_paste_", comment: ""), image: UIImage(systemName: "doc"), children: [copy, paste])
             
             let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info") ) { action in
                 NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
@@ -1227,11 +1223,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             let delete = UIMenu(title: NSLocalizedString("_delete_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirm])
 
             if metadata.directory {
-                return UIMenu(title: "", children: [copyPaste, detail, moveCopy, delete])
+                return UIMenu(title: "", children: [detail, moveCopy, delete])
             } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
-                return UIMenu(title: "", children: [copyPaste, detail, save, openQuickLook, openIn, moveCopy, delete])
+                return UIMenu(title: "", children: [copy, detail, save, openQuickLook, openIn, moveCopy, delete])
             } else {
-                return UIMenu(title: "", children: [copyPaste, detail, openQuickLook, openIn, moveCopy, delete])
+                return UIMenu(title: "", children: [copy, detail, openQuickLook, openIn, moveCopy, delete])
             }
         })
     }
