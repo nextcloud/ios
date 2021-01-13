@@ -44,12 +44,12 @@ class NCViewerPeekPop: UIViewController  {
         if metadata.directory {
 
             imageView.image = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: standardSizeWidth)
-            if let image = imageView.image { preferredContentSize = CGSize(width: image.size.width,  height: image.size.height) }
+            preferredContentSize = imageView.frame.size
 
         } else {
             
             imageView.image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: standardSizeWidth, height: standardSizeHeight), isAspectRation: true)
-            if let image = imageView.image { preferredContentSize = CGSize(width: image.size.width,  height: image.size.height) }
+            preferredContentSize = imageView.frame.size
         
             if metadata.hasPreview {
                 
