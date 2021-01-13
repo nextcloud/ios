@@ -27,6 +27,8 @@ import NCCommunication
 class NCViewerPeekPop: UIViewController  {
 
     private let imageView = UIImageView()
+    private let standardSizeWidth = UIScreen.main.bounds.width / 2
+    private let standardSizeHeight = UIScreen.main.bounds.height / 2
 
     override func loadView() {
         view = imageView
@@ -38,16 +40,14 @@ class NCViewerPeekPop: UIViewController  {
 
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
-        
+                
         if metadata.directory {
 
-            imageView.image = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width / 2)
-            preferredContentSize = CGSize(width: imageView.image?.size.width ?? 0,  height: imageView.image?.size.height ?? 0)
+            imageView.image = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: standardSizeWidth)
 
         } else {
             
-            imageView.image = UIImage.init(named: metadata.iconName)
-            preferredContentSize = CGSize(width: imageView.image?.size.width ?? 0,  height: imageView.image?.size.height ?? 0)
+            imageView.image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: standardSizeWidth, height: standardSizeHeight), isAspectRation: true)
         
             if metadata.hasPreview {
                 
@@ -55,7 +55,6 @@ class NCViewerPeekPop: UIViewController  {
                     
                     if let fullImage = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
                         imageView.image = fullImage.resizeImage(size: CGSize(width: view.bounds.size.width, height: view.bounds.size.height), isAspectRation: true)
-                        preferredContentSize = CGSize(width: imageView.image?.size.width ?? 0,  height: imageView.image?.size.height ?? 0)
                     }
                     
                 } else {
@@ -74,6 +73,7 @@ class NCViewerPeekPop: UIViewController  {
             }
         }
         
+        preferredContentSize = CGSize(width: imageView.image?.size.width ?? 0,  height: imageView.image?.size.height ?? 0)
     }
 
     required init?(coder: NSCoder) {

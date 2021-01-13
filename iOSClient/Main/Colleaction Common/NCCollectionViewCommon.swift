@@ -1275,7 +1275,13 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             let delete = UIMenu(title: NSLocalizedString("_delete_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteFile])
             
-            return UIMenu(title: "", children: [save, moveCopy, share, openIn, openQuickLook, delete])
+            if metadata.directory {
+                return UIMenu(title: "", children: [moveCopy, share, delete])
+            } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
+                return UIMenu(title: "", children: [save, moveCopy, share, openIn, openQuickLook, delete])
+            } else {
+                return UIMenu(title: "", children: [moveCopy, share, openIn, openQuickLook, delete])
+            }
         })
     }
 }
