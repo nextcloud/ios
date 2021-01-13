@@ -40,15 +40,16 @@ class NCViewerPeekPop: UIViewController  {
 
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = .clear
                 
         if metadata.directory {
 
             imageView.image = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: standardSizeWidth)
+            if let image = imageView.image { preferredContentSize = CGSize(width: image.size.width,  height: image.size.height) }
 
         } else {
             
             imageView.image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: standardSizeWidth, height: standardSizeHeight), isAspectRation: true)
+            if let image = imageView.image { preferredContentSize = CGSize(width: image.size.width,  height: image.size.height) }
         
             if metadata.hasPreview {
                 
@@ -56,6 +57,7 @@ class NCViewerPeekPop: UIViewController  {
                     
                     if let image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
                         imageView.image = image.resizeImage(size: CGSize(width: view.frame.size.width, height: view.frame.size.height), isAspectRation: true)
+                        if let image = imageView.image { preferredContentSize = CGSize(width: image.size.width,  height: image.size.height-50) } // -50 white line bottom
                     }
                     
                 } else {
@@ -75,12 +77,6 @@ class NCViewerPeekPop: UIViewController  {
                 }
             }
         }
-        
-        if let image = imageView.image {
-            preferredContentSize = CGSize(width: image.size.width,  height: image.size.height-50) // -50 white line bottom
-        }
-        
-        view.backgroundColor = .clear
     }
 
     required init?(coder: NSCoder) {
