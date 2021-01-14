@@ -1050,8 +1050,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
         metadataTouch = metadata
-        
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: {
+        let identifier = indexPath as NSCopying
+
+        return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             
             return NCViewerProviderContextMenu(metadata: metadata)
             
@@ -1118,6 +1119,16 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 return UIMenu(title: "", children: [copy, detail, openQuickLook, openIn, moveCopy, delete])
             }
         })
+    }
+    
+    @available(iOS 13.0, *)
+    func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        animator.addCompletion {
+
+            if let indexPath = configuration.identifier as? IndexPath {
+                self.collectionView(collectionView, didSelectItemAt: indexPath)
+            }
+        }
     }
 }
 

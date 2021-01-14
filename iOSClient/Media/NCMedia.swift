@@ -498,8 +498,9 @@ extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         
         let metadata = metadatas[indexPath.row]
+        let identifier = indexPath as NSCopying
 
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: {
+        return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             
             return NCViewerProviderContextMenu(metadata: metadata)
             
@@ -540,6 +541,16 @@ extension NCMedia: UICollectionViewDelegate {
                         
             return UIMenu(title: "", children: [save, openIn, moveCopy, delete])
         })
+    }
+    
+    @available(iOS 13.0, *)
+    func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        animator.addCompletion {
+
+            if let indexPath = configuration.identifier as? IndexPath {
+                self.collectionView(collectionView, didSelectItemAt: indexPath)
+            }
+        }
     }
 }
 
