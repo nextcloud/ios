@@ -49,30 +49,10 @@ class NCViewerProviderContextMenu: UIViewController  {
             
             imageView.image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: standardSizeWidth, height: standardSizeHeight), isAspectRation: true)
         
-            if metadata.hasPreview {
-                
-                if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-                    
-                    if let image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
-                        imageView.image = image.resizeImage(size: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height), isAspectRation: true)
-                    }
-                    
-                } else {
-                    
-                    let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
-                    let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-                    let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
-                    
-                    NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCBrandGlobal.shared.sizePreview, heightPreview: NCBrandGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCBrandGlobal.shared.sizeIcon) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
-                        if errorCode == 0 {
-                            if let image = imagePreview {
-                                self.imageView.image = image.resizeImage(size: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height), isAspectRation: true)
-                                if let size = self.imageView.image?.size {
-                                    self.preferredContentSize = size
-                                }
-                            }
-                        }
-                    }
+            if metadata.hasPreview && CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+                                    
+                if let image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
+                    imageView.image = image
                 }
             }
         }
