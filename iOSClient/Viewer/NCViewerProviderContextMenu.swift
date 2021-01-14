@@ -44,7 +44,8 @@ class NCViewerProviderContextMenu: UIViewController  {
                 
         if metadata.directory {
 
-            image = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width / 2)
+            imageView.image = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width / 2)
+            imageView.frame = CGRect(x: 0, y: 0, width: image?.size.width ?? 0, height: image?.size.height ?? 0)
 
         } else {
                             
@@ -65,7 +66,6 @@ class NCViewerProviderContextMenu: UIViewController  {
             imageView.image = image
             imageView.frame = CGRect(x: 0, y: 0, width: image?.size.width ?? 0, height: image?.size.height ?? 0)
 
-            
             // VIDEO
             if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
 
@@ -92,7 +92,7 @@ class NCViewerProviderContextMenu: UIViewController  {
                     imageView.frame = videoLayer.frame
                     imageView.layer.addSublayer(videoLayer)
                             
-                    player.isMuted = false
+                    player.isMuted = CCUtility.getAudioMute()
                     player.play()
                 }
             }
