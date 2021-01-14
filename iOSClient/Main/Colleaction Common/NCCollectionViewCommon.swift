@@ -1057,6 +1057,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
         }, actionProvider: { suggestedActions in
             
+            var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
+            if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
+            
             let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc") ) { action in
                 NCCollectionCommon.shared.copyFile(ocIds: [metadata.ocId])
             }
@@ -1081,8 +1084,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 NCCollectionCommon.shared.openSelectView(items: [metadata])
             }
             
-            let deleteConfirm = UIAction(title: NSLocalizedString("_delete_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { action in
-                
+            let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile, image: UIImage(systemName: "trash"), attributes: .destructive) { action in
                 NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
                     if errorCode != 0 {
                         NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
@@ -1090,8 +1092,17 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 }
             }
             
-            let delete = UIMenu(title: NSLocalizedString("_delete_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirm])
-
+            let deleteConfirmLocal = UIAction(title: NSLocalizedString("_delete_cache_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { action in
+                NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: true) { (errorCode, errorDescription) in
+                }
+            }
+            
+            var delete = UIMenu(title: NSLocalizedString("_delete_file_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirmLocal, deleteConfirmFile])
+            
+            if metadata.directory {
+                delete = UIMenu(title: NSLocalizedString("_delete_folder_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirmFile])
+            }
+            
             if metadata.directory {
                 return UIMenu(title: "", children: [detail, moveCopy, delete])
             } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
