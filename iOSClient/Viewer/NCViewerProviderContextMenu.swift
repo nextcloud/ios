@@ -52,7 +52,6 @@ class NCViewerProviderContextMenu: UIViewController  {
         
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterDownloadedFile), object: nil)
         
-                
         if metadata.directory {
 
             imageView.image = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width / 2)
@@ -60,38 +59,40 @@ class NCViewerProviderContextMenu: UIViewController  {
 
         } else {
                          
-            // ICON - IMAGE
+            // ICON
             if let image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: UIScreen.main.bounds.width / 2, height: UIScreen.main.bounds.height / 2), isAspectRation: true) {
                 
                 imageView.image = image
                 imageView.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
             }
             
-            // PREVIEW - IMAGE
+            // PREVIEW
             if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
                 
                 imageView.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag))
                 imageView.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
             }
              
-            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)
-            }
-            
-            // IMAGE - IMAGE
+            // VIEW IMAGE
             if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 
-                viewPhoto(metadata: metadata)
+                viewImage(metadata: metadata)
             }
 
-            // LIVE PHOTO
+            // VIEW LIVE PHOTO
             if metadataLivePhoto != nil && CCUtility.fileProviderStorageExists(metadataLivePhoto!.ocId, fileNameView: metadataLivePhoto!.fileNameView) {
-                playVideo(metadata: metadataLivePhoto!)
+                
+                viewVideo(metadata: metadataLivePhoto!)
             }
             
-            // VIDEO
+            // VIEW VIDEO
             if (metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) {
-                playVideo(metadata: metadata)
+                viewVideo(metadata: metadata)
+            }
+            
+            // AUTO DOWNLOAD
+            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)
             }
         }
     }
@@ -101,14 +102,21 @@ class NCViewerProviderContextMenu: UIViewController  {
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode == 0  && metadata.ocId == metadata.ocId {
-                    
+                if errorCode == 0 && metadata.ocId == self.metadata?.ocId {
+                    if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage {
+                        viewImage(metadata: metadata)
+                    } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
+                        viewVideo(metadata: metadata)
+                    }
+                }
+                if errorCode == 0 && metadata.ocId == self.metadataLivePhoto?.ocId {
+                    viewVideo(metadata: metadata)
                 }
             }
         }
     }
     
-    private func viewPhoto(metadata: tableMetadata) {
+    private func viewImage(metadata: tableMetadata) {
         
         var image: UIImage?
 
@@ -123,10 +131,11 @@ class NCViewerProviderContextMenu: UIViewController  {
         
         imageView.image = image
         imageView.frame = CGRect(x: 0, y: 0, width: image?.size.width ?? 0, height: image?.size.height ?? 0)
+        
         preferredContentSize = imageView.frame.size
     }
     
-    private func playVideo(metadata: tableMetadata) {
+    private func viewVideo(metadata: tableMetadata) {
         
         let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
 
