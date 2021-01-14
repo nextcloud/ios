@@ -31,18 +31,8 @@ class NCViewerProviderContextMenu: UIViewController  {
     private var metadata: tableMetadata?
     private var metadataLivePhoto: tableMetadata?
 
-    override func loadView() {
-        view = imageView
-        imageView.contentMode = .scaleAspectFit
-        preferredContentSize = imageView.frame.size
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        if let videoLayer = self.videoLayer {
-            videoLayer.frame = imageView.layer.bounds
-        }
-        preferredContentSize = imageView.frame.size
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     init(metadata: tableMetadata) {
@@ -101,6 +91,20 @@ class NCViewerProviderContextMenu: UIViewController  {
                 }
             }
         }
+    }
+    
+    override func loadView() {
+        view = imageView
+        imageView.contentMode = .scaleAspectFit
+        preferredContentSize = imageView.frame.size
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if let videoLayer = self.videoLayer {
+            videoLayer.frame = imageView.layer.bounds
+        }
+        preferredContentSize = imageView.frame.size
     }
     
     @objc func downloadedFile(_ notification: NSNotification) {
@@ -180,13 +184,5 @@ class NCViewerProviderContextMenu: UIViewController  {
         guard let track = AVURLAsset(url: url).tracks(withMediaType: AVMediaType.video).first else { return nil }
         let size = track.naturalSize.applying(track.preferredTransform)
         return CGSize(width: abs(size.width), height: abs(size.height))
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
     }
 }
