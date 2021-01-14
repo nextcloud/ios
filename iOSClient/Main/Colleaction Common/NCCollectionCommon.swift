@@ -210,16 +210,21 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
     
     // MARK: - Live Photo
     
-    func saveLivePhoto(metadata: tableMetadata, metadataMov: tableMetadata, progressView: UIProgressView?) {
+    func saveLivePhoto(metadata: tableMetadata, metadataMov: tableMetadata, progressView: UIProgressView?, viewActivity: UIView?) {
         
         let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
         let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
+        
+        if let view = viewActivity {
+            NCUtility.shared.startActivityIndicator(view: view)
+        }
         
         NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
             DispatchQueue.main.async {
                 progressView?.progress = Float(progress)
             }
         }, completion: { livePhoto, resources in
+            NCUtility.shared.stopActivityIndicator()
             progressView?.progress = 0
             if resources != nil {
                 NCLivePhoto.saveToLibrary(resources!) { (result) in

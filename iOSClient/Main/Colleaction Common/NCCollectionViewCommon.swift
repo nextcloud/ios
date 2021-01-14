@@ -1078,7 +1078,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         
                         save = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""), image: UIImage(systemName: "square.and.arrow.down")) { action in
                             
-                            NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMov: metadataLive, progressView: nil)
+                            NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMov: metadataLive, progressView: nil, viewActivity: self.view)
                         }
                     }
                 }

@@ -224,7 +224,7 @@ class NCViewerImage: UIViewController {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let ocIdMov = userInfo["ocIdMov"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let metadataMov = NCManageDatabase.shared.getMetadataFromOcId(ocIdMov) {
                 
-                NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMov: metadataMov, progressView: self.progressView)
+                NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMov: metadataMov, progressView: self.progressView, viewActivity: nil)
             }
         }
     }
