@@ -505,6 +505,9 @@ extension NCMedia: UICollectionViewDelegate {
             
         }, actionProvider: { suggestedActions in
             
+            var titleDelete = NSLocalizedString("_delete_photo_", comment: "")
+            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo { titleDelete = NSLocalizedString("_delete_video_", comment: "") }
+            
             let save = UIAction(title: NSLocalizedString("_save_selected_files_", comment: ""), image: UIImage(systemName: "square.and.arrow.down")) { action in
                 NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)
             }
@@ -517,7 +520,7 @@ extension NCMedia: UICollectionViewDelegate {
                 NCCollectionCommon.shared.openSelectView(items: [metadata])
             }
             
-            let deleteConfirm = UIAction(title: NSLocalizedString("_delete_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { action in
+            let deleteConfirm = UIAction(title: titleDelete, image: UIImage(systemName: "trash"), attributes: .destructive) { action in
                 
                 NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
                     if errorCode != 0 {
@@ -526,7 +529,7 @@ extension NCMedia: UICollectionViewDelegate {
                 }
             }
             
-            let delete = UIMenu(title: NSLocalizedString("_delete_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirm])
+            let delete = UIMenu(title: titleDelete, image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirm])
                         
             return UIMenu(title: "", children: [save, openIn, moveCopy, delete])
         })
