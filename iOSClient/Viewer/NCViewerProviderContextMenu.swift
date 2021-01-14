@@ -47,6 +47,7 @@ class NCViewerProviderContextMenu: UIViewController  {
 
             imageView.image = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width / 2)
             imageView.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
+            preferredContentSize = imageView.frame.size
 
         } else {
                          
@@ -55,6 +56,7 @@ class NCViewerProviderContextMenu: UIViewController  {
                 
                 imageView.image = image
                 imageView.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
+                preferredContentSize = imageView.frame.size
             }
             
             // PREVIEW
@@ -62,6 +64,7 @@ class NCViewerProviderContextMenu: UIViewController  {
                 
                 imageView.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag))
                 imageView.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
+                preferredContentSize = imageView.frame.size
             }
              
             // VIEW IMAGE
@@ -96,7 +99,6 @@ class NCViewerProviderContextMenu: UIViewController  {
     override func loadView() {
         view = imageView
         imageView.contentMode = .scaleAspectFit
-        preferredContentSize = imageView.frame.size
     }
     
     override func viewDidLayoutSubviews() {
@@ -104,7 +106,6 @@ class NCViewerProviderContextMenu: UIViewController  {
         if let videoLayer = self.videoLayer {
             videoLayer.frame = imageView.layer.bounds
         }
-        preferredContentSize = imageView.frame.size
     }
     
     @objc func downloadedFile(_ notification: NSNotification) {
@@ -168,7 +169,6 @@ class NCViewerProviderContextMenu: UIViewController  {
             self.videoLayer = AVPlayerLayer(player: player)
             if let videoLayer = self.videoLayer {
                 videoLayer.videoGravity = .resizeAspectFill
-                imageView.image = nil
                 imageView.frame = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
                 imageView.layer.addSublayer(videoLayer)
             }
