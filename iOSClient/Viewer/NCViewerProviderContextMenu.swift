@@ -95,6 +95,11 @@ class NCViewerProviderContextMenu: UIViewController  {
             if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)
             }
+            if let metadataLivePhoto = self.metadataLivePhoto {
+                if !CCUtility.fileProviderStorageExists(metadataLivePhoto.ocId, fileNameView: metadataLivePhoto.fileNameView) {
+                    NCOperationQueue.shared.download(metadata: metadataLivePhoto, selector: "", setFavorite: false)
+                }
+            }
         }
     }
     
