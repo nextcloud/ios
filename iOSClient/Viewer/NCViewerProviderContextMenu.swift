@@ -104,7 +104,11 @@ class NCViewerProviderContextMenu: UIViewController  {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if let videoLayer = self.videoLayer {
-            videoLayer.frame = imageView.layer.bounds
+            if videoLayer.frame.width == 0 && videoLayer.frame.height == 0 {
+                videoLayer.frame = imageView.frame
+            } else {
+                imageView.frame = videoLayer.frame
+            }
         }
     }
     
