@@ -110,6 +110,7 @@ class NCViewerProviderContextMenu: UIViewController  {
                     self.videoLayer = AVPlayerLayer(player: player)
                     if let videoLayer = self.videoLayer {
                         videoLayer.videoGravity = .resizeAspectFill
+                        imageView.image = nil
                         imageView.frame = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
                         imageView.layer.addSublayer(videoLayer)
                     }
