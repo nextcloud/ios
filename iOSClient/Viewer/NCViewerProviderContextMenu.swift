@@ -53,15 +53,17 @@ class NCViewerProviderContextMenu: UIViewController  {
             imageView.image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: standardSizeWidth, height: standardSizeHeight), isAspectRation: true)
         
             if metadata.hasPreview {
-                       
-                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                // PREVIEW
+                if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+                    imageView.image = UIImage.init(contentsOfFile: imagePathPreview)
+                }
+                // IMAGE
+                if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                     if ext == "GIF" {
                         imageView.image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
                     } else {
                         imageView.image = UIImage.init(contentsOfFile: imagePath)
                     }
-                } else if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-                    imageView.image = UIImage.init(contentsOfFile: imagePathPreview)
                 }
             }
         }
