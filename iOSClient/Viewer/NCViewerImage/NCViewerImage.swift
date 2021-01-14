@@ -758,9 +758,10 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         }
         
         // DOWNLOAD FILE LIVE PHOTO
-        let metadataLivePhoto = NCManageDatabase.shared.isLivePhoto(metadata: metadata)
-        if metadataLivePhoto != nil && CCUtility.getAutomaticDownloadImage() && !CCUtility.fileProviderStorageExists(metadataLivePhoto!.ocId, fileNameView: metadataLivePhoto!.fileNameView) {
-            NCOperationQueue.shared.download(metadata: metadataLivePhoto!, selector: "", setFavorite: false)
+        if let metadataLivePhoto = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
+            if CCUtility.getAutomaticDownloadImage() && !CCUtility.fileProviderStorageExists(metadataLivePhoto.ocId, fileNameView: metadataLivePhoto.fileNameView) {
+                NCOperationQueue.shared.download(metadata: metadataLivePhoto, selector: "", setFavorite: false)
+            }
         }
         
         // DOWNLOAD preview
