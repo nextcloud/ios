@@ -137,6 +137,8 @@ class NCViewerProviderContextMenu: UIViewController  {
         
         imageView.image = image
         imageView.frame = CGRect(x: 0, y: 0, width: image?.size.width ?? 0, height: image?.size.height ?? 0)
+        
+        preferredContentSize = imageView.frame.size
     }
     
     private func viewVideo(metadata: tableMetadata) {
@@ -169,6 +171,8 @@ class NCViewerProviderContextMenu: UIViewController  {
         
             player.isMuted = true
             player.play()
+            
+            preferredContentSize = imageView.frame.size
         }
     }
     
