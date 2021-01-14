@@ -27,10 +27,6 @@ import NCCommunication
 class NCViewerProviderContextMenu: UIViewController  {
 
     private let imageView = UIImageView()
-    private let standardSizeWidth = UIScreen.main.bounds.width / 2
-    private let standardSizeHeight = UIScreen.main.bounds.height / 2
-    private var player: AVPlayer?
-    private var videoLayer: AVPlayerLayer?
 
     override func loadView() {
         view = imageView
@@ -39,57 +35,76 @@ class NCViewerProviderContextMenu: UIViewController  {
     init(metadata: tableMetadata) {
         super.init(nibName: nil, bundle: nil)
         
+        var image: UIImage?
         let ext = CCUtility.getExtension(metadata.fileNameView)
         let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let imagePathPreview = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
 
-        imageView.clipsToBounds = true
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
                 
         if metadata.directory {
 
-            imageView.image = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: standardSizeWidth)
+            image = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width / 2)
 
         } else {
+                            
+            // PREVIEW
+            if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+                image = UIImage.init(contentsOfFile: imagePathPreview)
+            }
+                
+            // IMAGE
+            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                if ext == "GIF" {
+                    image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
+                } else {
+                    image = UIImage.init(contentsOfFile: imagePath)
+                }
+            }
             
-            imageView.image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: standardSizeWidth, height: standardSizeHeight), isAspectRation: true)
-        
-            if metadata.hasPreview {
-                
-                // PREVIEW
-                if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-                    imageView.image = UIImage.init(contentsOfFile: imagePathPreview)
-                }
-                
-                // IMAGE
-                if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                    if ext == "GIF" {
-                        imageView.image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
-                    } else {
-                        imageView.image = UIImage.init(contentsOfFile: imagePath)
-                    }
-                }
-                
-                // VIDEO
-                if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            imageView.image = image
+            imageView.frame = CGRect(x: 0, y: 0, width: image?.size.width ?? 0, height: image?.size.height ?? 0)
 
-                    player = AVPlayer(url: URL(fileURLWithPath: imagePath))
-                    player?.isMuted = false
-                    videoLayer = AVPlayerLayer(player: player)
-                        
-                    videoLayer!.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
-                    videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
-                                       
-                    imageView.layer.addSublayer(videoLayer!)
-                        
-                    player?.play()
+            
+            // VIDEO
+            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+
+                if let resolutionVideo = resolutionForLocalVideo(url: URL(fileURLWithPath: imagePath)) {
+                                        
+                    let originRatio = resolutionVideo.width / resolutionVideo.height
+                    let newRatio = UIScreen.main.bounds.width / UIScreen.main.bounds.height
+                    var newSize = CGSize.zero
+                    
+                    if originRatio < newRatio {
+                        newSize.height = UIScreen.main.bounds.height
+                        newSize.width = UIScreen.main.bounds.height * originRatio
+                    } else {
+                        newSize.width = UIScreen.main.bounds.width
+                        newSize.height = UIScreen.main.bounds.width / originRatio
+                    }
+                    
+                    let player = AVPlayer(url: URL(fileURLWithPath: imagePath))
+                    let videoLayer = AVPlayerLayer(player: player)
+                    
+                    videoLayer.frame = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
+                    videoLayer.videoGravity = AVLayerVideoGravity.resizeAspect
+                         
+                    imageView.frame = videoLayer.frame
+                    imageView.layer.addSublayer(videoLayer)
+                            
+                    player.isMuted = false
+                    player.play()
                 }
             }
         }
         
-        if let size = imageView.image?.size {
-            preferredContentSize = size
-        }
+        preferredContentSize = imageView.frame.size
+    }
+    
+    private func resolutionForLocalVideo(url: URL) -> CGSize? {
+        guard let track = AVURLAsset(url: url).tracks(withMediaType: AVMediaType.video).first else { return nil }
+        let size = track.naturalSize.applying(track.preferredTransform)
+        return CGSize(width: abs(size.width), height: abs(size.height))
     }
     
     required init?(coder: NSCoder) {
