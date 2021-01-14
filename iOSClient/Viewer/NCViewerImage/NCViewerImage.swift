@@ -224,25 +224,7 @@ class NCViewerImage: UIViewController {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let ocIdMov = userInfo["ocIdMov"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let metadataMov = NCManageDatabase.shared.getMetadataFromOcId(ocIdMov) {
                 
-                let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
-                let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
-                
-                NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
-                    DispatchQueue.main.async {
-                        self.progressView.progress = Float(progress)
-                    }
-                }, completion: { livePhoto, resources in
-                    self.progressView.progress = 0
-                    if resources != nil {
-                        NCLivePhoto.saveToLibrary(resources!) { (result) in
-                            if !result {
-                                NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError)
-                            }
-                        }
-                    } else {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError)
-                    }
-                })
+                NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMov: metadataMov, progressView: self.progressView)
             }
         }
     }

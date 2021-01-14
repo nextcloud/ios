@@ -1068,8 +1068,20 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
             }
             
-            let save = UIAction(title: NSLocalizedString("_save_selected_files_", comment: ""), image: UIImage(systemName: "square.and.arrow.down")) { action in
+            var save = UIAction(title: NSLocalizedString("_save_selected_files_", comment: ""), image: UIImage(systemName: "square.and.arrow.down")) { action in
                 NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)
+            }
+            
+            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio {
+                if let metadataLive = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
+                    if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataLive.ocId, fileNameView: metadataLive.fileNameView) {
+                        
+                        save = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""), image: UIImage(systemName: "square.and.arrow.down")) { action in
+                            
+                            NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMov: metadataLive, progressView: nil)
+                        }
+                    }
+                }
             }
             
             let openQuickLook = UIAction(title: NSLocalizedString("_open_quicklook_", comment: ""), image: UIImage(systemName: "eye")) { action in

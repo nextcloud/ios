@@ -208,6 +208,31 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
     
+    // MARK: - Live Photo
+    
+    func saveLivePhoto(metadata: tableMetadata, metadataMov: tableMetadata, progressView: UIProgressView?) {
+        
+        let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
+        let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
+        
+        NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
+            DispatchQueue.main.async {
+                progressView?.progress = Float(progress)
+            }
+        }, completion: { livePhoto, resources in
+            progressView?.progress = 0
+            if resources != nil {
+                NCLivePhoto.saveToLibrary(resources!) { (result) in
+                    if !result {
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError)
+                    }
+                }
+            } else {
+                NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError)
+            }
+        })
+    }
+    
     // MARK: - Copy & Paste
 
     func copyFile(ocIds: [String]) {
