@@ -508,15 +508,17 @@ extension NCMedia: UICollectionViewDelegate {
             
             var titleDelete = NSLocalizedString("_delete_photo_", comment: "")
             if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo { titleDelete = NSLocalizedString("_delete_video_", comment: "") }
-            
-            var save = UIAction(title: NSLocalizedString("_save_selected_files_", comment: ""), image: UIImage(systemName: "square.and.arrow.down")) { action in
-                NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)
+            var discoverabilityTitleSave: String?
+            let metadataMov = NCManageDatabase.shared.isLivePhoto(metadata: metadata)
+            if metadataMov != nil {
+                discoverabilityTitleSave = NSLocalizedString("_livephoto_save_disco_", comment: "")
             }
             
-            if let metadataMov = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
-                save = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""), image: UIImage(systemName: "square.and.arrow.down")) { action in
-                        
-                    NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMov: metadataMov, progressView: nil, viewActivity: self.view)
+            let save = UIAction(title: NSLocalizedString("_save_selected_files_", comment: ""), image: UIImage(systemName: "square.and.arrow.down"), discoverabilityTitle: discoverabilityTitleSave) { action in
+                if metadataMov != nil  {
+                    NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMov: metadataMov!, progressView: nil, viewActivity: self.view)
+                } else {
+                    NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)
                 }
             }
             
