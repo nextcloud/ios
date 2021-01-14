@@ -756,7 +756,13 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         if ((metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)
         }
-            
+        
+        // DOWNLOAD FILE LIVE PHOTO
+        let metadataLivePhoto = NCManageDatabase.shared.isLivePhoto(metadata: metadata)
+        if metadataLivePhoto != nil && CCUtility.getAutomaticDownloadImage() && !CCUtility.fileProviderStorageExists(metadataLivePhoto!.ocId, fileNameView: metadataLivePhoto!.fileNameView) {
+            NCOperationQueue.shared.download(metadata: metadataLivePhoto!, selector: "", setFavorite: false)
+        }
+        
         // DOWNLOAD preview
         if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) && metadata.hasPreview {
             
