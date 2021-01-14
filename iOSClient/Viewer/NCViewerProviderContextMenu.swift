@@ -29,6 +29,8 @@ class NCViewerProviderContextMenu: UIViewController  {
     private let imageView = UIImageView()
     private let standardSizeWidth = UIScreen.main.bounds.width / 2
     private let standardSizeHeight = UIScreen.main.bounds.height / 2
+    private var player: AVPlayer?
+    private var videoLayer: AVPlayerLayer?
 
     override func loadView() {
         view = imageView
@@ -36,7 +38,7 @@ class NCViewerProviderContextMenu: UIViewController  {
     
     init(metadata: tableMetadata) {
         super.init(nibName: nil, bundle: nil)
-
+        
         let ext = CCUtility.getExtension(metadata.fileNameView)
         let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let imagePathPreview = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
@@ -53,10 +55,12 @@ class NCViewerProviderContextMenu: UIViewController  {
             imageView.image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: standardSizeWidth, height: standardSizeHeight), isAspectRation: true)
         
             if metadata.hasPreview {
+                
                 // PREVIEW
                 if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
                     imageView.image = UIImage.init(contentsOfFile: imagePathPreview)
                 }
+                
                 // IMAGE
                 if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                     if ext == "GIF" {
@@ -64,6 +68,21 @@ class NCViewerProviderContextMenu: UIViewController  {
                     } else {
                         imageView.image = UIImage.init(contentsOfFile: imagePath)
                     }
+                }
+                
+                // VIDEO
+                if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+
+                    player = AVPlayer(url: URL(fileURLWithPath: imagePath))
+                    player?.isMuted = false
+                    videoLayer = AVPlayerLayer(player: player)
+                        
+                    videoLayer!.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
+                    videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
+                                       
+                    imageView.layer.addSublayer(videoLayer!)
+                        
+                    player?.play()
                 }
             }
         }
@@ -79,6 +98,5 @@ class NCViewerProviderContextMenu: UIViewController  {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
 }
