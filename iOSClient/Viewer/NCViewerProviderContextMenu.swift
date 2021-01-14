@@ -35,45 +35,59 @@ class NCViewerProviderContextMenu: UIViewController  {
     init(metadata: tableMetadata) {
         super.init(nibName: nil, bundle: nil)
         
+        var metadata = metadata
         var image: UIImage?
         let ext = CCUtility.getExtension(metadata.fileNameView)
-        let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-        let imagePathPreview = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+        var filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
 
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
                 
         if metadata.directory {
 
-            imageView.image = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width / 2)
+            image = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width / 2)
+            
+            imageView.image = image
             imageView.frame = CGRect(x: 0, y: 0, width: image?.size.width ?? 0, height: image?.size.height ?? 0)
 
         } else {
-                            
-            // PREVIEW
+                         
+            // ICON - IMAGE
+            image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: UIScreen.main.bounds.width / 2, height: UIScreen.main.bounds.height / 2), isAspectRation: true)
+            
+            // PREVIEW - IMAGE
             if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-                image = UIImage.init(contentsOfFile: imagePathPreview)
+                image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag))
             }
                 
-            // IMAGE
+            // IMAGE - IMAGE
             if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 if ext == "GIF" {
-                    image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
+                    image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: filePath))
                 } else {
-                    image = UIImage.init(contentsOfFile: imagePath)
+                    image = UIImage.init(contentsOfFile: filePath)
                 }
             }
             
             imageView.image = image
             imageView.frame = CGRect(x: 0, y: 0, width: image?.size.width ?? 0, height: image?.size.height ?? 0)
 
+            // LIVE PHOTO
+            let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
+            if let metadataLivePhoto = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)) {
+                if CCUtility.fileProviderStorageExists(metadataLivePhoto.ocId, fileNameView: metadataLivePhoto.fileNameView) {
+                    metadata = metadataLivePhoto
+                    filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                }
+            }
+            
             // VIDEO
-            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            if (metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) {
 
-                if let resolutionVideo = resolutionForLocalVideo(url: URL(fileURLWithPath: imagePath)) {
+                if let resolutionVideo = resolutionForLocalVideo(url: URL(fileURLWithPath: filePath)) {
                                         
                     let originRatio = resolutionVideo.width / resolutionVideo.height
                     let newRatio = UIScreen.main.bounds.width / UIScreen.main.bounds.height
-                    var newSize = CGSize.zero
+                    var newSize = resolutionVideo
                     
                     if originRatio < newRatio {
                         newSize.height = UIScreen.main.bounds.height
@@ -83,16 +97,16 @@ class NCViewerProviderContextMenu: UIViewController  {
                         newSize.height = UIScreen.main.bounds.width / originRatio
                     }
                     
-                    let player = AVPlayer(url: URL(fileURLWithPath: imagePath))
+                    let player = AVPlayer(url: URL(fileURLWithPath: filePath))
                     let videoLayer = AVPlayerLayer(player: player)
                     
                     videoLayer.frame = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
-                    videoLayer.videoGravity = AVLayerVideoGravity.resizeAspect
-                         
-                    imageView.frame = videoLayer.frame
+                    videoLayer.videoGravity = AVLayerVideoGravity.resize
+                    
+                    imageView.frame = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
                     imageView.layer.addSublayer(videoLayer)
                             
-                    player.isMuted = CCUtility.getAudioMute()
+                    player.isMuted = true
                     player.play()
                 }
             }
