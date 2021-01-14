@@ -27,9 +27,17 @@ import NCCommunication
 class NCViewerProviderContextMenu: UIViewController  {
 
     private let imageView = UIImageView()
+    private var videoLayer: AVPlayerLayer?
 
     override func loadView() {
         view = imageView
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if let videoLayer = self.videoLayer {
+            videoLayer.frame = imageView.layer.bounds
+        }
     }
     
     init(metadata: tableMetadata) {
@@ -98,14 +106,14 @@ class NCViewerProviderContextMenu: UIViewController  {
                     }
                     
                     let player = AVPlayer(url: URL(fileURLWithPath: filePath))
-                    let videoLayer = AVPlayerLayer(player: player)
                     
-                    videoLayer.frame = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
-                    videoLayer.videoGravity = AVLayerVideoGravity.resize
-                    
-                    imageView.frame = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
-                    imageView.layer.addSublayer(videoLayer)
-                            
+                    self.videoLayer = AVPlayerLayer(player: player)
+                    if let videoLayer = self.videoLayer {
+                        videoLayer.videoGravity = .resizeAspectFill
+                        imageView.frame = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
+                        imageView.layer.addSublayer(videoLayer)
+                    }
+                
                     player.isMuted = true
                     player.play()
                 }
