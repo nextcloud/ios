@@ -515,7 +515,8 @@ extension NCMedia: UICollectionViewDelegate {
             }
             
             let save = UIAction(title: NSLocalizedString("_save_selected_files_", comment: ""), image: UIImage(systemName: "square.and.arrow.down"), discoverabilityTitle: discoverabilityTitleSave) { action in
-                if metadataMov != nil  {
+                
+                if metadataMov != nil && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMov!.ocId, fileNameView: metadataMov!.fileNameView)  {
                     NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMov: metadataMov!, progressView: nil, viewActivity: self.view)
                 } else {
                     NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)

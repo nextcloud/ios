@@ -1060,6 +1060,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
             if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
+            var discoverabilityTitleSave: String?
+            let metadataMov = NCManageDatabase.shared.isLivePhoto(metadata: metadata)
+            if metadataMov != nil {
+                discoverabilityTitleSave = NSLocalizedString("_livephoto_save_disco_", comment: "")
+            }
             
             let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc") ) { action in
                 NCCollectionCommon.shared.copyFile(ocIds: [metadata.ocId])
@@ -1069,14 +1074,12 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
             }
             
-            var save = UIAction(title: NSLocalizedString("_save_selected_files_", comment: ""), image: UIImage(systemName: "square.and.arrow.down")) { action in
-                NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)
-            }
-            
-            if let metadataMov = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
-                save = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""), image: UIImage(systemName: "square.and.arrow.down")) { action in
-                        
-                    NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMov: metadataMov, progressView: nil, viewActivity: self.view)
+            let save = UIAction(title: NSLocalizedString("_save_selected_files_", comment: ""), image: UIImage(systemName: "square.and.arrow.down"), discoverabilityTitle: discoverabilityTitleSave) { action in
+                
+                if metadataMov != nil && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMov!.ocId, fileNameView: metadataMov!.fileNameView)  {
+                    NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMov: metadataMov!, progressView: nil, viewActivity: self.view)
+                } else {
+                    NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)
                 }
             }
             
