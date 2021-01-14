@@ -35,8 +35,11 @@ class NCViewerProviderContextMenu: UIViewController  {
     }
     
     init(metadata: tableMetadata) {
-        
         super.init(nibName: nil, bundle: nil)
+
+        let ext = CCUtility.getExtension(metadata.fileNameView)
+        let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let imagePathPreview = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
 
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
@@ -49,10 +52,16 @@ class NCViewerProviderContextMenu: UIViewController  {
             
             imageView.image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: standardSizeWidth, height: standardSizeHeight), isAspectRation: true)
         
-            if metadata.hasPreview && CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-                                    
-                if let image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
-                    imageView.image = image
+            if metadata.hasPreview {
+                       
+                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                    if ext == "GIF" {
+                        imageView.image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
+                    } else {
+                        imageView.image = UIImage.init(contentsOfFile: imagePath)
+                    }
+                } else if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+                    imageView.image = UIImage.init(contentsOfFile: imagePathPreview)
                 }
             }
         }
