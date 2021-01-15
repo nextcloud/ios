@@ -241,7 +241,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
     // MARK: - Context Menu COnfiguration
     
     @available(iOS 13.0, *)
-    func contextMenuConfiguration(metadata: tableMetadata, viewController: UIViewController) -> UIMenu {
+    func contextMenuConfiguration(metadata: tableMetadata, viewController: UIViewController, deleteLocal: Bool) -> UIMenu {
         
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
@@ -305,12 +305,17 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             }
         }
         
-        let deleteConfirmLocal = UIAction(title: NSLocalizedString("_delete_cache_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { action in
+        let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { action in
             NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: true) { (errorCode, errorDescription) in
             }
         }
         
+        
         var delete = UIMenu(title: NSLocalizedString("_delete_file_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirmLocal, deleteConfirmFile])
+        
+        if !deleteLocal {
+            delete = UIMenu(title: NSLocalizedString("_delete_file_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirmFile])
+        }
         
         if metadata.directory {
             delete = UIMenu(title: NSLocalizedString("_delete_folder_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirmFile])

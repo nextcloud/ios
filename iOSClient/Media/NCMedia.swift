@@ -506,7 +506,7 @@ extension NCMedia: UICollectionViewDelegate {
             
         }, actionProvider: { suggestedActions in
             
-            return NCCollectionCommon.shared.contextMenuConfiguration(metadata: metadata, viewController: self)
+            return NCCollectionCommon.shared.contextMenuConfiguration(metadata: metadata, viewController: self, deleteLocal: false)
         })
     }
     
