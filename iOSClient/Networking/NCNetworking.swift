@@ -43,6 +43,7 @@ import Queuer
     var delegate: NCNetworkingDelegate?
     
     var lastReachability: Bool = true
+    var networkReachability: NCCommunicationCommon.typeReachability?
     var downloadRequest: [String: DownloadRequest] = [:]
     var uploadRequest: [String: UploadRequest] = [:]
     var uploadMetadataInBackground: [String: tableMetadata] = [:]
@@ -120,6 +121,8 @@ import Queuer
             }
             lastReachability = false
         }
+        
+        networkReachability = typeReachability
         
         #endif
     }

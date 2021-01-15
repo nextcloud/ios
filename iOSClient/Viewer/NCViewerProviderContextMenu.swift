@@ -86,7 +86,18 @@ class NCViewerProviderContextMenu: UIViewController  {
             
             // AUTO DOWNLOAD
             if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)
+                
+                var maxDownload: UInt64 = 0
+                
+                if NCNetworking.shared.networkReachability == NCCommunicationCommon.typeReachability.reachableCellular {
+                    maxDownload = NCBrandGlobal.shared.maxAutoDownloadCellular
+                } else {
+                    maxDownload = NCBrandGlobal.shared.maxAutoDownload
+                }
+                
+                if metadata.size <= maxDownload {
+                    NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)
+                }
             }
             if let metadataLivePhoto = self.metadataLivePhoto {
                 if !CCUtility.fileProviderStorageExists(metadataLivePhoto.ocId, fileNameView: metadataLivePhoto.fileNameView) {

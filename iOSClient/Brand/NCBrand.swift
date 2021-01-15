@@ -303,6 +303,10 @@ class NCBrandColor: NSObject {
     let indexPageComments: Int                      = 1
     let indexPageSharing: Int                       = 2
     
+    // NCViewerProviderContextMenu
+    let maxAutoDownload: UInt64                     = 104857600 // 100MB
+    let maxAutoDownloadCellular: UInt64             = 10485760  // 10MB
+
     // Nextcloud unsupported
     let nextcloud_unsupported_version: Int          = 13
     
