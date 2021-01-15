@@ -238,6 +238,93 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         })
     }
     
+    // MARK: - Context Menu COnfiguration
+    
+    @available(iOS 13.0, *)
+    func contextMenuConfiguration(metadata: tableMetadata, viewController: UIViewController) -> UIMenu {
+        
+        var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
+        if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
+        var discoverabilityTitleSave: String?
+        let metadataMOV = NCManageDatabase.shared.isLivePhoto(metadata: metadata)
+        if metadataMOV != nil {
+            discoverabilityTitleSave = NSLocalizedString("_livephoto_save_", comment: "")
+        }
+        
+        let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc") ) { action in
+            if metadataMOV != nil {
+                NCCollectionCommon.shared.copyFile(ocIds: [metadata.ocId, metadataMOV!.ocId])
+            } else {
+                NCCollectionCommon.shared.copyFile(ocIds: [metadata.ocId])
+            }
+        }
+        
+        let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info") ) { action in
+            NCNetworkingNotificationCenter.shared.openShare(ViewController: viewController, metadata: metadata, indexPage: 0)
+        }
+        
+        let save = UIAction(title: NSLocalizedString("_save_selected_files_", comment: ""), image: UIImage(systemName: "square.and.arrow.down"), discoverabilityTitle: discoverabilityTitleSave) { action in
+            if metadataMOV != nil {
+                
+                if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                    NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbumLivePhotoIMG, setFavorite: false)
+                }
+                
+                if !CCUtility.fileProviderStorageExists(metadataMOV!.ocId, fileNameView: metadataMOV!.fileNameView) {
+                    NCOperationQueue.shared.download(metadata: metadataMOV!, selector: NCBrandGlobal.shared.selectorSaveAlbumLivePhotoMOV, setFavorite: false)
+                }
+                
+                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMOV!.ocId, fileNameView: metadataMOV!.fileNameView) {
+                    NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMov: metadataMOV!, progressView: nil, viewActivity: self.appDelegate.window.rootViewController?.view)
+                }
+                
+            } else {
+                NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)
+            }
+        }
+        
+        let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { action in
+            NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn)
+        }
+        
+        let openQuickLook = UIAction(title: NSLocalizedString("_open_quicklook_", comment: ""), image: UIImage(systemName: "eye")) { action in
+            NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadFileQuickLook)
+        }
+        
+        let open = UIMenu(title: NSLocalizedString("_open_", comment: ""), image: UIImage(systemName: "arrow.up.square"), children: [openIn, openQuickLook])
+        
+        let moveCopy = UIAction(title: NSLocalizedString("_move_or_copy_", comment: ""), image: UIImage(systemName: "arrow.up.right.square")) { action in
+            NCCollectionCommon.shared.openSelectView(items: [metadata])
+        }
+        
+        let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile, image: UIImage(systemName: "trash"), attributes: .destructive) { action in
+            NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
+                if errorCode != 0 {
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                }
+            }
+        }
+        
+        let deleteConfirmLocal = UIAction(title: NSLocalizedString("_delete_cache_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { action in
+            NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: true) { (errorCode, errorDescription) in
+            }
+        }
+        
+        var delete = UIMenu(title: NSLocalizedString("_delete_file_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirmLocal, deleteConfirmFile])
+        
+        if metadata.directory {
+            delete = UIMenu(title: NSLocalizedString("_delete_folder_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirmFile])
+        }
+        
+        if metadata.directory {
+            return UIMenu(title: "", children: [detail, moveCopy, delete])
+        } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
+            return UIMenu(title: "", children: [copy, detail, save, open, moveCopy, delete])
+        } else {
+            return UIMenu(title: "", children: [copy, detail, open, moveCopy, delete])
+        }
+    }
+    
     // MARK: - Copy & Paste
 
     func copyFile(ocIds: [String]) {

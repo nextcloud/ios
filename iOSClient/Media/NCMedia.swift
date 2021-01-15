@@ -506,54 +506,7 @@ extension NCMedia: UICollectionViewDelegate {
             
         }, actionProvider: { suggestedActions in
             
-            var titleDelete = NSLocalizedString("_delete_photo_", comment: "")
-            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo { titleDelete = NSLocalizedString("_delete_video_", comment: "") }
-            var discoverabilityTitleSave: String?
-            let metadataMOV = NCManageDatabase.shared.isLivePhoto(metadata: metadata)
-            if metadataMOV != nil {
-                discoverabilityTitleSave = NSLocalizedString("_livephoto_save_", comment: "")
-            }
-            
-            let save = UIAction(title: NSLocalizedString("_save_selected_files_", comment: ""), image: UIImage(systemName: "square.and.arrow.down"), discoverabilityTitle: discoverabilityTitleSave) { action in
-                if metadataMOV != nil {
-                    
-                    if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                        NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbumLivePhotoIMG, setFavorite: false)
-                    }
-                    
-                    if !CCUtility.fileProviderStorageExists(metadataMOV!.ocId, fileNameView: metadataMOV!.fileNameView) {
-                        NCOperationQueue.shared.download(metadata: metadataMOV!, selector: NCBrandGlobal.shared.selectorSaveAlbumLivePhotoMOV, setFavorite: false)
-                    }
-                    
-                    if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMOV!.ocId, fileNameView: metadataMOV!.fileNameView) {
-                        NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMov: metadataMOV!, progressView: nil, viewActivity: self.appDelegate.window.rootViewController?.view)
-                    }
-                    
-                } else {
-                    NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)
-                }
-            }
-            
-            let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { action in
-                NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn)
-            }
-            
-            let moveCopy = UIAction(title: NSLocalizedString("_move_or_copy_", comment: ""), image: UIImage(systemName: "arrow.up.right.square")) { action in
-                NCCollectionCommon.shared.openSelectView(items: [metadata])
-            }
-            
-            let deleteConfirm = UIAction(title: titleDelete, image: UIImage(systemName: "trash"), attributes: .destructive) { action in
-                
-                NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
-                    if errorCode != 0 {
-                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                    }
-                }
-            }
-            
-            let delete = UIMenu(title: titleDelete, image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirm])
-                        
-            return UIMenu(title: "", children: [save, openIn, moveCopy, delete])
+            return NCCollectionCommon.shared.contextMenuConfiguration(metadata: metadata, viewController: self)
         })
     }
     
