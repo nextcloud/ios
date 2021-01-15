@@ -245,10 +245,10 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
-        var discoverabilityTitleSave: String?
+        var titleSave: String = NSLocalizedString("_save_selected_files_", comment: "")
         let metadataMOV = NCManageDatabase.shared.isLivePhoto(metadata: metadata)
         if metadataMOV != nil {
-            discoverabilityTitleSave = NSLocalizedString("_livephoto_save_", comment: "")
+            titleSave = NSLocalizedString("_livephoto_save_", comment: "")
         }
         
         let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc") ) { action in
@@ -263,7 +263,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             NCNetworkingNotificationCenter.shared.openShare(ViewController: viewController, metadata: metadata, indexPage: 0)
         }
         
-        let save = UIAction(title: NSLocalizedString("_save_selected_files_", comment: ""), image: UIImage(systemName: "square.and.arrow.down"), discoverabilityTitle: discoverabilityTitleSave) { action in
+        let save = UIAction(title: titleSave, image: UIImage(systemName: "square.and.arrow.down")) { action in
             if metadataMOV != nil {
                 
                 if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
