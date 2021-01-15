@@ -172,15 +172,12 @@ class NCService: NSObject {
                         NCCommunication.shared.readShares { (account, shares, errorCode, ErrorDescription) in
                             if errorCode == 0 {
                                 
-                                DispatchQueue.global().async {
-                                    
-                                    NCManageDatabase.shared.deleteTableShare(account: account)
-                                    if shares != nil {
-                                        NCManageDatabase.shared.addShare(urlBase: self.appDelegate.urlBase, account: account, shares: shares!)
-                                    }
-                                    self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: account)
+                                NCManageDatabase.shared.deleteTableShare(account: account)
+                                if shares != nil {
+                                    NCManageDatabase.shared.addShare(urlBase: self.appDelegate.urlBase, account: account, shares: shares!)
                                 }
-                                
+                                self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: account)
+                               
                             } else {
                                 NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                             }

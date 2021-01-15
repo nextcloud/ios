@@ -1710,7 +1710,7 @@ class NCManageDatabase: NSObject {
         
         // E2EE find the fileName for fileNameView
         if isEncrypted || metadata.e2eEncrypted {
-            if let tableE2eEncryption = getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, file.serverUrl, file.fileName)) {
+            if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
                 let results = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: file.contentType, directory: file.directory)
                 metadata.contentType = results.contentType
@@ -1721,9 +1721,7 @@ class NCManageDatabase: NSObject {
         
         // Live Photo "DETECT"
         if !metadata.directory && !metadata.livePhoto && (metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage) {
-            if isLivePhoto(metadata: metadata) != nil {
-                metadata.livePhoto = true
-            }
+            metadata.livePhoto = NCManageDatabase.shared.isLivePhoto(metadata: metadata)
         }
         
         return metadata
@@ -2338,6 +2336,22 @@ class NCManageDatabase: NSObject {
         }
         
         return tableMetadata.init(value: result)
+    }
+   
+    @objc func isLivePhoto(metadata: tableMetadata) -> Bool {
+           
+        let realm = try! Realm()
+        realm.refresh()
+        
+        if !CCUtility.getLivePhoto() {
+            return false
+        }
+        
+        if realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId)).first == nil {
+            return false
+        }
+        
+        return true
     }
     
     func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending: Bool = false) -> [tableMetadata] {
