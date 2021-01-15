@@ -728,7 +728,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         }
         
         // DOWNLOAD FILE LIVE PHOTO
-        if let metadataLivePhoto = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
+        if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             if CCUtility.getAutomaticDownloadImage() && !CCUtility.fileProviderStorageExists(metadataLivePhoto.ocId, fileNameView: metadataLivePhoto.fileNameView) {
                 NCOperationQueue.shared.download(metadata: metadataLivePhoto, selector: "", setFavorite: false)
             }

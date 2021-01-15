@@ -1710,12 +1710,19 @@ class NCManageDatabase: NSObject {
         
         // E2EE find the fileName for fileNameView
         if isEncrypted || metadata.e2eEncrypted {
-            if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, file.serverUrl, file.fileName)) {
+            if let tableE2eEncryption = getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
                 let results = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: file.contentType, directory: file.directory)
                 metadata.contentType = results.contentType
                 metadata.iconName = results.iconName
                 metadata.typeFile = results.typeFile
+            }
+        }
+        
+        // Live Photo "DETECT"
+        if !metadata.directory && !metadata.livePhoto && (metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage) {
+            if isLivePhoto(metadata: metadata) != nil {
+                metadata.livePhoto = true
             }
         }
         
@@ -2317,7 +2324,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func isLivePhoto(metadata: tableMetadata) -> tableMetadata? {
+    @objc func getMetadataLivePhoto(metadata: tableMetadata) -> tableMetadata? {
            
         let realm = try! Realm()
         realm.refresh()

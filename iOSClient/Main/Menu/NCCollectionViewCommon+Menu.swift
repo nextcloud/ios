@@ -223,7 +223,7 @@ extension NCCollectionViewCommon {
                                 NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorDownloadAllFile)
                             } else {
                                 NCNetworking.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadOffline) { (_) in }
-                                if let metadataLivePhoto = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
+                                if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                                     NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCBrandGlobal.shared.selectorLoadOffline) { (_) in }
                                 }
                             }
@@ -366,7 +366,7 @@ extension NCCollectionViewCommon {
                         for ocId in selectOcId {
                             copyOcIds.append(ocId)
                             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                if let metadataMOV = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
+                                if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                                     copyOcIds.append(metadataMOV.ocId)
                                 }
                             }
@@ -411,7 +411,7 @@ extension NCCollectionViewCommon {
                     for ocId in selectOcId {
                         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                             if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
-                                if let metadataMOV = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
+                                if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                                     
                                     if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                                         NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbumLivePhotoIMG, setFavorite: false)

@@ -42,7 +42,7 @@ class NCViewerProviderContextMenu: UIViewController  {
         super.init(nibName: nil, bundle: nil)
         
         self.metadata = metadata
-        self.metadataLivePhoto = NCManageDatabase.shared.isLivePhoto(metadata: metadata)
+        self.metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         
         NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterDownloadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterDownloadedFile), object: nil)

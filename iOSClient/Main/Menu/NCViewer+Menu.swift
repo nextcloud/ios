@@ -272,7 +272,7 @@ extension NCViewer {
             }
         }
         
-        if let metadataMOV = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
+        if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_livephoto_save_", comment: ""),

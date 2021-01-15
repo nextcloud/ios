@@ -246,7 +246,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
         var titleSave: String = NSLocalizedString("_save_selected_files_", comment: "")
-        let metadataMOV = NCManageDatabase.shared.isLivePhoto(metadata: metadata)
+        let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         if metadataMOV != nil {
             titleSave = NSLocalizedString("_livephoto_save_", comment: "")
         }

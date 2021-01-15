@@ -145,7 +145,7 @@ import Foundation
                         
                         var metadata = metadata
                         var metadataMOV = metadata
-                        guard let metadataTMP = NCManageDatabase.shared.isLivePhoto(metadata: metadata) else { break }
+                        guard let metadataTMP = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) else { break }
                         
                         if selector == NCBrandGlobal.shared.selectorSaveAlbumLivePhotoIMG {
                             metadataMOV = metadataTMP
