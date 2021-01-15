@@ -976,7 +976,6 @@
 		F74D3DB81BAC1941000BAE4B /* Networking */ = {
 			isa = PBXGroup;
 			children = (
-				F7C5259A1E3B441D00FFE02C /* Notification */,
 				F75A9EE523796C6F0044CFCE /* NCNetworking.swift */,
 				F70D8D8024A4A9BF000A5756 /* NCNetworkingAutoUpload.swift */,
 				F7D96FCB246ED7E100536D73 /* NCNetworkingCheckRemoteUser.swift */,
@@ -1333,7 +1332,6 @@
 				F73B422A2476764F00A30FD3 /* NCNotification.swift */,
 			);
 			name = Notification;
-			path = ..;
 			sourceTree = "<group>";
 		};
 		F7C742D31E7BD36600D9C973 /* Supporting Files */ = {
@@ -1469,6 +1467,7 @@
 				F7EC9CB921185F2000F1C5CE /* Media */,
 				F7CB68942541670D0050EC94 /* More */,
 				F74D3DB81BAC1941000BAE4B /* Networking */,
+				F7C5259A1E3B441D00FFE02C /* Notification */,
 				F7381ED9218218A4000B1560 /* Offline */,
 				F713418B2597513800768D21 /* PushNotification */,
 				F765F72E25237E3F00391DBE /* Recent */,
