@@ -41,7 +41,9 @@ class NCViewerProviderContextMenu: UIViewController  {
         self.metadata = metadata
         self.metadataLivePhoto = NCManageDatabase.shared.isLivePhoto(metadata: metadata)
         
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterDownloadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterDownloadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadCancelFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
         
         if metadata.directory {
 
@@ -112,6 +114,8 @@ class NCViewerProviderContextMenu: UIViewController  {
         imageView.contentMode = .scaleAspectFit
     }
     
+    // MARK: - NotificationCenter
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if let videoLayer = self.videoLayer {
@@ -119,6 +123,18 @@ class NCViewerProviderContextMenu: UIViewController  {
                 videoLayer.frame = imageView.frame
             } else {
                 imageView.frame = videoLayer.frame
+            }
+        }
+    }
+    
+    @objc func downloadStartFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let ocId = userInfo["ocId"] as? String {
+                if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
+                    NCUtility.shared.startActivityIndicator(view: self.view)
+                }
             }
         }
     }
@@ -138,9 +154,26 @@ class NCViewerProviderContextMenu: UIViewController  {
                 if errorCode == 0 && metadata.ocId == self.metadataLivePhoto?.ocId {
                     viewVideo(metadata: metadata)
                 }
+                if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
+                    NCUtility.shared.stopActivityIndicator()
+                }
             }
         }
     }
+    
+    @objc func downloadCancelFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let ocId = userInfo["ocId"] as? String {
+                if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
+                    NCUtility.shared.stopActivityIndicator()
+                }
+            }
+        }
+    }
+    
+    // MARK: - Viewer
     
     private func viewImage(metadata: tableMetadata) {
         
