@@ -22,14 +22,17 @@
 //
 
 import Foundation
+import AVFoundation
 import NCCommunication
 
 class NCViewerProviderContextMenu: UIViewController  {
 
     private let imageView = UIImageView()
     private var videoLayer: AVPlayerLayer?
+    private var audioPlayer: AVAudioPlayer?
     private var metadata: tableMetadata?
     private var metadataLivePhoto: tableMetadata?
+    
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -82,8 +85,13 @@ class NCViewerProviderContextMenu: UIViewController  {
             }
             
             // VIEW VIDEO
-            if (metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) {
+            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 viewVideo(metadata: metadata)
+            }
+            
+            // PLAY AUDIO
+            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                playAudio(metadata: metadata)
             }
             
             // AUTO DOWNLOAD
@@ -114,10 +122,9 @@ class NCViewerProviderContextMenu: UIViewController  {
         imageView.contentMode = .scaleAspectFit
     }
     
-    // MARK: - NotificationCenter
-
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
         if let videoLayer = self.videoLayer {
             if videoLayer.frame.width == 0 && videoLayer.frame.height == 0 {
                 videoLayer.frame = imageView.frame
@@ -127,6 +134,8 @@ class NCViewerProviderContextMenu: UIViewController  {
         }
     }
     
+    // MARK: - NotificationCenter
+
     @objc func downloadStartFile(_ notification: NSNotification) {
         if self.view?.window == nil { return }
         
@@ -149,6 +158,8 @@ class NCViewerProviderContextMenu: UIViewController  {
                         viewImage(metadata: metadata)
                     } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
                         viewVideo(metadata: metadata)
+                    } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio {
+                        playAudio(metadata: metadata)
                     }
                 }
                 if errorCode == 0 && metadata.ocId == self.metadataLivePhoto?.ocId {
@@ -190,6 +201,27 @@ class NCViewerProviderContextMenu: UIViewController  {
         
         imageView.image = image
         imageView.frame = CGRect(x: 0, y: 0, width: image?.size.width ?? 0, height: image?.size.height ?? 0)
+        
+        preferredContentSize = imageView.frame.size
+    }
+    
+    func playAudio(metadata: tableMetadata) {
+        
+        let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+
+            audioPlayer = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: filePath), fileTypeHint: AVFileType.mp3.rawValue)
+
+            guard let player = audioPlayer else { return }
+
+            player.play()
+
+        } catch let error {
+            print(error.localizedDescription)
+        }
         
         preferredContentSize = imageView.frame.size
     }
