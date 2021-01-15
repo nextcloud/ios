@@ -1067,7 +1067,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
             
             let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc") ) { action in
-                NCCollectionCommon.shared.copyFile(ocIds: [metadata.ocId])
+                if metadataMOV != nil {
+                    NCCollectionCommon.shared.copyFile(ocIds: [metadata.ocId, metadataMOV!.ocId])
+                } else {
+                    NCCollectionCommon.shared.copyFile(ocIds: [metadata.ocId])
+                }
             }
             
             let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info") ) { action in

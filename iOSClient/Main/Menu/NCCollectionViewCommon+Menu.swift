@@ -362,7 +362,16 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_copy_file_", comment: ""),
                     icon: UIImage(systemName: "doc.on.doc")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
-                        NCCollectionCommon.shared.copyFile(ocIds: selectOcId)
+                        var copyOcIds = [String]()
+                        for ocId in selectOcId {
+                            copyOcIds.append(ocId)
+                            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                                if let metadataMOV = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
+                                    copyOcIds.append(metadataMOV.ocId)
+                                }
+                            }
+                        }
+                        NCCollectionCommon.shared.copyFile(ocIds: copyOcIds)
                         self.tapSelect(sender: self)
                     }
                 )
