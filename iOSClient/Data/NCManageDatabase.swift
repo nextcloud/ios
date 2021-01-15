@@ -1721,7 +1721,7 @@ class NCManageDatabase: NSObject {
         
         // Live Photo "DETECT"
         if !metadata.directory && !metadata.livePhoto && (metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage) {
-            metadata.livePhoto = NCManageDatabase.shared.isLivePhoto(metadata: metadata)
+            metadata.livePhoto = isLivePhoto(metadata: metadata)
         }
         
         return metadata
@@ -2338,14 +2338,10 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
    
-    @objc func isLivePhoto(metadata: tableMetadata) -> Bool {
+    func isLivePhoto(metadata: tableMetadata) -> Bool {
            
         let realm = try! Realm()
         realm.refresh()
-        
-        if !CCUtility.getLivePhoto() {
-            return false
-        }
         
         if realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId)).first == nil {
             return false
