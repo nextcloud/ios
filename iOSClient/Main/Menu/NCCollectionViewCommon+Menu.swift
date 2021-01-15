@@ -401,8 +401,24 @@ extension NCCollectionViewCommon {
                 action: { menuAction in
                     for ocId in selectOcId {
                         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)
+                            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
+                                if let metadataMOV = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
+                                    
+                                    if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                                        NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbumLivePhotoIMG, setFavorite: false)
+                                    }
+                                    
+                                    if !CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
+                                        NCOperationQueue.shared.download(metadata: metadataMOV, selector: NCBrandGlobal.shared.selectorSaveAlbumLivePhotoMOV, setFavorite: false)
+                                    }
+                                    
+                                    if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
+                                        NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMov: metadataMOV, progressView: nil, viewActivity: self.appDelegate.window.rootViewController?.view)
+                                    }
+                                    
+                                } else {
+                                    NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)
+                                }
                             }
                         }
                     }
