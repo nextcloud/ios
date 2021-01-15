@@ -141,6 +141,24 @@ import Foundation
                             NCContentPresenter.shared.messageNotification("_access_photo_not_enabled_", description: "_access_photo_not_enabled_msg_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorFileNotSaved)
                         }
                         
+                    case NCBrandGlobal.shared.selectorSaveAlbumLivePhotoIMG, NCBrandGlobal.shared.selectorSaveAlbumLivePhotoMOV:
+                        
+                        var metadata = metadata
+                        var metadataMOV = metadata
+                        guard let metadataTMP = NCManageDatabase.shared.isLivePhoto(metadata: metadata) else { break }
+                        
+                        if selector == NCBrandGlobal.shared.selectorSaveAlbumLivePhotoIMG {
+                            metadataMOV = metadataTMP
+                        }
+                        
+                        if selector == NCBrandGlobal.shared.selectorSaveAlbumLivePhotoMOV {
+                            metadata = metadataTMP
+                        }
+                            
+                        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
+                            NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMov: metadataMOV, progressView: nil, viewActivity: self.appDelegate.window.rootViewController?.view)
+                        }
+                        
                     default:
                         
                         break

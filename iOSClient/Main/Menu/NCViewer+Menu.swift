@@ -272,22 +272,29 @@ extension NCViewer {
             }
         }
         
-        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio {
-            if let metadataLive = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
-                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataLive.ocId, fileNameView: metadataLive.fileNameView) {
-                    actions.append(
-                        NCMenuAction(
-                            title: NSLocalizedString("_livephoto_save_", comment: ""),
-                            icon: UIImage(named: "livePhoto")!.image(color: NCBrandColor.shared.icon, size: 50),
-                            action: { menuAction in
-                                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterMenuSaveLivePhoto, userInfo: ["ocId": metadata.ocId, "ocIdMov": metadataLive.ocId])
-                            }
-                        )
-                    )
-                }
-            }
+        if let metadataMOV = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_livephoto_save_", comment: ""),
+                    icon: UIImage(named: "livePhoto")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    action: { menuAction in
+                        
+                        if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                            NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbumLivePhotoIMG, setFavorite: false)
+                        }
+                        
+                        if !CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
+                            NCOperationQueue.shared.download(metadata: metadataMOV, selector: NCBrandGlobal.shared.selectorSaveAlbumLivePhotoMOV, setFavorite: false)
+                        }
+                        
+                        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
+                            NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMov: metadataMOV, progressView: nil, viewActivity: self.appDelegate.window.rootViewController?.view)
+                        }
+                    }
+                )
+            )
         }
-         
+        
         return actions
     }
 }

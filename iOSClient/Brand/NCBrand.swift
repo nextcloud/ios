@@ -415,6 +415,8 @@ class NCBrandColor: NSObject {
     @objc let selectorUploadAutoUploadAll           = "uploadAutoUploadAll"
     @objc let selectorUploadFile                    = "uploadFile"
     @objc let selectorSaveAlbum                     = "saveAlbum"
+    @objc let selectorSaveAlbumLivePhotoIMG         = "saveAlbumLivePhotoIMG"
+    @objc let selectorSaveAlbumLivePhotoMOV         = "saveAlbumLivePhotoMOV"
 
     // Metadata : Status
     //
@@ -475,7 +477,6 @@ class NCBrandColor: NSObject {
     @objc let notificationCenterFavoriteFile                    = "favoriteFile"                     // userInfo: ocId
 
     @objc let notificationCenterMenuSearchTextPDF               = "menuSearchTextPDF"
-    @objc let notificationCenterMenuSaveLivePhoto               = "menuSaveLivePhoto"                // userInfo: ocId, ocIdMov
     @objc let notificationCenterMenuDetailClose                 = "menuDetailClose"
 }
 
