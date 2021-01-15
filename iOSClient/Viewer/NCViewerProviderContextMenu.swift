@@ -89,9 +89,9 @@ class NCViewerProviderContextMenu: UIViewController  {
                 viewVideo(metadata: metadata)
             }
             
-            // PLAY AUDIO
+            // PLAY SOUND
             if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                playAudio(metadata: metadata)
+                playSound(metadata: metadata)
             }
             
             // AUTO DOWNLOAD
@@ -159,7 +159,7 @@ class NCViewerProviderContextMenu: UIViewController  {
                     } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
                         viewVideo(metadata: metadata)
                     } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio {
-                        playAudio(metadata: metadata)
+                        playSound(metadata: metadata)
                     }
                 }
                 if errorCode == 0 && metadata.ocId == self.metadataLivePhoto?.ocId {
@@ -205,7 +205,7 @@ class NCViewerProviderContextMenu: UIViewController  {
         preferredContentSize = imageView.frame.size
     }
     
-    func playAudio(metadata: tableMetadata) {
+    func playSound(metadata: tableMetadata) {
         
         let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
 
