@@ -106,7 +106,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         }
     }
 
-    func openSelectView(items: [Any]) {
+    func openSelectView(items: [Any], viewController: UIViewController) {
         
         let navigationController = UIStoryboard.init(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
         let topViewController = navigationController.topViewController as! NCSelect
@@ -162,7 +162,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         navigationController.setViewControllers(listViewController, animated: false)
         navigationController.modalPresentationStyle = .formSheet
         
-        appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+        viewController.present(navigationController, animated: true, completion: nil)
     }
     
     @objc func openFileViewInFolder(serverUrl: String, fileName: String) {
@@ -294,7 +294,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         let open = UIMenu(title: NSLocalizedString("_open_", comment: ""), image: UIImage(systemName: "arrow.up.square"), children: [openIn, openQuickLook])
         
         let moveCopy = UIAction(title: NSLocalizedString("_move_or_copy_", comment: ""), image: UIImage(systemName: "arrow.up.right.square")) { action in
-            NCCollectionCommon.shared.openSelectView(items: [metadata])
+            NCCollectionCommon.shared.openSelectView(items: [metadata], viewController: viewController)
         }
         
         let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile, image: UIImage(systemName: "trash"), attributes: .destructive) { action in
