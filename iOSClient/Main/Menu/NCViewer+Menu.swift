@@ -97,21 +97,6 @@ extension NCViewer {
         }
         
         //
-        // OPEN IN
-        //
-        if metadata.session == "" && !webView {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_open_in_", comment: ""),
-                    icon: UIImage(named: "openFile")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    action: { menuAction in
-                        NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn)
-                    }
-                )
-            )
-        }
-        
-        //
         // RENAME
         //
         if !webView {
@@ -175,6 +160,23 @@ extension NCViewer {
         }
         
         //
+        // VIEW IN FOLDER
+        //
+        if !webView {
+            if appDelegate.activeFileViewInFolder == nil {
+                actions.append(
+                    NCMenuAction(
+                        title: NSLocalizedString("_view_in_folder_", comment: ""),
+                        icon: UIImage(named: "viewInFolder")!.image(color: NCBrandColor.shared.icon, size: 50),
+                        action: { menuAction in
+                            NCCollectionCommon.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+                        }
+                    )
+                )
+            }
+        }
+        
+        //
         // OFFLINE
         //
         if metadata.session == "" && !webView {
@@ -195,61 +197,15 @@ extension NCViewer {
         }
         
         //
-        // VIEW IN FOLDER
+        // OPEN IN
         //
-        if !webView {
-            if appDelegate.activeFileViewInFolder == nil {
-                actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString("_view_in_folder_", comment: ""),
-                        icon: UIImage(named: "viewInFolder")!.image(color: NCBrandColor.shared.icon, size: 50),
-                        action: { menuAction in
-                            NCCollectionCommon.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-                        }
-                    )
-                )
-            }
-        }
-        
-        //
-        // DELETE
-        //
-        if !webView {
+        if metadata.session == "" && !webView {
             actions.append(
                 NCMenuAction(
-                    title: titleDelete,
-                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    title: NSLocalizedString("_open_in_", comment: ""),
+                    icon: UIImage(named: "openFile")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
-                        
-                        let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
-                        
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
-                            
-                            NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
-                                if errorCode != 0 {
-                                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                                }
-                            }
-                        })
-                        
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })
-                                            
-                        viewController.present(alertController, animated: true, completion:nil)
-                    }
-                )
-            )
-        }
-        
-        //
-        // PDF
-        //
-        if (metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileDocument && metadata.contentType == "application/pdf" ) {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_search_", comment: ""),
-                    icon: UIImage(named: "search")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    action: { menuAction in
-                        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterMenuSearchTextPDF)
+                        NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn)
                     }
                 )
             )
@@ -295,6 +251,50 @@ extension NCViewer {
                         } else {
                             NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)
                         }
+                    }
+                )
+            )
+        }
+        
+        //
+        // PDF
+        //
+        if (metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileDocument && metadata.contentType == "application/pdf" ) {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_search_", comment: ""),
+                    icon: UIImage(named: "search")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    action: { menuAction in
+                        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterMenuSearchTextPDF)
+                    }
+                )
+            )
+        }
+        
+        //
+        // DELETE
+        //
+        if !webView {
+            actions.append(
+                NCMenuAction(
+                    title: titleDelete,
+                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    action: { menuAction in
+                        
+                        let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
+                        
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
+                            
+                            NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
+                                if errorCode != 0 {
+                                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                }
+                            }
+                        })
+                        
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })
+                                            
+                        viewController.present(alertController, animated: true, completion:nil)
                     }
                 )
             )
