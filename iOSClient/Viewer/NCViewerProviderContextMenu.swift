@@ -94,8 +94,8 @@ class NCViewerProviderContextMenu: UIViewController  {
                 playSound(metadata: metadata)
             }
             
-            // AUTO DOWNLOAD
-            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            // AUTO DOWNLOAD VIDEO / AUDIO
+            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio) {
                 
                 var maxDownload: UInt64 = 0
                 
@@ -109,6 +109,8 @@ class NCViewerProviderContextMenu: UIViewController  {
                     NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)
                 }
             }
+            
+            // AUTO DOWNLOAD LIVE PHOTO
             if let metadataLivePhoto = self.metadataLivePhoto {
                 if !CCUtility.fileProviderStorageExists(metadataLivePhoto.ocId, fileNameView: metadataLivePhoto.fileNameView) {
                     NCOperationQueue.shared.download(metadata: metadataLivePhoto, selector: "", setFavorite: false)
