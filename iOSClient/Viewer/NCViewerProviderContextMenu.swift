@@ -119,7 +119,7 @@ class NCViewerProviderContextMenu: UIViewController  {
     
     override func loadView() {
         view = imageView
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
     }
     
     override func viewDidLayoutSubviews() {
@@ -132,6 +132,7 @@ class NCViewerProviderContextMenu: UIViewController  {
                 imageView.frame = videoLayer.frame
             }
         }
+        preferredContentSize = imageView.frame.size
     }
     
     // MARK: - NotificationCenter
