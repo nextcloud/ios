@@ -327,9 +327,9 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         if metadata.directory {
             return UIMenu(title: "", children: [detail, moveCopy, delete])
         } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
-            return UIMenu(title: "", children: [copy, detail, save, open, moveCopy, delete])
+            return UIMenu(title: "", children: [copy, detail, moveCopy, open, save, delete])
         } else {
-            return UIMenu(title: "", children: [copy, detail, open, moveCopy, delete])
+            return UIMenu(title: "", children: [copy, detail, moveCopy, open, delete])
         }
     }
     
