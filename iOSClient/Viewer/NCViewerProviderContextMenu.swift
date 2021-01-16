@@ -132,7 +132,11 @@ class NCViewerProviderContextMenu: UIViewController  {
         super.viewDidLayoutSubviews()
         
         if let videoLayer = self.videoLayer {
-            videoLayer.frame = imageView.frame
+            if videoLayer.frame == CGRect.zero {
+                videoLayer.frame = imageView.frame
+            } else {
+                imageView.frame = videoLayer.frame
+            }
         }
         preferredContentSize = imageView.frame.size
     }
