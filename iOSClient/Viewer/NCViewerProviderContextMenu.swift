@@ -110,6 +110,11 @@ class NCViewerProviderContextMenu: UIViewController  {
                 }
             }
             
+            // AUTO DOWNLOAD IMAGE
+            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && CCUtility.getAutomaticDownloadImage() {
+                NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)
+            }
+            
             // AUTO DOWNLOAD LIVE PHOTO
             if let metadataLivePhoto = self.metadataLivePhoto {
                 if !CCUtility.fileProviderStorageExists(metadataLivePhoto.ocId, fileNameView: metadataLivePhoto.fileNameView) {
