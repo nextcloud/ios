@@ -33,7 +33,6 @@ class NCViewerProviderContextMenu: UIViewController  {
     private var metadata: tableMetadata?
     private var metadataLivePhoto: tableMetadata?
     
-
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -133,11 +132,7 @@ class NCViewerProviderContextMenu: UIViewController  {
         super.viewDidLayoutSubviews()
         
         if let videoLayer = self.videoLayer {
-            if videoLayer.frame.width == 0 && videoLayer.frame.height == 0 {
-                videoLayer.frame = imageView.frame
-            } else {
-                imageView.frame = videoLayer.frame
-            }
+            videoLayer.frame = imageView.frame
         }
         preferredContentSize = imageView.frame.size
     }
