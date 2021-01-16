@@ -256,7 +256,7 @@ extension NCViewer {
         }
         
         //
-        // IMAGE - VIDEO - AUDIO
+        // DOWNLOAD IMAGE MAX RESOLUTION
         //
         if metadata.session == "" {
             if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "" {
@@ -272,13 +272,29 @@ extension NCViewer {
             }
         }
         
-        if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+        //
+        // SAVE IMAGE / VIDEO
+        //
+        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
+            
+            var title: String = NSLocalizedString("_save_selected_files_", comment: "")
+            var icon = UIImage(named: "saveSelectedFiles")!.image(color: NCBrandColor.shared.icon, size: 50)
+            let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
+            if metadataMOV != nil {
+                title = NSLocalizedString("_livephoto_save_", comment: "")
+                icon = UIImage(named: "livePhoto")!.image(color: NCBrandColor.shared.icon, size: 50)
+            }
+            
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_livephoto_save_", comment: ""),
-                    icon: UIImage(named: "livePhoto")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    title: title,
+                    icon: icon,
                     action: { menuAction in
-                        NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
+                        if metadataMOV != nil {
+                            NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
+                        } else {
+                            NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)
+                        }
                     }
                 )
             )

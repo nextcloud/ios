@@ -156,14 +156,17 @@ extension NCCollectionViewCommon {
         //
         if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
             var title: String = NSLocalizedString("_save_selected_files_", comment: "")
+            var icon = UIImage(named: "saveSelectedFiles")!.image(color: NCBrandColor.shared.icon, size: 50)
             let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
             if metadataMOV != nil {
                 title = NSLocalizedString("_livephoto_save_", comment: "")
+                icon = UIImage(named: "livePhoto")!.image(color: NCBrandColor.shared.icon, size: 50)
             }
+            
             actions.append(
                 NCMenuAction(
                     title: title,
-                    icon: UIImage(named: "saveSelectedFiles")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: icon,
                     action: { menuAction in
                         if metadataMOV != nil {
                             NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
