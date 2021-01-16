@@ -82,6 +82,26 @@ extension NCViewer {
         )
         
         //
+        // OFFLINE
+        //
+        if metadata.session == "" && !webView {
+            actions.append(
+                NCMenuAction(
+                    title: titleOffline,
+                    icon: UIImage(named: "offline")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    action: { menuAction in
+                        if ((localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) && metadata.session == "") {
+                            
+                            NCNetworking.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadOffline) { (_) in }
+                        } else {
+                            NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
+                        }
+                    }
+                )
+            )
+        }
+        
+        //
         // DETAIL
         //
         if !appDelegate.disableSharesView {
@@ -174,26 +194,6 @@ extension NCViewer {
                     )
                 )
             }
-        }
-        
-        //
-        // OFFLINE
-        //
-        if metadata.session == "" && !webView {
-            actions.append(
-                NCMenuAction(
-                    title: titleOffline,
-                    icon: UIImage(named: "offline")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    action: { menuAction in
-                        if ((localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) && metadata.session == "") {
-                            
-                            NCNetworking.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadOffline) { (_) in }
-                        } else {
-                            NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
-                        }
-                    }
-                )
-            )
         }
         
         //

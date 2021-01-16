@@ -122,6 +122,38 @@ extension NCCollectionViewCommon {
         )
         
         //
+        // OFFLINE
+        //
+        if !isFolderEncrypted {
+            actions.append(
+                NCMenuAction(
+                    title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
+                    icon: UIImage(named: "offline")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    action: { menuAction in
+                        if isOffline {
+                            if metadata.directory {
+                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: false, account: self.appDelegate.account)
+                            } else {
+                                NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: false)
+                            }
+                        } else {
+                            if metadata.directory {
+                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: self.appDelegate.account)
+                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorDownloadAllFile)
+                            } else {
+                                NCNetworking.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadOffline) { (_) in }
+                                if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+                                    NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCBrandGlobal.shared.selectorLoadOffline) { (_) in }
+                                }
+                            }
+                        }
+                        self.reloadDataSource()
+                    }
+                )
+            )
+        }
+        
+        //
         // DETAIL
         //
         if !isFolderEncrypted && !appDelegate.disableSharesView {
@@ -197,38 +229,6 @@ extension NCCollectionViewCommon {
                     icon: UIImage(named: "viewInFolder")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         NCCollectionCommon.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-                    }
-                )
-            )
-        }
-        
-        //
-        // OFFLINE
-        //
-        if !isFolderEncrypted {
-            actions.append(
-                NCMenuAction(
-                    title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
-                    icon: UIImage(named: "offline")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    action: { menuAction in
-                        if isOffline {
-                            if metadata.directory {
-                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: false, account: self.appDelegate.account)
-                            } else {
-                                NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: false)
-                            }
-                        } else {
-                            if metadata.directory {
-                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: self.appDelegate.account)
-                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorDownloadAllFile)
-                            } else {
-                                NCNetworking.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadOffline) { (_) in }
-                                if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                                    NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCBrandGlobal.shared.selectorLoadOffline) { (_) in }
-                                }
-                            }
-                        }
-                        self.reloadDataSource()
                     }
                 )
             )
