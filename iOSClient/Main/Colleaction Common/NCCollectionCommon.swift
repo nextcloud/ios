@@ -290,7 +290,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
     // MARK: - Context Menu COnfiguration
     
     @available(iOS 13.0, *)
-    func contextMenuConfiguration(metadata: tableMetadata, viewController: UIViewController, deleteLocal: Bool) -> UIMenu {
+    func contextMenuConfiguration(metadata: tableMetadata, viewController: UIViewController, enableDeleteLocal: Bool, enableViewInFolder: Bool) -> UIMenu {
         
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
@@ -324,6 +324,10 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             }
         }
         
+        let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""), image: UIImage(systemName: "arrow.up.right.square")) { action in
+            NCCollectionCommon.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+        }
+        
         let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { action in
             NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn)
         }
@@ -351,10 +355,9 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             }
         }
         
-        
         var delete = UIMenu(title: NSLocalizedString("_delete_file_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirmLocal, deleteConfirmFile])
         
-        if !deleteLocal {
+        if !enableDeleteLocal {
             delete = UIMenu(title: NSLocalizedString("_delete_file_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirmFile])
         }
         
@@ -363,12 +366,20 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         }
         
         if metadata.directory {
-            return UIMenu(title: "", children: [detail, moveCopy, delete])
-        } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
-            return UIMenu(title: "", children: [copy, detail, moveCopy, open, save, delete])
-        } else {
-            return UIMenu(title: "", children: [copy, detail, moveCopy, open, delete])
+             return UIMenu(title: "", children: [detail, moveCopy, delete])
         }
+        
+        var children: [UIMenuElement] = [copy, detail, moveCopy, open, delete]
+
+        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
+            children.insert(save, at: 4)
+        }
+        
+        if enableViewInFolder {
+            children.insert(viewInFolder, at: 2)
+        }
+        
+        return UIMenu(title: "", image: nil, identifier: nil, children: children)
     }
     
     // MARK: - Copy & Paste
