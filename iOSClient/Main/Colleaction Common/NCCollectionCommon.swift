@@ -399,8 +399,23 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             
             if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 do {
+                    // etag
                     let etagPasteboard = try NSKeyedArchiver.archivedData(withRootObject: metadata.ocId, requiringSecureCoding: false)
                     items.append([NCBrandGlobal.shared.metadataKeyedUnarchiver:etagPasteboard])
+                    // Get Data
+                    let data = try Data.init(contentsOf: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
+                    // image
+                    if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage {
+                        if CCUtility.getExtension(metadata.fileNameView) == "GIF" {
+                            items.append([kUTTypeGIF as String:data])
+                        } else {
+                            items.append([kUTTypeJPEG as String:data])
+                        }
+                    }
+                    // video
+                    if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
+                        items.append([kUTTypeMPEG4 as String:data])
+                    }
                 } catch {
                     print("error")
                 }
