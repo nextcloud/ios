@@ -336,7 +336,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadFileQuickLook)
         }
         
-        let open = UIMenu(title: NSLocalizedString("_open_", comment: ""), image: UIImage(systemName: "arrow.up.square"), children: [openIn, openQuickLook])
+        let open = UIMenu(title: NSLocalizedString("_open_", comment: ""), image: UIImage(systemName: "square.and.arrow.up"), children: [openIn, openQuickLook])
         
         let moveCopy = UIAction(title: NSLocalizedString("_move_or_copy_", comment: ""), image: UIImage(systemName: "arrow.up.right.square")) { action in
             NCCollectionCommon.shared.openSelectView(items: [metadata], viewController: viewController)
