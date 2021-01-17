@@ -117,29 +117,7 @@ import Foundation
                        
                     case NCBrandGlobal.shared.selectorSaveAlbum:
                         
-                        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                        let status = PHPhotoLibrary.authorizationStatus()
-
-                        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && status == PHAuthorizationStatus.authorized {
-                            
-                            if let image = UIImage.init(contentsOfFile: fileNamePath) {
-                                UIImageWriteToSavedPhotosAlbum(image, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
-                            } else {
-                                NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorFileNotSaved)
-                            }
-                            
-                        } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && status == PHAuthorizationStatus.authorized {
-                            
-                            if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath) {
-                                UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
-                            } else {
-                                NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorFileNotSaved)
-                            }
-                            
-                        } else if status != PHAuthorizationStatus.authorized {
-                            
-                            NCContentPresenter.shared.messageNotification("_access_photo_not_enabled_", description: "_access_photo_not_enabled_msg_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorFileNotSaved)
-                        }
+                        NCCollectionCommon.shared.saveAlbum(metadata: metadata)
                         
                     case NCBrandGlobal.shared.selectorSaveAlbumLivePhotoIMG, NCBrandGlobal.shared.selectorSaveAlbumLivePhotoMOV:
                         
@@ -206,13 +184,6 @@ import Foundation
         } else {
             
             NCNetworking.shared.download(metadata: metadata, selector: selector) { (_) in }
-        }
-    }
-    
-    @objc func SaveAlbum(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
-        
-        if error != nil {
-            NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorFileNotSaved)
         }
     }
     

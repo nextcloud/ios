@@ -208,16 +208,50 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
     
-    // MARK: - Live Photo
+    // MARK: - Save Photo - Video - Live Photo
+    
+    func saveAlbum(metadata: tableMetadata) {
+        
+        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let status = PHPhotoLibrary.authorizationStatus()
+
+        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && status == PHAuthorizationStatus.authorized {
+            
+            if let image = UIImage.init(contentsOfFile: fileNamePath) {
+                UIImageWriteToSavedPhotosAlbum(image, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
+            } else {
+                NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorFileNotSaved)
+            }
+            
+        } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && status == PHAuthorizationStatus.authorized {
+            
+            if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath) {
+                UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
+            } else {
+                NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorFileNotSaved)
+            }
+            
+        } else if status != PHAuthorizationStatus.authorized {
+            
+            NCContentPresenter.shared.messageNotification("_access_photo_not_enabled_", description: "_access_photo_not_enabled_msg_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorFileNotSaved)
+        }
+    }
+    
+    @objc private func SaveAlbum(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        
+        if error != nil {
+            NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorFileNotSaved)
+        }
+    }
     
     func saveLivePhoto(metadata: tableMetadata, metadataMOV: tableMetadata) {
         
         if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-            NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbumLivePhotoIMG, setFavorite: false)
+            NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbumLivePhotoIMG)
         }
         
         if !CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
-            NCOperationQueue.shared.download(metadata: metadataMOV, selector: NCBrandGlobal.shared.selectorSaveAlbumLivePhotoMOV, setFavorite: false)
+            NCOperationQueue.shared.download(metadata: metadataMOV, selector: NCBrandGlobal.shared.selectorSaveAlbumLivePhotoMOV)
         }
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
@@ -282,7 +316,11 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             if metadataMOV != nil {
                 NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
             } else {
-                NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum, setFavorite: false)
+                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                    self.saveAlbum(metadata: metadata)
+                } else {
+                    NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum)
+                }
             }
         }
         
@@ -356,7 +394,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
                     print("error")
                 }
             } else {
-                NCNetworking.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadCopy, setFavorite: false) { (_) in }
+                NCNetworking.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadCopy) { (_) in }
             }
         }
         

@@ -454,13 +454,6 @@ class NCViewerImage: UIViewController {
         } else {
             itemPlay = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.play, target: self, action: #selector(playerPlay))
         }
-        /*
-        if currentMetadata.favorite {
-            itemFavorite = UIBarButtonItem(image: UIImage(named: "videoFavoriteOn"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(SetFavorite))
-        } else {
-            itemFavorite = UIBarButtonItem(image: UIImage(named: "videoFavoriteOff"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(SetFavorite))
-        }
-        */
         if mute {
             itemMute = UIBarButtonItem(image: UIImage(named: "audioOff"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(SetMute))
         } else {
@@ -484,11 +477,6 @@ class NCViewerImage: UIViewController {
         player?.isMuted = !mute
         setToolBar()
     }
-    /*
-    @objc func SetFavorite() {
-        NCNetworking.shared.favoriteMetadata(currentMetadata, urlBase: self.appDelegate.urlBase) { (errorCode, errorDescription) in }
-    }
-    */
 }
 
 
@@ -724,13 +712,13 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         
         // DOWNLOAD FILE
         if ((metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-            NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)
+            NCOperationQueue.shared.download(metadata: metadata, selector: "")
         }
         
         // DOWNLOAD FILE LIVE PHOTO
         if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             if CCUtility.getAutomaticDownloadImage() && !CCUtility.fileProviderStorageExists(metadataLivePhoto.ocId, fileNameView: metadataLivePhoto.fileNameView) {
-                NCOperationQueue.shared.download(metadata: metadataLivePhoto, selector: "", setFavorite: false)
+                NCOperationQueue.shared.download(metadata: metadataLivePhoto, selector: "")
             }
         }
         

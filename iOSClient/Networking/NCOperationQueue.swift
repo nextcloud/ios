@@ -50,13 +50,13 @@ import NCCommunication
     
     // Download file
     
-    @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool) {
+    func download(metadata: tableMetadata, selector: String) {
         for operation in downloadQueue.operations as! [NCOperationDownload]  {
             if operation.metadata.ocId == metadata.ocId {
                 return
             }
         }
-        downloadQueue.addOperation(NCOperationDownload.init(metadata: metadata, selector: selector, setFavorite: setFavorite))
+        downloadQueue.addOperation(NCOperationDownload.init(metadata: metadata, selector: selector))
     }
     @objc func downloadCancelAll() {
         downloadQueue.cancelAll()
@@ -153,19 +153,17 @@ class NCOperationDownload: ConcurrentOperation {
    
     var metadata: tableMetadata
     var selector: String
-    var setFavorite: Bool
     
-    init(metadata: tableMetadata, selector: String, setFavorite: Bool) {
+    init(metadata: tableMetadata, selector: String) {
         self.metadata = tableMetadata.init(value: metadata)
         self.selector = selector
-        self.setFavorite = setFavorite
     }
     
     override func start() {
         if isCancelled {
             self.finish()
         } else {
-            NCNetworking.shared.download(metadata: metadata, selector: self.selector, setFavorite: self.setFavorite) { (_) in
+            NCNetworking.shared.download(metadata: metadata, selector: self.selector) { (_) in
                 self.finish()
             }
         }
@@ -285,7 +283,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                                                 NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
                                             } else {
                                                 if NCManageDatabase.shared.isDownloadMetadata(metadata, download: true) {
-                                                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
+                                                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector)
                                                 }
                                             }
                                         }
@@ -301,7 +299,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                                         }
                                         
                                         for metadata in metadatasChanged.metadatasLocalUpdate {
-                                            NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
+                                            NCOperationQueue.shared.download(metadata: metadata, selector: self.selector)
                                         }
                                     }
                                     
@@ -324,7 +322,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                                 NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
                             } else {
                                 if NCManageDatabase.shared.isDownloadMetadata(metadata, download: self.download) {
-                                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
+                                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector)
                                 }
                             }
                         }
@@ -335,7 +333,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                 
             } else {
                 if NCManageDatabase.shared.isDownloadMetadata(metadata, download: self.download) {
-                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
+                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector)
                 }
                 self.finish()
             }

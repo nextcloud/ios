@@ -101,7 +101,7 @@ class NCOffline: NCCollectionViewCommon  {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory {
                             if NCManageDatabase.shared.isDownloadMetadata(metadata, download: true) {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorDownloadFile, setFavorite: false)
+                                NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
                             }
                         }
                     }

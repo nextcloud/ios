@@ -239,7 +239,7 @@ import Queuer
         }
     }
     
-    @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool = false, completion: @escaping (_ errorCode: Int)->()) {
+    @objc func download(metadata: tableMetadata, selector: String, completion: @escaping (_ errorCode: Int)->()) {
         
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
@@ -273,7 +273,7 @@ import Queuer
             
             } else if errorCode == 0 {
                
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCBrandGlobal.shared.metadataStatusNormal, etag: etag, setFavorite: setFavorite)
+                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCBrandGlobal.shared.metadataStatusNormal, etag: etag)
                 NCManageDatabase.shared.addLocalFile(metadata: metadata)
                 
                 #if !EXTENSION

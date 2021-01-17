@@ -1978,7 +1978,7 @@ class NCManageDatabase: NSObject {
         return (metadatasUpdate, metadatasLocalUpdate)
     }
     
-    func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil, setFavorite: Bool = false) {
+    func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil) {
             
         let realm = try! Realm()
         realm.refresh()
@@ -2003,9 +2003,6 @@ class NCManageDatabase: NSObject {
                 }
                 if let etag = etag {
                     result?.etag = etag
-                }
-                if setFavorite {
-                    result?.favorite = true
                 }
             }
         } catch let error {
