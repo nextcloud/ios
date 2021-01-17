@@ -404,17 +404,10 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
                     items.append([NCBrandGlobal.shared.metadataKeyedUnarchiver:etagPasteboard])
                     // Get Data
                     let data = try Data.init(contentsOf: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
-                    // image
-                    if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage {
-                        if CCUtility.getExtension(metadata.fileNameView) == "GIF" {
-                            items.append([kUTTypeGIF as String:data])
-                        } else {
-                            items.append([kUTTypeJPEG as String:data])
-                        }
-                    }
-                    // video
-                    if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
-                        items.append([kUTTypeMPEG4 as String:data])
+                    // Pasteboard item
+                    if let unmanagedFileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (metadata.fileNameView as NSString).pathExtension as CFString, nil) {
+                        let fileUTI = unmanagedFileUTI.takeRetainedValue() as String
+                        items.append([fileUTI:data])
                     }
                 } catch {
                     print("error")
