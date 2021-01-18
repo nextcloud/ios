@@ -99,6 +99,8 @@
     self.listFilesVC = [NSMutableDictionary new];
     self.listFavoriteVC = [NSMutableDictionary new];
     self.listOfflineVC = [NSMutableDictionary new];
+    
+    self.pasteboardOcIds = [NSMutableArray new];
 
     // Push Notification
     [application registerForRemoteNotifications];

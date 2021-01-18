@@ -393,16 +393,11 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_copy_file_", comment: ""),
                     icon: UIImage(systemName: "doc.on.doc")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
-                        var copyOcIds = [String]()
+                        self.appDelegate.pasteboardOcIds.removeAllObjects()
                         for ocId in selectOcId {
-                            copyOcIds.append(ocId)
-                            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                                    copyOcIds.append(metadataMOV.ocId)
-                                }
-                            }
+                            self.appDelegate.pasteboardOcIds.add(ocId)
                         }
-                        NCCollectionCommon.shared.copyFile(ocIds: copyOcIds)
+                        NCCollectionCommon.shared.copyPasteboard()
                         self.tapSelect(sender: self)
                     }
                 )

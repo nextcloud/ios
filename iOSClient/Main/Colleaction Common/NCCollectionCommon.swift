@@ -301,11 +301,8 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         }
         
         let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc") ) { action in
-            if metadataMOV != nil {
-                NCCollectionCommon.shared.copyFile(ocIds: [metadata.ocId, metadataMOV!.ocId])
-            } else {
-                NCCollectionCommon.shared.copyFile(ocIds: [metadata.ocId])
-            }
+            self.appDelegate.pasteboardOcIds = [metadata.ocId]
+            self.copyPasteboard()
         }
         
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info") ) { action in
@@ -384,14 +381,17 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
     
     // MARK: - Copy & Paste
 
-    func copyFile(ocIds: [String]) {
+    func copyPasteboard() {
+        
         var metadatas: [tableMetadata] = []
         var items = [[String : Any]]()
-
         
-        for ocId in ocIds {
-            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+        for ocId in appDelegate.pasteboardOcIds {
+            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId as? String) {
                 metadatas.append(metadata)
+                if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+                    metadatas.append(metadataMOV)
+                }
             }
         }
         
@@ -399,9 +399,6 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             
             if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 do {
-                    // etag
-                    let etagPasteboard = try NSKeyedArchiver.archivedData(withRootObject: metadata.ocId, requiringSecureCoding: false)
-                    items.append([NCBrandGlobal.shared.metadataKeyedUnarchiver:etagPasteboard])
                     // Get Data
                     let data = try Data.init(contentsOf: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
                     // Pasteboard item
@@ -420,46 +417,25 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         UIPasteboard.general.setItems(items, options: [:])
     }
 
-    func pasteFiles(serverUrl: String) {
+    func pastePasteboard(serverUrl: String) {
         
         var listData: [String] = []
-        
-        // Detect metadataKeyedUnarchiver
-        var foundMetadataKeyedUnarchiver: Bool = false
-        for item in UIPasteboard.general.items {
-            for object in item {
-                if object.key == NCBrandGlobal.shared.metadataKeyedUnarchiver {
-                    foundMetadataKeyedUnarchiver = true
-                }
-            }
-        }
         
         for item in UIPasteboard.general.items {
             for object in item {
                 let contentType = object.key
                 let data = object.value
-                if contentType == NCBrandGlobal.shared.metadataKeyedUnarchiver {
-                    do {
-                        if let ocId = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data as! Data) as? String{
-                            uploadPasteOcId(ocId, serverUrl: serverUrl)
-                        }
-                    } catch {
-                        print("error")
+               
+                if data is String {
+                    if listData.contains(data as! String) {
+                        continue
+                    } else {
+                        listData.append(data as! String)
                     }
-                    continue
                 }
-                if !foundMetadataKeyedUnarchiver {
-                    if data is String {
-                        if listData.contains(data as! String) {
-                            continue
-                        } else {
-                            listData.append(data as! String)
-                        }
-                    }
-                    let type = NCCommunicationCommon.shared.convertUTItoResultType(fileUTI: contentType as CFString)
-                    if type.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue && type.resultExtension != "" {
-                        uploadPasteFile(fileName: type.resultFilename, ext: type.resultExtension, contentType: contentType, serverUrl: serverUrl, data: data)
-                    }
+                let type = NCCommunicationCommon.shared.convertUTItoResultType(fileUTI: contentType as CFString)
+                if type.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue && type.resultExtension != "" {
+                    uploadPasteFile(fileName: type.resultFilename, ext: type.resultExtension, contentType: contentType, serverUrl: serverUrl, data: data)
                 }
             }
         }

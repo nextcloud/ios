@@ -747,7 +747,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     @objc func pasteFilesMenu() {
-        NCCollectionCommon.shared.pasteFiles(serverUrl: serverUrl)
+        NCCollectionCommon.shared.pastePasteboard(serverUrl: serverUrl)
     }
     
     // MARK: - DataSource + NC Endpoint

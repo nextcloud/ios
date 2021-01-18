@@ -100,16 +100,7 @@ import Foundation
                         
                     case NCBrandGlobal.shared.selectorLoadCopy:
                         
-                        var items = UIPasteboard.general.items
-                        
-                        do {
-                            let etagPasteboard = try NSKeyedArchiver.archivedData(withRootObject: metadata.ocId, requiringSecureCoding: false)
-                            items.append([NCBrandGlobal.shared.metadataKeyedUnarchiver:etagPasteboard])
-                        } catch {
-                            print("error")
-                        }
-                        
-                        UIPasteboard.general.setItems(items, options: [:])
+                        NCCollectionCommon.shared.copyPasteboard()
                         
                     case NCBrandGlobal.shared.selectorLoadOffline:
                         

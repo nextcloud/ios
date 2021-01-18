@@ -50,9 +50,6 @@
 @property (nonatomic, strong) UIWindow *window;
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
 
-// Timer Process
-
-
 // Parameter account
 @property (nonatomic, strong) NSString *account;
 @property (nonatomic, strong) NSString *urlBase;
@@ -92,6 +89,8 @@
 @property (nonatomic, strong) NSUserDefaults *ncUserDefaults;
 @property (nonatomic, strong) NCNetworkingAutoUpload *networkingAutoUpload;
 @property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
+
+@property (nonatomic, strong) NSMutableArray *pasteboardOcIds;
 
 // Login
 - (void)startTimerErrorNetworking;
