@@ -66,8 +66,11 @@ class NCViewerProviderContextMenu: UIViewController  {
             // PREVIEW
             if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
                 
-                imageView.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag))
-                imageView.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
+                if let image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
+                    imageView.image = resizeImage(image)
+                    imageView.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
+                }
+                
                 preferredContentSize = imageView.frame.size
             }
              
@@ -210,7 +213,7 @@ class NCViewerProviderContextMenu: UIViewController  {
         
         if let image = image {
             imageView.image = resizeImage(image)
-            imageView.frame = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+            imageView.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
         }
         
         preferredContentSize = imageView.frame.size
@@ -279,8 +282,8 @@ class NCViewerProviderContextMenu: UIViewController  {
     }
     
     private func resizeImage(_ image: UIImage) -> UIImage {
-        if (image.size.width <  image.size.height) && (image.size.width < UIScreen.main.bounds.width) {
-            if let image = image.resizeImage(size: CGSize(width: UIScreen.main.bounds.width / 2, height: UIScreen.main.bounds.height / 2), isAspectRation: true) {
+        if (image.size.width <= image.size.height) && (image.size.width >= UIScreen.main.bounds.width) {
+            if let image = image.resizeImage(size: CGSize(width: UIScreen.main.bounds.width/2, height: UIScreen.main.bounds.height/2), isAspectRation: true) {
                 return image
             }
         }
