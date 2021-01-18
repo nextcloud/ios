@@ -448,7 +448,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)!
             
             if data is UIImage {
-                try (data as? UIImage)?.jpegData(compressionQuality: 1)?.write(to: URL(fileURLWithPath: filePath))
+                try (data as? UIImage)?.pngData()?.write(to: URL(fileURLWithPath: filePath))
             } else if data is Data {
                 try (data as? Data)?.write(to: URL(fileURLWithPath: filePath))
             } else if data is String {
@@ -468,26 +468,6 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             
         } catch { }
     }
-
-    private func uploadPasteOcId(_ ocId: String, serverUrl: String) {
-        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                let fileNameView = NCUtilityFileSystem.shared.createFileName(metadata.fileNameView, serverUrl: serverUrl, account: appDelegate.account)
-                let ocId = NSUUID().uuidString
-                
-                CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView))
-                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
-                
-                metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
-                metadataForUpload.sessionSelector = NCBrandGlobal.shared.selectorUploadFile
-                metadataForUpload.size = metadata.size
-                metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
-                
-                NCManageDatabase.shared.addMetadata(metadataForUpload)
-            }
-        }
-    }
-
 }
 
 
