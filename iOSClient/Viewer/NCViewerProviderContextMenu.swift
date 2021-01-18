@@ -208,8 +208,10 @@ class NCViewerProviderContextMenu: UIViewController  {
             image = UIImage.init(contentsOfFile: filePath)
         }
         
-        imageView.image = image
-        imageView.frame = CGRect(x: 0, y: 0, width: image?.size.width ?? 0, height: image?.size.height ?? 0)
+        if let image = image {
+            imageView.image = resizeImage(image)
+            imageView.frame = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+        }
         
         preferredContentSize = imageView.frame.size
     }
@@ -274,5 +276,14 @@ class NCViewerProviderContextMenu: UIViewController  {
         guard let track = AVURLAsset(url: url).tracks(withMediaType: AVMediaType.video).first else { return nil }
         let size = track.naturalSize.applying(track.preferredTransform)
         return CGSize(width: abs(size.width), height: abs(size.height))
+    }
+    
+    private func resizeImage(_ image: UIImage) -> UIImage {
+        if (image.size.width <  image.size.height) && (image.size.width < UIScreen.main.bounds.width) {
+            if let image = image.resizeImage(size: CGSize(width: UIScreen.main.bounds.width / 2, height: UIScreen.main.bounds.height / 2), isAspectRation: true) {
+                return image
+            }
+        }
+        return image
     }
 }
