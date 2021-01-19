@@ -33,6 +33,8 @@ class NCViewerProviderContextMenu: UIViewController  {
     private var metadata: tableMetadata?
     private var metadataLivePhoto: tableMetadata?
     
+    private var frame = CGRect.zero
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -284,9 +286,11 @@ class NCViewerProviderContextMenu: UIViewController  {
     private func resizeImage(_ image: UIImage) -> UIImage {
         if (image.size.width <= image.size.height) && (image.size.width >= UIScreen.main.bounds.width) {
             if let image = image.resizeImage(size: CGSize(width: UIScreen.main.bounds.width/2, height: UIScreen.main.bounds.height/2), isAspectRation: true) {
+                frame = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
                 return image
             }
         }
+        frame = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
         return image
     }
 }
