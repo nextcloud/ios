@@ -200,10 +200,9 @@ class NCViewerProviderContextMenu: UIViewController  {
         
         var image: UIImage?
 
-        let ext = CCUtility.getExtension(metadata.fileNameView)
         let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         
-        if ext == "GIF" {
+        if metadata.contentType == "image/gif" {
             image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: filePath))
         } else {
             image = UIImage.init(contentsOfFile: filePath)
