@@ -389,9 +389,10 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         for ocId in appDelegate.pasteboardOcIds {
             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId as? String) {
                 metadatas.append(metadata)
-                if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                    metadatas.append(metadataMOV)
-                }
+//                TODO: Live Photo
+//                if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+//                    metadatas.append(metadataMOV)
+//                }
             }
         }
         
