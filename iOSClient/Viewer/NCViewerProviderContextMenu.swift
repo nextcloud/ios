@@ -32,9 +32,7 @@ class NCViewerProviderContextMenu: UIViewController  {
     private var audioPlayer: AVAudioPlayer?
     private var metadata: tableMetadata?
     private var metadataLivePhoto: tableMetadata?
-    
-    private var frame = CGRect.zero
-    
+        
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -69,7 +67,7 @@ class NCViewerProviderContextMenu: UIViewController  {
             if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
                 
                 if let image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
-                    imageView.image = resizeImage(image)
+                    imageView.image = image
                     imageView.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
                 }
                 
@@ -210,11 +208,9 @@ class NCViewerProviderContextMenu: UIViewController  {
         } else {
             image = UIImage.init(contentsOfFile: filePath)
         }
-        
-        if let image = image {
-            imageView.image = resizeImage(image)
-            imageView.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
-        }
+
+        imageView.image = image
+        imageView.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
         
         preferredContentSize = imageView.frame.size
     }
@@ -279,16 +275,5 @@ class NCViewerProviderContextMenu: UIViewController  {
         guard let track = AVURLAsset(url: url).tracks(withMediaType: AVMediaType.video).first else { return nil }
         let size = track.naturalSize.applying(track.preferredTransform)
         return CGSize(width: abs(size.width), height: abs(size.height))
-    }
-    
-    private func resizeImage(_ image: UIImage) -> UIImage {
-        if (image.size.width <= image.size.height) && (image.size.width >= UIScreen.main.bounds.width) {
-            if let image = image.resizeImage(size: CGSize(width: UIScreen.main.bounds.width/2, height: UIScreen.main.bounds.height/2), isAspectRation: true) {
-                frame = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
-                return image
-            }
-        }
-        frame = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
-        return image
     }
 }
