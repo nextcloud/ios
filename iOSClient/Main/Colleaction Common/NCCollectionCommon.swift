@@ -418,34 +418,14 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
     }
 
     func pastePasteboard(serverUrl: String) {
-        
-        var listData: [String] = []
-        
-        for item in UIPasteboard.general.items {
-            for object in item {
                 
-                let contentType = object.key
-                let data = object.value
-               
-                if data is String {
-                    if listData.contains(data as! String) {
-                        continue
-                    } else {
-                        listData.append(data as! String)
+        for (index, item) in UIPasteboard.general.items.enumerated() {
+            if let contentType = item.first?.key {
+                if let data = UIPasteboard.general.data(forPasteboardType: contentType, inItemSet: IndexSet([index]))?.first {
+                    let type = NCCommunicationCommon.shared.convertUTItoResultType(fileUTI: contentType as CFString)
+                    if type.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue && type.resultExtension != "" {
+                        uploadPasteFile(fileName: type.resultFilename, ext: type.resultExtension, contentType: contentType, serverUrl: serverUrl, data: data)
                     }
-                }
-                
-                /*
-                if contentType == "com.compuserve.gif" {
-                    if let dataGif = UIPasteboard.general.data(forPasteboardType: kUTTypeGIF as String, inItemSet: nil)?.first {
-                        data = dataGif
-                    }
-                }
-                */
-                
-                let type = NCCommunicationCommon.shared.convertUTItoResultType(fileUTI: contentType as CFString)
-                if type.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue && type.resultExtension != "" {
-                    uploadPasteFile(fileName: type.resultFilename, ext: type.resultExtension, contentType: contentType, serverUrl: serverUrl, data: data)
                 }
             }
         }
