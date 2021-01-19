@@ -115,7 +115,7 @@ class NCViewerProviderContextMenu: UIViewController  {
             }
             
             // AUTO DOWNLOAD IMAGE GIF
-            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.getExtension(metadata.fileNameView) == "GIF" {
+            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.contentType == "image/gif" {
                 NCOperationQueue.shared.download(metadata: metadata, selector: "")
             }
             
