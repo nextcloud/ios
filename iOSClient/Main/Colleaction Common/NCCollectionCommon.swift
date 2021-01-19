@@ -433,12 +433,13 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
     }
 
     private func uploadPasteFile(fileName: String, ext: String, contentType: String, serverUrl: String, data: Data) {
+        
         do {
             let fileNameView = fileName + "_" + CCUtility.getIncrementalNumber() + "." + ext
             let ocId = UUID().uuidString
             let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)!
             
-            try (data as? Data)?.write(to: URL(fileURLWithPath: filePath))
+            try data.write(to: URL(fileURLWithPath: filePath))
            
             let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: contentType, livePhoto: false)
             
