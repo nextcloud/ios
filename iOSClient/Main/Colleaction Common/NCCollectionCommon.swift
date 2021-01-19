@@ -423,6 +423,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         
         for item in UIPasteboard.general.items {
             for object in item {
+                
                 let contentType = object.key
                 let data = object.value
                
@@ -433,6 +434,15 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
                         listData.append(data as! String)
                     }
                 }
+                
+                /*
+                if contentType == "com.compuserve.gif" {
+                    if let dataGif = UIPasteboard.general.data(forPasteboardType: kUTTypeGIF as String, inItemSet: nil)?.first {
+                        data = dataGif
+                    }
+                }
+                */
+                
                 let type = NCCommunicationCommon.shared.convertUTItoResultType(fileUTI: contentType as CFString)
                 if type.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue && type.resultExtension != "" {
                     uploadPasteFile(fileName: type.resultFilename, ext: type.resultExtension, contentType: contentType, serverUrl: serverUrl, data: data)
