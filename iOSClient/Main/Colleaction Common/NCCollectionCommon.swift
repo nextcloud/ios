@@ -419,8 +419,9 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
 
     func pastePasteboard(serverUrl: String) {
                 
-        for (index, item) in UIPasteboard.general.items.enumerated() {
-            if let contentType = item.first?.key {
+        for (index, items) in UIPasteboard.general.items.enumerated() {
+            for item in items {
+                let contentType = item.key
                 if let data = UIPasteboard.general.data(forPasteboardType: contentType, inItemSet: IndexSet([index]))?.first {
                     let type = NCCommunicationCommon.shared.convertUTItoResultType(fileUTI: contentType as CFString)
                     if type.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue && type.resultExtension != "" {
@@ -431,22 +432,14 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         }
     }
 
-    private func uploadPasteFile(fileName: String, ext: String, contentType: String, serverUrl: String, data: Any) {
+    private func uploadPasteFile(fileName: String, ext: String, contentType: String, serverUrl: String, data: Data) {
         do {
             let fileNameView = fileName + "_" + CCUtility.getIncrementalNumber() + "." + ext
             let ocId = UUID().uuidString
             let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)!
             
-            if data is UIImage {
-                try (data as? UIImage)?.pngData()?.write(to: URL(fileURLWithPath: filePath))
-            } else if data is Data {
-                try (data as? Data)?.write(to: URL(fileURLWithPath: filePath))
-            } else if data is String {
-                try (data as? String)?.write(to: URL(fileURLWithPath: filePath), atomically: true, encoding: .utf8)
-            } else {
-                return
-            }
-            
+            try (data as? Data)?.write(to: URL(fileURLWithPath: filePath))
+           
             let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: contentType, livePhoto: false)
             
             metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
