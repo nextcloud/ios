@@ -415,15 +415,20 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
     }
 
     func pastePasteboard(serverUrl: String) {
-                
+        
+        var typeDataSaved = [String: Data]()
+        
         for (index, items) in UIPasteboard.general.items.enumerated() {
             for item in items {
                 let contentType = item.key
                 if let data = UIPasteboard.general.data(forPasteboardType: contentType, inItemSet: IndexSet([index]))?.first {
-                    let type = NCCommunicationCommon.shared.convertUTItoResultType(fileUTI: contentType as CFString)
-                    if type.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue && type.resultExtension != "" {
-                        uploadPasteFile(fileName: type.resultFilename, ext: type.resultExtension, contentType: contentType, serverUrl: serverUrl, data: data)
-                    }
+                    typeDataSaved[contentType] = data
+                }
+            }
+            for (contentType,data) in typeDataSaved {
+                let results = NCCommunicationCommon.shared.convertUTItoResultType(fileUTI: contentType as CFString)
+                if results.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue {
+                    uploadPasteFile(fileName: results.resultFilename, ext: results.resultExtension, contentType: contentType, serverUrl: serverUrl, data: data)
                 }
             }
         }

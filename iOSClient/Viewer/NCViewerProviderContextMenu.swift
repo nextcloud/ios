@@ -275,4 +275,13 @@ class NCViewerProviderContextMenu: UIViewController  {
         let size = track.naturalSize.applying(track.preferredTransform)
         return CGSize(width: abs(size.width), height: abs(size.height))
     }
+    
+    private func resizeImage(_ image: UIImage) -> UIImage {
+        if (image.size.width <= image.size.height) && (image.size.width >= UIScreen.main.bounds.width) {
+            if let image = image.resizeImage(size: CGSize(width: UIScreen.main.bounds.width/2, height: UIScreen.main.bounds.height/2), isAspectRation: true) {
+                return image
+            }
+        }
+        return image
+    }
 }
