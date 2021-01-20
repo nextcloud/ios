@@ -280,7 +280,7 @@ class NCViewerProviderContextMenu: UIViewController  {
     private func resizeImage(_ image: UIImage?) -> UIImage? {
         guard let image = image else { return nil }
         
-        if (image.size.width <= image.size.height) && (image.size?.width >= UIScreen.main.bounds.width) {
+        if (image.size.width <= image.size.height) && (image.size.width >= UIScreen.main.bounds.width) {
             if let image = image.resizeImage(size: CGSize(width: UIScreen.main.bounds.width/2, height: UIScreen.main.bounds.height/2), isAspectRation: true) {
                 return image
             }
