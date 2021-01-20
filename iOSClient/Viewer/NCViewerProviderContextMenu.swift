@@ -67,7 +67,7 @@ class NCViewerProviderContextMenu: UIViewController  {
             if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
                 
                 if let image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
-                    imageView.image = image
+                    imageView.image = resizeImage(image)
                     imageView.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
                 }
                 
@@ -206,6 +206,7 @@ class NCViewerProviderContextMenu: UIViewController  {
             image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: filePath))
         } else {
             image = UIImage.init(contentsOfFile: filePath)
+            image = resizeImage(image)
         }
 
         imageView.image = image
@@ -276,12 +277,15 @@ class NCViewerProviderContextMenu: UIViewController  {
         return CGSize(width: abs(size.width), height: abs(size.height))
     }
     
-    private func resizeImage(_ image: UIImage) -> UIImage {
-        if (image.size.width <= image.size.height) && (image.size.width >= UIScreen.main.bounds.width) {
+    private func resizeImage(_ image: UIImage?) -> UIImage? {
+        guard let image = image else { return nil }
+        
+        if (image.size.width <= image.size.height) && (image.size?.width >= UIScreen.main.bounds.width) {
             if let image = image.resizeImage(size: CGSize(width: UIScreen.main.bounds.width/2, height: UIScreen.main.bounds.height/2), isAspectRation: true) {
                 return image
             }
         }
+        
         return image
     }
 }
