@@ -32,6 +32,7 @@ class NCViewerProviderContextMenu: UIViewController  {
     private var audioPlayer: AVAudioPlayer?
     private var metadata: tableMetadata?
     private var metadataLivePhoto: tableMetadata?
+    private var frame = CGRect.zero
         
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -49,9 +50,9 @@ class NCViewerProviderContextMenu: UIViewController  {
         
         if metadata.directory {
 
-            imageView.image = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width / 2)
-            imageView.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
-            preferredContentSize = imageView.frame.size
+            let image = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width / 2)
+            imageView.image = image
+            imageView.frame = resize(image.size)
 
         } else {
                          
@@ -59,8 +60,7 @@ class NCViewerProviderContextMenu: UIViewController  {
             if let image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: UIScreen.main.bounds.width / 2, height: UIScreen.main.bounds.height / 2), isAspectRation: true) {
                 
                 imageView.image = image
-                imageView.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
-                preferredContentSize = imageView.frame.size
+                imageView.frame = resize(image.size)
             }
             
             // PREVIEW
@@ -68,10 +68,8 @@ class NCViewerProviderContextMenu: UIViewController  {
                 
                 if let image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
                     imageView.image = image
-                    imageView.frame = resize(image)
+                    imageView.frame = resize(image.size)
                 }
-                
-                preferredContentSize = imageView.frame.size
             }
              
             // VIEW IMAGE
@@ -135,13 +133,9 @@ class NCViewerProviderContextMenu: UIViewController  {
         super.viewDidLayoutSubviews()
         
         if let videoLayer = self.videoLayer {
-            if videoLayer.frame == CGRect.zero {
-                videoLayer.frame = imageView.frame
-            } else {
-                imageView.frame = videoLayer.frame
-            }
+            videoLayer.frame = frame
         }
-        preferredContentSize = imageView.frame.size
+        preferredContentSize = frame.size
     }
     
     // MARK: - NotificationCenter
@@ -209,9 +203,7 @@ class NCViewerProviderContextMenu: UIViewController  {
         }
 
         imageView.image = image
-        imageView.frame = resize(image)
-        
-        preferredContentSize = imageView.frame.size
+        imageView.frame = resize(image?.size)
     }
     
     func playSound(metadata: tableMetadata) {
@@ -240,33 +232,19 @@ class NCViewerProviderContextMenu: UIViewController  {
         let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
 
         if let resolutionVideo = resolutionForLocalVideo(url: URL(fileURLWithPath: filePath)) {
-                                
-            let originRatio = resolutionVideo.width / resolutionVideo.height
-            let newRatio = UIScreen.main.bounds.width / UIScreen.main.bounds.height
-            var newSize = resolutionVideo
-            
-            if originRatio < newRatio {
-                newSize.height = UIScreen.main.bounds.height
-                newSize.width = UIScreen.main.bounds.height * originRatio
-            } else {
-                newSize.width = UIScreen.main.bounds.width
-                newSize.height = UIScreen.main.bounds.width / originRatio
-            }
-            
+                               
             let player = AVPlayer(url: URL(fileURLWithPath: filePath))
             
             self.videoLayer = AVPlayerLayer(player: player)
             if let videoLayer = self.videoLayer {
                 videoLayer.videoGravity = .resizeAspectFill
                 imageView.image = nil
-                imageView.frame = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
+                imageView.frame = resize(resolutionVideo)
                 imageView.layer.addSublayer(videoLayer)
             }
         
             player.isMuted = true
             player.play()
-            
-            preferredContentSize = imageView.frame.size
         }
     }
     
@@ -276,17 +254,24 @@ class NCViewerProviderContextMenu: UIViewController  {
         return CGSize(width: abs(size.width), height: abs(size.height))
     }
     
-    private func resize(_ image: UIImage?) -> CGRect {
-        guard let image = image else { return CGRect.zero }
+    private func resize(_ size: CGSize?) -> CGRect {
         
-        if image.size.width < UIScreen.main.bounds.width {
-            return CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+        guard let size = size else {
+            frame = CGRect.zero
+            preferredContentSize = frame.size
+            return frame
+        }
+        
+        if size.width < UIScreen.main.bounds.width {
+            frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+            preferredContentSize = frame.size
+            return frame
         }
         
         let height = UIScreen.main.bounds.height / 2
         let width = UIScreen.main.bounds.width/2
         
-        let originRatio = image.size.width / image.size.height
+        let originRatio = size.width / size.height
         let newRatio = UIScreen.main.bounds.width / UIScreen.main.bounds.height
         var newSize = CGSize.zero
         
@@ -298,6 +283,8 @@ class NCViewerProviderContextMenu: UIViewController  {
             newSize.height = width / originRatio
         }
         
-        return CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
+        frame = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
+        preferredContentSize = frame.size
+        return frame
     }
 }
