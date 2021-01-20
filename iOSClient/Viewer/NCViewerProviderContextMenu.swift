@@ -262,13 +262,13 @@ class NCViewerProviderContextMenu: UIViewController  {
             return frame
         }
         
-        if size.width < UIScreen.main.bounds.width {
+        if size.width <= UIScreen.main.bounds.width || size.width >= size.height {
             frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
             preferredContentSize = frame.size
             return frame
         }
         
-        let height = UIScreen.main.bounds.height / 2
+        let height = UIScreen.main.bounds.height/2
         let width = UIScreen.main.bounds.width/2
         
         let originRatio = size.width / size.height
