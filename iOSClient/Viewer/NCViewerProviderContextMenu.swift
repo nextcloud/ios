@@ -67,7 +67,7 @@ class NCViewerProviderContextMenu: UIViewController  {
             if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
                 
                 if let image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
-                    imageView.image = resizeImage(image)
+                    imageView.image = image
                     imageView.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
                 }
                 
@@ -206,11 +206,10 @@ class NCViewerProviderContextMenu: UIViewController  {
             image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: filePath))
         } else {
             image = UIImage.init(contentsOfFile: filePath)
-            image = resizeImage(image)
         }
 
         imageView.image = image
-        imageView.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
+        imageView.frame = resize(image)//CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
         
         preferredContentSize = imageView.frame.size
     }
@@ -277,15 +276,21 @@ class NCViewerProviderContextMenu: UIViewController  {
         return CGSize(width: abs(size.width), height: abs(size.height))
     }
     
-    private func resizeImage(_ image: UIImage?) -> UIImage? {
-        guard let image = image else { return nil }
+    private func resize(_ image: UIImage?) -> CGRect {
+        guard let image = image else { return CGRect.zero }
         
-        if (image.size.width <= image.size.height) && (image.size.width >= UIScreen.main.bounds.width) {
-            if let image = image.resizeImage(size: CGSize(width: UIScreen.main.bounds.width/2, height: UIScreen.main.bounds.height/2), isAspectRation: true) {
-                return image
-            }
+        let originRatio = image.size.width / image.size.height
+        let newRatio = UIScreen.main.bounds.width/2 / UIScreen.main.bounds.height/2
+        var newSize = CGSize.zero
+        
+        if originRatio < newRatio {
+            newSize.height = UIScreen.main.bounds.height
+            newSize.width = UIScreen.main.bounds.height * originRatio
+        } else {
+            newSize.width = UIScreen.main.bounds.width
+            newSize.height = UIScreen.main.bounds.width / originRatio
         }
         
-        return image
+        return CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
     }
 }
