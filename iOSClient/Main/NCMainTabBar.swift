@@ -235,5 +235,13 @@ class NCMainTabBar: UITabBar {
             }
         }
     }
+    
+    func getCenterButton() -> UIView? {
+        if let centerButton = self.viewWithTag(99) {
+            return centerButton
+        } else {
+            return nil
+        }
+    }
 }
 

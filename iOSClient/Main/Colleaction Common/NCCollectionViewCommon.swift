@@ -24,8 +24,8 @@
 import Foundation
 import NCCommunication
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate  {
-
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate  {
+    
     @IBOutlet weak var collectionView: UICollectionView!
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -705,7 +705,31 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     @objc func longPressCollecationView(_ gestureRecognizer: UILongPressGestureRecognizer) {
+        
         openMenuItems(with: nil, gestureRecognizer: gestureRecognizer)
+        /*
+        if #available(iOS 13.0, *) {
+            
+            let interaction = UIContextMenuInteraction(delegate: self)
+            self.view.addInteraction(interaction)
+        }
+        */
+    }
+    
+    @available(iOS 13.0, *)
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: {
+            
+            return nil
+            
+        }, actionProvider: { suggestedActions in
+            
+            //let share = UIAction(title: "Share Pupper", image: UIImage(systemName: "square.and.arrow.up")) { action in
+            //}
+            //return UIMenu(title: "Main Menu", children: [share])
+            return nil
+        })
     }
     
     func openMenuItems(with objectId: String?, gestureRecognizer: UILongPressGestureRecognizer) {
