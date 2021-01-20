@@ -1889,9 +1889,14 @@ class NCManageDatabase: NSObject {
         do {
             try realm.safeWrite {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                    let resultsType = NCCommunicationCommon.shared.getInternalContenType(fileName: fileNameTo, contentType: "", directory: result.directory)
                     result.fileName = fileNameTo
                     result.fileNameView = fileNameTo
                     result.fileNameWithoutExt = (fileNameTo as NSString).deletingPathExtension
+                    result.ext = resultsType.ext
+                    result.iconName = resultsType.iconName
+                    result.contentType = resultsType.typeIdentifier
+                    result.typeFile = resultsType.typeFile
                 }
             }
         } catch let error {
