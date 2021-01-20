@@ -281,6 +281,20 @@ extension NCCollectionViewCommon {
         }
         
         //
+        // COPY
+        //
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_copy_file_", comment: ""),
+                icon: UIImage(named: "copy")!.image(color: NCBrandColor.shared.icon, size: 50),
+                action: { menuAction in
+                    self.appDelegate.pasteboardOcIds = [metadata.ocId];
+                    NCCollectionCommon.shared.copyPasteboard()
+                }
+            )
+        )
+        
+        //
         // DELETE
         //
         actions.append(
@@ -385,26 +399,6 @@ extension NCCollectionViewCommon {
         )
         
         //
-        // COPY
-        //
-        if #available(iOS 13.0, *) {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_copy_file_", comment: ""),
-                    icon: UIImage(systemName: "doc.on.doc")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    action: { menuAction in
-                        self.appDelegate.pasteboardOcIds.removeAllObjects()
-                        for ocId in selectOcId {
-                            self.appDelegate.pasteboardOcIds.add(ocId)
-                        }
-                        NCCollectionCommon.shared.copyPasteboard()
-                        self.tapSelect(sender: self)
-                    }
-                )
-            )
-        }
-        
-        //
         // COPY - MOVE
         //
         actions.append(
@@ -449,6 +443,24 @@ extension NCCollectionViewCommon {
                             }
                         }
                     }
+                    self.tapSelect(sender: self)
+                }
+            )
+        )
+        
+        //
+        // COPY
+        //
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_copy_file_", comment: ""),
+                icon: UIImage(named: "copy")!.image(color: NCBrandColor.shared.icon, size: 50),
+                action: { menuAction in
+                    self.appDelegate.pasteboardOcIds.removeAllObjects()
+                    for ocId in selectOcId {
+                        self.appDelegate.pasteboardOcIds.add(ocId)
+                    }
+                    NCCollectionCommon.shared.copyPasteboard()
                     self.tapSelect(sender: self)
                 }
             )

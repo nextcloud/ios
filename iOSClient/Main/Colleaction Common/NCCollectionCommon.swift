@@ -366,7 +366,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
              return UIMenu(title: "", children: [detail, moveCopy, delete])
         }
         
-        var children: [UIMenuElement] = [detail, copy, moveCopy, open, delete]
+        var children: [UIMenuElement] = [detail, moveCopy, open, copy, delete]
 
         if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
             children.insert(save, at: 4)

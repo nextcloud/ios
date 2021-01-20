@@ -272,6 +272,20 @@ extension NCViewer {
         }
         
         //
+        // COPY
+        //
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_copy_file_", comment: ""),
+                icon: UIImage(named: "copy")!.image(color: NCBrandColor.shared.icon, size: 50),
+                action: { menuAction in
+                    self.appDelegate.pasteboardOcIds = [metadata.ocId];
+                    NCCollectionCommon.shared.copyPasteboard()
+                }
+            )
+        )
+        
+        //
         // DELETE
         //
         if !webView {
