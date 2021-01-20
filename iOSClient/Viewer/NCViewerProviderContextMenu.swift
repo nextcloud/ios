@@ -68,7 +68,7 @@ class NCViewerProviderContextMenu: UIViewController  {
                 
                 if let image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
                     imageView.image = image
-                    imageView.frame = CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
+                    imageView.frame = resize(image)
                 }
                 
                 preferredContentSize = imageView.frame.size
@@ -209,7 +209,7 @@ class NCViewerProviderContextMenu: UIViewController  {
         }
 
         imageView.image = image
-        imageView.frame = resize(image)//CGRect(x: 0, y: 0, width: imageView.image?.size.width ?? 0, height: imageView.image?.size.height ?? 0)
+        imageView.frame = resize(image)
         
         preferredContentSize = imageView.frame.size
     }
@@ -279,16 +279,23 @@ class NCViewerProviderContextMenu: UIViewController  {
     private func resize(_ image: UIImage?) -> CGRect {
         guard let image = image else { return CGRect.zero }
         
+        if image.size.width < UIScreen.main.bounds.width {
+            return CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+        }
+        
+        let height = UIScreen.main.bounds.height / 2
+        let width = UIScreen.main.bounds.width/2
+        
         let originRatio = image.size.width / image.size.height
-        let newRatio = UIScreen.main.bounds.width/2 / UIScreen.main.bounds.height/2
+        let newRatio = UIScreen.main.bounds.width / UIScreen.main.bounds.height
         var newSize = CGSize.zero
         
         if originRatio < newRatio {
-            newSize.height = UIScreen.main.bounds.height
-            newSize.width = UIScreen.main.bounds.height * originRatio
+            newSize.height = height
+            newSize.width = height * originRatio
         } else {
-            newSize.width = UIScreen.main.bounds.width
-            newSize.height = UIScreen.main.bounds.width / originRatio
+            newSize.width = width
+            newSize.height = width / originRatio
         }
         
         return CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
