@@ -256,20 +256,25 @@ class NCViewerProviderContextMenu: UIViewController  {
     
     private func resize(_ size: CGSize?) -> CGRect {
         
+        var height = UIScreen.main.bounds.height/2
+        var width = UIScreen.main.bounds.width/2
+        
         guard let size = size else {
             frame = CGRect.zero
             preferredContentSize = frame.size
             return frame
         }
         
-        if size.width <= UIScreen.main.bounds.width || size.width >= size.height {
+        if size.width <= UIScreen.main.bounds.width { 
             frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
             preferredContentSize = frame.size
             return frame
         }
         
-        let height = UIScreen.main.bounds.height/2
-        let width = UIScreen.main.bounds.width/2
+        if size.width >= size.height {
+            height = UIScreen.main.bounds.height
+            width = UIScreen.main.bounds.width
+        }
         
         let originRatio = size.width / size.height
         let newRatio = UIScreen.main.bounds.width / UIScreen.main.bounds.height
