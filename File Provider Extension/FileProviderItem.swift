@@ -41,9 +41,9 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         return NSNumber(value: metadata.size)
     }
     
-    var typeIdentifier: String {
+    var uniformTypeIdentifier: String {
         let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: "", directory: metadata.directory)
-        return results.typeIdentifier
+        return results.uniformTypeIdentifier
     }
     
     var contentModificationDate: Date? {

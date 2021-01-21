@@ -1895,7 +1895,7 @@ class NCManageDatabase: NSObject {
                     result.fileNameWithoutExt = (fileNameTo as NSString).deletingPathExtension
                     result.ext = resultsType.ext
                     result.iconName = resultsType.iconName
-                    result.contentType = resultsType.typeIdentifier
+                    result.contentType = resultsType.mimeType
                     result.typeFile = resultsType.typeFile
                 }
             }
