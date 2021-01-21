@@ -122,6 +122,21 @@ extension NCCollectionViewCommon {
         )
         
         //
+        // DETAIL
+        //
+        if !isFolderEncrypted && !appDelegate.disableSharesView {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_details_", comment: ""),
+                    icon: UIImage(named: "details")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    action: { menuAction in
+                        NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
+                    }
+                )
+            )
+        }
+        
+        //
         // OFFLINE
         //
         if !isFolderEncrypted {
@@ -154,15 +169,46 @@ extension NCCollectionViewCommon {
         }
         
         //
-        // DETAIL
+        // OPEN IN
         //
-        if !isFolderEncrypted && !appDelegate.disableSharesView {
+        if !metadata.directory && !NCBrandOptions.shared.disable_openin_file {
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_details_", comment: ""),
-                    icon: UIImage(named: "details")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    title: NSLocalizedString("_open_in_", comment: ""),
+                    icon: UIImage(named: "openFile")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
-                        NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
+                        NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn)
+                    }
+                )
+            )
+        }
+        
+        //
+        // SAVE
+        //
+        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
+            var title: String = NSLocalizedString("_save_selected_files_", comment: "")
+            var icon = UIImage(named: "saveSelectedFiles")!.image(color: NCBrandColor.shared.icon, size: 50)
+            let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
+            if metadataMOV != nil {
+                title = NSLocalizedString("_livephoto_save_", comment: "")
+                icon = UIImage(named: "livePhoto")!.image(color: NCBrandColor.shared.icon, size: 50)
+            }
+            
+            actions.append(
+                NCMenuAction(
+                    title: title,
+                    icon: icon,
+                    action: { menuAction in
+                        if metadataMOV != nil {
+                            NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
+                        } else {
+                            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                                NCCollectionCommon.shared.saveAlbum(metadata: metadata)
+                            } else {
+                                NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum)
+                            }
+                        }
                     }
                 )
             )
@@ -220,6 +266,22 @@ extension NCCollectionViewCommon {
         }
         
         //
+        // COPY
+        //
+        if !metadata.directory {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_copy_file_", comment: ""),
+                    icon: UIImage(named: "copy")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    action: { menuAction in
+                        self.appDelegate.pasteboardOcIds = [metadata.ocId];
+                        NCCollectionCommon.shared.copyPasteboard()
+                    }
+                )
+            )
+        }
+        
+        //
         // VIEW IN FOLDER
         //
         if layoutKey == NCBrandGlobal.shared.layoutViewRecent && appDelegate.activeFileViewInFolder == nil {
@@ -233,66 +295,6 @@ extension NCCollectionViewCommon {
                 )
             )
         }
-        
-        //
-        // OPEN IN
-        //
-        if !metadata.directory && !NCBrandOptions.shared.disable_openin_file {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_open_in_", comment: ""),
-                    icon: UIImage(named: "openFile")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    action: { menuAction in
-                        NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn)
-                    }
-                )
-            )
-        }
-        
-        //
-        // SAVE
-        //
-        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
-            var title: String = NSLocalizedString("_save_selected_files_", comment: "")
-            var icon = UIImage(named: "saveSelectedFiles")!.image(color: NCBrandColor.shared.icon, size: 50)
-            let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
-            if metadataMOV != nil {
-                title = NSLocalizedString("_livephoto_save_", comment: "")
-                icon = UIImage(named: "livePhoto")!.image(color: NCBrandColor.shared.icon, size: 50)
-            }
-            
-            actions.append(
-                NCMenuAction(
-                    title: title,
-                    icon: icon,
-                    action: { menuAction in
-                        if metadataMOV != nil {
-                            NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
-                        } else {
-                            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                                NCCollectionCommon.shared.saveAlbum(metadata: metadata)
-                            } else {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum)
-                            }
-                        }
-                    }
-                )
-            )
-        }
-        
-        //
-        // COPY
-        //
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_copy_file_", comment: ""),
-                icon: UIImage(named: "copy")!.image(color: NCBrandColor.shared.icon, size: 50),
-                action: { menuAction in
-                    self.appDelegate.pasteboardOcIds = [metadata.ocId];
-                    NCCollectionCommon.shared.copyPasteboard()
-                }
-            )
-        )
         
         //
         // DELETE
@@ -399,28 +401,6 @@ extension NCCollectionViewCommon {
         )
         
         //
-        // COPY - MOVE
-        //
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
-                icon: UIImage(named: "move")!.image(color: NCBrandColor.shared.icon, size: 50),
-                action: { menuAction in
-                    var meradatasSelect = [tableMetadata]()
-                    for ocId in selectOcId {
-                        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                            meradatasSelect.append(metadata)
-                        }
-                    }
-                    if meradatasSelect.count > 0 {
-                        NCCollectionCommon.shared.openSelectView(items: meradatasSelect, viewController: self)
-                    }
-                    self.tapSelect(sender: self)
-                }
-            )
-        )
-        
-        //
         // SAVE TO PHOTO GALLERY
         //
         actions.append(
@@ -442,6 +422,28 @@ extension NCCollectionViewCommon {
                                 }
                             }
                         }
+                    }
+                    self.tapSelect(sender: self)
+                }
+            )
+        )
+        
+        //
+        // COPY - MOVE
+        //
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
+                icon: UIImage(named: "move")!.image(color: NCBrandColor.shared.icon, size: 50),
+                action: { menuAction in
+                    var meradatasSelect = [tableMetadata]()
+                    for ocId in selectOcId {
+                        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                            meradatasSelect.append(metadata)
+                        }
+                    }
+                    if meradatasSelect.count > 0 {
+                        NCCollectionCommon.shared.openSelectView(items: meradatasSelect, viewController: self)
                     }
                     self.tapSelect(sender: self)
                 }

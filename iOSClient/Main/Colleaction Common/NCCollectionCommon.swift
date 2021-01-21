@@ -362,18 +362,20 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             delete = UIMenu(title: NSLocalizedString("_delete_folder_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirmFile])
         }
         
+        // ------ MENU -----
+        
         if metadata.directory {
              return UIMenu(title: "", children: [detail, moveCopy, delete])
         }
         
-        var children: [UIMenuElement] = [detail, moveCopy, open, copy, delete]
+        var children: [UIMenuElement] = [detail, open, moveCopy, copy, delete]
 
         if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
-            children.insert(save, at: 4)
+            children.insert(save, at: 2)
         }
         
         if enableViewInFolder {
-            children.insert(viewInFolder, at: 2)
+            children.insert(viewInFolder, at: 5)
         }
         
         return UIMenu(title: "", image: nil, identifier: nil, children: children)
