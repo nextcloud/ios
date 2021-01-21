@@ -1712,8 +1712,8 @@ class NCManageDatabase: NSObject {
         if isEncrypted || metadata.e2eEncrypted {
             if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
-                let results = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: file.contentType, directory: file.directory)
-                metadata.contentType = results.contentType
+                let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory)
+                metadata.contentType = results.mimeType
                 metadata.iconName = results.iconName
                 metadata.typeFile = results.typeFile
             }
@@ -1766,10 +1766,10 @@ class NCManageDatabase: NSObject {
     @objc func createMetadata(account: String, fileName: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, livePhoto: Bool) -> tableMetadata {
         
         let metadata = tableMetadata()
-        let results = NCCommunicationCommon.shared.getInternalContenType(fileName: fileName, contentType: contentType, directory: false)
+        let results = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
         
         metadata.account = account
-        metadata.contentType = results.contentType
+        metadata.contentType = results.mimeType
         metadata.creationDate = Date() as NSDate
         metadata.date = Date() as NSDate
         metadata.hasPreview = true
@@ -1889,7 +1889,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.safeWrite {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
-                    let resultsType = NCCommunicationCommon.shared.getInternalContenType(fileName: fileNameTo, contentType: "", directory: result.directory)
+                    let resultsType = NCCommunicationCommon.shared.getInternalType(fileName: fileNameTo, mimeType: "", directory: result.directory)
                     result.fileName = fileNameTo
                     result.fileNameView = fileNameTo
                     result.fileNameWithoutExt = (fileNameTo as NSString).deletingPathExtension

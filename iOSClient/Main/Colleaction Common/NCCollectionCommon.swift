@@ -418,11 +418,11 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
                 
         for (index, items) in UIPasteboard.general.items.enumerated() {
             for item in items {
-                let contentType = item.key
-                if let data = UIPasteboard.general.data(forPasteboardType: contentType, inItemSet: IndexSet([index]))?.first {
-                    let results = NCCommunicationCommon.shared.convertUTItoResultType(fileUTI: contentType as CFString)
+                let pasteboardType = item.key
+                if let data = UIPasteboard.general.data(forPasteboardType: pasteboardType, inItemSet: IndexSet([index]))?.first {
+                    let results = NCCommunicationCommon.shared.getDescriptionFile(inUTI: pasteboardType as CFString)
                     if results.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue {
-                        uploadPasteFile(fileName: results.resultFilename, ext: results.resultExtension, contentType: contentType, serverUrl: serverUrl, data: data)
+                        uploadPasteFile(fileName: results.resultFilename, ext: results.resultExtension, contentType: pasteboardType, serverUrl: serverUrl, data: data)
                     }
                 }
             }

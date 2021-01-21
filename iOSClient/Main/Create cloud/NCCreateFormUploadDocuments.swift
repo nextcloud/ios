@@ -270,8 +270,8 @@ import NCCommunication
             return
         } else {
             
-            let result = NCCommunicationCommon.shared.getInternalContenType(fileName: fileNameForm as! String, contentType: "", directory: false)
-            if NCUtility.shared.isDirectEditing(account: appDelegate.account, contentType: result.contentType) == nil {
+            let result = NCCommunicationCommon.shared.getInternalType(fileName: fileNameForm as! String, mimeType: "", directory: false)
+            if NCUtility.shared.isDirectEditing(account: appDelegate.account, contentType: result.mimeType) == nil {
                 fileNameForm = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
             }
             
@@ -328,10 +328,10 @@ import NCCommunication
                 if errorCode == 0 && account == self.appDelegate.account {
                     
                     if url != nil && url!.count > 0 {
-                        let result = NCCommunicationCommon.shared.getInternalContenType(fileName: fileName, contentType: "", directory: false)
+                        let results = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
                         
                         self.dismiss(animated: true, completion: {
-                            let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, fileName: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url ?? "", contentType: result.contentType, livePhoto: false)
+                            let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, fileName: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url ?? "", contentType: results.mimeType, livePhoto: false)
                             
                             NCViewer.shared.view(viewController: self.appDelegate.activeViewController, metadata: metadata, metadatas: [metadata])
                         })

@@ -321,7 +321,6 @@ import Queuer
             return
         }
         
-        let internalContenType = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: metadata.contentType, directory: false)
         var fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                    
         if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
@@ -331,9 +330,10 @@ import Queuer
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             let metadata = tableMetadata.init(value: metadata)
             
-            metadata.contentType = internalContenType.contentType
-            metadata.iconName = internalContenType.iconName
-            metadata.typeFile = internalContenType.typeFile
+            let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
+            metadata.contentType = results.mimeType
+            metadata.iconName = results.iconName
+            metadata.typeFile = results.typeFile
             if let date = NCUtilityFileSystem.shared.getFileCreationDate(filePath: fileNameLocalPath) {
                  metadata.creationDate = date
             }
