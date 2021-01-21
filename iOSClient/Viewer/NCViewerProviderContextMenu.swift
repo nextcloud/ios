@@ -32,7 +32,6 @@ class NCViewerProviderContextMenu: UIViewController  {
     private var audioPlayer: AVAudioPlayer?
     private var metadata: tableMetadata?
     private var metadataLivePhoto: tableMetadata?
-    private var frame = CGRect.zero
         
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -133,9 +132,13 @@ class NCViewerProviderContextMenu: UIViewController  {
         super.viewDidLayoutSubviews()
         
         if let videoLayer = self.videoLayer {
-            videoLayer.frame = frame
+            if videoLayer.frame == CGRect.zero {
+                videoLayer.frame = imageView.frame
+            } else {
+                imageView.frame = videoLayer.frame
+            }
         }
-        preferredContentSize = frame.size
+        preferredContentSize = imageView.frame.size
     }
     
     // MARK: - NotificationCenter
@@ -258,9 +261,9 @@ class NCViewerProviderContextMenu: UIViewController  {
         
         var height = UIScreen.main.bounds.height/2
         var width = UIScreen.main.bounds.width/2
+        var frame = CGRect.zero
         
         guard let size = size else {
-            frame = CGRect.zero
             preferredContentSize = frame.size
             return frame
         }
