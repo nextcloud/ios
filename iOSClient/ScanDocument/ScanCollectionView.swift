@@ -82,7 +82,9 @@ class DragDropViewController: UIViewController {
         transferDown.setImage(UIImage(named: "transferDown")?.image(color: NCBrandColor.shared.brandElement, size: 25), for: .normal)
         
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
-        add.addGestureRecognizer(longPressRecognizer)
+        collectionViewSource.addGestureRecognizer(longPressRecognizer)
+        let longPressRecognizerPlus = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
+        add.addGestureRecognizer(longPressRecognizerPlus)
         
         // changeTheming
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
