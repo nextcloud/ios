@@ -357,7 +357,7 @@ class DragDropViewController: UIViewController {
             let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: NCBrandGlobal.shared.keyFileNameMask, keyFileNameType: NCBrandGlobal.shared.keyFileNameType, keyFileNameOriginal: NCBrandGlobal.shared.keyFileNameOriginal)!
             let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
             
-            guard let image = pasteboard.image else {
+            guard let image = pasteboard.image?.fixedOrientation() else {
                 return
             }
             
