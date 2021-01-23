@@ -41,7 +41,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         return NSNumber(value: metadata.size)
     }
     
-    var uniformTypeIdentifier: String {
+    var typeIdentifier: String {
         let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: "", directory: metadata.directory)
         return results.uniformTypeIdentifier
     }
