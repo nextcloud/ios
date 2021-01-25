@@ -1224,6 +1224,8 @@
 		F7B0C1701EE8397E0033AC24 /* AutoUpload */ = {
 			isa = PBXGroup;
 			children = (
+				F7BFCCC01B68C21900548E76 /* CCManageLocation.h */,
+				F7BFCCC11B68C21900548E76 /* CCManageLocation.m */,
 				F7B0C1731EE839A30033AC24 /* NCAutoUpload.h */,
 				F7B0C1741EE839A30033AC24 /* NCAutoUpload.m */,
 			);
@@ -1257,15 +1259,6 @@
 				F73D5E46246DE09200DF6467 /* NCElementsJSON.swift */,
 			);
 			path = Data;
-			sourceTree = "<group>";
-		};
-		F7BFCCBD1B68C21900548E76 /* ManageLocation+ManageAsset */ = {
-			isa = PBXGroup;
-			children = (
-				F7BFCCC01B68C21900548E76 /* CCManageLocation.h */,
-				F7BFCCC11B68C21900548E76 /* CCManageLocation.m */,
-			);
-			path = "ManageLocation+ManageAsset";
 			sourceTree = "<group>";
 		};
 		F7BFFA621A24D7300044ED85 /* Login */ = {
@@ -1468,7 +1461,6 @@
 				F7725A5D251F33BB00D125E0 /* Files */,
 				F7A80BC7252624C100C7CD01 /* FileViewInFolder */,
 				F7BFFA621A24D7300044ED85 /* Login */,
-				F7BFCCBD1B68C21900548E76 /* ManageLocation+ManageAsset */,
 				F7EC9CB921185F2000F1C5CE /* Media */,
 				F7CB68942541670D0050EC94 /* More */,
 				F74D3DB81BAC1941000BAE4B /* Networking */,
