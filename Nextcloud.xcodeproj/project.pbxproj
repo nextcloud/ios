@@ -197,7 +197,6 @@
 		F77B0E5F1D118A16002130FE /* NCSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE4311BAC0268006C0017 /* NCSettings.m */; };
 		F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42D1BAC0268006C0017 /* CCManageAccount.m */; };
 		F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */; };
-		F77B0ED51D118A16002130FE /* PHAsset+Utility.m in Sources */ = {isa = PBXBuildFile; fileRef = F777F0311C29717F00CE81CB /* PHAsset+Utility.m */; };
 		F77B0ED91D118A16002130FE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F67BAD1A24D27800EE80DA /* main.m */; };
 		F77B0F611D118A16002130FE /* Acknowledgements.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F7ACE42B1BAC0268006C0017 /* Acknowledgements.rtf */; };
 		F77B0F631D118A16002130FE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
@@ -571,8 +570,6 @@
 		F77444F322281649000D5EB0 /* NCGridMediaCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCGridMediaCell.swift; sourceTree = "<group>"; };
 		F77444F422281649000D5EB0 /* NCGridMediaCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCGridMediaCell.xib; sourceTree = "<group>"; };
 		F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPickerViewController.swift; sourceTree = "<group>"; };
-		F777F0301C29717F00CE81CB /* PHAsset+Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PHAsset+Utility.h"; sourceTree = "<group>"; };
-		F777F0311C29717F00CE81CB /* PHAsset+Utility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PHAsset+Utility.m"; sourceTree = "<group>"; };
 		F77A697C250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+Menu.swift"; sourceTree = "<group>"; };
 		F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+MainThread.h"; sourceTree = "<group>"; };
 		F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNotificationCenter+MainThread.m"; sourceTree = "<group>"; };
@@ -1267,8 +1264,6 @@
 			children = (
 				F7BFCCC01B68C21900548E76 /* CCManageLocation.h */,
 				F7BFCCC11B68C21900548E76 /* CCManageLocation.m */,
-				F777F0301C29717F00CE81CB /* PHAsset+Utility.h */,
-				F777F0311C29717F00CE81CB /* PHAsset+Utility.m */,
 			);
 			path = "ManageLocation+ManageAsset";
 			sourceTree = "<group>";
@@ -2160,7 +2155,6 @@
 				F7E4D9C422ED929B003675FD /* NCShareComments.swift in Sources */,
 				F717402E24F699A5000C87D5 /* NCFavorite.swift in Sources */,
 				F74DE14325135B6800917068 /* NCTransfers.swift in Sources */,
-				F77B0ED51D118A16002130FE /* PHAsset+Utility.m in Sources */,
 				F755E6462525946C008DAB45 /* NCCollectionViewCommon.swift in Sources */,
 				F77B0ED91D118A16002130FE /* main.m in Sources */,
 			);
