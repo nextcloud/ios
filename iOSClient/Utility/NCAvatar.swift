@@ -32,13 +32,13 @@ import Foundation
         }
     }
     
-    @IBInspectable var borderWidth: CGFloat = 5 {
+    @IBInspectable var borderWidth: CGFloat = 1 {
         didSet{
             layoutSubviews()
         }
     }
     
-    @IBInspectable var borderColor: UIColor = UIColor.blue {
+    @IBInspectable var borderColor: UIColor = NCBrandColor.shared.avatarBorder {
         didSet{
             layoutSubviews()
         }
@@ -60,17 +60,7 @@ import Foundation
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        
-        layer.cornerRadius = bounds.width / roundness
-        layer.borderWidth = borderWidth
-        layer.borderColor = borderColor.cgColor
-        layer.backgroundColor = background.cgColor
-        clipsToBounds = true
-        
-        let path = UIBezierPath(roundedRect: bounds.insetBy(dx: 0.5, dy: 0.5), cornerRadius: bounds.width / roundness)
-        let mask = CAShapeLayer()
-        
-        mask.path = path.cgPath
-        layer.mask = mask
+                
+        self.avatar(roundness: roundness, borderWidth: borderWidth, borderColor: borderColor, backgroundColor: background)
     }
 }

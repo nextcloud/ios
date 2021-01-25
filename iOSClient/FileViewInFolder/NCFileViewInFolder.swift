@@ -33,16 +33,16 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         
         appDelegate.activeFileViewInFolder = self
         titleCurrentFolder = NCBrandOptions.shared.brand
-        layoutKey = k_layout_view_viewInFolder
+        layoutKey = NCBrandGlobal.shared.layoutViewViewInFolder
         enableSearchBar = false
-        emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.shared.brandElement)
+        emptyImage = UIImage.init(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = "_no_file_pull_down_"
     }
     
     override func viewWillAppear(_ animated: Bool) {
                 
-        if serverUrl == NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
             self.navigationItem.title = NCBrandOptions.shared.brand
         } else {
             self.navigationItem.title = (serverUrl as NSString).lastPathComponent
@@ -54,7 +54,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(itemForLine)
         
-        if layout == k_layout_list {
+        if layout == NCBrandGlobal.shared.layoutList {
             collectionView?.collectionViewLayout = listLayout
         } else {
             collectionView?.collectionViewLayout = gridLayout
@@ -132,9 +132,8 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
             if errorCode == 0 {
                 for metadata in metadatas ?? [] {
                     if !metadata.directory {
-                        let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                        if (CCUtility.getFavoriteOffline() && localFile == nil) || (localFile != nil && localFile?.etag != metadata.etag) {
-                            NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
+                        if NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
+                            NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
                         }
                     }
                 }

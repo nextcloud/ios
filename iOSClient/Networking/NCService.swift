@@ -57,7 +57,7 @@ class NCService: NSObject {
                 
                     // Update User (+ userProfile.id) & active account & account network
                     guard let tableAccount = NCManageDatabase.shared.setAccountUserProfile(userProfile!) else {
-                        NCContentPresenter.shared.messageNotification("Account", description: "Internal error : account not found on DB",  delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                        NCContentPresenter.shared.messageNotification("Account", description: "Internal error : account not found on DB",  delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError)
                         return
                     }
                 
@@ -67,12 +67,8 @@ class NCService: NSObject {
                     
                     self.appDelegate.settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userID: tableAccount.userID, password: CCUtility.getPassword(tableAccount.account))
                        
-                    // Synchronize favorite
-                    var selector = selectorReadFile
-                    if CCUtility.getFavoriteOffline() {
-                        selector = selectorDownloadFile
-                    }
-                    NCNetworking.shared.listingFavoritescompletion(selector: selector) { (_, _, _, _) in }
+                    // Synchronize favorite                    
+                    NCNetworking.shared.listingFavoritescompletion(selector: NCBrandGlobal.shared.selectorReadFile) { (_, _, _, _) in }
                 
                     // Synchronize Offline Directory
                     if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "serverUrl", ascending: true) {
@@ -80,7 +76,7 @@ class NCService: NSObject {
                             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) else {
                                 continue
                             }
-                            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadFile)
+                            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
                         }
                     }
                 
@@ -90,11 +86,11 @@ class NCService: NSObject {
                         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(file.ocId) else {
                             continue
                         }
-                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadFile)
+                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
                     }
                              
                     // Get Avatar
-                    let avatarUrl = "\(self.appDelegate.urlBase!)/index.php/avatar/\(self.appDelegate.user!)/\(k_avatar_size)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
+                    let avatarUrl = "\(self.appDelegate.urlBase!)/index.php/avatar/\(self.appDelegate.user!)/\(NCBrandGlobal.shared.avatarSize)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + stringUser + "-" + self.appDelegate.user + ".png"
                     NCCommunication.shared.downloadContent(serverUrl: avatarUrl) { (account, data, errorCode, errorMessage) in
                         
@@ -112,7 +108,7 @@ class NCService: NSObject {
                         }
                     }
                           
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_changeUserProfile)
+                    NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterChangeUserProfile)
                                         
                     self.requestServerCapabilities()
                 }
@@ -136,9 +132,9 @@ class NCService: NSObject {
                     
                     if extendedSupport == false {
                         if serverProductName == "owncloud" {
-                            NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_dismissAfterSecondLong))
+                            NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError)
                         } else if versionMajor <=  NCBrandGlobal.shared.nextcloud_unsupported_version {
-                            NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_unsupported_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_dismissAfterSecondLong))
+                            NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_unsupported_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError)
                         }
                     }
                 }
@@ -158,9 +154,15 @@ class NCService: NSObject {
                 
                     NCManageDatabase.shared.addCapabilitiesJSon(data!, account: account)
                 
+                    let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+                    
                     // Setup communication
-                    self.appDelegate.settingSetupCommunication(account)
-                
+                    if serverVersionMajor > 0 {
+                        NCCommunicationCommon.shared.setup(nextcloudVersion: serverVersionMajor)
+                    }
+                    NCCommunicationCommon.shared.setup(webDav: NCUtilityFileSystem.shared.getWebDAV(account: account))
+                    NCCommunicationCommon.shared.setup(dav: NCUtilityFileSystem.shared.getDAV())
+                    
                     // Theming
                     NCBrandColor.shared.settingThemingColor(account: account)
                 
@@ -170,17 +172,14 @@ class NCService: NSObject {
                         NCCommunication.shared.readShares { (account, shares, errorCode, ErrorDescription) in
                             if errorCode == 0 {
                                 
-                                DispatchQueue.global().async {
-                                    
-                                    NCManageDatabase.shared.deleteTableShare(account: account)
-                                    if shares != nil {
-                                        NCManageDatabase.shared.addShare(urlBase: self.appDelegate.urlBase, account: account, shares: shares!)
-                                    }
-                                    self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: account)
+                                NCManageDatabase.shared.deleteTableShare(account: account)
+                                if shares != nil {
+                                    NCManageDatabase.shared.addShare(urlBase: self.appDelegate.urlBase, account: account, shares: shares!)
                                 }
-                                
+                                self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: account)
+                               
                             } else {
-                                NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                             }
                         }
                     }
@@ -195,8 +194,7 @@ class NCService: NSObject {
                     }
                 
                     // Text direct editor detail
-                    let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-                    if serverVersionMajor >= k_nextcloud_version_18_0 {
+                    if serverVersionMajor >= NCBrandGlobal.shared.nextcloudVersion18 {
                         NCCommunication.shared.NCTextObtainEditorDetails() { (account, editors, creators, errorCode, errorMessage) in
                             if errorCode == 0 && account == self.appDelegate.account {
                                 

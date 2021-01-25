@@ -2,7 +2,7 @@
 //  String+Extensions.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 22/11/20.
+//  Created by Marino Faggiana on 22/12/20.
 //  Copyright © 2020 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
@@ -25,20 +25,14 @@ import Foundation
 
 extension String {
     
-    func textToImage(size: CGFloat) -> UIImage? {
-        
-        let nsString = (self as NSString)
-        let font = UIFont.systemFont(ofSize: size)
-        let stringAttributes = [NSAttributedString.Key.font: font]
-        let imageSize = nsString.size(withAttributes: stringAttributes)
-
-        UIGraphicsBeginImageContextWithOptions(imageSize, false, 0)
-        UIColor.clear.set() // clear background
-        UIRectFill(CGRect(origin: CGPoint(), size: imageSize)) // set rect size
-        nsString.draw(at: CGPoint.zero, withAttributes: stringAttributes) // draw text within rect
-        let image = UIGraphicsGetImageFromCurrentImageContext() // create image from context
-        UIGraphicsEndImageContext() //  end image context
-
-        return image ?? UIImage()
+    func formatSecondsToString(_ seconds: TimeInterval) -> String {
+        if seconds.isNaN {
+            return "00:00:00"
+        }
+        let sec = Int(seconds.truncatingRemainder(dividingBy: 60))
+        let min = Int(seconds.truncatingRemainder(dividingBy: 3600) / 60)
+        let hour = Int(seconds / 3600)
+        return String(format: "%02d:%02d:%02d", hour, min, sec)
     }
+    
 }

@@ -31,9 +31,9 @@ class NCOffline: NCCollectionViewCommon  {
         
         appDelegate.activeOffline = self
         titleCurrentFolder = NSLocalizedString("_manage_file_offline_", comment: "")
-        layoutKey = k_layout_view_offline
+        layoutKey = NCBrandGlobal.shared.layoutViewOffline
         enableSearchBar = true
-        emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.shared.brandElement)
+        emptyImage = UIImage.init(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = "_tutorial_offline_view_"
     }
@@ -100,9 +100,8 @@ class NCOffline: NCCollectionViewCommon  {
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory {
-                            let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                            if localFile == nil || localFile?.etag != metadata.etag {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
+                            if NCManageDatabase.shared.isDownloadMetadata(metadata, download: true) {
+                                NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
                             }
                         }
                     }

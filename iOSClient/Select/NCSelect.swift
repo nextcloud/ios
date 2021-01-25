@@ -32,6 +32,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
     @IBOutlet fileprivate weak var toolbar: UIView!
+    @IBOutlet fileprivate weak var separator: UIView!
     @IBOutlet fileprivate weak var overwriteView: UIView!
 
     @IBOutlet fileprivate weak var buttonCancel: UIBarButtonItem!
@@ -42,8 +43,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     @IBOutlet fileprivate weak var overwriteSwitch: UISwitch!
     @IBOutlet fileprivate weak var overwriteLabel: UILabel!
     
-    @IBOutlet fileprivate weak var toolBarTop: NSLayoutConstraint!
-
     // ------ external settings ------------------------------------
     @objc var delegate: NCSelectDelegate?
     
@@ -66,7 +65,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     
     private var emptyDataSet: NCEmptyDataSet?
     
-    private let keyLayout = k_layout_view_move
+    private let keyLayout = NCBrandGlobal.shared.layoutViewMove
     private var serverUrlPush = ""
     private var metadataTouch: tableMetadata?
     private var metadataFolder = tableMetadata()
@@ -129,7 +128,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
         // Empty
-        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -200, delegate: self)
+        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 0, delegate: self)
         
         // title button
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
@@ -152,8 +151,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         buttonDone1.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
         buttonDone1.setTitleColor(.black, for: .normal)
                 
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterReloadDataSource), object: nil)
 
         changeTheming()
     }
@@ -163,7 +162,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         
         self.navigationItem.title = titleCurrentFolder
         
-        toolBarTop.constant = -100
         buttonDone.setTitle(titleButtonDone, for: .normal)
         buttonDone1.setTitle(titleButtonDone1, for: .normal)
         buttonDone1.isHidden = isButtonDone1Hide
@@ -180,7 +178,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         
         // set the serverUrl
         if serverUrl == "" {
-            serverUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+            serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         }
                 
         // get auto upload folder
@@ -190,7 +188,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(itemForLine)
         
-        if layout == k_layout_list {
+        if layout == NCBrandGlobal.shared.layoutList {
             collectionView.collectionViewLayout = listLayout
         } else {
             collectionView.collectionViewLayout = gridLayout
@@ -215,7 +213,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         collectionView.reloadData()
         refreshControl.backgroundColor = NCBrandColor.shared.backgroundView
         toolbar.backgroundColor = NCBrandColor.shared.tabBar
-        //toolbar.tintColor = .gray
+        separator.backgroundColor = NCBrandColor.shared.graySoft
     }
     
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
@@ -225,13 +223,13 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     // MARK: - Empty
     
     func emptyDataSetView(_ view: NCEmptyView) {
-        
+                
         if networkInProgress {
-            view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "networkInProgress"), width: 300, height: 300, color: .gray)
+            view.emptyImage.image = UIImage.init(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
             view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
             view.emptyDescription.text = ""
         } else {
-            view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.shared.brandElement)
+            view.emptyImage.image = UIImage.init(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
             if includeImages {
                 view.emptyTitle.text = NSLocalizedString("_files_no_files_", comment: "")
             } else {
@@ -304,7 +302,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
                     self.collectionView.reloadData()
                 })
             })
-            layout = k_layout_list
+            layout = NCBrandGlobal.shared.layoutList
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -313,7 +311,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
                     self.collectionView.reloadData()
                 })
             })
-            layout = k_layout_grid
+            layout = NCBrandGlobal.shared.layoutGrid
         }
     }
     
@@ -412,9 +410,9 @@ extension NCSelect: UICollectionViewDataSource {
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
             
             if collectionView.collectionViewLayout == gridLayout {
-                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.shared.icon), for: .normal)
+                header.buttonSwitch.setImage(UIImage.init(named: "switchList")?.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
             } else {
-                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.shared.icon), for: .normal)
+                header.buttonSwitch.setImage(UIImage.init(named: "switchGrid")?.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
             }
             
             header.delegate = self
@@ -450,7 +448,7 @@ extension NCSelect: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
-            if layout == k_layout_list {
+            if layout == NCBrandGlobal.shared.layoutList {
                 return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
             } else {
                 return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
@@ -464,8 +462,8 @@ extension NCSelect: UICollectionViewDataSource {
         // Download preview
         NCOperationQueue.shared.downloadThumbnail(metadata: metadata, urlBase: appDelegate.urlBase, view: collectionView, indexPath: indexPath)
         
-        isShare = metadata.permissions.contains(k_permission_shared) && !metadataFolder.permissions.contains(k_permission_shared)
-        isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder.permissions.contains(k_permission_mounted)
+        isShare = metadata.permissions.contains(NCBrandGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCBrandGlobal.shared.permissionShared)
+        isMounted = metadata.permissions.contains(NCBrandGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCBrandGlobal.shared.permissionMounted)
         
         if dataSource.metadataShare[metadata.ocId] != nil {
             tableShare = dataSource.metadataShare[metadata.ocId]
@@ -473,7 +471,7 @@ extension NCSelect: UICollectionViewDataSource {
         
         // LAYOUT LIST
         
-        if layout == k_layout_list {
+        if layout == NCBrandGlobal.shared.layoutList {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
             cell.delegate = self
@@ -568,17 +566,13 @@ extension NCSelect: UICollectionViewDataSource {
                 cell.imageShared.image = NCCollectionCommon.images.cellCanShareImage
             }
             if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userID {
-                // Load avatar
-                let fileNameSource = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + metadata.ownerId + ".png"
-                let fileNameSourceAvatar = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-avatar-" + metadata.ownerId + ".png"
-                if FileManager.default.fileExists(atPath: fileNameSourceAvatar) {
-                    cell.imageShared.image = UIImage(contentsOfFile: fileNameSourceAvatar)
-                } else if FileManager.default.fileExists(atPath: fileNameSource) {
-                    cell.imageShared.image = NCUtility.shared.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
+                let fileNameUser = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + metadata.ownerId + ".png"
+                if FileManager.default.fileExists(atPath: fileNameUser) {
+                    cell.imageShared.image = UIImage(contentsOfFile: fileNameUser)
                 } else {
-                    NCCommunication.shared.downloadAvatar(userID: metadata.ownerId, fileNameLocalPath: fileNameSource, size: Int(k_avatar_size)) { (account, data, errorCode, errorMessage) in
+                    NCCommunication.shared.downloadAvatar(userID: metadata.ownerId, fileNameLocalPath: fileNameUser, size: NCBrandGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.account {
-                            cell.imageShared.image = NCUtility.shared.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
+                            cell.imageShared.image = UIImage(contentsOfFile: fileNameUser)
                         }
                     }
                 }
@@ -607,7 +601,7 @@ extension NCSelect: UICollectionViewDataSource {
         
         // LAYOUT GRID
         
-        if layout == k_layout_grid {
+        if layout == NCBrandGlobal.shared.layoutGrid {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
             cell.delegate = self
@@ -704,10 +698,13 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         
-        if richWorkspaceText?.count ?? 0 == 0 {
-            headerRichWorkspaceHeight = 0
-        } else {
-            headerRichWorkspaceHeight = UIScreen.main.bounds.size.height / 4
+        headerRichWorkspaceHeight = 0
+        
+        if let richWorkspaceText = richWorkspaceText {
+            let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
+            if trimmed.count > 0 {
+                headerRichWorkspaceHeight = UIScreen.main.bounds.size.height / 4
+            }
         }
         
         return CGSize(width: collectionView.frame.width, height: headerHeight + headerRichWorkspaceHeight)
@@ -771,7 +768,7 @@ extension NCSelect {
             if errorCode == 0 {
                 self.loadDatasource(withLoadFolder: true)
             }  else {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
         }
     }
@@ -783,7 +780,7 @@ extension NCSelect {
         
         NCNetworking.shared.readFolder(serverUrl: serverUrl, account: appDelegate.account) { (_, _, _, _, _, errorCode, errorDescription) in
             if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
             self.networkInProgress = false
             self.loadDatasource(withLoadFolder: false)

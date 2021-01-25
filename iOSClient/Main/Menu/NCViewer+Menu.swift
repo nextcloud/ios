@@ -70,11 +70,11 @@ extension NCViewer {
         actions.append(
             NCMenuAction(
                 title: titleFavorite,
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.shared.yellowFavorite),
+                icon: UIImage(named: "favorite")!.image(color: NCBrandColor.shared.yellowFavorite, size: 50),
                 action: { menuAction in
                     NCNetworking.shared.favoriteMetadata(metadata, urlBase: self.appDelegate.urlBase) { (errorCode, errorDescription) in
                         if errorCode != 0 {
-                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
                     }
                 }
@@ -88,9 +88,29 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "details")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         NCNetworkingNotificationCenter.shared.openShare(ViewController: viewController, metadata: metadata, indexPage: 0)
+                    }
+                )
+            )
+        }
+        
+        //
+        // OFFLINE
+        //
+        if metadata.session == "" && !webView {
+            actions.append(
+                NCMenuAction(
+                    title: titleOffline,
+                    icon: UIImage(named: "offline")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    action: { menuAction in
+                        if ((localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) && metadata.session == "") {
+                            
+                            NCNetworking.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadOffline) { (_) in }
+                        } else {
+                            NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
+                        }
                     }
                 )
             )
@@ -101,10 +121,39 @@ extension NCViewer {
         //
         if metadata.session == "" && !webView {
             actions.append(
-                NCMenuAction(title: NSLocalizedString("_open_in_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                NCMenuAction(
+                    title: NSLocalizedString("_open_in_", comment: ""),
+                    icon: UIImage(named: "openFile")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
-                        NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: selectorOpenIn)
+                        NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn)
+                    }
+                )
+            )
+        }
+        
+        //
+        // SAVE IMAGE / VIDEO
+        //
+        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
+            
+            var title: String = NSLocalizedString("_save_selected_files_", comment: "")
+            var icon = UIImage(named: "saveSelectedFiles")!.image(color: NCBrandColor.shared.icon, size: 50)
+            let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
+            if metadataMOV != nil {
+                title = NSLocalizedString("_livephoto_save_", comment: "")
+                icon = UIImage(named: "livePhoto")!.image(color: NCBrandColor.shared.icon, size: 50)
+            }
+            
+            actions.append(
+                NCMenuAction(
+                    title: title,
+                    icon: icon,
+                    action: { menuAction in
+                        if metadataMOV != nil {
+                            NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
+                        } else {
+                            NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum)
+                        }
                     }
                 )
             )
@@ -117,7 +166,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "rename"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "rename")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
 
@@ -127,7 +176,7 @@ extension NCViewer {
                             let fileNameNew = alertController.textFields![0].text
                             NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, urlBase: self.appDelegate.urlBase, viewController: viewController) { (errorCode, errorDescription) in
                                 if errorCode != 0 {
-                                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                 }
                             }
                         })
@@ -147,7 +196,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_move_or_copy_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "move")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         
                         let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
@@ -174,24 +223,18 @@ extension NCViewer {
         }
         
         //
-        // OFFLINE
+        // COPY
         //
-        if metadata.session == "" && !webView {
-            actions.append(
-                NCMenuAction(
-                    title: titleOffline,
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.shared.icon),
-                    action: { menuAction in
-                        if ((localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) && metadata.session == "") {
-                            
-                            NCNetworking.shared.download(metadata: metadata, selector: selectorLoadOffline) { (_) in }
-                        } else {
-                            NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
-                        }
-                    }
-                )
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_copy_file_", comment: ""),
+                icon: UIImage(named: "copy")!.image(color: NCBrandColor.shared.icon, size: 50),
+                action: { menuAction in
+                    self.appDelegate.pasteboardOcIds = [metadata.ocId];
+                    NCCollectionCommon.shared.copyPasteboard()
+                }
             )
-        }
+        )
         
         //
         // VIEW IN FOLDER
@@ -201,7 +244,7 @@ extension NCViewer {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_view_in_folder_", comment: ""),
-                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "viewInFolder"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                        icon: UIImage(named: "viewInFolder")!.image(color: NCBrandColor.shared.icon, size: 50),
                         action: { menuAction in
                             NCCollectionCommon.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
                         }
@@ -211,12 +254,45 @@ extension NCViewer {
         }
         
         //
+        // DOWNLOAD IMAGE MAX RESOLUTION
+        //
+        if metadata.session == "" {
+            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "" {
+                actions.append(
+                    NCMenuAction(
+                        title: NSLocalizedString("_download_image_max_", comment: ""),
+                        icon: UIImage(named: "downloadImageFullRes")!.image(color: NCBrandColor.shared.icon, size: 50),
+                        action: { menuAction in
+                            NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
+                        }
+                    )
+                )
+            }
+        }
+        
+        //
+        // PDF
+        //
+        if (metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileDocument && metadata.contentType == "application/pdf" ) {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_search_", comment: ""),
+                    icon: UIImage(named: "search")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    action: { menuAction in
+                        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterMenuSearchTextPDF)
+                    }
+                )
+            )
+        }
+        
+        //
         // DELETE
         //
         if !webView {
             actions.append(
-                NCMenuAction(title: titleDelete,
-                             icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                NCMenuAction(
+                    title: titleDelete,
+                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         
                         let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
@@ -225,7 +301,7 @@ extension NCViewer {
                             
                             NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
                                 if errorCode != 0 {
-                                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                 }
                             }
                         })
@@ -238,51 +314,6 @@ extension NCViewer {
             )
         }
         
-        //
-        // PDF
-        //
-        if (metadata.typeFile == k_metadataTypeFile_document && metadata.contentType == "application/pdf" ) {
-            actions.append(
-                NCMenuAction(title: NSLocalizedString("_search_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "search"), width: 50, height: 50, color: NCBrandColor.shared.icon),
-                    action: { menuAction in
-                        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuSearchTextPDF)
-                    }
-                )
-            )
-        }
-        
-        //
-        // IMAGE - VIDEO - AUDIO
-        //
-        if metadata.session == "" {
-            if metadata.typeFile == k_metadataTypeFile_image && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "" {
-                actions.append(
-                    NCMenuAction(title: NSLocalizedString("_download_image_max_", comment: ""),
-                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "downloadImageFullRes"), width: 50, height: 50, color: NCBrandColor.shared.icon),
-                        action: { menuAction in
-                            NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
-                        }
-                    )
-                )
-            }
-        }
-        
-        if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
-            if let metadataLive = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
-                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataLive.ocId, fileNameView: metadataLive.fileNameView) {
-                    actions.append(
-                        NCMenuAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
-                            icon: CCGraphics.changeThemingColorImage(UIImage(named: "livePhoto"), width: 50, height: 50, color: NCBrandColor.shared.icon),
-                            action: { menuAction in
-                                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuSaveLivePhoto, userInfo: ["ocId": metadata.ocId, "ocIdMov": metadataLive.ocId])
-                            }
-                        )
-                    )
-                }
-            }
-        }
-         
         return actions
     }
 }

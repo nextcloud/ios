@@ -126,6 +126,7 @@ class NCBrandColor: NSObject {
     @objc public let yellowFavorite:        UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
     @objc public let textInfo:              UIColor = UIColor(red: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 1.0)
     @objc public var select:                UIColor = .white
+    @objc public var avatarBorder:          UIColor = .white
 
     override init() {
         self.brand = self.customer
@@ -143,6 +144,7 @@ class NCBrandColor: NSObject {
             textView = .white
             separator = UIColor(red: 60.0/255.0, green: 60.0/255.0, blue: 60.0/255.0, alpha: 1.0)
             select = UIColor.white.withAlphaComponent(0.2)
+            avatarBorder = .black
         } else {
             tabBar = .white
             backgroundView = .white
@@ -151,6 +153,7 @@ class NCBrandColor: NSObject {
             textView = .black
             separator = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
             select = self.brandElement.withAlphaComponent(0.1)
+            avatarBorder = .white
         }
     }
     
@@ -168,7 +171,7 @@ class NCBrandColor: NSObject {
             
             let themingColorText = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorText)
             
-            CCGraphics.settingThemingColor(themingColor, themingColorElement: themingColorElement, themingColorText: themingColorText)
+            settingBrandColor(themingColor, themingColorElement: themingColorElement, themingColorText: themingColorText)
                         
             if NCBrandColor.shared.brandElement.isTooLight() {
                 if let color = NCBrandColor.shared.brandElement.darker(by: darker) {
@@ -202,10 +205,46 @@ class NCBrandColor: NSObject {
         
         DispatchQueue.main.async {
             NCCollectionCommon.shared.createImagesThemingColor()
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_changeTheming)
+            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterChangeTheming)
         }
     }
 #endif
+    
+    @objc func settingBrandColor(_ themingColor: String?, themingColorElement: String?, themingColorText: String?) {
+                
+        // COLOR
+        if themingColor?.first == "#" {
+            if let color = UIColor(hex: themingColor!) {
+                NCBrandColor.shared.brand = color
+            } else {
+                NCBrandColor.shared.brand = NCBrandColor.shared.customer
+            }
+        } else {
+            NCBrandColor.shared.brand = NCBrandColor.shared.customer
+        }
+        
+        // COLOR TEXT
+        if themingColorText?.first == "#" {
+            if let color = UIColor(hex: themingColorText!) {
+                NCBrandColor.shared.brandText = color
+            } else {
+                NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
+            }
+        } else {
+            NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
+        }
+        
+        // COLOR ELEMENT
+        if themingColorElement?.first == "#" {
+            if let color = UIColor(hex: themingColorElement!) {
+                NCBrandColor.shared.brandElement = color
+            } else {
+                NCBrandColor.shared.brandElement = NCBrandColor.shared.brand
+            }
+        } else {
+            NCBrandColor.shared.brandElement = NCBrandColor.shared.brand
+        }
+    }
 }
 
 //MARK: - Global
@@ -217,17 +256,245 @@ class NCBrandColor: NSObject {
     }()
 
     // Directory on Group
-    @objc public let appDatabaseNextcloud: String   = "Library/Application Support/Nextcloud"
+    @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"
+    @objc let appApplicationSupport                 = "Library/Application Support"
+    @objc let appUserData                           = "Library/Application Support/UserData"
+    @objc let appCertificates                       = "Library/Application Support/Certificates"
+    @objc let appScan                               = "Library/Application Support/Scan"
+    @objc let directoryProviderStorage              = "File Provider Storage"
+
+    // Service Key Share
+    @objc let serviceShareKeyChain                  = "Crypto Cloud"
+    @objc let metadataKeyedUnarchiver               = "it.twsweb.nextcloud.metadata"
+
+    // Nextcloud version
+    @objc let nextcloudVersion12: Int               =  12
+    let nextcloudVersion15: Int                     =  15
+    let nextcloudVersion17: Int                     =  17
+    let nextcloudVersion18: Int                     =  18
+    let nextcloudVersion20: Int                     =  20
 
     // Database Realm
-    public let databaseDefault: String              = "nextcloud.realm"
-    public let databaseSchemaVersion: UInt64        = 153
+    let databaseDefault                             = "nextcloud.realm"
+    let databaseSchemaVersion: UInt64               = 161
+    
+    // Intro selector
+    @objc let introLogin: Int                       = 0
+    @objc let introSignup: Int                      = 1
+    
+    // Avatar & Preview
+    let avatarSize: CGFloat                         = 512
+    @objc let sizePreview: CGFloat                  = 1024
+    @objc let sizeIcon: CGFloat                     = 512
+    
+    // E2EE
+    let e2eeMaxFileSize: UInt64                     = 524288000   // 500 MB
+    let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
+    @objc let e2eeVersion                           = "1.1"
+    
+    // Max Size Upload
+    let uploadMaxFileSize: UInt64                   = 524288000   // 500 MB
+    
+    // Max Cache Proxy Video
+    let maxHTTPCache: Int64                         = 10737418240 // 10 GB
     
     // NCSharePaging
-    public let indexPageActivity: Int               = 0
-    public let indexPageComments: Int               = 1
-    public let indexPageSharing: Int                = 2
+    let indexPageActivity: Int                      = 0
+    let indexPageComments: Int                      = 1
+    let indexPageSharing: Int                       = 2
     
+    // NCViewerProviderContextMenu
+    let maxAutoDownload: UInt64                     = 104857600 // 100MB
+    let maxAutoDownloadCellular: UInt64             = 10485760  // 10MB
+
     // Nextcloud unsupported
-    public let nextcloud_unsupported_version: Int   = 13
+    let nextcloud_unsupported_version: Int          = 13
+    
+    // Layout
+    let layoutList                                  = "typeLayoutList"
+    let layoutGrid                                  = "typeLayoutGrid"
+    
+    let layoutViewMove                              = "LayoutMove"
+    let layoutViewTrash                             = "LayoutTrash"
+    let layoutViewOffline                           = "LayoutOffline"
+    let layoutViewFavorite                          = "LayoutFavorite"
+    let layoutViewFiles                             = "LayoutFiles"
+    let layoutViewViewInFolder                      = "ViewInFolder"
+    let layoutViewTransfers                         = "LayoutTransfers"
+    let layoutViewRecent                            = "LayoutRecent"
+    let layoutViewShares                            = "LayoutShares"
+    
+    // Button Type in Cell list/grid
+    let buttonMoreMore                              = "more"
+    let buttonMoreStop                              = "stop"
+    
+    // Text -  OnlyOffice - Collabora
+    let editorText                                  = "text"
+    let editorOnlyoffice                            = "onlyoffice"
+    let editorCollabora                             = "collabora"
+
+    let onlyofficeDocx                              = "onlyoffice_docx"
+    let onlyofficeXlsx                              = "onlyoffice_xlsx"
+    let onlyofficePptx                              = "onlyoffice_pptx"
+
+    // Template
+    let templateDocument                            = "document"
+    let templateSpreadsheet                         = "spreadsheet"
+    let templatePresentation                        = "presentation"
+    
+    // Rich Workspace
+    let fileNameRichWorkspace                       = "Readme.md"
+    
+    @objc let dismissAfterSecond: TimeInterval      = 4
+    @objc let dismissAfterSecondLong: TimeInterval  = 10
+    
+    // Error
+    @objc let ErrorBadRequest: Int                  = 400
+    @objc let ErrorResourceNotFound: Int            = 404
+    @objc let ErrorConflict: Int                    = 409
+    @objc let ErrorBadServerResponse: Int           = -1011
+    @objc let ErrorInternalError: Int               = -99999
+    @objc let ErrorFileNotSaved: Int                = -99998
+    @objc let ErrorDecodeMetadata: Int              = -99997
+    @objc let ErrorE2EENotEnabled: Int              = -99996
+    @objc let ErrorOffline: Int                     = -99994
+    @objc let ErrorCharactersForbidden: Int         = -99993
+    @objc let ErrorCreationFile: Int                = -99992
+    
+    // Constants to identify the different permissions of a file
+    @objc let permissionShared                      = "S"
+    @objc let permissionCanShare                    = "R"
+    @objc let permissionMounted                     = "M"
+    @objc let permissionFileCanWrite                = "W"
+    @objc let permissionCanCreateFile               = "C"
+    @objc let permissionCanCreateFolder             = "K"
+    @objc let permissionCanDelete                   = "D"
+    @objc let permissionCanRename                   = "N"
+    @objc let permissionCanMove                     = "V"
+    
+    //Share permission
+    //permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
+    @objc let permissionReadShare: Int              = 1
+    @objc let permissionUpdateShare: Int            = 2
+    @objc let permissionCreateShare: Int            = 4
+    @objc let permissionDeleteShare: Int            = 8
+    @objc let permissionShareShare: Int             = 16
+    
+    @objc let permissionMinFileShare: Int           = 1
+    @objc let permissionMaxFileShare: Int           = 19
+    @objc let permissionMinFolderShare: Int         = 1
+    @objc let permissionMaxFolderShare: Int         = 31
+    @objc let permissionDefaultFileRemoteShareNoSupportShareOption: Int     = 3
+    @objc let permissionDefaultFolderRemoteShareNoSupportShareOption: Int   = 15
+    
+    // Metadata : FileType
+    @objc let metadataTypeFileAudio                 = "audio"
+    @objc let metadataTypeFileCompress              = "compress"
+    @objc let metadataTypeFileDirectory             = "directory"
+    @objc let metadataTypeFileDocument              = "document"
+    @objc let metadataTypeFileImage                 = "image"
+    @objc let metadataTypeFileUnknown               = "unknow"
+    @objc let metadataTypeFileVideo                 = "video"
+    @objc let metadataTypeFileImagemeter            = "imagemeter"
+    
+    // Filename Mask and Type
+    @objc let keyFileNameMask                       = "fileNameMask"
+    @objc let keyFileNameType                       = "fileNameType"
+    @objc let keyFileNameAutoUploadMask             = "fileNameAutoUploadMask"
+    @objc let keyFileNameAutoUploadType             = "fileNameAutoUploadType"
+    @objc let keyFileNameOriginal                   = "fileNameOriginal"
+    @objc let keyFileNameOriginalAutoUpload         = "fileNameOriginalAutoUpload"
+
+    // Selector
+    @objc let selectorDownloadFile                  = "downloadFile"
+    @objc let selectorDownloadAllFile               = "downloadAllFile"
+    @objc let selectorReadFile                      = "readFile"
+    @objc let selectorListingFavorite               = "listingFavorite"
+    @objc let selectorLoadFileView                  = "loadFileView"
+    @objc let selectorLoadFileQuickLook             = "loadFileQuickLook"
+    @objc let selectorLoadCopy                      = "loadCopy"
+    @objc let selectorLoadOffline                   = "loadOffline"
+    @objc let selectorOpenIn                        = "openIn"
+    @objc let selectorUploadAutoUpload              = "uploadAutoUpload"
+    @objc let selectorUploadAutoUploadAll           = "uploadAutoUploadAll"
+    @objc let selectorUploadFile                    = "uploadFile"
+    @objc let selectorSaveAlbum                     = "saveAlbum"
+    @objc let selectorSaveAlbumLivePhotoIMG         = "saveAlbumLivePhotoIMG"
+    @objc let selectorSaveAlbumLivePhotoMOV         = "saveAlbumLivePhotoMOV"
+
+    // Metadata : Status
+    //
+    // 1) wait download/upload
+    // 2) in download/upload
+    // 3) downloading/uploading
+    // 4) done or error
+    //
+    @objc let metadataStatusNormal: Int             = 0
+
+    @objc let metadataStatustypeDownload: Int       = 1
+
+    @objc let metadataStatusWaitDownload: Int       = 2
+    @objc let metadataStatusInDownload: Int         = 3
+    @objc let metadataStatusDownloading: Int        = 4
+    @objc let metadataStatusDownloadError: Int      = 5
+
+    @objc let metadataStatusTypeUpload: Int         = 6
+
+    @objc let metadataStatusWaitUpload: Int         = 7
+    @objc let metadataStatusInUpload: Int           = 8
+    @objc let metadataStatusUploading: Int          = 9
+    @objc let metadataStatusUploadError: Int        = 10
+    @objc let metadataStatusUploadForcedStart: Int  = 11
+    
+    // Notification Center
+
+    @objc let notificationCenterApplicationDidEnterBackground   = "applicationDidEnterBackground"
+    @objc let notificationCenterApplicationWillEnterForeground  = "applicationWillEnterForeground"
+
+    @objc let notificationCenterInitializeMain                  = "initializeMain"
+    @objc let notificationCenterChangeTheming                   = "changeTheming"
+    @objc let notificationCenterChangeUserProfile               = "changeUserProfile"
+    @objc let notificationCenterRichdocumentGrabFocus           = "richdocumentGrabFocus"
+    @objc let notificationCenterReloadDataNCShare               = "reloadDataNCShare"
+    @objc let notificationCenterCloseRichWorkspaceWebView       = "closeRichWorkspaceWebView"
+
+    @objc let notificationCenterReloadDataSource                = "reloadDataSource"                 // userInfo: ocId?, serverUrl?
+    @objc let notificationCenterReloadDataSourceNetworkForced   = "reloadDataSourceNetworkForced"    // userInfo: serverUrl?
+
+    @objc let notificationCenterChangeStatusFolderE2EE          = "changeStatusFolderE2EE"           // userInfo: serverUrl
+
+    @objc let notificationCenterDownloadStartFile               = "downloadStartFile"                // userInfo: ocId
+    @objc let notificationCenterDownloadedFile                  = "downloadedFile"                   // userInfo: ocId, selector, errorCode, errorDescription
+    @objc let notificationCenterDownloadCancelFile              = "downloadCancelFile"               // userInfo: ocId
+
+    @objc let notificationCenterUploadStartFile                 = "uploadStartFile"                  // userInfo: ocId
+    @objc let notificationCenterUploadedFile                    = "uploadedFile"                     // userInfo: ocId, ocIdTemp, errorCode, errorDescription
+    @objc let notificationCenterUploadCancelFile                = "uploadCancelFile"                 // userInfo: ocId
+
+    @objc let notificationCenterProgressTask                    = "progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
+    
+    @objc let notificationCenterCreateFolder                    = "createFolder"                     // userInfo: ocId
+    @objc let notificationCenterDeleteFile                      = "deleteFile"                       // userInfo: ocId, fileNameView, typeFile, onlyLocal
+    @objc let notificationCenterRenameFile                      = "renameFile"                       // userInfo: ocId, errorCode, errorDescription
+    @objc let notificationCenterMoveFile                        = "moveFile"                         // userInfo: ocId, serverUrlTo
+    @objc let notificationCenterCopyFile                        = "copyFile"                         // userInfo: ocId, serverUrlFrom
+    @objc let notificationCenterFavoriteFile                    = "favoriteFile"                     // userInfo: ocId
+
+    @objc let notificationCenterMenuSearchTextPDF               = "menuSearchTextPDF"
+    @objc let notificationCenterMenuDetailClose                 = "menuDetailClose"
 }
+
+//DispatchQueue.main.async
+//DispatchQueue.main.asyncAfter(deadline: .now() + 0.1)
+//DispatchQueue.global().async
+
+//#if targetEnvironment(simulator)
+//#endif
+
+
+//dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//dispatch_async(dispatch_get_main_queue(), ^{
+//dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+
+//#if TARGET_OS_SIMULATOR
+//#endif

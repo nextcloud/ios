@@ -45,11 +45,11 @@ class NCShareCommon: NSObject {
         
         let size: CGFloat = 200
         
-        let bottomImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: size, height: size, color: colorCircle)
-        let topImage = CCGraphics.changeThemingColorImage(UIImage.init(named: imageName), width: size, height: size, color: UIColor.white)
+        let bottomImage = UIImage.init(named: "circle")!.image(color: colorCircle, size: size/2)
+        let topImage = UIImage.init(named: imageName)!.image(color: .white, size: size/2)
         UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, UIScreen.main.scale)
-        bottomImage?.draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: size, height: size)))
-        topImage?.draw(in: CGRect(origin:  CGPoint(x: size/4, y: size/4), size: CGSize(width: size/2, height: size/2)))
+        bottomImage.draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: size, height: size)))
+        topImage.draw(in: CGRect(origin:  CGPoint(x: size/4, y: size/4), size: CGSize(width: size/2, height: size/2)))
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
@@ -208,27 +208,27 @@ class NCShareCommon: NSObject {
         
         switch shareType {
         case SHARE_TYPE_USER:
-            return UIImage(named: "shareTypeUser")
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_GROUP:
-            return UIImage(named: "shareTypeGroup")
+            return UIImage(named: "shareTypeGroup")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_LINK:
-            return UIImage(named: "shareTypeLink")
+            return UIImage(named: "shareTypeLink")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_EMAIL:
-            return UIImage(named: "shareTypeEmail")
+            return UIImage(named: "shareTypeEmail")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_CONTACT:
-            return UIImage(named: "shareTypeUser")
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_REMOTE:
-            return UIImage(named: "shareTypeUser")
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_CIRCLE:
-            return UIImage(named: "shareTypeCircles")
+            return UIImage(named: "shareTypeCircles")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_GUEST:
-            return UIImage(named: "shareTypeUser")
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_REMOTE_GROUP:
-            return UIImage(named: "shareTypeGroup")
+            return UIImage(named: "shareTypeGroup")?.imageColor(NCBrandColor.shared.textView)
         case self.SHARE_TYPE_ROOM:
-            return UIImage(named: "shareTypeRoom")
+            return UIImage(named: "shareTypeRoom")?.imageColor(NCBrandColor.shared.textView)
         default:
-            return UIImage(named: "shareTypeUser")
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
         }
     }
 }

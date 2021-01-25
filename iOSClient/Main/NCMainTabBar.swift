@@ -28,6 +28,7 @@ class NCMainTabBar: UITabBar {
     private var fillColor: UIColor!
     private var shapeLayer: CALayer?
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private var timer: Timer?
     
 //    override var traitCollection: UITraitCollection {
 //        return UITraitCollection(horizontalSizeClass: .compact)
@@ -36,7 +37,9 @@ class NCMainTabBar: UITabBar {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        timer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: (#selector(updateBadgeNumber)), userInfo: nil, repeats: true)
+            
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
         
         changeTheming()
     }
@@ -137,37 +140,37 @@ class NCMainTabBar: UITabBar {
     private func createButtons() {
        
         // File
-        if let item = items?[Int(k_tabBarApplicationIndexFile)] {
+        if let item = items?[0] {
             item.title = NSLocalizedString("_home_", comment: "")
-            item.image = CCGraphics.changeThemingColorImage(UIImage(named: "tabBarFiles"), width: 50, height: 50, color: NCBrandColor.shared.brandElement)
+            item.image = UIImage(named: "tabBarFiles")?.image(color: NCBrandColor.shared.brandElement, size: 25)
             item.selectedImage = item.image
         }
         
         // Favorite
-        if let item = items?[Int(k_tabBarApplicationIndexFavorite)] {
+        if let item = items?[1] {
             item.title = NSLocalizedString("_favorites_", comment: "")
-            item.image = CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.shared.brandElement)
+            item.image = UIImage(named: "favorite")?.image(color: NCBrandColor.shared.brandElement, size: 25)
             item.selectedImage = item.image
         }
         
         // +
-        if let item = items?[Int(k_tabBarApplicationIndexPlusHide)] {
+        if let item = items?[2] {
             item.title = ""
             item.image = nil
             item.isEnabled = false
         }
         
         // Media
-        if let item = items?[Int(k_tabBarApplicationIndexMedia)] {
+        if let item = items?[3] {
             item.title = NSLocalizedString("_media_", comment: "")
-            item.image = CCGraphics.changeThemingColorImage(UIImage(named: "media"), width: 50, height: 50, color: NCBrandColor.shared.brandElement)
+            item.image = UIImage(named: "media")?.image(color: NCBrandColor.shared.brandElement, size: 25)
             item.selectedImage = item.image
         }
         
         // More
-        if let item = items?[Int(k_tabBarApplicationIndexMore)] {
+        if let item = items?[4] {
             item.title = NSLocalizedString("_more_", comment: "")
-            item.image = CCGraphics.changeThemingColorImage(UIImage(named: "tabBarMore"), width: 50, height: 50, color: NCBrandColor.shared.brandElement)
+            item.image = UIImage(named: "tabBarMore")?.image(color: NCBrandColor.shared.brandElement, size: 25)
             item.selectedImage = item.image
         }
         
@@ -182,7 +185,7 @@ class NCMainTabBar: UITabBar {
         let centerButton = UIButton(frame: CGRect(x: (self.bounds.width / 2)-(centerButtonHeight/2), y: centerButtonY, width: centerButtonHeight, height: centerButtonHeight))
         
         centerButton.setTitle("", for: .normal)
-        centerButton.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "tabBarPlus"), width: 100, height: 100, color: .white), for: .normal)
+        centerButton.setImage(UIImage(named: "tabBarPlus")?.image(color: .white, size: 100), for: .normal)
         centerButton.backgroundColor = NCBrandColor.shared.brandElement
         centerButton.tintColor = UIColor.white
         centerButton.tag = 99
@@ -204,13 +207,40 @@ class NCMainTabBar: UITabBar {
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, appDelegate.activeServerUrl)) {
             
             if !directory.permissions.contains("CK") {
-                NCContentPresenter.shared.messageNotification("_warning_", description: "_no_permission_add_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
+                NCContentPresenter.shared.messageNotification("_warning_", description: "_no_permission_add_file_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError)
                 return
             }
         }
         
         if let viewController = self.window?.rootViewController {
             appDelegate.showMenuIn(viewController: viewController)
+        }
+    }
+    
+    @objc func updateBadgeNumber() {
+        
+        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
+        
+        let counterDownload = NCOperationQueue.shared.downloadCount()
+        let counterUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d OR status == %d", NCBrandGlobal.shared.metadataStatusWaitUpload, NCBrandGlobal.shared.metadataStatusInUpload, NCBrandGlobal.shared.metadataStatusUploading)).count
+        let total = counterDownload + counterUpload
+        
+        UIApplication.shared.applicationIconBadgeNumber = total
+        
+        if let item = items?[0] {
+            if total > 0 {
+                item.badgeValue = String(total)
+            } else {
+                item.badgeValue = nil
+            }
+        }
+    }
+    
+    func getCenterButton() -> UIView? {
+        if let centerButton = self.viewWithTag(99) {
+            return centerButton
+        } else {
+            return nil
         }
     }
 }

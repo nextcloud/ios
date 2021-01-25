@@ -143,6 +143,8 @@
 "_leave_share_"             = "Leave this share";
 "_delete_file_"             = "Delete file";
 "_delete_folder_"           = "Delete folder";
+"_delete_photo_"            = "Delete photo";
+"_delete_video_"            = "Delete video";
 "_automatic_Download_Image_" = "Use images in full resolution";
 "_automatic_Download_Image_footer_" = "When viewing images always download, if not available locally, the images in full resolution";
 "_size_"                    = "Size";
@@ -435,6 +437,7 @@
 "_share_"                       = "Share";
 "_reload_"                      = "Reload";
 "_open_in_"                     = "Open in…";
+"_open_"                        = "Open…";
 "_remove_local_file_"           = "Remove from cache";
 "_add_local_"                   = "Add to local storage";
 "_comm_erro_pull_down_"         = "Attention: Communication error with the server. Pull down to refresh.";
@@ -492,10 +495,8 @@
 
 "_file_del_only_local_"         = "File not present on server";
 
-"_copy_file_"                   = "Copy file";
-"_copy_files_"                  = "Copy files";
-"_paste_file_"                  = "Paste file";
-"_paste_files_"                 = "Paste files";
+"_copy_file_"                   = "Copy";
+"_paste_file_"                  = "Paste";
 "_open_quicklook_"              = "Open with Quick Look";
 
 "_search_this_folder_"          = "Search in this folder";

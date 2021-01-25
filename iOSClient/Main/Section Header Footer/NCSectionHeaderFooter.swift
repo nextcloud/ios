@@ -45,12 +45,12 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), width: 50, height: 50, color: NCBrandColor.shared.icon), for: .normal)
+        buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
         
         buttonOrder.setTitle("", for: .normal)
         buttonOrder.setTitleColor(NCBrandColor.shared.brandElement, for: .normal)
         
-        buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.shared.icon), for: .normal)
+        buttonMore.setImage(UIImage.init(named: "more")!.image(color:  NCBrandColor.shared.icon, size: 25), for: .normal)
                 
         // Gradient
         gradient.startPoint = CGPoint(x: 0, y: 0.60)
@@ -61,7 +61,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         tap.delegate = self
         viewRichWorkspace?.addGestureRecognizer(tap)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
         
         changeTheming()
     }
@@ -158,7 +158,7 @@ class NCSectionFooter: UICollectionReusableView {
         labelSection.textColor = NCBrandColor.shared.icon
     }
     
-    func setTitleLabel(directories: Int, files: Int, size: Double) {
+    func setTitleLabel(directories: Int, files: Int, size: Int64) {
         
         var foldersText = ""
         var filesText = ""

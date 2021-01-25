@@ -42,8 +42,8 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var typeIdentifier: String {
-        let results = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: "", directory: metadata.directory)
-        return results.typeIdentifier
+        let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: "", directory: metadata.directory)
+        return results.uniformTypeIdentifier
     }
     
     var contentModificationDate: Date? {
@@ -107,7 +107,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var isDownloading: Bool {
-        if metadata.status == Int(k_metadataStatusDownloading) {
+        if metadata.status == NCBrandGlobal.shared.metadataStatusDownloading {
             return true
         } else {
             return false
@@ -115,7 +115,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var downloadingError: Error? {
-        if metadata.status == Int(k_metadataStatusDownloadError) {
+        if metadata.status == NCBrandGlobal.shared.metadataStatusDownloadError {
             return fileProviderData.FileProviderError.downloadError
         } else {
             return nil
@@ -131,7 +131,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var isUploading: Bool {
-        if metadata.status == Int(k_metadataStatusUploading) {
+        if metadata.status == NCBrandGlobal.shared.metadataStatusUploading {
             return true
         } else {
             return false
@@ -139,7 +139,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var uploadingError: Error? {
-        if metadata.status == Int(k_metadataStatusUploadError) {
+        if metadata.status == NCBrandGlobal.shared.metadataStatusUploadError {
             return fileProviderData.FileProviderError.uploadError
         } else {
             return nil

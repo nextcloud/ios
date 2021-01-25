@@ -44,7 +44,7 @@ class NCSharePaging: UIViewController {
         // Verify Comments & Sharing enabled
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         let comments = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
-        if serverVersionMajor >= k_files_comments && comments == false {
+        if serverVersionMajor >= NCBrandGlobal.shared.nextcloudVersion20 && comments == false {
             commentsEnabled = false
         }
         let sharing = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
@@ -75,7 +75,7 @@ class NCSharePaging: UIViewController {
        
         pagingViewController.metadata = metadata
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
         
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done, target: self, action: #selector(exitTapped))
 
@@ -123,7 +123,7 @@ class NCSharePaging: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
     }
     
     @objc func exitTapped() {
@@ -280,7 +280,7 @@ class NCSharePagingView: PagingView {
         } else {
             if metadata!.directory {
                 let image = UIImage.init(named: "folder")!
-                headerView.imageView.image = CCGraphics.changeThemingColorImage(image, width: image.size.width*2, height: image.size.height*2, color: NCBrandColor.shared.brandElement)
+                headerView.imageView.image = image.image(color: NCBrandColor.shared.brandElement, size: image.size.width)
             } else if metadata!.iconName.count > 0 {
                 headerView.imageView.image = UIImage.init(named: metadata!.iconName)
             } else {
@@ -290,9 +290,9 @@ class NCSharePagingView: PagingView {
         headerView.fileName.text = metadata?.fileNameView
         headerView.fileName.textColor = NCBrandColor.shared.textView
         if metadata!.favorite {
-            headerView.favorite.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 40, height: 40, color: NCBrandColor.shared.yellowFavorite), for: .normal)
+            headerView.favorite.setImage(UIImage.init(named: "favorite")!.image(color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
         } else {
-            headerView.favorite.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 40, height: 40, color: NCBrandColor.shared.textInfo), for: .normal)
+            headerView.favorite.setImage(UIImage.init(named: "favorite")!.image(color: NCBrandColor.shared.textInfo, size: 20), for: .normal)
         }
         headerView.info.text = CCUtility.transformedSize(metadata!.size) + ", " + CCUtility.dateDiff(metadata!.date as Date)
         addSubview(headerView)
@@ -339,12 +339,12 @@ class NCShareHeaderView: UIView {
             NCNetworking.shared.favoriteMetadata(metadata, urlBase: appDelegate.urlBase) { (errorCode, errorDescription) in
                 if errorCode == 0 {
                     if !metadata.favorite {
-                        self.favorite.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 40, height: 40, color: NCBrandColor.shared.yellowFavorite), for: .normal)
+                        self.favorite.setImage(UIImage.init(named: "favorite")!.image(color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
                     } else {
-                        self.favorite.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 40, height: 40, color: NCBrandColor.shared.textInfo), for: .normal)
+                        self.favorite.setImage(UIImage.init(named: "favorite")!.image(color: NCBrandColor.shared.textInfo, size: 20), for: .normal)
                     }
                 } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
         }

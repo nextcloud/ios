@@ -33,9 +33,9 @@ class NCFiles: NCCollectionViewCommon  {
         
         appDelegate.activeFiles = self
         titleCurrentFolder = NCBrandOptions.shared.brand
-        layoutKey = k_layout_view_files
+        layoutKey = NCBrandGlobal.shared.layoutViewFiles
         enableSearchBar = true
-        emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.shared.brandElement)
+        emptyImage = UIImage.init(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = "_no_file_pull_down_"
     }
@@ -43,7 +43,7 @@ class NCFiles: NCCollectionViewCommon  {
     override func viewWillAppear(_ animated: Bool) {
         
         if isRoot {
-            serverUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+            serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         }
         
         super.viewWillAppear(animated)
@@ -54,7 +54,7 @@ class NCFiles: NCCollectionViewCommon  {
     override func initializeMain() {
         
         if isRoot {
-            serverUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+            serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
             reloadDataSourceNetwork(forced: true)
         }
         
@@ -68,18 +68,18 @@ class NCFiles: NCCollectionViewCommon  {
         
         DispatchQueue.global(qos: .background).async {
                         
-            if !self.isSearching {
+            if !self.isSearching && self.appDelegate.account != nil && self.appDelegate.urlBase != nil {
                 self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
                 if self.metadataFolder == nil {
-                    self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl:  self.serverUrl)
+                    self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl: self.serverUrl)
                 }
             }
             
             self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort: self.sort, ascending: self.ascending, directoryOnTop: self.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
             
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()                
+            DispatchQueue.main.async { [weak self] in
+                self?.refreshControl.endRefreshing()
+                self?.collectionView.reloadData()                
             }
         }
     }
@@ -99,9 +99,8 @@ class NCFiles: NCCollectionViewCommon  {
             if errorCode == 0 {
                 for metadata in metadatas ?? [] {
                     if !metadata.directory {
-                        let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                        if (CCUtility.getFavoriteOffline() && localFile == nil) || (localFile != nil && localFile?.etag != metadata.etag) {
-                            NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
+                        if NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
+                            NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
                         }
                     }
                 }

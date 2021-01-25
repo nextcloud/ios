@@ -119,6 +119,11 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
+                    if oldSchemaVersion < 160 {
+                        migration.deleteData(forType: tableDirectory.className())
+                        migration.deleteData(forType: tableMetadata.className())
+                    }
+                    
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
                     
                     // totalBytes refers to the size of the file on disk in bytes (data + free space)
@@ -136,7 +141,7 @@ class NCManageDatabase: NSObject {
                 if let databaseFilePath = databaseFilePath {
                     do {
                         #if !EXTENSION
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: TimeInterval(k_dismissAfterSecondLong), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError), forced: true)
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: NCBrandGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
                         #endif
                         try FileManager.default.removeItem(at: databaseFilePath)
                     } catch {}
@@ -158,7 +163,7 @@ class NCManageDatabase: NSObject {
             if let databaseFilePath = databaseFilePath {
                 do {
                     #if !EXTENSION
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: TimeInterval(k_dismissAfterSecondLong), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError), forced: true)
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: NCBrandGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
                     #endif
                     try FileManager.default.removeItem(at: databaseFilePath)
                 } catch {}
@@ -395,7 +400,7 @@ class NCManageDatabase: NSObject {
         if result.autoUploadDirectory.count > 0 {
             return result.autoUploadDirectory
         } else {
-            return NCUtility.shared.getHomeServer(urlBase: urlBase, account: account)
+            return NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, account: account)
         }
     }
 
@@ -1030,10 +1035,10 @@ class NCManageDatabase: NSObject {
                         addObject.mimetypes.append(mimeType)
                     }
                     addObject.name = editor.name
-                    if editor.name.lowercased() == k_editor_onlyoffice {
-                        addObject.editor = k_editor_onlyoffice
+                    if editor.name.lowercased() == NCBrandGlobal.shared.editorOnlyoffice {
+                        addObject.editor = NCBrandGlobal.shared.editorOnlyoffice
                     } else {
-                        addObject.editor = k_editor_text
+                        addObject.editor = NCBrandGlobal.shared.editorText
                     }
                     for mimeType in editor.optionalMimetypes {
                         addObject.optionalMimetypes.append(mimeType)
@@ -1255,6 +1260,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    /*
     @objc func setDirectory(synchronized: Bool, serverUrl: String, account: String) {
         
         let realm = try! Realm()
@@ -1294,7 +1300,8 @@ class NCManageDatabase: NSObject {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
-
+    */
+    
     //MARK: -
     //MARK: Table e2e Encryption
     
@@ -1556,7 +1563,6 @@ class NCManageDatabase: NSObject {
                 addObject.exifLongitude = "-1"
                 addObject.ocId = metadata.ocId
                 addObject.fileName = metadata.fileName
-                addObject.size = metadata.size
             
                 realm.add(addObject, update: .all)
             }
@@ -1706,11 +1712,16 @@ class NCManageDatabase: NSObject {
         if isEncrypted || metadata.e2eEncrypted {
             if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
-                let results = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: file.contentType, directory: file.directory)
-                metadata.contentType = results.contentType
+                let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory)
+                metadata.contentType = results.mimeType
                 metadata.iconName = results.iconName
                 metadata.typeFile = results.typeFile
             }
+        }
+        
+        // Live Photo "DETECT"
+        if !metadata.directory && !metadata.livePhoto && (metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage) {
+            metadata.livePhoto = isLivePhoto(metadata: metadata)
         }
         
         return metadata
@@ -1755,10 +1766,10 @@ class NCManageDatabase: NSObject {
     @objc func createMetadata(account: String, fileName: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, livePhoto: Bool) -> tableMetadata {
         
         let metadata = tableMetadata()
-        let results = NCCommunicationCommon.shared.getInternalContenType(fileName: fileName, contentType: contentType, directory: false)
+        let results = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
         
         metadata.account = account
-        metadata.contentType = results.contentType
+        metadata.contentType = results.mimeType
         metadata.creationDate = Date() as NSDate
         metadata.date = Date() as NSDate
         metadata.hasPreview = true
@@ -1878,9 +1889,14 @@ class NCManageDatabase: NSObject {
         do {
             try realm.safeWrite {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                    let resultsType = NCCommunicationCommon.shared.getInternalType(fileName: fileNameTo, mimeType: "", directory: result.directory)
                     result.fileName = fileNameTo
                     result.fileNameView = fileNameTo
                     result.fileNameWithoutExt = (fileNameTo as NSString).deletingPathExtension
+                    result.ext = resultsType.ext
+                    result.iconName = resultsType.iconName
+                    result.contentType = resultsType.mimeType
+                    result.typeFile = resultsType.typeFile
                 }
             }
         } catch let error {
@@ -1916,10 +1932,10 @@ class NCManageDatabase: NSObject {
                     
                     if let result = metadatasResult.first(where: { $0.ocId == metadata.ocId }) {
                         // update
-                        if result.status == k_metadataStatusNormal && (result.etag != metadata.etag || result.fileNameView != metadata.fileNameView || result.date != metadata.date || result.permissions != metadata.permissions) {
+                        if result.status == NCBrandGlobal.shared.metadataStatusNormal && (result.etag != metadata.etag || result.fileNameView != metadata.fileNameView || result.date != metadata.date || result.permissions != metadata.permissions) {
                             ocIdsUdate.append(metadata.ocId)
                             realm.add(metadata, update: .all)
-                        } else if result.status == k_metadataStatusNormal && addCompareLivePhoto && result.livePhoto != metadata.livePhoto {
+                        } else if result.status == NCBrandGlobal.shared.metadataStatusNormal && addCompareLivePhoto && result.livePhoto != metadata.livePhoto {
                             ocIdsUdate.append(metadata.ocId)
                             realm.add(metadata, update: .all)
                         }
@@ -1932,8 +1948,6 @@ class NCManageDatabase: NSObject {
                     if metadata.directory && !ocIdsUdate.contains(metadata.ocId) {
                         let table = realm.objects(tableDirectory.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first
                         if table?.etag != metadata.etag {
-                            ocIdsUdate.append(metadata.ocId)
-                        } else if addDirectorySynchronized && table?.synchronized == false {
                             ocIdsUdate.append(metadata.ocId)
                         }
                     }
@@ -1969,7 +1983,7 @@ class NCManageDatabase: NSObject {
         return (metadatasUpdate, metadatasLocalUpdate)
     }
     
-    func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil, setFavorite: Bool = false) {
+    func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil) {
             
         let realm = try! Realm()
         realm.refresh()
@@ -1994,9 +2008,6 @@ class NCManageDatabase: NSObject {
                 }
                 if let etag = etag {
                     result?.etag = etag
-                }
-                if setFavorite {
-                    result?.favorite = true
                 }
             }
         } catch let error {
@@ -2127,7 +2138,7 @@ class NCManageDatabase: NSObject {
         
         // For Live Photo
         var fileNameImages: [String] = []
-        let filtered = results.filter{ $0.typeFile.contains(k_metadataTypeFile_image) }
+        let filtered = results.filter{ $0.typeFile.contains(NCBrandGlobal.shared.metadataTypeFileImage) }
         filtered.forEach { print($0)
             let fileName = ($0.fileNameView as NSString).deletingPathExtension
             fileNameImages.append(fileName)
@@ -2219,13 +2230,13 @@ class NCManageDatabase: NSObject {
         var serverUrl = serverUrl
         var fileName = ""
         
-        let serverUrlHome = NCUtility.shared.getHomeServer(urlBase: urlBase, account: account)
+        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, account: account)
         if serverUrlHome == serverUrl {
             fileName = "."
             serverUrl = ".."
         } else {
             fileName = (serverUrl as NSString).lastPathComponent
-            serverUrl = NCUtility.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: urlBase, account: account)
+            serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: urlBase, account: account)
         }
         
         guard let result = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).first else { return nil }
@@ -2257,7 +2268,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.safeWrite {
                 
-                let results = realm.objects(tableMetadata.self).filter("account == %@ AND (status == %d OR status == %@)", account, k_metadataStatusWaitUpload, k_metadataStatusUploadError)
+                let results = realm.objects(tableMetadata.self).filter("account == %@ AND (status == %d OR status == %@)", account, NCBrandGlobal.shared.metadataStatusWaitUpload, NCBrandGlobal.shared.metadataStatusUploadError)
                 realm.delete(results)
             }
         } catch let error {
@@ -2313,7 +2324,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func isLivePhoto(metadata: tableMetadata) -> tableMetadata? {
+    @objc func getMetadataLivePhoto(metadata: tableMetadata) -> tableMetadata? {
            
         let realm = try! Realm()
         realm.refresh()
@@ -2327,6 +2338,18 @@ class NCManageDatabase: NSObject {
         }
         
         return tableMetadata.init(value: result)
+    }
+   
+    func isLivePhoto(metadata: tableMetadata) -> Bool {
+           
+        let realm = try! Realm()
+        realm.refresh()
+        
+        if realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId)).first == nil {
+            return false
+        }
+        
+        return true
     }
     
     func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending: Bool = false) -> [tableMetadata] {
@@ -2347,13 +2370,13 @@ class NCManageDatabase: NSObject {
         
         if metadataFolder != nil {
             
-            isShare = metadata.permissions.contains(k_permission_shared) && !metadataFolder!.permissions.contains(k_permission_shared)
-            isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder!.permissions.contains(k_permission_mounted)
+            isShare = metadata.permissions.contains(NCBrandGlobal.shared.permissionShared) && !metadataFolder!.permissions.contains(NCBrandGlobal.shared.permissionShared)
+            isMounted = metadata.permissions.contains(NCBrandGlobal.shared.permissionMounted) && !metadataFolder!.permissions.contains(NCBrandGlobal.shared.permissionMounted)
             
         } else if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))  {
                 
-            isShare = metadata.permissions.contains(k_permission_shared) && !directory.permissions.contains(k_permission_shared)
-            isMounted = metadata.permissions.contains(k_permission_mounted) && !directory.permissions.contains(k_permission_mounted)
+            isShare = metadata.permissions.contains(NCBrandGlobal.shared.permissionShared) && !directory.permissions.contains(NCBrandGlobal.shared.permissionShared)
+            isMounted = metadata.permissions.contains(NCBrandGlobal.shared.permissionMounted) && !directory.permissions.contains(NCBrandGlobal.shared.permissionMounted)
         }
         
         if isShare || isMounted {
@@ -2361,6 +2384,29 @@ class NCManageDatabase: NSObject {
         } else {
             return false
         }
+    }
+    
+    func isDownloadMetadata(_ metadata: tableMetadata, download: Bool) -> Bool {
+        
+        let localFile = getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        let fileSize = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
+        if (localFile != nil || download) && (localFile?.etag != metadata.etag || fileSize == 0) {
+            return true
+        }
+        return false
+    }
+    
+    func getMetadataConflict(account: String, serverUrl: String, fileName: String) -> tableMetadata? {
+        
+        // verify exists conflict
+        let fileNameExtension = (fileName as NSString).pathExtension.lowercased()
+        let fileNameWithoutExtension = (fileName as NSString).deletingPathExtension
+        var fileNameConflict = fileName
+        
+        if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
+            fileNameConflict = fileNameWithoutExtension + ".jpg"
+        }
+        return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
     }
     
     //MARK: -
@@ -2453,8 +2499,8 @@ class NCManageDatabase: NSObject {
         for share in shares {
             
             let addObject = tableShare()
-            let fullPath = NCUtility.shared.getHomeServer(urlBase: urlBase, account: account) + share.path
-            let serverUrl = NCUtility.shared.deletingLastPathComponent(serverUrl:fullPath, urlBase: urlBase, account: account)
+            let fullPath = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, account: account) + share.path
+            let serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(serverUrl:fullPath, urlBase: urlBase, account: account)
             let fileName = NSString(string: fullPath).lastPathComponent
                         
             addObject.account = account

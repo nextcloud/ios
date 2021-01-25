@@ -31,9 +31,9 @@ class NCFavorite: NCCollectionViewCommon  {
         
         appDelegate.activeFavorite = self
         titleCurrentFolder = NSLocalizedString("_favorites_", comment: "")
-        layoutKey = k_layout_view_favorite
+        layoutKey = NCBrandGlobal.shared.layoutViewFavorite
         enableSearchBar = true
-        emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 300, height: 300, color: NCBrandColor.shared.yellowFavorite)
+        emptyImage = UIImage.init(named: "favorite")?.image(color: NCBrandColor.shared.yellowFavorite, size: UIScreen.main.bounds.width)
         emptyTitle = "_favorite_no_files_"
         emptyDescription = "_tutorial_favorite_view_"
     }
@@ -76,18 +76,9 @@ class NCFavorite: NCCollectionViewCommon  {
         
         if serverUrl == "" {
             
-            NCNetworking.shared.listingFavoritescompletion(selector: selectorListingFavorite) { (account, metadatas, errorCode, errorDescription) in
-                if errorCode == 0 {
-                    for metadata in metadatas ?? [] {
-                        if !metadata.directory && CCUtility.getFavoriteOffline() {
-                            let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                            if localFile == nil || localFile?.etag != metadata.etag {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
-                            }
-                        }
-                    }
-                } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            NCNetworking.shared.listingFavoritescompletion(selector: NCBrandGlobal.shared.selectorListingFavorite) { (account, metadatas, errorCode, errorDescription) in
+                if errorCode != 0 {
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
                 
                 self.refreshControl.endRefreshing()
@@ -101,9 +92,8 @@ class NCFavorite: NCCollectionViewCommon  {
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory {
-                            let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                            if (CCUtility.getFavoriteOffline() && localFile == nil) || (localFile != nil && localFile?.etag != metadata.etag) {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
+                            if NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
+                                NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
                             }
                         }
                     }

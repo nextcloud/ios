@@ -23,12 +23,9 @@
 
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
-#import <PushKit/PushKit.h>
 #import <AVKit/AVKit.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 #import <TOPasscodeViewController/TOPasscodeViewController.h>
-
-#import "CCUtility.h"
 #import "CCLogin.h"
 
 @class NCFiles;
@@ -50,12 +47,8 @@
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>
 
-// Timer Process
-@property (nonatomic, strong) NSTimer *timerUpdateApplicationIconBadgeNumber;
-@property (nonatomic, strong) NSTimer *timerErrorNetworking;
-
 @property (nonatomic, strong) UIWindow *window;
-@property (nonatomic, strong) NCDocumentPickerViewController *documentPickerViewController;
+@property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
 
 // Parameter account
 @property (nonatomic, strong) NSString *account;
@@ -63,20 +56,6 @@
 @property (nonatomic, strong) NSString *user;
 @property (nonatomic, strong) NSString *userID;
 @property (nonatomic, strong) NSString *password;
-
-// Networking 
-@property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
-
-// UploadFromOtherUpp
-@property (nonatomic, strong) NSString *fileNameUpload;
-
-// Passcode lockDirectory
-@property (nonatomic, strong) NSDate *sessionePasscodeLock;
-
-// Push Norification Token
-@property (nonatomic, strong) NSString *pushKitToken;
-
-@property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
 
 @property (nonatomic, retain) NSString *activeServerUrl;
 @property (nonatomic, retain) UIViewController *activeViewController;
@@ -102,17 +81,16 @@
 @property (nonatomic, strong) NSMutableDictionary *listOfflineVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
 
+@property (nonatomic, strong) NSTimer *timerErrorNetworking;
+@property (nonatomic, strong) NCDocumentPickerViewController *documentPickerViewController;
 @property (nonatomic) UIUserInterfaceStyle preferredUserInterfaceStyle API_AVAILABLE(ios(12.0));
-
-// Shares
 @property (nonatomic, strong) NSArray *shares;
 @property BOOL disableSharesView;
-
-// UserDefaults
 @property (nonatomic, strong) NSUserDefaults *ncUserDefaults;
-
-// Network Auto Upload
 @property (nonatomic, strong) NCNetworkingAutoUpload *networkingAutoUpload;
+@property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
+
+@property (nonatomic, strong) NSMutableArray *pasteboardOcIds;
 
 // Login
 - (void)startTimerErrorNetworking;
@@ -121,10 +99,6 @@
 // Setting Account & Communication
 - (void)settingAccount:(NSString *)account urlBase:(NSString *)urlBase user:(NSString *)user userID:(NSString *)userID password:(NSString *)password;
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe;
-- (void)settingSetupCommunication:(NSString *)account;
-
-// Push Notification
-- (void)pushNotification;
 
 @end
 

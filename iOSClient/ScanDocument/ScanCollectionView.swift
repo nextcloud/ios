@@ -78,14 +78,16 @@ class DragDropViewController: UIViewController {
         segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 1)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_bn_", comment: ""), forSegmentAt: 2)
 
-        add.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "add"), multiplier:2, color: NCBrandColor.shared.brandElement), for: .normal)
-        transferDown.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "transferDown"), multiplier:2, color: NCBrandColor.shared.brandElement), for: .normal)
+        add.setImage(UIImage(named: "add")?.image(color: NCBrandColor.shared.brandElement, size: 25), for: .normal)
+        transferDown.setImage(UIImage(named: "transferDown")?.image(color: NCBrandColor.shared.brandElement, size: 25), for: .normal)
         
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
-        add.addGestureRecognizer(longPressRecognizer)
+        collectionViewSource.addGestureRecognizer(longPressRecognizer)
+        let longPressRecognizerPlus = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
+        add.addGestureRecognizer(longPressRecognizerPlus)
         
         // changeTheming
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
         
         changeTheming()
         
@@ -354,10 +356,10 @@ class DragDropViewController: UIViewController {
         
         if pasteboard.hasImages {
             
-            let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
+            let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: NCBrandGlobal.shared.keyFileNameMask, keyFileNameType: NCBrandGlobal.shared.keyFileNameType, keyFileNameOriginal: NCBrandGlobal.shared.keyFileNameOriginal)!
             let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
             
-            guard let image = pasteboard.image else {
+            guard let image = pasteboard.image?.fixedOrientation() else {
                 return
             }
             
@@ -403,7 +405,7 @@ extension DragDropViewController : UICollectionViewDataSource {
             
             // 72 DPI
             if imageWidthInPixels > 595 || imageHeightInPixels > 842  {
-                image = CCGraphics.scale(image, to: CGSize(width: 595, height: 842), isAspectRation: true)
+                image = image.resizeImage(size: CGSize(width: 595, height: 842), isAspectRation: true) ?? image
             }
             
             cell.customImageView?.image = image
@@ -422,7 +424,7 @@ extension DragDropViewController : UICollectionViewDataSource {
             
             // 72 DPI 
             if imageWidthInPixels > 595 || imageHeightInPixels > 842  {
-                image = CCGraphics.scale(image, to: CGSize(width: 595, height: 842), isAspectRation: true)
+                image = image.resizeImage(size: CGSize(width: 595, height: 842), isAspectRation: true) ?? image
             }
             
             cell.customImageView?.image = self.filter(image: image)

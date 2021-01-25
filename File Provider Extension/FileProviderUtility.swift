@@ -59,7 +59,7 @@ class fileProviderUtility: NSObject {
     
     func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier? {
         
-        let homeServerUrl = NCUtility.shared.getHomeServer(urlBase: metadata.urlBase, account: metadata.account)
+        let homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: metadata.urlBase, account: metadata.account)
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))  {
             if directory.serverUrl == homeServerUrl {
                 return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)

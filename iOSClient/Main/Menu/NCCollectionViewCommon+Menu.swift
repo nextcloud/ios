@@ -51,7 +51,7 @@ extension NCCollectionViewCommon {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let serverUrl = metadata.serverUrl+"/"+metadata.fileName
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
-        let serverUrlHome = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         var isOffline = false
         
         var titleDelete = NSLocalizedString("_delete_", comment: "")
@@ -64,8 +64,8 @@ extension NCCollectionViewCommon {
         }
         
         if let metadataFolder = metadataFolder {
-            let isShare = metadata.permissions.contains(k_permission_shared) && !metadataFolder.permissions.contains(k_permission_shared)
-            let isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder.permissions.contains(k_permission_mounted)
+            let isShare = metadata.permissions.contains(NCBrandGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCBrandGlobal.shared.permissionShared)
+            let isMounted = metadata.permissions.contains(NCBrandGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCBrandGlobal.shared.permissionMounted)
             if isShare || isMounted {
                 titleDelete = NSLocalizedString("_leave_share_", comment: "")
             }
@@ -110,11 +110,11 @@ extension NCCollectionViewCommon {
         actions.append(
             NCMenuAction(
                 title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.shared.yellowFavorite),
+                icon: UIImage(named: "favorite")!.image(color: NCBrandColor.shared.yellowFavorite, size: 50),
                 action: { menuAction in
                     NCNetworking.shared.favoriteMetadata(metadata, urlBase: appDelegate.urlBase) { (errorCode, errorDescription) in
                         if errorCode != 0 {
-                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
                     }
                 }
@@ -128,9 +128,41 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "details")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
+                    }
+                )
+            )
+        }
+        
+        //
+        // OFFLINE
+        //
+        if !isFolderEncrypted {
+            actions.append(
+                NCMenuAction(
+                    title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
+                    icon: UIImage(named: "offline")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    action: { menuAction in
+                        if isOffline {
+                            if metadata.directory {
+                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: false, account: self.appDelegate.account)
+                            } else {
+                                NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: false)
+                            }
+                        } else {
+                            if metadata.directory {
+                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: self.appDelegate.account)
+                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorDownloadAllFile)
+                            } else {
+                                NCNetworking.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorLoadOffline) { (_) in }
+                                if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+                                    NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCBrandGlobal.shared.selectorLoadOffline) { (_) in }
+                                }
+                            }
+                        }
+                        self.reloadDataSource()
                     }
                 )
             )
@@ -143,9 +175,40 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_open_in_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "openFile")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
-                        NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: selectorOpenIn)
+                        NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCBrandGlobal.shared.selectorOpenIn)
+                    }
+                )
+            )
+        }
+        
+        //
+        // SAVE
+        //
+        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
+            var title: String = NSLocalizedString("_save_selected_files_", comment: "")
+            var icon = UIImage(named: "saveSelectedFiles")!.image(color: NCBrandColor.shared.icon, size: 50)
+            let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
+            if metadataMOV != nil {
+                title = NSLocalizedString("_livephoto_save_", comment: "")
+                icon = UIImage(named: "livePhoto")!.image(color: NCBrandColor.shared.icon, size: 50)
+            }
+            
+            actions.append(
+                NCMenuAction(
+                    title: title,
+                    icon: icon,
+                    action: { menuAction in
+                        if metadataMOV != nil {
+                            NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
+                        } else {
+                            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                                NCCollectionCommon.shared.saveAlbum(metadata: metadata)
+                            } else {
+                                NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum)
+                            }
+                        }
                     }
                 )
             )
@@ -158,7 +221,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "rename"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "rename")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
                         
@@ -172,7 +235,7 @@ extension NCCollectionViewCommon {
                             if let fileNameNew = alertController.textFields?.first?.text {
                                 NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, urlBase: appDelegate.urlBase, viewController: self) { (errorCode, errorDescription) in
                                     if errorCode != 0 {
-                                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                     }
                                 }
                             }
@@ -186,7 +249,7 @@ extension NCCollectionViewCommon {
                 )
             )
         }
-
+        
         //
         // COPY - MOVE
         //
@@ -194,41 +257,25 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_move_or_copy_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "move")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
-                        NCCollectionCommon.shared.openSelectView(items: [metadata])
+                        NCCollectionCommon.shared.openSelectView(items: [metadata], viewController: self)
                     }
                 )
             )
         }
         
         //
-        // OFFLINE
+        // COPY
         //
-        if !isFolderEncrypted {
+        if !metadata.directory {
             actions.append(
                 NCMenuAction(
-                    title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    title: NSLocalizedString("_copy_file_", comment: ""),
+                    icon: UIImage(named: "copy")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
-                        if isOffline {
-                            if metadata.directory {
-                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: false, account: self.appDelegate.account)
-                            } else {
-                                NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: false)
-                            }
-                        } else {
-                            if metadata.directory {
-                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: self.appDelegate.account)
-                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadAllFile)
-                            } else {
-                                NCNetworking.shared.download(metadata: metadata, selector: selectorLoadOffline) { (_) in }
-                                if let metadataLivePhoto = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
-                                    NCNetworking.shared.download(metadata: metadataLivePhoto, selector: selectorLoadOffline) { (_) in }
-                                }
-                            }
-                        }
-                        self.reloadDataSource()
+                        self.appDelegate.pasteboardOcIds = [metadata.ocId];
+                        NCCollectionCommon.shared.copyPasteboard()
                     }
                 )
             )
@@ -237,11 +284,11 @@ extension NCCollectionViewCommon {
         //
         // VIEW IN FOLDER
         //
-        if layoutKey == k_layout_view_recent && appDelegate.activeFileViewInFolder == nil {
+        if layoutKey == NCBrandGlobal.shared.layoutViewRecent && appDelegate.activeFileViewInFolder == nil {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "viewInFolder"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "viewInFolder")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         NCCollectionCommon.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
                     }
@@ -255,7 +302,7 @@ extension NCCollectionViewCommon {
         actions.append(
             NCMenuAction(
                 title: titleDelete,
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
                 action: { menuAction in
                     let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
@@ -277,7 +324,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "lock"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "lock")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: false) { (account, errorCode, errorDescription) in
                             if errorCode == 0 {
@@ -285,9 +332,9 @@ extension NCCollectionViewCommon {
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: true, richWorkspace: nil, account: metadata.account)
                                 NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: true)
                                 
-                                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_changeStatusFolderE2EE, userInfo: ["serverUrl":metadata.serverUrl])
+                                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl":metadata.serverUrl])
                             } else {
-                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_mark_folder_", comment: ""), description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: .error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_mark_folder_", comment: ""), description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: .error, errorCode: errorCode)
                             }
                         }
                     }
@@ -302,7 +349,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "lock"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "lock")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { (account, errorCode, errorDescription) in
                             if errorCode == 0 {
@@ -310,9 +357,9 @@ extension NCCollectionViewCommon {
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: false, richWorkspace: nil, account: metadata.account)
                                 NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
                                 
-                                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_changeStatusFolderE2EE, userInfo: ["serverUrl":metadata.serverUrl])
+                                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl":metadata.serverUrl])
                             } else {
-                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_delete_mark_folder_", comment: ""), description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: .error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_delete_mark_folder_", comment: ""), description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: .error, errorCode: errorCode)
                             }
                         }
                     }
@@ -340,34 +387,15 @@ extension NCCollectionViewCommon {
     private func initMenuSelect(viewController: UIViewController, selectOcId: [String]) -> [NCMenuAction] {
         var actions = [NCMenuAction]()
        
+        //
+        // SELECT ALL
+        //
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_select_all_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "selectFull"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                icon: UIImage(named: "selectFull")!.image(color: NCBrandColor.shared.icon, size: 50),
                 action: { menuAction in
                     self.collectionViewSelectAll()
-                }
-            )
-        )
-        
-        //
-        // COPY - MOVE
-        //
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.shared.icon),
-                action: { menuAction in
-                    var meradatasSelect = [tableMetadata]()
-                    for ocId in selectOcId {
-                        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                            meradatasSelect.append(metadata)
-                        }
-                    }
-                    if meradatasSelect.count > 0 {
-                        NCCollectionCommon.shared.openSelectView(items: meradatasSelect)
-                    }
-                    self.tapSelect(sender: self)
                 }
             )
         )
@@ -378,15 +406,63 @@ extension NCCollectionViewCommon {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_save_selected_files_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "saveSelectedFiles"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                icon: UIImage(named: "saveSelectedFiles")!.image(color: NCBrandColor.shared.icon, size: 50),
                 action: { menuAction in
                     for ocId in selectOcId {
                         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                            if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorSaveAlbum, setFavorite: false)
+                            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
+                                if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+                                    NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
+                                } else {
+                                    if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                                        NCCollectionCommon.shared.saveAlbum(metadata: metadata)
+                                    } else {
+                                        NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorSaveAlbum)
+                                    }
+                                }
                             }
                         }
                     }
+                    self.tapSelect(sender: self)
+                }
+            )
+        )
+        
+        //
+        // COPY - MOVE
+        //
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
+                icon: UIImage(named: "move")!.image(color: NCBrandColor.shared.icon, size: 50),
+                action: { menuAction in
+                    var meradatasSelect = [tableMetadata]()
+                    for ocId in selectOcId {
+                        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                            meradatasSelect.append(metadata)
+                        }
+                    }
+                    if meradatasSelect.count > 0 {
+                        NCCollectionCommon.shared.openSelectView(items: meradatasSelect, viewController: self)
+                    }
+                    self.tapSelect(sender: self)
+                }
+            )
+        )
+        
+        //
+        // COPY
+        //
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_copy_file_", comment: ""),
+                icon: UIImage(named: "copy")!.image(color: NCBrandColor.shared.icon, size: 50),
+                action: { menuAction in
+                    self.appDelegate.pasteboardOcIds.removeAllObjects()
+                    for ocId in selectOcId {
+                        self.appDelegate.pasteboardOcIds.add(ocId)
+                    }
+                    NCCollectionCommon.shared.copyPasteboard()
                     self.tapSelect(sender: self)
                 }
             )
@@ -398,7 +474,7 @@ extension NCCollectionViewCommon {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_selected_files_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
                 action: { menuAction in
                     let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in

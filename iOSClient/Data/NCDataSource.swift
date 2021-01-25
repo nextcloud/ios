@@ -150,11 +150,11 @@ class NCDataSource: NSObject {
         
     // MARK: -
 
-    func getFilesInformation() -> (directories: Int,  files: Int, size: Double) {
+    func getFilesInformation() -> (directories: Int,  files: Int, size: Int64) {
 
         var directories: Int = 0
         var files: Int = 0
-        var size: Double = 0
+        var size: Int64 = 0
 
         for metadata in metadatas {
             if metadata.directory {

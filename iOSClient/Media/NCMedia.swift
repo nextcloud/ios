@@ -47,7 +47,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     private var filterTypeFileImage = false
     private var filterTypeFileVideo = false
             
-    private let kMaxImageGrid: CGFloat = 7
+    private let maxImageGrid: CGFloat = 7
     private var cellHeigth: CGFloat = 0
 
     private var oldInProgress = false
@@ -63,7 +63,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     struct cacheImages {
         static var cellLivePhotoImage = UIImage()
         static var cellPlayImage = UIImage()
-        static var cellFavouriteImage = UIImage()
     }
 
     // MARK: - View Life Cycle
@@ -73,7 +72,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
         appDelegate.activeMedia = self
         
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground), name: NSNotification.Name(rawValue: k_notificationCenter_applicationWillEnterForeground), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
     }
     
     override func viewDidLoad() {
@@ -92,23 +91,18 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         
         // Empty
         emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 0, delegate: self)
-                
-        // 3D Touch peek and pop
-        if traitCollection.forceTouchCapability == .available {
-            registerForPreviewing(with: self, sourceView: view)
-        }
-        
+      
         // Notification
-        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterDeleteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterMoveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterRenameFile), object: nil)
             
         mediaCommandView = Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as? NCMediaCommandView
         self.view.addSubview(mediaCommandView!)
         mediaCommandView?.mediaView = self
-        mediaCommandView?.zoomInButton.isEnabled = !(self.gridLayout.itemForLine == 1)
-        mediaCommandView?.zoomOutButton.isEnabled = !(self.gridLayout.itemForLine == self.kMaxImageGrid - 1)
+        mediaCommandView?.zoomInButton.isEnabled = !(gridLayout.itemForLine == 1)
+        mediaCommandView?.zoomOutButton.isEnabled = !(gridLayout.itemForLine == maxImageGrid - 1)
         mediaCommandView?.collapseControlButtonView(true)
         mediaCommandView?.translatesAutoresizingMaskIntoConstraints = false
         mediaCommandView?.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
@@ -176,11 +170,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     
     @objc func zoomOutGrid() {
         UIView.animate(withDuration: 0.0, animations: {
-            if(self.gridLayout.itemForLine + 1 < self.kMaxImageGrid) {
+            if(self.gridLayout.itemForLine + 1 < self.maxImageGrid) {
                 self.gridLayout.itemForLine += 1
                 self.mediaCommandView?.zoomInButton.isEnabled = true
             }
-            if(self.gridLayout.itemForLine == self.kMaxImageGrid - 1) {
+            if(self.gridLayout.itemForLine == self.maxImageGrid - 1) {
                 self.mediaCommandView?.zoomOutButton.isEnabled = false
             }
 
@@ -213,7 +207,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_select_", comment: ""),
-                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "selectFull"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                        icon: UIImage(named: "selectFull")!.image(color: NCBrandColor.shared.icon, size: 50),
                         action: { menuAction in
                             self.isEditMode = true
                         }
@@ -224,7 +218,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString(filterTypeFileImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: filterTypeFileImage ? "imageno" : "imageyes"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: filterTypeFileImage ? "imageno" : "imageyes")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         self.filterTypeFileImage = !self.filterTypeFileImage
                         self.filterTypeFileVideo = false
@@ -236,7 +230,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString(filterTypeFileVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: filterTypeFileVideo ? "videono" : "videoyes"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: filterTypeFileVideo ? "videono" : "videoyes")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         self.filterTypeFileVideo = !self.filterTypeFileVideo
                         self.filterTypeFileImage = false
@@ -248,7 +242,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_select_media_folder_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "folderAutomaticUpload"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "folderAutomaticUpload")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
                         let viewController = navigationController.topViewController as! NCSelect
@@ -270,7 +264,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_modified_date_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortModifiedDate"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "sortModifiedDate")!.image(color: NCBrandColor.shared.icon, size: 50),
                     selected: CCUtility.getMediaSortDate() == "date",
                     on: true,
                     action: { menuAction in
@@ -283,7 +277,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_created_date_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortCreatedDate"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "sortCreatedDate")!.image(color: NCBrandColor.shared.icon, size: 50),
                     selected: CCUtility.getMediaSortDate() == "creationDate",
                     on: true,
                     action: { menuAction in
@@ -296,7 +290,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_upload_date_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortUploadDate"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "sortUploadDate")!.image(color: NCBrandColor.shared.icon, size: 50),
                     selected: CCUtility.getMediaSortDate() == "uploadDate",
                     on: true,
                     action: { menuAction in
@@ -311,7 +305,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_cancel_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "cancel")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         self.isEditMode = false
                         self.selectOcId.removeAll()
@@ -326,7 +320,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "move")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         self.isEditMode = false
                         var meradatasSelect = [tableMetadata]()
@@ -336,7 +330,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
                             }
                         }
                         if meradatasSelect.count > 0 {
-                            NCCollectionCommon.shared.openSelectView(items: meradatasSelect)
+                            NCCollectionCommon.shared.openSelectView(items: meradatasSelect, viewController: self)
                         }
                         self.selectOcId.removeAll()
                     }
@@ -349,14 +343,14 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_delete_selected_files_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         self.isEditMode = false
                         for ocId in self.selectOcId {
                             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                                 NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
                                     if errorCode != 0 {
-                                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                     }
                                 }
                             }
@@ -396,9 +390,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         collectionView.backgroundColor = NCBrandColor.shared.backgroundView
         collectionView.reloadData()
         
-        cacheImages.cellLivePhotoImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: .white)
-        cacheImages.cellPlayImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .white)
-        cacheImages.cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 100, height: 100, color: NCBrandColor.shared.yellowFavorite)
+        cacheImages.cellLivePhotoImage = UIImage.init(named: "livePhoto")!.image(color: .white, size: 50)
+        cacheImages.cellPlayImage = UIImage.init(named: "play")!.image(color: .white, size: 50)
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
@@ -465,42 +458,13 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     
     func emptyDataSetView(_ view: NCEmptyView) {
         
-        view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "media"), width: 300, height: 300, color: .gray)
+        view.emptyImage.image = UIImage.init(named: "media")?.image(color: .gray, size: UIScreen.main.bounds.width)
         if oldInProgress || newInProgress {
             view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
         } else {
             view.emptyTitle.text = NSLocalizedString("_tutorial_photo_view_", comment: "")
         }
         view.emptyDescription.text = ""
-    }
-}
-
-// MARK: - 3D Touch peek and pop
-
-extension NCMedia: UIViewControllerPreviewingDelegate {
-    
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
-        
-        guard let point = collectionView?.convert(location, from: collectionView?.superview) else { return nil }
-        guard let indexPath = collectionView?.indexPathForItem(at: point) else { return nil }
-        let metadata = metadatas[indexPath.row]
-        guard let cell = collectionView?.cellForItem(at: indexPath) as? NCGridMediaCell  else { return nil }
-        guard let viewController = UIStoryboard(name: "CCPeekPop", bundle: nil).instantiateViewController(withIdentifier: "PeekPopImagePreview") as? CCPeekPop else { return nil }
-        
-        previewingContext.sourceRect = cell.frame
-        viewController.metadata = metadata
-        viewController.imageFile = cell.imageItem.image
-        viewController.showOpenIn = true
-        viewController.showShare = false
-        viewController.showOpenQuickLook = false
-
-        return viewController
-    }
-    
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
-        
-        guard let indexPath = collectionView?.indexPathForItem(at: previewingContext.sourceRect.origin) else { return }
-        collectionView(collectionView, didSelectItemAt: indexPath)
     }
 }
 
@@ -527,6 +491,32 @@ extension NCMedia: UICollectionViewDelegate {
             
             appDelegate.activeServerUrl = metadataTouch!.serverUrl
             NCViewer.shared.view(viewController: self, metadata: metadataTouch!, metadatas: metadatas)
+        }
+    }
+    
+    @available(iOS 13.0, *)
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        
+        let metadata = metadatas[indexPath.row]
+        let identifier = indexPath as NSCopying
+
+        return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
+            
+            return NCViewerProviderContextMenu(metadata: metadata)
+            
+        }, actionProvider: { suggestedActions in
+            
+            return NCCollectionCommon.shared.contextMenuConfiguration(metadata: metadata, viewController: self, enableDeleteLocal: false, enableViewInFolder: true)
+        })
+    }
+    
+    @available(iOS 13.0, *)
+    func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        animator.addCompletion {
+
+            if let indexPath = configuration.identifier as? IndexPath {
+                self.collectionView(collectionView, didSelectItemAt: indexPath)
+            }
         }
     }
 }
@@ -587,7 +577,7 @@ extension NCMedia: UICollectionViewDataSource {
             }
             cell.date = metadata.date as Date
 
-            if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
+            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio {
                 cell.imageStatus.image = cacheImages.cellPlayImage
             } else if metadata.livePhoto && livePhoto {
                 cell.imageStatus.image = cacheImages.cellLivePhotoImage
@@ -647,14 +637,14 @@ extension NCMedia {
         if let tableAccount = NCManageDatabase.shared.getAccountActive() {
             self.mediaPath = tableAccount.mediaPath
         }
-        let startServerUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) + mediaPath
+        let startServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) + mediaPath
         
-        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, k_metadataTypeFile_image, k_metadataTypeFile_video)
+        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NCBrandGlobal.shared.metadataTypeFileImage, NCBrandGlobal.shared.metadataTypeFileVideo)
         
         if filterTypeFileImage {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, k_metadataTypeFile_video)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NCBrandGlobal.shared.metadataTypeFileVideo)
         } else if filterTypeFileVideo {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, k_metadataTypeFile_image)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NCBrandGlobal.shared.metadataTypeFileImage)
         } else {
             predicate = predicateDefault
         }
@@ -892,7 +882,7 @@ class NCMediaCommandView: UIView {
         gradient.endPoint = CGPoint(x: 0, y: 0.9)
         gradient.colors = [UIColor.black.withAlphaComponent(0.4).cgColor , UIColor.clear.cgColor]
         layer.insertSublayer(gradient, at: 0)
-        moreButton.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: .white), for: .normal)
+        moreButton.setImage(UIImage.init(named: "more")!.image(color: .white, size: 25), for: .normal)
         title.text = ""
     }
     

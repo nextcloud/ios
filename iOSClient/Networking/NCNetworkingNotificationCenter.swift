@@ -27,8 +27,8 @@ import Foundation
     @objc public static let shared: NCNetworkingNotificationCenter = {
         let instance = NCNetworkingNotificationCenter()
         
-        NotificationCenter.default.addObserver(instance, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadedFile), object: nil)
-        NotificationCenter.default.addObserver(instance, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadedFile), object: nil)
+        NotificationCenter.default.addObserver(instance, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterDownloadedFile), object: nil)
+        NotificationCenter.default.addObserver(instance, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterUploadedFile), object: nil)
         
         return instance
     }()
@@ -53,7 +53,7 @@ import Foundation
                     documentController?.delegate = self
 
                     switch selector {
-                    case selectorLoadFileQuickLook:
+                    case NCBrandGlobal.shared.selectorLoadFileQuickLook:
                         
                         let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
                         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
@@ -61,7 +61,7 @@ import Foundation
                         viewerQuickLook = NCViewerQuickLook.init()
                         viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath))
                         
-                    case selectorLoadFileView:
+                    case NCBrandGlobal.shared.selectorLoadFileView:
                         
                         if UIApplication.shared.applicationState == UIApplication.State.active {
                                                         
@@ -71,13 +71,13 @@ import Foundation
                                     documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
                                 }
                                 
-                            } else if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
+                            } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileCompress || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileUnknown {
 
                                 if let view = appDelegate.window?.rootViewController?.view {
                                     documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
                                 }
                                 
-                            } else if metadata.typeFile == k_metadataTypeFile_imagemeter {
+                            } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImagemeter {
                                 
                                 if let view = appDelegate.window?.rootViewController?.view {
                                     documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
@@ -89,7 +89,7 @@ import Foundation
                             }
                         }
                         
-                    case selectorOpenIn:
+                    case NCBrandGlobal.shared.selectorOpenIn:
                         
                         if UIApplication.shared.applicationState == UIApplication.State.active {
                             
@@ -98,47 +98,34 @@ import Foundation
                             }
                         }
                         
-                    case selectorLoadCopy:
+                    case NCBrandGlobal.shared.selectorLoadCopy:
                         
-                        var items = UIPasteboard.general.items
+                        NCCollectionCommon.shared.copyPasteboard()
                         
-                        do {
-                            let etagPasteboard = try NSKeyedArchiver.archivedData(withRootObject: metadata.ocId, requiringSecureCoding: false)
-                            items.append([k_metadataKeyedUnarchiver:etagPasteboard])
-                        } catch {
-                            print("error")
-                        }
-                        
-                        UIPasteboard.general.setItems(items, options: [:])
-                        
-                    case selectorLoadOffline:
+                    case NCBrandGlobal.shared.selectorLoadOffline:
                         
                         NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: true)
                        
-                    case selectorSaveAlbum:
+                    case NCBrandGlobal.shared.selectorSaveAlbum:
                         
-                        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                        let status = PHPhotoLibrary.authorizationStatus()
-
-                        if metadata.typeFile == k_metadataTypeFile_image && status == PHAuthorizationStatus.authorized {
+                        NCCollectionCommon.shared.saveAlbum(metadata: metadata)
+                        
+                    case NCBrandGlobal.shared.selectorSaveAlbumLivePhotoIMG, NCBrandGlobal.shared.selectorSaveAlbumLivePhotoMOV:
+                        
+                        var metadata = metadata
+                        var metadataMOV = metadata
+                        guard let metadataTMP = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) else { break }
+                        
+                        if selector == NCBrandGlobal.shared.selectorSaveAlbumLivePhotoIMG {
+                            metadataMOV = metadataTMP
+                        }
+                        
+                        if selector == NCBrandGlobal.shared.selectorSaveAlbumLivePhotoMOV {
+                            metadata = metadataTMP
+                        }
                             
-                            if let image = UIImage.init(contentsOfFile: fileNamePath) {
-                                UIImageWriteToSavedPhotosAlbum(image, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
-                            } else {
-                                NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorFileNotSaved))
-                            }
-                            
-                        } else if metadata.typeFile == k_metadataTypeFile_video && status == PHAuthorizationStatus.authorized {
-                            
-                            if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath) {
-                                UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
-                            } else {
-                                NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorFileNotSaved))
-                            }
-                            
-                        } else if status != PHAuthorizationStatus.authorized {
-                            
-                            NCContentPresenter.shared.messageNotification("_access_photo_not_enabled_", description: "_access_photo_not_enabled_msg_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorFileNotSaved))
+                        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
+                            NCCollectionCommon.shared.saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV, progressView: nil, viewActivity: self.appDelegate.window.rootViewController?.view)
                         }
                         
                     default:
@@ -149,7 +136,7 @@ import Foundation
                 } else {
                     
                     // File do not exists on server, remove in local
-                    if (errorCode == k_CCErrorResourceNotFound || errorCode == k_CCErrorBadServerResponse) {
+                    if (errorCode == NCBrandGlobal.shared.ErrorResourceNotFound || errorCode == NCBrandGlobal.shared.ErrorBadServerResponse) {
                         
                         do {
                             try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
@@ -160,7 +147,7 @@ import Foundation
                         
                     } else {
                         
-                        NCContentPresenter.shared.messageNotification("_download_file_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        NCContentPresenter.shared.messageNotification("_download_file_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     }
                 }
             }
@@ -183,18 +170,11 @@ import Foundation
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["ocId": metadata.ocId, "selector": selector, "errorCode": 0, "errorDescription": "" ])
+            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": selector, "errorCode": 0, "errorDescription": "" ])
                                     
         } else {
             
             NCNetworking.shared.download(metadata: metadata, selector: selector) { (_) in }
-        }
-    }
-    
-    @objc func SaveAlbum(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
-        
-        if error != nil {
-            NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorFileNotSaved))
         }
     }
     
@@ -208,7 +188,7 @@ import Foundation
                 if metadata.account == appDelegate.account {
                     if errorCode != 0 {
                         if errorCode != -999 && errorCode != 401 && errorDescription != "" {
-                            NCContentPresenter.shared.messageNotification("_upload_file_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("_upload_file_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
                     }
                 }

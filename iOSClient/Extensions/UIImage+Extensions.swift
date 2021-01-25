@@ -26,36 +26,30 @@ import Accelerate
 
 extension UIImage {
     
-    func resizeImageUsingVImage(size:CGSize) -> UIImage? {
+    @objc func resizeImage(size: CGSize, isAspectRation: Bool) -> UIImage? {
         
-        let cgImage = self.cgImage!
-        var format = vImage_CGImageFormat(bitsPerComponent: 8, bitsPerPixel: 32, colorSpace: nil, bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.first.rawValue), version: 0, decode: nil, renderingIntent: CGColorRenderingIntent.defaultIntent)
-        var sourceBuffer = vImage_Buffer()
-        defer {
-            free(sourceBuffer.data)
+        let originRatio = self.size.width / self.size.height
+        let newRatio = size.width / size.height
+        var newSize = size
+
+        if isAspectRation {
+            if originRatio < newRatio {
+                newSize.height = size.height
+                newSize.width = size.height * originRatio
+            } else {
+                newSize.width = size.width;
+                newSize.height = size.width / originRatio
+            }
         }
-        var error = vImageBuffer_InitWithCGImage(&sourceBuffer, &format, nil, cgImage, numericCast(kvImageNoFlags))
-        guard error == kvImageNoError else { return nil }
-        // create a destination buffer
-        let destWidth = Int(size.width)
-        let destHeight = Int(size.height)
-        let bytesPerPixel = self.cgImage!.bitsPerPixel/8
-        let destBytesPerRow = destWidth * bytesPerPixel
-        let destData = UnsafeMutablePointer<UInt8>.allocate(capacity: destHeight * destBytesPerRow)
-        defer {
-            destData.deallocate()
+        
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
+        self.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        if let image = newImage {
+            return image
         }
-        var destBuffer = vImage_Buffer(data: destData, height: vImagePixelCount(destHeight), width: vImagePixelCount(destWidth), rowBytes: destBytesPerRow)
-        // scale the image
-        error = vImageScale_ARGB8888(&sourceBuffer, &destBuffer, nil, numericCast(kvImageHighQualityResampling))
-        guard error == kvImageNoError else { return nil }
-        // create a CGImage from vImage_Buffer
-        var destCGImage = vImageCreateCGImageFromBuffer(&destBuffer, &format, nil, nil, numericCast(kvImageNoFlags), &error)?.takeRetainedValue()
-        guard error == kvImageNoError else { return nil }
-        // create a UIImage
-        let resizedImage = destCGImage.flatMap { UIImage(cgImage: $0, scale: 0.0, orientation: self.imageOrientation) }
-        destCGImage = nil
-        return resizedImage
+        return self
     }
     
     func fixedOrientation() -> UIImage? {
@@ -118,5 +112,32 @@ extension UIImage {
         
         guard let newCGImage = ctx.makeImage() else { return nil }
         return UIImage.init(cgImage: newCGImage, scale: 1, orientation: .up)
+    }
+    
+    @objc func image(color: UIColor, size: CGFloat) -> UIImage {
+        
+        let size = CGSize(width: size, height: size)
+        
+        UIGraphicsBeginImageContextWithOptions(size, false, self.scale)
+        color.setFill()
+
+        let context = UIGraphicsGetCurrentContext()
+        context?.translateBy(x: 0, y: size.height)
+        context?.scaleBy(x: 1.0, y: -1.0)
+        context?.setBlendMode(CGBlendMode.normal)
+
+        let rect = CGRect(origin: .zero, size: size)
+        guard let cgImage = self.cgImage else { return self }
+        context?.clip(to: rect, mask: cgImage)
+        context?.fill(rect)
+
+        let newImage = UIGraphicsGetImageFromCurrentImageContext() ?? self
+        UIGraphicsEndImageContext()
+        
+        return newImage
+    }
+    
+    func imageColor(_ color: UIColor) -> UIImage {
+        return image(color: color, size: size.width)
     }
 }

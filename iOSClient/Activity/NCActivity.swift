@@ -60,7 +60,7 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
         tableView.tableFooterView = UIView()
         tableView.contentInset = insets
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
         
         changeTheming()
     }
@@ -94,7 +94,7 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
     
     func emptyDataSetView(_ view: NCEmptyView) {
         
-        view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "activity"), width: 300, height: 300, color: .gray)
+        view.emptyImage.image = UIImage.init(named: "activity")?.image(color: .gray, size: UIScreen.main.bounds.width)
         view.emptyTitle.text = NSLocalizedString("_no_activity_", comment: "")
         view.emptyDescription.text = ""
     }
@@ -228,7 +228,7 @@ extension NCActivity: UITableViewDataSource {
                     }
                 } else {
                     DispatchQueue.global().async {
-                        NCCommunication.shared.downloadAvatar(userID: activity.user, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size)) { (account, data, errorCode, errorMessage) in
+                        NCCommunication.shared.downloadAvatar(userID: activity.user, fileNameLocalPath: fileNameLocalPath, size: NCBrandGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
                             if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
                                 cell.avatar.image = UIImage(data: data!)
                             }
@@ -348,7 +348,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                         viewController.trashPath = result.filePath
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
                     } else {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_trash_file_not_found_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_trash_file_not_found_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError)
                     }
                 }
             }
@@ -382,7 +382,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
             var pathComponents = activityPreview.link.components(separatedBy: "?")
             pathComponents = pathComponents[1].components(separatedBy: "&")
             var serverUrlFileName = pathComponents[0].replacingOccurrences(of: "dir=", with: "").removingPercentEncoding!
-            serverUrlFileName = appDelegate.urlBase + "/" + NCUtility.shared.getWebDAV(account: activityPreview.account) + serverUrlFileName + "/" + activitySubjectRich.name
+            serverUrlFileName = appDelegate.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: activityPreview.account) + serverUrlFileName + "/" + activitySubjectRich.name
             
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)!
             

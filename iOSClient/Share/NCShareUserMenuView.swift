@@ -101,8 +101,8 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         
         fieldSetExpirationDate.inputView = UIView()
         
-        imageNoteToRecipient.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 100, height: 100, color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1))
-        imageUnshare.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 100, height: 100, color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1))
+        imageNoteToRecipient.image = UIImage.init(named: "file_txt")!.image(color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
+        imageUnshare.image = UIImage.init(named: "trash")!.image(color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
     }
     
     override func willMove(toWindow newWindow: UIWindow?) {
@@ -314,12 +314,12 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     func shareCompleted() {
         unLoad()
-        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataNCShare)
+        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataNCShare)
     }
     
     func unShareCompleted() {
         unLoad()
-        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataNCShare)
+        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataNCShare)
     }
     
     func updateShareWithError(idShare: Int) {

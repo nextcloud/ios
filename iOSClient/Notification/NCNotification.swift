@@ -44,7 +44,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         // Empty
         emptyDataSet = NCEmptyDataSet.init(view: tableView, offset: 0, delegate: self)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
         
         changeTheming()
     }
@@ -73,7 +73,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     
     func emptyDataSetView(_ view: NCEmptyView) {
         
-        view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "notification"), width: 300, height: 300, color: .gray)
+        view.emptyImage.image = UIImage.init(named: "notification")?.image(color: .gray, size: UIScreen.main.bounds.width)
         view.emptyTitle.text = NSLocalizedString("_no_notification_", comment: "")
         view.emptyDescription.text = ""
     }
@@ -104,9 +104,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         }
         
         if let image = image {
-            cell.icon.image = CCGraphics.changeThemingColorImage(image, multiplier: 2, color: NCBrandColor.shared.brandElement)
+            cell.icon.image = image.image(color:  NCBrandColor.shared.brandElement, size: 25)
         } else {
-            cell.icon.image = CCGraphics.changeThemingColorImage(#imageLiteral(resourceName: "notification"), multiplier:2, color: NCBrandColor.shared.brandElement)
+            cell.icon.image = #imageLiteral(resourceName: "notification").image(color: NCBrandColor.shared.brandElement, size: 25)
         }
         
         // Avatar
@@ -158,7 +158,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
         cell.message.textColor = .gray
         
-        cell.remove.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "exit")!, width: 40, height: 40, color: .gray), for: .normal)
+        cell.remove.setImage(UIImage(named: "exit")!.image(color: .gray, size: 20), for: .normal)
         
         cell.primary.isEnabled = false
         cell.primary.isHidden = true
@@ -243,7 +243,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 self.reloadDatasource()
                 
             } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }
@@ -270,7 +270,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                                 self.reloadDatasource()
                                 
                             } else if errorCode != 0 {
-                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                             } else {
                                 print("[LOG] It has been changed user during networking process, error.")
                             }

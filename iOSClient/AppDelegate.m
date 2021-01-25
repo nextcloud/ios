@@ -22,10 +22,10 @@
 //
 
 #import "AppDelegate.h"
-#import "CCGraphics.h"
 #import "NCBridgeSwift.h"
 #import "NCAutoUpload.h"
-#import "NCPushNotificationEncryption.h"
+#import "NSNotificationCenter+MainThread.h"
+#import "NCPushNotification.h"
 #import <QuartzCore/QuartzCore.h>
 
 @import Firebase;
@@ -67,8 +67,7 @@
         [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Start session with level %lu %@", (unsigned long)logLevel, versionNextcloudiOS]];
     }
     
-    //
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:k_notificationCenter_initializeMain object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil];
     
     // Set account, if no exists clear all
     tableAccount *tableAccount = [[NCManageDatabase shared] getAccountActive];
@@ -100,6 +99,8 @@
     self.listFilesVC = [NSMutableDictionary new];
     self.listFavoriteVC = [NSMutableDictionary new];
     self.listOfflineVC = [NSMutableDictionary new];
+    
+    self.pasteboardOcIds = [NSMutableArray new];
 
     // Push Notification
     [application registerForRemoteNotifications];
@@ -114,7 +115,6 @@
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
     // Start Timer
-    self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
     [self startTimerErrorNetworking];
 
     // Store review
@@ -138,8 +138,8 @@
     if ([NCBrandOptions shared].disable_intro) {
         [CCUtility setIntro:YES];
         
-        if (self.account.length == 0) {
-            [self openLoginView:nil selector:k_intro_login openLoginWeb:false];
+        if (self.account == nil || self.account.length == 0) {
+            [self openLoginView:nil selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
         }
         
     } else {
@@ -154,7 +154,7 @@
     }
 
     // init home
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
 
     // Passcode
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -172,7 +172,7 @@
 //
 - (void)applicationWillResignActive:(UIApplication *)application
 {
-    if (self.account.length == 0) { return; }
+    if (self.account == nil || self.account.length == 0) { return; }
     
     // Dismiss FileViewInFolder
     if (self.activeFileViewInFolder != nil ) {
@@ -180,8 +180,6 @@
             self.activeFileViewInFolder = nil;
         }];
     }
-    
-    [self updateApplicationIconBadgeNumber];
 }
 
 //
@@ -189,9 +187,9 @@
 //
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    if (self.account.length == 0) { return; }
+    if (self.account == nil || self.account.length == 0) { return; }
     
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationWillEnterForeground object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterApplicationWillEnterForeground object:nil];
     
     // Request Passcode
     [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
@@ -200,13 +198,13 @@
     [[NCAutoUpload shared] initStateAutoUpload];
     
     // Read active directory
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_reloadDataSourceNetworkForced object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterReloadDataSourceNetworkForced object:nil];
     
     // Required unsubscribing / subscribing
-    [self pushNotification];
+    [[NCPushNotification shared] pushNotification];
     
     // RichDocument
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_richdocumentGrabFocus object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterRichdocumentGrabFocus object:nil];
     
     // Request Service Server Nextcloud
     [[NCService shared] startRequestServicesServer];
@@ -217,7 +215,7 @@
 //
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    if (self.account.length == 0) { return; }
+    if (self.account == nil || self.account.length == 0) { return; }
         
     // Brand
     #if defined(HC)
@@ -239,9 +237,9 @@
 //
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    if (self.account.length == 0) { return; }
+    if (self.account == nil || self.account.length == 0) { return; }
 
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationDidEnterBackground object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterApplicationDidEnterBackground object:nil];
     
     [self passcodeWithAutomaticallyPromptForBiometricValidation:false];
 }
@@ -257,7 +255,7 @@
 // NotificationCenter
 - (void)initializeMain:(NSNotification *)notification
 {
-    if (self.account.length == 0) { return; }
+    if (self.account == nil || self.account.length == 0) { return; }
     
     // Clear error certificate
     [CCUtility setCertificateError:self.account error:NO];
@@ -266,7 +264,7 @@
     [[NCBrandColor shared] settingThemingColorWithAccount:self.account];
     
     // close detail
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_menuDetailClose object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterMenuDetailClose object:nil];
     
     // Not Photos Video in library ? then align and Init Auto Upload
     NSArray *recordsPhotoLibrary = [[NCManageDatabase shared] getPhotoLibraryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", self.account]];
@@ -281,7 +279,7 @@
     [[NCService shared] startRequestServicesServer];
     
     // Registeration push notification
-    [self pushNotification];
+    [[NCPushNotification shared] pushNotification];
     
     // Registeration domain File Provider
     //FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
@@ -291,18 +289,16 @@
     [[NCCommunicationCommon shared] writeLog:@"initialize Main"];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Login / checkErrorNetworking =====
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark Login / checkErrorNetworking
 
 - (void)checkErrorNetworking
 {
-    if (self.account.length == 0) { return; }
+    if (self.account == nil || self.account.length == 0) { return; }
     
     // check unauthorized server (401)
     if ([CCUtility getPassword:self.account].length == 0) {
         
-        [self openLoginView:self.window.rootViewController selector:k_intro_login openLoginWeb:true];
+        [self openLoginView:self.window.rootViewController selector:NCBrandGlobal.shared.introLogin openLoginWeb:true];
     }
     
     // check certificate untrusted (-1202)
@@ -354,13 +350,13 @@
     }
     
     // normal login
-    if (selector == k_intro_signup) {
+    if (selector == NCBrandGlobal.shared.introSignup) {
         
         if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
             
             self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
             
-            if (selector == k_intro_signup) {
+            if (selector == NCBrandGlobal.shared.introSignup) {
                 self.activeLoginWeb.urlBase = [[NCBrandOptions shared] linkloginPreferredProviders];
             } else {
                 self.activeLoginWeb.urlBase = self.urlBase;
@@ -429,12 +425,10 @@
 
 - (void)startTimerErrorNetworking
 {
-    self.timerErrorNetworking = [NSTimer scheduledTimerWithTimeInterval:k_timerErrorNetworking target:self selector:@selector(checkErrorNetworking) userInfo:nil repeats:YES];
+    self.timerErrorNetworking = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(checkErrorNetworking) userInfo:nil repeats:YES];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Account & Communication =====
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark Account & Communication
 
 - (void)settingAccount:(NSString *)account urlBase:(NSString *)urlBase user:(NSString *)user userID:(NSString *)userID password:(NSString *)password
 {
@@ -447,14 +441,21 @@
     (void)[NCNetworkingNotificationCenter shared];
 
     [[NCCommunicationCommon shared] setupWithAccount:account user:user userId:userID password:password urlBase:urlBase];
-    [self settingSetupCommunication:account];
+    
+    NSInteger serverVersionMajor = [[NCManageDatabase shared] getCapabilitiesServerIntWithAccount:account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
+    if (serverVersionMajor > 0) {
+        [[NCCommunicationCommon shared] setupWithNextcloudVersion:serverVersionMajor];
+    }
+    
+    [[NCCommunicationCommon shared] setupWithWebDav:[[NCUtilityFileSystem shared] getWebDAVWithAccount:account]];
+    [[NCCommunicationCommon shared] setupWithDav:[[NCUtilityFileSystem shared] getDAV]];
 }
 
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe
 {
     // Push Notification
     tableAccount *accountPN = [[NCManageDatabase shared] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    [self unsubscribingNextcloudServerPushNotification:accountPN.account urlBase:accountPN.urlBase user:accountPN.user withSubscribing:false];
+    [[NCPushNotification shared] unsubscribingNextcloudServerPushNotification:accountPN.account urlBase:accountPN.urlBase user:accountPN.user withSubscribing:false];
 
     [self settingAccount:nil urlBase:nil user:nil userID:nil password:nil];
     
@@ -477,112 +478,17 @@
             NSString *newAccount = listAccount[0];
             tableAccount *tableAccount = [[NCManageDatabase shared] setAccountActive:newAccount];
             [self settingAccount:newAccount urlBase:tableAccount.urlBase user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]];
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
         } else {
-            [self openLoginView:self.window.rootViewController selector:k_intro_login openLoginWeb:false];
+            [self openLoginView:self.window.rootViewController selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
         }
     }
 }
 
-- (void)settingSetupCommunication:(NSString *)account
-{
-    NSInteger serverVersionMajor = [[NCManageDatabase shared] getCapabilitiesServerIntWithAccount:account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
-    if (serverVersionMajor > 0) {
-        [[NCCommunicationCommon shared] setupWithNextcloudVersion:serverVersionMajor];
-    }
-    
-    [[NCCommunicationCommon shared] setupWithWebDav:[[NCUtility shared] getWebDAVWithAccount:account]];
-    [[NCCommunicationCommon shared] setupWithDav:[[NCUtility shared] getDAV]];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Push Notifications =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)pushNotification
-{
-    if (self.account.length == 0 || self.pushKitToken.length == 0) { return; }
-    
-    for (tableAccount *result in [[NCManageDatabase shared] getAllAccount]) {
-        
-        NSString *token = [CCUtility getPushNotificationToken:result.account];
-        
-        if (![token isEqualToString:self.pushKitToken]) {
-            if (token != nil) {
-                // unsubscribing + subscribing
-                [self unsubscribingNextcloudServerPushNotification:result.account urlBase:result.urlBase user:result.user withSubscribing:true];
-            } else {
-                [self subscribingNextcloudServerPushNotification:result.account urlBase:result.urlBase user:result.user];
-            }
-        }
-    }
-}
-
-- (void)subscribingNextcloudServerPushNotification:(NSString *)account urlBase:(NSString *)urlBase user:(NSString *)user
-{
-    if (self.account.length == 0 || self.pushKitToken.length == 0) { return; }
-    
-    [[NCPushNotificationEncryption shared] generatePushNotificationsKeyPair:account];
-
-    NSString *pushTokenHash = [[NCEndToEndEncryption sharedManager] createSHA512:self.pushKitToken];
-    NSData *pushPublicKey = [CCUtility getPushNotificationPublicKey:account];
-    NSString *pushDevicePublicKey = [[NSString alloc] initWithData:pushPublicKey encoding:NSUTF8StringEncoding];
-    NSString *proxyServerPath = [NCBrandOptions shared].pushNotificationServerProxy;
-    
-    [[NCCommunication shared] subscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[CCUtility getPassword:account] pushTokenHash:pushTokenHash devicePublicKey:pushDevicePublicKey proxyServerUrl:proxyServerPath customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSString *deviceIdentifier, NSString *signature, NSString *publicKey, NSInteger errorCode, NSString *errorDescription) {
-        if (errorCode == 0) {
-            NSString *userAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [CCUtility getUserAgent]];
-            [[NCCommunication shared] subscribingPushProxyWithProxyServerUrl:proxyServerPath pushToken:self.pushKitToken deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent completionHandler:^(NSInteger errorCode, NSString *errorDescription) {
-                if (errorCode == 0) {
-                    
-                    [[NCCommunicationCommon shared] writeLog:@"Subscribed to Push Notification server & proxy successfully"];
-
-                    [CCUtility setPushNotificationToken:account token:self.pushKitToken];
-                    [CCUtility setPushNotificationDeviceIdentifier:account deviceIdentifier:deviceIdentifier];
-                    [CCUtility setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:signature];
-                    [CCUtility setPushNotificationSubscribingPublicKey:account publicKey:publicKey];
-                }
-            }];
-        }
-    }];
-}
-
-- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account urlBase:(NSString *)urlBase user:(NSString *)user withSubscribing:(BOOL)subscribing
-{
-    if (self.account.length == 0) { return; }
-    
-    NSString *deviceIdentifier = [CCUtility getPushNotificationDeviceIdentifier:account];
-    NSString *signature = [CCUtility getPushNotificationDeviceIdentifierSignature:account];
-    NSString *publicKey = [CCUtility getPushNotificationSubscribingPublicKey:account];
-
-    [[NCCommunication shared] unsubscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[CCUtility getPassword:account] customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
-        if (errorCode == 0) {
-            NSString *userAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [CCUtility getUserAgent]];
-            NSString *proxyServerPath = [NCBrandOptions shared].pushNotificationServerProxy;
-            [[NCCommunication shared] unsubscribingPushProxyWithProxyServerUrl:proxyServerPath deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent completionHandler:^(NSInteger errorCode, NSString *errorDescription) {
-                if (errorCode == 0) {
-                
-                    [[NCCommunicationCommon shared] writeLog:@"Unsubscribed to Push Notification server & proxy successfully."];
-                    
-                    [CCUtility setPushNotificationPublicKey:account data:nil];
-                    [CCUtility setPushNotificationSubscribingPublicKey:account publicKey:nil];
-                    [CCUtility setPushNotificationPrivateKey:account data:nil];
-                    [CCUtility setPushNotificationToken:account token:nil];
-                    [CCUtility setPushNotificationDeviceIdentifier:account deviceIdentifier:nil];
-                    [CCUtility setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:nil];
-                    
-                    if (self.pushKitToken != nil && subscribing) {
-                        [self subscribingNextcloudServerPushNotification:account urlBase:urlBase user:user];
-                    }
-                }
-            }];
-        }
-    }];
-}
+#pragma mark Push Notifications
 
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
-    //Called when a notification is delivered to a foreground app.
     completionHandler(UNNotificationPresentationOptionAlert);
 }
 
@@ -593,121 +499,21 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    self.pushKitToken = [self stringWithDeviceToken:deviceToken];
-
-    [self pushNotification];
+    [[NCPushNotification shared] registerForRemoteNotificationsWithDeviceToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    NSString *message = [userInfo objectForKey:@"subject"];
-    if (message) {
-        NSArray *results = [[NCManageDatabase shared] getAllAccount];
-        for (tableAccount *result in results) {
-            if ([CCUtility getPushNotificationPrivateKey:result.account]) {
-                NSData *decryptionKey = [CCUtility getPushNotificationPrivateKey:result.account];
-                NSString *decryptedMessage = [[NCPushNotificationEncryption shared] decryptPushNotification:message withDevicePrivateKey:decryptionKey];
-                if (decryptedMessage) {
-                    NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
-                    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                    NSInteger nid = [[json objectForKey:@"nid"] integerValue];
-                    BOOL delete = [[json objectForKey:@"delete"] boolValue];
-                    BOOL deleteAll = [[json objectForKey:@"delete-all"] boolValue];
-                    if (delete) {
-                        [self removeNotificationWithNotificationId:nid usingDecryptionKey:decryptionKey];
-                    } else if (deleteAll) {
-                        [self cleanAllNotifications];
-                    }
-                }
-            }
-        }
-    }
-    completionHandler(UIBackgroundFetchResultNoData);
-}
-
-- (void)cleanAllNotifications
-{
-    [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
-}
-
-- (void)removeNotificationWithNotificationId:(NSInteger)notificationId usingDecryptionKey:(NSData *)key
-{
-    // Check in pending notifications
-    [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
-        for (UNNotificationRequest *notificationRequest in requests) {
-            NSString *message = [notificationRequest.content.userInfo objectForKey:@"subject"];
-            NSString *decryptedMessage = [[NCPushNotificationEncryption shared] decryptPushNotification:message withDevicePrivateKey:key];
-            if (decryptedMessage) {
-                NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
-                NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                NSInteger nid = [[json objectForKey:@"nid"] integerValue];
-                if (nid == notificationId) {
-                    [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[notificationRequest.identifier]];
-                }
-            }
-        }
-    }];
-    // Check in delivered notifications
-    [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
-        for (UNNotification *notification in notifications) {
-            NSString *message = [notification.request.content.userInfo objectForKey:@"subject"];
-            NSString *decryptedMessage = [[NCPushNotificationEncryption shared] decryptPushNotification:message withDevicePrivateKey:key];
-            if (decryptedMessage) {
-                NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
-                NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                NSInteger nid = [[json objectForKey:@"nid"] integerValue];
-                if (nid == notificationId) {
-                    [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[notification.request.identifier]];
-                }
-            }
-        }
+    [[NCPushNotification shared] applicationdidReceiveRemoteNotification:userInfo fetchCompletionHandler:^(UIBackgroundFetchResult result) {
+        completionHandler(result);
     }];
 }
 
-- (NSString *)stringWithDeviceToken:(NSData *)deviceToken
-{
-    const char *data = [deviceToken bytes];
-    NSMutableString *token = [NSMutableString string];
-    
-    for (NSUInteger i = 0; i < [deviceToken length]; i++) {
-        [token appendFormat:@"%02.2hhX", data[i]];
-    }
-    
-    return [token copy];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== ApplicationIconBadgeNumber =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)updateApplicationIconBadgeNumber
-{
-    if (self.account.length == 0) { return; }
-            
-    NSInteger counterDownload = [[NCOperationQueue shared] downloadCount];
-    NSInteger counterUpload = [[NCManageDatabase shared] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d OR status == %d", k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading]].count;
-    NSInteger total = counterDownload + counterUpload;
-    
-    [UIApplication sharedApplication].applicationIconBadgeNumber = total;
-    
-    UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
-    if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-        UITabBarItem *tabBarItem = [tabBarController.tabBar.items objectAtIndex:0];
-        if (total > 0) {
-            [tabBarItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
-        } else {
-            [tabBarItem setBadgeValue:nil];
-        }
-    }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Fetch =====
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark Fetch
 
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    if (self.account.length == 0) {
+    if (self.account == nil || self.account.length == 0) {
         completionHandler(UIBackgroundFetchResultNoData);
         return;
     }
@@ -724,9 +530,7 @@
     });
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Operation Networking & Session =====
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark Operation Networking & Session
 
 //
 // Method called by the system when all the background task has end
@@ -734,9 +538,7 @@
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)(void))completionHandler
 {
     [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Start handle Events For Background URLSession: %@", identifier]];
-    
-    [self updateApplicationIconBadgeNumber];
-    
+        
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         self.backgroundSessionCompletionHandler = completionHandler;
         void (^completionHandler)() = self.backgroundSessionCompletionHandler;
@@ -745,14 +547,11 @@
     });
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== OpenURL  =====
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark OpenURL
 
-// Method called from iOS system to send a file from other app.
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
 {
-    if (self.account.length == 0) { return YES; }
+    if (self.account == nil || self.account.length == 0) { return YES; }
     
     NSString *scheme = url.scheme;
     NSString *fileName;
@@ -794,14 +593,14 @@
                             if ([link containsString:accountURL.host] && [user isEqualToString:accountUser]) {
                                 matchedAccount = [[NCManageDatabase shared] setAccountActive:account.account];
                                 [self settingAccount:matchedAccount.account urlBase:matchedAccount.urlBase user:matchedAccount.user userID:matchedAccount.userID password:[CCUtility getPassword:matchedAccount.account]];
-                                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
+                                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
                             }
                         }
                     }
                     
                     if (matchedAccount) {
                         
-                        NSString *webDAV = [[NCUtility shared] getWebDAVWithAccount:self.account];
+                        NSString *webDAV = [[NCUtilityFileSystem shared] getWebDAVWithAccount:self.account];
 
                         if ([path containsString:@"/"]) {
 
@@ -834,31 +633,10 @@
         return YES;
     }
     
-    NSError *error;
-    NSLog(@"[LOG] the path is: %@", url.path);
-        
-    NSArray *splitedUrl = [url.path componentsSeparatedByString:@"/"];
-    self.fileNameUpload = [NSString stringWithFormat:@"%@",[splitedUrl objectAtIndex:([splitedUrl count]-1)]];
-    
-    if (self.account && [[NSFileManager defaultManager] fileExistsAtPath:url.path]) {
-        
-        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:self.fileNameUpload] error:nil];
-        [[NSFileManager defaultManager] moveItemAtPath:url.path toPath:[NSTemporaryDirectory() stringByAppendingString:self.fileNameUpload] error:&error];
-        
-        if (error == nil) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                UIViewController *uploadNavigationViewController = [[UIStoryboard storyboardWithName:@"CCUploadFromOtherUpp" bundle:nil] instantiateViewControllerWithIdentifier:@"CCUploadNavigationViewController"];
-                [self.window.rootViewController presentViewController:uploadNavigationViewController animated:YES completion:nil];
-            });
-        }
-    }
-    
     return YES;
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Passcode + Delegate =====
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark Passcode + Delegate
 
 - (void)passcodeWithAutomaticallyPromptForBiometricValidation:(BOOL)automaticallyPromptForBiometricValidation
 {

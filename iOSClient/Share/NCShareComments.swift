@@ -84,7 +84,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         }
         
         // changeTheming
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
         
         changeTheming()
     }
@@ -111,8 +111,8 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                 NCManageDatabase.shared.addComments(comments!, account: metadata.account, objectId: metadata.fileId)
                 self.tableView.reloadData()
             } else {
-                if errorCode != k_CCErrorResourceNotFound {
-                    NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                if errorCode != NCBrandGlobal.shared.ErrorResourceNotFound {
+                    NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
         }
@@ -133,7 +133,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                 self.newCommentField.text = ""
                 self.reloadData()
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
         }
     }
@@ -146,7 +146,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_edit_comment_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "edit"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                icon: UIImage(named: "edit")!.image(color: NCBrandColor.shared.icon, size: 50),
                 action: { menuAction in
                     guard let metadata = self.metadata else { return }
                     guard let tableComments = tableComments else { return }
@@ -165,7 +165,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                                     if errorCode == 0 {
                                         self.reloadData()
                                     } else {
-                                        NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                        NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                     }
                                 }
                             }
@@ -180,7 +180,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_comment_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
                 action: { menuAction in
                     guard let metadata = self.metadata else { return }
                     guard let tableComments = tableComments else { return }
@@ -189,7 +189,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                         if errorCode == 0 {
                             self.reloadData()
                         } else {
-                            NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
                     }
                 }
@@ -199,7 +199,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_cancel_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.shared.icon),
+                icon: UIImage(named: "cancel")!.image(color: NCBrandColor.shared.icon, size: 50),
                 action: { menuAction in
                 }
             )
@@ -316,7 +316,7 @@ class NCShareCommentsCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.lightGray), for: .normal)
+        buttonMenu.setImage(UIImage.init(named: "shareMenu")!.image(color: .lightGray, size: 50), for: .normal)
     }
     
     @IBAction func touchUpInsideMenu(_ sender: Any) {

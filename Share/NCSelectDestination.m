@@ -69,7 +69,7 @@
     
     if (![_serverUrl length]) {
                 
-        _serverUrl = [[NCUtility shared] getHomeServerWithUrlBase:urlBase account:account];
+        _serverUrl = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase account:account];
         
         [self.navigationController.navigationBar.topItem setTitleView:[[UIImageView alloc] initWithImage: [UIImage imageNamed:@"themingLogo"]]];
         self.title = @"Home";
@@ -255,11 +255,11 @@
     if (metadata.directory) {
     
         if (metadata.e2eEncrypted)
-            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] multiplier:2 color:NCBrandColor.shared.brandElement];
+            cell.imageView.image = [[UIImage imageNamed:@"folderEncrypted"] imageWithColor:NCBrandColor.shared.brandElement size:50];
         else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory])
-            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderAutomaticUpload"] multiplier:2 color:NCBrandColor.shared.brandElement];
+            cell.imageView.image = [[UIImage imageNamed:@"folderAutomaticUpload"] imageWithColor:NCBrandColor.shared.brandElement size:50];
         else
-            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:NCBrandColor.shared.brandElement];
+            cell.imageView.image = [[UIImage imageNamed:@"folder"] imageWithColor:NCBrandColor.shared.brandElement size:50];
         
     } else {
         

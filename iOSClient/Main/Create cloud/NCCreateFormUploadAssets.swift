@@ -46,7 +46,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         
         self.init()
         
-        if serverUrl == NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
             titleServerUrl = "/"
         } else {
             if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
@@ -86,7 +86,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             })
         }
         
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
 
         changeTheming()
     }
@@ -125,7 +125,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
 
-        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, width: 50, height: 50, color: NCBrandColor.shared.brandElement) as UIImage
+        row.cellConfig["imageView.image"] = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
@@ -165,7 +165,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         // Maintain the original fileName
         
         row = XLFormRowDescriptor(tag: "maintainOriginalFileName", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_maintain_original_filename_", comment: ""))
-        row.value = CCUtility.getOriginalFileName(k_keyFileNameOriginal)
+        row.value = CCUtility.getOriginalFileName(NCBrandGlobal.shared.keyFileNameOriginal)
         row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
@@ -176,7 +176,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         // Add File Name Type
         
         row = XLFormRowDescriptor(tag: "addFileNameType", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_add_filenametype_", comment: ""))
-        row.value = CCUtility.getFileNameType(k_keyFileNameType)
+        row.value = CCUtility.getFileNameType(NCBrandGlobal.shared.keyFileNameType)
         row.hidden = "$\("maintainOriginalFileName") == 1"
         row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
 
@@ -191,7 +191,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         form.addFormSection(section)
         
         row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeAccount, title: (NSLocalizedString("_filename_", comment: "")))
-        let fileNameMask : String = CCUtility.getFileNameMask(k_keyFileNameMask)
+        let fileNameMask : String = CCUtility.getFileNameMask(NCBrandGlobal.shared.keyFileNameMask)
         if fileNameMask.count > 0 {
             row.value = fileNameMask
         }
@@ -249,11 +249,11 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             }
         }
         else if formRow.tag == "maintainOriginalFileName" {
-            CCUtility.setOriginalFileName((formRow.value! as AnyObject).boolValue, key: k_keyFileNameOriginal)
+            CCUtility.setOriginalFileName((formRow.value! as AnyObject).boolValue, key: NCBrandGlobal.shared.keyFileNameOriginal)
             self.reloadForm()
         }
         else if formRow.tag == "addFileNameType" {
-            CCUtility.setFileNameType((formRow.value! as AnyObject).boolValue, key: k_keyFileNameType)
+            CCUtility.setFileNameType((formRow.value! as AnyObject).boolValue, key: NCBrandGlobal.shared.keyFileNameType)
             self.reloadForm()
         }
         else if formRow.tag == "maskFileName" {
@@ -278,7 +278,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                     
                     self.reloadFormRow(formRow)
                     
-                    NCContentPresenter.shared.messageNotification("_info_", description: "_forbidden_characters_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorCharactersForbidden), forced: true)
+                    NCContentPresenter.shared.messageNotification("_info_", description: "_forbidden_characters_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorCharactersForbidden, forced: true)
                 }
             }
             
@@ -309,7 +309,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             
             self.serverUrl = serverUrl!
             
-            if serverUrl == NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
+            if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
                 self.titleServerUrl = "/"
             } else {
                 if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account
@@ -365,8 +365,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             
             let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
             if autoUploadPath == self.serverUrl {
-                if NCNetworking.shared.createFolder(assets: self.assets, selector: selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase) {
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
+                if NCNetworking.shared.createFolder(assets: self.assets, selector: NCBrandGlobal.shared.selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase) {
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
                     return
                 }
             }
@@ -375,7 +375,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                     
                 var serverUrl = self.serverUrl
                 var livePhoto: Bool = false
-                let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String, fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
+                let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String, fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: NCBrandGlobal.shared.keyFileNameMask, keyFileNameType: NCBrandGlobal.shared.keyFileNameType, keyFileNameOriginal: NCBrandGlobal.shared.keyFileNameOriginal)!
                 let assetDate = asset.creationDate ?? Date()
                 let dateFormatter = DateFormatter()
                 
@@ -406,9 +406,9 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 
                 metadataForUpload.assetLocalIdentifier = asset.localIdentifier
                 metadataForUpload.session = self.session
-                metadataForUpload.sessionSelector = selectorUploadFile
-                metadataForUpload.size = Double(NCUtilityFileSystem.shared.getFileSize(asset: asset))
-                metadataForUpload.status = Int(k_metadataStatusWaitUpload)
+                metadataForUpload.sessionSelector = NCBrandGlobal.shared.selectorUploadFile
+                metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(asset: asset)
+                metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
                 
                 if livePhoto {
                     
@@ -426,10 +426,10 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                             metadataMOVForUpload.livePhoto = true
                             
                             metadataMOVForUpload.session = self.session
-                            metadataMOVForUpload.sessionSelector = selectorUploadFile
+                            metadataMOVForUpload.sessionSelector = NCBrandGlobal.shared.selectorUploadFile
                             metadataMOVForUpload.size = fileSize
-                            metadataMOVForUpload.status = Int(k_metadataStatusWaitUpload)
-                            metadataMOVForUpload.typeFile = k_metadataTypeFile_video
+                            metadataMOVForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
+                            metadataMOVForUpload.typeFile = NCBrandGlobal.shared.metadataTypeFileVideo
 
                             metadatasMOV.append(metadataMOVForUpload)
                         }
@@ -438,7 +438,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                     semaphore.wait()
                 }
                 
-                if NCUtility.shared.getMetadataConflict(account: self.appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {
+                if NCManageDatabase.shared.getMetadataConflict(account: self.appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {
                     metadatasUploadInConflict.append(metadataForUpload)
                 } else {
                     metadatasNOConflict.append(metadataForUpload)
@@ -484,7 +484,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         var returnString: String = ""
         let asset = assets[0]
         
-        if (CCUtility.getOriginalFileName(k_keyFileNameOriginal)) {
+        if (CCUtility.getOriginalFileName(NCBrandGlobal.shared.keyFileNameOriginal)) {
             
             return (NSLocalizedString("_filename_", comment: "") + ": " + (asset.value(forKey: "filename") as! String))
             
@@ -495,21 +495,21 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             if valueRenameTrimming.count > 0 {
                 
                 self.form.delegate = nil
-                CCUtility.setFileNameMask(valueRename, key: k_keyFileNameMask)
+                CCUtility.setFileNameMask(valueRename, key: NCBrandGlobal.shared.keyFileNameMask)
                 self.form.delegate = self
                 
-                returnString = CCUtility.createFileName(asset.value(forKey: "filename") as! String?, fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)
+                returnString = CCUtility.createFileName(asset.value(forKey: "filename") as! String?, fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: NCBrandGlobal.shared.keyFileNameMask, keyFileNameType: NCBrandGlobal.shared.keyFileNameType, keyFileNameOriginal: NCBrandGlobal.shared.keyFileNameOriginal)
                 
             } else {
                 
-                CCUtility.setFileNameMask("", key: k_keyFileNameMask)
-                returnString = CCUtility.createFileName(asset.value(forKey: "filename") as! String?, fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)
+                CCUtility.setFileNameMask("", key: NCBrandGlobal.shared.keyFileNameMask)
+                returnString = CCUtility.createFileName(asset.value(forKey: "filename") as! String?, fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: NCBrandGlobal.shared.keyFileNameType, keyFileNameOriginal: NCBrandGlobal.shared.keyFileNameOriginal)
             }
             
         } else {
             
-            CCUtility.setFileNameMask("", key: k_keyFileNameMask)
-            returnString = CCUtility.createFileName(asset.value(forKey: "filename") as! String?, fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)
+            CCUtility.setFileNameMask("", key: NCBrandGlobal.shared.keyFileNameMask)
+            returnString = CCUtility.createFileName(asset.value(forKey: "filename") as! String?, fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: NCBrandGlobal.shared.keyFileNameType, keyFileNameOriginal: NCBrandGlobal.shared.keyFileNameOriginal)
         }
         
         return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + returnString

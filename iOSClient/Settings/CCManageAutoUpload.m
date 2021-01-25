@@ -65,7 +65,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadDirectory" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_autoupload_select_folder_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundCell;
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
-    [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderAutomaticUpload"] width:50 height:50 color:NCBrandColor.shared.icon] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"folderAutomaticUpload"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -205,7 +205,7 @@
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     // changeTheming
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:NCBrandGlobal.shared.notificationCenterChangeTheming object:nil];
     
     [self changeTheming];
 }
@@ -488,14 +488,14 @@
 {
     if (serverUrl != nil) {
         
-        if ([serverUrl isEqualToString:[[NCUtility shared] getHomeServerWithUrlBase:appDelegate.urlBase account:appDelegate.account]]) {
-            [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_autoupload_error_select_folder_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError forced:true];
+        if ([serverUrl isEqualToString:[[NCUtilityFileSystem shared] getHomeServerWithUrlBase:appDelegate.urlBase account:appDelegate.account]]) {
+            [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_autoupload_error_select_folder_" delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:NCBrandGlobal.shared.ErrorInternalError forced:true];
             return;
         }
         
         // Settings new folder Automatatic upload
         [[NCManageDatabase shared] setAccountAutoUploadFileName:serverUrl.lastPathComponent];
-        [[NCManageDatabase shared] setAccountAutoUploadDirectory:[[NCUtility shared] deletingLastPathComponentWithServerUrl:serverUrl urlBase:appDelegate.urlBase account:appDelegate.account] urlBase:appDelegate.urlBase account:appDelegate.account];
+        [[NCManageDatabase shared] setAccountAutoUploadDirectory:[[NCUtilityFileSystem shared] deletingLastPathComponentWithServerUrl:serverUrl urlBase:appDelegate.urlBase account:appDelegate.account] urlBase:appDelegate.urlBase account:appDelegate.account];
     }
 }
 
