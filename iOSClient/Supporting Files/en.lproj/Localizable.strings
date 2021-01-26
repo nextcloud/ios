@@ -152,6 +152,7 @@
 "_duration_"                = "Duration";
 "_model_"                   = "Model";
 "_set_user_status_"         = "Set user status";
+"_open_settings_"           = "Open settings";
 
 /* User status */
 "_online_"                  = "Online";
@@ -840,6 +841,7 @@
 "_err_asset_not_found_locally_"         = "Error: Photo/video not found locally, removed from upload";
 "_err_asset_not_found_"                 = "Error: Photo/video not found, removed from upload";
 "_err_e2ee_app_version_"                = "Error: The version of app End-to-End encryption is not compatible, please update your server";
+"_err_permission_microphone_"           = "Please allow microphone usage from Settings";
 
 // QRCode
 

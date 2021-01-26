@@ -31,7 +31,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
     @objc public func showMenuIn(viewController: UIViewController) {
         
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-        mainMenuViewController.actions = self.initMenu()
+        mainMenuViewController.actions = self.initMenu(viewController: viewController)
 
         let menuPanelController = NCMenuPanelController()
         menuPanelController.parentPresenter = viewController
@@ -42,7 +42,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
         viewController.present(menuPanelController, animated: true, completion: nil)
     }
     
-    private func initMenu() -> [NCMenuAction] {
+    private func initMenu(viewController: UIViewController) -> [NCMenuAction] {
         
         var actions: [NCMenuAction] = []
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -114,15 +114,19 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
             NCMenuAction(
                 title: NSLocalizedString("_create_voice_memo_", comment: ""), icon: UIImage(named: "microphone")!.image(color: NCBrandColor.shared.icon, size: 50), action: { menuAction in
                     
-                    let fileName = CCUtility.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), extension: "m4a")!
-                    let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as! NCAudioRecorderViewController
-                
-                    viewController.delegate = self
-                    viewController.createRecorder(fileName: fileName)
-                    viewController.modalTransitionStyle = .crossDissolve
-                    viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
-                
-                    appDelegate.window.rootViewController?.present(viewController, animated: true, completion: nil)
+                    NCUtility.shared.askRecordPermission(viewController: viewController) { (permissions) in
+                        if permissions {
+                            let fileName = CCUtility.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), extension: "m4a")!
+                            let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as! NCAudioRecorderViewController
+                        
+                            viewController.delegate = self
+                            viewController.createRecorder(fileName: fileName)
+                            viewController.modalTransitionStyle = .crossDissolve
+                            viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+                        
+                            appDelegate.window.rootViewController?.present(viewController, animated: true, completion: nil)
+                        }
+                    }
                 }
             )
         )
