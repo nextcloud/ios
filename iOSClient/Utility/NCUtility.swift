@@ -449,7 +449,7 @@ class NCUtility: NSObject {
         }
     }
     
-    func askRecordPermission(viewController: UIViewController, completion: @escaping (_ hasPermissions: Bool)->()) {
+    func askAudioRecordPermission(viewController: UIViewController, completion: @escaping (_ hasPermissions: Bool)->()) {
         
         switch AVAudioSession.sharedInstance().recordPermission {
         case AVAudioSession.RecordPermission.granted:
