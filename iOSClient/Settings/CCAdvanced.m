@@ -353,7 +353,7 @@
     
     [CCUtility createDirectoryStandard];
 
-    [[NCAutoUpload shared] alignPhotoLibrary];
+    [[CCAutoUpload shared] alignPhotoLibrary];
 
     // Inizialized home
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];

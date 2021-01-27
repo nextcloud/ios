@@ -1,5 +1,5 @@
 //
-//  NCAutoUpload.m
+//  CCAutoUpload.m
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 07/06/17.
@@ -21,14 +21,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "NCAutoUpload.h"
+#import "CCAutoUpload.h"
 #import "AppDelegate.h"
 #import "NCBridgeSwift.h"
 #import "CCHud.h"
 
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 
-@interface NCAutoUpload ()
+@interface CCAutoUpload ()
 {
     AppDelegate *appDelegate;
     CCHud *_hud;
@@ -36,17 +36,17 @@
 }
 @end
 
-@implementation NCAutoUpload
+@implementation CCAutoUpload
 
-+ (NCAutoUpload *)shared {
++ (CCAutoUpload *)shared {
     
-    static NCAutoUpload *shared;
+    static CCAutoUpload *shared;
     
     @synchronized(self)
     {
         if (!shared) {
             
-            shared = [NCAutoUpload new];
+            shared = [CCAutoUpload new];
             shared->appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         }
         return shared;

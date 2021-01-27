@@ -1,5 +1,5 @@
 //
-//  NCAutoUpload.h
+//  CCAutoUpload.h
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 07/06/17.
@@ -27,9 +27,9 @@
 
 @class tableAccount;
 
-@interface NCAutoUpload : NSObject <CCManageLocationDelegate>
+@interface CCAutoUpload : NSObject <CCManageLocationDelegate>
 
-+ (NCAutoUpload *)shared;
++ (CCAutoUpload *)shared;
 
 - (void)initStateAutoUpload;
 - (BOOL)checkIfLocationIsEnabled;

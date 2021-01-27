@@ -4,7 +4,7 @@
 
 #import "AppDelegate.h"
 #import "CCManageAccount.h"
-#import "NCAutoUpload.h"
+#import "CCAutoUpload.h"
 #import "NCEndToEndEncryption.h"
 #import "NYMnemonic.h"
 #import "UIImage+animatedGIF.h"

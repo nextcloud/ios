@@ -23,7 +23,7 @@
 
 #import "AppDelegate.h"
 #import "NCBridgeSwift.h"
-#import "NCAutoUpload.h"
+#import "CCAutoUpload.h"
 #import "NSNotificationCenter+MainThread.h"
 #import "NCPushNotification.h"
 #import <QuartzCore/QuartzCore.h>
@@ -195,7 +195,7 @@
     [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
     
     // Initialize Auto upload
-    [[NCAutoUpload shared] initStateAutoUpload];
+    [[CCAutoUpload shared] initStateAutoUpload];
     
     // Read active directory
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterReloadDataSourceNetworkForced object:nil];
@@ -269,11 +269,11 @@
     // Not Photos Video in library ? then align and Init Auto Upload
     NSArray *recordsPhotoLibrary = [[NCManageDatabase shared] getPhotoLibraryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", self.account]];
     if ([recordsPhotoLibrary count] == 0) {
-        [[NCAutoUpload shared] alignPhotoLibrary];
+        [[CCAutoUpload shared] alignPhotoLibrary];
     }
     
     // Start Auto Upload
-    [[NCAutoUpload shared] initStateAutoUpload];
+    [[CCAutoUpload shared] initStateAutoUpload];
     
     // Start services
     [[NCService shared] startRequestServicesServer];
@@ -521,7 +521,7 @@
     [[NCCommunicationCommon shared] writeLog:@"Start perform Fetch With Completion Handler"];
     
     // Verify new photo
-    [[NCAutoUpload shared] initStateAutoUpload];
+    [[CCAutoUpload shared] initStateAutoUpload];
     
     // after 20 sec
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{

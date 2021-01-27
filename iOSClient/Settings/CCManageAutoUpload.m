@@ -22,7 +22,7 @@
 //
 
 #import "CCManageAutoUpload.h"
-#import "NCAutoUpload.h"
+#import "CCAutoUpload.h"
 #import "AppDelegate.h"
 #import "NCBridgeSwift.h"
 
@@ -261,7 +261,7 @@
             }
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                [[NCAutoUpload shared] alignPhotoLibrary];
+                [[CCAutoUpload shared] alignPhotoLibrary];
             });
             
         } else {
@@ -287,7 +287,7 @@
             
             BOOL isLocationIsEnabled = NO;
             
-            [[NCAutoUpload shared] checkIfLocationIsEnabled];
+            [[CCAutoUpload shared] checkIfLocationIsEnabled];
                             
             if(isLocationIsEnabled == YES) {
                 
@@ -315,7 +315,7 @@
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
-            [[NCAutoUpload shared] setupAutoUploadFull];
+            [[CCAutoUpload shared] setupAutoUploadFull];
             [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadFull" state:YES];
             
         } else {
@@ -331,7 +331,7 @@
 
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                [[NCAutoUpload shared] alignPhotoLibrary];
+                [[CCAutoUpload shared] alignPhotoLibrary];
             });
         }
     }
@@ -347,7 +347,7 @@
 
         if ([[rowDescriptor.value valueData] boolValue] == YES){
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                [[NCAutoUpload shared] alignPhotoLibrary];
+                [[CCAutoUpload shared] alignPhotoLibrary];
             });
         }
     }

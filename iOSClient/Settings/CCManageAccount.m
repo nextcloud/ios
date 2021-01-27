@@ -24,7 +24,7 @@
 #import "CCManageAccount.h"
 #import "AppDelegate.h"
 #import "CCLogin.h"
-#import "NCAutoUpload.h"
+#import "CCAutoUpload.h"
 #import "NSNotificationCenter+MainThread.h"
 #import "NCBridgeSwift.h"
 
