@@ -103,7 +103,20 @@ class NCAskAuthorization: NSObject {
         case CLAuthorizationStatus.authorizedAlways:
             completion(true)
             break
+        case CLAuthorizationStatus.authorizedWhenInUse, CLAuthorizationStatus.denied, CLAuthorizationStatus.restricted:
+            let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_err_permission_locationmanager_", comment: ""), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_open_settings_", comment: ""), style: .default, handler: { action in
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                completion(false)
+            }))
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { action in
+                completion(false)
+            }))
+            viewController.present(alert, animated: true, completion: nil)
+            break
         case CLAuthorizationStatus.notDetermined:
+            NCManageLocation.shared.startSignificantChangeUpdates()
+            completion(false)
             break
         default:
             break

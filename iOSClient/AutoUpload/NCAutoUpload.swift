@@ -58,7 +58,7 @@ class NCManageLocation: NSObject, CLLocationManagerDelegate {
         return instance
     }()
     
-    var locationManager: CLLocationManager?
+    public var locationManager: CLLocationManager?
     @objc public var firstChangeAuthorizationDone: Bool = false
     
     @objc public func startSignificantChangeUpdates() {
