@@ -22,7 +22,6 @@
 //
 
 #import <XLForm/XLForm.h>
-#import "CCManageLocation.h"
 
 @interface CCManageAutoUpload : XLFormViewController
 

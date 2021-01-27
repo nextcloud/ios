@@ -27,7 +27,7 @@
 
 @class tableAccount;
 
-@interface CCAutoUpload : NSObject <CCManageLocationDelegate>
+@interface CCAutoUpload : NSObject
 
 + (CCAutoUpload *)shared;
 

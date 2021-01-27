@@ -48,6 +48,10 @@
             
             shared = [CCAutoUpload new];
             shared->appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+            
+            [[NSNotificationCenter defaultCenter] addObserver:shared selector:@selector(statusAuthorizationLocationChanged) name:NCBrandGlobal.shared.notificationStatusAuthorizationChangedLocation object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:shared selector:@selector(changedLocation) name:NCBrandGlobal.shared.notificationCenterChangedLocation object:nil];
+
         }
         return shared;
     }
@@ -72,7 +76,7 @@
         
     } else {
         
-        [[CCManageLocation shared] stopSignificantChangeUpdates];
+        [[NCManageLocation shared] stopSignificantChangeUpdates];
     }
 }
 
@@ -93,7 +97,7 @@
         if (account.autoUpload == YES)
             [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUpload" state:NO];
         
-        [[CCManageLocation shared] stopSignificantChangeUpdates];
+        [[NCManageLocation shared] stopSignificantChangeUpdates];
         
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
@@ -117,7 +121,7 @@
         if (account.autoUpload == YES)
             [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUpload" state:NO];
         
-        [[CCManageLocation shared] stopSignificantChangeUpdates];
+        [[NCManageLocation shared] stopSignificantChangeUpdates];
         
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
@@ -134,9 +138,7 @@
 - (BOOL)checkIfLocationIsEnabled
 {
     tableAccount *account = [[NCManageDatabase shared] getAccountActive];
-    
-    [CCManageLocation shared].delegate = self;
-    
+        
     if ([CLLocationManager locationServicesEnabled]) {
         
         [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Check if location is enabled: authorizationStatus: %d", [CLLocationManager authorizationStatus]]];
@@ -146,7 +148,7 @@
             if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined ) {
                 
                 [[NCCommunicationCommon shared] writeLog:@"Check if location is enabled: Location services not determined"];
-                [[CCManageLocation shared] startSignificantChangeUpdates];
+                [[NCManageLocation shared] startSignificantChangeUpdates];
                 
             } else {
                 
@@ -178,14 +180,14 @@
                 if (account.autoUploadBackground == NO)
                     [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:YES];
                 
-                [[CCManageLocation shared] startSignificantChangeUpdates];
+                [[NCManageLocation shared] startSignificantChangeUpdates];
                 
             } else {
                 
                 if (account.autoUploadBackground == YES)
                     [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
                 
-                [[CCManageLocation shared] stopSignificantChangeUpdates];
+                [[NCManageLocation shared] stopSignificantChangeUpdates];
                 
                 UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) preferredStyle:UIAlertControllerStyleAlert];
                 UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
@@ -200,7 +202,7 @@
         if (account.autoUploadBackground == YES)
             [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
         
-        [[CCManageLocation shared] stopSignificantChangeUpdates];
+        [[NCManageLocation shared] stopSignificantChangeUpdates];
         
         if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
             
@@ -234,12 +236,12 @@
             
             if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
                 
-                if ([CCManageLocation shared].firstChangeAuthorizationDone) {
-                    
+                if (NCManageLocation.shared.firstChangeAuthorizationDone) {
+                                    
                     if (account.autoUploadBackground == YES)
                         [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
                     
-                    [[CCManageLocation shared] stopSignificantChangeUpdates];
+                    [[NCManageLocation shared] stopSignificantChangeUpdates];
                 }
                 
             } else {
@@ -257,7 +259,7 @@
                 
                 [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
                 
-                [[CCManageLocation shared] stopSignificantChangeUpdates];
+                [[NCManageLocation shared] stopSignificantChangeUpdates];
                 
                 if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
                     
@@ -278,9 +280,9 @@
             }
         }
         
-        if (![CCManageLocation shared].firstChangeAuthorizationDone) {
+        if (!NCManageLocation.shared.firstChangeAuthorizationDone) {
             
-            [CCManageLocation shared].firstChangeAuthorizationDone = YES;
+            NCManageLocation.shared.firstChangeAuthorizationDone = true;
         }
     }
 }
@@ -309,7 +311,7 @@
             if (account.autoUploadBackground == YES)
                 [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
             
-            [[CCManageLocation shared] stopSignificantChangeUpdates];
+            [[NCManageLocation shared] stopSignificantChangeUpdates];
         }
     }
 }

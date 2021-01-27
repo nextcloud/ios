@@ -307,7 +307,7 @@
         } else {
             
             [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
-            [[CCManageLocation shared] stopSignificantChangeUpdates];
+            [[NCManageLocation shared] stopSignificantChangeUpdates];
         }
     }
 

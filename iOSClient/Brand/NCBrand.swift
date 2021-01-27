@@ -482,6 +482,9 @@ class NCBrandColor: NSObject {
 
     @objc let notificationCenterMenuSearchTextPDF               = "menuSearchTextPDF"
     @objc let notificationCenterMenuDetailClose                 = "menuDetailClose"
+    
+    @objc let notificationCenterChangedLocation                 = "changedLocation"
+    @objc let notificationStatusAuthorizationChangedLocation    = "statusAuthorizationChangedLocation"
 }
 
 //DispatchQueue.main.async
