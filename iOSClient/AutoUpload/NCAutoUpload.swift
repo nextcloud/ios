@@ -31,6 +31,20 @@ class NCAutoUpload: NSObject {
         return instance
     }()
     
+    func initStateAutoUpload() {
+        
+        if let account = NCManageDatabase.shared.getAccountActive() {
+            if account.autoUpload {
+                // [self setupAutoUpload];
+                
+                if account.autoUploadBackground {
+                    // [self checkIfLocationIsEnabled];
+                }
+            }
+        } else {
+            NCManageLocation.shared.stopSignificantChangeUpdates()
+        }
+    }
 }
 
 //MARK: -

@@ -481,5 +481,42 @@ class NCUtility: NSObject {
             break
         }
     }
+    
+    func askPhotoLibraryPermission(viewController: UIViewController, completion: @escaping (_ hasPermissions: Bool)->()) {
+     
+        switch PHPhotoLibrary.authorizationStatus() {
+        case PHAuthorizationStatus.authorized:
+            completion(true)
+            break
+        case PHAuthorizationStatus.denied, PHAuthorizationStatus.limited, PHAuthorizationStatus.restricted:
+            let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_err_permission_photolibrary_", comment: ""), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_open_settings_", comment: ""), style: .default, handler: { action in
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                completion(false)
+            }))
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { action in
+                completion(false)
+            }))
+            viewController.present(alert, animated: true, completion: nil)
+            break
+        case PHAuthorizationStatus.notDetermined:
+            PHPhotoLibrary.requestAuthorization { (allowed) in
+                DispatchQueue.main.async {
+                    if allowed == PHAuthorizationStatus.authorized {
+                        completion(true)
+                    } else {
+                        completion(false)
+                    }
+                }
+            }
+            break
+        default:
+            break
+        }
+    }
+    
+    func askLocationManagerPermission(viewController: UIViewController, completion: @escaping (_ hasPermissions: Bool)->()) {
+        
+    }
 }
 
