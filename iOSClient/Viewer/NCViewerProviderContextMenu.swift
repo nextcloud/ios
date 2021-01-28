@@ -268,7 +268,7 @@ class NCViewerProviderContextMenu: UIViewController  {
             return frame
         }
         
-        if size.width <= UIScreen.main.bounds.width { 
+        if size.width < width {
             frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
             preferredContentSize = frame.size
             return frame
