@@ -57,7 +57,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     private var mediaPath = ""
     private var livePhoto: Bool = false
     
-    private var timeIntervalSearchNewMedia: TimeInterval = 3.5
+    private var timeIntervalSearchNewMedia: TimeInterval = 3.0
     private var timerSearchNewMedia: Timer?
         
     struct cacheImages {
