@@ -54,7 +54,11 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_upload_photos_videos_", comment: ""), icon: UIImage(named: "file_photo")!.image(color: NCBrandColor.shared.icon, size: 50), action: { menuAction in
-                    NCPhotosPickerViewController.init(viewController: appDelegate.window.rootViewController!, maxSelectedAssets: 0, singleSelectedMode: false)
+                    NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { (hasPermission) in
+                        if hasPermission {
+                            NCPhotosPickerViewController.init(viewController: appDelegate.window.rootViewController!, maxSelectedAssets: 0, singleSelectedMode: false)
+                        }
+                    }
                 }
             )
         )
@@ -114,8 +118,8 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
             NCMenuAction(
                 title: NSLocalizedString("_create_voice_memo_", comment: ""), icon: UIImage(named: "microphone")!.image(color: NCBrandColor.shared.icon, size: 50), action: { menuAction in
                     
-                    NCAskAuthorization.shared.askAuthorizationAudioRecord(viewController: viewController) { (permissions) in
-                        if permissions {
+                    NCAskAuthorization.shared.askAuthorizationAudioRecord(viewController: viewController) { (hasPermission) in
+                        if hasPermission {
                             let fileName = CCUtility.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), extension: "m4a")!
                             let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as! NCAudioRecorderViewController
                         
