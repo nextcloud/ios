@@ -842,7 +842,7 @@
 "_err_asset_not_found_"                 = "Error: Photo/video not found, removed from upload";
 "_err_e2ee_app_version_"                = "Error: The version of app End-to-End encryption is not compatible, please update your server";
 "_err_permission_microphone_"           = "Please allow Microphone usage from Settings";
-"_err_permission_photolibrary_"         = "Please allow Photos - All Photos from Settings";
+"_err_permission_photolibrary_"         = "Please allow Photos from Settings";
 "_err_permission_locationmanager_"      = "Please allow Location - Always from Settings";
 
 // QRCode
