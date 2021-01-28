@@ -31,18 +31,30 @@ class NCAutoUpload: NSObject {
         return instance
     }()
     
-    func initStateAutoUpload() {
+    func initStateAutoUpload(viewController: UIViewController?) {
         
         if let account = NCManageDatabase.shared.getAccountActive() {
             if account.autoUpload {
                 // [self setupAutoUpload];
                 
                 if account.autoUploadBackground {
-                    // [self checkIfLocationIsEnabled];
+                    NCAskAuthorization.shared.askAuthorizationLocationManager(viewController: viewController) { (hasPermissions) in
+                        if hasPermissions {
+                            NCManageLocation.shared.startSignificantChangeUpdates()
+                        }
+                    }
                 }
             }
         } else {
             NCManageLocation.shared.stopSignificantChangeUpdates()
+        }
+    }
+    
+    @objc func changeLocation() {
+        
+        if let account = NCManageDatabase.shared.getAccountActive() {
+            if account.autoUpload && account.autoUploadBackground && UIApplication.shared.applicationState == UIApplication.State.background {
+            }
         }
     }
 }

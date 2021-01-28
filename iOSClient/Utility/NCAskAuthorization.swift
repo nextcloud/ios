@@ -97,7 +97,7 @@ class NCAskAuthorization: NSObject {
         }
     }
     
-    func askAuthorizationLocationManager(viewController: UIViewController, completion: @escaping (_ hasPermissions: Bool)->()) {
+    func askAuthorizationLocationManager(viewController: UIViewController?, completion: @escaping (_ hasPermissions: Bool)->()) {
         
         switch CLLocationManager.authorizationStatus() {
         case CLAuthorizationStatus.authorizedAlways:
@@ -112,7 +112,7 @@ class NCAskAuthorization: NSObject {
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { action in
                 completion(false)
             }))
-            viewController.present(alert, animated: true, completion: nil)
+            viewController?.present(alert, animated: true, completion: nil)
             break
         case CLAuthorizationStatus.notDetermined:
             NCManageLocation.shared.startSignificantChangeUpdates()
