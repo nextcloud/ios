@@ -190,6 +190,8 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                         }
                     }
                     completion(newAssets)
+                } else {
+                    completion(nil)
                 }
             } else {
                 completion(nil)
