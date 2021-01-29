@@ -36,7 +36,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
 
     // MARK: -
     
-    @objc public func startSignificantChangeUpdates() {
+    func startSignificantChangeUpdates() {
         
         if locationManager == nil {
             
@@ -48,7 +48,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
         locationManager?.startMonitoringSignificantLocationChanges()
     }
     
-    @objc public func stopSignificantChangeUpdates() {
+   @objc func stopSignificantChangeUpdates() {
         
         locationManager?.stopMonitoringSignificantLocationChanges()
     }
@@ -117,12 +117,20 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
         
     }
     
-    @objc func uploadNewAssets() {
-        
+    @objc func setupAutoUploadFull() {
+        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.window.rootViewController) { (hasPermission) in
+            if hasPermission {
+                self.uploadAssetsNewAndFull(selector: NCBrandGlobal.shared.selectorUploadAutoUploadAll)
+            }
+        }
     }
     
-    @objc func setupAutoUploadFull() {
-        
+    @objc func uploadNewAssets() {
+        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.window.rootViewController) { (hasPermission) in
+            if hasPermission {
+                self.uploadAssetsNewAndFull(selector: NCBrandGlobal.shared.selectorUploadAutoUpload)
+            }
+        }
     }
     
     @objc func alignPhotoLibrary() {
@@ -137,7 +145,11 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
         }
     }
     
-    func getCameraRollAssets(account: tableAccount, selector: String, alignPhotoLibrary: Bool, completion: @escaping (_ assets: [PHAsset]?)->()) {
+    private func uploadAssetsNewAndFull(selector: String) {
+        
+    }
+    
+    private func getCameraRollAssets(account: tableAccount, selector: String, alignPhotoLibrary: Bool, completion: @escaping (_ assets: [PHAsset]?)->()) {
                 
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.window.rootViewController) { (hasPermission) in
             if hasPermission {
