@@ -160,6 +160,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                     let predicateVideo = NSPredicate(format: "mediaType == %i", PHAssetMediaType.video.rawValue)
                     var predicate: NSPredicate?
                     let fetchOptions = PHFetchOptions()
+                    var newAssets: [PHAsset] = []
 
                     if alignPhotoLibrary || (account.autoUploadImage && account.autoUploadVideo) {
                         predicate = NSCompoundPredicate(orPredicateWithSubpredicates: [predicateImage, predicateVideo])
@@ -173,21 +174,22 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                     let assets: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection.firstObject!, options: fetchOptions)
                     
                     if selector == NCBrandGlobal.shared.selectorUploadAutoUpload {
-                        var newAssets: [PHAsset] = []
                         var creationDate = ""
                         var idAsset = ""
                         let idsAsset = NCManageDatabase.shared.getPhotoLibraryIdAsset(image: account.autoUploadImage, video: account.autoUploadVideo, account: account.account)
-                        assets.enumerateObjects { (asset, count, stop) in
+                        assets.enumerateObjects { (asset, _, _) in
                             if asset.creationDate != nil { creationDate = String(describing: asset.creationDate) }
                             idAsset = account.account + asset.localIdentifier + creationDate
                             if !(idsAsset?.contains(idAsset) ?? false) {
                                 newAssets.append(asset)
                             }
                         }
-                        completion(newAssets)
                     } else {
-                        completion(assets.copy() as? [PHAsset])
+                        assets.enumerateObjects { (asset, _, _) in
+                            newAssets.append(asset)
+                        }
                     }
+                    completion(newAssets)
                 }
             } else {
                 completion(nil)
