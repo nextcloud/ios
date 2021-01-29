@@ -156,11 +156,10 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                 let assetCollection = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
                 if assetCollection.count > 0 {
                     
-                    let predicateImage = NSPredicate(format: "mediaType == %i", PHAssetMediaType.image as! CVarArg)
-                    let predicateVideo = NSPredicate(format: "mediaType == %i", PHAssetMediaType.video as! CVarArg)
+                    let predicateImage = NSPredicate(format: "mediaType == %i", PHAssetMediaType.image.rawValue)
+                    let predicateVideo = NSPredicate(format: "mediaType == %i", PHAssetMediaType.video.rawValue)
                     var predicate: NSPredicate?
                     let fetchOptions = PHFetchOptions()
-                    
 
                     if alignPhotoLibrary || (account.autoUploadImage && account.autoUploadVideo) {
                         predicate = NSCompoundPredicate(orPredicateWithSubpredicates: [predicateImage, predicateVideo])
@@ -184,15 +183,15 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                             if !(idsAsset?.contains(idAsset) ?? false) {
                                 newAssets.append(asset)
                             }
-                            completion(newAssets)
                         }
+                        completion(newAssets)
                     } else {
                         completion(assets.copy() as? [PHAsset])
                     }
                 }
+            } else {
+                completion(nil)
             }
-            
-            completion(nil)
         }
     }
 }
