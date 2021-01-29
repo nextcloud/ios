@@ -25,6 +25,7 @@
 #import "AppDelegate.h"
 #import "CCAdvanced.h"
 #import "CCManageAccount.h"
+#import "CCManageAutoUpload.h"
 #import "NCManageEndToEndEncryption.h"
 #import "NCBridgeSwift.h"
 #import "NSNotificationCenter+MainThread.h"

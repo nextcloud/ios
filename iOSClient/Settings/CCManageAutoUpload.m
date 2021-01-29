@@ -22,7 +22,6 @@
 //
 
 #import "CCManageAutoUpload.h"
-#import "CCAutoUpload.h"
 #import "AppDelegate.h"
 #import "NCBridgeSwift.h"
 
@@ -261,7 +260,7 @@
             }
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                [[CCAutoUpload shared] alignPhotoLibrary];
+                [[NCAutoUpload shared] alignPhotoLibrary];
             });
             
         } else {
@@ -287,7 +286,7 @@
             
             BOOL isLocationIsEnabled = NO;
             
-            [[CCAutoUpload shared] checkIfLocationIsEnabled];
+            //[[CCAutoUpload shared] checkIfLocationIsEnabled];
                             
             if(isLocationIsEnabled == YES) {
                 
@@ -307,7 +306,7 @@
         } else {
             
             [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
-            [[NCManageLocation shared] stopSignificantChangeUpdates];
+            [[NCAutoUpload shared] stopSignificantChangeUpdates];
         }
     }
 
@@ -315,7 +314,7 @@
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
-            [[CCAutoUpload shared] setupAutoUploadFull];
+            [[NCAutoUpload shared] setupAutoUploadFull];
             [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadFull" state:YES];
             
         } else {
@@ -331,7 +330,7 @@
 
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                [[CCAutoUpload shared] alignPhotoLibrary];
+                [[NCAutoUpload shared] alignPhotoLibrary];
             });
         }
     }
@@ -347,7 +346,7 @@
 
         if ([[rowDescriptor.value valueData] boolValue] == YES){
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                [[CCAutoUpload shared] alignPhotoLibrary];
+                [[NCAutoUpload shared] alignPhotoLibrary];
             });
         }
     }

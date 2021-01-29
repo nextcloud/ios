@@ -115,7 +115,7 @@ class NCAskAuthorization: NSObject {
             viewController?.present(alert, animated: true, completion: nil)
             break
         case CLAuthorizationStatus.notDetermined:
-            NCManageLocation.shared.startSignificantChangeUpdates()
+            NCAutoUpload.shared.startSignificantChangeUpdates()
             completion(false)
             break
         default:

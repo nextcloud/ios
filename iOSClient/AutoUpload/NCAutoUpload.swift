@@ -25,53 +25,15 @@ import Foundation
 import CoreLocation
 import NCCommunication
 
-class NCAutoUpload: NSObject {
+class NCAutoUpload: NSObject, CLLocationManagerDelegate {
     @objc static let shared: NCAutoUpload = {
         let instance = NCAutoUpload()
         return instance
     }()
     
-    func initStateAutoUpload(viewController: UIViewController?) {
-        
-        if let account = NCManageDatabase.shared.getAccountActive() {
-            if account.autoUpload {
-                // [self setupAutoUpload];
-                
-                if account.autoUploadBackground {
-                    NCAskAuthorization.shared.askAuthorizationLocationManager(viewController: viewController) { (hasPermissions) in
-                        if hasPermissions {
-                            NCManageLocation.shared.startSignificantChangeUpdates()
-                        }
-                    }
-                }
-            }
-        } else {
-            NCManageLocation.shared.stopSignificantChangeUpdates()
-        }
-    }
-    
-    @objc func changeLocation() {
-        
-        if let account = NCManageDatabase.shared.getAccountActive() {
-            if account.autoUpload && account.autoUploadBackground && UIApplication.shared.applicationState == UIApplication.State.background {
-            }
-        }
-    }
-}
-
-//MARK: -
-
-//- (void)statusAuthorizationLocationChanged;
-//- (void)changedLocation;
-
-class NCManageLocation: NSObject, CLLocationManagerDelegate {
-    @objc static let shared: NCManageLocation = {
-        let instance = NCManageLocation()
-        return instance
-    }()
-    
     public var locationManager: CLLocationManager?
-    @objc public var firstChangeAuthorizationDone: Bool = false
+
+    // MARK: -
     
     @objc public func startSignificantChangeUpdates() {
         
@@ -82,7 +44,7 @@ class NCManageLocation: NSObject, CLLocationManagerDelegate {
             locationManager?.requestAlwaysAuthorization()
         }
         
-        locationManager?.startMonitoringSignificantLocationChanges()        
+        locationManager?.startMonitoringSignificantLocationChanges()
     }
     
     @objc public func stopSignificantChangeUpdates() {
@@ -98,16 +60,61 @@ class NCManageLocation: NSObject, CLLocationManagerDelegate {
         
         NCCommunicationCommon.shared.writeLog("update location manager: latitude " + latitude + ", longitude " + longitude)
         
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterChangedLocation)
+        changeLocation()
     }
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationStatusAuthorizationChangedLocation)
+        statusAuthorizationLocationChanged()
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationStatusAuthorizationChangedLocation)
+        statusAuthorizationLocationChanged()
+    }
+    
+    func changeLocation() {
+        
+        if let account = NCManageDatabase.shared.getAccountActive() {
+            if account.autoUpload && account.autoUploadBackground && UIApplication.shared.applicationState == UIApplication.State.background {
+            }
+        }
+    }
+    
+    func statusAuthorizationLocationChanged() {
+        
+    }
+    
+    // MARK: -
+    
+    @objc func initStateAutoUpload(viewController: UIViewController?) {
+        
+        if let account = NCManageDatabase.shared.getAccountActive() {
+            if account.autoUpload {
+                setupAutoUpload()
+                
+                if account.autoUploadBackground {
+                    NCAskAuthorization.shared.askAuthorizationLocationManager(viewController: viewController) { (hasPermissions) in
+                        if hasPermissions {
+                            self.startSignificantChangeUpdates()
+                        }
+                    }
+                }
+            }
+        } else {
+            stopSignificantChangeUpdates()
+        }
+    }
+    
+    @objc func setupAutoUpload() {
+        
+    }
+    
+    @objc func setupAutoUploadFull() {
+        
+    }
+    
+    @objc func alignPhotoLibrary() {
+        
     }
 }
