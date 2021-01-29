@@ -981,6 +981,7 @@
 		F74D3DB81BAC1941000BAE4B /* Networking */ = {
 			isa = PBXGroup;
 			children = (
+				F72CD63925C19EBF00F46F9A /* NCAutoUpload.swift */,
 				F75A9EE523796C6F0044CFCE /* NCNetworking.swift */,
 				F70D8D8024A4A9BF000A5756 /* NCNetworkingAutoUpload.swift */,
 				F7D96FCB246ED7E100536D73 /* NCNetworkingCheckRemoteUser.swift */,
@@ -1219,14 +1220,6 @@
 			path = BrowserWeb;
 			sourceTree = "<group>";
 		};
-		F7B0C1701EE8397E0033AC24 /* AutoUpload */ = {
-			isa = PBXGroup;
-			children = (
-				F72CD63925C19EBF00F46F9A /* NCAutoUpload.swift */,
-			);
-			path = AutoUpload;
-			sourceTree = "<group>";
-		};
 		F7B2DEEB1F976785007CF4D2 /* NYMnemonic */ = {
 			isa = PBXGroup;
 			children = (
@@ -1448,7 +1441,6 @@
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F7A321621E9E37960069AD1B /* Activity */,
 				F7E0E1DA22327885006B0911 /* AudioRecorder */,
-				F7B0C1701EE8397E0033AC24 /* AutoUpload */,
 				F7AE00F6230E8191007ACF8A /* BrowserWeb */,
 				F7BAAD951ED5A63D00B7EAD4 /* Data */,
 				F73FAEE224D2CA830090692E /* Diagnostics */,
