@@ -29,7 +29,7 @@ class NCAskAuthorization: NSObject {
         return instance
     }()
     
-    func askAuthorizationAudioRecord(viewController: UIViewController, completion: @escaping (_ hasPermission: Bool)->()) {
+    func askAuthorizationAudioRecord(viewController: UIViewController?, completion: @escaping (_ hasPermission: Bool)->()) {
         
         switch AVAudioSession.sharedInstance().recordPermission {
         case AVAudioSession.RecordPermission.granted:
@@ -44,7 +44,7 @@ class NCAskAuthorization: NSObject {
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { action in
                 completion(false)
             }))
-            viewController.present(alert, animated: true, completion: nil)
+            viewController?.present(alert, animated: true, completion: nil)
             break
         case AVAudioSession.RecordPermission.undetermined:
             AVAudioSession.sharedInstance().requestRecordPermission { (allowed) in
@@ -63,7 +63,7 @@ class NCAskAuthorization: NSObject {
         }
     }
     
-    func askAuthorizationPhotoLibrary(viewController: UIViewController, completion: @escaping (_ hasPermission: Bool)->()) {
+    func askAuthorizationPhotoLibrary(viewController: UIViewController?, completion: @escaping (_ hasPermission: Bool)->()) {
      
         switch PHPhotoLibrary.authorizationStatus() {
         case PHAuthorizationStatus.authorized:
@@ -78,7 +78,7 @@ class NCAskAuthorization: NSObject {
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { action in
                 completion(false)
             }))
-            viewController.present(alert, animated: true, completion: nil)
+            viewController?.present(alert, animated: true, completion: nil)
             break
         case PHAuthorizationStatus.notDetermined:
             PHPhotoLibrary.requestAuthorization { (allowed) in
@@ -97,7 +97,7 @@ class NCAskAuthorization: NSObject {
         }
     }
     
-    func askAuthorizationLocationManager(viewController: UIViewController?, completion: @escaping (_ hasPermission: Bool)->()) {
+    @objc func askAuthorizationLocationManager(viewController: UIViewController?, completion: @escaping (_ hasPermission: Bool)->()) {
         
         switch CLLocationManager.authorizationStatus() {
         case CLAuthorizationStatus.authorizedAlways:

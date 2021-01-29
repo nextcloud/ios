@@ -283,25 +283,24 @@
     if ([rowDescriptor.tag isEqualToString:@"autoUploadBackground"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            
-            BOOL isLocationIsEnabled = NO;
-            
-            //[[CCAutoUpload shared] checkIfLocationIsEnabled];
-                            
-            if(isLocationIsEnabled == YES) {
+                        
+            [[NCAskAuthorization shared] askAuthorizationLocationManagerWithViewController:self completion:^(BOOL hasPermission) {
                 
-                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_autoupload_background_title_", nil) message:NSLocalizedString(@"_autoupload_background_msg_", nil) preferredStyle:UIAlertControllerStyleAlert];
-                UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-                
-                [alertController addAction:okAction];
-                [self presentViewController:alertController animated:YES completion:nil];
-                
-                [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:YES];
+                if (hasPermission == YES) {
                     
-            } else {
-                 
-                [self reloadForm];
-            }
+                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_autoupload_background_title_", nil) message:NSLocalizedString(@"_autoupload_background_msg_", nil) preferredStyle:UIAlertControllerStyleAlert];
+                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                    
+                    [alertController addAction:okAction];
+                    [self presentViewController:alertController animated:YES completion:nil];
+                    
+                    [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:YES];
+                        
+                } else {
+                     
+                    [self reloadForm];
+                }
+            }];
             
         } else {
             

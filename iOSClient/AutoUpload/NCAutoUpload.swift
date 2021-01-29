@@ -31,6 +31,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
         return instance
     }()
     
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     public var locationManager: CLLocationManager?
 
     // MARK: -
@@ -60,29 +61,24 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
         
         NCCommunicationCommon.shared.writeLog("update location manager: latitude " + latitude + ", longitude " + longitude)
         
-        changeLocation()
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        
-        statusAuthorizationLocationChanged()
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        
-        statusAuthorizationLocationChanged()
-    }
-    
-    func changeLocation() {
-        
         if let account = NCManageDatabase.shared.getAccountActive() {
             if account.autoUpload && account.autoUploadBackground && UIApplication.shared.applicationState == UIApplication.State.background {
+                self.uploadNewAssets()
             }
         }
     }
     
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        statusAuthorizationLocationChanged()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        statusAuthorizationLocationChanged()
+    }
+    
     func statusAuthorizationLocationChanged() {
-        
+        NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadBackground", state: false)
+        self.stopSignificantChangeUpdates()
     }
     
     // MARK: -
@@ -92,11 +88,13 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
         if let account = NCManageDatabase.shared.getAccountActive() {
             if account.autoUpload {
                 setupAutoUpload()
-                
                 if account.autoUploadBackground {
-                    NCAskAuthorization.shared.askAuthorizationLocationManager(viewController: viewController) { (hasPermissions) in
+                    NCAskAuthorization.shared.askAuthorizationLocationManager(viewController: appDelegate.window.rootViewController) { (hasPermissions) in
                         if hasPermissions {
                             self.startSignificantChangeUpdates()
+                        } else {
+                            NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadBackground", state: false)
+                            self.stopSignificantChangeUpdates()
                         }
                     }
                 }
@@ -108,6 +106,19 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
     
     @objc func setupAutoUpload() {
         
+        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.window.rootViewController) { (hasPermission) in
+            if hasPermission {
+                self.uploadNewAssets()
+            } else {
+                NCManageDatabase.shared.setAccountAutoUploadProperty("autoUpload", state: false)
+                self.stopSignificantChangeUpdates()
+            }
+        }
+        
+    }
+    
+    @objc func uploadNewAssets() {
+        
     }
     
     @objc func setupAutoUploadFull() {
@@ -115,6 +126,61 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
     }
     
     @objc func alignPhotoLibrary() {
-        
+        if let account = NCManageDatabase.shared.getAccountActive() {
+            getCameraRollAssets(account: account, selector: NCBrandGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true) { (assets) in
+                NCManageDatabase.shared.clearTable(tablePhotoLibrary.self, account: account.account)
+                if let assets = assets {
+                    NCManageDatabase.shared.addPhotoLibrary(assets, account: account.account)
+                    NCCommunicationCommon.shared.writeLog("Align Photo Library \(assets.count)")
+                }
+            }
+        }
+    }
+    
+    func getCameraRollAssets(account: tableAccount, selector: String, alignPhotoLibrary: Bool, completion: @escaping (_ assets: [PHAsset]?)->()) {
+                
+        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.window.rootViewController) { (hasPermission) in
+            if hasPermission {
+                let assetCollection = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
+                if assetCollection.count > 0 {
+                    
+                    let predicateImage = NSPredicate(format: "mediaType == %i", PHAssetMediaType.image as! CVarArg)
+                    let predicateVideo = NSPredicate(format: "mediaType == %i", PHAssetMediaType.video as! CVarArg)
+                    var predicate: NSPredicate?
+                    let fetchOptions = PHFetchOptions()
+                    
+
+                    if alignPhotoLibrary || (account.autoUploadImage && account.autoUploadVideo) {
+                        predicate = NSCompoundPredicate(orPredicateWithSubpredicates: [predicateImage, predicateVideo])
+                    } else if account.autoUploadImage {
+                        predicate = predicateImage
+                    } else if account.autoUploadVideo {
+                        predicate = predicateVideo
+                    }
+                    
+                    fetchOptions.predicate = predicate
+                    let assets: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection.firstObject!, options: fetchOptions)
+                    
+                    if selector == NCBrandGlobal.shared.selectorUploadAutoUpload {
+                        var newAssets: [PHAsset] = []
+                        var creationDate = ""
+                        var idAsset = ""
+                        let idsAsset = NCManageDatabase.shared.getPhotoLibraryIdAsset(image: account.autoUploadImage, video: account.autoUploadVideo, account: account.account)
+                        assets.enumerateObjects { (asset, count, stop) in
+                            if asset.creationDate != nil { creationDate = String(describing: asset.creationDate) }
+                            idAsset = account.account + asset.localIdentifier + creationDate
+                            if !(idsAsset?.contains(idAsset) ?? false) {
+                                newAssets.append(asset)
+                            }
+                            completion(newAssets)
+                        }
+                    } else {
+                        completion(assets.copy() as? [PHAsset])
+                    }
+                }
+            }
+            
+            completion(nil)
+        }
     }
 }
