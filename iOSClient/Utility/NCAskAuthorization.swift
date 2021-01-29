@@ -44,7 +44,9 @@ class NCAskAuthorization: NSObject {
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { action in
                 completion(false)
             }))
-            viewController?.present(alert, animated: true, completion: nil)
+            DispatchQueue.main.async {
+                viewController?.present(alert, animated: true, completion: nil)
+            }
             break
         case AVAudioSession.RecordPermission.undetermined:
             AVAudioSession.sharedInstance().requestRecordPermission { (allowed) in
@@ -78,7 +80,9 @@ class NCAskAuthorization: NSObject {
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { action in
                 completion(false)
             }))
-            viewController?.present(alert, animated: true, completion: nil)
+            DispatchQueue.main.async {
+                viewController?.present(alert, animated: true, completion: nil)
+            }
             break
         case PHAuthorizationStatus.notDetermined:
             PHPhotoLibrary.requestAuthorization { (allowed) in
@@ -112,10 +116,14 @@ class NCAskAuthorization: NSObject {
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { action in
                 completion(false)
             }))
-            viewController?.present(alert, animated: true, completion: nil)
+            DispatchQueue.main.async {
+                viewController?.present(alert, animated: true, completion: nil)
+            }
             break
         case CLAuthorizationStatus.notDetermined:
-            NCAutoUpload.shared.startSignificantChangeUpdates()
+            DispatchQueue.main.async {
+                NCAutoUpload.shared.startSignificantChangeUpdates()
+            }
             completion(false)
             break
         default:

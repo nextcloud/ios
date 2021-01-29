@@ -259,9 +259,7 @@
                 [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadVideo" state:YES];
             }
             
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                [[NCAutoUpload shared] alignPhotoLibrary];
-            });
+            [[NCAutoUpload shared] alignPhotoLibrary];
             
         } else {
             
@@ -328,9 +326,7 @@
         [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadImage" state:[[rowDescriptor.value valueData] boolValue]];
 
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                [[NCAutoUpload shared] alignPhotoLibrary];
-            });
+            [[NCAutoUpload shared] alignPhotoLibrary];
         }
     }
     
@@ -344,9 +340,7 @@
         [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadVideo" state:[[rowDescriptor.value valueData] boolValue]];
 
         if ([[rowDescriptor.value valueData] boolValue] == YES){
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                [[NCAutoUpload shared] alignPhotoLibrary];
-            });
+            [[NCAutoUpload shared] alignPhotoLibrary];
         }
     }
     
