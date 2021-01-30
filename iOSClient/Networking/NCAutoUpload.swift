@@ -126,9 +126,9 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
     
     // MARK: -
 
-    @objc func alignPhotoLibrary() {
+    @objc func alignPhotoLibrary(viewController: UIViewController?) {
         if let account = NCManageDatabase.shared.getAccountActive() {
-            getCameraRollAssets(account: account, selector: NCBrandGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true) { (assets) in
+            getCameraRollAssets(viewController: viewController, account: account, selector: NCBrandGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true) { (assets) in
                 NCManageDatabase.shared.clearTable(tablePhotoLibrary.self, account: account.account)
                 if let assets = assets {
                     NCManageDatabase.shared.addPhotoLibrary(assets, account: account.account)
@@ -138,9 +138,9 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
         }
     }
     
-    private func getCameraRollAssets(account: tableAccount, selector: String, alignPhotoLibrary: Bool, completion: @escaping (_ assets: [PHAsset]?)->()) {
+    private func getCameraRollAssets(viewController: UIViewController?, account: tableAccount, selector: String, alignPhotoLibrary: Bool, completion: @escaping (_ assets: [PHAsset]?)->()) {
                 
-        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.window.rootViewController) { (hasPermission) in
+        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { (hasPermission) in
             if hasPermission {
                 let assetCollection = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
                 if assetCollection.count > 0 {

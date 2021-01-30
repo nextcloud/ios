@@ -259,7 +259,7 @@
                 [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadVideo" state:YES];
             }
             
-            [[NCAutoUpload shared] alignPhotoLibrary];
+            [[NCAutoUpload shared] alignPhotoLibraryWithViewController:self];
             
         } else {
             
@@ -326,7 +326,7 @@
         [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadImage" state:[[rowDescriptor.value valueData] boolValue]];
 
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [[NCAutoUpload shared] alignPhotoLibrary];
+            [[NCAutoUpload shared] alignPhotoLibraryWithViewController:self];
         }
     }
     
@@ -340,7 +340,7 @@
         [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadVideo" state:[[rowDescriptor.value valueData] boolValue]];
 
         if ([[rowDescriptor.value valueData] boolValue] == YES){
-            [[NCAutoUpload shared] alignPhotoLibrary];
+            [[NCAutoUpload shared] alignPhotoLibraryWithViewController:self];
         }
     }
     

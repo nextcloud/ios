@@ -268,7 +268,7 @@
     // Not Photos Video in library ? then align and Init Auto Upload
     NSArray *recordsPhotoLibrary = [[NCManageDatabase shared] getPhotoLibraryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", self.account]];
     if ([recordsPhotoLibrary count] == 0) {
-        [[NCAutoUpload shared] alignPhotoLibrary];
+        [[NCAutoUpload shared] alignPhotoLibraryWithViewController:nil];
     }
     
     // Start Auto Upload
