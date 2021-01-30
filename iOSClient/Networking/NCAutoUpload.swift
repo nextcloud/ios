@@ -63,7 +63,11 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
         
         if let account = NCManageDatabase.shared.getAccountActive() {
             if account.autoUpload && account.autoUploadBackground && UIApplication.shared.applicationState == UIApplication.State.background {
-                self.uploadNewAssets()
+                NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: nil) { (hasPermission) in
+                    if hasPermission {
+                        self.uploadAssetsNewAndFull(selector: NCBrandGlobal.shared.selectorUploadAutoUpload)
+                    }
+                }
             }
         }
     }
@@ -86,7 +90,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
             if account.autoUpload {
                 NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { (hasPermission) in
                     if hasPermission {
-                        self.uploadNewAssets()
+                        self.uploadAssetsNewAndFull(selector: NCBrandGlobal.shared.selectorUploadAutoUpload)
                         if account.autoUploadBackground {
                             NCAskAuthorization.shared.askAuthorizationLocationManager(viewController: viewController) { (hasPermissions) in
                                 if hasPermissions {
@@ -112,14 +116,6 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.window.rootViewController) { (hasPermission) in
             if hasPermission {
                 self.uploadAssetsNewAndFull(selector: NCBrandGlobal.shared.selectorUploadAutoUploadAll)
-            }
-        }
-    }
-    
-    func uploadNewAssets() {
-        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.window.rootViewController) { (hasPermission) in
-            if hasPermission {
-                self.uploadAssetsNewAndFull(selector: NCBrandGlobal.shared.selectorUploadAutoUpload)
             }
         }
     }
