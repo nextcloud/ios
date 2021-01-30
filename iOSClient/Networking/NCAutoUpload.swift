@@ -157,6 +157,9 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                         predicate = predicateImage
                     } else if account.autoUploadVideo {
                         predicate = predicateVideo
+                    } else {
+                        completion(nil)
+                        return
                     }
                     
                     fetchOptions.predicate = predicate
