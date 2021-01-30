@@ -194,7 +194,7 @@
     [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
     
     // Initialize Auto upload
-    [[NCAutoUpload shared] initStateAutoUploadWithViewController:nil];
+    [[NCAutoUpload shared] initAutoUploadWithViewController:nil];
     
     // Read active directory
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterReloadDataSourceNetworkForced object:nil];
@@ -272,7 +272,7 @@
     }
     
     // Start Auto Upload
-    [[NCAutoUpload shared] initStateAutoUploadWithViewController:nil];
+    [[NCAutoUpload shared] initAutoUploadWithViewController:nil];
     
     // Start services
     [[NCService shared] startRequestServicesServer];
@@ -520,7 +520,7 @@
     [[NCCommunicationCommon shared] writeLog:@"Start perform Fetch With Completion Handler"];
     
     // Verify new photo
-    [[NCAutoUpload shared] initStateAutoUploadWithViewController:nil];
+    [[NCAutoUpload shared] initAutoUploadWithViewController:nil];
     
     // after 20 sec
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
