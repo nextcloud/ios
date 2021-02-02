@@ -87,7 +87,6 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
     // MARK: -
     
     @objc func initAutoUpload(viewController: UIViewController?) {
-        
         if let account = NCManageDatabase.shared.getAccountActive() {
             if account.autoUpload {
                 NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { (hasPermission) in
@@ -144,9 +143,9 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                 
                 if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
                     DispatchQueue.main.async {
-                        self.hud = CCHud.init(view: self.appDelegate.window.rootViewController)
+                        //self.hud = CCHud.init(view: self.appDelegate.window.rootViewController)
                         NCContentPresenter.shared.messageNotification("_attention_", description: "_create_full_upload_", delay: NCBrandGlobal.shared.dismissAfterSecondLong, type: .info, errorCode: 0, forced: true)
-                        self.hud?.visibleHudTitle(NSLocalizedString("_wait_", comment: ""), mode: MBProgressHUDMode.indeterminate, color: NCBrandColor.shared.brand)
+                        //self.hud?.visibleHudTitle(NSLocalizedString("_wait_", comment: ""), mode: MBProgressHUDMode.indeterminate, color: NCBrandColor.shared.brand)
                     }
                 }
                 
@@ -321,7 +320,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                         var idAsset = ""
                         let idsAsset = NCManageDatabase.shared.getPhotoLibraryIdAsset(image: account.autoUploadImage, video: account.autoUploadVideo, account: account.account)
                         assets.enumerateObjects { (asset, _, _) in
-                            if asset.creationDate != nil { creationDate = String(describing: asset.creationDate) }
+                            if asset.creationDate != nil { creationDate = String(describing: asset.creationDate!) }
                             idAsset = account.account + asset.localIdentifier + creationDate
                             if !(idsAsset?.contains(idAsset) ?? false) {
                                 newAssets.append(asset)
