@@ -8,3 +8,4 @@
 #import "NYMnemonic.h"
 #import "UIImage+animatedGIF.h"
 #import "CCUtility.h"
+#import "CCHud.h"
