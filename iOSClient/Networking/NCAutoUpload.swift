@@ -65,7 +65,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
             if account.autoUpload && account.autoUploadBackground && UIApplication.shared.applicationState == UIApplication.State.background {
                 NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: nil) { (hasPermission) in
                     if hasPermission {
-                        self.uploadAssetsNewAndFull(selector: NCBrandGlobal.shared.selectorUploadAutoUpload)
+                        self.uploadAssetsNewAndFull(viewController: nil, selector: NCBrandGlobal.shared.selectorUploadAutoUpload)
                     }
                 }
             }
@@ -90,7 +90,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
             if account.autoUpload {
                 NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { (hasPermission) in
                     if hasPermission {
-                        self.uploadAssetsNewAndFull(selector: NCBrandGlobal.shared.selectorUploadAutoUpload)
+                        self.uploadAssetsNewAndFull(viewController:viewController, selector: NCBrandGlobal.shared.selectorUploadAutoUpload)
                         if account.autoUploadBackground {
                             NCAskAuthorization.shared.askAuthorizationLocationManager(viewController: viewController) { (hasPermissions) in
                                 if hasPermissions {
@@ -112,15 +112,29 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
         }
     }
     
-    @objc func autoUploadFullPhotos() {
+    @objc func autoUploadFullPhotos(viewController: UIViewController?) {
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.window.rootViewController) { (hasPermission) in
             if hasPermission {
-                self.uploadAssetsNewAndFull(selector: NCBrandGlobal.shared.selectorUploadAutoUploadAll)
+                self.uploadAssetsNewAndFull(viewController: viewController, selector: NCBrandGlobal.shared.selectorUploadAutoUploadAll)
             }
         }
     }
     
-    private func uploadAssetsNewAndFull(selector: String) {
+    private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String) {
+        
+        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
+        guard let account = NCManageDatabase.shared.getAccountActive() else { return }
+        
+        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        let newAssetToUpload = self.getCameraRollAssets(viewController: viewController, account: account, selector: selector, alignPhotoLibrary: false) { (assets) in
+            
+            if assets == nil || assets?.count == 0 {
+                NCCommunicationCommon.shared.writeLog("Automatic upload, no new assets found")
+                return
+            } else {
+                NCCommunicationCommon.shared.writeLog("Automatic upload, new \(assets?.count) assets found")
+            }
+        }
         
     }
     

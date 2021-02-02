@@ -311,7 +311,7 @@
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
-            [[NCAutoUpload shared] autoUploadFullPhotos];
+            [[NCAutoUpload shared] autoUploadFullPhotosWithViewController:self];
             [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadFull" state:YES];
             
         } else {
