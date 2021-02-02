@@ -490,6 +490,7 @@ class NCBrandColor: NSObject {
 //DispatchQueue.main.async
 //DispatchQueue.main.asyncAfter(deadline: .now() + 0.1)
 //DispatchQueue.global().async
+//DispatchQueue.global(qos: .background).async
 
 //#if targetEnvironment(simulator)
 //#endif

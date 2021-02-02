@@ -129,95 +129,150 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, account: account.account)
         var counterLivePhoto: Int = 0
         var metadataFull: [tableMetadata] = []
-        self.getCameraRollAssets(viewController: viewController, account: account, selector: selector, alignPhotoLibrary: false) { (assets) in
-            
-            if assets == nil || assets?.count == 0 {
-                NCCommunicationCommon.shared.writeLog("Automatic upload, no new assets found")
-                return
-            } else {
-                NCCommunicationCommon.shared.writeLog("Automatic upload, new \(assets?.count ?? 0) assets found")
-            }
-            guard let assets = assets else { return }
-            
-            if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
-                DispatchQueue.main.async {
-                    self.hud = CCHud.init(view: self.appDelegate.window.rootViewController)
-                    NCContentPresenter.shared.messageNotification("_attention_", description: "_create_full_upload_", delay: NCBrandGlobal.shared.dismissAfterSecondLong, type: .info, errorCode: 0, forced: true)
-                    self.hud?.visibleHudTitle(NSLocalizedString("_wait_", comment: ""), mode: MBProgressHUDMode.indeterminate, color: NCBrandColor.shared.brand)
+        
+        DispatchQueue.global(qos: .background).async {
+        
+            self.getCameraRollAssets(viewController: viewController, account: account, selector: selector, alignPhotoLibrary: false) { (assets) in
+                
+                if assets == nil || assets?.count == 0 {
+                    NCCommunicationCommon.shared.writeLog("Automatic upload, no new assets found")
+                    return
+                } else {
+                    NCCommunicationCommon.shared.writeLog("Automatic upload, new \(assets?.count ?? 0) assets found")
                 }
-            }
-            
-            // Create the folder for auto upload & if request the subfolders
-            if NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase) {
+                guard let assets = assets else { return }
+                
                 if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
                     DispatchQueue.main.async {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: .error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
+                        self.hud = CCHud.init(view: self.appDelegate.window.rootViewController)
+                        NCContentPresenter.shared.messageNotification("_attention_", description: "_create_full_upload_", delay: NCBrandGlobal.shared.dismissAfterSecondLong, type: .info, errorCode: 0, forced: true)
+                        self.hud?.visibleHudTitle(NSLocalizedString("_wait_", comment: ""), mode: MBProgressHUDMode.indeterminate, color: NCBrandColor.shared.brand)
+                    }
+                }
+                
+                // Create the folder for auto upload & if request the subfolders
+                if NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase) {
+                    if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
+                        DispatchQueue.main.async {
+                            NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: .error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
+                            self.hud?.hideHud()
+                        }
+                        return
+                    }
+                }
+                
+                self.endForAssetToUpload = false
+                
+                for asset in assets {
+                    
+                    var livePhoto = false
+                    var session: String = ""
+                    guard let assetDate = asset.creationDate else { continue }
+                    let assetMediaType = asset.mediaType
+                    let formatter = DateFormatter()
+                    var serverUrl: String = ""
+                    
+                    let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String, fileDate: assetDate, fileType: assetMediaType, keyFileName: NCBrandGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCBrandGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCBrandGlobal.shared.keyFileNameOriginalAutoUpload)!
+                    
+                    if (asset.mediaSubtypes.rawValue == PHAssetMediaSubtype.photoLive.rawValue || asset.mediaSubtypes.rawValue == (PHAssetMediaSubtype.photoHDR.rawValue + PHAssetMediaSubtype.photoLive.rawValue)) && CCUtility.getLivePhoto() {
+                        livePhoto = true
+                    }
+                    
+                    if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
+                        session = NCCommunicationCommon.shared.sessionIdentifierUpload
+                    } else {
+                        if assetMediaType == PHAssetMediaType.image && account.autoUploadWWAnPhoto == false { session = NCNetworking.shared.sessionIdentifierBackground }
+                        else if assetMediaType == PHAssetMediaType.video && account.autoUploadWWAnVideo == false { session = NCNetworking.shared.sessionIdentifierBackground }
+                        else if assetMediaType == PHAssetMediaType.image && account.autoUploadWWAnPhoto { session = NCNetworking.shared.sessionIdentifierBackgroundWWan }
+                        else if assetMediaType == PHAssetMediaType.video && account.autoUploadWWAnVideo { session = NCNetworking.shared.sessionIdentifierBackgroundWWan }
+                        else { session = NCNetworking.shared.sessionIdentifierBackground }
+                    }
+                    
+                    formatter.dateFormat = "yyyy"
+                    let yearString = formatter.string(from: assetDate)
+                    formatter.dateFormat = "MM"
+                    let monthString = formatter.string(from: assetDate)
+                    
+                    if account.autoUploadCreateSubfolder {
+                        serverUrl = autoUploadPath + "/" + yearString + "/" + monthString
+                    } else {
+                        serverUrl = autoUploadPath
+                    }
+
+                    if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account.account, serverUrl, fileName)) != nil {
+                        
+                        if selector == NCBrandGlobal.shared.selectorUploadAutoUpload {
+                            NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
+                        }
+                        
+                    } else {
+                        
+                        /* INSERT METADATA FOR UPLOAD */
+                        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: account.account, fileName: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", livePhoto: livePhoto)
+                        metadataForUpload.assetLocalIdentifier = asset.localIdentifier
+                        metadataForUpload.session = session
+                        metadataForUpload.sessionSelector = selector
+                        metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(asset: asset)
+                        metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
+                        if assetMediaType == PHAssetMediaType.video {
+                            metadataForUpload.typeFile = NCBrandGlobal.shared.metadataTypeFileVideo
+                        } else if (assetMediaType == PHAssetMediaType.image) {
+                            metadataForUpload.typeFile = NCBrandGlobal.shared.metadataTypeFileImage
+                        }
+                        
+                        if selector == NCBrandGlobal.shared.selectorUploadAutoUpload {
+                            NCCommunicationCommon.shared.writeLog("Automatic upload added \(metadataForUpload.fileNameView) (\(metadataForUpload.size) bytes) with Identifier \(metadataForUpload.assetLocalIdentifier)")
+                            NCManageDatabase.shared.addMetadataForAutoUpload(metadataForUpload)
+                            NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
+                        } else if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
+                            metadataFull.append(metadataForUpload)
+                        }
+                        
+                        /* INSERT METADATA MOV LIVE PHOTO FOR UPLOAD */
+                        if livePhoto {
+                            
+                            counterLivePhoto += 1
+                            let fileName = (fileName as NSString).deletingPathExtension + ".mov"
+                            let ocId = NSUUID().uuidString
+                            let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+                            CCUtility.extractLivePhotoAsset(asset, filePath: filePath) { (url) in
+                                if url != nil {
+                                    let metadataForUpload = NCManageDatabase.shared.createMetadata(account: account.account, fileName: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", livePhoto: livePhoto)
+                                    metadataForUpload.session = session
+                                    metadataForUpload.sessionSelector = selector
+                                    metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
+                                    metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
+                                    metadataForUpload.typeFile = NCBrandGlobal.shared.metadataTypeFileVideo
+                                    
+                                    if selector == NCBrandGlobal.shared.selectorUploadAutoUpload {
+                                        NCCommunicationCommon.shared.writeLog("Automatic upload added Live Photo \(metadataForUpload.fileNameView) (\(metadataForUpload.size) bytes) with Identifier \(metadataForUpload.assetLocalIdentifier)")
+                                        NCManageDatabase.shared.addMetadataForAutoUpload(metadataForUpload)
+                                    } else if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
+                                        metadataFull.append(metadataForUpload)
+                                    }
+                                }
+                            }
+                            counterLivePhoto -= 1
+                            if self.endForAssetToUpload && counterLivePhoto == 0 && selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
+                                DispatchQueue.main.async {
+                                    NCManageDatabase.shared.addMetadatas(metadataFull)
+                                    self.hud?.hideHud()
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                self.endForAssetToUpload = true
+                
+                if counterLivePhoto == 0 && selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
+                    DispatchQueue.main.async {
+                        NCManageDatabase.shared.addMetadatas(metadataFull)
                         self.hud?.hideHud()
                     }
-                    return
                 }
-            }
-            
-            self.endForAssetToUpload = false
-            
-            for asset in assets {
-                
-                var livePhoto = false
-                var session: String = ""
-                guard let assetDate = asset.creationDate else { continue }
-                let assetMediaType = asset.mediaType
-                var formatter = DateFormatter()
-                var serverUrl: String = ""
-                
-                let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String, fileDate: assetDate, fileType: assetMediaType, keyFileName: NCBrandGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCBrandGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCBrandGlobal.shared.keyFileNameOriginalAutoUpload)!
-                
-                if (asset.mediaSubtypes.rawValue == PHAssetMediaSubtype.photoLive.rawValue || asset.mediaSubtypes.rawValue == (PHAssetMediaSubtype.photoHDR.rawValue + PHAssetMediaSubtype.photoLive.rawValue)) && CCUtility.getLivePhoto() {
-                    livePhoto = true
-                }
-                
-                if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
-                    session = NCCommunicationCommon.shared.sessionIdentifierUpload
-                } else {
-                    if assetMediaType == PHAssetMediaType.image && account.autoUploadWWAnPhoto == false { session = NCNetworking.shared.sessionIdentifierBackground }
-                    else if assetMediaType == PHAssetMediaType.video && account.autoUploadWWAnVideo == false { session = NCNetworking.shared.sessionIdentifierBackground }
-                    else if assetMediaType == PHAssetMediaType.image && account.autoUploadWWAnPhoto { session = NCNetworking.shared.sessionIdentifierBackgroundWWan }
-                    else if assetMediaType == PHAssetMediaType.video && account.autoUploadWWAnVideo { session = NCNetworking.shared.sessionIdentifierBackgroundWWan }
-                    else { session = NCNetworking.shared.sessionIdentifierBackground }
-                }
-                
-                formatter.dateFormat = "yyyy"
-                let yearString = formatter.string(from: assetDate)
-                formatter.dateFormat = "MM"
-                let monthString = formatter.string(from: assetDate)
-                
-                if account.autoUploadCreateSubfolder {
-                    serverUrl = autoUploadPath + "/" + yearString + "/" + monthString
-                } else {
-                    serverUrl = autoUploadPath
-                }
-
-                if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account.account, serverUrl, fileName)) {
-                    
-                    if selector == NCBrandGlobal.shared.selectorUploadAutoUpload {
-                        NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
-                    }
-                    
-                } else {
-                    
-                }
-            }
-            
-            self.endForAssetToUpload = true
-            
-            
-            if counterLivePhoto == 0 && selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
-                DispatchQueue.main.async {
-                    NCManageDatabase.shared.addMetadatas(metadataFull)
-                    self.hud?.hideHud()
-                }
-            }
-        }
-        
+            } // END 
+        } // END DispatchQueue.global(qos: .background).async
     }
     
     // MARK: -
