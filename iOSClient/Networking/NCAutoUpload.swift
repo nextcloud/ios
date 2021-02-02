@@ -271,7 +271,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                         self.hud?.hideHud()
                     }
                 }
-            } // END 
+            } // END
         } // END DispatchQueue.global(qos: .background).async
     }
     
