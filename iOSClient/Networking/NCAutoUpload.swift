@@ -198,7 +198,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                         serverUrl = autoUploadPath
                     }
 
-                    // MOST COMPATIBLE SEARCH --> HEIC --> JPG ( no case )
+                    // MOST COMPATIBLE SEARCH --> HEIC --> JPG
                     var fileNameSearchMetadata = fileName
                     let ext = (fileNameSearchMetadata as NSString).pathExtension.uppercased()
                     if ext == "HEIC" && CCUtility.getFormatCompatibility() {
