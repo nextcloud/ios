@@ -205,7 +205,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                         fileNameSearchMetadata = (fileNameSearchMetadata as NSString).deletingPathExtension + ".jpg"
                     }
                     
-                    if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView ==[c] %@", account.account, serverUrl, fileNameSearchMetadata)) != nil {
+                    if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account.account, serverUrl, fileNameSearchMetadata)) != nil {
                         
                         if selector == NCBrandGlobal.shared.selectorUploadAutoUpload {
                             NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
