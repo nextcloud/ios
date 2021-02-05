@@ -198,7 +198,14 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                         serverUrl = autoUploadPath
                     }
 
-                    if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account.account, serverUrl, fileName)) != nil {
+                    // MOST COMPATIBLE SEARCH --> HEIC --> JPG ( no case )
+                    var fileNameSearchMetadata = fileName
+                    let ext = (fileNameSearchMetadata as NSString).pathExtension.uppercased()
+                    if ext == "HEIC" && CCUtility.getFormatCompatibility() {
+                        fileNameSearchMetadata = (fileNameSearchMetadata as NSString).deletingPathExtension + ".jpg"
+                    }
+                    
+                    if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView ==[c] %@", account.account, serverUrl, fileNameSearchMetadata)) != nil {
                         
                         if selector == NCBrandGlobal.shared.selectorUploadAutoUpload {
                             NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
