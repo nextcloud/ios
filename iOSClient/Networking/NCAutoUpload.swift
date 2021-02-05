@@ -62,7 +62,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
         guard let latitude = location?.coordinate.latitude else { return }
         guard let longitude = location?.coordinate.longitude else { return }
         
-        NCCommunicationCommon.shared.writeLog("update location manager: latitude \(latitude) longitude \(longitude)")
+        NCCommunicationCommon.shared.writeLog("Location manager: latitude \(latitude) longitude \(longitude)")
         
         if let account = NCManageDatabase.shared.getAccountActive() {
             if account.autoUpload && account.autoUploadBackground && UIApplication.shared.applicationState == UIApplication.State.background {
@@ -79,7 +79,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
         if CLLocationManager.authorizationStatus() != CLAuthorizationStatus.authorizedAlways {
             NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadBackground", state: false)
             self.stopSignificantChangeUpdates()
-        } 
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
