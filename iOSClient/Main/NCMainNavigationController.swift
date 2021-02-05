@@ -34,7 +34,8 @@ class NCMainNavigationController: UINavigationController {
         
         changeTheming()
     }
-    
+
+    /*
     // https://stackoverflow.com/questions/37829721/pushing-view-controller-twice
     override func pushViewController(_ viewController: UIViewController, animated: Bool) {
         
@@ -48,6 +49,7 @@ class NCMainNavigationController: UINavigationController {
             CATransaction.commit()
         }
     }
+    */
     
     @objc func changeTheming() {
                   
