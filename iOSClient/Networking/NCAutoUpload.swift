@@ -143,9 +143,9 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                 
                 if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
                     DispatchQueue.main.async {
-                        //self.hud = CCHud.init(view: self.appDelegate.window.rootViewController)
+                        self.hud = CCHud.init(view: self.appDelegate.window.rootViewController?.view)
                         NCContentPresenter.shared.messageNotification("_attention_", description: "_create_full_upload_", delay: NCBrandGlobal.shared.dismissAfterSecondLong, type: .info, errorCode: 0, forced: true)
-                        //self.hud?.visibleHudTitle(NSLocalizedString("_wait_", comment: ""), mode: MBProgressHUDMode.indeterminate, color: NCBrandColor.shared.brand)
+                        self.hud?.visibleHudTitle(NSLocalizedString("_wait_", comment: ""), mode: MBProgressHUDMode.indeterminate, color: NCBrandColor.shared.brand)
                     }
                 }
                 
