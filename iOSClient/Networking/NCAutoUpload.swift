@@ -38,19 +38,20 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
 
     // MARK: -
     
-    func startSignificantChangeUpdates() {
+    @objc func startSignificantChangeUpdates() {
         
         if locationManager == nil {
             
             locationManager = CLLocationManager.init()
             locationManager?.delegate = self
+            locationManager?.distanceFilter = 100
             locationManager?.requestAlwaysAuthorization()
         }
         
         locationManager?.startMonitoringSignificantLocationChanges()
     }
     
-   @objc func stopSignificantChangeUpdates() {
+    @objc func stopSignificantChangeUpdates() {
         
         locationManager?.stopMonitoringSignificantLocationChanges()
     }
@@ -58,10 +59,10 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
         let location = locations.last
-        let latitude = String(describing: location?.coordinate.latitude)
-        let longitude = String(describing: location?.coordinate.longitude)
+        guard let latitude = location?.coordinate.latitude else { return }
+        guard let longitude = location?.coordinate.longitude else { return }
         
-        NCCommunicationCommon.shared.writeLog("update location manager: latitude " + latitude + ", longitude " + longitude)
+        NCCommunicationCommon.shared.writeLog("update location manager: latitude \(latitude) longitude \(longitude)")
         
         if let account = NCManageDatabase.shared.getAccountActive() {
             if account.autoUpload && account.autoUploadBackground && UIApplication.shared.applicationState == UIApplication.State.background {
@@ -75,13 +76,21 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadBackground", state: false)
-        self.stopSignificantChangeUpdates()
+        NCAskAuthorization.shared.askAuthorizationLocationManager() { (hasFullPermissions) in
+            if !hasFullPermissions {
+                NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadBackground", state: false)
+                self.stopSignificantChangeUpdates()
+            }
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadBackground", state: false)
-        self.stopSignificantChangeUpdates()
+        NCAskAuthorization.shared.askAuthorizationLocationManager() { (hasFullPermissions) in
+            if !hasFullPermissions {
+                NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadBackground", state: false)
+                self.stopSignificantChangeUpdates()
+            }
+        }
     }
     
     // MARK: -
@@ -93,8 +102,8 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                     if hasPermission {
                         self.uploadAssetsNewAndFull(viewController:viewController, selector: NCBrandGlobal.shared.selectorUploadAutoUpload)
                         if account.autoUploadBackground {
-                            NCAskAuthorization.shared.askAuthorizationLocationManager(viewController: viewController) { (hasPermissions) in
-                                if hasPermissions {
+                            NCAskAuthorization.shared.askAuthorizationLocationManager() { (hasFullPermissions) in
+                                if hasFullPermissions {
                                     self.startSignificantChangeUpdates()
                                 } else {
                                     NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadBackground", state: false)

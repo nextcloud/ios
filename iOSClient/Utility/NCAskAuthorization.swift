@@ -101,24 +101,14 @@ class NCAskAuthorization: NSObject {
         }
     }
     
-    @objc func askAuthorizationLocationManager(viewController: UIViewController?, completion: @escaping (_ hasPermission: Bool)->()) {
+    @objc func askAuthorizationLocationManager(completion: @escaping (_ hasFullPermissions: Bool)->()) {
         
         switch CLLocationManager.authorizationStatus() {
         case CLAuthorizationStatus.authorizedAlways:
             completion(true)
             break
         case CLAuthorizationStatus.authorizedWhenInUse, CLAuthorizationStatus.denied, CLAuthorizationStatus.restricted:
-            let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_err_permission_locationmanager_", comment: ""), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_open_settings_", comment: ""), style: .default, handler: { action in
-                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-                completion(false)
-            }))
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { action in
-                completion(false)
-            }))
-            DispatchQueue.main.async {
-                viewController?.present(alert, animated: true, completion: nil)
-            }
+            completion(false)
             break
         case CLAuthorizationStatus.notDetermined:
             DispatchQueue.main.async {

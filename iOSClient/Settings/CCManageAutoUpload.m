@@ -282,9 +282,9 @@
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
                         
-            [[NCAskAuthorization shared] askAuthorizationLocationManagerWithViewController:self completion:^(BOOL hasPermission) {
+            [[NCAskAuthorization shared]  askAuthorizationLocationManagerWithCompletion: ^(BOOL hasFullPermissions) {
                 
-                if (hasPermission == YES) {
+                if (hasFullPermissions == YES) {
                     
                     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_autoupload_background_title_", nil) message:NSLocalizedString(@"_autoupload_background_msg_", nil) preferredStyle:UIAlertControllerStyleAlert];
                     UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
@@ -293,6 +293,7 @@
                     [self presentViewController:alertController animated:YES completion:nil];
                     
                     [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:YES];
+                    [[NCAutoUpload shared] startSignificantChangeUpdates];
                         
                 } else {
                      
