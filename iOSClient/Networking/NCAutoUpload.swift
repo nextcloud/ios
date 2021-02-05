@@ -76,12 +76,10 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        NCAskAuthorization.shared.askAuthorizationLocationManager() { (hasFullPermissions) in
-            if !hasFullPermissions {
-                NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadBackground", state: false)
-                self.stopSignificantChangeUpdates()
-            }
-        }
+        if CLLocationManager.authorizationStatus() != CLAuthorizationStatus.authorizedAlways {
+            NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadBackground", state: false)
+            self.stopSignificantChangeUpdates()
+        } 
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
