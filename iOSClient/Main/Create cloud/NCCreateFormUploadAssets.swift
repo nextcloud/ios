@@ -380,7 +380,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 let dateFormatter = DateFormatter()
                 
                 // Detect LivePhoto Upload
-                if (asset.mediaSubtypes == PHAssetMediaSubtype.photoLive || asset.mediaSubtypes.rawValue == PHAssetMediaSubtype.photoLive.rawValue + PHAssetMediaSubtype.photoHDR.rawValue) && CCUtility.getLivePhoto() {
+                if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() {
                     livePhoto = true
                 } 
                 

@@ -180,7 +180,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                     
                     let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String, fileDate: assetDate, fileType: assetMediaType, keyFileName: NCBrandGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCBrandGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCBrandGlobal.shared.keyFileNameOriginalAutoUpload)!
                     
-                    if (asset.mediaSubtypes.rawValue == PHAssetMediaSubtype.photoLive.rawValue || asset.mediaSubtypes.rawValue == (PHAssetMediaSubtype.photoHDR.rawValue + PHAssetMediaSubtype.photoLive.rawValue)) && CCUtility.getLivePhoto() {
+                    if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() {
                         livePhoto = true
                     }
                     
