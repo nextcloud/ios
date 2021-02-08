@@ -2327,13 +2327,21 @@ class NCManageDatabase: NSObject {
     @objc func getMetadataLivePhoto(metadata: tableMetadata) -> tableMetadata? {
            
         let realm = try! Realm()
+        var typeFile = metadata.typeFile
+
         realm.refresh()
         
         if !metadata.livePhoto || !CCUtility.getLivePhoto() {
             return nil
         }
         
-        guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId)).first else {
+        if typeFile == NCBrandGlobal.shared.metadataTypeFileImage {
+            typeFile = NCBrandGlobal.shared.metadataTypeFileVideo
+        } else {
+            typeFile = NCBrandGlobal.shared.metadataTypeFileImage
+        }
+        
+        guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@ AND typeFile == %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId, typeFile)).first else {
             return nil
         }
         
