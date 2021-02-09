@@ -45,9 +45,9 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
             locationManager = CLLocationManager.init()
             locationManager?.delegate = self
             locationManager?.distanceFilter = 100
-            locationManager?.requestAlwaysAuthorization()
         }
         
+        locationManager?.requestAlwaysAuthorization()
         locationManager?.startMonitoringSignificantLocationChanges()
     }
     
