@@ -1721,7 +1721,15 @@ class NCManageDatabase: NSObject {
         
         // Live Photo "DETECT"
         if !metadata.directory && !metadata.livePhoto && (metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage) {
-            metadata.livePhoto = isLivePhoto(metadata: metadata)
+            var typeFile = metadata.typeFile
+            if typeFile == NCBrandGlobal.shared.metadataTypeFileImage {
+                typeFile = NCBrandGlobal.shared.metadataTypeFileVideo
+            } else {
+                typeFile = NCBrandGlobal.shared.metadataTypeFileImage
+            }
+            if getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@ AND typeFile == %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId, typeFile)) != nil {
+                metadata.livePhoto = true
+            }
         }
         
         return metadata
@@ -2348,18 +2356,6 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
    
-    func isLivePhoto(metadata: tableMetadata) -> Bool {
-           
-        let realm = try! Realm()
-        realm.refresh()
-        
-        if realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId)).first == nil {
-            return false
-        }
-        
-        return true
-    }
-    
     func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending: Bool = false) -> [tableMetadata] {
         
         let realm = try! Realm()
