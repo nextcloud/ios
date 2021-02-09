@@ -141,10 +141,6 @@
 		F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */; };
 		F75B0ABD244C4DBB00E58DCA /* NCNetworkingNotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75B0ABC244C4DBB00E58DCA /* NCNetworkingNotificationCenter.swift */; };
 		F75C0C4823D1FAE300163CC8 /* NCRichWorkspaceCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75C0C4723D1FAE300163CC8 /* NCRichWorkspaceCommon.swift */; };
-		F75E57A925BF0D61002B72C2 /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F75E57A825BF0D61002B72C2 /* SVGKitSwift */; };
-		F75E57AF25BF0DA1002B72C2 /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F75E57AE25BF0DA1002B72C2 /* SVGKitSwift */; };
-		F75E57B125BF0DA7002B72C2 /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F75E57B025BF0DA7002B72C2 /* SVGKitSwift */; };
-		F75E57B325BF0DAD002B72C2 /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F75E57B225BF0DAD002B72C2 /* SVGKitSwift */; };
 		F75E57BD25BF0EC1002B72C2 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F75E57BC25BF0EC1002B72C2 /* SVGKit */; };
 		F75E57BF25BF0EC8002B72C2 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F75E57BE25BF0EC8002B72C2 /* SVGKit */; };
 		F75E57C125BF0ECD002B72C2 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F75E57C025BF0ECD002B72C2 /* SVGKit */; };
@@ -707,7 +703,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F75E57C325BF0ED2002B72C2 /* SVGKit in Frameworks */,
-				F75E57B325BF0DAD002B72C2 /* SVGKitSwift in Frameworks */,
 				F782A58D251236D1007BBABD /* RealmSwift in Frameworks */,
 				F786D597253454D800E3DD7B /* NCCommunication in Frameworks */,
 				F782A58B251236D1007BBABD /* Realm in Frameworks */,
@@ -719,7 +714,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F75E57BF25BF0EC8002B72C2 /* SVGKit in Frameworks */,
-				F75E57AF25BF0DA1002B72C2 /* SVGKitSwift in Frameworks */,
 				F782A585251236B7007BBABD /* RealmSwift in Frameworks */,
 				F786D593253454CE00E3DD7B /* NCCommunication in Frameworks */,
 				F782A583251236B7007BBABD /* Realm in Frameworks */,
@@ -731,7 +725,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F75E57C125BF0ECD002B72C2 /* SVGKit in Frameworks */,
-				F75E57B125BF0DA7002B72C2 /* SVGKitSwift in Frameworks */,
 				F782A589251236CA007BBABD /* RealmSwift in Frameworks */,
 				F786D595253454D300E3DD7B /* NCCommunication in Frameworks */,
 				F782A587251236CA007BBABD /* Realm in Frameworks */,
@@ -772,7 +765,6 @@
 				F78AA20621F783E900D0F205 /* SwiftRichString.framework in Frameworks */,
 				F7DBD82C23E46A4700ECB7C6 /* MarkdownKit.framework in Frameworks */,
 				F75E57BD25BF0EC1002B72C2 /* SVGKit in Frameworks */,
-				F75E57A925BF0D61002B72C2 /* SVGKitSwift in Frameworks */,
 				F74AFCE922E8B025003DE61F /* FSCalendar.framework in Frameworks */,
 				F7D2C773246470CA008513AE /* XLForm.framework in Frameworks */,
 				F782A57D25123694007BBABD /* RealmSwift in Frameworks */,
@@ -1595,7 +1587,6 @@
 				F782A58A251236D1007BBABD /* Realm */,
 				F782A58C251236D1007BBABD /* RealmSwift */,
 				F786D596253454D800E3DD7B /* NCCommunication */,
-				F75E57B225BF0DAD002B72C2 /* SVGKitSwift */,
 				F75E57C225BF0ED2002B72C2 /* SVGKit */,
 			);
 			productName = "Notification Service Extension";
@@ -1619,7 +1610,6 @@
 				F782A582251236B7007BBABD /* Realm */,
 				F782A584251236B7007BBABD /* RealmSwift */,
 				F786D592253454CE00E3DD7B /* NCCommunication */,
-				F75E57AE25BF0DA1002B72C2 /* SVGKitSwift */,
 				F75E57BE25BF0EC8002B72C2 /* SVGKit */,
 			);
 			productName = "Share Ext";
@@ -1643,7 +1633,6 @@
 				F782A586251236CA007BBABD /* Realm */,
 				F782A588251236CA007BBABD /* RealmSwift */,
 				F786D594253454D300E3DD7B /* NCCommunication */,
-				F75E57B025BF0DA7002B72C2 /* SVGKitSwift */,
 				F75E57C025BF0ECD002B72C2 /* SVGKit */,
 			);
 			productName = "File Provider Extension";
@@ -1673,7 +1662,6 @@
 				F782A57C25123694007BBABD /* RealmSwift */,
 				F786D58C253454BF00E3DD7B /* NCCommunication */,
 				F7C4D88C2534887E00C142DA /* Parchment */,
-				F75E57A825BF0D61002B72C2 /* SVGKitSwift */,
 				F75E57BC25BF0EC1002B72C2 /* SVGKit */,
 			);
 			productName = "Crypto Cloud";
@@ -2829,26 +2817,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F75E57A825BF0D61002B72C2 /* SVGKitSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
-			productName = SVGKitSwift;
-		};
-		F75E57AE25BF0DA1002B72C2 /* SVGKitSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
-			productName = SVGKitSwift;
-		};
-		F75E57B025BF0DA7002B72C2 /* SVGKitSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
-			productName = SVGKitSwift;
-		};
-		F75E57B225BF0DAD002B72C2 /* SVGKitSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
-			productName = SVGKitSwift;
-		};
 		F75E57BC25BF0EC1002B72C2 /* SVGKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
