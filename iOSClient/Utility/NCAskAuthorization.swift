@@ -107,7 +107,11 @@ class NCAskAuthorization: NSObject {
         case CLAuthorizationStatus.authorizedAlways:
             completion(true)
             break
+        /*
         case CLAuthorizationStatus.authorizedWhenInUse, CLAuthorizationStatus.denied, CLAuthorizationStatus.restricted:
+            DispatchQueue.main.async {
+                NCAutoUpload.shared.startSignificantChangeUpdates()
+            }
             completion(false)
             break
         case CLAuthorizationStatus.notDetermined:
@@ -116,7 +120,12 @@ class NCAskAuthorization: NSObject {
             }
             completion(false)
             break
+        */
         default:
+            DispatchQueue.main.async {
+                NCAutoUpload.shared.startSignificantChangeUpdates()
+            }
+            completion(false)
             break
         }
     }
