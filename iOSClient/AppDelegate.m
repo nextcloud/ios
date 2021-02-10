@@ -204,7 +204,7 @@
     [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
     
     // Initialize Auto upload
-    [[NCAutoUpload shared] initAutoUploadWithViewController:nil];
+    [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^{ }];
     
     // Read active directory
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterReloadDataSourceNetworkForced object:nil];
@@ -280,7 +280,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterMenuDetailClose object:nil];
     
     // Start Auto Upload
-    [[NCAutoUpload shared] initAutoUploadWithViewController:nil];
+    [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^{ }];
     
     // Start services
     [[NCService shared] startRequestServicesServer];
@@ -548,16 +548,17 @@
 -(void)handleBackgroundTask:(BGTask *)task API_AVAILABLE(ios(13.0))
 {
     if (self.account == nil || self.account.length == 0) {
+        [task setTaskCompletedWithSuccess:true];
         return;
     }
     
-    //do things with task
     [[NCCommunicationCommon shared] writeLog:@"Start handler background task"];
     
     // Verify new photo
-    [[NCAutoUpload shared] initAutoUploadWithViewController:nil];
-    
-    //[task setTaskCompletedWithSuccess:true];
+    [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^{
+        [[NCCommunicationCommon shared] writeLog:@"Completition handler background task"];
+        [task setTaskCompletedWithSuccess:true];
+    }];
 }
 
 #pragma mark Fetch
@@ -572,15 +573,10 @@
     [[NCCommunicationCommon shared] writeLog:@"Start perform Fetch"];
     
     // Verify new photo
-    [[NCAutoUpload shared] initAutoUploadWithViewController:nil];
-    
-    // after 20 sec
-    /*
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [[NCCommunicationCommon shared] writeLog:@"End 20 sec. perform Fetch"];
+    [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^{
+        [[NCCommunicationCommon shared] writeLog:@"Completition perform Fetch"];
         completionHandler(UIBackgroundFetchResultNoData);
-    });
-    */
+    }];
 }
 
 #pragma mark Operation Networking & Session
