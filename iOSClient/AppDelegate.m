@@ -166,7 +166,7 @@
     // Background task
     if (@available(iOS 13.0, *)) {
         [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:NCBrandGlobal.shared.backgroudTask usingQueue:nil launchHandler:^(BGTask *task) {
-            [self handleProcessingTask:task];
+            [self handleBackgroundTask:task];
         }];
     }
     
@@ -250,7 +250,7 @@
     [self passcodeWithAutomaticallyPromptForBiometricValidation:false];
     
     if (@available(iOS 13.0, *)) {
-        [self scheduleProcessingTask];
+        [self scheduleBackgroundTask];
     }
 }
 
@@ -515,12 +515,7 @@
 
 #pragma mark Background Task
 
--(void)handleProcessingTask:(BGTask *)task API_AVAILABLE(ios(13.0))
-{
-    //do things with task
-}
-
--(void)scheduleProcessingTask
+-(void)scheduleBackgroundTask
 {
     if (@available(iOS 13.0, *)) {
         NSError *error = NULL;
@@ -549,6 +544,24 @@
     }
 }
 
+-(void)handleBackgroundTask:(BGTask *)task API_AVAILABLE(ios(13.0))
+{
+    if (self.account == nil || self.account.length == 0) {
+        return;
+    }
+    
+    //do things with task
+    [[NCCommunicationCommon shared] writeLog:@"Start handler background task"];
+    
+    // Verify new photo
+    [[NCAutoUpload shared] initAutoUploadWithViewController:nil];
+    
+    // after 20 sec
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [[NCCommunicationCommon shared] writeLog:@"End 20 sec. handler background task"];
+    });
+}
+
 #pragma mark Fetch
 
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
@@ -558,14 +571,14 @@
         return;
     }
     
-    [[NCCommunicationCommon shared] writeLog:@"Start perform Fetch With Completion Handler"];
+    [[NCCommunicationCommon shared] writeLog:@"Start perform Fetch"];
     
     // Verify new photo
     [[NCAutoUpload shared] initAutoUploadWithViewController:nil];
     
     // after 20 sec
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [[NCCommunicationCommon shared] writeLog:@"End 20 sec. perform Fetch With Completion Handler"];
+        [[NCCommunicationCommon shared] writeLog:@"End 20 sec. perform Fetch"];
         completionHandler(UIBackgroundFetchResultNoData);
     });
 }
