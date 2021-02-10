@@ -163,8 +163,9 @@
     // Auto upload
     self.networkingAutoUpload = [NCNetworkingAutoUpload new];
     
+    // Background task
     if (@available(iOS 13.0, *)) {
-        NSLog(@"configureProcessingTask");
+        NSLog(@"configure ProcessingTask");
         [self configureProcessingTask];
     }
     
@@ -248,7 +249,7 @@
     [self passcodeWithAutomaticallyPromptForBiometricValidation:false];
     
     if (@available(iOS 13.0, *)) {
-        NSLog(@"scheduleProcessingTask");
+        NSLog(@"schedule ProcessingTask");
         [self scheduleProcessingTask];
     }
 }
@@ -545,6 +546,7 @@
         // new task
         BGProcessingTaskRequest *request = [[BGProcessingTaskRequest alloc] initWithIdentifier:NCBrandGlobal.shared.backgroudTask];
         request.requiresNetworkConnectivity = YES;
+        request.requiresExternalPower = NO;
         request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:5];
         BOOL success = [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];
         if (!success) {
