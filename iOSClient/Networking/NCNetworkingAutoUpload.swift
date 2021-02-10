@@ -62,7 +62,7 @@ class NCNetworkingAutoUpload: NSObject {
         
         timerProcess?.invalidate()
         
-        debugPrint("[LOG] PROCESS-AUTO-UPLOAD \(counterUpload)")
+        print("[LOG] PROCESS-AUTO-UPLOAD \(counterUpload)")
     
         NCNetworking.shared.getOcIdInBackgroundSession { (listOcId) in
             
