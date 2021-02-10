@@ -148,6 +148,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                 
                 if assets == nil || assets?.count == 0 {
                     NCCommunicationCommon.shared.writeLog("Automatic upload, no new assets found")
+                    completion()
                     return
                 } else {
                     NCCommunicationCommon.shared.writeLog("Automatic upload, new \(assets?.count ?? 0) assets found")
@@ -169,8 +170,9 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                             NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: .error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
                             self.hud?.hideHud()
                         }
-                        return
                     }
+                    completion()
+                    return
                 }
                 
                 self.endForAssetToUpload = false
@@ -290,6 +292,8 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                         self.hud?.hideHud()
                     }
                 }
+                
+                completion()
             }
         }
     }
