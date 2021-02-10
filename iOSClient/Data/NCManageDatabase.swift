@@ -2483,15 +2483,6 @@ class NCManageDatabase: NSObject {
         return Array(idsAsset)
     }
     
-    @objc func getPhotoLibrary(predicate: NSPredicate) -> [tablePhotoLibrary] {
-        
-        let realm = try! Realm()
-
-        let results = realm.objects(tablePhotoLibrary.self).filter(predicate)
-        
-        return Array(results.map { tablePhotoLibrary.init(value:$0) })
-    }
-    
     //MARK: -
     //MARK: Table Share
     
