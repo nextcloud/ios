@@ -891,30 +891,29 @@ import Queuer
         let serverUrl = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, account: account)
         let fileName =  NCManageDatabase.shared.getAccountAutoUploadFileName()
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: urlBase, account: account)
-        var error = false
+        var result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase)
         
-        error = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase)
-        if useSubFolder && !error {
+        if useSubFolder && result {
             for dateSubFolder in CCUtility.createNameSubFolder(assets) {
                 let fileName = (dateSubFolder as! NSString).lastPathComponent
                 let serverUrl = ((autoUploadPath + "/" + (dateSubFolder as! String)) as NSString).deletingLastPathComponent
-                error = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase)
-                if error { break }
+                result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase)
+                if !result { break }
             }
         }
         
-        return error
+        return result
     }
     
     private func createFolderWithSemaphore(fileName: String, serverUrl: String, account: String, urlBase: String) -> Bool {
-        var error = false
+        var result: Bool = false
         let semaphore = Semaphore()
         NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: true) { (errorCode, errorDescription) in
-            if errorCode != 0 { error = true }
+            if errorCode == 0 { result = true }
             semaphore.continue()
         }
-        if semaphore.wait() != .success { error = true }
-        return error
+        if semaphore.wait() == .success { result = true }
+        return result
     }
     
     //MARK: - WebDav Delete

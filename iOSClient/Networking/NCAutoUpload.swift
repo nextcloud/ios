@@ -164,7 +164,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                 guard let assets = assets else { return }
                 
                 // Create the folder for auto upload & if request the subfolders
-                if NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase) {
+                if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase) {
                     DispatchQueue.main.async {
                         if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
                             NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: .error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
@@ -255,6 +255,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                             let fileName = (fileName as NSString).deletingPathExtension + ".mov"
                             let ocId = NSUUID().uuidString
                             let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+                            
                             CCUtility.extractLivePhotoAsset(asset, filePath: filePath) { (url) in
                                 if url != nil {
                                     let metadataForUpload = NCManageDatabase.shared.createMetadata(account: account.account, fileName: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", livePhoto: livePhoto)
@@ -272,7 +273,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                                     }
                                 }
                                 counterLivePhoto -= 1
-                                if self.endForAssetToUpload && counterLivePhoto == 0 {
+                                if counterLivePhoto == 0 && self.endForAssetToUpload {
                                     DispatchQueue.main.async {
                                         if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
                                             NCManageDatabase.shared.addMetadatas(metadataFull)

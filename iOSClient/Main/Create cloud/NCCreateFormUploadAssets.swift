@@ -365,7 +365,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             
             let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
             if autoUploadPath == self.serverUrl {
-                if NCNetworking.shared.createFolder(assets: self.assets, selector: NCBrandGlobal.shared.selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase) {
+                if !NCNetworking.shared.createFolder(assets: self.assets, selector: NCBrandGlobal.shared.selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase) {
                     NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
                     return
                 }
