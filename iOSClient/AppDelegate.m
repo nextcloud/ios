@@ -165,8 +165,9 @@
     
     // Background task
     if (@available(iOS 13.0, *)) {
-        NSLog(@"configure ProcessingTask");
-        [self configureProcessingTask];
+        [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:NCBrandGlobal.shared.backgroudTask usingQueue:nil launchHandler:^(BGTask *task) {
+            [self handleProcessingTask:task];
+        }];
     }
     
     return YES;
@@ -249,7 +250,6 @@
     [self passcodeWithAutomaticallyPromptForBiometricValidation:false];
     
     if (@available(iOS 13.0, *)) {
-        NSLog(@"schedule ProcessingTask");
         [self scheduleProcessingTask];
     }
 }
@@ -515,23 +515,6 @@
 
 #pragma mark Background Task
 
--(void)configureProcessingTask
-{
-    if (@available(iOS 13.0, *)) {
-        [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:NCBrandGlobal.shared.backgroudTask usingQueue:nil launchHandler:^(BGTask *task) {
-            [self scheduleLocalNotifications];
-            [self handleProcessingTask:task];
-        }];
-    } else {
-        // No fallback
-    }
-}
-
--(void)scheduleLocalNotifications
-{
-    //do things
-}
-
 -(void)handleProcessingTask:(BGTask *)task API_AVAILABLE(ios(13.0))
 {
     //do things with task
@@ -550,10 +533,18 @@
         request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:5];
         BOOL success = [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];
         if (!success) {
-            // Errorcodes https://stackoverflow.com/a/58224050/872051
-            NSLog(@"Background task failed to submit request: %@", error);
+            /*
+             Here are possible error codes for Domain=BGTaskSchedulerErrorDomain extracted from ObjC headers with some explanation.
+
+             BGTaskSchedulerErrorCodeUnavailable = 1 // Background task scheduling functionality is not available for this app/extension. Background App Refresh may have been disabled in Settings.
+
+             BGTaskSchedulerErrorCodeTooManyPendingTaskRequests = 2 // The task request could not be submitted because there are too many pending task requests of this type. Cancel some existing task requests before trying again.
+
+             BGTaskSchedulerErrorCodeNotPermitted = 3 // The task request could not be submitted because the appropriate background mode is not included in the UIBackgroundModes array, or its identifier was not present in the BGTaskSchedulerPermittedIdentifiers array in the app's Info.plist.
+             */
+            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Background task failed to submit request: %@", error]];
         } else {
-            NSLog(@"Background task success submit request %@", request);
+            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Background task success submit request %@", request]];
         }
     }
 }
