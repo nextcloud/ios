@@ -129,7 +129,13 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
     @objc func autoUploadFullPhotos(viewController: UIViewController?) {
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.window.rootViewController) { (hasPermission) in
             if hasPermission {
-                self.uploadAssetsNewAndFull(viewController: viewController, selector: NCBrandGlobal.shared.selectorUploadAutoUploadAll) { }
+                self.hud = CCHud.init(view: self.appDelegate.window.rootViewController?.view)
+                NCContentPresenter.shared.messageNotification("_attention_", description: "_create_full_upload_", delay: NCBrandGlobal.shared.dismissAfterSecondLong, type: .info, errorCode: 0, forced: true)
+                self.hud?.visibleHudTitle(NSLocalizedString("_wait_", comment: ""), mode: MBProgressHUDMode.indeterminate, color: NCBrandColor.shared.brand)
+                
+                self.uploadAssetsNewAndFull(viewController: viewController, selector: NCBrandGlobal.shared.selectorUploadAutoUploadAll) {
+                    self.hud?.hideHud()
+                }
             }
         }
     }
@@ -148,31 +154,24 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                 
                 if assets == nil || assets?.count == 0 {
                     NCCommunicationCommon.shared.writeLog("Automatic upload, no new assets found")
-                    completion()
+                    DispatchQueue.main.async {
+                        completion()
+                    }
                     return
                 } else {
                     NCCommunicationCommon.shared.writeLog("Automatic upload, new \(assets?.count ?? 0) assets found")
                 }
                 guard let assets = assets else { return }
                 
-                if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
-                    DispatchQueue.main.async {
-                        self.hud = CCHud.init(view: self.appDelegate.window.rootViewController?.view)
-                        NCContentPresenter.shared.messageNotification("_attention_", description: "_create_full_upload_", delay: NCBrandGlobal.shared.dismissAfterSecondLong, type: .info, errorCode: 0, forced: true)
-                        self.hud?.visibleHudTitle(NSLocalizedString("_wait_", comment: ""), mode: MBProgressHUDMode.indeterminate, color: NCBrandColor.shared.brand)
-                    }
-                }
-                
                 // Create the folder for auto upload & if request the subfolders
                 if NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase) {
-                    if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
-                        DispatchQueue.main.async {
+                    DispatchQueue.main.async {
+                        if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
                             NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: .error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
-                            self.hud?.hideHud()
                         }
+                        completion()
+                        return
                     }
-                    completion()
-                    return
                 }
                 
                 self.endForAssetToUpload = false
@@ -272,12 +271,14 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                                         metadataFull.append(metadataForUpload)
                                     }
                                 }
-                            }
-                            counterLivePhoto -= 1
-                            if self.endForAssetToUpload && counterLivePhoto == 0 && selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
-                                DispatchQueue.main.async {
-                                    NCManageDatabase.shared.addMetadatas(metadataFull)
-                                    self.hud?.hideHud()
+                                counterLivePhoto -= 1
+                                if self.endForAssetToUpload && counterLivePhoto == 0 {
+                                    DispatchQueue.main.async {
+                                        if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
+                                            NCManageDatabase.shared.addMetadatas(metadataFull)
+                                        }
+                                        completion()
+                                    }
                                 }
                             }
                         }
@@ -286,14 +287,14 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                 
                 self.endForAssetToUpload = true
                 
-                if counterLivePhoto == 0 && selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
+                if counterLivePhoto == 0 {
                     DispatchQueue.main.async {
-                        NCManageDatabase.shared.addMetadatas(metadataFull)
-                        self.hud?.hideHud()
+                        if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
+                            NCManageDatabase.shared.addMetadatas(metadataFull)
+                        }
+                        completion()
                     }
                 }
-                
-                completion()
             }
         }
     }
