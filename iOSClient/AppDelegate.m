@@ -163,6 +163,11 @@
     // Auto upload
     self.networkingAutoUpload = [NCNetworkingAutoUpload new];
     
+    if (@available(iOS 13.0, *)) {
+        NSLog(@"configureProcessingTask");
+        [self configureProcessingTask];
+    }
+    
     return YES;
 }
 
@@ -241,6 +246,11 @@
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterApplicationDidEnterBackground object:nil];
     
     [self passcodeWithAutomaticallyPromptForBiometricValidation:false];
+    
+    if (@available(iOS 13.0, *)) {
+        NSLog(@"scheduleProcessingTask");
+        [self scheduleProcessingTask];
+    }
 }
 
 //
@@ -500,6 +510,50 @@
     [[NCPushNotification shared] applicationdidReceiveRemoteNotification:userInfo fetchCompletionHandler:^(UIBackgroundFetchResult result) {
         completionHandler(result);
     }];
+}
+
+#pragma mark Background Task
+
+-(void)configureProcessingTask
+{
+    if (@available(iOS 13.0, *)) {
+        [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:NCBrandGlobal.shared.backgroudTask usingQueue:nil launchHandler:^(BGTask *task) {
+            [self scheduleLocalNotifications];
+            [self handleProcessingTask:task];
+        }];
+    } else {
+        // No fallback
+    }
+}
+
+-(void)scheduleLocalNotifications
+{
+    //do things
+}
+
+-(void)handleProcessingTask:(BGTask *)task API_AVAILABLE(ios(13.0))
+{
+    //do things with task
+}
+
+-(void)scheduleProcessingTask
+{
+    if (@available(iOS 13.0, *)) {
+        NSError *error = NULL;
+        // cancel existing task (if any)
+        [BGTaskScheduler.sharedScheduler cancelTaskRequestWithIdentifier:NCBrandGlobal.shared.backgroudTask];
+        // new task
+        BGProcessingTaskRequest *request = [[BGProcessingTaskRequest alloc] initWithIdentifier:NCBrandGlobal.shared.backgroudTask];
+        request.requiresNetworkConnectivity = YES;
+        request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:5];
+        BOOL success = [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];
+        if (!success) {
+            // Errorcodes https://stackoverflow.com/a/58224050/872051
+            NSLog(@"Background task failed to submit request: %@", error);
+        } else {
+            NSLog(@"Background task success submit request %@", request);
+        }
+    }
 }
 
 #pragma mark Fetch

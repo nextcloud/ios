@@ -24,6 +24,7 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 #import <AVKit/AVKit.h>
+#import <BackgroundTasks/BackgroundTasks.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 #import <TOPasscodeViewController/TOPasscodeViewController.h>
 #import "CCLogin.h"
