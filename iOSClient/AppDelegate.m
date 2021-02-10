@@ -56,14 +56,17 @@
     [[NCCommunicationCommon shared] setupWithDelegate:[NCNetworking shared]];
     [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent]];
     
-    NSInteger logLevel = [CCUtility getLogLevel];
-    [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel];
+    // LOG
+    NSInteger levelLog = [CCUtility getLogLevel];
+    [[NCCommunicationCommon shared] setLevelLog:levelLog];
+    [[NCCommunicationCommon shared] setPrintLog:true];
+
     NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
     NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, versionApp];
     if (isSimulatorOrTestFlight) {
-        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Start session with level %lu %@ (Simulator / TestFlight)", (unsigned long)logLevel, versionNextcloudiOS]];
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Start session with level %lu %@ (Simulator / TestFlight)", (unsigned long)levelLog, versionNextcloudiOS]];
     } else {
-        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Start session with level %lu %@", (unsigned long)logLevel, versionNextcloudiOS]];
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Start session with level %lu %@", (unsigned long)levelLog, versionNextcloudiOS]];
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil];
