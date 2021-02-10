@@ -535,9 +535,7 @@
              Here are possible error codes for Domain=BGTaskSchedulerErrorDomain extracted from ObjC headers with some explanation.
 
              BGTaskSchedulerErrorCodeUnavailable = 1 // Background task scheduling functionality is not available for this app/extension. Background App Refresh may have been disabled in Settings.
-
              BGTaskSchedulerErrorCodeTooManyPendingTaskRequests = 2 // The task request could not be submitted because there are too many pending task requests of this type. Cancel some existing task requests before trying again.
-
              BGTaskSchedulerErrorCodeNotPermitted = 3 // The task request could not be submitted because the appropriate background mode is not included in the UIBackgroundModes array, or its identifier was not present in the BGTaskSchedulerPermittedIdentifiers array in the app's Info.plist.
              */
             [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Background task failed to submit request: %@", error]];
@@ -559,10 +557,7 @@
     // Verify new photo
     [[NCAutoUpload shared] initAutoUploadWithViewController:nil];
     
-    // after 20 sec
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [[NCCommunicationCommon shared] writeLog:@"End 20 sec. handler background task"];
-    });
+    //[task setTaskCompletedWithSuccess:true];
 }
 
 #pragma mark Fetch
@@ -580,10 +575,12 @@
     [[NCAutoUpload shared] initAutoUploadWithViewController:nil];
     
     // after 20 sec
+    /*
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [[NCCommunicationCommon shared] writeLog:@"End 20 sec. perform Fetch"];
         completionHandler(UIBackgroundFetchResultNoData);
     });
+    */
 }
 
 #pragma mark Operation Networking & Session

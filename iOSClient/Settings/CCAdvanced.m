@@ -147,7 +147,7 @@
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_diagnostics_", nil)];
     [form addFormSection:section];
     
-    NSString *fileNameLog = [[NCCommunicationCommon shared] getFileNameLog];
+    NSString *fileNameLog = NCCommunicationCommon.shared.filenameLog;
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameLog]) {
         
@@ -324,9 +324,9 @@
     
     if ([rowDescriptor.tag isEqualToString:@"logLevel"]) {
         
-        NSInteger logLevel = [[rowDescriptor.value valueData] intValue];
-        [CCUtility setLogLevel:logLevel];
-        [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel];
+        NSInteger levelLog = [[rowDescriptor.value valueData] intValue];
+        [CCUtility setLogLevel:levelLog];
+        [[NCCommunicationCommon shared] setLevelLog:levelLog];
     }
 }
 
