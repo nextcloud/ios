@@ -528,7 +528,7 @@
         BGProcessingTaskRequest *request = [[BGProcessingTaskRequest alloc] initWithIdentifier:NCBrandGlobal.shared.backgroudTask];
         request.requiresNetworkConnectivity = YES;
         request.requiresExternalPower = NO;
-        request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:5];
+//        request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:5];
         BOOL success = [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];
         if (!success) {
             /*
