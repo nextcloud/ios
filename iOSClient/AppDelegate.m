@@ -166,7 +166,7 @@
     // Auto upload
     self.networkingAutoUpload = [NCNetworkingAutoUpload new];
     
-    // Background task
+    // Background task: register
     if (@available(iOS 13.0, *)) {
         [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:NCBrandGlobal.shared.backgroudTask usingQueue:nil launchHandler:^(BGTask *task) {
             [self handleBackgroundTask:task];
@@ -204,7 +204,7 @@
     [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
     
     // Initialize Auto upload
-    [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^{ }];
+    [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^(NSInteger items) { }];
     
     // Read active directory
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterReloadDataSourceNetworkForced object:nil];
@@ -280,7 +280,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterMenuDetailClose object:nil];
     
     // Start Auto Upload
-    [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^{ }];
+    [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^(NSInteger items) { }];
     
     // Start services
     [[NCService shared] startRequestServicesServer];
@@ -555,8 +555,8 @@
     [[NCCommunicationCommon shared] writeLog:@"Start handler background task"];
     
     // Verify new photo
-    [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^{
-        [[NCCommunicationCommon shared] writeLog:@"Completition handler background task"];
+    [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^(NSInteger items) {
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Completition handler background task with %lu uploads", (unsigned long)items]];
         [task setTaskCompletedWithSuccess:true];
     }];
 }
@@ -573,9 +573,13 @@
     [[NCCommunicationCommon shared] writeLog:@"Start perform Fetch"];
     
     // Verify new photo
-    [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^{
-        [[NCCommunicationCommon shared] writeLog:@"Completition perform Fetch"];
-        completionHandler(UIBackgroundFetchResultNoData);
+    [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^(NSInteger items) {
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Completition perform Fetch with %lu uploads", (unsigned long)items]];
+        if (items == 0) {
+            completionHandler(UIBackgroundFetchResultNoData);
+        } else {
+            completionHandler(UIBackgroundFetchResultNewData);
+        }
     }];
 }
 

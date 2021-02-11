@@ -68,7 +68,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
             if account.autoUpload && account.autoUploadBackground && UIApplication.shared.applicationState == UIApplication.State.background {
                 NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: nil) { (hasPermission) in
                     if hasPermission {
-                        self.uploadAssetsNewAndFull(viewController: nil, selector: NCBrandGlobal.shared.selectorUploadAutoUpload) { }
+                        self.uploadAssetsNewAndFull(viewController: nil, selector: NCBrandGlobal.shared.selectorUploadAutoUpload) { (items) in }
                     }
                 }
             }
@@ -93,13 +93,13 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
     
     // MARK: -
     
-    @objc func initAutoUpload(viewController: UIViewController?, completion: @escaping ()->()) {
+    @objc func initAutoUpload(viewController: UIViewController?, completion: @escaping (_ items: Int)->()) {
         if let account = NCManageDatabase.shared.getAccountActive() {
             if account.autoUpload {
                 NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { (hasPermission) in
                     if hasPermission {
-                        self.uploadAssetsNewAndFull(viewController:viewController, selector: NCBrandGlobal.shared.selectorUploadAutoUpload) {
-                            completion()
+                        self.uploadAssetsNewAndFull(viewController:viewController, selector: NCBrandGlobal.shared.selectorUploadAutoUpload) { (items) in
+                            completion(items)
                         }
                         if account.autoUploadBackground {
                             NCAskAuthorization.shared.askAuthorizationLocationManager() { (hasFullPermissions) in
@@ -114,15 +114,15 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                     } else {
                         NCManageDatabase.shared.setAccountAutoUploadProperty("autoUpload", state: false)
                         self.stopSignificantChangeUpdates()
-                        completion()
+                        completion(0)
                     }
                 }
             } else {
-                completion()
+                completion(0)
             }
         } else {
             stopSignificantChangeUpdates()
-            completion()
+            completion(0)
         }
     }
     
@@ -133,21 +133,21 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                 NCContentPresenter.shared.messageNotification("_attention_", description: "_create_full_upload_", delay: NCBrandGlobal.shared.dismissAfterSecondLong, type: .info, errorCode: 0, forced: true)
                 self.hud?.visibleHudTitle(NSLocalizedString("_wait_", comment: ""), mode: MBProgressHUDMode.indeterminate, color: NCBrandColor.shared.brand)
                 
-                self.uploadAssetsNewAndFull(viewController: viewController, selector: NCBrandGlobal.shared.selectorUploadAutoUploadAll) {
+                self.uploadAssetsNewAndFull(viewController: viewController, selector: NCBrandGlobal.shared.selectorUploadAutoUploadAll) { (items) in
                     self.hud?.hideHud()
                 }
             }
         }
     }
     
-    private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, completion: @escaping ()->()) {
+    private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, completion: @escaping (_ items: Int)->()) {
         
         if appDelegate.account == nil || appDelegate.account.count == 0 { return }
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) else { return }
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, account: account.account)
         var counterLivePhoto: Int = 0
         var metadataFull: [tableMetadata] = []
-        
+        var counterItemsUpload: Int = 0
         DispatchQueue.global(qos: .background).async {
         
             self.getCameraRollAssets(viewController: viewController, account: account, selector: selector, alignPhotoLibrary: false) { (assets) in
@@ -155,7 +155,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                 if assets == nil || assets?.count == 0 {
                     NCCommunicationCommon.shared.writeLog("Automatic upload, no new assets found")
                     DispatchQueue.main.async {
-                        completion()
+                        completion(counterItemsUpload)
                     }
                     return
                 } else {
@@ -169,7 +169,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                         if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
                             NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: .error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
                         }
-                        completion()
+                        completion(counterItemsUpload)
                         return
                     }
                 }
@@ -247,6 +247,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                         } else if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
                             metadataFull.append(metadataForUpload)
                         }
+                        counterItemsUpload += 1
                         
                         /* INSERT METADATA MOV LIVE PHOTO FOR UPLOAD */
                         if livePhoto {
@@ -271,6 +272,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                                     } else if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
                                         metadataFull.append(metadataForUpload)
                                     }
+                                    counterItemsUpload += 1
                                 }
                                 counterLivePhoto -= 1
                                 if counterLivePhoto == 0 && self.endForAssetToUpload {
@@ -278,7 +280,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                                         if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
                                             NCManageDatabase.shared.addMetadatas(metadataFull)
                                         }
-                                        completion()
+                                        completion(counterItemsUpload)
                                     }
                                 }
                             }
@@ -293,7 +295,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                         if selector == NCBrandGlobal.shared.selectorUploadAutoUploadAll {
                             NCManageDatabase.shared.addMetadatas(metadataFull)
                         }
-                        completion()
+                        completion(counterItemsUpload)
                     }
                 }
             }
