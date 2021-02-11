@@ -530,7 +530,9 @@
         request.requiresExternalPower = NO;
 //        request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:5];
         BOOL success = [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];
-        if (!success) {
+        if (success) {
+            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Background task success submit request %@", request]];
+        } else {
             /*
              Here are possible error codes for Domain=BGTaskSchedulerErrorDomain extracted from ObjC headers with some explanation.
 
@@ -539,8 +541,6 @@
              BGTaskSchedulerErrorCodeNotPermitted = 3 // The task request could not be submitted because the appropriate background mode is not included in the UIBackgroundModes array, or its identifier was not present in the BGTaskSchedulerPermittedIdentifiers array in the app's Info.plist.
              */
             [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Background task failed to submit request: %@", error]];
-        } else {
-            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Background task success submit request %@", request]];
         }
     }
 }
