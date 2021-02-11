@@ -94,9 +94,6 @@
     // UserDefaults
     self.ncUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:[NCBrandOptions shared].capabilitiesGroups];
         
-    // Background Fetch
-    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
-
     self.listProgressMetadata = [NSMutableDictionary new];
     self.listFilesVC = [NSMutableDictionary new];
     self.listFavoriteVC = [NSMutableDictionary new];
@@ -215,6 +212,9 @@
     // RichDocument
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterRichdocumentGrabFocus object:nil];
     
+    // Background Fetch
+    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+
     // Request Service Server Nextcloud
     [[NCService shared] startRequestServicesServer];
 }
