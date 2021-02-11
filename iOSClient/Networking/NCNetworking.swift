@@ -886,7 +886,7 @@ import Queuer
         }
     }
     
-    @objc func createFolder(assets: [PHAsset], selector: String, useSubFolder: Bool, account: String, urlBase: String) -> Bool {
+    func createFolder(assets: [PHAsset], selector: String, useSubFolder: Bool, account: String, urlBase: String) -> Bool {
         
         let serverUrl = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, account: account)
         let fileName =  NCManageDatabase.shared.getAccountAutoUploadFileName()
@@ -906,12 +906,15 @@ import Queuer
     }
     
     private func createFolderWithSemaphore(fileName: String, serverUrl: String, account: String, urlBase: String) -> Bool {
+        
         var result: Bool = false
         let semaphore = Semaphore()
+        
         NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: true) { (errorCode, errorDescription) in
             if errorCode == 0 { result = true }
             semaphore.continue()
         }
+        
         if semaphore.wait() == .success { result = true }
         return result
     }
