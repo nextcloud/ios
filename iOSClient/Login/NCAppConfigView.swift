@@ -73,7 +73,7 @@ class NCAppConfigView: UIViewController {
             return
         }
         
-        NCCommunication.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password, customUserAgent: nil) { (token, errorCode, errorDescription) in
+        NCCommunication.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password, userAgent: nil) { (token, errorCode, errorDescription) in
             DispatchQueue.main.async {
                 if errorCode == 0 && token != nil {
                     let account: String = "\(username) \(serverUrl)"

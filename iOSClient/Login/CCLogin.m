@@ -339,7 +339,7 @@
                 [self.activity stopAnimating];
                 self.login.enabled = YES;
                 
-                [self AfterLoginWithUrl:url user:user token:token errorCode:errorCode message:errorDescription];
+                [self afterLoginWithUrl:url user:user token:token errorCode:errorCode message:errorDescription];
             }];
         }
     }
@@ -375,17 +375,17 @@
         self.login.enabled = NO;
         [self.activity startAnimating];
 
-        [[NCCommunication shared] getAppPasswordWithServerUrl:url username:user password:password customUserAgent:nil completionHandler:^(NSString *token, NSInteger errorCode, NSString *errorDescription) {
+        [[NCCommunication shared] getAppPasswordWithServerUrl:url username:user password:password userAgent:nil completionHandler:^(NSString *token, NSInteger errorCode, NSString *errorDescription) {
             
             [self.activity stopAnimating];
             self.login.enabled = YES;
             
-            [self AfterLoginWithUrl:url user:user token:token errorCode:errorCode message:errorDescription];
+            [self afterLoginWithUrl:url user:user token:token errorCode:errorCode message:errorDescription];
         }];
     }
 }
 
-- (void)AfterLoginWithUrl:(NSString *)url user:(NSString *)user token:(NSString *)token errorCode:(NSInteger)errorCode message:(NSString *)message
+- (void)afterLoginWithUrl:(NSString *)url user:(NSString *)user token:(NSString *)token errorCode:(NSInteger)errorCode message:(NSString *)message
 {
     if (errorCode == 0) {
         
