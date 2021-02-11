@@ -1254,4 +1254,44 @@ import Queuer
             completion(errorCode, errorDescription)
         }
     }
+    
+    //MARK: - TEST API
+    
+    /*
+    @objc public func getAppPassword(serverUrl: String, username: String, password: String, customUserAgent: String? = nil, completionHandler: @escaping (_ token: String?, _ errorCode: Int, _ errorDescription: String) -> Void) {
+                
+        let endpoint = "/ocs/v2.php/core/getapppassword"
+        
+        let url:URLConvertible = try! (serverUrl + endpoint).asURL() as URLConvertible
+        var headers: HTTPHeaders = [.authorization(username: username, password: password)]
+        if customUserAgent != nil {
+            headers.update(.userAgent(customUserAgent!))
+        }
+        //headers.update(.contentType("application/json"))
+        headers.update(name: "OCS-APIRequest", value: "true")
+               
+        var urlRequest: URLRequest
+        do {
+            try urlRequest = URLRequest(url: url, method: HTTPMethod(rawValue: "GET"), headers: headers)
+        } catch {
+            completionHandler(nil, error._code, error.localizedDescription)
+            return
+        }
+        
+        AF.request(urlRequest).validate(statusCode: 200..<300).response { (response) in
+            debugPrint(response)
+            
+            switch response.result {
+            case .failure(let error):
+                completionHandler(nil, 0, "")
+            case .success(let data):
+                if let data = data {
+                    completionHandler("", 0, "")
+                } else {
+                    completionHandler(nil, NSURLErrorBadServerResponse, NSLocalizedString("_error_decode_xml_", value: "Invalid response, error decode XML", comment: ""))
+                }
+            }
+        }
+    }
+    */
 }
