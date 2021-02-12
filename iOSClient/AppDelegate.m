@@ -526,35 +526,31 @@
 
 #pragma mark Background Task
 
--(void)scheduleAppRefresh
+-(void)scheduleAppRefresh API_AVAILABLE(ios(13.0))
 {
-    if (@available(iOS 13.0, *)) {
-        NSError *error = NULL;
-        BGAppRefreshTaskRequest *request = [[BGAppRefreshTaskRequest alloc] initWithIdentifier:NCBrandGlobal.shared.refreshTask];
-        request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:5*60]; // after 5 minutes
-        BOOL success = [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];
-        if (success) {
-            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Refresh task success submit request %@", request]];
-        } else {
-            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Refresh task failed to submit request: %@", error]];
-        }
+    NSError *error = NULL;
+    BGAppRefreshTaskRequest *request = [[BGAppRefreshTaskRequest alloc] initWithIdentifier:NCBrandGlobal.shared.refreshTask];
+    request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:5*60]; // after 5 minutes
+    BOOL success = [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];
+    if (success) {
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Refresh task success submit request %@", request]];
+    } else {
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Refresh task failed to submit request: %@", error]];
     }
 }
 
--(void)scheduleBackgroundProcessing
+-(void)scheduleBackgroundProcessing API_AVAILABLE(ios(13.0))
 {
-    if (@available(iOS 13.0, *)) {
-        NSError *error = NULL;
-        BGProcessingTaskRequest *request = [[BGProcessingTaskRequest alloc] initWithIdentifier:NCBrandGlobal.shared.processingTask];
-        request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:5*60]; // after 5 minutes
-        request.requiresNetworkConnectivity = YES;
-        request.requiresExternalPower = NO;
-        BOOL success = [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];
-        if (success) {
-            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Background Processing task success submit request %@", request]];
-        } else {
-            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Background Processing task failed to submit request: %@", error]];
-        }
+    NSError *error = NULL;
+    BGProcessingTaskRequest *request = [[BGProcessingTaskRequest alloc] initWithIdentifier:NCBrandGlobal.shared.processingTask];
+    request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:5*60]; // after 5 minutes
+    request.requiresNetworkConnectivity = YES;
+    request.requiresExternalPower = NO;
+    BOOL success = [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];
+    if (success) {
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Background Processing task success submit request %@", request]];
+    } else {
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Background Processing task failed to submit request: %@", error]];
     }
 }
 
