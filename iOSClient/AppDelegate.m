@@ -560,18 +560,10 @@
 
 -(void)handleRefreshTask:(BGTask *)task API_AVAILABLE(ios(13.0))
 {
-    if (self.account == nil || self.account.length == 0) {
-        [task setTaskCompletedWithSuccess:true];
-        return;
-    }
-    
     [[NCCommunicationCommon shared] writeLog:@"Start handler refresh task"];
-    
-    // Verify new photo
-    [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^(NSInteger items) {
-        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Completition handler refresh task with %lu uploads", (unsigned long)items]];
-        [task setTaskCompletedWithSuccess:true];
-    }];
+    [[NCCommunicationCommon shared] writeLog:@"Completition handler refresh task"];
+
+    [task setTaskCompletedWithSuccess:true];
 }
 
 -(void)handleProcessingTask:(BGTask *)task API_AVAILABLE(ios(13.0))
