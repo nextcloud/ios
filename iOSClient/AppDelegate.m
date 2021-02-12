@@ -59,8 +59,12 @@
     // LOG
     NSInteger levelLog = [CCUtility getLogLevel];
     [[NCCommunicationCommon shared] setLevelLog:levelLog];
+#ifdef DEBUG
     [[NCCommunicationCommon shared] setPrintLog:true];
-
+#else
+    [[NCCommunicationCommon shared] setPrintLog:false];
+#endif
+    
     NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
     NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, versionApp];
     if (isSimulatorOrTestFlight) {
@@ -171,10 +175,10 @@
         [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:NCBrandGlobal.shared.processingTask usingQueue:nil launchHandler:^(BGTask *task) {
             [self handleProcessingTask:task];
         }];
-    } else {
-        // Background Fetch
-        [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     }
+    
+    // Background Fetch
+    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
     return YES;
 }
