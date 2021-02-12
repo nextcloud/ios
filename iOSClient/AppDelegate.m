@@ -163,6 +163,9 @@
     // Auto upload
     self.networkingAutoUpload = [NCNetworkingAutoUpload new];
     
+    // Background Fetch
+    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+    
     // Background task: register
     if (@available(iOS 13.0, *)) {
         [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:NCBrandGlobal.shared.backgroudTask usingQueue:nil launchHandler:^(BGTask *task) {
@@ -212,9 +215,6 @@
     // RichDocument
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterRichdocumentGrabFocus object:nil];
     
-    // Background Fetch
-    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
-
     // Request Service Server Nextcloud
     [[NCService shared] startRequestServicesServer];
 }
