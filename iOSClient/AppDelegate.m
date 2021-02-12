@@ -163,14 +163,17 @@
     // Auto upload
     self.networkingAutoUpload = [NCNetworkingAutoUpload new];
     
-    // Background Fetch
-    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
-    
     // Background task: register
     if (@available(iOS 13.0, *)) {
-        [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:NCBrandGlobal.shared.backgroudTask usingQueue:nil launchHandler:^(BGTask *task) {
-            [self handleBackgroundTask:task];
+        [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:NCBrandGlobal.shared.refreshTask usingQueue:nil launchHandler:^(BGTask *task) {
+            [self handleRefreshTask:task];
         }];
+        [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:NCBrandGlobal.shared.processingTask usingQueue:nil launchHandler:^(BGTask *task) {
+            [self handleProcessingTask:task];
+        }];
+    } else {
+        // Background Fetch
+        [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     }
     
     return YES;
@@ -253,7 +256,8 @@
     [self passcodeWithAutomaticallyPromptForBiometricValidation:false];
     
     if (@available(iOS 13.0, *)) {
-        [self scheduleBackgroundTask];
+        [self scheduleAppRefresh];
+        [self scheduleBackgroundProcessing];
     }
 }
 
@@ -518,47 +522,60 @@
 
 #pragma mark Background Task
 
--(void)scheduleBackgroundTask
+-(void)scheduleAppRefresh
 {
     if (@available(iOS 13.0, *)) {
         NSError *error = NULL;
-        // cancel existing task (if any)
-        [BGTaskScheduler.sharedScheduler cancelTaskRequestWithIdentifier:NCBrandGlobal.shared.backgroudTask];
-        // new task
-        BGProcessingTaskRequest *request = [[BGProcessingTaskRequest alloc] initWithIdentifier:NCBrandGlobal.shared.backgroudTask];
-        request.requiresNetworkConnectivity = YES;
-        request.requiresExternalPower = NO;
+        BGAppRefreshTaskRequest *request = [[BGAppRefreshTaskRequest alloc] initWithIdentifier:NCBrandGlobal.shared.refreshTask];
         request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:5*60]; // after 5 minutes
         BOOL success = [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];
         if (success) {
-            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Background task success submit request %@", request]];
+            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Refresh task success submit request %@", request]];
         } else {
-            /*
-             Here are possible error codes for Domain=BGTaskSchedulerErrorDomain extracted from ObjC headers with some explanation.
-
-             BGTaskSchedulerErrorCodeUnavailable = 1 // Background task scheduling functionality is not available for this app/extension. Background App Refresh may have been disabled in Settings.
-             BGTaskSchedulerErrorCodeTooManyPendingTaskRequests = 2 // The task request could not be submitted because there are too many pending task requests of this type. Cancel some existing task requests before trying again.
-             BGTaskSchedulerErrorCodeNotPermitted = 3 // The task request could not be submitted because the appropriate background mode is not included in the UIBackgroundModes array, or its identifier was not present in the BGTaskSchedulerPermittedIdentifiers array in the app's Info.plist.
-             */
-            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Background task failed to submit request: %@", error]];
+            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Refresh task failed to submit request: %@", error]];
         }
     }
 }
 
--(void)handleBackgroundTask:(BGTask *)task API_AVAILABLE(ios(13.0))
+-(void)scheduleBackgroundProcessing
+{
+    if (@available(iOS 13.0, *)) {
+        NSError *error = NULL;
+        BGProcessingTaskRequest *request = [[BGProcessingTaskRequest alloc] initWithIdentifier:NCBrandGlobal.shared.processingTask];
+        request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:5*60]; // after 5 minutes
+        request.requiresNetworkConnectivity = YES;
+        request.requiresExternalPower = NO;
+        BOOL success = [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];
+        if (success) {
+            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Background Processing task success submit request %@", request]];
+        } else {
+            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Background Processing task failed to submit request: %@", error]];
+        }
+    }
+}
+
+-(void)handleRefreshTask:(BGTask *)task API_AVAILABLE(ios(13.0))
 {
     if (self.account == nil || self.account.length == 0) {
         [task setTaskCompletedWithSuccess:true];
         return;
     }
     
-    [[NCCommunicationCommon shared] writeLog:@"Start handler background task"];
+    [[NCCommunicationCommon shared] writeLog:@"Start handler refresh task"];
     
     // Verify new photo
     [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^(NSInteger items) {
-        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Completition handler background task with %lu uploads", (unsigned long)items]];
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Completition handler refresh task with %lu uploads", (unsigned long)items]];
         [task setTaskCompletedWithSuccess:true];
     }];
+}
+
+-(void)handleProcessingTask:(BGTask *)task API_AVAILABLE(ios(13.0))
+{
+    [[NCCommunicationCommon shared] writeLog:@"Start handler processing task"];
+    [[NCCommunicationCommon shared] writeLog:@"Completition handler processing task"];
+    
+    [task setTaskCompletedWithSuccess:true];
 }
 
 #pragma mark Fetch

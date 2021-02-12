@@ -4,7 +4,8 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>com.nextcloud.backgroudTask</string>
+		<string>com.nextcloud.refreshTask</string>
+		<string>com.nextcloud.processingTask</string>
 	</array>
 	<key>CFBundleAllowMixedLocalizations</key>
 	<true/>

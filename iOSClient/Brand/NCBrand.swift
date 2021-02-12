@@ -266,8 +266,9 @@ class NCBrandColor: NSObject {
     // Service
     @objc let serviceShareKeyChain                  = "Crypto Cloud"
     @objc let metadataKeyedUnarchiver               = "it.twsweb.nextcloud.metadata"
-    @objc let backgroudTask                         = "com.nextcloud.backgroudTask"
-
+    @objc let refreshTask                           = "com.nextcloud.refreshTask"
+    @objc let processingTask                        = "com.nextcloud.processingTask"
+    
     // Nextcloud version
     @objc let nextcloudVersion12: Int               =  12
     let nextcloudVersion15: Int                     =  15
