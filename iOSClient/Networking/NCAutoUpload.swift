@@ -70,7 +70,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                     if hasPermission {
                         self.uploadAssetsNewAndFull(viewController: nil, selector: NCBrandGlobal.shared.selectorUploadAutoUpload) { (items) in
                             if items > 0 {
-                                appDelegate.networkingAutoUpload.startProcess()
+                                self.appDelegate.networkingAutoUpload.startProcess()
                             }
                         }
                     }
@@ -104,7 +104,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                     if hasPermission {
                         self.uploadAssetsNewAndFull(viewController:viewController, selector: NCBrandGlobal.shared.selectorUploadAutoUpload) { (items) in
                             if items > 0 {
-                                appDelegate.networkingAutoUpload.startProcess()
+                                self.appDelegate.networkingAutoUpload.startProcess()
                             }
                             completion(items)
                         }
