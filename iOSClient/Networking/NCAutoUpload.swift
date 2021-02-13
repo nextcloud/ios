@@ -68,7 +68,11 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
             if account.autoUpload && account.autoUploadBackground && UIApplication.shared.applicationState == UIApplication.State.background {
                 NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: nil) { (hasPermission) in
                     if hasPermission {
-                        self.uploadAssetsNewAndFull(viewController: nil, selector: NCBrandGlobal.shared.selectorUploadAutoUpload) { (items) in }
+                        self.uploadAssetsNewAndFull(viewController: nil, selector: NCBrandGlobal.shared.selectorUploadAutoUpload) { (items) in
+                            if items > 0 {
+                                appDelegate.networkingAutoUpload.startProcess()
+                            }
+                        }
                     }
                 }
             }
@@ -99,6 +103,9 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                 NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { (hasPermission) in
                     if hasPermission {
                         self.uploadAssetsNewAndFull(viewController:viewController, selector: NCBrandGlobal.shared.selectorUploadAutoUpload) { (items) in
+                            if items > 0 {
+                                appDelegate.networkingAutoUpload.startProcess()
+                            }
                             completion(items)
                         }
                         if account.autoUploadBackground {

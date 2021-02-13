@@ -587,7 +587,9 @@
         if (items == 0) {
             completionHandler(UIBackgroundFetchResultNoData);
         } else {
-            completionHandler(UIBackgroundFetchResultNewData);
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                completionHandler(UIBackgroundFetchResultNewData);
+            });
         }
     }];
 }
