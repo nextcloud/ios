@@ -572,9 +572,11 @@
 -(void)handleProcessingTask:(BGTask *)task API_AVAILABLE(ios(13.0))
 {
     [[NCCommunicationCommon shared] writeLog:@"Start handler processing task"];
-    [[NCCommunicationCommon shared] writeLog:@"Completition handler processing task"];
     
-    [task setTaskCompletedWithSuccess:true];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [[NCCommunicationCommon shared] writeLog:@"Completition handler processing task"];
+        [task setTaskCompletedWithSuccess:true];
+    });
 }
 
 #pragma mark Fetch
