@@ -175,10 +175,10 @@
         [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:NCBrandGlobal.shared.processingTask usingQueue:nil launchHandler:^(BGTask *task) {
             [self handleProcessingTask:task];
         }];
+    } else {
+        // Background Fetch
+        [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     }
-    
-    // Background Fetch
-    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
     return YES;
 }
@@ -564,8 +564,10 @@
     [[NCCommunicationCommon shared] writeLog:@"Start handler refresh task"];
     
     [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^(NSInteger items) {
-        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Completition handler refresh task with %lu uploads", (unsigned long)items]];
-        [task setTaskCompletedWithSuccess:true];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Completition handler refresh task with %lu uploads", (unsigned long)items]];
+            [task setTaskCompletedWithSuccess:true];
+        });
     }];
 }
 
@@ -581,6 +583,7 @@
 
 #pragma mark Fetch
 
+/*
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
     if (self.account == nil || self.account.length == 0) {
@@ -599,7 +602,7 @@
         }
     }];
 }
-
+*/
 #pragma mark Operation Networking & Session
 
 //
