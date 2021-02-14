@@ -583,26 +583,32 @@
 
 #pragma mark Fetch
 
-/*
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    if (self.account == nil || self.account.length == 0) {
-        completionHandler(UIBackgroundFetchResultNoData);
-        return;
-    }
-    
-    [[NCCommunicationCommon shared] writeLog:@"Start perform Fetch"];
-    
-    [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^(NSInteger items) {
-        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Completition perform Fetch with %lu uploads", (unsigned long)items]];
-        if (items == 0) {
+    if (@available(iOS 13.0, *)) {
+        
+        [[NCCommunicationCommon shared] writeLog:@"Start perform Fetch on iOS >= 13 denied"];
+        
+    } else {
+        
+        if (self.account == nil || self.account.length == 0) {
             completionHandler(UIBackgroundFetchResultNoData);
-        } else {
-            completionHandler(UIBackgroundFetchResultNewData);
+            return;
         }
-    }];
+        
+        [[NCCommunicationCommon shared] writeLog:@"Start perform Fetch"];
+        
+        [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^(NSInteger items) {
+            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Completition perform Fetch with %lu uploads", (unsigned long)items]];
+            if (items == 0) {
+                completionHandler(UIBackgroundFetchResultNoData);
+            } else {
+                completionHandler(UIBackgroundFetchResultNewData);
+            }
+        }];
+    }
 }
-*/
+
 #pragma mark Operation Networking & Session
 
 //
