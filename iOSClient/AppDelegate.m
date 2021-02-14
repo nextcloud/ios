@@ -563,7 +563,6 @@
     
     [[NCCommunicationCommon shared] writeLog:@"Start handler refresh task"];
     
-    // Verify new photo
     [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^(NSInteger items) {
         [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Completition handler refresh task with %lu uploads", (unsigned long)items]];
         [task setTaskCompletedWithSuccess:true];
@@ -589,7 +588,6 @@
     
     [[NCCommunicationCommon shared] writeLog:@"Start perform Fetch"];
     
-    // Verify new photo
     [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^(NSInteger items) {
         [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Completition perform Fetch with %lu uploads", (unsigned long)items]];
         if (items == 0) {
