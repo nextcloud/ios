@@ -70,25 +70,9 @@ class NCService: NSObject {
                     // Synchronize favorite                    
                     NCNetworking.shared.listingFavoritescompletion(selector: NCBrandGlobal.shared.selectorReadFile) { (_, _, _, _) in }
                 
-                    // Synchronize Offline Directory
-                    if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "serverUrl", ascending: true) {
-                        for directory: tableDirectory in directories {
-                            guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) else {
-                                continue
-                            }
-                            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
-                        }
-                    }
-                
-                    // Synchronize Offline Files
-                    let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "fileName", ascending: true)
-                    for file: tableLocalFile in files {
-                        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(file.ocId) else {
-                            continue
-                        }
-                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
-                    }
-                             
+                    // Synchronize Offline
+                    self.synchronizeOffline(account: tableAccount.account)
+                    
                     // Get Avatar
                     let avatarUrl = "\(self.appDelegate.urlBase!)/index.php/avatar/\(self.appDelegate.user!)/\(NCBrandGlobal.shared.avatarSize)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + stringUser + "-" + self.appDelegate.user + ".png"
@@ -259,6 +243,28 @@ class NCService: NSObject {
             } else {
                 NCBrandColor.shared.settingThemingColor(account: account)
             }
+        }
+    }
+    
+    @objc func synchronizeOffline(account: String) {
+        
+        // Synchronize Offline Directory
+        if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true) {
+            for directory: tableDirectory in directories {
+                guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) else {
+                    continue
+                }
+                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
+            }
+        }
+    
+        // Synchronize Offline Files
+        let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "fileName", ascending: true)
+        for file: tableLocalFile in files {
+            guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(file.ocId) else {
+                continue
+            }
+            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
         }
     }
    

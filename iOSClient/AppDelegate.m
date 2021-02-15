@@ -561,11 +561,11 @@
         return;
     }
     
-    [[NCCommunicationCommon shared] writeLog:@"Start handler refresh task"];
+    [[NCCommunicationCommon shared] writeLog:@"Start handler refresh task [Auto upload]"];
     
     [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^(NSInteger items) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Completition handler refresh task with %lu uploads", (unsigned long)items]];
+            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Completition handler refresh task with %lu uploads [Auto upload]", (unsigned long)items]];
             [task setTaskCompletedWithSuccess:true];
         });
     }];
@@ -573,10 +573,17 @@
 
 -(void)handleProcessingTask:(BGTask *)task API_AVAILABLE(ios(13.0))
 {
-    [[NCCommunicationCommon shared] writeLog:@"Start handler processing task"];
+    if (self.account == nil || self.account.length == 0) {
+        [task setTaskCompletedWithSuccess:true];
+        return;
+    }
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [[NCCommunicationCommon shared] writeLog:@"Completition handler processing task"];
+    [[NCCommunicationCommon shared] writeLog:@"Start handler processing task [Synchronize Offline]"];
+    
+    [[NCService shared] synchronizeOfflineWithAccount:self.account];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [[NCCommunicationCommon shared] writeLog:@"Completition handler processing task [Synchronize Offline]"];
         [task setTaskCompletedWithSuccess:true];
     });
 }
