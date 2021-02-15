@@ -144,6 +144,18 @@ import Queuer
         delegate?.downloadComplete?(fileName: fileName, serverUrl: serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, description: description, task: task, errorCode: errorCode, errorDescription: errorDescription)
     }
     
+    func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+        
+        #if !EXTENSION
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let completionHandler = appDelegate.backgroundSessionCompletionHandler {
+            NCCommunicationCommon.shared.writeLog("Called urlSessionDidFinishEvents for Background URLSession")
+            appDelegate.backgroundSessionCompletionHandler = nil
+            completionHandler()
+        }
+
+       #endif
+    }
+    
     //MARK: - Pinning check
     
     @objc func checkTrustedChallenge(challenge: URLAuthenticationChallenge, directoryCertificate: String) -> Bool {
