@@ -578,12 +578,16 @@
         return;
     }
     
-    [[NCCommunicationCommon shared] writeLog:@"Start handler processing task [Synchronize Offline]"];
+    [[NCCommunicationCommon shared] writeLog:@"Start handler processing task [Synchronize Favorite & Offline]"];
+    
+    [[NCNetworking shared] listingFavoritescompletionWithSelector:NCBrandGlobal.shared.selectorReadFile completion:^(NSString *account, NSArray<tableMetadata *> *metadatas, NSInteger errorCode, NSString * errorDescription) {
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Completition listing favorite with error %lu", (unsigned long)errorCode]];
+    }];
     
     [[NCService shared] synchronizeOfflineWithAccount:self.account];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [[NCCommunicationCommon shared] writeLog:@"Completition handler processing task [Synchronize Offline]"];
+        [[NCCommunicationCommon shared] writeLog:@"Completition handler processing task [Synchronize Favorite & Offline]"];
         [task setTaskCompletedWithSuccess:true];
     });
 }
