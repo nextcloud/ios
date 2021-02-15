@@ -603,10 +603,10 @@
             return;
         }
         
-        [[NCCommunicationCommon shared] writeLog:@"Start perform Fetch"];
+        [[NCCommunicationCommon shared] writeLog:@"Start perform Fetch [Auto upload]"];
         
         [[NCAutoUpload shared] initAutoUploadWithViewController:nil completion:^(NSInteger items) {
-            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Completition perform Fetch with %lu uploads", (unsigned long)items]];
+            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Completition perform Fetch with %lu uploads [Auto upload]", (unsigned long)items]];
             if (items == 0) {
                 completionHandler(UIBackgroundFetchResultNoData);
             } else {
