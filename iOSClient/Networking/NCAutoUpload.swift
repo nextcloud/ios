@@ -68,7 +68,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
             if account.autoUpload && account.autoUploadBackground && UIApplication.shared.applicationState == UIApplication.State.background {
                 NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: nil) { (hasPermission) in
                     if hasPermission {
-                        self.uploadAssetsNewAndFull(viewController: nil, selector: NCBrandGlobal.shared.selectorUploadAutoUpload) { (items) in
+                        self.uploadAssetsNewAndFull(viewController: nil, selector: NCBrandGlobal.shared.selectorUploadAutoUpload, log: "Change location") { (items) in
                             if items > 0 {
                                 self.appDelegate.networkingAutoUpload.startProcess()
                             }
@@ -102,7 +102,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
             if account.autoUpload {
                 NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { (hasPermission) in
                     if hasPermission {
-                        self.uploadAssetsNewAndFull(viewController:viewController, selector: NCBrandGlobal.shared.selectorUploadAutoUpload) { (items) in
+                        self.uploadAssetsNewAndFull(viewController:viewController, selector: NCBrandGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload") { (items) in
                             if items > 0 {
                                 self.appDelegate.networkingAutoUpload.startProcess()
                             }
@@ -133,21 +133,21 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
         }
     }
     
-    @objc func autoUploadFullPhotos(viewController: UIViewController?) {
+    @objc func autoUploadFullPhotos(viewController: UIViewController?, log: String) {
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.window.rootViewController) { (hasPermission) in
             if hasPermission {
                 self.hud = CCHud.init(view: self.appDelegate.window.rootViewController?.view)
                 NCContentPresenter.shared.messageNotification("_attention_", description: "_create_full_upload_", delay: NCBrandGlobal.shared.dismissAfterSecondLong, type: .info, errorCode: 0, forced: true)
                 self.hud?.visibleHudTitle(NSLocalizedString("_wait_", comment: ""), mode: MBProgressHUDMode.indeterminate, color: NCBrandColor.shared.brand)
                 
-                self.uploadAssetsNewAndFull(viewController: viewController, selector: NCBrandGlobal.shared.selectorUploadAutoUploadAll) { (items) in
+                self.uploadAssetsNewAndFull(viewController: viewController, selector: NCBrandGlobal.shared.selectorUploadAutoUploadAll, log: log) { (items) in
                     self.hud?.hideHud()
                 }
             }
         }
     }
     
-    private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, completion: @escaping (_ items: Int)->()) {
+    private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, log: String, completion: @escaping (_ items: Int)->()) {
         
         if appDelegate.account == nil || appDelegate.account.count == 0 { return }
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) else { return }
@@ -160,13 +160,13 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
             self.getCameraRollAssets(viewController: viewController, account: account, selector: selector, alignPhotoLibrary: false) { (assets) in
                 
                 if assets == nil || assets?.count == 0 {
-                    NCCommunicationCommon.shared.writeLog("Automatic upload, no new assets found")
+                    NCCommunicationCommon.shared.writeLog("Automatic upload, no new assets found [" + log + "]")
                     DispatchQueue.main.async {
                         completion(counterItemsUpload)
                     }
                     return
                 } else {
-                    NCCommunicationCommon.shared.writeLog("Automatic upload, new \(assets?.count ?? 0) assets found")
+                    NCCommunicationCommon.shared.writeLog("Automatic upload, new \(assets?.count ?? 0) assets found [" + log + "]")
                 }
                 guard let assets = assets else { return }
                 
