@@ -62,15 +62,8 @@
     
     NSString *pathDirectoryGroup = [[CCUtility getDirectoryGroup] path];
     [[NCCommunicationCommon shared] setPathLog: pathDirectoryGroup];
-    
-#ifdef DEBUG
-    [[NCCommunicationCommon shared] setPrintLog:true];
-#else
-    [[NCCommunicationCommon shared] setPrintLog:false];
-#endif
-    
-    NSString *versionApp = [[NCUtility shared] getVersionApp];
-    NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, versionApp];
+        
+    NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp];
     if (isSimulatorOrTestFlight) {
         [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Start session with level %lu %@ (Simulator / TestFlight)", (unsigned long)levelLog, versionNextcloudiOS]];
     } else {

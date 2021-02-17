@@ -68,6 +68,12 @@
         NSInteger levelLog = [CCUtility getLogLevel];
         [[NCCommunicationCommon shared] setLevelLog:levelLog];
         
+        NSString *pathDirectoryGroup = [[CCUtility getDirectoryGroup] path];
+        [[NCCommunicationCommon shared] setPathLog: pathDirectoryGroup];
+                
+        NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp];
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Start session with level %lu %@", (unsigned long)levelLog, versionNextcloudiOS]];
+        
         // Networking
         [[NCCommunicationCommon shared] setupWithAccount:tableAccount.account user:tableAccount.user userId:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] urlBase:tableAccount.urlBase userAgent:[CCUtility getUserAgent] webDav:webDav dav:nil nextcloudVersion:serverVersionMajor delegate:[NCNetworking shared]];
        
