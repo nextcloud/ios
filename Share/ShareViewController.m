@@ -64,6 +64,10 @@
         NSInteger serverVersionMajor = [[NCManageDatabase shared] getCapabilitiesServerIntWithAccount:tableAccount.account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
         NSString *webDav = [[NCUtilityFileSystem shared] getWebDAVWithAccount:tableAccount.account];
         
+        // LOG
+        NSInteger levelLog = [CCUtility getLogLevel];
+        [[NCCommunicationCommon shared] setLevelLog:levelLog];
+        
         // Networking
         [[NCCommunicationCommon shared] setupWithAccount:tableAccount.account user:tableAccount.user userId:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] urlBase:tableAccount.urlBase userAgent:[CCUtility getUserAgent] webDav:webDav dav:nil nextcloudVersion:serverVersionMajor delegate:[NCNetworking shared]];
        

@@ -74,7 +74,16 @@ class fileProviderData: NSObject {
                 self.fileProviderManager = fileProviderManager
             }
         }
-                
+        
+        // LOG
+        if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
+            NCCommunicationCommon.shared.pathLog = pathDirectoryGroup
+            let levelLog = CCUtility.getLogLevel()
+            NCCommunicationCommon.shared.levelLog = levelLog
+            let version = NSString(format:NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility.shared.getVersionApp()) as String
+            NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + version + " (File Provider Extension)")
+        }
+        
         // NO DOMAIN -> Set default account
         if domain == nil {
             

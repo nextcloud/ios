@@ -59,13 +59,17 @@
     // LOG
     NSInteger levelLog = [CCUtility getLogLevel];
     [[NCCommunicationCommon shared] setLevelLog:levelLog];
+    
+    NSString *pathDirectoryGroup = [[CCUtility getDirectoryGroup] path];
+    [[NCCommunicationCommon shared] setPathLog: pathDirectoryGroup];
+    
 #ifdef DEBUG
     [[NCCommunicationCommon shared] setPrintLog:true];
 #else
     [[NCCommunicationCommon shared] setPrintLog:false];
 #endif
     
-    NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+    NSString *versionApp = [[NCUtility shared] getVersionApp];
     NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, versionApp];
     if (isSimulatorOrTestFlight) {
         [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Start session with level %lu %@ (Simulator / TestFlight)", (unsigned long)levelLog, versionNextcloudiOS]];

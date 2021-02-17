@@ -448,5 +448,14 @@ class NCUtility: NSObject {
             try? originalImage?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
         }
     }
+    
+    @objc func getVersionApp() -> String {
+        if let dictionary = Bundle.main.infoDictionary {
+            if let version = dictionary["CFBundleShortVersionString"], let build = dictionary["CFBundleVersion"] {
+                return "\(version).\(build)"
+            }
+        }
+        return ""
+    }
 }
 
