@@ -202,6 +202,8 @@
 {
     if (self.account == nil || self.account.length == 0) { return; }
     
+    [[NCCommunicationCommon shared] writeLog:@"Application will enter in foreground"];
+    
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterApplicationWillEnterForeground object:nil];
     
     // Request Passcode
@@ -251,6 +253,8 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     if (self.account == nil || self.account.length == 0) { return; }
+
+    [[NCCommunicationCommon shared] writeLog:@"Application did enter in background"];
 
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterApplicationDidEnterBackground object:nil];
     
