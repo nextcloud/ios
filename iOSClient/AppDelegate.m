@@ -30,6 +30,7 @@
 @import Firebase;
 
 @class NCViewerRichdocument;
+@class NCSettingsBundleHelper;
 
 @interface AppDelegate() <TOPasscodeViewControllerDelegate>
 @end
@@ -230,6 +231,8 @@
 //
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
+    [NCSettingsBundleHelper setVersionAndBuildNumber];
+
     if (self.account == nil || self.account.length == 0) { return; }
         
     // Brand
