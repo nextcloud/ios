@@ -63,7 +63,9 @@
     
     NSString *pathDirectoryGroup = [[CCUtility getDirectoryGroup] path];
     [[NCCommunicationCommon shared] setPathLog: pathDirectoryGroup];
-        
+            
+    [[NCCommunicationCommon shared] setCopyLogToDocumentDirectory: true];
+    
     NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp];
     if (isSimulatorOrTestFlight) {
         [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Start session with level %lu %@ (Simulator / TestFlight)", (unsigned long)levelLog, versionNextcloudiOS]];
