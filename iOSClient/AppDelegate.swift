@@ -1,13 +1,33 @@
 //
 //  AppDelegate.swift
+//  Nextcloud
 //
+//  Created by Marino Faggiana on 04/09/14 (19/02/21 swift).
+//  Copyright (c) 2014 Marino Faggiana. All rights reserved.
+//
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 
 import UIKit
 import NCCommunication
 import TOPasscodeViewController
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, TOPasscodeViewControllerDelegate {
 
     var backgroundSessionCompletionHandler: (() -> Void)?
     var window: UIWindow?
@@ -53,36 +73,76 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var shares: [tableShare] = []
     @objc var timerErrorNetworking: Timer?
 
-    /*
-    @property (nonatomic) UIUserInterfaceStyle preferredUserInterfaceStyle API_AVAILABLE(ios(12.0));
-    @property (nonatomic, strong) NSUserDefaults *ncUserDefaults;
-*/
-    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         return true
     }
 
+    // L' applicazione si dimetterà dallo stato di attivo
     func applicationWillResignActive(_ application: UIApplication) {
-        // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-        // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+        
+        if account == "" { return}
+        
+        if activeFileViewInFolder != nil {
+            activeFileViewInFolder?.dismiss(animated: false, completion: {
+                self.activeFileViewInFolder = nil
+            })
+        }
     }
 
+    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
+    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     func applicationDidEnterBackground(_ application: UIApplication) {
-        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        
+        if account == "" { return}
+        
+        NCCommunicationCommon.shared.writeLog("Application did enter in background")
+        
+        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterApplicationDidEnterBackground)
+        
+        passcodeWithAutomaticallyPromptForBiometricValidation(false)
+        
+        if #available(iOS 13.0, *) {
+            
+        }
     }
 
+    // L' applicazione entrerà in primo piano (attivo solo dopo il background)
+    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     func applicationWillEnterForeground(_ application: UIApplication) {
-        // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+        
+        if account == "" { return}
+
+        NCCommunicationCommon.shared.writeLog("Application will enter in foreground")
+        
+        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterApplicationWillEnterForeground)
+
+        // Request Passcode
+        passcodeWithAutomaticallyPromptForBiometricValidation(true)
+        
+        // Initialize Auto upload
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { (_) in }
+        
+        // Read active directory
+        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
+        
+        // Required unsubscribing / subscribing
+        NCPushNotification.shared().pushNotification()
+        
+        // RichDocument
+        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterRichdocumentGrabFocus)
+        
+        // Request Service Server Nextcloud
+        NCService.shared.startRequestServicesServer()
     }
 
+    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     func applicationDidBecomeActive(_ application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     }
 
+    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     func applicationWillTerminate(_ application: UIApplication) {
-        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        NCCommunicationCommon.shared.writeLog("bye bye")
     }
     
     // MARK: -
@@ -146,6 +206,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     @objc func deleteAccount(_ account: String, wipe: Bool) {
+        
+    }
+    
+    // MARK: - Passcode + Delegate
+    
+    func passcodeWithAutomaticallyPromptForBiometricValidation(_ automaticallyPromptForBiometricValidation: Bool) {
         
     }
 }
