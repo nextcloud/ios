@@ -21,7 +21,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#import <Photos/Photos.h>
 #import "CCManageAutoUpload.h"
+#import "CCUtility.h"
 #import "NCBridgeSwift.h"
 
 @interface CCManageAutoUpload () <NCSelectDelegate>

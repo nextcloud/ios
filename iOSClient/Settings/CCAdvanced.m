@@ -23,7 +23,6 @@
 
 #import "CCAdvanced.h"
 #import "CCUtility.h"
-#import "AppDelegate.h"
 #import "NSNotificationCenter+MainThread.h"
 #import <KTVHTTPCache/KTVHTTPCache.h>
 #import "NCBridgeSwift.h"

@@ -11,12 +11,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     var backgroundSessionCompletionHandler: (() -> Void)?
-
-    var account: String = ""
-    var urlBase: String = ""
-    var user: String = ""
-    var userID: String = ""
-    var password: String = ""
+    var preferredUserInterfaceStyle: UIUserInterfaceStyle?
+    
+    @objc var account: String = ""
+    @objc var urlBase: String = ""
+    @objc var user: String = ""
+    @objc var userID: String = ""
+    @objc var password: String = ""
     
     var activeFavorite: NCFavorite?
     var activeFiles: NCFiles?
@@ -51,7 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var passcodeViewController: TOPasscodeViewController?
     var pasteboardOcIds: [String] = []
     var shares: [tableShare] = []
-    var timerErrorNetworking: Timer?
+    @objc var timerErrorNetworking: Timer?
 
     /*
     @property (nonatomic) UIUserInterfaceStyle preferredUserInterfaceStyle API_AVAILABLE(ios(12.0));
@@ -91,7 +92,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
     }
 
-    func startTimerErrorNetworking() {
+    @objc func startTimerErrorNetworking() {
         timerErrorNetworking = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(checkErrorNetworking), userInfo: nil, repeats: true)
     }
     
