@@ -87,7 +87,7 @@ class NCLoginWeb: UIViewController {
         super.viewDidAppear(animated)
         
         // Stop timer error network
-        appDelegate.timerErrorNetworking.invalidate()
+        appDelegate.timerErrorNetworking?.invalidate()
     }
     
     override func viewDidDisappear(_ animated: Bool) {

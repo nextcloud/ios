@@ -145,7 +145,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             coordinator.coordinate(readingItemAt: url, options: NSFileCoordinator.ReadingOptions.forUploading, error: nil) { (url) in
                 
                 let fileName = url.lastPathComponent
-                let serverUrl = appDelegate.activeServerUrl!
+                let serverUrl = appDelegate.activeServerUrl
                 let ocId = NSUUID().uuidString
                 let data = try? Data.init(contentsOf: url)
                 let path = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!)
@@ -174,7 +174,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                         } else {
                             
                             NCManageDatabase.shared.addMetadata(metadataForUpload)
-                            appDelegate.networkingAutoUpload.startProcess()
+                            appDelegate.networkingAutoUpload?.startProcess()
                         }
                         
                     } catch {

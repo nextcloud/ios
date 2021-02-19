@@ -4,6 +4,7 @@
 
 import UIKit
 import NCCommunication
+import TOPasscodeViewController
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,8 +17,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var userID: String = ""
     var password: String = ""
     
-    var activeServerUrl: String = ""
-    
     var activeFavorite: NCFavorite?
     var activeFiles: NCFiles?
     var activeFileViewInFolder: NCFileViewInFolder?
@@ -27,26 +26,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var activeMore: NCMore?
     var activeOffline: NCOffline?
     var activeRecent: NCRecent?
+    var activeServerUrl: String = ""
     var activeShares: NCShares?
     var activeTransfers: NCTransfers?
     var activeTrash: NCTrash?
     var activeViewController: UIViewController?
     var activeViewerVideo: NCViewerVideo?
     
-    var timerErrorNetworking: Timer?
+    var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
+    var networkingAutoUpload: NCNetworkingAutoUpload?
+    var passcodeViewController: TOPasscodeViewController?
+    var pasteboardOcIds: [String] = []
     var shares: [tableShare] = []
+    var timerErrorNetworking: Timer?
 
-    
     /*
-    //@property (nonatomic) UIUserInterfaceStyle preferredUserInterfaceStyle API_AVAILABLE(ios(12.0));
-    @property (nonatomic, strong) NSArray *shares;
-    @property BOOL disableSharesView;
+    @property (nonatomic) UIUserInterfaceStyle preferredUserInterfaceStyle API_AVAILABLE(ios(12.0));
     @property (nonatomic, strong) NSUserDefaults *ncUserDefaults;
-    @property (nonatomic, strong) NCNetworkingAutoUpload *networkingAutoUpload;
-    @property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
-
-    @property (nonatomic, strong) NSMutableArray *pasteboardOcIds;
 */
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
