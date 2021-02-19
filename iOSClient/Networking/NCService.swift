@@ -128,7 +128,7 @@ class NCService: NSObject {
     
     private func requestServerCapabilities() {
         
-        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
+        if appDelegate.account == "" { return }
         
         NCCommunication.shared.getCapabilities() { (account, data, errorCode, errorDescription) in
             

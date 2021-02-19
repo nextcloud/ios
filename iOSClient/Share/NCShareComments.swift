@@ -67,7 +67,8 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
             labelUser.text = tabAccount.displayName
         }
         
-        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + appDelegate.user + ".png"
+        var fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + appDelegate.user
+        fileNameLocalPath = fileNameLocalPath + ".png"
         if FileManager.default.fileExists(atPath: fileNameLocalPath) {
             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                 imageItem.image = image
@@ -251,7 +252,8 @@ extension NCShareComments: UITableViewDataSource {
             cell.sizeToFit()
             
             // Image
-            let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + tableComments.actorId + ".png"
+            var fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + tableComments.actorId
+            fileNameLocalPath = fileNameLocalPath + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
             } else {

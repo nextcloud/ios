@@ -34,6 +34,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var activeViewController: UIViewController?
     var activeViewerVideo: NCViewerVideo?
     
+    var listFilesVC: [String:NCFiles] = [:]
+    var listFavoriteVC: [String:NCFavorite] = [:]
+    var listOfflineVC: [String:NCOffline] = [:]
+    var listProgressMetadata: [String:tableMetadata] = [:]
+    
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
     var networkingAutoUpload: NCNetworkingAutoUpload?
@@ -132,6 +137,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if serverVersionMajor > 0 {
             NCCommunicationCommon.shared.setup(nextcloudVersion: serverVersionMajor)
         }
+    }
+    
+    func deleteAccount(_ account: String, wipe: Bool) {
+        
     }
 }
 

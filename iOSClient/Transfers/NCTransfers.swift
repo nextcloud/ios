@@ -207,7 +207,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         
         // Transfer
         var progress: Float = 0.0
-        var totalBytes: Int64 = 0
+        var totalBytes: Int64 = 0        
         let progressArray = appDelegate.listProgressMetadata.object(forKey: metadata.ocId) as? NSArray
         if progressArray != nil && progressArray?.count == 3 {
             progress = progressArray?.object(at: 0) as? Float ?? 0

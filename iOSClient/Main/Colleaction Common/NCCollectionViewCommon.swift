@@ -248,9 +248,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         self.navigationController?.popToRootViewController(animated: false)
         
-        appDelegate.listFilesVC.removeAllObjects()
-        appDelegate.listFavoriteVC.removeAllObjects()
-        appDelegate.listOfflineVC.removeAllObjects()
+        appDelegate.listFilesVC.removeAll()
+        appDelegate.listFavoriteVC.removeAll()
+        appDelegate.listOfflineVC.removeAll()
         
         reloadDataSource()
     }
@@ -910,11 +910,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             // FILES
             if layoutKey == NCBrandGlobal.shared.layoutViewFiles {
                 
-                if let viewController = appDelegate.listFilesVC.value(forKey: serverUrlPush) {
-                    guard let vcFiles = (viewController as? NCFiles) else { return }
+                if let viewController = appDelegate.listFilesVC[serverUrlPush] {
                     
-                    if vcFiles.isViewLoaded {
-                        self.navigationController?.pushViewController(vcFiles, animated: true)
+                    if viewController.isViewLoaded {
+                        self.navigationController?.pushViewController(viewController, animated: true)
                     }
                     
                 } else {
@@ -925,8 +924,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     vcFiles.serverUrl = serverUrlPush
                     vcFiles.titleCurrentFolder = metadataTouch!.fileNameView
                     
-                    appDelegate.listFilesVC.setValue(vcFiles, forKey: serverUrlPush)
-                    
+                    appDelegate.listFilesVC[serverUrlPush] = vcFiles
+                                        
                     self.navigationController?.pushViewController(vcFiles, animated: true)
                 }
             }
@@ -934,11 +933,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             // FAVORITE
             if layoutKey == NCBrandGlobal.shared.layoutViewFavorite {
             
-                if let viewController = appDelegate.listFavoriteVC.value(forKey: serverUrlPush) {
-                    guard let vcFavorite = (viewController as? NCFavorite) else { return }
+                if let viewController = appDelegate.listFavoriteVC[serverUrlPush] {
                     
-                    if vcFavorite.isViewLoaded {
-                        self.navigationController?.pushViewController(vcFavorite, animated: true)
+                    if viewController.isViewLoaded {
+                        self.navigationController?.pushViewController(viewController, animated: true)
                     }
 
                 } else {
@@ -948,7 +946,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     vcFavorite.serverUrl = serverUrlPush
                     vcFavorite.titleCurrentFolder = metadataTouch!.fileNameView
                 
-                    appDelegate.listFavoriteVC.setValue(vcFavorite, forKey: serverUrlPush)
+                    appDelegate.listFavoriteVC[serverUrlPush] = vcFavorite
                     
                     self.navigationController?.pushViewController(vcFavorite, animated: true)
                 }
@@ -957,11 +955,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             // OFFLINE
             if layoutKey == NCBrandGlobal.shared.layoutViewOffline {
                 
-                if let viewController = appDelegate.listOfflineVC.value(forKey: serverUrlPush) {
-                    guard let vcOffline = (viewController as? NCOffline) else { return }
+                if let viewController = appDelegate.listOfflineVC[serverUrlPush] {
                     
-                    if vcOffline.isViewLoaded {
-                        self.navigationController?.pushViewController(vcOffline, animated: true)
+                    if viewController.isViewLoaded {
+                        self.navigationController?.pushViewController(viewController, animated: true)
                     }
                     
                 } else {
@@ -971,7 +968,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     vcOffline.serverUrl = serverUrlPush
                     vcOffline.titleCurrentFolder = metadataTouch!.fileNameView
                     
-                    appDelegate.listOfflineVC.setValue(vcOffline, forKey: serverUrlPush)
+                    appDelegate.listOfflineVC[serverUrlPush] = vcOffline
                     
                     self.navigationController?.pushViewController(vcOffline, animated: true)
                 }
@@ -980,11 +977,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             // RECENT ( for push use Files ... he he he )
             if layoutKey == NCBrandGlobal.shared.layoutViewRecent {
                 
-                if let viewController = appDelegate.listFilesVC.value(forKey: serverUrlPush) {
-                    guard let vcFiles = (viewController as? NCFiles) else { return }
+                if let viewController = appDelegate.listFilesVC[serverUrlPush] {
                     
-                    if vcFiles.isViewLoaded {
-                        self.navigationController?.pushViewController(vcFiles, animated: true)
+                    if viewController.isViewLoaded {
+                        self.navigationController?.pushViewController(viewController, animated: true)
                     }
                     
                 } else {
@@ -995,7 +991,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     vcFiles.serverUrl = serverUrlPush
                     vcFiles.titleCurrentFolder = metadataTouch!.fileNameView
                     
-                    appDelegate.listFilesVC.setValue(vcFiles, forKey: serverUrlPush)
+                    appDelegate.listFilesVC[serverUrlPush] = vcFiles
                     
                     self.navigationController?.pushViewController(vcFiles, animated: true)
                 }
@@ -1015,11 +1011,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             // SHARES ( for push use Files ... he he he )
             if layoutKey == NCBrandGlobal.shared.layoutViewShares {
                 
-                if let viewController = appDelegate.listFilesVC.value(forKey: serverUrlPush) {
-                    guard let vcFiles = (viewController as? NCFiles) else { return }
+                if let viewController = appDelegate.listFilesVC[serverUrlPush] {
                     
-                    if vcFiles.isViewLoaded {
-                        self.navigationController?.pushViewController(vcFiles, animated: true)
+                    if viewController.isViewLoaded {
+                        self.navigationController?.pushViewController(viewController, animated: true)
                     }
                     
                 } else {
@@ -1030,7 +1025,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     vcFiles.serverUrl = serverUrlPush
                     vcFiles.titleCurrentFolder = metadataTouch!.fileNameView
                     
-                    appDelegate.listFilesVC.setValue(vcFiles, forKey: serverUrlPush)
+                    appDelegate.listFilesVC[serverUrlPush] = vcFiles
                     
                     self.navigationController?.pushViewController(vcFiles, animated: true)
                 }

@@ -389,7 +389,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         var items = [[String : Any]]()
         
         for ocId in appDelegate.pasteboardOcIds {
-            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId as? String) {
+            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 metadatas.append(metadata)
             }
         }

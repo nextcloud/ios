@@ -229,7 +229,7 @@ extension NCCreateFormUploadConflictDelegate {
             
             NCManageDatabase.shared.addMetadatas(metadatasNOConflict)
             
-            appDelegate.networkingAutoUpload.startProcess()
+            appDelegate.networkingAutoUpload?.startProcess()
         }
                 
         dismiss(animated: true)
