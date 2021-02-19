@@ -22,7 +22,6 @@
 //
 
 #import "NCSettings.h"
-#import "AppDelegate.h"
 #import "CCAdvanced.h"
 #import "CCManageAccount.h"
 #import "CCManageAutoUpload.h"

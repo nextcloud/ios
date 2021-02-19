@@ -21,14 +21,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "AppDelegate.h"
 #import "NCBridgeSwift.h"
 #import "NCPushNotification.h"
 #import "NCPushNotificationEncryption.h"
+#import "CCUtility.h"
 
 @interface NCPushNotification ()
 {
-    AppDelegate *appDelegate;
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 }
 @end
 

@@ -22,7 +22,6 @@
 //
 
 #import "CCManageAutoUpload.h"
-#import "AppDelegate.h"
 #import "NCBridgeSwift.h"
 
 @interface CCManageAutoUpload () <NCSelectDelegate>

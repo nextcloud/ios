@@ -22,10 +22,10 @@
 //
 
 #import "CCManageAccount.h"
-#import "AppDelegate.h"
 #import "CCLogin.h"
 #import "NSNotificationCenter+MainThread.h"
 #import "NCBridgeSwift.h"
+#import "CCUtility.h"
 
 #define actionSheetCancellaAccount 1
 

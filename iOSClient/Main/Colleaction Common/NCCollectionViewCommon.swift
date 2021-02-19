@@ -231,7 +231,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func initializeMain() {
         
-        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
+        if appDelegate.account == "" { return }
         
         if searchController?.isActive ?? false {
             searchController?.isActive = false
@@ -506,8 +506,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 let status = userInfo["status"] as? Int ?? NCBrandGlobal.shared.metadataStatusNormal
                 let totalBytes = userInfo["totalBytes"] as? Int64 ?? 0
                 let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64 ?? 0
+                        
+                let progressType = AppDelegate.progressType(progress: progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected)
+                appDelegate.listProgress[ocId] = progressType
                 
-                appDelegate.listProgressMetadata.setObject([progress as NSNumber, totalBytes as NSNumber, totalBytesExpected as NSNumber], forKey: userInfo["ocId"] as? NSString ?? "")
+                //appDelegate.listProgressMetadata.setObject([progress as NSNumber, totalBytes as NSNumber, totalBytesExpected as NSNumber], forKey: userInfo["ocId"] as? NSString ?? "")
                 
                 if let index = dataSource.getIndexMetadata(ocId: ocId) {
                     if let cell = collectionView?.cellForItem(at: IndexPath(row: index, section: 0)) {
@@ -778,7 +781,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func reloadDataSource() {
         
-        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
+        if appDelegate.account == "" { return }
         
         // Get richWorkspace Text
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
@@ -800,7 +803,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     @objc func networkSearch() {
         
-        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
+        if appDelegate.account == "" { return }
         
         if literalSearch?.count ?? 0 > 1 {
         
@@ -1267,7 +1270,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.imageShared.image = NCCollectionCommon.images.cellCanShareImage
             }
             if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userID {
-                let fileNameUser = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + metadata.ownerId + ".png"
+                var fileNameUser = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + metadata.ownerId
+                fileNameUser = fileNameUser + ".png"
                 if FileManager.default.fileExists(atPath: fileNameUser) {
                     cell.imageShared.avatar()
                     cell.imageShared.image = UIImage(contentsOfFile: fileNameUser)
@@ -1284,10 +1288,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             // Transfer
             var progress: Float = 0.0
             var totalBytes: Int64 = 0
-            let progressArray = appDelegate.listProgressMetadata.object(forKey: metadata.ocId) as? NSArray
-            if progressArray != nil && progressArray?.count == 3 {
-                progress = progressArray?.object(at: 0) as? Float ?? 0
-                totalBytes = progressArray?.object(at: 1) as? Int64 ?? 0
+            if let progressType = appDelegate.listProgress[metadata.ocId] {
+                progress = progressType.progress
+                totalBytes = progressType.totalBytes
             }
             if metadata.status == NCBrandGlobal.shared.metadataStatusInDownload || metadata.status == NCBrandGlobal.shared.metadataStatusDownloading ||  metadata.status >= NCBrandGlobal.shared.metadataStatusTypeUpload {
                 cell.progressView.isHidden = false

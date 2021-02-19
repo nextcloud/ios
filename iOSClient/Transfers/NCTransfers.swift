@@ -207,11 +207,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         
         // Transfer
         var progress: Float = 0.0
-        var totalBytes: Int64 = 0        
-        let progressArray = appDelegate.listProgressMetadata.object(forKey: metadata.ocId) as? NSArray
-        if progressArray != nil && progressArray?.count == 3 {
-            progress = progressArray?.object(at: 0) as? Float ?? 0
-            totalBytes = progressArray?.object(at: 1) as? Int64 ?? 0
+        var totalBytes: Int64 = 0
+        if let progressType = appDelegate.listProgress[metadata.ocId] {
+            progress = progressType.progress
+            totalBytes = progressType.totalBytes
         }
         
         if metadata.status == NCBrandGlobal.shared.metadataStatusInDownload || metadata.status == NCBrandGlobal.shared.metadataStatusDownloading ||  metadata.status >= NCBrandGlobal.shared.metadataStatusTypeUpload {

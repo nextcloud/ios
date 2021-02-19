@@ -22,7 +22,6 @@
 //
 
 #import "Acknowledgements.h"
-#import "AppDelegate.h"
 
 @interface Acknowledgements ()
 {
