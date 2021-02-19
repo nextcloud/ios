@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import AVKit
 
 protocol NCViewerVideoDelegate {
     func startPictureInPicture(metadata: tableMetadata)
