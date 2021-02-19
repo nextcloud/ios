@@ -1432,10 +1432,10 @@
 			isa = PBXGroup;
 			children = (
 				F7509BA925DFC69C005370D1 /* AppDelegate.swift */,
+				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F70F02A81C889183008DAB36 /* Libraries external */,
 				F7C1CDD91E6DFC6F005D92BE /* Brand */,
 				F70211F31BAC56E9003FC03E /* Main */,
-				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F7A321621E9E37960069AD1B /* Activity */,
 				F7E0E1DA22327885006B0911 /* AudioRecorder */,
 				F7AE00F6230E8191007ACF8A /* BrowserWeb */,
