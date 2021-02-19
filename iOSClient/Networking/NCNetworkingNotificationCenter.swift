@@ -85,7 +85,7 @@ import Foundation
                                 
                             } else {
                                 
-                                if let viewController == self.appDelegate.activeViewController {
+                                if let viewController = self.appDelegate.activeViewController {
                                     NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata])
                                 }
                             }

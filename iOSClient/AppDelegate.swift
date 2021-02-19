@@ -35,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var timerErrorNetworking: Timer?
     var documentPickerViewController: NCDocumentPickerViewController?
-    var shares: [String] = []
+    var shares: [tableShare] = []
 
     
     /*
