@@ -23,6 +23,7 @@
 
 #import "NCManageEndToEndEncryption.h"
 #import "NSNotificationCenter+MainThread.h"
+#import <LocalAuthentication/LocalAuthentication.h>
 #import <TOPasscodeViewController/TOPasscodeViewController.h>
 #import "NCBridgeSwift.h"
 #import "CCUtility.h"

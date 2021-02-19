@@ -23,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var activeFileViewInFolder: NCFileViewInFolder?
     var activeLogin: CCLogin?
     var activeLoginWeb: NCLoginWeb?
-    var activeMedia: NCMedia?
+    @objc var activeMedia: NCMedia?
     var activeMore: NCMore?
     var activeOffline: NCOffline?
     var activeRecent: NCRecent?
@@ -87,7 +87,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: -
 
-    func openLoginView(viewController: UIViewController?, selector: Int, openLoginWeb: Bool) {
+    @objc func openLoginView(viewController: UIViewController?, selector: Int, openLoginWeb: Bool) {
         
     }
 

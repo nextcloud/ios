@@ -219,7 +219,7 @@ class NCMainTabBar: UITabBar {
     
     @objc func updateBadgeNumber() {
         
-        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
+        if appDelegate.account == "" { return }
         
         let counterDownload = NCOperationQueue.shared.downloadCount()
         let counterUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d OR status == %d", NCBrandGlobal.shared.metadataStatusWaitUpload, NCBrandGlobal.shared.metadataStatusInUpload, NCBrandGlobal.shared.metadataStatusUploading)).count

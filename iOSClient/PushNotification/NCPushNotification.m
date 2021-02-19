@@ -50,7 +50,7 @@
 
 - (void)pushNotification
 {
-    if (appDelegate.account == "" || self.pushKitToken.length == 0) { return; }
+    if (self.pushKitToken.length == 0) { return; }
     
     for (tableAccount *result in [[NCManageDatabase shared] getAllAccount]) {
         
