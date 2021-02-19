@@ -456,7 +456,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                         conflict.metadatasMOV = metadatasMOV
                         conflict.metadatasUploadInConflict = metadatasUploadInConflict
                     
-                        self.appDelegate.window.rootViewController?.present(conflict, animated: true, completion: nil)
+                        self.appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
                     }
                 }
                 
@@ -465,7 +465,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 NCManageDatabase.shared.addMetadatas(metadatasNOConflict)
                 NCManageDatabase.shared.addMetadatas(metadatasMOV)
                 
-                self.appDelegate.networkingAutoUpload.startProcess()
+                self.appDelegate.networkingAutoUpload?.startProcess()
             }
         
             DispatchQueue.main.async {self.dismiss(animated: true, completion: nil)  }

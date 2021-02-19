@@ -56,7 +56,9 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                 title: NSLocalizedString("_upload_photos_videos_", comment: ""), icon: UIImage(named: "file_photo")!.image(color: NCBrandColor.shared.icon, size: 50), action: { menuAction in
                     NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { (hasPermission) in
                         if hasPermission {
-                            NCPhotosPickerViewController.init(viewController: appDelegate.window.rootViewController!, maxSelectedAssets: 0, singleSelectedMode: false)
+                            if let viewController = appDelegate.window?.rootViewController {
+                                NCPhotosPickerViewController.init(viewController: viewController, maxSelectedAssets: 0, singleSelectedMode: false)
+                            }
                         }
                     }
                 }
@@ -66,7 +68,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_upload_file_", comment: ""), icon: UIImage(named: "file")!.image(color: NCBrandColor.shared.icon, size: 50), action: { menuAction in
-                    if let tabBarController = self.window.rootViewController as? UITabBarController {
+                    if let tabBarController = self.window?.rootViewController as? UITabBarController {
                         self.documentPickerViewController = NCDocumentPickerViewController.init(tabBarController: tabBarController)
                     }
                 }
@@ -99,7 +101,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                     viewController.serverUrl = appDelegate.activeServerUrl
                     viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
 
-                    appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+                    appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
                 })
             )
         } 
@@ -108,7 +110,9 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_scans_document_", comment: ""), icon: UIImage(named: "scan")!.image(color: NCBrandColor.shared.icon, size: 50), action: { menuAction in
-                        NCCreateScanDocument.shared.openScannerDocument(viewController: appDelegate.window.rootViewController!)
+                        if let viewController = appDelegate.window?.rootViewController {
+                            NCCreateScanDocument.shared.openScannerDocument(viewController: viewController)
+                        }
                     }
                 )
             )
@@ -128,7 +132,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                             viewController.modalTransitionStyle = .crossDissolve
                             viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
                         
-                            appDelegate.window.rootViewController?.present(viewController, animated: true, completion: nil)
+                            appDelegate.window?.rootViewController?.present(viewController, animated: true, completion: nil)
                         }
                     }
                 }
@@ -140,7 +144,6 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                 icon: UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 50), action: { menuAction in
                     
                     if appDelegate.activeServerUrl == "" { return }
-                     //guard let serverUrl = appDelegate.activeServerUrl else { return }
                     
                     let alertController = UIAlertController(title: NSLocalizedString("_create_folder_on_", comment: ""), message: nil, preferredStyle: .alert)
                     
@@ -162,7 +165,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                     alertController.addAction(cancelAction)
                     alertController.addAction(okAction)
 
-                    appDelegate.window.rootViewController?.present(alertController, animated: true, completion: nil)
+                    appDelegate.window?.rootViewController?.present(alertController, animated: true, completion: nil)
                 }
             )
         )
@@ -201,7 +204,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                         viewController.serverUrl = appDelegate.activeServerUrl
                         viewController.titleForm = NSLocalizedString("_create_new_document_", comment: "")
 
-                        appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+                        appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
                     }
                 )
             )
@@ -224,7 +227,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                         viewController.serverUrl = appDelegate.activeServerUrl
                         viewController.titleForm = NSLocalizedString("_create_new_spreadsheet_", comment: "")
 
-                        appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+                        appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
                     }
                 )
             )
@@ -247,7 +250,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                         viewController.serverUrl = appDelegate.activeServerUrl
                         viewController.titleForm = NSLocalizedString("_create_new_presentation_", comment: "")
 
-                        appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+                        appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
                     }
                 )
             )
@@ -269,7 +272,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                             viewController.serverUrl = appDelegate.activeServerUrl
                             viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
 
-                            appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+                            appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
                         }
                     )
                 )
@@ -288,7 +291,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                             viewController.serverUrl = appDelegate.activeServerUrl
                             viewController.titleForm = NSLocalizedString("_create_new_spreadsheet_", comment: "")
 
-                            appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+                            appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
                         }
                     )
                 )
@@ -307,7 +310,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                             viewController.serverUrl = appDelegate.activeServerUrl
                             viewController.titleForm = NSLocalizedString("_create_new_presentation_", comment: "")
 
-                            appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+                            appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
                         }
                     )
                 )
@@ -327,7 +330,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
         
         let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadVoiceNote
         viewController.setup(serverUrl: appDelegate.activeServerUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
-        appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+        appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
     
     func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String) { }

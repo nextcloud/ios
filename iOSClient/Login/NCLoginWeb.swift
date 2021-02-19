@@ -246,8 +246,8 @@ extension NCLoginWeb: WKNavigationDelegate {
                     viewController.modalPresentationStyle = .fullScreen
                     NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
                     viewController.view.alpha = 0
-                    appDelegate.window.rootViewController = viewController
-                    appDelegate.window.makeKeyAndVisible()
+                    appDelegate.window?.rootViewController = viewController
+                    appDelegate.window?.makeKeyAndVisible()
                     UIView.animate(withDuration: 0.5) {
                         viewController.view.alpha = 1
                     }

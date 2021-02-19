@@ -9,8 +9,9 @@ import TOPasscodeViewController
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    var window: UIWindow!
-    
+    var window: UIWindow?
+    var backgroundSessionCompletionHandler: (() -> Void)?
+
     var account: String = ""
     var urlBase: String = ""
     var user: String = ""
@@ -75,12 +76,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: -
 
-    @objc func checkErrorNetworking() {
+    func openLoginView(viewController: UIViewController, selector: Int, openLoginWeb: Bool) {
         
     }
 
     func startTimerErrorNetworking() {
         timerErrorNetworking = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(checkErrorNetworking), userInfo: nil, repeats: true)
+    }
+    
+    @objc func checkErrorNetworking() {
+        
+        if account == "" { return }
+        
+        // check unauthorized server (401)
+        if CCUtility.getPasscode()?.cont == 0 {
+            openLoginView(viewController: window.rootViewController, selector: NCBrandGlobal.shared.introLogin, openLoginWeb: true)
+        }
+        
+        // check certificate untrusted (-1202)
+        if CCUtility.getCertificateError(account) {
+            
+        }
     }
     
     // MARK: -

@@ -187,7 +187,7 @@ class NCEndToEndInitialize : NSObject  {
                     passphraseTextField?.placeholder = "Enter passphrase (12 words)"
                 }
                 
-                self.appDelegate.window.rootViewController?.present(alertController, animated: true)
+                self.appDelegate.window?.rootViewController?.present(alertController, animated: true)
                 
             } else if errorCode != 0 {
                 
@@ -274,7 +274,7 @@ class NCEndToEndInitialize : NSObject  {
                     }
                     
                     alertController.addAction(OKAction)
-                    self.appDelegate.window.rootViewController?.present(alertController, animated: true)
+                    self.appDelegate.window?.rootViewController?.present(alertController, animated: true)
                     
                 case NCBrandGlobal.shared.ErrorConflict:
                     NCContentPresenter.shared.messageNotification("E2E get privateKey", description: "forbidden: the user can't access the private key", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)

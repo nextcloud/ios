@@ -386,7 +386,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
             
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)!
             
-            NCUtility.shared.startActivityIndicator(view: (appDelegate.window.rootViewController?.view)!)
+            NCUtility.shared.startActivityIndicator(view: (appDelegate.window?.rootViewController?.view)!)
             
             NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
                 

@@ -205,7 +205,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         navigationController.setViewControllers(listViewController, animated: false)
         navigationController.modalPresentationStyle = .formSheet
         
-        appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+        appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
     
     // MARK: - Save Photo - Video - Live Photo
@@ -255,7 +255,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         }
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
-            saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV, progressView: nil, viewActivity: self.appDelegate.window.rootViewController?.view)
+            saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV, progressView: nil, viewActivity: self.appDelegate.window?.rootViewController?.view)
         }
     }
     

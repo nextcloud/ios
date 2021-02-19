@@ -302,8 +302,9 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.status.text = ""
             cell.displayName.text = ""
             
-            let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + appDelegate.user + ".png"
-
+            var fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + appDelegate.user
+            fileNamePath = fileNamePath + ".png"
+            
             if let themingAvatarFile = UIImage.init(contentsOfFile: fileNamePath) {
                 cell.avatar?.image = themingAvatarFile
             } else {
@@ -417,7 +418,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 let manageAccount = CCManageAccount()
                 manageAccount.delete(self.appDelegate.account)
 
-                self.appDelegate.openLoginView(self, selector: NCBrandGlobal.shared.introLogin, openLoginWeb: false)
+                self.appDelegate.openLoginView(viewController:self, selector: NCBrandGlobal.shared.introLogin, openLoginWeb: false)
             }
 
             let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action: UIAlertAction) in

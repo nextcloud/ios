@@ -259,7 +259,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
                    
         NCManageDatabase.shared.addMetadata(metadata)
                 
-        appDelegate.networkingAutoUpload.startProcess()
+        appDelegate.networkingAutoUpload?.startProcess()
         
         self.dismiss(animated: true, completion: nil)
     }
