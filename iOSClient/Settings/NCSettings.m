@@ -28,8 +28,8 @@
 #import "NCManageEndToEndEncryption.h"
 #import "NCBridgeSwift.h"
 #import "NSNotificationCenter+MainThread.h"
+#import <LocalAuthentication/LocalAuthentication.h>
 #import <TOPasscodeViewController/TOPasscodeViewController.h>
-
 
 #define alertViewEsci 1
 #define alertViewAzzeraCache 2
@@ -284,13 +284,10 @@
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             [CCUtility setDarkModeDetect:true];
             // detect Dark Mode
-            if (@available(iOS 12.0, *)) {
-                appDelegate.preferredUserInterfaceStyle = self.traitCollection.userInterfaceStyle;
-                if (appDelegate.preferredUserInterfaceStyle == UIUserInterfaceStyleDark) {
-                    [CCUtility setDarkMode:YES];
-                } else {
-                    [CCUtility setDarkMode:NO];
-                }
+            if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+                [CCUtility setDarkMode:YES];
+            } else {
+                [CCUtility setDarkMode:NO];
             }
         } else {
             [CCUtility setDarkModeDetect:false];

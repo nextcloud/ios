@@ -9,10 +9,9 @@ import TOPasscodeViewController
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    var window: UIWindow?
     var backgroundSessionCompletionHandler: (() -> Void)?
-    var preferredUserInterfaceStyle: UIUserInterfaceStyle?
-    
+    var window: UIWindow?
+
     @objc var account: String = ""
     @objc var urlBase: String = ""
     @objc var user: String = ""
