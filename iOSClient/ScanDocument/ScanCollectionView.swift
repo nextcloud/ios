@@ -33,7 +33,6 @@ class DragDropViewController: UIViewController {
     private var imagesDestination: [UIImage] = []
     private var itemsDestination: [String] = []
     
-    //AppDelegate
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     //MARK: Outlets
@@ -117,7 +116,7 @@ class DragDropViewController: UIViewController {
         if imagesDestination.count > 0 {
             
             var images: [UIImage] = []
-            var serverUrl = appDelegate.activeServerUrl!
+            var serverUrl = appDelegate.activeServerUrl
 
             for image in imagesDestination {
                 images.append(filter(image: image)!)

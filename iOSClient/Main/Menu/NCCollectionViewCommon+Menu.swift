@@ -458,9 +458,9 @@ extension NCCollectionViewCommon {
                 title: NSLocalizedString("_copy_file_", comment: ""),
                 icon: UIImage(named: "copy")!.image(color: NCBrandColor.shared.icon, size: 50),
                 action: { menuAction in
-                    self.appDelegate.pasteboardOcIds.removeAllObjects()
+                    self.appDelegate.pasteboardOcIds.removeAll()
                     for ocId in selectOcId {
-                        self.appDelegate.pasteboardOcIds.add(ocId)
+                        self.appDelegate.pasteboardOcIds.append(ocId)
                     }
                     NCCollectionCommon.shared.copyPasteboard()
                     self.tapSelect(sender: self)

@@ -76,7 +76,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: -
 
-    func openLoginView(viewController: UIViewController, selector: Int, openLoginWeb: Bool) {
+    func openLoginView(viewController: UIViewController?, selector: Int, openLoginWeb: Bool) {
         
     }
 
@@ -89,13 +89,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if account == "" { return }
         
         // check unauthorized server (401)
-        if CCUtility.getPasscode()?.cont == 0 {
-            openLoginView(viewController: window.rootViewController, selector: NCBrandGlobal.shared.introLogin, openLoginWeb: true)
+        if CCUtility.getPasscode()?.count == 0 {
+            openLoginView(viewController: window?.rootViewController, selector: NCBrandGlobal.shared.introLogin, openLoginWeb: true)
         }
         
         // check certificate untrusted (-1202)
         if CCUtility.getCertificateError(account) {
             
+            let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
+                        
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
+                NCNetworking.shared.writeCertificate(directoryCertificate: CCUtility.getDirectoryCerificates())
+                self.startTimerErrorNetworking()
+            }))
+            
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
+                self.startTimerErrorNetworking()
+            }))
+            
+            window?.rootViewController?.present(alertController, animated: true, completion: {
+                self.timerErrorNetworking?.invalidate()
+            })
         }
     }
     
