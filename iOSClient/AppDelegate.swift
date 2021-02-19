@@ -87,7 +87,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: -
 
-    @objc func openLoginView(viewController: UIViewController?, selector: Int, openLoginWeb: Bool) {
+    @objc func openLogin(viewController: UIViewController?, selector: Int, openLoginWeb: Bool) {
         
     }
 
@@ -101,7 +101,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // check unauthorized server (401)
         if CCUtility.getPasscode()?.count == 0 {
-            openLoginView(viewController: window?.rootViewController, selector: NCBrandGlobal.shared.introLogin, openLoginWeb: true)
+            openLogin(viewController: window?.rootViewController, selector: NCBrandGlobal.shared.introLogin, openLoginWeb: true)
         }
         
         // check certificate untrusted (-1202)
@@ -126,7 +126,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: -
     
-    func settingAccount(_ account: String, urlBase: String, user: String, userID: String, password: String) {
+    @objc func settingAccount(_ account: String, urlBase: String, user: String, userID: String, password: String) {
         
         self.account = account
         self.urlBase = urlBase
@@ -145,7 +145,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    func deleteAccount(_ account: String, wipe: Bool) {
+    @objc func deleteAccount(_ account: String, wipe: Bool) {
         
     }
 }

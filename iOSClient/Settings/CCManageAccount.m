@@ -330,7 +330,7 @@
     
     // Open Login
     if (accounts.count == 0) {
-        [appDelegate openLoginView:self selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
+        [appDelegate openLoginWithViewController:self selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
     }
 }
 
@@ -383,7 +383,7 @@
 {
     [self deselectFormRow:sender];
     
-    [appDelegate openLoginView:self selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
+    [appDelegate openLoginWithViewController:self selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
 }
 
 #pragma --------------------------------------------------------------------------------------------

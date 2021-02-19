@@ -22,12 +22,7 @@
 //
 
 #import "Acknowledgements.h"
-
-@interface Acknowledgements ()
-{
-    AppDelegate *appDelegate;
-}
-@end
+#import "NCBridgeSwift.h"
 
 @implementation Acknowledgements
 
@@ -35,8 +30,6 @@
 {
     [super viewDidLoad];
     
-    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
     NSURL *rtfPath = [[NSBundle mainBundle]  URLForResource:@"Acknowledgements" withExtension:@"rtf"];
     
     NSAttributedString *attributedStringWithRtf = [[NSAttributedString alloc] initWithURL:rtfPath options:@{NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType} documentAttributes:nil error:nil];
