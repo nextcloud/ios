@@ -128,6 +128,7 @@
 		F74DE14425135B6800917068 /* NCTransfers.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74DE14225135B6800917068 /* NCTransfers.storyboard */; };
 		F7501C322212E57500FB1415 /* NCMedia.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7501C302212E57400FB1415 /* NCMedia.storyboard */; };
 		F7501C332212E57500FB1415 /* NCMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7501C312212E57400FB1415 /* NCMedia.swift */; };
+		F7509BAA25DFC69C005370D1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7509BA925DFC69C005370D1 /* AppDelegate.swift */; };
 		F752011D25480387000BF3A7 /* NCViewerVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F752011C25480387000BF3A7 /* NCViewerVideo.swift */; };
 		F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755BD9A20594AC7008C5FBB /* NCService.swift */; };
 		F755E6462525946C008DAB45 /* NCCollectionViewCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755E6442525946C008DAB45 /* NCCollectionViewCommon.swift */; };
@@ -196,7 +197,6 @@
 		F77B0E5F1D118A16002130FE /* NCSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE4311BAC0268006C0017 /* NCSettings.m */; };
 		F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42D1BAC0268006C0017 /* CCManageAccount.m */; };
 		F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */; };
-		F77B0ED91D118A16002130FE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F67BAD1A24D27800EE80DA /* main.m */; };
 		F77B0F611D118A16002130FE /* Acknowledgements.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F7ACE42B1BAC0268006C0017 /* Acknowledgements.rtf */; };
 		F77B0F631D118A16002130FE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
 		F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
@@ -268,7 +268,6 @@
 		F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */; };
 		F7AF7633246BEDFE00B86E3C /* TOPasscodeViewController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7AF7632246BEDFE00B86E3C /* TOPasscodeViewController.framework */; };
 		F7B1076D25D3CF2800E72DE2 /* BackgroundTasks.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B1076C25D3CF2800E72DE2 /* BackgroundTasks.framework */; };
-		F7B174C822FAC0A8000B7579 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B174C722FAC0A8000B7579 /* AppDelegate.m */; };
 		F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B2DEEF1F976785007CF4D2 /* NYMnemonic.m */; };
 		F7B2DEF11F976859007CF4D2 /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = F7B2DEED1F976785007CF4D2 /* english.txt */; };
 		F7B7504B2397D38F004E13EC /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */; };
@@ -486,6 +485,7 @@
 		F74DE14225135B6800917068 /* NCTransfers.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCTransfers.storyboard; sourceTree = "<group>"; };
 		F7501C302212E57400FB1415 /* NCMedia.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCMedia.storyboard; sourceTree = "<group>"; };
 		F7501C312212E57400FB1415 /* NCMedia.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCMedia.swift; sourceTree = "<group>"; };
+		F7509BA925DFC69C005370D1 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F7514EDA1C7B1336008F3338 /* CCHud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCHud.h; sourceTree = "<group>"; };
 		F7514EDB1C7B1336008F3338 /* CCHud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCHud.m; sourceTree = "<group>"; };
 		F75153232226920200323DDC /* FastScroll.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FastScroll.framework; path = Carthage/Build/iOS/FastScroll.framework; sourceTree = "<group>"; };
@@ -612,7 +612,6 @@
 		F7A0D1452592256F008F8A13 /* UIImageView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+Extensions.swift"; sourceTree = "<group>"; };
 		F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAdvanced.h; sourceTree = "<group>"; };
 		F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAdvanced.m; sourceTree = "<group>"; };
-		F7A582D71A24DAB500E903D7 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AppDelegate.h; sourceTree = "<group>"; };
 		F7A80BC8252624C100C7CD01 /* NCFileViewInFolder.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCFileViewInFolder.storyboard; sourceTree = "<group>"; };
 		F7A80BC9252624C100C7CD01 /* NCFileViewInFolder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCFileViewInFolder.swift; sourceTree = "<group>"; };
 		F7ACE4291BAC0268006C0017 /* Acknowledgements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Acknowledgements.h; sourceTree = "<group>"; };
@@ -629,7 +628,6 @@
 		F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCBrowserWeb.storyboard; sourceTree = "<group>"; };
 		F7AF7632246BEDFE00B86E3C /* TOPasscodeViewController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TOPasscodeViewController.framework; path = Carthage/Build/iOS/TOPasscodeViewController.framework; sourceTree = "<group>"; };
 		F7B1076C25D3CF2800E72DE2 /* BackgroundTasks.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BackgroundTasks.framework; path = System/Library/Frameworks/BackgroundTasks.framework; sourceTree = SDKROOT; };
-		F7B174C722FAC0A8000B7579 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		F7B1A7761EBB3C8000BFB6D1 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7B2DEED1F976785007CF4D2 /* english.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = english.txt; sourceTree = "<group>"; };
 		F7B2DEEE1F976785007CF4D2 /* NYMnemonic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NYMnemonic.h; sourceTree = "<group>"; };
@@ -692,7 +690,6 @@
 		F7F1E54B2492369A00E42386 /* NCMediaCommandView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCMediaCommandView.xib; sourceTree = "<group>"; };
 		F7F35B592578FB63003F5589 /* CollaboraOnlineWebViewKeyboardManager.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CollaboraOnlineWebViewKeyboardManager.framework; path = Carthage/Build/iOS/CollaboraOnlineWebViewKeyboardManager.framework; sourceTree = "<group>"; };
 		F7F4B1D723C74B3E00D82A6E /* NCRichWorkspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCRichWorkspace.swift; sourceTree = "<group>"; };
-		F7F67BAD1A24D27800EE80DA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		F7F67BB81A24D27800EE80DA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndMetadata.swift; sourceTree = "<group>"; };
 		F7F8D7191ED6183000E711F3 /* CCCellShareExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellShareExt.h; sourceTree = "<group>"; };
@@ -1434,11 +1431,10 @@
 		F7F67BAA1A24D27800EE80DA /* iOSClient */ = {
 			isa = PBXGroup;
 			children = (
+				F7509BA925DFC69C005370D1 /* AppDelegate.swift */,
 				F70F02A81C889183008DAB36 /* Libraries external */,
 				F7C1CDD91E6DFC6F005D92BE /* Brand */,
 				F70211F31BAC56E9003FC03E /* Main */,
-				F7A582D71A24DAB500E903D7 /* AppDelegate.h */,
-				F7B174C722FAC0A8000B7579 /* AppDelegate.m */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F7A321621E9E37960069AD1B /* Activity */,
 				F7E0E1DA22327885006B0911 /* AudioRecorder */,
@@ -1478,7 +1474,6 @@
 			isa = PBXGroup;
 			children = (
 				F72B60941A24F04E004EF66F /* Localizations */,
-				F7F67BAD1A24D27800EE80DA /* main.m */,
 				F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */,
 			);
 			name = "Supporting Files";
@@ -2058,6 +2053,7 @@
 				F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */,
 				F769454222E9F0EE000A798A /* NCShareLinkMenuView.swift in Sources */,
 				F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */,
+				F7509BAA25DFC69C005370D1 /* AppDelegate.swift in Sources */,
 				F77B0E301D118A16002130FE /* CCHud.m in Sources */,
 				F76673ED22C901F6007ED366 /* FileProviderDomain.swift in Sources */,
 				F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */,
@@ -2085,7 +2081,6 @@
 				F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */,
 				F7C1EEA525053A9C00866ACC /* NCDataSource.swift in Sources */,
 				F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */,
-				F7B174C822FAC0A8000B7579 /* AppDelegate.m in Sources */,
 				F7A0D1462592256F008F8A13 /* UIImageView+Extensions.swift in Sources */,
 				F749C10B23C4A5340027D966 /* NCIntroCollectionViewCell.swift in Sources */,
 				F718C24E254D507B00C5C256 /* NCViewerImageDetailView.swift in Sources */,
@@ -2136,7 +2131,6 @@
 				F717402E24F699A5000C87D5 /* NCFavorite.swift in Sources */,
 				F74DE14325135B6800917068 /* NCTransfers.swift in Sources */,
 				F755E6462525946C008DAB45 /* NCCollectionViewCommon.swift in Sources */,
-				F77B0ED91D118A16002130FE /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

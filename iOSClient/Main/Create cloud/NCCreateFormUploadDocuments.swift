@@ -333,7 +333,9 @@ import NCCommunication
                         self.dismiss(animated: true, completion: {
                             let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, fileName: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url ?? "", contentType: results.mimeType, livePhoto: false)
                             
-                            NCViewer.shared.view(viewController: self.appDelegate.activeViewController, metadata: metadata, metadatas: [metadata])
+                            if let viewController = self.appDelegate.activeViewController {
+                                NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata])
+                            }
                         })
                     }
                     
@@ -355,7 +357,9 @@ import NCCommunication
                     
                         let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url!, contentType: "", livePhoto: false)
                     
-                        NCViewer.shared.view(viewController: self.appDelegate.activeViewController, metadata: metadata, metadatas: [metadata])
+                        if let viewController = self.appDelegate.activeViewController {
+                            NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata])
+                        }
                    })
                    
                     

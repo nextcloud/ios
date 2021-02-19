@@ -58,7 +58,7 @@ class NCAppConfigView: UIViewController {
         super.viewDidAppear(animated)
         
         // Stop timer error network
-        appDelegate.timerErrorNetworking.invalidate()
+        appDelegate.timerErrorNetworking?.invalidate()
         
         guard let serverUrl = self.serverUrl else {
             NCContentPresenter.shared.messageNotification("_error_", description: "User Default, serverUrl not found", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
