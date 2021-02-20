@@ -32,7 +32,6 @@
 		F704B5E52430AA8000632F5F /* NCCreateFormUploadConflict.swift in Sources */ = {isa = PBXBuildFile; fileRef = F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */; };
 		F704B5E72430C06700632F5F /* NCCreateFormUploadConflictCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F704B5E62430C06700632F5F /* NCCreateFormUploadConflictCell.xib */; };
 		F704B5E92430C0B800632F5F /* NCCreateFormUploadConflictCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F704B5E82430C0B800632F5F /* NCCreateFormUploadConflictCell.swift */; };
-		F704FA5C232A343F00BBA952 /* IMImagemeterViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F704FA5B232A343F00BBA952 /* IMImagemeterViewer.swift */; };
 		F70753EB2542A99800972D44 /* NCViewerImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753EA2542A99800972D44 /* NCViewerImage.swift */; };
 		F70753F12542A9A200972D44 /* NCViewerImageZoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753F02542A9A200972D44 /* NCViewerImageZoom.swift */; };
 		F70753F72542A9C000972D44 /* NCViewerImage.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70753F62542A9C000972D44 /* NCViewerImage.storyboard */; };
@@ -378,7 +377,6 @@
 		F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadConflict.swift; sourceTree = "<group>"; };
 		F704B5E62430C06700632F5F /* NCCreateFormUploadConflictCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCCreateFormUploadConflictCell.xib; sourceTree = "<group>"; };
 		F704B5E82430C0B800632F5F /* NCCreateFormUploadConflictCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadConflictCell.swift; sourceTree = "<group>"; };
-		F704FA5B232A343F00BBA952 /* IMImagemeterViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IMImagemeterViewer.swift; sourceTree = "<group>"; };
 		F7053E3C1C639DF500741EA5 /* CCUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUtility.h; sourceTree = "<group>"; };
 		F7053E3D1C639DF500741EA5 /* CCUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUtility.m; sourceTree = "<group>"; };
 		F7063DEC2199E55F003F38DA /* SVGKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SVGKit.framework; path = Carthage/Build/iOS/SVGKit.framework; sourceTree = "<group>"; };
@@ -823,23 +821,6 @@
 			path = Main;
 			sourceTree = "<group>";
 		};
-		F704FA5A232A341800BBA952 /* Imagemeter */ = {
-			isa = PBXGroup;
-			children = (
-				F704FA5B232A343F00BBA952 /* IMImagemeterViewer.swift */,
-			);
-			path = Imagemeter;
-			sourceTree = "<group>";
-		};
-		F70F02A81C889183008DAB36 /* Libraries external */ = {
-			isa = PBXGroup;
-			children = (
-				F704FA5A232A341800BBA952 /* Imagemeter */,
-				F7B2DEEB1F976785007CF4D2 /* NYMnemonic */,
-			);
-			path = "Libraries external";
-			sourceTree = SOURCE_ROOT;
-		};
 		F710D1FA24057E5E00A6033D /* ActionSheetHeaderView */ = {
 			isa = PBXGroup;
 			children = (
@@ -1263,6 +1244,7 @@
 		F7BFFA991A24D7BB0044ED85 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
+				F7B2DEEB1F976785007CF4D2 /* NYMnemonic */,
 				F7514EDA1C7B1336008F3338 /* CCHud.h */,
 				F7514EDB1C7B1336008F3338 /* CCHud.m */,
 				F7053E3C1C639DF500741EA5 /* CCUtility.h */,
@@ -1433,7 +1415,6 @@
 			children = (
 				F7509BA925DFC69C005370D1 /* AppDelegate.swift */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
-				F70F02A81C889183008DAB36 /* Libraries external */,
 				F7C1CDD91E6DFC6F005D92BE /* Brand */,
 				F70211F31BAC56E9003FC03E /* Main */,
 				F7A321621E9E37960069AD1B /* Activity */,
@@ -2112,7 +2093,6 @@
 				F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */,
 				F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */,
-				F704FA5C232A343F00BBA952 /* IMImagemeterViewer.swift in Sources */,
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
 				F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
