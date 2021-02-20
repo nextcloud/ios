@@ -188,8 +188,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Auto upload
         networkingAutoUpload = NCNetworkingAutoUpload.init()
         
+        // Background task: register
+        if #available(iOS 13.0, *) {
+        } else {
+            application.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum)
+        }
         /*
-         // Background task: register
          if (@available(iOS 13.0, *)) {
              [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:NCBrandGlobal.shared.refreshTask usingQueue:nil launchHandler:^(BGTask *task) {
                  [self handleRefreshTask:task];
@@ -197,9 +201,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
              [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:NCBrandGlobal.shared.processingTask usingQueue:nil launchHandler:^(BGTask *task) {
                  [self handleProcessingTask:task];
              }];
-         } else {
-             // Background Fetch
-             [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
          }
          */
         
