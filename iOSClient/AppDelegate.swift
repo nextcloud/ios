@@ -174,9 +174,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, TOPasscodeViewControllerD
         //[fileProviderDomain registerDomains];
     }
   
-    // MARK: Push Notifications
+    // MARK: - Push Notifications
     
-    // MARK: Login & checkErrorNetworking
+    // MARK: - Login & checkErrorNetworking
 
     @objc func openLogin(viewController: UIViewController?, selector: Int, openLoginWeb: Bool) {
         
@@ -215,7 +215,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, TOPasscodeViewControllerD
         }
     }
     
-    // MARK: Account & Communication
+    // MARK: - Account & Communication
     
     @objc func settingAccount(_ account: String, urlBase: String, user: String, userID: String, password: String) {
         
