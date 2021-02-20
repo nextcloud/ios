@@ -21,13 +21,13 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
 import UIKit
 import NCCommunication
 import TOPasscodeViewController
+import Firebase
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, TOPasscodeViewControllerDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, TOPasscodeViewControllerDelegate {
 
     var backgroundSessionCompletionHandler: (() -> Void)?
     var window: UIWindow?
@@ -71,10 +71,138 @@ class AppDelegate: UIResponder, UIApplicationDelegate, TOPasscodeViewControllerD
     var passcodeViewController: TOPasscodeViewController?
     var pasteboardOcIds: [String] = []
     var shares: [tableShare] = []
+    var ncUserDefaults: UserDefaults?
     @objc var timerErrorNetworking: Timer?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        let userAgent = CCUtility.getUserAgent() as String
+        let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
+        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
+
+        UserDefaults.standard.register(defaults: ["UserAgent" : userAgent])
+        if !CCUtility.getDisableCrashservice() && !NCBrandOptions.shared.disable_crash_service == false {
+            FirebaseApp.configure()
+        }
+        
+        CCUtility.createDirectoryStandard()
+        CCUtility.emptyTemporaryDirectory()
+        
+        NCCommunicationCommon.shared.setup(delegate: NCNetworking.shared)
+        NCCommunicationCommon.shared.setup(userAgent: userAgent)
+        
+        startTimerErrorNetworking()
+
+        // LOG
+        let levelLog = CCUtility.getLogLevel()
+        NCCommunicationCommon.shared.levelLog = levelLog
+        if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
+            NCCommunicationCommon.shared.pathLog = pathDirectoryGroup
+        }
+        NCCommunicationCommon.shared.copyLogToDocumentDirectory = true
+        if isSimulatorOrTestFlight {
+            NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+        } else {
+            NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
+        }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(initializeMain(notification:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterInitializeMain), object: nil)
+        
+        if let tableAccount = NCManageDatabase.shared.getAccountActive() {
+            
+            // FIX 3.0.5 lost urlbase
+            if tableAccount.urlBase.count == 0 {
+                let user = tableAccount.user + " "
+                let urlBase = tableAccount.account.replacingOccurrences(of: user, with: "")
+                tableAccount.urlBase = urlBase
+                NCManageDatabase.shared.updateAccount(tableAccount)
+            }
+            
+            settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userID: tableAccount.userID, password: CCUtility.getPassword(tableAccount.account))
+            
+        } else {
+            
+            CCUtility.deleteAllChainStore()
+            if let bundleID = Bundle.main.bundleIdentifier {
+                UserDefaults.standard.removePersistentDomain(forName: bundleID)
+            }
+        }
+        
+        ncUserDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroups)
+        
+        // Push Notification
+        application.registerForRemoteNotifications()
+        UNUserNotificationCenter.current().delegate = self
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { (_, _) in }
+
+        // AV
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print(error)
+        }
+        application.beginReceivingRemoteControlEvents()
+                
+        // Store review
+        if !NCUtility.shared.isSimulatorOrTestFlight() {
+            let review = NCStoreReview()
+            review.incrementAppRuns()
+            review.showStoreReview()
+        }
+        
+        // Detect Dark mode
+        if #available(iOS 13.0, *) {
+            if CCUtility.getDarkModeDetect() {
+                if UITraitCollection.current.userInterfaceStyle == .dark {
+                    CCUtility.setDarkMode(true)
+                } else {
+                    CCUtility.setDarkMode(false)
+                }
+            }
+        }
+        
+        if NCBrandOptions.shared.disable_intro {
+            CCUtility.setIntro(true)
+            if account == "" {
+                openLogin(viewController: nil, selector: NCBrandGlobal.shared.introLogin, openLoginWeb: false)
+            }
+        } else {
+            if !CCUtility.getIntro() {
+                if let introViewController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() {
+                    let navController = UINavigationController(rootViewController: introViewController)
+                    window?.rootViewController = navController
+                    window?.makeKeyAndVisible()
+                }
+            }
+        }
+        
+        // init home
+        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
+
+        // Passcode
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
+//        });
+        
+        // Auto upload
+        networkingAutoUpload = NCNetworkingAutoUpload.init()
+        
+        /*
+         // Background task: register
+         if (@available(iOS 13.0, *)) {
+             [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:NCBrandGlobal.shared.refreshTask usingQueue:nil launchHandler:^(BGTask *task) {
+                 [self handleRefreshTask:task];
+             }];
+             [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:NCBrandGlobal.shared.processingTask usingQueue:nil launchHandler:^(BGTask *task) {
+                 [self handleProcessingTask:task];
+             }];
+         } else {
+             // Background Fetch
+             [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+         }
+         */
+        
         return true
     }
 
@@ -144,7 +272,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, TOPasscodeViewControllerD
     
     // MARK: -
 
-    func initializeMain(notification: NSNotification) {
+    @objc func initializeMain(notification: NSNotification) {
         
         if account == "" { return}
 
@@ -174,6 +302,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, TOPasscodeViewControllerD
         //[fileProviderDomain registerDomains];
     }
   
+    // MARK: - Background Task
+
     // MARK: - Push Notifications
     
     // MARK: - Login & checkErrorNetworking
