@@ -370,6 +370,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     @objc func deleteAccount(_ account: String, wipe: Bool) {
         
+        // Push Notification
+        if let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
+            NCPushNotification.shared().unsubscribingNextcloudServerPushNotification(account.account, urlBase: account.urlBase, user: account.user, withSubscribing: false)
+        }
+        
+        settingAccount("", urlBase: "", user: "", userID: "", password: "")
+        
+        let results = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
+        for result in results {
+            CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(result.ocId))
+        }
+        NCManageDatabase.shared.clearDatabase(account: account, removeAccount: true)
+        
+        CCUtility.clearAllKeysEnd(toEnd: account)
+        CCUtility.clearAllKeysPushNotification(account)
+        CCUtility.setCertificateError(account, error: false)
+        CCUtility.setPassword(account, password: nil)
+        
+        if wipe {
+            let accounts = NCManageDatabase.shared.getAccounts()
+            if accounts?.count ?? 0 > 0 {
+                if let newAccount = accounts?.first {
+                    if let account = NCManageDatabase.shared.setAccountActive(newAccount) {
+                        settingAccount(account.account, urlBase: account.urlBase, user: account.user, userID: account.userID, password: CCUtility.getPassword(account.account))
+                        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
+                    }
+                }
+            } else {
+                openLogin(viewController: window?.rootViewController, selector: NCBrandGlobal.shared.introLogin, openLoginWeb: false)
+            }
+        }
     }
     
     // MARK: - TOPasscodeViewController
