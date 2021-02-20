@@ -24,6 +24,7 @@
 import UIKit
 import NCCommunication
 import TOPasscodeViewController
+import LocalAuthentication
 import Firebase
 
 @UIApplicationMain
@@ -371,10 +372,80 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
     }
     
-    // MARK: - Passcode & Delegate
+    // MARK: - TOPasscodeViewController
     
     func passcodeWithAutomaticallyPromptForBiometricValidation(_ automaticallyPromptForBiometricValidation: Bool) {
         
+        let laContext = LAContext()
+        var error: NSError?
+        
+        if CCUtility.getPasscode()?.count == 0 || account == "" || CCUtility.getNotPasscodeAtStart() { return }
+        if passcodeViewController == nil {
+            passcodeViewController = TOPasscodeViewController.init(style: .translucentLight, passcodeType: .sixDigits)
+            if #available(iOS 13.0, *) {
+                if UITraitCollection.current.userInterfaceStyle == .dark {
+                    passcodeViewController?.style = .translucentDark
+                }
+            }
+            passcodeViewController?.delegate = self
+            passcodeViewController?.keypadButtonShowLettering = false
+            if CCUtility.getEnableTouchFaceID() && laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+                if error == nil {
+                    if laContext.biometryType == .faceID  {
+                        passcodeViewController?.biometryType = .faceID
+                        passcodeViewController?.allowBiometricValidation = true
+                    } else if laContext.biometryType == .touchID  {
+                        passcodeViewController?.biometryType = .touchID
+                        passcodeViewController?.allowBiometricValidation = true
+                    }
+                }
+            }
+            if let passcodeViewController = self.passcodeViewController {
+                window?.rootViewController?.present(passcodeViewController, animated: true, completion: {
+                    self.enableTouchFaceID(automaticallyPromptForBiometricValidation)
+                })
+            }
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.enableTouchFaceID(automaticallyPromptForBiometricValidation)
+            }
+        }
+    }
+        
+    func didInputCorrectPasscode(in passcodeViewController: TOPasscodeViewController) {
+        passcodeViewController.dismiss(animated: true) {
+            self.passcodeViewController = nil
+        }
+    }
+    
+    func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
+        return code == CCUtility.getPasscode()
+    }
+    
+    func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
+        LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
+            if success {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    passcodeViewController.dismiss(animated: true) {
+                        self.passcodeViewController = nil
+                    }
+                }
+            }
+        }
+    }
+    
+    func enableTouchFaceID(_ automaticallyPromptForBiometricValidation: Bool) {
+        if CCUtility.getEnableTouchFaceID() && automaticallyPromptForBiometricValidation && passcodeViewController?.view.window != nil {
+            LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
+                if success {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        self.passcodeViewController?.dismiss(animated: true) {
+                            self.passcodeViewController = nil
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
