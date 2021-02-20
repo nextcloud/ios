@@ -144,6 +144,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate, TOPasscodeViewControllerD
     
     // MARK: -
 
+    func initializeMain(notification: NSNotification) {
+        
+        if account == "" { return}
+
+        NCCommunicationCommon.shared.writeLog("initialize Main")
+        
+        // Clear error certificate
+        CCUtility.setCertificateError(account, error: false)
+        
+        // Registeration push notification
+        NCPushNotification.shared().pushNotification()
+        
+        // Setting Theming
+        NCBrandColor.shared.settingThemingColor(account: account)
+        
+        // Start Auto Upload
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { (_) in }
+        
+        // Start services
+        NCService.shared.startRequestServicesServer()
+        
+        // close detail
+        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterMenuDetailClose)
+
+        // Registeration domain File Provider
+        //FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
+        //[fileProviderDomain removeAllDomains];
+        //[fileProviderDomain registerDomains];
+    }
+  
+    // MARK: Push Notifications
+    
+    // MARK: Login & checkErrorNetworking
+
     @objc func openLogin(viewController: UIViewController?, selector: Int, openLoginWeb: Bool) {
         
     }
@@ -181,7 +215,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, TOPasscodeViewControllerD
         }
     }
     
-    // MARK: -
+    // MARK: Account & Communication
     
     @objc func settingAccount(_ account: String, urlBase: String, user: String, userID: String, password: String) {
         
@@ -206,7 +240,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, TOPasscodeViewControllerD
         
     }
     
-    // MARK: - Passcode + Delegate
+    // MARK: - Passcode & Delegate
     
     func passcodeWithAutomaticallyPromptForBiometricValidation(_ automaticallyPromptForBiometricValidation: Bool) {
         
