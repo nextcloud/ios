@@ -78,7 +78,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate, TOPasscodeViewControllerD
         return true
     }
 
-    // L' applicazione si dimetterà dallo stato di attivo
+    // L' applicazione entrerà in primo piano (attivo sempre)
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        
+        NCSettingsBundleHelper.setVersionAndBuildNumber()
+        
+        if account == "" { return}
+
+        NCNetworking.shared.verifyUploadZombie()
+    }
+    
+    // L' applicazione entrerà in primo piano (attivo solo dopo il background)
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        
+        if account == "" { return}
+
+        NCCommunicationCommon.shared.writeLog("Application will enter in foreground")
+        
+        // Request Passcode
+        passcodeWithAutomaticallyPromptForBiometricValidation(true)
+        
+        // Initialize Auto upload
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { (_) in }
+                
+        // Required unsubscribing / subscribing
+        NCPushNotification.shared().pushNotification()
+        
+        // Request Service Server Nextcloud
+        NCService.shared.startRequestServicesServer()
+        
+        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterApplicationWillEnterForeground)
+        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterRichdocumentGrabFocus)
+        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
+    }
+
     func applicationWillResignActive(_ application: UIApplication) {
         
         if account == "" { return}
@@ -89,9 +122,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, TOPasscodeViewControllerD
             })
         }
     }
-
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    
     func applicationDidEnterBackground(_ application: UIApplication) {
         
         if account == "" { return}
@@ -106,41 +137,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, TOPasscodeViewControllerD
             
         }
     }
-
-    // L' applicazione entrerà in primo piano (attivo solo dopo il background)
-    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-    func applicationWillEnterForeground(_ application: UIApplication) {
-        
-        if account == "" { return}
-
-        NCCommunicationCommon.shared.writeLog("Application will enter in foreground")
-        
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterApplicationWillEnterForeground)
-
-        // Request Passcode
-        passcodeWithAutomaticallyPromptForBiometricValidation(true)
-        
-        // Initialize Auto upload
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { (_) in }
-        
-        // Read active directory
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
-        
-        // Required unsubscribing / subscribing
-        NCPushNotification.shared().pushNotification()
-        
-        // RichDocument
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterRichdocumentGrabFocus)
-        
-        // Request Service Server Nextcloud
-        NCService.shared.startRequestServicesServer()
-    }
-
-    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    func applicationDidBecomeActive(_ application: UIApplication) {
-    }
-
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    
     func applicationWillTerminate(_ application: UIApplication) {
         NCCommunicationCommon.shared.writeLog("bye bye")
     }
