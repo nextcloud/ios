@@ -207,9 +207,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione entrerà in primo piano (attivo sempre)
     func applicationDidBecomeActive(_ application: UIApplication) {
-        
         NCSettingsBundleHelper.setVersionAndBuildNumber()
-        
         if account == "" { return}
 
         NCNetworking.shared.verifyUploadZombie()
@@ -217,7 +215,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     // L' applicazione entrerà in primo piano (attivo solo dopo il background)
     func applicationWillEnterForeground(_ application: UIApplication) {
-        
         if account == "" { return}
 
         NCCommunicationCommon.shared.writeLog("Application will enter in foreground")
@@ -240,7 +237,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
-        
         if account == "" { return}
         
         if activeFileViewInFolder != nil {
@@ -251,13 +247,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
-        
         if account == "" { return}
         
         NCCommunicationCommon.shared.writeLog("Application did enter in background")
-        
         NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterApplicationDidEnterBackground)
-        
         passcodeWithAutomaticallyPromptForBiometricValidation(false)
         
         if #available(iOS 13.0, *) {
