@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import BackgroundTasks
 import NCCommunication
 import TOPasscodeViewController
 import LocalAuthentication
@@ -182,28 +183,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
 
         // Passcode
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
-//        });
-        
+        DispatchQueue.global().async {
+            self.passcodeWithAutomaticallyPromptForBiometricValidation(true)
+        }
+                
         // Auto upload
         networkingAutoUpload = NCNetworkingAutoUpload.init()
         
         // Background task: register
         if #available(iOS 13.0, *) {
+            BGTaskScheduler.shared.register(forTaskWithIdentifier: NCBrandGlobal.shared.refreshTask, using: nil) { task in
+                self.handleRefreshTask(task)
+            }
+            BGTaskScheduler.shared.register(forTaskWithIdentifier: NCBrandGlobal.shared.processingTask, using: nil) { task in
+                self.handleProcessingTask(task)
+            }
         } else {
             application.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum)
         }
-        /*
-         if (@available(iOS 13.0, *)) {
-             [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:NCBrandGlobal.shared.refreshTask usingQueue:nil launchHandler:^(BGTask *task) {
-                 [self handleRefreshTask:task];
-             }];
-             [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:NCBrandGlobal.shared.processingTask usingQueue:nil launchHandler:^(BGTask *task) {
-                 [self handleProcessingTask:task];
-             }];
-         }
-         */
         
         return true
     }
@@ -305,9 +302,85 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
   
     // MARK: - Background Task
+    
+    @available(iOS 13.0, *)
+    func scheduleAppRefresh() {
+        let request = BGAppRefreshTaskRequest.init(identifier: NCBrandGlobal.shared.refreshTask)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
+        do {
+            try BGTaskScheduler.shared.submit(request)
+            NCCommunicationCommon.shared.writeLog("Refresh task success submit request \(request)")
+        } catch {
+            NCCommunicationCommon.shared.writeLog("Refresh task failed to submit request: \(error)")
+        }
+    }
+    
+    @available(iOS 13.0, *)
+    func scheduleBackgroundProcessing() {
+        let request = BGProcessingTaskRequest.init(identifier: NCBrandGlobal.shared.processingTask)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
+        request.requiresNetworkConnectivity = true
+        request.requiresExternalPower = false
+        do {
+            try BGTaskScheduler.shared.submit(request)
+            NCCommunicationCommon.shared.writeLog("Background Processing task success submit request \(request)")
+        } catch {
+            NCCommunicationCommon.shared.writeLog("Background Processing task failed to submit request: \(error)")
+        }
+    }
+    
+    @available(iOS 13.0, *)
+    func handleRefreshTask(_ task: BGTask) {
+        if account == "" {
+            task.setTaskCompleted(success: true)
+            return
+        }
+        NCCommunicationCommon.shared.writeLog("Start handler refresh task [Auto upload]")
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { (items) in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                NCCommunicationCommon.shared.writeLog("Completition handler refresh task with %lu uploads [Auto upload]")
+                task.setTaskCompleted(success: true)
+            }
+        }
+    }
+    
+    @available(iOS 13.0, *)
+    func handleProcessingTask(_ task: BGTask) {
+        if account == "" {
+            task.setTaskCompleted(success: true)
+            return
+        }
+        NCCommunicationCommon.shared.writeLog("Start handler processing task [Synchronize Favorite & Offline]")
+        NCNetworking.shared.listingFavoritescompletion(selector: NCBrandGlobal.shared.selectorReadFile) { (account, metadatas, errorCode, errorDescription) in
+            NCCommunicationCommon.shared.writeLog("Completition listing favorite with error: \(errorCode)")
+        }
+        NCService.shared.synchronizeOffline(account: account)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 25) {
+            NCCommunicationCommon.shared.writeLog("Completition handler processing task [Synchronize Favorite & Offline]")
+            task.setTaskCompleted(success: true)
+        }
+    }
 
     // MARK: - Push Notifications
     
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler(UNNotificationPresentationOptions.alert)
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        completionHandler()
+    }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        NCPushNotification.shared().registerForRemoteNotifications(withDeviceToken: deviceToken)
+    }
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        NCPushNotification.shared().applicationdidReceiveRemoteNotification(userInfo) { (result) in
+            completionHandler(result)
+        }
+    }
+        
     // MARK: - Login & checkErrorNetworking
 
     @objc func openLogin(viewController: UIViewController?, selector: Int, openLoginWeb: Bool) {
