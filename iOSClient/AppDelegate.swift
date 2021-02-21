@@ -261,7 +261,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         passcodeWithAutomaticallyPromptForBiometricValidation(false)
         
         if #available(iOS 13.0, *) {
-            
+            scheduleAppRefresh()
+            scheduleBackgroundProcessing()
         }
     }
     
