@@ -446,39 +446,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func showLoginViewController(_ viewController:UIViewController?, contextViewController: UIViewController?) {
-    /*
-     -(void)showLoginViewController:(UIViewController *)viewController forContext:(UIViewController *)contextViewController
-     {
-         if (contextViewController == NULL) {
-             
-             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-             navigationController.navigationBar.barStyle =  UIBarStyleBlack;
-             navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText;
-             navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer;
-             [navigationController.navigationBar setTranslucent:false];
-             self.window.rootViewController = navigationController;
-             
-             [self.window makeKeyAndVisible];
-             
-         } else if ([contextViewController isKindOfClass:[UINavigationController class]]) {
-             
-             UINavigationController *navigationController = ((UINavigationController *)contextViewController);
-             [navigationController pushViewController:viewController animated:true];
-             
-         } else {
-             
-             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-             navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-             navigationController.navigationBar.barStyle =  UIBarStyleBlack;
-             navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText;
-             navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer;
-             [navigationController.navigationBar setTranslucent:false];
-             
-             [contextViewController presentViewController:navigationController animated:true completion:nil];
-         }
-     }
-
-     */
+        if contextViewController == nil {
+            if let viewController = viewController {
+                let navigationController = UINavigationController.init(rootViewController: viewController)
+                navigationController.navigationBar.barStyle = .black
+                navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText
+                navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer
+                navigationController.navigationBar.isTranslucent = false
+                window?.rootViewController = navigationController
+                window?.makeKeyAndVisible()
+            }
+        } else if contextViewController is UINavigationController {
+            if let contextViewController = contextViewController, let viewController = viewController {
+                (contextViewController as! UINavigationController).pushViewController(viewController, animated: true)
+            }
+        } else {
+            if let viewController = viewController, let contextViewController = contextViewController {
+                let navigationController = UINavigationController.init(rootViewController: viewController)
+                navigationController.modalPresentationStyle = .fullScreen
+                navigationController.navigationBar.barStyle = .black
+                navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText
+                navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer
+                navigationController.navigationBar.isTranslucent = false
+                contextViewController.present(navigationController, animated: true) { }
+            }
+        }
     }
     
     @objc func startTimerErrorNetworking() {
