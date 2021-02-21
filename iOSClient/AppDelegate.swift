@@ -637,5 +637,84 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
     }
+    
+    // MARK: - OpenURL
+
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        if account == "" { return false }
+        
+        let scheme = url.scheme
+        let action = url.host
+        var fileName: String = ""
+        var serverUrl: String = ""
+        var matchedAccount: tableAccount?
+
+        if scheme == "nextcloud" && action == "open-file" {
+            
+            if let urlComponents = URLComponents.init(url: url, resolvingAgainstBaseURL: false) {
+                
+                let queryItems = urlComponents.queryItems
+                let user = CCUtility.value(forKey: "user", fromQueryItems: queryItems)
+                let path = CCUtility.value(forKey: "path", fromQueryItems: queryItems)
+                let link = CCUtility.value(forKey: "link", fromQueryItems: queryItems)
+                
+                if user?.count == 0 || path?.count == 0 || URL(string: link)?.host?.count == 0 {
+                    
+                    let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_error_parameter_schema_", comment: ""), preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                                       
+                    window?.rootViewController?.present(alertController, animated: true, completion: { })
+                    
+                } else {
+                    
+                    if let account = NCManageDatabase.shared.getAccountActive() {
+                        
+                        let urlBase = URL(string: account.urlBase)
+                        let user = account.user
+                        if link?.contains(urlBase?.host ?? "") ?? false && self.user == user {
+                            matchedAccount = account
+                        } else {
+                            let accounts = NCManageDatabase.shared.getAllAccount()
+                            for account in accounts {
+                                guard let accountURL = URL(string: account.urlBase) else { return false }
+                                let accountUser = account.user
+                                if link?.contains(accountURL.host ?? "") ?? false && user == accountUser {
+                                    matchedAccount = NCManageDatabase.shared.setAccountActive(accountUser)
+                                    settingAccount(matchedAccount!.account, urlBase: matchedAccount!.urlBase, user: matchedAccount!.user, userID: matchedAccount!.userID, password: CCUtility.getPassword(matchedAccount!.account))
+                                    NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
+                                }
+                            }
+                        }
+                        
+                        if matchedAccount != nil {
+                            
+                            let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: account.account)
+                            if path!.contains("/") {
+                                fileName = (path! as NSString).lastPathComponent
+                                serverUrl = matchedAccount!.urlBase + "/" + webDAV + "/" + (path! as NSString).deletingLastPathComponent
+                            } else {
+                                fileName = path!
+                                serverUrl = matchedAccount!.urlBase + "/" + webDAV
+                            }
+                            NCCollectionCommon.shared.openFileViewInFolder(serverUrl: serverUrl, fileName: fileName)
+                            
+                        } else {
+                            
+                            guard let domain = URL(string: link)?.host else { return true }
+                            fileName = (path! as NSString).lastPathComponent
+                            let message = String(format: "_account_not_available_", user, domain, fileName)
+                            
+                            let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
+                            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                                               
+                            window?.rootViewController?.present(alertController, animated: true, completion: { })
+                        }
+                    }
+                }
+            }
+        }
+        
+        return true
+    }
 }
 
