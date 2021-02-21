@@ -40,6 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc var userID: String = ""
     @objc var password: String = ""
     
+    var activeAppConfigView: NCAppConfigView?
     var activeFavorite: NCFavorite?
     var activeFiles: NCFiles?
     var activeFileViewInFolder: NCFileViewInFolder?
@@ -403,9 +404,83 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Login & checkErrorNetworking
 
     @objc func openLogin(viewController: UIViewController?, selector: Int, openLoginWeb: Bool) {
+       
+        // use appConfig [MDM]
+        if NCBrandOptions.shared.use_configuration && !(activeAppConfigView?.isViewLoaded ?? false) && activeAppConfigView?.view.window == nil {
+            activeAppConfigView = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCAppConfigView") as? NCAppConfigView
+            showLoginViewController(activeAppConfigView, contextViewController: viewController)
+            return
+        }
         
+        // only for personalized LoginWeb [customer]
+        if NCBrandOptions.shared.use_login_web_personalized && !(activeLoginWeb?.isViewLoaded ?? false) && activeLoginWeb?.view.window == nil {
+            activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+            activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
+            showLoginViewController(activeLoginWeb, contextViewController: viewController)
+            return
+        }
+        
+        // Nextcloud standard login
+        if selector == NCBrandGlobal.shared.introSignup {
+            if !(activeLoginWeb?.isViewLoaded ?? false) && activeLoginWeb?.view.window == nil {
+                activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+                if selector == NCBrandGlobal.shared.introSignup {
+                    activeLoginWeb?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+                } else {
+                    activeLoginWeb?.urlBase = self.urlBase
+                }
+                showLoginViewController(activeLoginWeb, contextViewController: viewController)
+            }
+        } else if NCBrandOptions.shared.disable_intro && NCBrandOptions.shared.disable_request_login_url {
+            activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+            activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
+            showLoginViewController(activeLoginWeb, contextViewController: viewController)
+        } else if openLoginWeb && !(activeLoginWeb?.isViewLoaded ?? false) && activeLoginWeb?.view.window == nil {
+            activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+            activeLoginWeb?.urlBase = urlBase
+            showLoginViewController(activeLoginWeb, contextViewController: viewController)
+        } else if !(activeLoginWeb?.isViewLoaded ?? false) && activeLoginWeb?.view.window == nil {
+            activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+            showLoginViewController(activeLoginWeb, contextViewController: viewController)
+        }
     }
 
+    func showLoginViewController(_ viewController:UIViewController?, contextViewController: UIViewController?) {
+    /*
+     -(void)showLoginViewController:(UIViewController *)viewController forContext:(UIViewController *)contextViewController
+     {
+         if (contextViewController == NULL) {
+             
+             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+             navigationController.navigationBar.barStyle =  UIBarStyleBlack;
+             navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText;
+             navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer;
+             [navigationController.navigationBar setTranslucent:false];
+             self.window.rootViewController = navigationController;
+             
+             [self.window makeKeyAndVisible];
+             
+         } else if ([contextViewController isKindOfClass:[UINavigationController class]]) {
+             
+             UINavigationController *navigationController = ((UINavigationController *)contextViewController);
+             [navigationController pushViewController:viewController animated:true];
+             
+         } else {
+             
+             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+             navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
+             navigationController.navigationBar.barStyle =  UIBarStyleBlack;
+             navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText;
+             navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer;
+             [navigationController.navigationBar setTranslucent:false];
+             
+             [contextViewController presentViewController:navigationController animated:true completion:nil];
+         }
+     }
+
+     */
+    }
+    
     @objc func startTimerErrorNetworking() {
         timerErrorNetworking = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(checkErrorNetworking), userInfo: nil, repeats: true)
     }
