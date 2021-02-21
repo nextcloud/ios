@@ -360,7 +360,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             task.setTaskCompleted(success: true)
         }
     }
+    
+    // MARK: - Fetch
 
+    func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        if account == "" {
+            completionHandler(UIBackgroundFetchResult.noData)
+            return
+        }
+        NCCommunicationCommon.shared.writeLog("Start perform Fetch [Auto upload]")
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { (items) in
+            NCCommunicationCommon.shared.writeLog("Completition perform Fetch with \(items) uploads [Auto upload]")
+            if items == 0 {
+                completionHandler(UIBackgroundFetchResult.noData)
+            } else {
+                completionHandler(UIBackgroundFetchResult.newData)
+            }
+        }
+    }
+    
+    // MARK: - Background Networking Session
+
+    func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
+        NCCommunicationCommon.shared.writeLog("Start handle Events For Background URLSession: \(identifier)")
+        backgroundSessionCompletionHandler = completionHandler
+    }
+    
     // MARK: - Push Notifications
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
