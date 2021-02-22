@@ -47,7 +47,6 @@ import NCCommunication
             
             let token = CCUtility.getPassword(account)!
             if token == "" { return }
-            //guard let token = CCUtility.getPassword(account) else { return }
             
             NCCommunication.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token) { (account, wipe, errorCode, errorDescriptiuon) in
                 
