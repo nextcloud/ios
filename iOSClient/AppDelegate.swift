@@ -425,6 +425,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
        
         // use appConfig [MDM]
         if NCBrandOptions.shared.use_configuration {
+            
             if !(activeAppConfigView?.isViewLoaded ?? false) && activeAppConfigView?.view.window == nil {
                 activeAppConfigView = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCAppConfigView") as? NCAppConfigView
                 showLoginViewController(activeAppConfigView, contextViewController: viewController)
@@ -434,6 +435,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         // only for personalized LoginWeb [customer]
         if NCBrandOptions.shared.use_login_web_personalized {
+            
             if !(activeLoginWeb?.isViewLoaded ?? false) && activeLoginWeb?.view.window == nil {
                 activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
                 activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
