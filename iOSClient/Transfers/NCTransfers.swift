@@ -33,7 +33,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         
         appDelegate.activeTransfers = self
         titleCurrentFolder = NSLocalizedString("_transfers_", comment: "")
-        layoutKey = NCBrandGlobal.shared.layoutViewTransfers
+        layoutKey = NCGlobal.shared.layoutViewTransfers
         enableSearchBar = false
         emptyImage = UIImage.init(named: "load")?.image(color: .gray, size: UIScreen.main.bounds.width)
         emptyTitle = "_no_transfer_"
@@ -135,7 +135,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         
         guard let metadata = metadataTemp else { return }
             
-        metadata.status = NCBrandGlobal.shared.metadataStatusInUpload
+        metadata.status = NCGlobal.shared.metadataStatusInUpload
         metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
         
         NCManageDatabase.shared.addMetadata(metadata)
@@ -148,7 +148,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         guard let metadata = metadataTemp else { return false }
         if metadata.e2eEncrypted { return false }
         
-        if metadata.status == NCBrandGlobal.shared.metadataStatusWaitUpload || metadata.status == NCBrandGlobal.shared.metadataStatusInUpload || metadata.status == NCBrandGlobal.shared.metadataStatusUploading {
+        if metadata.status == NCGlobal.shared.metadataStatusWaitUpload || metadata.status == NCGlobal.shared.metadataStatusInUpload || metadata.status == NCGlobal.shared.metadataStatusUploading {
             return true
         }
         
@@ -188,14 +188,14 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         if pathText == "" { pathText = "/" }
         cell.labelPath.text = pathText
         
-        cell.setButtonMore(named: NCBrandGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
+        cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
 
         cell.progressView.progress = 0.0
         cell.separator.backgroundColor = NCBrandColor.shared.separator
                 
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-        } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
+        } else if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
             cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
         }
         
@@ -213,7 +213,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
             totalBytes = progressType.totalBytes
         }
         
-        if metadata.status == NCBrandGlobal.shared.metadataStatusInDownload || metadata.status == NCBrandGlobal.shared.metadataStatusDownloading ||  metadata.status >= NCBrandGlobal.shared.metadataStatusTypeUpload {
+        if metadata.status == NCGlobal.shared.metadataStatusInDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading ||  metadata.status >= NCGlobal.shared.metadataStatusTypeUpload {
             cell.progressView.isHidden = false
         } else {
             cell.progressView.isHidden = true
@@ -222,27 +222,27 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
 
         // Write status on Label Info
         switch metadata.status {
-        case NCBrandGlobal.shared.metadataStatusWaitDownload:
+        case NCGlobal.shared.metadataStatusWaitDownload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_download_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
             break
-        case NCBrandGlobal.shared.metadataStatusInDownload:
+        case NCGlobal.shared.metadataStatusInDownload:
             cell.labelStatus.text = NSLocalizedString("_status_in_download_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
             break
-        case NCBrandGlobal.shared.metadataStatusDownloading:
+        case NCGlobal.shared.metadataStatusDownloading:
             cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↓ " + CCUtility.transformedSize(totalBytes)
             break
-        case NCBrandGlobal.shared.metadataStatusWaitUpload:
+        case NCGlobal.shared.metadataStatusWaitUpload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
             break
-        case NCBrandGlobal.shared.metadataStatusInUpload:
+        case NCGlobal.shared.metadataStatusInUpload:
             cell.labelStatus.text = NSLocalizedString("_status_in_upload_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
             break
-        case NCBrandGlobal.shared.metadataStatusUploading:
+        case NCGlobal.shared.metadataStatusUploading:
             cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
             break

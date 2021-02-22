@@ -45,7 +45,7 @@ class NCUtility: NSObject {
             keyStore = serverUrl
         }
         
-        UICKeyChainStore.setString(string, forKey: keyStore, service: NCBrandGlobal.shared.serviceShareKeyChain)
+        UICKeyChainStore.setString(string, forKey: keyStore, service: NCGlobal.shared.serviceShareKeyChain)
     }
     
     func setLayoutForView(key: String, serverUrl: String, layout: String) {
@@ -57,7 +57,7 @@ class NCUtility: NSObject {
         var titleButton: String
         var itemForLine: Int
 
-        (_, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: NCBrandGlobal.shared.layoutViewFavorite, serverUrl: serverUrl)
+        (_, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewFavorite, serverUrl: serverUrl)
 
         setLayoutForView(key: key, serverUrl: serverUrl, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButton: titleButton, itemForLine: itemForLine)
     }
@@ -91,9 +91,9 @@ class NCUtility: NSObject {
             keyStore = serverUrl
         }
         
-        guard let string = UICKeyChainStore.string(forKey: keyStore, service: NCBrandGlobal.shared.serviceShareKeyChain) else {
-            setLayoutForView(key: key, serverUrl: serverUrl, layout: NCBrandGlobal.shared.layoutList, sort: "fileName", ascending: true, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
-            return (NCBrandGlobal.shared.layoutList, "fileName", true, "none", true, "_sorted_by_name_a_z_", 3)
+        guard let string = UICKeyChainStore.string(forKey: keyStore, service: NCGlobal.shared.serviceShareKeyChain) else {
+            setLayoutForView(key: key, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList, sort: "fileName", ascending: true, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
+            return (NCGlobal.shared.layoutList, "fileName", true, "none", true, "_sorted_by_name_a_z_", 3)
         }
 
         let array = string.components(separatedBy: "|")
@@ -105,9 +105,9 @@ class NCUtility: NSObject {
             return (array[0], array[1], sort.boolValue, array[3], directoryOnTop.boolValue, array[5], Int(itemForLine.intValue))
         }
         
-        setLayoutForView(key: key, serverUrl: serverUrl, layout: NCBrandGlobal.shared.layoutList, sort: "fileName", ascending: true, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
+        setLayoutForView(key: key, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList, sort: "fileName", ascending: true, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
         
-        return (NCBrandGlobal.shared.layoutList, "fileName", true, "none", true, "_sorted_by_name_a_z_", 3)
+        return (NCGlobal.shared.layoutList, "fileName", true, "none", true, "_sorted_by_name_a_z_", 3)
     }
         
     func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool, account: String, closure: @escaping (String?) -> ()) {
@@ -283,7 +283,7 @@ class NCUtility: NSObject {
         
         // HARDCODE
         if editor == "" {
-            editor = NCBrandGlobal.shared.editorText
+            editor = NCGlobal.shared.editorText
         }
         
         return editor
@@ -425,19 +425,19 @@ class NCUtility: NSObject {
         
         if FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
         if !CCUtility.fileProviderStorageExists(ocId, fileNameView: fileName) { return }
-        if typeFile != NCBrandGlobal.shared.metadataTypeFileImage && typeFile != NCBrandGlobal.shared.metadataTypeFileVideo { return }
+        if typeFile != NCGlobal.shared.metadataTypeFileImage && typeFile != NCGlobal.shared.metadataTypeFileVideo { return }
         
-        if typeFile == NCBrandGlobal.shared.metadataTypeFileImage {
+        if typeFile == NCGlobal.shared.metadataTypeFileImage {
             
             originalImage = UIImage.init(contentsOfFile: fileNamePath)
             
-            scaleImagePreview = originalImage?.resizeImage(size: CGSize(width: NCBrandGlobal.shared.sizePreview, height: NCBrandGlobal.shared.sizePreview), isAspectRation: false)
-            scaleImageIcon = originalImage?.resizeImage(size: CGSize(width: NCBrandGlobal.shared.sizeIcon, height: NCBrandGlobal.shared.sizeIcon), isAspectRation: false)
+            scaleImagePreview = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview), isAspectRation: false)
+            scaleImageIcon = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: false)
             
             try? scaleImagePreview?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
             try? scaleImageIcon?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
             
-        } else if typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
+        } else if typeFile == NCGlobal.shared.metadataTypeFileVideo {
             
             let videoPath = NSTemporaryDirectory()+"tempvideo.mp4"
             NCUtilityFileSystem.shared.linkItem(atPath: fileNamePath, toPath: videoPath)

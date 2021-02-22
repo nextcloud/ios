@@ -85,8 +85,8 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
         )
         #endif
       
-        if NCCommunication.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == NCBrandGlobal.shared.editorText}) && !isEncrypted {
-            let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCBrandGlobal.shared.editorText})!
+        if NCCommunication.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == NCGlobal.shared.editorText}) && !isEncrypted {
+            let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""), icon: UIImage(named: "file_txt")!.image(color: NCBrandColor.shared.icon, size: 50), action: { menuAction in
                     guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController() else {
@@ -95,9 +95,9 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                     navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
                     
                     let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
-                    viewController.editorId = NCBrandGlobal.shared.editorText
+                    viewController.editorId = NCGlobal.shared.editorText
                     viewController.creatorId = directEditingCreator.identifier
-                    viewController.typeTemplate = NCBrandGlobal.shared.templateDocument
+                    viewController.typeTemplate = NCGlobal.shared.templateDocument
                     viewController.serverUrl = appDelegate.activeServerUrl
                     viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
 
@@ -156,7 +156,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                         if let fileNameFolder = alertController.textFields?.first?.text {
                             NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: appDelegate.activeServerUrl, account: appDelegate.account, urlBase: appDelegate.urlBase, overwrite: false) { (errorCode, errorDescription) in
                                 if errorCode != 0 {
-                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                 }
                             }
                         }
@@ -170,13 +170,13 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
             )
         )
 
-        if serverVersionMajor >= NCBrandGlobal.shared.nextcloudVersion18 && directory?.richWorkspace == nil && !isEncrypted && NCCommunication.shared.isNetworkReachable() {
+        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 && directory?.richWorkspace == nil && !isEncrypted && NCCommunication.shared.isNetworkReachable() {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_add_folder_info_", comment: ""), icon: UIImage(named: "addFolderInfo")!.image(color: NCBrandColor.shared.icon, size: 50), action: { menuAction in
                         let richWorkspaceCommon = NCRichWorkspaceCommon()
                         if let viewController = self.activeViewController {
-                            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, appDelegate.activeServerUrl, NCBrandGlobal.shared.fileNameRichWorkspace.lowercased())) == nil {
+                            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, appDelegate.activeServerUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) == nil {
                                 richWorkspaceCommon.createViewerNextcloudText(serverUrl: appDelegate.activeServerUrl, viewController: viewController)
                             } else {
                                 richWorkspaceCommon.openViewerNextcloudText(serverUrl: appDelegate.activeServerUrl, viewController: viewController)
@@ -187,8 +187,8 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
             )
         }
                
-        if NCCommunication.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == NCBrandGlobal.shared.editorOnlyoffice && $0.identifier == NCBrandGlobal.shared.onlyofficeDocx}) && !isEncrypted {
-            let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCBrandGlobal.shared.editorOnlyoffice && $0.identifier == NCBrandGlobal.shared.onlyofficeDocx})!
+        if NCCommunication.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficeDocx}) && !isEncrypted {
+            let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficeDocx})!
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_create_new_document_", comment: ""), icon: UIImage(named: "create_file_document")!, action: { menuAction in
@@ -198,9 +198,9 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                         let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
-                        viewController.editorId = NCBrandGlobal.shared.editorOnlyoffice
+                        viewController.editorId = NCGlobal.shared.editorOnlyoffice
                         viewController.creatorId = directEditingCreator.identifier
-                        viewController.typeTemplate = NCBrandGlobal.shared.templateDocument
+                        viewController.typeTemplate = NCGlobal.shared.templateDocument
                         viewController.serverUrl = appDelegate.activeServerUrl
                         viewController.titleForm = NSLocalizedString("_create_new_document_", comment: "")
 
@@ -210,8 +210,8 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
             )
         }
         
-        if NCCommunication.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == NCBrandGlobal.shared.editorOnlyoffice && $0.identifier == NCBrandGlobal.shared.onlyofficeXlsx}) && !isEncrypted {
-            let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCBrandGlobal.shared.editorOnlyoffice && $0.identifier == NCBrandGlobal.shared.onlyofficeXlsx})!
+        if NCCommunication.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficeXlsx}) && !isEncrypted {
+            let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficeXlsx})!
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), icon: UIImage(named: "create_file_xls")!, action: { menuAction in
@@ -221,9 +221,9 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                         let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
-                        viewController.editorId = NCBrandGlobal.shared.editorOnlyoffice
+                        viewController.editorId = NCGlobal.shared.editorOnlyoffice
                         viewController.creatorId = directEditingCreator.identifier
-                        viewController.typeTemplate = NCBrandGlobal.shared.templateSpreadsheet
+                        viewController.typeTemplate = NCGlobal.shared.templateSpreadsheet
                         viewController.serverUrl = appDelegate.activeServerUrl
                         viewController.titleForm = NSLocalizedString("_create_new_spreadsheet_", comment: "")
 
@@ -233,8 +233,8 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
             )
         }
         
-        if NCCommunication.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == NCBrandGlobal.shared.editorOnlyoffice && $0.identifier == NCBrandGlobal.shared.onlyofficePptx}) && !isEncrypted {
-            let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCBrandGlobal.shared.editorOnlyoffice && $0.identifier == NCBrandGlobal.shared.onlyofficePptx})!
+        if NCCommunication.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficePptx}) && !isEncrypted {
+            let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficePptx})!
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_create_new_presentation_", comment: ""), icon: UIImage(named: "create_file_ppt")!, action: { menuAction in
@@ -244,9 +244,9 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                         let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
-                        viewController.editorId = NCBrandGlobal.shared.editorOnlyoffice
+                        viewController.editorId = NCGlobal.shared.editorOnlyoffice
                         viewController.creatorId = directEditingCreator.identifier
-                        viewController.typeTemplate = NCBrandGlobal.shared.templatePresentation
+                        viewController.typeTemplate = NCGlobal.shared.templatePresentation
                         viewController.serverUrl = appDelegate.activeServerUrl
                         viewController.titleForm = NSLocalizedString("_create_new_presentation_", comment: "")
 
@@ -267,8 +267,8 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                             navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                             let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
-                            viewController.editorId = NCBrandGlobal.shared.editorCollabora
-                            viewController.typeTemplate = NCBrandGlobal.shared.templateDocument
+                            viewController.editorId = NCGlobal.shared.editorCollabora
+                            viewController.typeTemplate = NCGlobal.shared.templateDocument
                             viewController.serverUrl = appDelegate.activeServerUrl
                             viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
 
@@ -286,8 +286,8 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                             navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                             let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
-                            viewController.editorId = NCBrandGlobal.shared.editorCollabora
-                            viewController.typeTemplate = NCBrandGlobal.shared.templateSpreadsheet
+                            viewController.editorId = NCGlobal.shared.editorCollabora
+                            viewController.typeTemplate = NCGlobal.shared.templateSpreadsheet
                             viewController.serverUrl = appDelegate.activeServerUrl
                             viewController.titleForm = NSLocalizedString("_create_new_spreadsheet_", comment: "")
 
@@ -305,8 +305,8 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                             navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                             let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
-                            viewController.editorId = NCBrandGlobal.shared.editorCollabora
-                            viewController.typeTemplate = NCBrandGlobal.shared.templatePresentation
+                            viewController.editorId = NCGlobal.shared.editorCollabora
+                            viewController.typeTemplate = NCGlobal.shared.templatePresentation
                             viewController.serverUrl = appDelegate.activeServerUrl
                             viewController.titleForm = NSLocalizedString("_create_new_presentation_", comment: "")
 

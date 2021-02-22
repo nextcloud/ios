@@ -74,7 +74,7 @@ import NCCommunication
         // title 
         self.title = titleForm
       
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
 
         changeTheming()
         
@@ -315,11 +315,11 @@ import NCCommunication
     
     func createDocument(fileNamePath: String, fileName: String) {
         
-        if self.editorId == NCBrandGlobal.shared.editorText || self.editorId == NCBrandGlobal.shared.editorOnlyoffice {
+        if self.editorId == NCGlobal.shared.editorText || self.editorId == NCGlobal.shared.editorOnlyoffice {
              
             var customUserAgent: String?
             
-            if self.editorId == NCBrandGlobal.shared.editorOnlyoffice {
+            if self.editorId == NCGlobal.shared.editorOnlyoffice {
                 customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
             }
             
@@ -340,14 +340,14 @@ import NCCommunication
                     }
                     
                 } else if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCBrandGlobal.shared.dismissAfterSecond, type:NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCGlobal.shared.dismissAfterSecond, type:NCContentPresenter.messageType.error, errorCode: errorCode)
                 } else {
                    print("[LOG] It has been changed user during networking process, error.")
                 }
             }
         }
         
-        if self.editorId == NCBrandGlobal.shared.editorCollabora {
+        if self.editorId == NCGlobal.shared.editorCollabora {
             
             NCCommunication.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { (account, url, errorCode, errorDescription) in
                 
@@ -364,7 +364,7 @@ import NCCommunication
                    
                     
                 } else if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 } else {
                     print("[LOG] It has been changed user during networking process, error.")
                 }
@@ -384,10 +384,10 @@ import NCCommunication
         indicator.color = NCBrandColor.shared.brandElement
         indicator.startAnimating()
         
-        if self.editorId == NCBrandGlobal.shared.editorText || self.editorId == NCBrandGlobal.shared.editorOnlyoffice {
+        if self.editorId == NCGlobal.shared.editorText || self.editorId == NCGlobal.shared.editorOnlyoffice {
                         
             var customUserAgent: String?
-            if self.editorId == NCBrandGlobal.shared.editorOnlyoffice {
+            if self.editorId == NCGlobal.shared.editorOnlyoffice {
                 customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
             }
             NCCommunication.shared.NCTextGetListOfTemplates(customUserAgent: customUserAgent) { (account, templates, errorCode, errorMessage) in
@@ -421,13 +421,13 @@ import NCCommunication
                     let temp = NCCommunicationEditorTemplates()
                     
                     temp.identifier = ""
-                    if self.editorId == NCBrandGlobal.shared.editorText {
+                    if self.editorId == NCGlobal.shared.editorText {
                         temp.ext = "md"
-                    } else if self.editorId == NCBrandGlobal.shared.editorOnlyoffice && self.typeTemplate == NCBrandGlobal.shared.templateDocument {
+                    } else if self.editorId == NCGlobal.shared.editorOnlyoffice && self.typeTemplate == NCGlobal.shared.templateDocument {
                         temp.ext = "docx"
-                    } else if self.editorId == NCBrandGlobal.shared.editorOnlyoffice && self.typeTemplate == NCBrandGlobal.shared.templateSpreadsheet {
+                    } else if self.editorId == NCGlobal.shared.editorOnlyoffice && self.typeTemplate == NCGlobal.shared.templateSpreadsheet {
                         temp.ext = "xlsx"
-                    } else if self.editorId == NCBrandGlobal.shared.editorOnlyoffice && self.typeTemplate == NCBrandGlobal.shared.templatePresentation {
+                    } else if self.editorId == NCGlobal.shared.editorOnlyoffice && self.typeTemplate == NCGlobal.shared.templatePresentation {
                         temp.ext = "pptx"
                     }
                     temp.name = "Empty"
@@ -445,7 +445,7 @@ import NCCommunication
             
         }
         
-        if self.editorId == NCBrandGlobal.shared.editorCollabora  {
+        if self.editorId == NCGlobal.shared.editorCollabora  {
                         
             NCCommunication.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate) { (account, templates, errorCode, errorDescription) in
                 
@@ -480,11 +480,11 @@ import NCCommunication
                     let temp = NCCommunicationEditorTemplates()
                     
                     temp.identifier = ""
-                    if self.typeTemplate == NCBrandGlobal.shared.templateDocument {
+                    if self.typeTemplate == NCGlobal.shared.templateDocument {
                         temp.ext = "docx"
-                    } else if self.typeTemplate == NCBrandGlobal.shared.templateSpreadsheet {
+                    } else if self.typeTemplate == NCGlobal.shared.templateSpreadsheet {
                         temp.ext = "xlsx"
-                    } else if self.typeTemplate == NCBrandGlobal.shared.templatePresentation {
+                    } else if self.typeTemplate == NCGlobal.shared.templatePresentation {
                         temp.ext = "pptx"
                     }
                     temp.name = "Empty"

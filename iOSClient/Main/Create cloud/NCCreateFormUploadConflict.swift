@@ -148,7 +148,7 @@ extension NCCreateFormUploadConflictDelegate {
             }
             
             switchAlreadyExistingFiles.isOn = true
-            NCContentPresenter.shared.messageNotification("_info_", description: "_file_not_rewite_doc_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
+            NCContentPresenter.shared.messageNotification("_info_", description: "_file_not_rewite_doc_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.ErrorInternalError, forced: true)
         }
         
         tableView.reloadData()
@@ -377,7 +377,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             } else if FileManager().fileExists(atPath: filePathNewFile) {
                 
                 do {
-                    if metadataNewFile.typeFile == NCBrandGlobal.shared.metadataTypeFileImage {
+                    if metadataNewFile.typeFile == NCGlobal.shared.metadataTypeFileImage {
                         let data = try Data(contentsOf: URL(fileURLWithPath: filePathNewFile))
                         if let image = UIImage(data: data) {
                             cell.imageNewFile.image = image

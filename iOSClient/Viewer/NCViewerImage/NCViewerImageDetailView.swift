@@ -97,7 +97,7 @@ class NCViewerImageDetailView: UIView {
         self.size = metadata.size
         self.date = metadata.date
         
-        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage {
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
             CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensMode) in
                 self.latitude = latitude
                 self.longitude = longitude
@@ -144,12 +144,12 @@ class NCViewerImageDetailView: UIView {
         }
         
         // Dimensions / Durations
-        if metadata?.typeFile == NCBrandGlobal.shared.metadataTypeFileImage {
+        if metadata?.typeFile == NCGlobal.shared.metadataTypeFileImage {
             if let image = self.image {
                 dimLabel.text = NSLocalizedString("_dimension_", comment: "")
                 dimValue.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
             }
-        } else if metadata?.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || metadata?.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio  {
+        } else if metadata?.typeFile == NCGlobal.shared.metadataTypeFileVideo || metadata?.typeFile == NCGlobal.shared.metadataTypeFileAudio  {
             if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata!) {
                 let playerVideo = AVPlayer(url: url)
                 if let duration = playerVideo.currentItem?.asset.duration {

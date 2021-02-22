@@ -79,7 +79,7 @@ class NCLoginWeb: UIViewController {
         if let url = URL(string: urlBase) {
             loadWebPage(webView: webView!, url: url)
         } else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "_login_url_error_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
+            NCContentPresenter.shared.messageNotification("_error_", description: "_login_url_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError, forced: true)
         }
     }
     
@@ -235,7 +235,7 @@ extension NCLoginWeb: WKNavigationDelegate {
             
         if (CCUtility.getIntro()) {
             
-            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
             self.dismiss(animated: true)
                 
         } else {
@@ -244,7 +244,7 @@ extension NCLoginWeb: WKNavigationDelegate {
             if (self.presentingViewController == nil) {
                 if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
                     viewController.modalPresentationStyle = .fullScreen
-                    NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
                     viewController.view.alpha = 0
                     appDelegate.window?.rootViewController = viewController
                     appDelegate.window?.makeKeyAndVisible()
@@ -253,7 +253,7 @@ extension NCLoginWeb: WKNavigationDelegate {
                     }
                 }
             } else {
-                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
                 self.dismiss(animated: true)
             }
         }

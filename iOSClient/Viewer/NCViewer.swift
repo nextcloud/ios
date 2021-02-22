@@ -41,7 +41,7 @@ class NCViewer: NSObject {
         self.metadatas = metadatas
         
         // IMAGE AUDIO VIDEO
-        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
             
             if let navigationController = viewController.navigationController {
                             
@@ -62,7 +62,7 @@ class NCViewer: NSObject {
         }
         
         // DOCUMENTS
-        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileDocument {
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileDocument {
                 
             // PDF
             if metadata.contentType == "application/pdf" {
@@ -82,14 +82,14 @@ class NCViewer: NSObject {
             if NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil && NCCommunication.shared.isNetworkReachable() {
                 
                 guard let editor = NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) else { return }
-                if editor == NCBrandGlobal.shared.editorText || editor == NCBrandGlobal.shared.editorOnlyoffice {
+                if editor == NCGlobal.shared.editorText || editor == NCGlobal.shared.editorOnlyoffice {
                     
                     if metadata.url == "" {
                         
                         var customUserAgent: String?
                         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
                         
-                        if editor == NCBrandGlobal.shared.editorOnlyoffice {
+                        if editor == NCGlobal.shared.editorOnlyoffice {
                             customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
                         }
                         
@@ -113,7 +113,7 @@ class NCViewer: NSObject {
                                 
                             } else if errorCode != 0 {
                                 
-                                NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                             }
                         }
                         
@@ -133,7 +133,7 @@ class NCViewer: NSObject {
                     
                 } else {
                     
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_editor_unknown_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError)
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_editor_unknown_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError)
                 }
                 
                 return
@@ -163,7 +163,7 @@ class NCViewer: NSObject {
                             
                         } else if errorCode != 0 {
                             
-                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
                     }
                     
@@ -205,14 +205,14 @@ extension NCViewer: NCSelectDelegate {
                 NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { (errorCode, errorDescription) in
                     if errorCode != 0 {
                         
-                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     }
                 }
             } else {
                 NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { (errorCode, errorDescription) in
                     if errorCode != 0 {
                         
-                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     }
                 }
             }

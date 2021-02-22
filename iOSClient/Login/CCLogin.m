@@ -215,7 +215,7 @@
                 }
                 
                 // Login Flow
-                else if (_user.hidden && _password.hidden && versionMajor >= [[NCBrandGlobal shared] nextcloudVersion12]) {
+                else if (_user.hidden && _password.hidden && versionMajor >= [[NCGlobal shared] nextcloudVersion12]) {
                     
                     NCLoginWeb *activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
                     activeLoginWeb.urlBase = self.baseUrl.text;
@@ -224,7 +224,7 @@
                 }
                 
                 // NO Login Flow available
-                else if (versionMajor < [[NCBrandGlobal shared] nextcloudVersion12]) {
+                else if (versionMajor < [[NCGlobal shared] nextcloudVersion12]) {
                     
                     [self.loginTypeView setHidden:YES];
                     
@@ -402,18 +402,18 @@
         [appDelegate settingAccount:tableAccount.account urlBase:tableAccount.urlBase user:tableAccount.user userId:tableAccount.userId password:[CCUtility getPassword:tableAccount.account]];
         
         if ([CCUtility getIntro]) {
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
             [self dismissViewControllerAnimated:YES completion:nil];
         } else {
             [CCUtility setIntro:YES];
             if (self.presentingViewController == nil) {
                 UIViewController *viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateInitialViewController];
                 viewController.modalPresentationStyle = UIModalPresentationFullScreen;
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
                 appDelegate.window.rootViewController = viewController;
                 [appDelegate.window makeKeyWindow];
             } else {
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
                 [self dismissViewControllerAnimated:YES completion:nil];
             }
         }

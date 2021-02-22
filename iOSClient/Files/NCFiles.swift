@@ -33,7 +33,7 @@ class NCFiles: NCCollectionViewCommon  {
         
         appDelegate.activeFiles = self
         titleCurrentFolder = NCBrandOptions.shared.brand
-        layoutKey = NCBrandGlobal.shared.layoutViewFiles
+        layoutKey = NCGlobal.shared.layoutViewFiles
         enableSearchBar = true
         emptyImage = UIImage.init(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
@@ -100,7 +100,7 @@ class NCFiles: NCCollectionViewCommon  {
                 for metadata in metadatas ?? [] {
                     if !metadata.directory {
                         if NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
-                            NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
+                            NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
                         }
                     }
                 }

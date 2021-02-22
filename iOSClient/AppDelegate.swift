@@ -165,7 +165,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if NCBrandOptions.shared.disable_intro {
             CCUtility.setIntro(true)
             if account == "" {
-                openLogin(viewController: nil, selector: NCBrandGlobal.shared.introLogin, openLoginWeb: false)
+                openLogin(viewController: nil, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
         } else {
             if !CCUtility.getIntro() {
@@ -178,8 +178,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         // init home
-        NotificationCenter.default.addObserver(self, selector: #selector(initializeMain(notification:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterInitializeMain), object: nil)
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
+        NotificationCenter.default.addObserver(self, selector: #selector(initializeMain(notification:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitializeMain), object: nil)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
 
         // Passcode
         DispatchQueue.global().async {
@@ -191,10 +191,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         // Background task: register
         if #available(iOS 13.0, *) {
-            BGTaskScheduler.shared.register(forTaskWithIdentifier: NCBrandGlobal.shared.refreshTask, using: nil) { task in
+            BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.refreshTask, using: nil) { task in
                 self.handleRefreshTask(task)
             }
-            BGTaskScheduler.shared.register(forTaskWithIdentifier: NCBrandGlobal.shared.processingTask, using: nil) { task in
+            BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.processingTask, using: nil) { task in
                 self.handleProcessingTask(task)
             }
         } else {
@@ -232,9 +232,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Request Service Server Nextcloud
         NCService.shared.startRequestServicesServer()
         
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterApplicationWillEnterForeground)
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterRichdocumentGrabFocus)
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationWillEnterForeground)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRichdocumentGrabFocus)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
     }
 
     // L' applicazione si dimetterà dallo stato di attivo
@@ -264,7 +264,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             scheduleBackgroundProcessing()
         }
         
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterApplicationDidEnterBackground)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
     }
     
     // L'applicazione terminerà
@@ -297,7 +297,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCService.shared.startRequestServicesServer()
         
         // close detail
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterMenuDetailClose)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuDetailClose)
 
         // Registeration domain File Provider
         //FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
@@ -309,7 +309,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     @available(iOS 13.0, *)
     func scheduleAppRefresh() {
-        let request = BGAppRefreshTaskRequest.init(identifier: NCBrandGlobal.shared.refreshTask)
+        let request = BGAppRefreshTaskRequest.init(identifier: NCGlobal.shared.refreshTask)
         request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
         do {
             try BGTaskScheduler.shared.submit(request)
@@ -321,7 +321,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     @available(iOS 13.0, *)
     func scheduleBackgroundProcessing() {
-        let request = BGProcessingTaskRequest.init(identifier: NCBrandGlobal.shared.processingTask)
+        let request = BGProcessingTaskRequest.init(identifier: NCGlobal.shared.processingTask)
         request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
         request.requiresNetworkConnectivity = true
         request.requiresExternalPower = false
@@ -342,6 +342,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCCommunicationCommon.shared.writeLog("Start handler refresh task [Auto upload]")
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { (items) in
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
                 NCCommunicationCommon.shared.writeLog("Completition handler refresh task with %lu uploads [Auto upload]")
                 task.setTaskCompleted(success: true)
             }
@@ -355,11 +356,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
         NCCommunicationCommon.shared.writeLog("Start handler processing task [Synchronize Favorite & Offline]")
-        NCNetworking.shared.listingFavoritescompletion(selector: NCBrandGlobal.shared.selectorReadFile) { (account, metadatas, errorCode, errorDescription) in
+        NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { (account, metadatas, errorCode, errorDescription) in
             NCCommunicationCommon.shared.writeLog("Completition listing favorite with error: \(errorCode)")
         }
         NCService.shared.synchronizeOffline(account: account)
         DispatchQueue.main.asyncAfter(deadline: .now() + 25) {
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
             NCCommunicationCommon.shared.writeLog("Completition handler processing task [Synchronize Favorite & Offline]")
             task.setTaskCompleted(success: true)
         }
@@ -374,6 +376,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         NCCommunicationCommon.shared.writeLog("Start perform Fetch [Auto upload]")
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { (items) in
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
             NCCommunicationCommon.shared.writeLog("Completition perform Fetch with \(items) uploads [Auto upload]")
             if items == 0 {
                 completionHandler(UIBackgroundFetchResult.noData)
@@ -434,11 +437,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         // Nextcloud standard login
-        if selector == NCBrandGlobal.shared.introSignup {
+        if selector == NCGlobal.shared.introSignup {
             
             if !(activeLoginWeb?.isViewLoaded ?? false) && activeLoginWeb?.view.window == nil {
                 activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
-                if selector == NCBrandGlobal.shared.introSignup {
+                if selector == NCGlobal.shared.introSignup {
                     activeLoginWeb?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
                 } else {
                     activeLoginWeb?.urlBase = self.urlBase
@@ -509,7 +512,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         // check unauthorized server (401)
         if CCUtility.getPasscode()?.count == 0 {
-            openLogin(viewController: window?.rootViewController, selector: NCBrandGlobal.shared.introLogin, openLoginWeb: true)
+            openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: true)
         }
         
         // check certificate untrusted (-1202)
@@ -579,11 +582,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 if let newAccount = accounts?.first {
                     if let account = NCManageDatabase.shared.setAccountActive(newAccount) {
                         settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
-                        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
                     }
                 }
             } else {
-                openLogin(viewController: window?.rootViewController, selector: NCBrandGlobal.shared.introLogin, openLoginWeb: false)
+                openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
         }
     }
@@ -707,7 +710,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                 if link?.contains(accountURL.host ?? "") ?? false && user == accountUser {
                                     matchedAccount = NCManageDatabase.shared.setAccountActive(accountUser)
                                     settingAccount(matchedAccount!.account, urlBase: matchedAccount!.urlBase, user: matchedAccount!.user, userId: matchedAccount!.userId, password: CCUtility.getPassword(matchedAccount!.account))
-                                    NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
+                                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
                                 }
                             }
                         }

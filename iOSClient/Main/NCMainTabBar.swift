@@ -39,8 +39,9 @@ class NCMainTabBar: UITabBar {
         
         timer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: (#selector(updateBadgeNumber)), userInfo: nil, repeats: true)
             
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
+
         changeTheming()
     }
     
@@ -207,7 +208,7 @@ class NCMainTabBar: UITabBar {
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, appDelegate.activeServerUrl)) {
             
             if !directory.permissions.contains("CK") {
-                NCContentPresenter.shared.messageNotification("_warning_", description: "_no_permission_add_file_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError)
+                NCContentPresenter.shared.messageNotification("_warning_", description: "_no_permission_add_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.ErrorInternalError)
                 return
             }
         }
@@ -222,7 +223,7 @@ class NCMainTabBar: UITabBar {
         if appDelegate.account == "" { return }
         
         let counterDownload = NCOperationQueue.shared.downloadCount()
-        let counterUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d OR status == %d", NCBrandGlobal.shared.metadataStatusWaitUpload, NCBrandGlobal.shared.metadataStatusInUpload, NCBrandGlobal.shared.metadataStatusUploading)).count
+        let counterUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d OR status == %d", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading)).count
         let total = counterDownload + counterUpload
         
         UIApplication.shared.applicationIconBadgeNumber = total

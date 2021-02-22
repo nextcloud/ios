@@ -159,7 +159,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             capabilitiesText = text
             updateCapabilities()
         } else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "_no_capabilities_found_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
+            NCContentPresenter.shared.messageNotification("_error_", description: "_no_capabilities_found_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.ErrorInternalError, forced: true)
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.dismiss(animated: true, completion: nil)
@@ -181,7 +181,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
                 
                 // EDITORS
                 let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-                if serverVersionMajor >= NCBrandGlobal.shared.nextcloudVersion18 {
+                if serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
                     NCCommunication.shared.NCTextObtainEditorDetails() { (account, editors, creators, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.account {
                             NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
@@ -278,9 +278,9 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         var onlyofficeEditors = false
         if let editors = NCManageDatabase.shared.getDirectEditingEditors(account: account) {
             for editor in editors {
-                if editor.editor == NCBrandGlobal.shared.editorText {
+                if editor.editor == NCGlobal.shared.editorText {
                     textEditor = true
-                } else if editor.editor == NCBrandGlobal.shared.editorOnlyoffice {
+                } else if editor.editor == NCGlobal.shared.editorOnlyoffice {
                     onlyofficeEditors = true
                 }
             }

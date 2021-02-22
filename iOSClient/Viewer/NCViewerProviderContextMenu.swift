@@ -43,9 +43,9 @@ class NCViewerProviderContextMenu: UIViewController  {
         self.metadata = metadata
         self.metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterDownloadStartFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadCancelFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
         
         if metadata.directory {
 
@@ -72,7 +72,7 @@ class NCViewerProviderContextMenu: UIViewController  {
             }
              
             // VIEW IMAGE
-            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 
                 viewImage(metadata: metadata)
             }
@@ -84,25 +84,25 @@ class NCViewerProviderContextMenu: UIViewController  {
             }
             
             // VIEW VIDEO
-            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            if metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 viewVideo(metadata: metadata)
             }
             
             // PLAY SOUND
-            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            if metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 playSound(metadata: metadata)
             }
             
             // AUTO DOWNLOAD VIDEO / AUDIO
-            // if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio || metadata.contentType == "application/pdf") {
-            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio) {
+            // if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio || metadata.contentType == "application/pdf") {
+            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio) {
                 
                 var maxDownload: UInt64 = 0
                 
                 if NCNetworking.shared.networkReachability == NCCommunicationCommon.typeReachability.reachableCellular {
-                    maxDownload = NCBrandGlobal.shared.maxAutoDownloadCellular
+                    maxDownload = NCGlobal.shared.maxAutoDownloadCellular
                 } else {
-                    maxDownload = NCBrandGlobal.shared.maxAutoDownload
+                    maxDownload = NCGlobal.shared.maxAutoDownload
                 }
                 
                 if metadata.size <= maxDownload {
@@ -162,11 +162,11 @@ class NCViewerProviderContextMenu: UIViewController  {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
                 if errorCode == 0 && metadata.ocId == self.metadata?.ocId {
-                    if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage {
+                    if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
                         viewImage(metadata: metadata)
-                    } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo {
+                    } else if metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
                         viewVideo(metadata: metadata)
-                    } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio {
+                    } else if metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio {
                         playSound(metadata: metadata)
                     }
                 }

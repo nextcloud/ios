@@ -33,7 +33,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         
         appDelegate.activeFileViewInFolder = self
         titleCurrentFolder = NCBrandOptions.shared.brand
-        layoutKey = NCBrandGlobal.shared.layoutViewViewInFolder
+        layoutKey = NCGlobal.shared.layoutViewViewInFolder
         enableSearchBar = false
         emptyImage = UIImage.init(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
@@ -54,7 +54,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(itemForLine)
         
-        if layout == NCBrandGlobal.shared.layoutList {
+        if layout == NCGlobal.shared.layoutList {
             collectionView?.collectionViewLayout = listLayout
         } else {
             collectionView?.collectionViewLayout = gridLayout
@@ -133,7 +133,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
                 for metadata in metadatas ?? [] {
                     if !metadata.directory {
                         if NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
-                            NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
+                            NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
                         }
                     }
                 }

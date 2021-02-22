@@ -155,7 +155,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
 
         if metadata.directory {
             // File Drop
-            if tableShare.permissions == NCBrandGlobal.shared.permissionCreateShare {
+            if tableShare.permissions == NCGlobal.shared.permissionCreateShare {
                 switchReadOnly.setOn(false, animated: false)
                 switchAllowUploadAndEditing.setOn(false, animated: false)
                 switchFileDrop.setOn(true, animated: false)
@@ -286,7 +286,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     @IBAction func switchFileDrop(sender: UISwitch) {
         
         guard let tableShare = self.tableShare else { return }
-        let permission = NCBrandGlobal.shared.permissionCreateShare
+        let permission = NCGlobal.shared.permissionCreateShare
 
         if sender.isOn && permission != tableShare.permissions {
             switchReadOnly.setOn(false, animated: false)
@@ -382,12 +382,12 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     func shareCompleted() {
         unLoad()
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataNCShare)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
     }
     
     func unShareCompleted() {
         unLoad()
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataNCShare)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
     }
     
     func updateShareWithError(idShare: Int) {

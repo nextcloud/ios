@@ -330,7 +330,7 @@
     
     // Open Login
     if (accounts.count == 0) {
-        [appDelegate openLoginWithViewController:self selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
+        [appDelegate openLoginWithViewController:self selector:NCGlobal.shared.introLogin openLoginWeb:false];
     }
 }
 
@@ -342,7 +342,7 @@
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     // changeTheming
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:NCBrandGlobal.shared.notificationCenterChangeTheming object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:NCGlobal.shared.notificationCenterChangeTheming object:nil];
     
     [self changeTheming];
 }
@@ -383,7 +383,7 @@
 {
     [self deselectFormRow:sender];
     
-    [appDelegate openLoginWithViewController:self selector:NCBrandGlobal.shared.introLogin openLoginWeb:false];
+    [appDelegate openLoginWithViewController:self selector:NCGlobal.shared.introLogin openLoginWeb:false];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -448,7 +448,7 @@
         [appDelegate settingAccount:tableAccount.account urlBase:tableAccount.urlBase user:tableAccount.user userId:tableAccount.userId password:[CCUtility getPassword:tableAccount.account]];
  
         // Init home
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
     }
     
     [self initializeForm];

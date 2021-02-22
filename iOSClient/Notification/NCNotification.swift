@@ -44,7 +44,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         // Empty
         emptyDataSet = NCEmptyDataSet.init(view: tableView, offset: 0, delegate: self)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         
         changeTheming()
     }
@@ -243,7 +243,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 self.reloadDatasource()
                 
             } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }
@@ -270,7 +270,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                                 self.reloadDatasource()
                                 
                             } else if errorCode != 0 {
-                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                             } else {
                                 print("[LOG] It has been changed user during networking process, error.")
                             }

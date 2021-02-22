@@ -44,7 +44,7 @@ class NCSharePaging: UIViewController {
         // Verify Comments & Sharing enabled
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         let comments = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
-        if serverVersionMajor >= NCBrandGlobal.shared.nextcloudVersion20 && comments == false {
+        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 && comments == false {
             commentsEnabled = false
         }
         let sharing = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
@@ -55,17 +55,17 @@ class NCSharePaging: UIViewController {
         if activity == nil {
             activityEnabled = false
         }
-        if indexPage == NCBrandGlobal.shared.indexPageComments && !commentsEnabled {
-            indexPage = NCBrandGlobal.shared.indexPageActivity
+        if indexPage == NCGlobal.shared.indexPageComments && !commentsEnabled {
+            indexPage = NCGlobal.shared.indexPageActivity
         }
-        if indexPage == NCBrandGlobal.shared.indexPageSharing && !sharingEnabled {
-            indexPage = NCBrandGlobal.shared.indexPageActivity
+        if indexPage == NCGlobal.shared.indexPageSharing && !sharingEnabled {
+            indexPage = NCGlobal.shared.indexPageActivity
         }
-        if indexPage == NCBrandGlobal.shared.indexPageActivity && !activityEnabled {
+        if indexPage == NCGlobal.shared.indexPageActivity && !activityEnabled {
             if sharingEnabled {
-                indexPage = NCBrandGlobal.shared.indexPageSharing
+                indexPage = NCGlobal.shared.indexPageSharing
             } else if commentsEnabled {
-                indexPage = NCBrandGlobal.shared.indexPageComments
+                indexPage = NCGlobal.shared.indexPageComments
             }
         }
         
@@ -75,7 +75,7 @@ class NCSharePaging: UIViewController {
        
         pagingViewController.metadata = metadata
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done, target: self, action: #selector(exitTapped))
 
@@ -123,7 +123,7 @@ class NCSharePaging: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
     }
     
     @objc func exitTapped() {
@@ -154,11 +154,11 @@ extension NCSharePaging: PagingViewControllerDelegate {
         
         guard let item = pagingItem as? PagingIndexItem else { return }
          
-        if item.index == NCBrandGlobal.shared.indexPageActivity && !activityEnabled {
+        if item.index == NCGlobal.shared.indexPageActivity && !activityEnabled {
             pagingViewController.contentInteraction = .none
-        } else if item.index == NCBrandGlobal.shared.indexPageComments && !commentsEnabled {
+        } else if item.index == NCGlobal.shared.indexPageComments && !commentsEnabled {
             pagingViewController.contentInteraction = .none
-        } else if item.index == NCBrandGlobal.shared.indexPageSharing && !sharingEnabled {
+        } else if item.index == NCGlobal.shared.indexPageSharing && !sharingEnabled {
             pagingViewController.contentInteraction = .none
         } else {
             self.title = item.title
@@ -176,19 +176,19 @@ extension NCSharePaging: PagingViewControllerDataSource {
         let topSafeArea = UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0
         
         switch index {
-        case NCBrandGlobal.shared.indexPageActivity:
+        case NCGlobal.shared.indexPageActivity:
             let viewController = UIStoryboard(name: "NCActivity", bundle: nil).instantiateInitialViewController() as! NCActivity
             viewController.insets = UIEdgeInsets(top: height - topSafeArea, left: 0, bottom: 0, right: 0)
             viewController.didSelectItemEnable = false
             viewController.filterFileId = metadata.fileId
             viewController.objectType = "files"
             return viewController
-        case NCBrandGlobal.shared.indexPageComments:
+        case NCGlobal.shared.indexPageComments:
             let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "comments") as! NCShareComments
             viewController.metadata = metadata
             viewController.height = height
             return viewController
-        case NCBrandGlobal.shared.indexPageSharing:
+        case NCGlobal.shared.indexPageSharing:
             let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing") as! NCShare
             viewController.sharingEnabled = sharingEnabled
             viewController.metadata = metadata
@@ -202,11 +202,11 @@ extension NCSharePaging: PagingViewControllerDataSource {
     func pagingViewController(_: PagingViewController, pagingItemAt index: Int) -> PagingItem {
         
         switch index {
-        case NCBrandGlobal.shared.indexPageActivity:
+        case NCGlobal.shared.indexPageActivity:
             return PagingIndexItem(index: index, title: NSLocalizedString("_activity_", comment: ""))
-        case NCBrandGlobal.shared.indexPageComments:
+        case NCGlobal.shared.indexPageComments:
             return PagingIndexItem(index: index, title: NSLocalizedString("_comments_", comment: ""))
-        case NCBrandGlobal.shared.indexPageSharing:
+        case NCGlobal.shared.indexPageSharing:
             return PagingIndexItem(index: index, title: NSLocalizedString("_sharing_", comment: ""))
         default:
             return PagingIndexItem(index: index, title: "")
@@ -239,13 +239,13 @@ class NCShareHeaderViewController: PagingViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if indexPath.item == NCBrandGlobal.shared.indexPageActivity && !activityEnabled {
+        if indexPath.item == NCGlobal.shared.indexPageActivity && !activityEnabled {
             return
         }
-        if indexPath.item == NCBrandGlobal.shared.indexPageComments && !commentsEnabled {
+        if indexPath.item == NCGlobal.shared.indexPageComments && !commentsEnabled {
             return
         }
-        if indexPath.item == NCBrandGlobal.shared.indexPageSharing && !sharingEnabled {
+        if indexPath.item == NCGlobal.shared.indexPageSharing && !sharingEnabled {
             return
         }
         super.collectionView(collectionView, didSelectItemAt: indexPath)
@@ -344,7 +344,7 @@ class NCShareHeaderView: UIView {
                         self.favorite.setImage(UIImage.init(named: "favorite")!.image(color: NCBrandColor.shared.textInfo, size: 20), for: .normal)
                     }
                 } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
         }

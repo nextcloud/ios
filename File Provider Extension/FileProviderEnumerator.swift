@@ -232,7 +232,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     if errorCode == 0 {
                         DispatchQueue.global().async {
                             NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
-                                let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCBrandGlobal.shared.metadataStatusNormal))
+                                let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal))
                                 NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
                                 for metadata in metadatasFolder {
                                     let serverUrl = metadata.serverUrl + "/" + metadata.fileNameView
@@ -284,7 +284,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     if errorCode == 0 {
                         DispatchQueue.global().async {
                             NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
-                                let metadatasResult = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", fileProviderData.shared.account, serverUrl, NCBrandGlobal.shared.metadataStatusNormal), page: page, limit: fileProviderData.shared.itemForPage, sorted: "fileName", ascending: true)
+                                let metadatasResult = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", fileProviderData.shared.account, serverUrl, NCGlobal.shared.metadataStatusNormal), page: page, limit: fileProviderData.shared.itemForPage, sorted: "fileName", ascending: true)
                                 NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
                                 for metadata in metadatasFolder {
                                     let serverUrl = metadata.serverUrl + "/" + metadata.fileNameView

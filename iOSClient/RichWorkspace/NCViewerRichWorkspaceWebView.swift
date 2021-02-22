@@ -77,7 +77,7 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
                 }
                 
                 dismiss(animated: true) {
-                    NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterCloseRichWorkspaceWebView, userInfo: nil)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCloseRichWorkspaceWebView, userInfo: nil)
                 }
             }
             

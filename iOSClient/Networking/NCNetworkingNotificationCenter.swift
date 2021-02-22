@@ -27,8 +27,8 @@ import Foundation
     @objc public static let shared: NCNetworkingNotificationCenter = {
         let instance = NCNetworkingNotificationCenter()
         
-        NotificationCenter.default.addObserver(instance, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.addObserver(instance, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterUploadedFile), object: nil)
+        NotificationCenter.default.addObserver(instance, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
+        NotificationCenter.default.addObserver(instance, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
         
         return instance
     }()
@@ -53,7 +53,7 @@ import Foundation
                     documentController?.delegate = self
 
                     switch selector {
-                    case NCBrandGlobal.shared.selectorLoadFileQuickLook:
+                    case NCGlobal.shared.selectorLoadFileQuickLook:
                         
                         let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
                         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
@@ -61,7 +61,7 @@ import Foundation
                         viewerQuickLook = NCViewerQuickLook.init()
                         viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath))
                         
-                    case NCBrandGlobal.shared.selectorLoadFileView:
+                    case NCGlobal.shared.selectorLoadFileView:
                         
                         if UIApplication.shared.applicationState == UIApplication.State.active {
                                                         
@@ -71,13 +71,13 @@ import Foundation
                                     documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
                                 }
                                 
-                            } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileCompress || metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileUnknown {
+                            } else if metadata.typeFile == NCGlobal.shared.metadataTypeFileCompress || metadata.typeFile == NCGlobal.shared.metadataTypeFileUnknown {
 
                                 if let view = appDelegate.window?.rootViewController?.view {
                                     documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
                                 }
                                 
-                            } else if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImagemeter {
+                            } else if metadata.typeFile == NCGlobal.shared.metadataTypeFileImagemeter {
                                 
                                 if let view = appDelegate.window?.rootViewController?.view {
                                     documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
@@ -91,7 +91,7 @@ import Foundation
                             }
                         }
                         
-                    case NCBrandGlobal.shared.selectorOpenIn:
+                    case NCGlobal.shared.selectorOpenIn:
                         
                         if UIApplication.shared.applicationState == UIApplication.State.active {
                             
@@ -100,29 +100,29 @@ import Foundation
                             }
                         }
                         
-                    case NCBrandGlobal.shared.selectorLoadCopy:
+                    case NCGlobal.shared.selectorLoadCopy:
                         
                         NCCollectionCommon.shared.copyPasteboard()
                         
-                    case NCBrandGlobal.shared.selectorLoadOffline:
+                    case NCGlobal.shared.selectorLoadOffline:
                         
                         NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: true)
                        
-                    case NCBrandGlobal.shared.selectorSaveAlbum:
+                    case NCGlobal.shared.selectorSaveAlbum:
                         
                         NCCollectionCommon.shared.saveAlbum(metadata: metadata)
                         
-                    case NCBrandGlobal.shared.selectorSaveAlbumLivePhotoIMG, NCBrandGlobal.shared.selectorSaveAlbumLivePhotoMOV:
+                    case NCGlobal.shared.selectorSaveAlbumLivePhotoIMG, NCGlobal.shared.selectorSaveAlbumLivePhotoMOV:
                         
                         var metadata = metadata
                         var metadataMOV = metadata
                         guard let metadataTMP = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) else { break }
                         
-                        if selector == NCBrandGlobal.shared.selectorSaveAlbumLivePhotoIMG {
+                        if selector == NCGlobal.shared.selectorSaveAlbumLivePhotoIMG {
                             metadataMOV = metadataTMP
                         }
                         
-                        if selector == NCBrandGlobal.shared.selectorSaveAlbumLivePhotoMOV {
+                        if selector == NCGlobal.shared.selectorSaveAlbumLivePhotoMOV {
                             metadata = metadataTMP
                         }
                             
@@ -138,7 +138,7 @@ import Foundation
                 } else {
                     
                     // File do not exists on server, remove in local
-                    if (errorCode == NCBrandGlobal.shared.ErrorResourceNotFound || errorCode == NCBrandGlobal.shared.ErrorBadServerResponse) {
+                    if (errorCode == NCGlobal.shared.ErrorResourceNotFound || errorCode == NCGlobal.shared.ErrorBadServerResponse) {
                         
                         do {
                             try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
@@ -149,7 +149,7 @@ import Foundation
                         
                     } else {
                         
-                        NCContentPresenter.shared.messageNotification("_download_file_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        NCContentPresenter.shared.messageNotification("_download_file_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     }
                 }
             }
@@ -172,7 +172,7 @@ import Foundation
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             
-            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": selector, "errorCode": 0, "errorDescription": "" ])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": selector, "errorCode": 0, "errorDescription": "" ])
                                     
         } else {
             
@@ -190,7 +190,7 @@ import Foundation
                 if metadata.account == appDelegate.account {
                     if errorCode != 0 {
                         if errorCode != -999 && errorCode != 401 && errorDescription != "" {
-                            NCContentPresenter.shared.messageNotification("_upload_file_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("_upload_file_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
                     }
                 }

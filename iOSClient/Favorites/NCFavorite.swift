@@ -31,7 +31,7 @@ class NCFavorite: NCCollectionViewCommon  {
         
         appDelegate.activeFavorite = self
         titleCurrentFolder = NSLocalizedString("_favorites_", comment: "")
-        layoutKey = NCBrandGlobal.shared.layoutViewFavorite
+        layoutKey = NCGlobal.shared.layoutViewFavorite
         enableSearchBar = true
         emptyImage = UIImage.init(named: "favorite")?.image(color: NCBrandColor.shared.yellowFavorite, size: UIScreen.main.bounds.width)
         emptyTitle = "_favorite_no_files_"
@@ -76,9 +76,9 @@ class NCFavorite: NCCollectionViewCommon  {
         
         if serverUrl == "" {
             
-            NCNetworking.shared.listingFavoritescompletion(selector: NCBrandGlobal.shared.selectorListingFavorite) { (account, metadatas, errorCode, errorDescription) in
+            NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorListingFavorite) { (account, metadatas, errorCode, errorDescription) in
                 if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
                 
                 self.refreshControl.endRefreshing()
@@ -93,7 +93,7 @@ class NCFavorite: NCCollectionViewCommon  {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory {
                             if NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
+                                NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
                             }
                         }
                     }

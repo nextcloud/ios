@@ -107,7 +107,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var isDownloading: Bool {
-        if metadata.status == NCBrandGlobal.shared.metadataStatusDownloading {
+        if metadata.status == NCGlobal.shared.metadataStatusDownloading {
             return true
         } else {
             return false
@@ -115,7 +115,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var downloadingError: Error? {
-        if metadata.status == NCBrandGlobal.shared.metadataStatusDownloadError {
+        if metadata.status == NCGlobal.shared.metadataStatusDownloadError {
             return fileProviderData.FileProviderError.downloadError
         } else {
             return nil
@@ -131,7 +131,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var isUploading: Bool {
-        if metadata.status == NCBrandGlobal.shared.metadataStatusUploading {
+        if metadata.status == NCGlobal.shared.metadataStatusUploading {
             return true
         } else {
             return false
@@ -139,7 +139,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var uploadingError: Error? {
-        if metadata.status == NCBrandGlobal.shared.metadataStatusUploadError {
+        if metadata.status == NCGlobal.shared.metadataStatusUploadError {
             return fileProviderData.FileProviderError.uploadError
         } else {
             return nil
