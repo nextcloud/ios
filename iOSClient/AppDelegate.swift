@@ -309,6 +309,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     @available(iOS 13.0, *)
     func scheduleAppRefresh() {
+        
         let request = BGAppRefreshTaskRequest.init(identifier: NCGlobal.shared.refreshTask)
         request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
         do {
@@ -321,6 +322,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     @available(iOS 13.0, *)
     func scheduleBackgroundProcessing() {
+        
         let request = BGProcessingTaskRequest.init(identifier: NCGlobal.shared.processingTask)
         request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
         request.requiresNetworkConnectivity = true
@@ -335,11 +337,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     @available(iOS 13.0, *)
     func handleRefreshTask(_ task: BGTask) {
+        
         if account == "" {
             task.setTaskCompleted(success: true)
             return
         }
+        
         NCCommunicationCommon.shared.writeLog("Start handler refresh task [Auto upload]")
+        
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { (items) in
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
@@ -351,15 +356,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     @available(iOS 13.0, *)
     func handleProcessingTask(_ task: BGTask) {
+        
         if account == "" {
             task.setTaskCompleted(success: true)
             return
         }
+        
         NCCommunicationCommon.shared.writeLog("Start handler processing task [Synchronize Favorite & Offline]")
+        
         NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { (account, metadatas, errorCode, errorDescription) in
             NCCommunicationCommon.shared.writeLog("Completition listing favorite with error: \(errorCode)")
         }
+        
         NCService.shared.synchronizeOffline(account: account)
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 25) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
             NCCommunicationCommon.shared.writeLog("Completition handler processing task [Synchronize Favorite & Offline]")
