@@ -380,11 +380,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Fetch
 
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        
         if account == "" {
             completionHandler(UIBackgroundFetchResult.noData)
             return
         }
+        
         NCCommunicationCommon.shared.writeLog("Start perform Fetch [Auto upload]")
+        
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { (items) in
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
             NCCommunicationCommon.shared.writeLog("Completition perform Fetch with \(items) uploads [Auto upload]")
@@ -399,6 +402,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Background Networking Session
 
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
+        
         NCCommunicationCommon.shared.writeLog("Start handle Events For Background URLSession: \(identifier)")
         backgroundSessionCompletionHandler = completionHandler
     }
@@ -609,6 +613,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         var error: NSError?
         
         if CCUtility.getPasscode()?.count == 0 || account == "" || CCUtility.getNotPasscodeAtStart() { return }
+        
         if passcodeViewController == nil {
             passcodeViewController = TOPasscodeViewController.init(style: .translucentLight, passcodeType: .sixDigits)
             if #available(iOS 13.0, *) {
@@ -680,6 +685,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - OpenURL
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        
         if account == "" { return false }
         
         let scheme = url.scheme
