@@ -502,7 +502,9 @@
 + (NSString *)getPassword:(NSString *)account
 {
     NSString *key = [@"password" stringByAppendingString:account];
-    return [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
+    NSString *result = [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
+    if (result == nil) { result = @""; }
+    return result;
 }
 
 + (void)setHCBusinessType:(NSString *)professions

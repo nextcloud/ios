@@ -195,11 +195,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         return true
     }
+    
+    // MARK: - Life Cycle
 
     // L' applicazione entrerà in primo piano (attivo sempre)
     func applicationDidBecomeActive(_ application: UIApplication) {
         
         NCSettingsBundleHelper.setVersionAndBuildNumber()
+        
         if account == "" { return}
 
         NCNetworking.shared.verifyUploadZombie()
@@ -520,7 +523,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if account == "" { return }
         
         // check unauthorized server (401)
-        if CCUtility.getPasscode()?.count == 0 {
+        if CCUtility.getPassword(account)!.count == 0 {
             openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: true)
         }
         
@@ -711,8 +714,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                             guard let accountURL = URL(string: account.urlBase) else { return false }
                             if linkScheme.contains(accountURL.host ?? "") && userScheme == account.user {
                                 NCManageDatabase.shared.setAccountActive(account.account)
-                                guard let password = CCUtility.getPassword(account.account) else { return false }
-                                settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: password)
+                                settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
                                 matchedAccount = account
                                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
                             }

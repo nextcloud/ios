@@ -45,7 +45,9 @@ import NCCommunication
         
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
             
-            guard let token = CCUtility.getPassword(account) else { return }
+            let token = CCUtility.getPassword(account)!
+            if token == "" { return }
+            //guard let token = CCUtility.getPassword(account) else { return }
             
             NCCommunication.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token) { (account, wipe, errorCode, errorDescriptiuon) in
                 
@@ -69,7 +71,7 @@ import NCCommunication
                 self.checkRemoteUserInProgress = false
             }
             
-        } else if CCUtility.getPassword(account) != nil {
+        } else if CCUtility.getPassword(account) != "" {
                
             if UIApplication.shared.applicationState == .active &&  NCCommunication.shared.isNetworkReachable() {
                 let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
