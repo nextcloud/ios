@@ -44,7 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var activeFavorite: NCFavorite?
     var activeFiles: NCFiles?
     var activeFileViewInFolder: NCFileViewInFolder?
-    var activeLogin: CCLogin?
+    @objc var activeLogin: CCLogin?
     var activeLoginWeb: NCLoginWeb?
     @objc var activeMedia: NCMedia?
     var activeMore: NCMore?
@@ -476,7 +476,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else {
             
             if !(activeLogin?.isViewLoaded ?? false) && activeLogin?.view.window == nil {
-                activeLogin = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "CCLoginNextcloud") as? CCLogin
+                activeLogin = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "CCLogin") as? CCLogin
                 showLoginViewController(activeLogin, contextViewController: viewController)
             }
         }
