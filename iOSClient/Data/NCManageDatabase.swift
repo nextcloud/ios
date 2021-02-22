@@ -124,6 +124,12 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableMetadata.className())
                     }
                     
+                    if oldSchemaVersion < 162 {
+                        migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
+                            newObject!["userId"] = oldObject!["userID"]
+                        }
+                    }
+                    
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
                     
                     // totalBytes refers to the size of the file on disk in bytes (data + free space)
@@ -293,7 +299,7 @@ class NCManageDatabase: NSObject {
                 
                 addObject.urlBase = urlBase
                 addObject.user = user
-                addObject.userID = user
+                addObject.userId = user
            
                 realm.add(addObject, update: .all)
             }
@@ -548,7 +554,7 @@ class NCManageDatabase: NSObject {
                 result.storageLocation = userProfile.storageLocation
                 result.subadmin = userProfile.subadmin.joined(separator: ",")
                 result.twitter = userProfile.twitter
-                result.userID = userProfile.userId
+                result.userId = userProfile.userId
                 result.webpage = userProfile.webpage
                 
                 returnAccount = result

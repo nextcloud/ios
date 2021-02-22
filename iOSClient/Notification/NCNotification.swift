@@ -131,7 +131,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                         }
                     } else {
                         DispatchQueue.global().async {
-                            NCCommunication.shared.downloadAvatar(userID: name, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size), customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.account) { (account, data, errorCode, errorMessage) in
+                            NCCommunication.shared.downloadAvatar(userId: name, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size), customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.account) { (account, data, errorCode, errorMessage) in
                                 if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
                                     if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                                         cell.avatar.isHidden = false

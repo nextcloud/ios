@@ -258,7 +258,7 @@ extension NCShareComments: UITableViewDataSource {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
             } else {
                 DispatchQueue.global().async {
-                    NCCommunication.shared.downloadAvatar(userID: tableComments.actorId, fileNameLocalPath: fileNameLocalPath, size: 128) { (account, data, errorCode, errorMessage) in
+                    NCCommunication.shared.downloadAvatar(userId: tableComments.actorId, fileNameLocalPath: fileNameLocalPath, size: 128) { (account, data, errorCode, errorMessage) in
                         if errorCode == 0 && UIImage(data: data!) != nil {
                             cell.imageItem.image = UIImage(named: "avatar")
                         }
@@ -289,7 +289,7 @@ extension NCShareComments: UITableViewDataSource {
             cell.labelMessage.text = tableComments.message
             cell.labelMessage.textColor = NCBrandColor.shared.textView
             // Button Menu
-            if tableComments.actorId == appDelegate.userID {
+            if tableComments.actorId == appDelegate.userId {
                 cell.buttonMenu.isHidden = false
             } else {
                 cell.buttonMenu.isHidden = true

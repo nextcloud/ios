@@ -65,7 +65,7 @@ class NCService: NSObject {
                     let url = tableAccount.urlBase
                     let stringUser = CCUtility.getStringUser(user, urlBase: url)!
                     
-                    self.appDelegate.settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userID: tableAccount.userID, password: CCUtility.getPassword(tableAccount.account))
+                    self.appDelegate.settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId, password: CCUtility.getPassword(tableAccount.account))
                        
                     // Synchronize favorite                    
                     NCNetworking.shared.listingFavoritescompletion(selector: NCBrandGlobal.shared.selectorReadFile) { (_, _, _, _) in }
@@ -215,7 +215,7 @@ class NCService: NSObject {
                     let userStatus = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false)
                     if userStatus {
                         NCCommunication.shared.getUserStatus { (account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, errorCode, errorDescription) in
-                            if errorCode == 0 && account == self.appDelegate.account && userId == self.appDelegate.userID {
+                            if errorCode == 0 && account == self.appDelegate.account && userId == self.appDelegate.userId {
                                 
                                 DispatchQueue.global().async {
                                 

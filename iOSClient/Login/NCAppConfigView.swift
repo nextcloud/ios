@@ -91,7 +91,7 @@ class NCAppConfigView: UIViewController {
                         return
                     }
                     
-                    self.appDelegate.settingAccount(account, urlBase: serverUrl, user: username, userID: tableAccount.userID, password: token!)
+                    self.appDelegate.settingAccount(account, urlBase: serverUrl, user: username, userId: tableAccount.userId, password: token!)
                     NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
                     
                     self.dismiss(animated: true) {}

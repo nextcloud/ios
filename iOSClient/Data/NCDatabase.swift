@@ -68,7 +68,7 @@ class tableAccount: Object {
     @objc dynamic var twitter = ""
     @objc dynamic var urlBase = ""
     @objc dynamic var user = ""
-    @objc dynamic var userID = ""
+    @objc dynamic var userId = ""
     @objc dynamic var userStatusClearAt: NSDate? = nil
     @objc dynamic var userStatusIcon: String?
     @objc dynamic var userStatusMessage: String?

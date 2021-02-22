@@ -231,7 +231,7 @@ extension NCLoginWeb: WKNavigationDelegate {
             return
         }
             
-        appDelegate.settingAccount(account, urlBase: urlBase, user: username, userID: tableAccount.userID, password: password)
+        appDelegate.settingAccount(account, urlBase: urlBase, user: username, userId: tableAccount.userId, password: password)
             
         if (CCUtility.getIntro()) {
             

@@ -43,7 +43,7 @@ class FileProviderDomain: NSObject {
                 for account in accounts {
                     guard let urlBase = NSURL(string: account.urlBase) else { continue }
                     guard let host = urlBase.host else { continue }
-                    let accountDomain =  account.userID + " (" + host + ")"
+                    let accountDomain =  account.userId + " (" + host + ")"
                     if domain == accountDomain {
                         domainFound = true
                         break
@@ -64,7 +64,7 @@ class FileProviderDomain: NSObject {
                 var domainFound = false
                 guard let urlBase = NSURL(string: account.urlBase) else { continue }
                 guard let host = urlBase.host else { continue }
-                let accountDomain =  account.userID + " (" + host + ")"
+                let accountDomain =  account.userId + " (" + host + ")"
                 for domain in domains {
                     if domain == accountDomain {
                         domainFound = true

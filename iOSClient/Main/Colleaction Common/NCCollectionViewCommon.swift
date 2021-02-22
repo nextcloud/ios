@@ -1269,14 +1269,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             } else {
                 cell.imageShared.image = NCCollectionCommon.images.cellCanShareImage
             }
-            if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userID {
+            if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId {
                 var fileNameUser = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + metadata.ownerId
                 fileNameUser = fileNameUser + ".png"
                 if FileManager.default.fileExists(atPath: fileNameUser) {
                     cell.imageShared.avatar()
                     cell.imageShared.image = UIImage(contentsOfFile: fileNameUser)
                 } else {
-                    NCCommunication.shared.downloadAvatar(userID: metadata.ownerId, fileNameLocalPath: fileNameUser, size: NCBrandGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
+                    NCCommunication.shared.downloadAvatar(userId: metadata.ownerId, fileNameLocalPath: fileNameUser, size: NCBrandGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.account {
                             cell.imageShared.avatar()
                             cell.imageShared.image = UIImage(contentsOfFile: fileNameUser)

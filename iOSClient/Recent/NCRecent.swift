@@ -135,7 +135,7 @@ class NCRecent: NCCollectionViewCommon  {
         dateFormatter.locale = Locale.init(identifier: "en_US_POSIX")
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
         let lessDateString = dateFormatter.string(from: Date())
-        let requestBody = String(format: requestBodyRecent, "/files/"+appDelegate.userID, lessDateString)
+        let requestBody = String(format: requestBodyRecent, "/files/"+appDelegate.userId, lessDateString)
         
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()

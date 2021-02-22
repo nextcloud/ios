@@ -37,7 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc var account: String = ""
     @objc var urlBase: String = ""
     @objc var user: String = ""
-    @objc var userID: String = ""
+    @objc var userId: String = ""
     @objc var password: String = ""
     
     var activeAppConfigView: NCAppConfigView?
@@ -120,7 +120,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NCManageDatabase.shared.updateAccount(tableAccount)
             }
             
-            settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userID: tableAccount.userID, password: CCUtility.getPassword(tableAccount.account))
+            settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId, password: CCUtility.getPassword(tableAccount.account))
             
         } else {
             
@@ -534,17 +534,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     // MARK: - Account & Communication
     
-    @objc func settingAccount(_ account: String, urlBase: String, user: String, userID: String, password: String) {
+    @objc func settingAccount(_ account: String, urlBase: String, user: String, userId: String, password: String) {
         
         self.account = account
         self.urlBase = urlBase
         self.user = user
-        self.userID = userID
+        self.userId = userId
         self.password = password
         
         _ = NCNetworkingNotificationCenter.shared
         
-        NCCommunicationCommon.shared.setup(account: account, user: user, userId: userID, password: password, urlBase: urlBase)
+        NCCommunicationCommon.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
         NCCommunicationCommon.shared.setup(webDav: NCUtilityFileSystem.shared.getWebDAV(account: account))
         NCCommunicationCommon.shared.setup(dav: NCUtilityFileSystem.shared.getDAV())
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
@@ -560,7 +560,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCPushNotification.shared().unsubscribingNextcloudServerPushNotification(account.account, urlBase: account.urlBase, user: account.user, withSubscribing: false)
         }
         
-        settingAccount("", urlBase: "", user: "", userID: "", password: "")
+        settingAccount("", urlBase: "", user: "", userId: "", password: "")
         
         let results = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
         for result in results {
@@ -578,7 +578,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if accounts?.count ?? 0 > 0 {
                 if let newAccount = accounts?.first {
                     if let account = NCManageDatabase.shared.setAccountActive(newAccount) {
-                        settingAccount(account.account, urlBase: account.urlBase, user: account.user, userID: account.userID, password: CCUtility.getPassword(account.account))
+                        settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
                         NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
                     }
                 }
@@ -706,7 +706,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                 let accountUser = account.user
                                 if link?.contains(accountURL.host ?? "") ?? false && user == accountUser {
                                     matchedAccount = NCManageDatabase.shared.setAccountActive(accountUser)
-                                    settingAccount(matchedAccount!.account, urlBase: matchedAccount!.urlBase, user: matchedAccount!.user, userID: matchedAccount!.userID, password: CCUtility.getPassword(matchedAccount!.account))
+                                    settingAccount(matchedAccount!.account, urlBase: matchedAccount!.urlBase, user: matchedAccount!.user, userId: matchedAccount!.userId, password: CCUtility.getPassword(matchedAccount!.account))
                                     NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
                                 }
                             }

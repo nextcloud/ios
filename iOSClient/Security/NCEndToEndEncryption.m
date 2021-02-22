@@ -74,7 +74,7 @@
 #pragma mark - Generate Certificate X509 - CSR - Private Key
 #
 
-- (BOOL)generateCertificateX509WithUserID:(NSString *)userID directory:(NSString *)directory
+- (BOOL)generateCertificateX509WithUserId:(NSString *)userId directory:(NSString *)directory
 {
     OPENSSL_init();
     
@@ -109,10 +109,10 @@
     // Now to add the subject name fields to the certificate
     // I use a macro here to make it cleaner.
     
-    const unsigned char *cUserID = (const unsigned char *) [userID cStringUsingEncoding:NSUTF8StringEncoding];
+    const unsigned char *cUserId = (const unsigned char *) [userId cStringUsingEncoding:NSUTF8StringEncoding];
 
     // Common Name = UserID.
-    addName("CN", cUserID);
+    addName("CN", cUserId);
     
     // The organizational unit for the cert. Usually this is a department.
     addName("OU", "Certificate Authority");
@@ -285,11 +285,11 @@
 #pragma mark - Create CSR & Encrypt/Decrypt Private Key
 #
 
-- (NSString *)createCSR:(NSString *)userID directory:(NSString *)directory
+- (NSString *)createCSR:(NSString *)userId directory:(NSString *)directory
 {
     // Create Certificate, if do not exists
     if (!_csrData) {
-        if (![self generateCertificateX509WithUserID:userID directory:directory])
+        if (![self generateCertificateX509WithUserId:userId directory:directory])
             return nil;
     }
     
@@ -298,12 +298,12 @@
     return csr;
 }
 
-- (NSString *)encryptPrivateKey:(NSString *)userID directory:(NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey
+- (NSString *)encryptPrivateKey:(NSString *)userId directory:(NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey
 {
     NSMutableData *privateKeyCipherData = [NSMutableData new];
 
     if (!_privateKeyData) {
-        if (![self generateCertificateX509WithUserID:userID directory:directory])
+        if (![self generateCertificateX509WithUserId:userId directory:directory])
             return nil;
     }
     

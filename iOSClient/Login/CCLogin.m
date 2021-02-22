@@ -399,7 +399,7 @@
         tableAccount *tableAccount = [[NCManageDatabase shared] setAccountActive:account];
         
         // Setting appDelegate active account
-        [appDelegate settingAccount:tableAccount.account urlBase:tableAccount.urlBase user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]];
+        [appDelegate settingAccount:tableAccount.account urlBase:tableAccount.urlBase user:tableAccount.user userId:tableAccount.userId password:[CCUtility getPassword:tableAccount.account]];
         
         if ([CCUtility getIntro]) {
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCBrandGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];

@@ -75,7 +75,7 @@
         [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Start session with level %lu %@", (unsigned long)levelLog, versionNextcloudiOS]];
         
         // Networking
-        [[NCCommunicationCommon shared] setupWithAccount:tableAccount.account user:tableAccount.user userId:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] urlBase:tableAccount.urlBase userAgent:[CCUtility getUserAgent] webDav:webDav dav:nil nextcloudVersion:serverVersionMajor delegate:[NCNetworking shared]];
+        [[NCCommunicationCommon shared] setupWithAccount:tableAccount.account user:tableAccount.user userId:tableAccount.userId password:[CCUtility getPassword:tableAccount.account] urlBase:tableAccount.urlBase userAgent:[CCUtility getUserAgent] webDav:webDav dav:nil nextcloudVersion:serverVersionMajor delegate:[NCNetworking shared]];
        
         _account = tableAccount.account;
         _urlBase = tableAccount.urlBase;

@@ -83,7 +83,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterReloadDataNCShare), object: nil)
         
         // Shared with you by ...
-        if metadata!.ownerId != self.appDelegate.userID {
+        if metadata!.ownerId != self.appDelegate.userId {
             
             searchFieldTopConstraint.constant = 65
             sharedWithYouByView.isHidden = false
@@ -94,7 +94,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) { sharedWithYouByImage.image = image }
             } else {
-                NCCommunication.shared.downloadAvatar(userID: metadata!.ownerId, fileNameLocalPath: fileNameLocalPath, size: NCBrandGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
+                NCCommunication.shared.downloadAvatar(userId: metadata!.ownerId, fileNameLocalPath: fileNameLocalPath, size: NCBrandGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
                     if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
                         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                             self.sharedWithYouByImage.image = image
@@ -322,7 +322,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                 }
             } else {
                 DispatchQueue.global().async {
-                    NCCommunication.shared.downloadAvatar(userID: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, size: NCBrandGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
+                    NCCommunication.shared.downloadAvatar(userId: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, size: NCBrandGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
                             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                                 DispatchQueue.main.async {
@@ -419,7 +419,7 @@ extension NCShare: UITableViewDataSource {
                     }
                 } else {
                     DispatchQueue.global().async {
-                        NCCommunication.shared.downloadAvatar(userID: tableShare.shareWith, fileNameLocalPath: fileNameLocalPath, size: NCBrandGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
+                        NCCommunication.shared.downloadAvatar(userId: tableShare.shareWith, fileNameLocalPath: fileNameLocalPath, size: NCBrandGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
                             if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
                                 if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                                     cell.imageItem.avatar()
@@ -437,7 +437,7 @@ extension NCShare: UITableViewDataSource {
                 }
                 
                 // If the initiator or the recipient is not the current user, show the list of sharees without any options to edit it.
-                if tableShare.uidOwner != self.appDelegate.userID && tableShare.uidFileOwner != self.appDelegate.userID {
+                if tableShare.uidOwner != self.appDelegate.userId && tableShare.uidFileOwner != self.appDelegate.userId {
                     cell.isUserInteractionEnabled = false
                     cell.switchCanEdit.isHidden = true
                     cell.labelCanEdit.isHidden = true
