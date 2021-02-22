@@ -52,7 +52,7 @@ class fileProviderData: NSObject {
     var fileProviderSignalUpdateWorkingSetItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
    
     // UserDefaults
-    var ncUserDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroups)
+    //var ncUserDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroups)
     
     // Error
     enum FileProviderError: Error {

@@ -74,7 +74,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var passcodeViewController: TOPasscodeViewController?
     var pasteboardOcIds: [String] = []
     var shares: [tableShare] = []
-    var ncUserDefaults: UserDefaults?
+    //var ncUserDefaults: UserDefaults?
     @objc var timerErrorNetworking: Timer?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -84,7 +84,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
 
         UserDefaults.standard.register(defaults: ["UserAgent" : userAgent])
-        if !CCUtility.getDisableCrashservice() && !NCBrandOptions.shared.disable_crash_service == false {
+        //ncUserDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroups)
+        if !CCUtility.getDisableCrashservice() && !NCBrandOptions.shared.disable_crash_service {
             FirebaseApp.configure()
         }
         
@@ -108,9 +109,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else {
             NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
         }
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(initializeMain(notification:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterInitializeMain), object: nil)
-        
+                
         if let tableAccount = NCManageDatabase.shared.getAccountActive() {
             
             // FIX 3.0.5 lost urlbase
@@ -130,8 +129,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
         }
-        
-        ncUserDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroups)
         
         // Push Notification
         application.registerForRemoteNotifications()
@@ -181,6 +178,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         // init home
+        NotificationCenter.default.addObserver(self, selector: #selector(initializeMain(notification:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterInitializeMain), object: nil)
         NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
 
         // Passcode
@@ -208,6 +206,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione entrerà in primo piano (attivo sempre)
     func applicationDidBecomeActive(_ application: UIApplication) {
+        
         NCSettingsBundleHelper.setVersionAndBuildNumber()
         if account == "" { return}
 
@@ -216,6 +215,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     // L' applicazione entrerà in primo piano (attivo solo dopo il background)
     func applicationWillEnterForeground(_ application: UIApplication) {
+        
         if account == "" { return}
 
         NCCommunicationCommon.shared.writeLog("Application will enter in foreground")
@@ -237,9 +237,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
     }
 
+    // L' applicazione si dimetterà dallo stato di attivo
     func applicationWillResignActive(_ application: UIApplication) {
+        
         if account == "" { return}
         
+        // Dismiss FileViewInFolder
         if activeFileViewInFolder != nil {
             activeFileViewInFolder?.dismiss(animated: false, completion: {
                 self.activeFileViewInFolder = nil
@@ -247,20 +250,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
     
+    // L' applicazione è entrata nello sfondo
     func applicationDidEnterBackground(_ application: UIApplication) {
+        
         if account == "" { return}
         
         NCCommunicationCommon.shared.writeLog("Application did enter in background")
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterApplicationDidEnterBackground)
+        
         passcodeWithAutomaticallyPromptForBiometricValidation(false)
         
         if #available(iOS 13.0, *) {
             scheduleAppRefresh()
             scheduleBackgroundProcessing()
         }
+        
+        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterApplicationDidEnterBackground)
     }
     
+    // L'applicazione terminerà
     func applicationWillTerminate(_ application: UIApplication) {
+        
         NCCommunicationCommon.shared.writeLog("bye bye")
     }
     
