@@ -420,6 +420,7 @@ class NCManageDatabase: NSObject {
         return folderPhotos
     }
     
+    @discardableResult
     @objc func setAccountActive(_ account: String) -> tableAccount? {
         
         let realm = try! Realm()

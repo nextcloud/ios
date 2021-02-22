@@ -709,10 +709,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         let accounts = NCManageDatabase.shared.getAllAccount()
                         for account in accounts {
                             guard let accountURL = URL(string: account.urlBase) else { return false }
-                            let accountUser = account.user
-                            if linkScheme.contains(accountURL.host ?? "") && userScheme == accountUser {
-                                matchedAccount = NCManageDatabase.shared.setAccountActive(accountUser)
-                                settingAccount(matchedAccount!.account, urlBase: matchedAccount!.urlBase, user: matchedAccount!.user, userId: matchedAccount!.userId, password: CCUtility.getPassword(matchedAccount!.account))
+                            if linkScheme.contains(accountURL.host ?? "") && userScheme == account.user {
+                                NCManageDatabase.shared.setAccountActive(account.account)
+                                guard let password = CCUtility.getPassword(account.account) else { return false }
+                                settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: password)
+                                matchedAccount = account
                                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
                             }
                         }
