@@ -605,7 +605,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let laContext = LAContext()
         var error: NSError?
         
-        if CCUtility.getPasscode()?.count == 0 || account == "" || CCUtility.getNotPasscodeAtStart() { return }
+        guard let passcode = CCUtility.getPasscode() else { return }
+        if passcode.count == 0 || account == "" || CCUtility.getNotPasscodeAtStart() { return }
         
         if passcodeViewController == nil {
             passcodeViewController = TOPasscodeViewController.init(style: .translucentLight, passcodeType: .sixDigits)
@@ -692,61 +693,51 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if let urlComponents = URLComponents.init(url: url, resolvingAgainstBaseURL: false) {
                 
                 let queryItems = urlComponents.queryItems
-                guard let user = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }
-                guard let path = CCUtility.value(forKey: "path", fromQueryItems: queryItems) else { return false }
-                guard let link = CCUtility.value(forKey: "link", fromQueryItems: queryItems) else { return false }
+                guard let userScheme = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }
+                guard let pathScheme = CCUtility.value(forKey: "path", fromQueryItems: queryItems) else { return false }
+                guard let linkScheme = CCUtility.value(forKey: "link", fromQueryItems: queryItems) else { return false }
                 
-                if user.count == 0 || path.count == 0 || URL(string: link)?.host?.count == 0 {
+                if let account = NCManageDatabase.shared.getAccountActive() {
                     
-                    let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_error_parameter_schema_", comment: ""), preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                                       
-                    window?.rootViewController?.present(alertController, animated: true, completion: { })
-                    
-                } else {
-                    
-                    if let account = NCManageDatabase.shared.getAccountActive() {
-                        
-                        let urlBase = URL(string: account.urlBase)
-                        let user = account.user
-                        if link.contains(urlBase?.host ?? "") && self.user == user {
-                            matchedAccount = account
-                        } else {
-                            let accounts = NCManageDatabase.shared.getAllAccount()
-                            for account in accounts {
-                                guard let accountURL = URL(string: account.urlBase) else { return false }
-                                let accountUser = account.user
-                                if link.contains(accountURL.host ?? "") && user == accountUser {
-                                    matchedAccount = NCManageDatabase.shared.setAccountActive(accountUser)
-                                    settingAccount(matchedAccount!.account, urlBase: matchedAccount!.urlBase, user: matchedAccount!.user, userId: matchedAccount!.userId, password: CCUtility.getPassword(matchedAccount!.account))
-                                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
-                                }
+                    let urlBase = URL(string: account.urlBase)
+                    let user = account.user
+                    if linkScheme.contains(urlBase?.host ?? "") && userScheme == user {
+                        matchedAccount = account
+                    } else {
+                        let accounts = NCManageDatabase.shared.getAllAccount()
+                        for account in accounts {
+                            guard let accountURL = URL(string: account.urlBase) else { return false }
+                            let accountUser = account.user
+                            if linkScheme.contains(accountURL.host ?? "") && userScheme == accountUser {
+                                matchedAccount = NCManageDatabase.shared.setAccountActive(accountUser)
+                                settingAccount(matchedAccount!.account, urlBase: matchedAccount!.urlBase, user: matchedAccount!.user, userId: matchedAccount!.userId, password: CCUtility.getPassword(matchedAccount!.account))
+                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
                             }
                         }
+                    }
+                    
+                    if matchedAccount != nil {
                         
-                        if matchedAccount != nil {
-                            
-                            let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: account.account)
-                            if path.contains("/") {
-                                fileName = (path as NSString).lastPathComponent
-                                serverUrl = matchedAccount!.urlBase + "/" + webDAV + "/" + (path as NSString).deletingLastPathComponent
-                            } else {
-                                fileName = path
-                                serverUrl = matchedAccount!.urlBase + "/" + webDAV
-                            }
-                            NCCollectionCommon.shared.openFileViewInFolder(serverUrl: serverUrl, fileName: fileName)
-                            
+                        let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: account.account)
+                        if pathScheme.contains("/") {
+                            fileName = (pathScheme as NSString).lastPathComponent
+                            serverUrl = matchedAccount!.urlBase + "/" + webDAV + "/" + (pathScheme as NSString).deletingLastPathComponent
                         } else {
-                            
-                            guard let domain = URL(string: link)?.host else { return true }
-                            fileName = (path as NSString).lastPathComponent
-                            let message = String(format: "_account_not_available_", user, domain, fileName)
-                            
-                            let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
-                            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                                               
-                            window?.rootViewController?.present(alertController, animated: true, completion: { })
+                            fileName = pathScheme
+                            serverUrl = matchedAccount!.urlBase + "/" + webDAV
                         }
+                        NCCollectionCommon.shared.openFileViewInFolder(serverUrl: serverUrl, fileName: fileName)
+                        
+                    } else {
+                        
+                        guard let domain = URL(string: linkScheme)?.host else { return true }
+                        fileName = (pathScheme as NSString).lastPathComponent
+                        let message = String(format: "_account_not_available_", userScheme, domain, fileName)
+                        
+                        let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                                           
+                        window?.rootViewController?.present(alertController, animated: true, completion: { })
                     }
                 }
             }
