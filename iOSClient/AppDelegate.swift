@@ -174,7 +174,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
 
         // Passcode
-        DispatchQueue.global().async {
+        DispatchQueue.main.async {
             self.passcodeWithAutomaticallyPromptForBiometricValidation(true)
         }
                 
@@ -481,6 +481,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func showLoginViewController(_ viewController:UIViewController?, contextViewController: UIViewController?) {
+        
         if contextViewController == nil {
             if let viewController = viewController {
                 let navigationController = UINavigationController.init(rootViewController: viewController)
