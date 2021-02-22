@@ -57,16 +57,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var activeViewController: UIViewController?
     var activeViewerVideo: NCViewerVideo?
     
-    struct progressType {
-        var progress: Float
-        var totalBytes: Int64
-        var totalBytesExpected: Int64
-    }
-    
     var listFilesVC: [String:NCFiles] = [:]
     var listFavoriteVC: [String:NCFavorite] = [:]
     var listOfflineVC: [String:NCOffline] = [:]
-    var listProgress: [String:progressType] = [:]
+    var listProgress: [String:NCGlobal.progressType] = [:]
     
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?

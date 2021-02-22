@@ -29,6 +29,13 @@ import Foundation
         return instance
     }()
 
+    // Struct for Progress
+    struct progressType {
+        var progress: Float
+        var totalBytes: Int64
+        var totalBytesExpected: Int64
+    }
+    
     // Directory on Group
     @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"
     @objc let appApplicationSupport                 = "Library/Application Support"

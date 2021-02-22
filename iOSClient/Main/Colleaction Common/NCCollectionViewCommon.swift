@@ -507,11 +507,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 let totalBytes = userInfo["totalBytes"] as? Int64 ?? 0
                 let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64 ?? 0
                         
-                let progressType = AppDelegate.progressType(progress: progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected)
+                let progressType = NCGlobal.progressType(progress: progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected)
                 appDelegate.listProgress[ocId] = progressType
-                
-                //appDelegate.listProgressMetadata.setObject([progress as NSNumber, totalBytes as NSNumber, totalBytesExpected as NSNumber], forKey: userInfo["ocId"] as? NSString ?? "")
-                
+                                
                 if let index = dataSource.getIndexMetadata(ocId: ocId) {
                     if let cell = collectionView?.cellForItem(at: IndexPath(row: index, section: 0)) {
                         if cell is NCListCell {
