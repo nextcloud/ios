@@ -732,12 +732,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         
                         guard let domain = URL(string: linkScheme)?.host else { return true }
                         fileName = (pathScheme as NSString).lastPathComponent
-                        let message = String(format: "_account_not_available_", userScheme, domain, fileName)
+                        let message = String(format: NSLocalizedString("_account_not_available_", comment: ""), userScheme, domain, fileName)
                         
                         let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
                                            
                         window?.rootViewController?.present(alertController, animated: true, completion: { })
+                        
+                        return false
                     }
                 }
             }
