@@ -692,11 +692,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if let urlComponents = URLComponents.init(url: url, resolvingAgainstBaseURL: false) {
                 
                 let queryItems = urlComponents.queryItems
-                let user = CCUtility.value(forKey: "user", fromQueryItems: queryItems)
-                let path = CCUtility.value(forKey: "path", fromQueryItems: queryItems)
-                let link = CCUtility.value(forKey: "link", fromQueryItems: queryItems)
+                guard let user = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }
+                guard let path = CCUtility.value(forKey: "path", fromQueryItems: queryItems) else { return false }
+                guard let link = CCUtility.value(forKey: "link", fromQueryItems: queryItems) else { return false }
                 
-                if user?.count == 0 || path?.count == 0 || URL(string: link)?.host?.count == 0 {
+                if user.count == 0 || path.count == 0 || URL(string: link)?.host?.count == 0 {
                     
                     let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_error_parameter_schema_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
@@ -709,14 +709,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         
                         let urlBase = URL(string: account.urlBase)
                         let user = account.user
-                        if link?.contains(urlBase?.host ?? "") ?? false && self.user == user {
+                        if link.contains(urlBase?.host ?? "") && self.user == user {
                             matchedAccount = account
                         } else {
                             let accounts = NCManageDatabase.shared.getAllAccount()
                             for account in accounts {
                                 guard let accountURL = URL(string: account.urlBase) else { return false }
                                 let accountUser = account.user
-                                if link?.contains(accountURL.host ?? "") ?? false && user == accountUser {
+                                if link.contains(accountURL.host ?? "") && user == accountUser {
                                     matchedAccount = NCManageDatabase.shared.setAccountActive(accountUser)
                                     settingAccount(matchedAccount!.account, urlBase: matchedAccount!.urlBase, user: matchedAccount!.user, userId: matchedAccount!.userId, password: CCUtility.getPassword(matchedAccount!.account))
                                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
@@ -727,11 +727,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         if matchedAccount != nil {
                             
                             let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: account.account)
-                            if path!.contains("/") {
-                                fileName = (path! as NSString).lastPathComponent
-                                serverUrl = matchedAccount!.urlBase + "/" + webDAV + "/" + (path! as NSString).deletingLastPathComponent
+                            if path.contains("/") {
+                                fileName = (path as NSString).lastPathComponent
+                                serverUrl = matchedAccount!.urlBase + "/" + webDAV + "/" + (path as NSString).deletingLastPathComponent
                             } else {
-                                fileName = path!
+                                fileName = path
                                 serverUrl = matchedAccount!.urlBase + "/" + webDAV
                             }
                             NCCollectionCommon.shared.openFileViewInFolder(serverUrl: serverUrl, fileName: fileName)
@@ -739,7 +739,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         } else {
                             
                             guard let domain = URL(string: link)?.host else { return true }
-                            fileName = (path! as NSString).lastPathComponent
+                            fileName = (path as NSString).lastPathComponent
                             let message = String(format: "_account_not_available_", user, domain, fileName)
                             
                             let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
