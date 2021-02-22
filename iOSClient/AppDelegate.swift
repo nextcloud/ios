@@ -515,7 +515,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         timerErrorNetworking = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(checkErrorNetworking), userInfo: nil, repeats: true)
     }
     
-    @objc func checkErrorNetworking() {
+    @objc private func checkErrorNetworking() {
         
         if account == "" { return }
         
