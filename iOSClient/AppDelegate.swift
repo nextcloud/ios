@@ -68,7 +68,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var passcodeViewController: TOPasscodeViewController?
     var pasteboardOcIds: [String] = []
     var shares: [tableShare] = []
-    //var ncUserDefaults: UserDefaults?
     @objc var timerErrorNetworking: Timer?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -78,7 +77,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
 
         UserDefaults.standard.register(defaults: ["UserAgent" : userAgent])
-        //ncUserDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroups)
         if !CCUtility.getDisableCrashservice() && !NCBrandOptions.shared.disable_crash_service {
             FirebaseApp.configure()
         }

@@ -50,10 +50,7 @@ class fileProviderData: NSObject {
     var fileProviderSignalUpdateContainerItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
     var fileProviderSignalDeleteWorkingSetItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateWorkingSetItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
-   
-    // UserDefaults
-    //var ncUserDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroups)
-    
+       
     // Error
     enum FileProviderError: Error {
         case downloadError
