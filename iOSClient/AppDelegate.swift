@@ -122,7 +122,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
         
-        // Push Notification
+        // Push Notification & display notification
         application.registerForRemoteNotifications()
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { (_, _) in }
@@ -161,9 +161,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         } else {
             if !CCUtility.getIntro() {
-                if let introViewController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() {
-                    let navController = UINavigationController(rootViewController: introViewController)
-                    window?.rootViewController = navController
+                if let viewController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() {
+                    let navigationController = UINavigationController(rootViewController: viewController)
+                    window?.rootViewController = navigationController
                     window?.makeKeyAndVisible()
                 }
             }
