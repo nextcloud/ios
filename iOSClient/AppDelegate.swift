@@ -102,17 +102,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
         }
                 
-        if let tableAccount = NCManageDatabase.shared.getAccountActive() {
+        if let resultActiveAccount = NCManageDatabase.shared.getAccountActive() {
             
             // FIX 3.0.5 lost urlbase
-            if tableAccount.urlBase.count == 0 {
-                let user = tableAccount.user + " "
-                let urlBase = tableAccount.account.replacingOccurrences(of: user, with: "")
-                tableAccount.urlBase = urlBase
-                NCManageDatabase.shared.updateAccount(tableAccount)
+            if resultActiveAccount.urlBase.count == 0 {
+                let user = resultActiveAccount.user + " "
+                let urlBase = resultActiveAccount.account.replacingOccurrences(of: user, with: "")
+                resultActiveAccount.urlBase = urlBase
+                NCManageDatabase.shared.updateAccount(resultActiveAccount)
             }
             
-            settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId, password: CCUtility.getPassword(tableAccount.account))
+            settingAccount(resultActiveAccount.account, urlBase: resultActiveAccount.urlBase, user: resultActiveAccount.user, userId: resultActiveAccount.userId, password: CCUtility.getPassword(resultActiveAccount.account))
             
         } else {
             
