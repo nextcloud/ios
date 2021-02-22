@@ -415,22 +415,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc func openLogin(viewController: UIViewController?, selector: Int, openLoginWeb: Bool) {
        
         // use appConfig [MDM]
-        if NCBrandOptions.shared.use_configuration && !(activeAppConfigView?.isViewLoaded ?? false) && activeAppConfigView?.view.window == nil {
-            activeAppConfigView = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCAppConfigView") as? NCAppConfigView
-            showLoginViewController(activeAppConfigView, contextViewController: viewController)
+        if NCBrandOptions.shared.use_configuration {
+            if !(activeAppConfigView?.isViewLoaded ?? false) && activeAppConfigView?.view.window == nil {
+                activeAppConfigView = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCAppConfigView") as? NCAppConfigView
+                showLoginViewController(activeAppConfigView, contextViewController: viewController)
+            }
             return
         }
         
         // only for personalized LoginWeb [customer]
-        if NCBrandOptions.shared.use_login_web_personalized && !(activeLoginWeb?.isViewLoaded ?? false) && activeLoginWeb?.view.window == nil {
-            activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
-            activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
-            showLoginViewController(activeLoginWeb, contextViewController: viewController)
+        if NCBrandOptions.shared.use_login_web_personalized {
+            if !(activeLoginWeb?.isViewLoaded ?? false) && activeLoginWeb?.view.window == nil {
+                activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+                activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
+                showLoginViewController(activeLoginWeb, contextViewController: viewController)
+            }
             return
         }
         
         // Nextcloud standard login
         if selector == NCBrandGlobal.shared.introSignup {
+            
             if !(activeLoginWeb?.isViewLoaded ?? false) && activeLoginWeb?.view.window == nil {
                 activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
                 if selector == NCBrandGlobal.shared.introSignup {
@@ -440,17 +445,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
                 showLoginViewController(activeLoginWeb, contextViewController: viewController)
             }
+            
         } else if NCBrandOptions.shared.disable_intro && NCBrandOptions.shared.disable_request_login_url {
-            activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
-            activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
-            showLoginViewController(activeLoginWeb, contextViewController: viewController)
-        } else if openLoginWeb && !(activeLoginWeb?.isViewLoaded ?? false) && activeLoginWeb?.view.window == nil {
-            activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
-            activeLoginWeb?.urlBase = urlBase
-            showLoginViewController(activeLoginWeb, contextViewController: viewController)
-        } else if !(activeLoginWeb?.isViewLoaded ?? false) && activeLoginWeb?.view.window == nil {
-            activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
-            showLoginViewController(activeLoginWeb, contextViewController: viewController)
+            
+            if !(activeLoginWeb?.isViewLoaded ?? false) && activeLoginWeb?.view.window == nil {
+                activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+                activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
+                showLoginViewController(activeLoginWeb, contextViewController: viewController)
+            }
+            
+        } else if openLoginWeb {
+            
+            if !(activeLoginWeb?.isViewLoaded ?? false) && activeLoginWeb?.view.window == nil {
+                activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+                activeLoginWeb?.urlBase = urlBase
+                showLoginViewController(activeLoginWeb, contextViewController: viewController)
+            }
+            
+        } else {
+            
+            if !(activeLogin?.isViewLoaded ?? false) && activeLogin?.view.window == nil {
+                activeLogin = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "CCLoginNextcloud") as? CCLogin
+                showLoginViewController(activeLogin, contextViewController: viewController)
+            }
         }
     }
 
