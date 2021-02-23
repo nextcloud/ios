@@ -174,11 +174,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             application.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum)
         }
         
-        // Passcode
-        DispatchQueue.main.async {
-            self.passcodeWithAutomaticallyPromptForBiometricValidation(true)
-        }
-        
         // Intro
         if NCBrandOptions.shared.disable_intro {
             CCUtility.setIntro(true)
@@ -193,6 +188,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     window?.makeKeyAndVisible()
                 }
             }
+        }
+        
+        // Passcode
+        DispatchQueue.main.async {
+            self.passcodeWithAutomaticallyPromptForBiometricValidation(true)
         }
         
         return true
