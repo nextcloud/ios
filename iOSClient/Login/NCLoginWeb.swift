@@ -24,6 +24,7 @@
 import Foundation
 import WebKit
 import NCCommunication
+import FloatingPanel
 
 class NCLoginWeb: UIViewController {
     
@@ -37,6 +38,8 @@ class NCLoginWeb: UIViewController {
     @objc var loginFlowV2Token = ""
     @objc var loginFlowV2Endpoint = ""
     @objc var loginFlowV2Login = ""
+    
+    // MARK: - Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -117,6 +120,61 @@ class NCLoginWeb: UIViewController {
     
     @objc func changeUser(sender: UIBarButtonItem) {
         
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+        mainMenuViewController.actions = self.initUsersMenu()
+
+        let menuPanelController = NCMenuPanelController()
+        menuPanelController.parentPresenter = self
+        menuPanelController.delegate = mainMenuViewController
+        menuPanelController.set(contentViewController: mainMenuViewController)
+        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+
+        self.present(menuPanelController, animated: true, completion: nil)
+    }
+    
+    // MARK: -
+    
+    private func initUsersMenu() -> [NCMenuAction] {
+        
+        var actions = [NCMenuAction]()
+        let accounts = NCManageDatabase.shared.getAllAccount()
+        var avatar = UIImage(named: "avatarCredentials")!.image(color: NCBrandColor.shared.icon, size: 50)
+        
+        for account in accounts {
+            
+            var fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(account.user, urlBase: account.urlBase) + "_" + account.user
+            fileNamePath = fileNamePath + ".png"
+            if var userImage = UIImage(contentsOfFile: fileNamePath) {
+                userImage = userImage.resizeImage(size: CGSize(width: 50, height: 50), isAspectRation: true)!
+                let userImageView = UIImageView(image: userImage)
+                userImageView.avatar(roundness: 2, borderWidth: 1, borderColor: NCBrandColor.shared.avatarBorder, backgroundColor: .clear)
+                UIGraphicsBeginImageContext(userImageView.bounds.size)
+                userImageView.layer.render(in: UIGraphicsGetCurrentContext()!)
+                if let newAvatar = UIGraphicsGetImageFromCurrentImageContext() {
+                    avatar = newAvatar
+                }
+                UIGraphicsEndImageContext()
+            }
+            
+            actions.append(
+                NCMenuAction(
+                    title: account.account,
+                    icon: avatar,
+                    onTitle: account.account,
+                    onIcon: avatar,
+                    selected: account.active == true,
+                    on: account.active == true,
+                    action: { menuAction in
+                        self.dismiss(animated: true) {
+                            self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+                        }
+                    }
+                )
+            )
+        }
+       
+        return actions
     }
 }
 
