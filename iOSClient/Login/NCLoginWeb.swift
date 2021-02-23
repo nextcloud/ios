@@ -144,7 +144,7 @@ class NCLoginWeb: UIViewController {
         for account in accounts {
             
             let title = account.user + " " + (URL(string: account.urlBase)?.host ?? "")
-            var fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(account.user, urlBase: account.urlBase) + "_" + account.user
+            var fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(account.user, urlBase: account.urlBase) + "-" + account.user
             fileNamePath = fileNamePath + ".png"
 
             if var userImage = UIImage(contentsOfFile: fileNamePath) {
