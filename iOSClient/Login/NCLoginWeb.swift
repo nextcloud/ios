@@ -143,10 +143,10 @@ class NCLoginWeb: UIViewController {
         
         for account in accounts {
             
-            let title = account.user + " " + URL(string: account.urlBase)?.host ?? ""
-            
+            let title = account.user + " " + (URL(string: account.urlBase)?.host ?? "")
             var fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(account.user, urlBase: account.urlBase) + "_" + account.user
             fileNamePath = fileNamePath + ".png"
+
             if var userImage = UIImage(contentsOfFile: fileNamePath) {
                 userImage = userImage.resizeImage(size: CGSize(width: 50, height: 50), isAspectRation: true)!
                 let userImageView = UIImageView(image: userImage)
@@ -168,10 +168,12 @@ class NCLoginWeb: UIViewController {
                     selected: account.active == true,
                     on: account.active == true,
                     action: { menuAction in
-                        if self.accont != account.account {
-                            self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
-                            self.appDelegate.initializeMain()
-                            self.dismiss(animated: true) { }
+                        if self.account != account.account {
+                            NCManageDatabase.shared.setAccountActive(account.account)
+                            self.dismiss(animated: true) {
+                                self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
+                                self.appDelegate.initializeMain()
+                            }
                         }
                     }
                 )
