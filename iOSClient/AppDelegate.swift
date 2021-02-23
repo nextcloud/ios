@@ -101,7 +101,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else {
             NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
         }
-                
+        
+        // Activate user account
         if let resultActiveAccount = NCManageDatabase.shared.getAccountActive() {
             
             // FIX 3.0.5 lost urlbase
@@ -121,6 +122,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
         }
+        
+        // init home
+        NotificationCenter.default.addObserver(self, selector: #selector(initializeMain(notification:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitializeMain), object: nil)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+        
+        // Auto upload
+        networkingAutoUpload = NCNetworkingAutoUpload.init()
         
         // Push Notification & display notification
         application.registerForRemoteNotifications()
@@ -154,6 +162,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
         
+        // Background task: register
+        if #available(iOS 13.0, *) {
+            BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.refreshTask, using: nil) { task in
+                self.handleRefreshTask(task)
+            }
+            BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.processingTask, using: nil) { task in
+                self.handleProcessingTask(task)
+            }
+        } else {
+            application.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum)
+        }
+        
+        // Passcode
+        DispatchQueue.main.async {
+            self.passcodeWithAutomaticallyPromptForBiometricValidation(true)
+        }
+        
+        // Intro
         if NCBrandOptions.shared.disable_intro {
             CCUtility.setIntro(true)
             if account == "" {
@@ -167,30 +193,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     window?.makeKeyAndVisible()
                 }
             }
-        }
-        
-        // init home
-        NotificationCenter.default.addObserver(self, selector: #selector(initializeMain(notification:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitializeMain), object: nil)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
-
-        // Passcode
-        DispatchQueue.main.async {
-            self.passcodeWithAutomaticallyPromptForBiometricValidation(true)
-        }
-                
-        // Auto upload
-        networkingAutoUpload = NCNetworkingAutoUpload.init()
-        
-        // Background task: register
-        if #available(iOS 13.0, *) {
-            BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.refreshTask, using: nil) { task in
-                self.handleRefreshTask(task)
-            }
-            BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.processingTask, using: nil) { task in
-                self.handleProcessingTask(task)
-            }
-        } else {
-            application.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum)
         }
         
         return true
