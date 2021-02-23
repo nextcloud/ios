@@ -549,7 +549,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
     
-    // MARK: - Account & Communication
+    // MARK: - Account
     
     @objc func settingAccount(_ account: String, urlBase: String, user: String, userId: String, password: String) {
         
@@ -572,7 +572,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     @objc func deleteAccount(_ account: String, wipe: Bool) {
         
-        // Push Notification
         if let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
             NCPushNotification.shared().unsubscribingNextcloudServerPushNotification(account.account, urlBase: account.urlBase, user: account.user, withSubscribing: false)
         }
@@ -734,9 +733,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                             fileName = pathScheme
                             serverUrl = matchedAccount!.urlBase + "/" + webDAV
                         }
+                        
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             NCCollectionCommon.shared.openFileViewInFolder(serverUrl: serverUrl, fileName: fileName)
                         }
+                        
                     } else {
                         
                         guard let domain = URL(string: linkScheme)?.host else { return true }
