@@ -41,12 +41,14 @@ class NCLoginWeb: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if (NCBrandOptions.shared.use_login_web_personalized) {
-            if let accountCount = NCManageDatabase.shared.getAccounts()?.count {
-                if(accountCount > 0) {
-                    self.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
-                }
-            }
+        let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
+        
+        if NCBrandOptions.shared.use_login_web_personalized  && accountCount > 0 {
+            navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
+        }
+        
+        if accountCount > 0 {
+            navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "users")!.image(color: NCBrandColor.shared.textView, size: 35), style: .plain, target: self, action:  #selector(self.changeUser(sender:)))
         }
         
         let config = WKWebViewConfiguration()
@@ -113,6 +115,9 @@ class NCLoginWeb: UIViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
+    @objc func changeUser(sender: UIBarButtonItem) {
+        
+    }
 }
 
 extension NCLoginWeb: WKNavigationDelegate {
