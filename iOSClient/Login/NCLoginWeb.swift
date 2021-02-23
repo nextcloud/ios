@@ -33,7 +33,6 @@ class NCLoginWeb: UIViewController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     @objc var urlBase = ""
-    @objc var account = ""
     
     @objc var loginFlowV2Available = false
     @objc var loginFlowV2Token = ""
@@ -168,7 +167,7 @@ class NCLoginWeb: UIViewController {
                     selected: account.active == true,
                     on: account.active == true,
                     action: { menuAction in
-                        if self.account != account.account {
+                        if self.appDelegate.account != account.account {
                             NCManageDatabase.shared.setAccountActive(account.account)
                             self.dismiss(animated: true) {
                                 self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
