@@ -124,7 +124,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         // init home
-        NotificationCenter.default.addObserver(self, selector: #selector(initializeMain(notification:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitializeMain), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(initializeMain), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitializeMain), object: nil)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
         
         // Auto upload
@@ -272,7 +272,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     // MARK: -
 
-    @objc func initializeMain(notification: NSNotification) {
+    @objc func initializeMain() {
         
         if account == "" { return}
 
@@ -467,6 +467,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if activeLoginWeb?.view.window == nil {
                 activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
                 activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
+                activeLoginWeb?.account = account
                 showLoginViewController(activeLoginWeb, contextViewController: viewController)
             }
             
@@ -475,6 +476,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if activeLoginWeb?.view.window == nil {
                 activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
                 activeLoginWeb?.urlBase = urlBase
+                activeLoginWeb?.account = account
                 showLoginViewController(activeLoginWeb, contextViewController: viewController)
             }
             

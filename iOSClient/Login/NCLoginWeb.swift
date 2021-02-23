@@ -33,6 +33,7 @@ class NCLoginWeb: UIViewController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     @objc var urlBase = ""
+    @objc var account = ""
     
     @objc var loginFlowV2Available = false
     @objc var loginFlowV2Token = ""
@@ -142,6 +143,8 @@ class NCLoginWeb: UIViewController {
         
         for account in accounts {
             
+            let title = account.user + " " + URL(string: account.urlBase)?.host ?? ""
+            
             var fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(account.user, urlBase: account.urlBase) + "_" + account.user
             fileNamePath = fileNamePath + ".png"
             if var userImage = UIImage(contentsOfFile: fileNamePath) {
@@ -158,16 +161,17 @@ class NCLoginWeb: UIViewController {
             
             actions.append(
                 NCMenuAction(
-                    title: account.account,
+                    title: title,
                     icon: avatar,
-                    onTitle: account.account,
+                    onTitle: title,
                     onIcon: avatar,
                     selected: account.active == true,
                     on: account.active == true,
                     action: { menuAction in
-                        self.dismiss(animated: true) {
+                        if self.accont != account.account {
                             self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+                            self.appDelegate.initializeMain()
+                            self.dismiss(animated: true) { }
                         }
                     }
                 )
