@@ -732,8 +732,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                             fileName = pathScheme
                             serverUrl = matchedAccount!.urlBase + "/" + webDAV
                         }
-                        NCCollectionCommon.shared.openFileViewInFolder(serverUrl: serverUrl, fileName: fileName)
-                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            NCCollectionCommon.shared.openFileViewInFolder(serverUrl: serverUrl, fileName: fileName)
+                        }
                     } else {
                         
                         guard let domain = URL(string: linkScheme)?.host else { return true }
