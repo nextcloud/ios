@@ -266,6 +266,60 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
     
+    func afterLogin(urlBase: String, user: String, token: String, errorCode: Int, errorDescription: String) {
+        
+        if errorCode == 0 {
+            
+            let account = user + " " + urlBase
+            
+            if NCManageDatabase.shared.getAccounts() == nil {
+                NCUtility.shared.removeAllSettings()
+            }
+            
+            NCManageDatabase.shared.deleteAccount(account)
+            NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, password: token)
+            
+            if let activeAccount = NCManageDatabase.shared.setAccountActive(account) {
+                appDelegate.settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
+            } else {
+                
+            }
+            
+            if CCUtility.getIntro() {
+                
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+                self.dismiss(animated: true)
+                
+            } else {
+                
+                CCUtility.setIntro(true)
+                
+                if self.presentingViewController == nil {
+                    
+                    let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+                    viewController?.modalPresentationStyle = .fullScreen
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+                    self.appDelegate.window?.rootViewController = viewController
+                    self.appDelegate.window?.makeKey()
+                    
+                } else {
+                    
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+                    self.dismiss(animated: true)
+                }
+            }
+            
+        } else if errorCode != NSURLErrorServerCertificateUntrusted {
+            
+            let message = NSLocalizedString("_not_possible_connect_to_server_", comment: "") + ".\n" + errorDescription
+            let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
+            
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
+
+            self.present(alertController, animated: true, completion: { })
+        }
+    }
+    
     // MARK: - QRCode
 
     func dismissQRCode(_ value: String?, metadataType: String?) {
@@ -299,7 +353,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     self.activity.stopAnimating()
                     self.login.isEnabled = true
                     
-                    // [self afterLoginWithUrl:url user:user token:token errorCode:errorCode message:errorDescription];
+                    self.afterLogin(urlBase: self.baseUrl.text!, user: self.user.text!, token: self.password.text!, errorCode: errorCode, errorDescription: errorDescription)
                 }
             }
         }
