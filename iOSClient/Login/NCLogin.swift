@@ -175,18 +175,65 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     @IBAction func handlebaseUrlchange(_ sender: Any) {
         
+        if baseUrl.text?.count ?? 0 > 0 && !user.isHidden && !password.isHidden {
+            isUrlValid()
+        }
     }
     
     @IBAction func handleButtonLogin(_ sender: Any) {
         
+        if baseUrl.text?.count ?? 0 > 0 && !user.isHidden && !password.isHidden {
+            
+            isUrlValid()
+            
+        } else if baseUrl.text?.count ?? 0 > 0 && user.text?.count ?? 0 > 0 && password.text?.count ?? 0 > 0 {
+            
+            guard var url = baseUrl.text else { return }
+            if url.hasSuffix("/") {
+                url = String(url.dropLast())
+            }
+            
+            login.isEnabled = false
+            activity.startAnimating()
+            
+            NCCommunication.shared.getAppPassword(serverUrl: url, username: user.text!, password: password.text!) { (token, errorCode, errorDescription) in
+                
+                self.login.isEnabled = true
+                self.activity.stopAnimating()
+                
+                self.standardLogin(urlBase: url, user: self.user.text ?? "", token: token ?? "", errorCode: errorCode, errorDescription: errorDescription)
+            }
+        }
     }
     
     @IBAction func handleToggleVisiblePassword(_ sender: Any) {
         
+        let currentPassword = self.password.text
+        
+        password.isSecureTextEntry = !password.isSecureTextEntry
+        password.text = currentPassword
     }
     
     @IBAction func handleLoginTypeView(_ sender: Any) {
         
+        if user.isHidden && password.isHidden {
+            
+            imageUser.isHidden = false
+            user.isHidden = false
+            imagePassword.isHidden = false
+            password.isHidden = false
+            
+            loginTypeView.setTitle(NSLocalizedString("_web_login_", comment: ""), for: .normal)
+            
+        } else {
+            
+            imageUser.isHidden = true
+            user.isHidden = true
+            imagePassword.isHidden = true
+            password.isHidden = true
+            
+            loginTypeView.setTitle(NSLocalizedString("_traditional_login_", comment: ""), for: .normal)
+        }
     }
     
     @IBAction func handleQRCode(_ sender: Any) {
@@ -288,7 +335,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
     
-    func afterLogin(urlBase: String, user: String, token: String, errorCode: Int, errorDescription: String) {
+    func standardLogin(urlBase: String, user: String, token: String, errorCode: Int, errorDescription: String) {
         
         if errorCode == 0 {
             
@@ -375,7 +422,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     self.activity.stopAnimating()
                     self.login.isEnabled = true
                     
-                    self.afterLogin(urlBase: self.baseUrl.text!, user: self.user.text!, token: self.password.text!, errorCode: errorCode, errorDescription: errorDescription)
+                    self.standardLogin(urlBase: self.baseUrl.text!, user: self.user.text!, token: self.password.text!, errorCode: errorCode, errorDescription: errorDescription)
                 }
             }
         }
