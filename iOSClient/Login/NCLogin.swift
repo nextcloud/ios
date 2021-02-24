@@ -45,10 +45,100 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     @IBOutlet weak var qrCode: UIButton!
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var textColor: UIColor = .white
+    var textColorOpponent: UIColor = .black
+    var cancelButton: UIBarButtonItem?
 
 
     // MARK: - Life Cycle
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        view.backgroundColor = NCBrandColor.shared.customer
+        
+        // Text color
+        if NCBrandColor.shared.customer.isTooLight() {
+            textColor = .black
+            textColorOpponent = .white
+        } else if NCBrandColor.shared.customer.isTooDark() {
+            textColor = .white
+            textColorOpponent = .black
+        } else {
+            textColor = .white
+            textColorOpponent = .black
+        }
+        
+        // Image Brand
+        imageBrand.image = UIImage(named: "logo")
+        
+        // Cancel Button
+        cancelButton = UIBarButtonItem.init(barButtonSystemItem: .stop, target: self, action: #selector(self.actionCancel))
+        cancelButton?.tintColor = textColor
+        
+        // Url
+        imageBaseUrl.image = UIImage(named: "loginURL")?.image(color: textColor, size: 50)
+        baseUrl.textColor = textColor
+        baseUrl.tintColor = textColor
+        baseUrl.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("_login_url_", comment: ""), attributes: [NSAttributedString.Key.foregroundColor: textColor.withAlphaComponent(0.5)])
+        baseUrl.delegate = self
+        
+        // User
+        imageUser.image = UIImage(named: "loginUser")?.image(color: textColor, size: 50)
+        user.textColor = textColor
+        user.tintColor = textColor
+        user.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("_username_", comment: ""), attributes: [NSAttributedString.Key.foregroundColor: textColor.withAlphaComponent(0.5)])
+        user.delegate = self
+        
+        // password
+        imagePassword.image = UIImage(named: "loginPassword")?.image(color: textColor, size: 50)
+        password.textColor = textColor
+        password.tintColor = textColor
+        password.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("_password_", comment: ""), attributes: [NSAttributedString.Key.foregroundColor: textColor.withAlphaComponent(0.5)])
+        password.delegate = self
+        
+        // toggle visible password
+        toggleVisiblePassword.setImage(UIImage(named: "visiblePassword")?.image(color: textColor, size: 50), for: .normal)
+        
+        // login
+        login.setTitle(NSLocalizedString("_login_", comment: ""), for: .normal)
+        login.backgroundColor = textColor
+        login.tintColor = textColor
+        login.layer.cornerRadius = 20
+        login.clipsToBounds = true
+        
+        // type of login
+        loginTypeView.setTitle(NSLocalizedString("_traditional_login_", comment: ""), for: .normal)
+        loginTypeView.setTitleColor(textColor.withAlphaComponent(0.5), for: .normal)
+     
+        // brand
+        if NCBrandOptions.shared.disable_request_login_url {
+            baseUrl.text = NCBrandOptions.shared.loginBaseUrl
+            imageBaseUrl.isHidden = true
+            baseUrl.isHidden = true
+        }
+        
+        // qrcode
+        qrCode.setImage(UIImage(named: "qrcode")?.image(color: textColor, size: 100), for: .normal)
+        
+        if NCManageDatabase.shared.getAccounts()?.count ?? 0 == 0 {
+            imageUser.isHidden = true
+            user.isHidden = true
+            imagePassword.isHidden = true
+            password.isHidden = true
+        } else {
+            imageUser.isHidden = true
+            user.isHidden = true
+            imagePassword.isHidden = true
+            password.isHidden = true
+            navigationItem.leftBarButtonItem = cancelButton
+        }
+
+    }
+    
+    @objc func actionCancel() {
+        dismiss(animated: true) { }
+    }
     
     
     // MARK: - QRCode
