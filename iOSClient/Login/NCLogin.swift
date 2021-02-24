@@ -136,10 +136,135 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        appDelegate.timerErrorNetworking?.invalidate()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        appDelegate.startTimerErrorNetworking()
+    }
+    
+    // MARK: - TextField
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return false
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField == password {
+            toggleVisiblePassword.isHidden = false
+        }
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if textField == password {
+            toggleVisiblePassword.isHidden = true
+        }
+    }
+    
+    // MARK: - Action
+
     @objc func actionCancel() {
         dismiss(animated: true) { }
     }
     
+    // MARK: - Login
+
+    func isUrlValid() {
+
+        // Check whether baseUrl contain protocol. If not add https:// by default.
+        if (baseUrl.text?.hasPrefix("https") ?? false) == false && (baseUrl.text?.hasPrefix("http") ?? false) == false {
+            self.baseUrl.text = "https://" + (self.baseUrl.text ?? "")
+        }
+        
+        guard var url = baseUrl.text else { return }
+        
+        login.isEnabled = false
+        activity.startAnimating()
+        
+        if url.hasSuffix("/") {
+            url = String(url.dropLast())
+        }
+        
+        NCCommunication.shared.getServerStatus(serverUrl: url) { (serverProductName, serverVersion, versionMajor, versionMinor, versionMicro, extendedSupport, errorCode ,errorDescription) in
+            
+            if errorCode == 0 {
+                
+                NCCommunication.shared.getLoginFlowV2(serverUrl: url) { (token, endpoint, login, errorCode, errorDescription) in
+                    
+                    self.login.isEnabled = true
+                    self.activity.stopAnimating()
+                    
+                    if errorCode == 0 && NCBrandOptions.shared.use_loginflowv2 && token != nil && endpoint != nil && login != nil {
+                        
+                        if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
+                            loginWeb.urlBase = url
+                            loginWeb.loginFlowV2Available = true
+                            loginWeb.loginFlowV2Token = token!
+                            loginWeb.loginFlowV2Endpoint = endpoint!
+                            loginWeb.loginFlowV2Login = login!
+                            
+                            self.navigationController?.pushViewController(loginWeb, animated: true)
+                        }
+                        
+                    } else if self.user.isHidden && self.password.isHidden && versionMajor >= NCGlobal.shared.nextcloudVersion12 {
+                        
+                        if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
+                            loginWeb.urlBase = url
+
+                            self.navigationController?.pushViewController(loginWeb, animated: true)
+                        }
+                        
+                    } else if versionMajor < NCGlobal.shared.nextcloudVersion12 {
+                        
+                        self.loginTypeView.isHidden = true
+                        
+                        self.imageUser.isHidden = false
+                        self.user.isHidden = false
+                        self.user.becomeFirstResponder()
+                        self.imagePassword.isHidden = false
+                        self.password.isHidden = false
+                    }
+                }
+                
+            } else {
+               
+                self.login.isEnabled = true
+                self.activity.stopAnimating()
+                
+                if errorCode == NSURLErrorServerCertificateUntrusted {
+                    
+                    let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
+                                
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
+                        NCNetworking.shared.writeCertificate(directoryCertificate: CCUtility.getDirectoryCerificates())
+                        self.appDelegate.startTimerErrorNetworking()
+                    }))
+                    
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
+                        self.appDelegate.startTimerErrorNetworking()
+                    }))
+                    
+                    self.present(alertController, animated: true, completion: {
+                        self.appDelegate.timerErrorNetworking?.invalidate()
+                    })
+                    
+                } else {
+                    
+                    let alertController = UIAlertController(title: NSLocalizedString("_connection_error_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
+
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
+                    
+                    self.present(alertController, animated: true, completion: { })
+                }
+            }
+        }
+    }
     
     // MARK: - QRCode
 
