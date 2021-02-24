@@ -172,6 +172,28 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     @objc func actionCancel() {
         dismiss(animated: true) { }
     }
+
+    @IBAction func handlebaseUrlchange(_ sender: Any) {
+        
+    }
+    
+    @IBAction func handleButtonLogin(_ sender: Any) {
+        
+    }
+    
+    @IBAction func handleToggleVisiblePassword(_ sender: Any) {
+        
+    }
+    
+    @IBAction func handleLoginTypeView(_ sender: Any) {
+        
+    }
+    
+    @IBAction func handleQRCode(_ sender: Any) {
+        
+        let qrCode = NCLoginQRCode.init(delegate: self)
+        qrCode.scan()
+    }
     
     // MARK: - Login
 

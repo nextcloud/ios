@@ -22,7 +22,6 @@
 //
 
 #import <XLForm/XLForm.h>
-#import "CCLogin.h"
 
 @interface CCManageAccount : XLFormViewController
 

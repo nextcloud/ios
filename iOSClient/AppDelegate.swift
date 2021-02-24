@@ -44,7 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var activeFavorite: NCFavorite?
     var activeFiles: NCFiles?
     var activeFileViewInFolder: NCFileViewInFolder?
-    @objc var activeLogin: CCLogin?
+    @objc var activeLogin: NCLogin?
     var activeLoginWeb: NCLoginWeb?
     @objc var activeMedia: NCMedia?
     var activeMore: NCMore?
@@ -432,7 +432,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if NCBrandOptions.shared.use_configuration {
             
             if activeAppConfigView?.view.window == nil {
-                activeAppConfigView = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCAppConfigView") as? NCAppConfigView
+                activeAppConfigView = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCAppConfigView") as? NCAppConfigView
                 showLoginViewController(activeAppConfigView, contextViewController: viewController)
             }
             return
@@ -442,7 +442,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if NCBrandOptions.shared.use_login_web_personalized {
             
             if activeLoginWeb?.view.window == nil {
-                activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
                 activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
                 showLoginViewController(activeLoginWeb, contextViewController: viewController)
             }
@@ -453,7 +453,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if selector == NCGlobal.shared.introSignup {
             
             if activeLoginWeb?.view.window == nil {
-                activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
                 if selector == NCGlobal.shared.introSignup {
                     activeLoginWeb?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
                 } else {
@@ -465,7 +465,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else if NCBrandOptions.shared.disable_intro && NCBrandOptions.shared.disable_request_login_url {
             
             if activeLoginWeb?.view.window == nil {
-                activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
                 activeLoginWeb?.urlBase = NCBrandOptions.shared.loginBaseUrl
                 showLoginViewController(activeLoginWeb, contextViewController: viewController)
             }
@@ -473,7 +473,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else if openLoginWeb {
             
             if activeLoginWeb?.view.window == nil {
-                activeLoginWeb = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
                 activeLoginWeb?.urlBase = urlBase
                 showLoginViewController(activeLoginWeb, contextViewController: viewController)
             }
@@ -481,7 +481,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else {
             
             if activeLogin?.view.window == nil {
-                activeLogin = UIStoryboard(name: "CCLogin", bundle: nil).instantiateViewController(withIdentifier: "CCLogin") as? CCLogin
+                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 showLoginViewController(activeLogin, contextViewController: viewController)
             }
         }

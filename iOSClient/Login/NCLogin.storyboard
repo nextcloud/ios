@@ -11,11 +11,30 @@
         <!--Login-->
         <scene sceneID="fVe-zF-WhZ">
             <objects>
-                <viewController storyboardIdentifier="CCLogin" id="yj9-jo-WIn" customClass="CCLogin" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NCLogin" id="yj9-jo-WIn" customClass="NCLogin" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Bv6-g3-l0M">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="BpI-xK-1SU">
+                                <rect key="frame" x="87" y="44" width="240" height="120"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="120" id="E9d-5O-bto"/>
+                                    <constraint firstAttribute="width" constant="240" id="xwH-mh-yDU"/>
+                                </constraints>
+                            </imageView>
+                            <textField opaque="NO" clipsSubviews="YES" tag="1" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" insetsLayoutMarginsFromSafeArea="NO" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Server address https://…" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="szn-G7-5sK">
+                                <rect key="frame" x="45" y="164" width="326" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="I2v-Zr-IWf"/>
+                                </constraints>
+                                <color key="textColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="URL" returnKeyType="done"/>
+                                <connections>
+                                    <action selector="handlebaseUrlchange:" destination="yj9-jo-WIn" eventType="editingDidEnd" id="efj-33-NT5"/>
+                                </connections>
+                            </textField>
                             <textField opaque="NO" clipsSubviews="YES" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Username" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="1Gf-Bw-Nim">
                                 <rect key="frame" x="45" y="208" width="319" height="44"/>
                                 <constraints>
@@ -34,6 +53,38 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <textInputTraits key="textInputTraits" returnKeyType="done" secureTextEntry="YES"/>
                             </textField>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="loginUser" translatesAutoresizingMaskIntoConstraints="NO" id="4OF-5u-Hd1">
+                                <rect key="frame" x="10" y="217.5" width="25" height="25"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="25" id="FlR-Hd-bH5"/>
+                                    <constraint firstAttribute="height" constant="25" id="ViZ-ks-cWQ"/>
+                                </constraints>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="loginURL" translatesAutoresizingMaskIntoConstraints="NO" id="s9o-RX-XeS">
+                                <rect key="frame" x="10" y="173.5" width="25" height="25"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="25" id="fh1-RS-gPF"/>
+                                    <constraint firstAttribute="height" constant="25" id="rDO-8n-TTv"/>
+                                </constraints>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="loginPassword" translatesAutoresizingMaskIntoConstraints="NO" id="7q8-rl-x2M">
+                                <rect key="frame" x="10" y="261.5" width="25" height="25"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="25" id="P8q-8P-IZg"/>
+                                    <constraint firstAttribute="width" constant="25" id="glL-CW-aF0"/>
+                                </constraints>
+                            </imageView>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fhk-o9-J0l">
+                                <rect key="frame" x="379" y="261.5" width="25" height="25"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="25" id="Tme-Lb-bhd"/>
+                                    <constraint firstAttribute="width" constant="25" id="uVC-Cm-7w6"/>
+                                </constraints>
+                                <state key="normal" image="visiblePassword" backgroundImage="visiblePassword"/>
+                                <connections>
+                                    <action selector="handleToggleVisiblePassword:" destination="yj9-jo-WIn" eventType="touchUpInside" id="if0-s4-Gzt"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HQd-pF-3cE">
                                 <rect key="frame" x="50" y="308" width="314" height="40"/>
                                 <color key="backgroundColor" red="0.2196078431372549" green="0.50196078431372548" blue="0.76470588235294112" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -49,46 +100,6 @@
                                     <action selector="handleButtonLogin:" destination="yj9-jo-WIn" eventType="touchUpInside" id="e6z-ip-PXo"/>
                                 </connections>
                             </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="loginURL" translatesAutoresizingMaskIntoConstraints="NO" id="s9o-RX-XeS">
-                                <rect key="frame" x="10" y="173.5" width="25" height="25"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="25" id="fh1-RS-gPF"/>
-                                    <constraint firstAttribute="height" constant="25" id="rDO-8n-TTv"/>
-                                </constraints>
-                            </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="loginUser" translatesAutoresizingMaskIntoConstraints="NO" id="4OF-5u-Hd1">
-                                <rect key="frame" x="10" y="217.5" width="25" height="25"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="25" id="FlR-Hd-bH5"/>
-                                    <constraint firstAttribute="height" constant="25" id="ViZ-ks-cWQ"/>
-                                </constraints>
-                            </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="loginPassword" translatesAutoresizingMaskIntoConstraints="NO" id="7q8-rl-x2M">
-                                <rect key="frame" x="10" y="261.5" width="25" height="25"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="25" id="P8q-8P-IZg"/>
-                                    <constraint firstAttribute="width" constant="25" id="glL-CW-aF0"/>
-                                </constraints>
-                            </imageView>
-                            <textField opaque="NO" clipsSubviews="YES" tag="1" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" insetsLayoutMarginsFromSafeArea="NO" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Server address https://…" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="szn-G7-5sK">
-                                <rect key="frame" x="45" y="164" width="326" height="44"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="I2v-Zr-IWf"/>
-                                </constraints>
-                                <color key="textColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="URL" returnKeyType="done"/>
-                                <connections>
-                                    <action selector="handlebaseUrlchange:" destination="yj9-jo-WIn" eventType="editingDidEnd" id="efj-33-NT5"/>
-                                </connections>
-                            </textField>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="BpI-xK-1SU">
-                                <rect key="frame" x="87" y="44" width="240" height="120"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="120" id="E9d-5O-bto"/>
-                                    <constraint firstAttribute="width" constant="240" id="xwH-mh-yDU"/>
-                                </constraints>
-                            </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="owR-PS-F32" userLabel="loginTypeView">
                                 <rect key="frame" x="159.5" y="822" width="95" height="40"/>
                                 <constraints>
@@ -98,17 +109,6 @@
                                 <state key="normal" title="Login type view"/>
                                 <connections>
                                     <action selector="handleLoginTypeView:" destination="yj9-jo-WIn" eventType="touchUpInside" id="V2I-Nr-nOu"/>
-                                </connections>
-                            </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fhk-o9-J0l">
-                                <rect key="frame" x="379" y="261.5" width="25" height="25"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="25" id="Tme-Lb-bhd"/>
-                                    <constraint firstAttribute="width" constant="25" id="uVC-Cm-7w6"/>
-                                </constraints>
-                                <state key="normal" image="visiblePassword" backgroundImage="visiblePassword"/>
-                                <connections>
-                                    <action selector="handleToggleVisiblePassword:" destination="yj9-jo-WIn" eventType="touchUpInside" id="if0-s4-Gzt"/>
                                 </connections>
                             </button>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="Kfq-Bg-a0E">
@@ -160,8 +160,8 @@
                     </view>
                     <navigationItem key="navigationItem" id="6v9-Gy-jiv"/>
                     <connections>
-                        <outlet property="activity" destination="Kfq-Bg-a0E" id="Xx6-cQ-Yef"/>
-                        <outlet property="baseUrl" destination="szn-G7-5sK" id="syP-Ff-tfS"/>
+                        <outlet property="activity" destination="Kfq-Bg-a0E" id="SqA-zj-Vd6"/>
+                        <outlet property="baseUrl" destination="szn-G7-5sK" id="rpO-mh-09O"/>
                         <outlet property="imageBaseUrl" destination="s9o-RX-XeS" id="Q81-S9-1P2"/>
                         <outlet property="imageBrand" destination="BpI-xK-1SU" id="0tB-69-RNs"/>
                         <outlet property="imagePassword" destination="7q8-rl-x2M" id="Cr5-Te-Rkq"/>

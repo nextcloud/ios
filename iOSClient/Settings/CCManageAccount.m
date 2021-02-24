@@ -22,7 +22,6 @@
 //
 
 #import "CCManageAccount.h"
-#import "CCLogin.h"
 #import "NSNotificationCenter+MainThread.h"
 #import "NCBridgeSwift.h"
 #import "CCUtility.h"
