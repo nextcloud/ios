@@ -366,23 +366,17 @@ class NCViewerImage: UIViewController {
                 
                 currentViewerImageZoom!.imageView.layer.addSublayer(videoLayer!)
                 
-                /*
-                if let duration = playerVideo?.currentItem?.asset.duration {
-                    durationVideo = Float(CMTimeGetSeconds(duration))
+                var interval:Double = 0.1
+                if let duration = player?.currentItem?.asset.duration {
+                    let durationSeconds = Double(CMTimeGetSeconds(duration))
+                    let width = Double(progressView.bounds.width)
+                    interval = (0.5 * durationSeconds) / width
                 }
-               
-                let timeScale = CMTimeScale(NSEC_PER_SEC)
-                let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
-                timeObserverToken = playerVideo?.addPeriodicTimeObserver(forInterval: time, queue: .main) { [weak self] time in
-                    print(time)
-                }
-               
-                let timeScale = CMTimeScale(NSEC_PER_SEC)
-                let time = CMTime(seconds: 1, preferredTimescale: timeScale)
-                timeObserverToken = player?.addPeriodicTimeObserver(forInterval: time, queue: .main) { time in
-                    NCManageDatabase.shared.addVideo(account:metadata.account, ocId: metadata.ocId, time: time)
-                }
-                */
+                let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+
+                player?.addPeriodicTimeObserver(forInterval: time, queue: nil, using: { (time) in
+                    self.updateProgressBar()
+                })
                 
                 // At end go back to start
                 NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
@@ -419,6 +413,10 @@ class NCViewerImage: UIViewController {
         }
         
         videoLayer?.removeFromSuperlayer()
+    }
+    
+    func updateProgressBar() {
+        
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
