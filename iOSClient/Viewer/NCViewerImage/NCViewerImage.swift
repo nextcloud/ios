@@ -375,7 +375,7 @@ class NCViewerImage: UIViewController {
                 let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
 
                 player?.addPeriodicTimeObserver(forInterval: time, queue: nil, using: { (time) in
-                    self.updateProgressBar()
+                    self.updateVideoProgressBar(time: time)
                 })
                 
                 // At end go back to start
@@ -415,8 +415,17 @@ class NCViewerImage: UIViewController {
         videoLayer?.removeFromSuperlayer()
     }
     
-    func updateProgressBar() {
+    func updateVideoProgressBar(time: CMTime) {
         
+        if let duration = player?.currentItem?.asset.duration {
+            let durationSeconds = Float(CMTimeGetSeconds(duration))
+            if durationSeconds > 0 {
+                let currentTimeSeconds = Float(CMTimeGetSeconds(time))
+                progressView.progress = currentTimeSeconds / durationSeconds
+                return
+            }
+        }
+        progressView.progress = 0
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
