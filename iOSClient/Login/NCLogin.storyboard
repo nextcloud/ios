@@ -79,7 +79,7 @@
                                 </constraints>
                                 <state key="normal" image="visiblePassword" backgroundImage="visiblePassword"/>
                                 <connections>
-                                    <action selector="handleToggleVisiblePassword:" destination="yj9-jo-WIn" eventType="touchUpInside" id="if0-s4-Gzt"/>
+                                    <action selector="actionToggleVisiblePassword:" destination="yj9-jo-WIn" eventType="touchUpInside" id="n5I-x0-ngr"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HQd-pF-3cE">
@@ -118,7 +118,7 @@
                                     <constraint firstAttribute="height" constant="50" id="OLT-tb-4Qb"/>
                                 </constraints>
                                 <connections>
-                                    <action selector="handleQRCode:" destination="yj9-jo-WIn" eventType="touchUpInside" id="IW6-a9-880"/>
+                                    <action selector="actionQRCode:" destination="yj9-jo-WIn" eventType="touchUpInside" id="qwL-rG-ead"/>
                                 </connections>
                             </button>
                         </subviews>

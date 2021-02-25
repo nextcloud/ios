@@ -213,7 +213,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
     
-    @IBAction func handleToggleVisiblePassword(_ sender: Any) {
+    @IBAction func actionToggleVisiblePassword(_ sender: Any) {
         
         let currentPassword = self.password.text
         
@@ -245,7 +245,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
     
-    @IBAction func handleQRCode(_ sender: Any) {
+    @IBAction func actionQRCode(_ sender: Any) {
         
         let qrCode = NCLoginQRCode.init(delegate: self)
         qrCode.scan()
@@ -396,32 +396,27 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         
         let protocolLogin = NCBrandOptions.shared.webLoginAutenticationProtocol + "login/"
         
-        if value.hasPrefix("protocolLogin") && value.contains("user:") && value.contains("password:") && value.contains("server:") {
+        if value.hasPrefix(protocolLogin) && value.contains("user:") && value.contains("password:") && value.contains("server:") {
             
             value = value.replacingOccurrences(of: protocolLogin, with: "")
             let valueArray = value.components(separatedBy: "&")
             if valueArray.count == 3 {
-                user.text = valueArray[0].replacingOccurrences(of: "user:", with: "")
-                password.text = valueArray[1].replacingOccurrences(of: "password:", with: "")
-                baseUrl.text = valueArray[2].replacingOccurrences(of: "server:", with: "")
                 
-                // Check whether baseUrl contain protocol. If not add https:// by default.
-                if (baseUrl.text?.hasPrefix("https") ?? false) == false && (baseUrl.text?.hasPrefix("http") ?? false) == false {
-                    self.baseUrl.text = "https://" + (self.baseUrl.text ?? "")
-                }
+                let user = valueArray[0].replacingOccurrences(of: "user:", with: "")
+                let password = valueArray[1].replacingOccurrences(of: "password:", with: "")
+                let urlBase = valueArray[2].replacingOccurrences(of: "server:", with: "")
+                let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: appDelegate.account)
+                let serverUrl = urlBase + "/" + webDAV
                 
                 loginButton.isEnabled = false
                 activity.startAnimating()
                 
-                let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: appDelegate.account)
-                let serverUrl = (baseUrl.text ?? "") + "/" + webDAV
-                
                 NCCommunication.shared.checkServer(serverUrl: serverUrl) { (errorCode, errorDescription) in
-                    
+                
                     self.activity.stopAnimating()
                     self.loginButton.isEnabled = true
                     
-                    self.standardLogin(urlBase: self.baseUrl.text!, user: self.user.text!, token: self.password.text!, errorCode: errorCode, errorDescription: errorDescription)
+                    self.standardLogin(urlBase: urlBase, user: user, token: password, errorCode: errorCode, errorDescription: errorDescription)
                 }
             }
         }
