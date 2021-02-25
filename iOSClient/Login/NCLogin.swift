@@ -278,6 +278,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     if errorCode == 0 && NCBrandOptions.shared.use_loginflowv2 && token != nil && endpoint != nil && login != nil {
                         
                         if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
+                            
                             loginWeb.urlBase = url
                             loginWeb.loginFlowV2Available = true
                             loginWeb.loginFlowV2Token = token!
@@ -287,9 +288,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                             self.navigationController?.pushViewController(loginWeb, animated: true)
                         }
                         
-                    } else if self.user.isHidden && self.password.isHidden && versionMajor >= NCGlobal.shared.nextcloudVersion12 {
+                    } else if self.currentLoginMode == .webFlow && versionMajor >= NCGlobal.shared.nextcloudVersion12 {
                         
                         if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
+                            
                             loginWeb.urlBase = url
 
                             self.navigationController?.pushViewController(loginWeb, animated: true)
