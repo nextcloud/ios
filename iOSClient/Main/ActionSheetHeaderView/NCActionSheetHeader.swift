@@ -25,7 +25,7 @@ import Foundation
 
 class NCActionSheetHeader: NSObject {
     
-    @objc static let shared: NCActionSheetHeader = {
+    static let shared: NCActionSheetHeader = {
         let instance = NCActionSheetHeader()
         return instance
     }()

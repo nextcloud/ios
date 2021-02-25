@@ -44,7 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var activeFavorite: NCFavorite?
     var activeFiles: NCFiles?
     var activeFileViewInFolder: NCFileViewInFolder?
-    @objc var activeLogin: NCLogin?
+    var activeLogin: NCLogin?
     var activeLoginWeb: NCLoginWeb?
     @objc var activeMedia: NCMedia?
     var activeMore: NCMore?
@@ -68,7 +68,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var passcodeViewController: TOPasscodeViewController?
     var pasteboardOcIds: [String] = []
     var shares: [tableShare] = []
-    @objc var timerErrorNetworking: Timer?
+    var timerErrorNetworking: Timer?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         

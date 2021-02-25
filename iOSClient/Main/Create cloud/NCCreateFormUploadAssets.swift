@@ -328,7 +328,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     }
     
     /*
-    @objc func save() {
+    func save() {
         
         self.dismiss(animated: true, completion: {
             

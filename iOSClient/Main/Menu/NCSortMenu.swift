@@ -39,7 +39,7 @@ class NCSortMenu: NSObject {
     private var titleButton = ""
     private var itemForLine: Int = 0
 
-    @objc func toggleMenu(viewController: UIViewController, key: String, sortButton: UIButton?, serverUrl: String, hideDirectoryOnTop: Bool = false) {
+    func toggleMenu(viewController: UIViewController, key: String, sortButton: UIButton?, serverUrl: String, hideDirectoryOnTop: Bool = false) {
         
         self.key = key
         self.sortButton = sortButton
@@ -60,7 +60,7 @@ class NCSortMenu: NSObject {
         viewController.present(menuPanelController, animated: true, completion: nil)
     }
     
-    @objc func actionMenu() {
+    func actionMenu() {
                 
         switch sort {
         case "fileName":

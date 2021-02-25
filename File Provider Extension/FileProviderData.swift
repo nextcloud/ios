@@ -24,7 +24,7 @@
 import NCCommunication
 
 class fileProviderData: NSObject {
-    @objc static let shared: fileProviderData = {
+    static let shared: fileProviderData = {
         let instance = fileProviderData()
         return instance
     }()

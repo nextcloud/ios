@@ -28,7 +28,7 @@ import NCCommunication
 
 extension AppDelegate: NCAudioRecorderViewControllerDelegate {
     
-    @objc public func showMenuIn(viewController: UIViewController) {
+    public func showMenuIn(viewController: UIViewController) {
         
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         mainMenuViewController.actions = self.initMenu(viewController: viewController)
