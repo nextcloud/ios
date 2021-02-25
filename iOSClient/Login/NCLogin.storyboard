@@ -32,7 +32,7 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="URL" returnKeyType="done"/>
                                 <connections>
-                                    <action selector="handlebaseUrlchange:" destination="yj9-jo-WIn" eventType="editingDidEnd" id="efj-33-NT5"/>
+                                    <action selector="actionBaseUrlchange:" destination="yj9-jo-WIn" eventType="editingDidEnd" id="viw-GY-1Za"/>
                                 </connections>
                             </textField>
                             <textField opaque="NO" clipsSubviews="YES" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Username" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="1Gf-Bw-Nim">
@@ -108,7 +108,7 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <state key="normal" title="Login type view"/>
                                 <connections>
-                                    <action selector="handleLoginTypeView:" destination="yj9-jo-WIn" eventType="touchUpInside" id="V2I-Nr-nOu"/>
+                                    <action selector="actionLoginModeButton:" destination="yj9-jo-WIn" eventType="touchUpInside" id="bqY-ne-nbT"/>
                                 </connections>
                             </button>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="Kfq-Bg-a0E">
@@ -167,7 +167,7 @@
                         <outlet property="imagePassword" destination="7q8-rl-x2M" id="Cr5-Te-Rkq"/>
                         <outlet property="imageUser" destination="4OF-5u-Hd1" id="MJa-4H-w7m"/>
                         <outlet property="loginButton" destination="HQd-pF-3cE" id="XOc-dS-QZ8"/>
-                        <outlet property="loginTypeViewButton" destination="owR-PS-F32" id="7dm-jk-nek"/>
+                        <outlet property="loginModeButton" destination="owR-PS-F32" id="iXW-wC-T2H"/>
                         <outlet property="password" destination="jU7-Iw-XfU" id="OWi-V0-Eij"/>
                         <outlet property="qrCode" destination="6tp-bh-Z9k" id="Tw3-op-BgR"/>
                         <outlet property="toggleVisiblePasswordButton" destination="fhk-o9-J0l" id="e0X-WA-5cz"/>

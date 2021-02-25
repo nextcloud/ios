@@ -40,10 +40,15 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var toggleVisiblePasswordButton: UIButton!
-    @IBOutlet weak var loginTypeViewButton: UIButton!
+    @IBOutlet weak var loginModeButton: UIButton!
     
     @IBOutlet weak var qrCode: UIButton!
 
+    enum loginMode {
+        case traditional, webFlow
+    }
+    var currentLoginMode: loginMode = .webFlow
+    
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var textColor: UIColor = .white
     var textColorOpponent: UIColor = .black
@@ -103,8 +108,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         loginButton.clipsToBounds = true
         
         // type of login
-        loginTypeViewButton.setTitle(NSLocalizedString("_traditional_login_", comment: ""), for: .normal)
-        loginTypeViewButton.setTitleColor(textColor.withAlphaComponent(0.5), for: .normal)
+        loginModeButton.setTitle(NSLocalizedString("_traditional_login_", comment: ""), for: .normal)
+        loginModeButton.setTitleColor(textColor.withAlphaComponent(0.5), for: .normal)
      
         // brand
         if NCBrandOptions.shared.disable_request_login_url {
@@ -171,35 +176,39 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         dismiss(animated: true) { }
     }
 
-    @IBAction func handlebaseUrlchange(_ sender: Any) {
+    @IBAction func actionBaseUrlchange(_ sender: Any) {
+                
+        guard var url = baseUrl.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
+        if url.hasSuffix("/") { url = String(url.dropLast()) }
+        if url.count == 0 { return }
         
-        if baseUrl.text?.count ?? 0 > 0 && !user.isHidden && !password.isHidden {
-            isUrlValid()
-        }
+        isUrlValid(url: url)
     }
     
     @IBAction func handleButtonLogin(_ sender: Any) {
         
-        if baseUrl.text?.count ?? 0 > 0 && !user.isHidden && !password.isHidden {
+        guard var url = baseUrl.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
+        if url.hasSuffix("/") { url = String(url.dropLast()) }
+        if url.count == 0 { return }
+
+        if  currentLoginMode == .webFlow {
             
-            isUrlValid()
+            isUrlValid(url: url)
             
-        } else if baseUrl.text?.count ?? 0 > 0 && user.text?.count ?? 0 > 0 && password.text?.count ?? 0 > 0 {
+        } else  {
             
-            guard var url = baseUrl.text else { return }
-            if url.hasSuffix("/") {
-                url = String(url.dropLast())
-            }
-            
+            guard let username = user.text else { return }
+            guard let password = password.text else { return }
+
             loginButton.isEnabled = false
             activity.startAnimating()
             
-            NCCommunication.shared.getAppPassword(serverUrl: url, username: user.text!, password: password.text!) { (token, errorCode, errorDescription) in
+            NCCommunication.shared.getAppPassword(serverUrl: url, username:  username, password: password) { (token, errorCode, errorDescription) in
                 
                 self.loginButton.isEnabled = true
                 self.activity.stopAnimating()
                 
-                self.standardLogin(urlBase: url, user: self.user.text ?? "", token: token ?? "", errorCode: errorCode, errorDescription: errorDescription)
+                self.standardLogin(urlBase: url, user: username, token: token ?? "", errorCode: errorCode, errorDescription: errorDescription)
             }
         }
     }
@@ -212,25 +221,27 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         password.text = currentPassword
     }
     
-    @IBAction func handleLoginTypeView(_ sender: Any) {
-        
-        if user.isHidden && password.isHidden {
+    @IBAction func actionLoginModeButton(_ sender: Any) {
+                
+        if currentLoginMode == .traditional {
             
+            currentLoginMode = .webFlow
             imageUser.isHidden = false
             user.isHidden = false
             imagePassword.isHidden = false
             password.isHidden = false
             
-            loginTypeViewButton.setTitle(NSLocalizedString("_web_login_", comment: ""), for: .normal)
+            loginModeButton.setTitle(NSLocalizedString("_web_login_", comment: ""), for: .normal)
             
         } else {
             
+            currentLoginMode = .traditional
             imageUser.isHidden = true
             user.isHidden = true
             imagePassword.isHidden = true
             password.isHidden = true
             
-            loginTypeViewButton.setTitle(NSLocalizedString("_traditional_login_", comment: ""), for: .normal)
+            loginModeButton.setTitle(NSLocalizedString("_traditional_login_", comment: ""), for: .normal)
         }
     }
     
@@ -242,7 +253,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     
     // MARK: - Login
 
-    func isUrlValid() {
+    func isUrlValid(url: String) {
 
         // Check whether baseUrl contain protocol. If not add https:// by default.
         if (baseUrl.text?.hasPrefix("https") ?? false) == false && (baseUrl.text?.hasPrefix("http") ?? false) == false {
@@ -289,7 +300,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         
                     } else if versionMajor < NCGlobal.shared.nextcloudVersion12 {
                         
-                        self.loginTypeViewButton.isHidden = true
+                        self.loginModeButton.isHidden = true
                         
                         self.imageUser.isHidden = false
                         self.user.isHidden = false
