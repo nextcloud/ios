@@ -158,18 +158,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         return false
     }
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        if textField == password {
-            toggleVisiblePasswordButton.isHidden = false
-        }
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        if textField == password {
-            toggleVisiblePasswordButton.isHidden = true
-        }
-    }
-    
     // MARK: - Action
 
     @objc func actionCancel() {
@@ -230,6 +218,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             user.isHidden = false
             imagePassword.isHidden = false
             password.isHidden = false
+            toggleVisiblePasswordButton.isHidden = false
             
             loginModeButton.setTitle(NSLocalizedString("_web_login_", comment: ""), for: .normal)
             
@@ -240,6 +229,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             user.isHidden = true
             imagePassword.isHidden = true
             password.isHidden = true
+            toggleVisiblePasswordButton.isHidden = true
             
             loginModeButton.setTitle(NSLocalizedString("_traditional_login_", comment: ""), for: .normal)
         }
