@@ -166,11 +166,11 @@
                         <outlet property="imageBrand" destination="BpI-xK-1SU" id="0tB-69-RNs"/>
                         <outlet property="imagePassword" destination="7q8-rl-x2M" id="Cr5-Te-Rkq"/>
                         <outlet property="imageUser" destination="4OF-5u-Hd1" id="MJa-4H-w7m"/>
-                        <outlet property="login" destination="HQd-pF-3cE" id="dpI-ns-Ivh"/>
-                        <outlet property="loginTypeView" destination="owR-PS-F32" id="Rdw-tW-R0G"/>
+                        <outlet property="loginButton" destination="HQd-pF-3cE" id="XOc-dS-QZ8"/>
+                        <outlet property="loginTypeViewButton" destination="owR-PS-F32" id="7dm-jk-nek"/>
                         <outlet property="password" destination="jU7-Iw-XfU" id="OWi-V0-Eij"/>
                         <outlet property="qrCode" destination="6tp-bh-Z9k" id="Tw3-op-BgR"/>
-                        <outlet property="toggleVisiblePassword" destination="fhk-o9-J0l" id="aco-hl-Ban"/>
+                        <outlet property="toggleVisiblePasswordButton" destination="fhk-o9-J0l" id="e0X-WA-5cz"/>
                         <outlet property="user" destination="1Gf-Bw-Nim" id="BUW-sz-I3f"/>
                     </connections>
                 </viewController>

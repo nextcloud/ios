@@ -38,17 +38,16 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     @IBOutlet weak var activity: UIActivityIndicatorView!
 
-    @IBOutlet weak var login: UIButton!
-    @IBOutlet weak var toggleVisiblePassword: UIButton!
-    @IBOutlet weak var loginTypeView: UIButton!
+    @IBOutlet weak var loginButton: UIButton!
+    @IBOutlet weak var toggleVisiblePasswordButton: UIButton!
+    @IBOutlet weak var loginTypeViewButton: UIButton!
     
     @IBOutlet weak var qrCode: UIButton!
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var textColor: UIColor = .white
     var textColorOpponent: UIColor = .black
-    var cancelButton: UIBarButtonItem?
-
+    
 
     // MARK: - Life Cycle
 
@@ -72,10 +71,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         // Image Brand
         imageBrand.image = UIImage(named: "logo")
         
-        // Cancel Button
-        cancelButton = UIBarButtonItem.init(barButtonSystemItem: .stop, target: self, action: #selector(self.actionCancel))
-        cancelButton?.tintColor = textColor
-        
         // Url
         imageBaseUrl.image = UIImage(named: "loginURL")?.image(color: textColor, size: 50)
         baseUrl.textColor = textColor
@@ -98,18 +93,18 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         password.delegate = self
         
         // toggle visible password
-        toggleVisiblePassword.setImage(UIImage(named: "visiblePassword")?.image(color: textColor, size: 50), for: .normal)
+        toggleVisiblePasswordButton.setImage(UIImage(named: "visiblePassword")?.image(color: textColor, size: 50), for: .normal)
         
         // login
-        login.setTitle(NSLocalizedString("_login_", comment: ""), for: .normal)
-        login.backgroundColor = textColor
-        login.tintColor = textColor
-        login.layer.cornerRadius = 20
-        login.clipsToBounds = true
+        loginButton.setTitle(NSLocalizedString("_login_", comment: ""), for: .normal)
+        loginButton.backgroundColor = textColor
+        loginButton.tintColor = textColorOpponent
+        loginButton.layer.cornerRadius = 20
+        loginButton.clipsToBounds = true
         
         // type of login
-        loginTypeView.setTitle(NSLocalizedString("_traditional_login_", comment: ""), for: .normal)
-        loginTypeView.setTitleColor(textColor.withAlphaComponent(0.5), for: .normal)
+        loginTypeViewButton.setTitle(NSLocalizedString("_traditional_login_", comment: ""), for: .normal)
+        loginTypeViewButton.setTitleColor(textColor.withAlphaComponent(0.5), for: .normal)
      
         // brand
         if NCBrandOptions.shared.disable_request_login_url {
@@ -131,9 +126,12 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             user.isHidden = true
             imagePassword.isHidden = true
             password.isHidden = true
-            navigationItem.leftBarButtonItem = cancelButton
+            
+            // Cancel Button
+            let navigationItemCancel = UIBarButtonItem.init(barButtonSystemItem: .stop, target: self, action: #selector(self.actionCancel))
+            navigationItemCancel.tintColor = textColor
+            navigationItem.leftBarButtonItem = navigationItemCancel
         }
-
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -157,13 +155,13 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if textField == password {
-            toggleVisiblePassword.isHidden = false
+            toggleVisiblePasswordButton.isHidden = false
         }
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         if textField == password {
-            toggleVisiblePassword.isHidden = true
+            toggleVisiblePasswordButton.isHidden = true
         }
     }
     
@@ -193,12 +191,12 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 url = String(url.dropLast())
             }
             
-            login.isEnabled = false
+            loginButton.isEnabled = false
             activity.startAnimating()
             
             NCCommunication.shared.getAppPassword(serverUrl: url, username: user.text!, password: password.text!) { (token, errorCode, errorDescription) in
                 
-                self.login.isEnabled = true
+                self.loginButton.isEnabled = true
                 self.activity.stopAnimating()
                 
                 self.standardLogin(urlBase: url, user: self.user.text ?? "", token: token ?? "", errorCode: errorCode, errorDescription: errorDescription)
@@ -223,7 +221,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             imagePassword.isHidden = false
             password.isHidden = false
             
-            loginTypeView.setTitle(NSLocalizedString("_web_login_", comment: ""), for: .normal)
+            loginTypeViewButton.setTitle(NSLocalizedString("_web_login_", comment: ""), for: .normal)
             
         } else {
             
@@ -232,7 +230,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             imagePassword.isHidden = true
             password.isHidden = true
             
-            loginTypeView.setTitle(NSLocalizedString("_traditional_login_", comment: ""), for: .normal)
+            loginTypeViewButton.setTitle(NSLocalizedString("_traditional_login_", comment: ""), for: .normal)
         }
     }
     
@@ -253,7 +251,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         
         guard var url = baseUrl.text else { return }
         
-        login.isEnabled = false
+        loginButton.isEnabled = false
         activity.startAnimating()
         
         if url.hasSuffix("/") {
@@ -266,7 +264,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 
                 NCCommunication.shared.getLoginFlowV2(serverUrl: url) { (token, endpoint, login, errorCode, errorDescription) in
                     
-                    self.login.isEnabled = true
+                    self.loginButton.isEnabled = true
                     self.activity.stopAnimating()
                     
                     if errorCode == 0 && NCBrandOptions.shared.use_loginflowv2 && token != nil && endpoint != nil && login != nil {
@@ -291,7 +289,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         
                     } else if versionMajor < NCGlobal.shared.nextcloudVersion12 {
                         
-                        self.loginTypeView.isHidden = true
+                        self.loginTypeViewButton.isHidden = true
                         
                         self.imageUser.isHidden = false
                         self.user.isHidden = false
@@ -303,7 +301,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 
             } else {
                
-                self.login.isEnabled = true
+                self.loginButton.isEnabled = true
                 self.activity.stopAnimating()
                 
                 if errorCode == NSURLErrorServerCertificateUntrusted {
@@ -411,7 +409,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     self.baseUrl.text = "https://" + (self.baseUrl.text ?? "")
                 }
                 
-                login.isEnabled = false
+                loginButton.isEnabled = false
                 activity.startAnimating()
                 
                 let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: appDelegate.account)
@@ -420,7 +418,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 NCCommunication.shared.checkServer(serverUrl: serverUrl) { (errorCode, errorDescription) in
                     
                     self.activity.stopAnimating()
-                    self.login.isEnabled = true
+                    self.loginButton.isEnabled = true
                     
                     self.standardLogin(urlBase: self.baseUrl.text!, user: self.user.text!, token: self.password.text!, errorCode: errorCode, errorDescription: errorDescription)
                 }
