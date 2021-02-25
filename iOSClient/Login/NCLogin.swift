@@ -177,7 +177,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 
     @IBAction func actionBaseUrlchange(_ sender: Any) {
-                
+        
         guard var url = baseUrl.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
         if url.hasSuffix("/") { url = String(url.dropLast()) }
         if url.count == 0 { return }
@@ -185,7 +185,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         isUrlValid(url: url)
     }
     
-    @IBAction func handleButtonLogin(_ sender: Any) {
+    @IBAction func actionButtonLogin(_ sender: Any) {
         
         guard var url = baseUrl.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
         if url.hasSuffix("/") { url = String(url.dropLast()) }
@@ -223,9 +223,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     
     @IBAction func actionLoginModeButton(_ sender: Any) {
                 
-        if currentLoginMode == .traditional {
+        if currentLoginMode == .webFlow {
             
-            currentLoginMode = .webFlow
+            currentLoginMode = .traditional
             imageUser.isHidden = false
             user.isHidden = false
             imagePassword.isHidden = false
@@ -235,7 +235,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             
         } else {
             
-            currentLoginMode = .traditional
+            currentLoginMode = .webFlow
             imageUser.isHidden = true
             user.isHidden = true
             imagePassword.isHidden = true
@@ -255,19 +255,16 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     func isUrlValid(url: String) {
 
-        // Check whether baseUrl contain protocol. If not add https:// by default.
-        if (baseUrl.text?.hasPrefix("https") ?? false) == false && (baseUrl.text?.hasPrefix("http") ?? false) == false {
-            self.baseUrl.text = "https://" + (self.baseUrl.text ?? "")
-        }
+        var url = url
         
-        guard var url = baseUrl.text else { return }
+        // Check whether baseUrl contain protocol. If not add https:// by default.
+        if url.hasPrefix("https") == false && url.hasPrefix("http") == false {
+            url = "https://" + url
+            self.baseUrl.text = url
+        }
         
         loginButton.isEnabled = false
         activity.startAnimating()
-        
-        if url.hasSuffix("/") {
-            url = String(url.dropLast())
-        }
         
         NCCommunication.shared.getServerStatus(serverUrl: url) { (serverProductName, serverVersion, versionMajor, versionMinor, versionMicro, extendedSupport, errorCode ,errorDescription) in
             
