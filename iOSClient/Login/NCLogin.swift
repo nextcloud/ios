@@ -176,20 +176,17 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         dismiss(animated: true) { }
     }
 
-    @IBAction func actionBaseUrlchange(_ sender: Any) {
-        
-        guard var url = baseUrl.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
-        if url.hasSuffix("/") { url = String(url.dropLast()) }
-        if url.count == 0 { return }
-        
-        isUrlValid(url: url)
-    }
-    
     @IBAction func actionButtonLogin(_ sender: Any) {
         
         guard var url = baseUrl.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
         if url.hasSuffix("/") { url = String(url.dropLast()) }
         if url.count == 0 { return }
+        
+        // Check whether baseUrl contain protocol. If not add https:// by default.
+        if url.hasPrefix("https") == false && url.hasPrefix("http") == false {
+            url = "https://" + url
+        }
+        self.baseUrl.text = url
 
         if  currentLoginMode == .webFlow {
             
@@ -199,6 +196,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             
             guard let username = user.text else { return }
             guard let password = password.text else { return }
+            
+            if username.count == 0 { return }
+            if password.count == 0 { return }
 
             loginButton.isEnabled = false
             activity.startAnimating()
@@ -254,15 +254,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     // MARK: - Login
 
     func isUrlValid(url: String) {
-
-        var url = url
-        
-        // Check whether baseUrl contain protocol. If not add https:// by default.
-        if url.hasPrefix("https") == false && url.hasPrefix("http") == false {
-            url = "https://" + url
-            self.baseUrl.text = url
-        }
-        
+            
         loginButton.isEnabled = false
         activity.startAnimating()
         
@@ -274,7 +266,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     
                     self.loginButton.isEnabled = true
                     self.activity.stopAnimating()
-                    
+                                        
+                    // Login Flow V2
                     if errorCode == 0 && NCBrandOptions.shared.use_loginflowv2 && token != nil && endpoint != nil && login != nil {
                         
                         if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
@@ -288,6 +281,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                             self.navigationController?.pushViewController(loginWeb, animated: true)
                         }
                         
+                    // Login Flow
                     } else if self.currentLoginMode == .webFlow && versionMajor >= NCGlobal.shared.nextcloudVersion12 {
                         
                         if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
@@ -297,15 +291,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                             self.navigationController?.pushViewController(loginWeb, animated: true)
                         }
                         
+                    // NO Login flow available
                     } else if versionMajor < NCGlobal.shared.nextcloudVersion12 {
                         
-                        self.loginModeButton.isHidden = true
+                        let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_webflow_not_available_", comment: ""), preferredStyle: .alert)
+
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
                         
-                        self.imageUser.isHidden = false
-                        self.user.isHidden = false
-                        self.user.becomeFirstResponder()
-                        self.imagePassword.isHidden = false
-                        self.password.isHidden = false
+                        self.present(alertController, animated: true, completion: { })
                     }
                 }
                 
@@ -333,7 +326,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     
                 } else {
                     
-                    let alertController = UIAlertController(title: NSLocalizedString("_connection_error_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
+                    let alertController = UIAlertController(title: NSLocalizedString("_connection_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
 
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
                     
@@ -358,8 +351,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             
             if let activeAccount = NCManageDatabase.shared.setAccountActive(account) {
                 appDelegate.settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
-            } else {
-                
             }
             
             if CCUtility.getIntro() {

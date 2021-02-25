@@ -31,9 +31,6 @@
                                 <color key="textColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="URL" returnKeyType="done"/>
-                                <connections>
-                                    <action selector="actionBaseUrlchange:" destination="yj9-jo-WIn" eventType="editingDidEnd" id="viw-GY-1Za"/>
-                                </connections>
                             </textField>
                             <textField opaque="NO" clipsSubviews="YES" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Username" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="1Gf-Bw-Nim">
                                 <rect key="frame" x="45" y="208" width="319" height="44"/>

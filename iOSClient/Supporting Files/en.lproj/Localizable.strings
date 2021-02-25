@@ -349,6 +349,7 @@
 "_traditional_login_"           = "Revert to old login method";
 "_web_login_"                   = "Revert to web login method";
 "_login_url_error_"             = "URL error, please verify your server URL";
+"_webflow_not_available_"       = "Web login not available, use the old login method";
 
 // Favorite
 
