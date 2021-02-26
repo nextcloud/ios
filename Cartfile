@@ -1,7 +1,5 @@
 github "kishikawakatsumi/UICKeyChainStore"
 github "jdg/MBProgressHUD" "1.1.0"
-github "yannickl/QRCodeReader.swift" "10.1.1"
-github "WenchaoD/FSCalendar" "2.8.0"
 github "scenee/FloatingPanel" "v1.7.6"
 github "ivanbruel/MarkdownKit"
 github "FabrizioBrancati/Queuer"

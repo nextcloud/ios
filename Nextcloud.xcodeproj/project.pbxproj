@@ -116,7 +116,6 @@
 		F74AF3A5247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */; };
 		F74AF3A6247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */; };
 		F74AF3A7247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */; };
-		F74AFCE922E8B025003DE61F /* FSCalendar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74AFCE822E8B024003DE61F /* FSCalendar.framework */; };
 		F74C0436253F1CDC009762AB /* NCShares.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74C0434253F1CDC009762AB /* NCShares.swift */; };
 		F74C0437253F1CDC009762AB /* NCShares.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74C0435253F1CDC009762AB /* NCShares.storyboard */; };
 		F74C4FBB2328C3C200A23E25 /* OpenSSL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74C4FBA2328C3C100A23E25 /* OpenSSL.framework */; };
@@ -235,6 +234,7 @@
 		F78F3FD025E8E583007936CF /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F78F3FCF25E8E583007936CF /* SwiftEntryKit */; };
 		F78F3FD725E8E6A5007936CF /* QRCodeReader in Frameworks */ = {isa = PBXBuildFile; productRef = F78F3FD625E8E6A5007936CF /* QRCodeReader */; };
 		F78F3FE625E8E78A007936CF /* SwiftRichString in Frameworks */ = {isa = PBXBuildFile; productRef = F78F3FE525E8E78A007936CF /* SwiftRichString */; };
+		F78F3FF125E8E83F007936CF /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = F78F3FF025E8E83F007936CF /* FSCalendar */; };
 		F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78F74332163757000C2ADAD /* NCTrash.storyboard */; };
 		F78F74362163781100C2ADAD /* NCTrash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78F74352163781100C2ADAD /* NCTrash.swift */; };
 		F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */; };
@@ -742,6 +742,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7176DBA256672640017E83C /* FirebaseCrashlytics.framework in Frameworks */,
+				F78F3FF125E8E83F007936CF /* FSCalendar in Frameworks */,
 				F74C4FBB2328C3C200A23E25 /* OpenSSL.framework in Frameworks */,
 				F7421EAF2294044B00C4B7C1 /* Accelerate.framework in Frameworks */,
 				F7C4D88D2534887E00C142DA /* Parchment in Frameworks */,
@@ -769,7 +770,6 @@
 				F774264122EB3F7300B23912 /* DropDown.framework in Frameworks */,
 				F7DBD82C23E46A4700ECB7C6 /* MarkdownKit.framework in Frameworks */,
 				F75E57BD25BF0EC1002B72C2 /* SVGKit in Frameworks */,
-				F74AFCE922E8B025003DE61F /* FSCalendar.framework in Frameworks */,
 				F7B1076D25D3CF2800E72DE2 /* BackgroundTasks.framework in Frameworks */,
 				F7D2C773246470CA008513AE /* XLForm.framework in Frameworks */,
 				F782A57D25123694007BBABD /* RealmSwift in Frameworks */,
@@ -1658,6 +1658,7 @@
 				F7BFE2D025E8E3D500AB17BE /* SwiftEntryKit */,
 				F78F3FD625E8E6A5007936CF /* QRCodeReader */,
 				F78F3FE525E8E78A007936CF /* SwiftRichString */,
+				F78F3FF025E8E83F007936CF /* FSCalendar */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -1771,6 +1772,7 @@
 				F7BFE2CF25E8E3D500AB17BE /* XCRemoteSwiftPackageReference "SwiftEntryKit" */,
 				F78F3FD525E8E6A5007936CF /* XCRemoteSwiftPackageReference "QRCodeReader" */,
 				F78F3FE425E8E78A007936CF /* XCRemoteSwiftPackageReference "SwiftRichString" */,
+				F78F3FEF25E8E83E007936CF /* XCRemoteSwiftPackageReference "FSCalendar" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -1898,7 +1900,6 @@
 				"$(SRCROOT)/Carthage/Build/iOS/KTVHTTPCache.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/KTVCocoaHTTPServer.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/MBProgressHUD.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/FSCalendar.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/DropDown.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/OpenSSL.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/QuickLayout.framework",
@@ -2829,6 +2830,14 @@
 				minimumVersion = 3.7.2;
 			};
 		};
+		F78F3FEF25E8E83E007936CF /* XCRemoteSwiftPackageReference "FSCalendar" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/WenchaoD/FSCalendar";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.8.2;
+			};
+		};
 		F7BFE2C425E8E2E300AB17BE /* XCRemoteSwiftPackageReference "TLPhotoPicker" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tilltue/TLPhotoPicker";
@@ -2950,6 +2959,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F78F3FE425E8E78A007936CF /* XCRemoteSwiftPackageReference "SwiftRichString" */;
 			productName = SwiftRichString;
+		};
+		F78F3FF025E8E83F007936CF /* FSCalendar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F78F3FEF25E8E83E007936CF /* XCRemoteSwiftPackageReference "FSCalendar" */;
+			productName = FSCalendar;
 		};
 		F7BFE2C525E8E2E300AB17BE /* TLPhotoPicker */ = {
 			isa = XCSwiftPackageProductDependency;
