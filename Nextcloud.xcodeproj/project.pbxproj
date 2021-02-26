@@ -171,6 +171,8 @@
 		F77444F8222816D5000D5EB0 /* NCPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */; };
 		F77910A525DD517B00CEDB9E /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F77910A425DD517B00CEDB9E /* Settings.bundle */; };
 		F77910AB25DD53C700CEDB9E /* NCSettingsBundleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77910AA25DD53C700CEDB9E /* NCSettingsBundleHelper.swift */; };
+		F779421A25E954AB00B7F9EC /* NCRenameFile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F779421925E954AB00B7F9EC /* NCRenameFile.storyboard */; };
+		F779422025E956C900B7F9EC /* NCRenameFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F779421F25E956C900B7F9EC /* NCRenameFile.swift */; };
 		F77A697D250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77A697C250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift */; };
 		F77B0DF51D118A16002130FE /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F77B0E301D118A16002130FE /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
@@ -563,6 +565,8 @@
 		F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPickerViewController.swift; sourceTree = "<group>"; };
 		F77910A425DD517B00CEDB9E /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		F77910AA25DD53C700CEDB9E /* NCSettingsBundleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSettingsBundleHelper.swift; sourceTree = "<group>"; };
+		F779421925E954AB00B7F9EC /* NCRenameFile.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCRenameFile.storyboard; sourceTree = "<group>"; };
+		F779421F25E956C900B7F9EC /* NCRenameFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCRenameFile.swift; sourceTree = "<group>"; };
 		F77A697C250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+Menu.swift"; sourceTree = "<group>"; };
 		F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+MainThread.h"; sourceTree = "<group>"; };
 		F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNotificationCenter+MainThread.m"; sourceTree = "<group>"; };
@@ -787,6 +791,7 @@
 		F70211F31BAC56E9003FC03E /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				F779421025E9548900B7F9EC /* Rename file */,
 				F7E0E1DA22327885006B0911 /* AudioRecorder */,
 				F710D1FA24057E5E00A6033D /* ActionSheetHeaderView */,
 				371B5A2F23D0B04B00FAFAE9 /* Menu */,
@@ -1027,6 +1032,15 @@
 				F7725A5E251F33BB00D125E0 /* NCFiles.swift */,
 			);
 			path = Files;
+			sourceTree = "<group>";
+		};
+		F779421025E9548900B7F9EC /* Rename file */ = {
+			isa = PBXGroup;
+			children = (
+				F779421925E954AB00B7F9EC /* NCRenameFile.storyboard */,
+				F779421F25E956C900B7F9EC /* NCRenameFile.swift */,
+			);
+			path = "Rename file";
 			sourceTree = "<group>";
 		};
 		F78ACD4721903F850088454D /* Cell */ = {
@@ -1821,6 +1835,7 @@
 				F710D20024057E5E00A6033D /* NCActionSheetHeaderView.xib in Resources */,
 				F723985C253C95CE00257F49 /* NCViewerRichdocument.storyboard in Resources */,
 				F758B45A212C564000515F55 /* Scan.storyboard in Resources */,
+				F779421A25E954AB00B7F9EC /* NCRenameFile.storyboard in Resources */,
 				F765F73225237E3F00391DBE /* NCRecent.storyboard in Resources */,
 				F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */,
 				F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */,
@@ -2015,6 +2030,7 @@
 				F7A80BCB252624C100C7CD01 /* NCFileViewInFolder.swift in Sources */,
 				F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */,
 				F77910AB25DD53C700CEDB9E /* NCSettingsBundleHelper.swift in Sources */,
+				F779422025E956C900B7F9EC /* NCRenameFile.swift in Sources */,
 				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */,
 				F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				F758B460212C56A400515F55 /* ScanCollectionView.swift in Sources */,
