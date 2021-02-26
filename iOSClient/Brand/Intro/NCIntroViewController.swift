@@ -173,10 +173,9 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
 
     @IBAction func host(_ sender: Any) {
         
-        guard let url = URL(string: NCBrandOptions.shared.linkLoginHost) else { return }
-        UIApplication.shared.open(url)
+        //guard let url = URL(string: NCBrandOptions.shared.linkLoginHost) else { return }
+        //UIApplication.shared.open(url)
         
-        /*
         let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as? NCBrowserWeb
 
         browserWebVC?.urlBase = NCBrandOptions.shared.linkLoginHost
@@ -184,9 +183,9 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         if let browserWebVC = browserWebVC {
             appDelegate.window?.rootViewController?.present(browserWebVC, animated: true)
         }
-        */
     }
 }
+
 extension UINavigationController {
     open override var childForStatusBarStyle: UIViewController? {
         return topViewController?.childForStatusBarStyle ?? topViewController
