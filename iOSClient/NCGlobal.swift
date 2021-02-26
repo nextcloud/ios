@@ -234,41 +234,41 @@ class NCGlobal: NSObject {
     @objc let notificationCenterApplicationDidEnterBackground   = "applicationDidEnterBackground"
     let notificationCenterApplicationWillEnterForeground        = "applicationWillEnterForeground"
 
-    let notificationCenterInitializeMain                  = "initializeMain"
-    @objc let notificationCenterChangeTheming             = "changeTheming"
-    let notificationCenterChangeUserProfile               = "changeUserProfile"
-    let notificationCenterRichdocumentGrabFocus           = "richdocumentGrabFocus"
-    let notificationCenterReloadDataNCShare               = "reloadDataNCShare"
-    let notificationCenterCloseRichWorkspaceWebView       = "closeRichWorkspaceWebView"
-    let notificationCenterUpdateBadgeNumber               = "updateBadgeNumber"
+    @objc let notificationCenterInitializeMain                  = "initializeMain"
+    @objc let notificationCenterChangeTheming                   = "changeTheming"
+    let notificationCenterChangeUserProfile                     = "changeUserProfile"
+    let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
+    let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
+    let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
+    let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"
 
-    @objc let notificationCenterReloadDataSource          = "reloadDataSource"                 // userInfo: ocId?, serverUrl?
-    let notificationCenterReloadDataSourceNetworkForced   = "reloadDataSourceNetworkForced"    // userInfo: serverUrl?
+    @objc let notificationCenterReloadDataSource                = "reloadDataSource"                 // userInfo: ocId?, serverUrl?
+    let notificationCenterReloadDataSourceNetworkForced         = "reloadDataSourceNetworkForced"    // userInfo: serverUrl?
 
-    let notificationCenterChangeStatusFolderE2EE          = "changeStatusFolderE2EE"           // userInfo: serverUrl
+    let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"           // userInfo: serverUrl
 
-    let notificationCenterDownloadStartFile               = "downloadStartFile"                // userInfo: ocId
-    let notificationCenterDownloadedFile                  = "downloadedFile"                   // userInfo: ocId, selector, errorCode, errorDescription
-    let notificationCenterDownloadCancelFile              = "downloadCancelFile"               // userInfo: ocId
+    let notificationCenterDownloadStartFile                     = "downloadStartFile"                // userInfo: ocId
+    let notificationCenterDownloadedFile                        = "downloadedFile"                   // userInfo: ocId, selector, errorCode, errorDescription
+    let notificationCenterDownloadCancelFile                    = "downloadCancelFile"               // userInfo: ocId
 
-    let notificationCenterUploadStartFile                 = "uploadStartFile"                  // userInfo: ocId
-    @objc let notificationCenterUploadedFile              = "uploadedFile"                     // userInfo: ocId, ocIdTemp, errorCode, errorDescription
-    let notificationCenterUploadCancelFile                = "uploadCancelFile"                 // userInfo: ocId
+    let notificationCenterUploadStartFile                       = "uploadStartFile"                  // userInfo: ocId
+    @objc let notificationCenterUploadedFile                    = "uploadedFile"                     // userInfo: ocId, ocIdTemp, errorCode, errorDescription
+    let notificationCenterUploadCancelFile                      = "uploadCancelFile"                 // userInfo: ocId
 
-    let notificationCenterProgressTask                    = "progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
+    let notificationCenterProgressTask                          = "progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
     
-    let notificationCenterCreateFolder                    = "createFolder"                     // userInfo: ocId
-    let notificationCenterDeleteFile                      = "deleteFile"                       // userInfo: ocId, fileNameView, typeFile, onlyLocal
-    let notificationCenterRenameFile                      = "renameFile"                       // userInfo: ocId, errorCode, errorDescription
-    let notificationCenterMoveFile                        = "moveFile"                         // userInfo: ocId, serverUrlTo
-    let notificationCenterCopyFile                        = "copyFile"                         // userInfo: ocId, serverUrlFrom
-    let notificationCenterFavoriteFile                    = "favoriteFile"                     // userInfo: ocId
+    let notificationCenterCreateFolder                          = "createFolder"                     // userInfo: ocId
+    let notificationCenterDeleteFile                            = "deleteFile"                       // userInfo: ocId, fileNameView, typeFile, onlyLocal
+    let notificationCenterRenameFile                            = "renameFile"                       // userInfo: ocId, errorCode, errorDescription
+    let notificationCenterMoveFile                              = "moveFile"                         // userInfo: ocId, serverUrlTo
+    let notificationCenterCopyFile                              = "copyFile"                         // userInfo: ocId, serverUrlFrom
+    let notificationCenterFavoriteFile                          = "favoriteFile"                     // userInfo: ocId
 
-    let notificationCenterMenuSearchTextPDF               = "menuSearchTextPDF"
-    let notificationCenterMenuDetailClose                 = "menuDetailClose"
+    let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
+    let notificationCenterMenuDetailClose                       = "menuDetailClose"
     
-    let notificationCenterChangedLocation                 = "changedLocation"
-    let notificationStatusAuthorizationChangedLocation    = "statusAuthorizationChangedLocation"
+    let notificationCenterChangedLocation                       = "changedLocation"
+    let notificationStatusAuthorizationChangedLocation          = "statusAuthorizationChangedLocation"
 }
 
 //DispatchQueue.main.async
