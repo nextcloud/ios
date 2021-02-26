@@ -232,43 +232,43 @@ class NCGlobal: NSObject {
     // Notification Center
 
     @objc let notificationCenterApplicationDidEnterBackground   = "applicationDidEnterBackground"
-    @objc let notificationCenterApplicationWillEnterForeground  = "applicationWillEnterForeground"
+    let notificationCenterApplicationWillEnterForeground        = "applicationWillEnterForeground"
 
-    @objc let notificationCenterInitializeMain                  = "initializeMain"
-    @objc let notificationCenterChangeTheming                   = "changeTheming"
-    @objc let notificationCenterChangeUserProfile               = "changeUserProfile"
-    @objc let notificationCenterRichdocumentGrabFocus           = "richdocumentGrabFocus"
-    @objc let notificationCenterReloadDataNCShare               = "reloadDataNCShare"
-    @objc let notificationCenterCloseRichWorkspaceWebView       = "closeRichWorkspaceWebView"
-    @objc let notificationCenterUpdateBadgeNumber               = "updateBadgeNumber"
+    let notificationCenterInitializeMain                  = "initializeMain"
+    @objc let notificationCenterChangeTheming             = "changeTheming"
+    let notificationCenterChangeUserProfile               = "changeUserProfile"
+    let notificationCenterRichdocumentGrabFocus           = "richdocumentGrabFocus"
+    let notificationCenterReloadDataNCShare               = "reloadDataNCShare"
+    let notificationCenterCloseRichWorkspaceWebView       = "closeRichWorkspaceWebView"
+    let notificationCenterUpdateBadgeNumber               = "updateBadgeNumber"
 
-    @objc let notificationCenterReloadDataSource                = "reloadDataSource"                 // userInfo: ocId?, serverUrl?
-    @objc let notificationCenterReloadDataSourceNetworkForced   = "reloadDataSourceNetworkForced"    // userInfo: serverUrl?
+    @objc let notificationCenterReloadDataSource          = "reloadDataSource"                 // userInfo: ocId?, serverUrl?
+    let notificationCenterReloadDataSourceNetworkForced   = "reloadDataSourceNetworkForced"    // userInfo: serverUrl?
 
-    @objc let notificationCenterChangeStatusFolderE2EE          = "changeStatusFolderE2EE"           // userInfo: serverUrl
+    let notificationCenterChangeStatusFolderE2EE          = "changeStatusFolderE2EE"           // userInfo: serverUrl
 
-    @objc let notificationCenterDownloadStartFile               = "downloadStartFile"                // userInfo: ocId
-    @objc let notificationCenterDownloadedFile                  = "downloadedFile"                   // userInfo: ocId, selector, errorCode, errorDescription
-    @objc let notificationCenterDownloadCancelFile              = "downloadCancelFile"               // userInfo: ocId
+    let notificationCenterDownloadStartFile               = "downloadStartFile"                // userInfo: ocId
+    let notificationCenterDownloadedFile                  = "downloadedFile"                   // userInfo: ocId, selector, errorCode, errorDescription
+    let notificationCenterDownloadCancelFile              = "downloadCancelFile"               // userInfo: ocId
 
-    @objc let notificationCenterUploadStartFile                 = "uploadStartFile"                  // userInfo: ocId
-    @objc let notificationCenterUploadedFile                    = "uploadedFile"                     // userInfo: ocId, ocIdTemp, errorCode, errorDescription
-    @objc let notificationCenterUploadCancelFile                = "uploadCancelFile"                 // userInfo: ocId
+    let notificationCenterUploadStartFile                 = "uploadStartFile"                  // userInfo: ocId
+    @objc let notificationCenterUploadedFile              = "uploadedFile"                     // userInfo: ocId, ocIdTemp, errorCode, errorDescription
+    let notificationCenterUploadCancelFile                = "uploadCancelFile"                 // userInfo: ocId
 
-    @objc let notificationCenterProgressTask                    = "progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
+    let notificationCenterProgressTask                    = "progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
     
-    @objc let notificationCenterCreateFolder                    = "createFolder"                     // userInfo: ocId
-    @objc let notificationCenterDeleteFile                      = "deleteFile"                       // userInfo: ocId, fileNameView, typeFile, onlyLocal
-    @objc let notificationCenterRenameFile                      = "renameFile"                       // userInfo: ocId, errorCode, errorDescription
-    @objc let notificationCenterMoveFile                        = "moveFile"                         // userInfo: ocId, serverUrlTo
-    @objc let notificationCenterCopyFile                        = "copyFile"                         // userInfo: ocId, serverUrlFrom
-    @objc let notificationCenterFavoriteFile                    = "favoriteFile"                     // userInfo: ocId
+    let notificationCenterCreateFolder                    = "createFolder"                     // userInfo: ocId
+    let notificationCenterDeleteFile                      = "deleteFile"                       // userInfo: ocId, fileNameView, typeFile, onlyLocal
+    let notificationCenterRenameFile                      = "renameFile"                       // userInfo: ocId, errorCode, errorDescription
+    let notificationCenterMoveFile                        = "moveFile"                         // userInfo: ocId, serverUrlTo
+    let notificationCenterCopyFile                        = "copyFile"                         // userInfo: ocId, serverUrlFrom
+    let notificationCenterFavoriteFile                    = "favoriteFile"                     // userInfo: ocId
 
-    @objc let notificationCenterMenuSearchTextPDF               = "menuSearchTextPDF"
-    @objc let notificationCenterMenuDetailClose                 = "menuDetailClose"
+    let notificationCenterMenuSearchTextPDF               = "menuSearchTextPDF"
+    let notificationCenterMenuDetailClose                 = "menuDetailClose"
     
-    @objc let notificationCenterChangedLocation                 = "changedLocation"
-    @objc let notificationStatusAuthorizationChangedLocation    = "statusAuthorizationChangedLocation"
+    let notificationCenterChangedLocation                 = "changedLocation"
+    let notificationStatusAuthorizationChangedLocation    = "statusAuthorizationChangedLocation"
 }
 
 //DispatchQueue.main.async
