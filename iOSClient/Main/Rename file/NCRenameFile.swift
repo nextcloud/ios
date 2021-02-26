@@ -24,13 +24,16 @@ class NCRenameFile: UIViewController {
         super.viewDidLoad()
         
         if let metadata = self.metadata {
-            
-            fileNameWithoutExt.text = metadata.fileNameWithoutExt
-            ext.text = metadata.ext
-            
+                        
             if metadata.directory {
+                
                 previewFile.image = NCCollectionCommon.images.cellFolderImage
+                
+                fileNameWithoutExt.text = metadata.fileName
+                ext.isHidden = true
+                
             } else {
+                
                 if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                     previewFile.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
                 } else {
@@ -40,9 +43,12 @@ class NCRenameFile: UIViewController {
                         previewFile.image = NCCollectionCommon.images.cellFileImage
                     }
                 }
+                
+                fileNameWithoutExt.text = metadata.fileNameWithoutExt
+                ext.text = metadata.ext
             }
         }
-        
+                
         title = NSLocalizedString("_rename_file_", comment: "")
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
@@ -69,6 +75,7 @@ class NCRenameFile: UIViewController {
         guard let metadata = metadata else { return }
         var newFileNameWithoutExt = ""
         var newExt = ""
+        var fileNameNew = ""
         
         if fileNameWithoutExt.text == nil || fileNameWithoutExt.text?.count == 0 {
             self.fileNameWithoutExt.text = metadata.fileNameWithoutExt
@@ -77,14 +84,25 @@ class NCRenameFile: UIViewController {
             newFileNameWithoutExt = fileNameWithoutExt.text!
         }
         
-        if ext.text == nil || ext.text?.count == 0 {
-            self.ext.text = metadata.ext
-            return
+        if metadata.directory {
+            
+            fileNameNew = newFileNameWithoutExt
+            
         } else {
-            newExt = ext.text!
+            
+            if ext.text == nil || ext.text?.count == 0 {
+                self.ext.text = metadata.ext
+                return
+            } else {
+                newExt = ext.text!
+            }
+            
+            if newExt != metadata.ext {
+                
+            }
+            
+            fileNameNew = newFileNameWithoutExt + "." + newExt
         }
-        
-        let fileNameNew = newFileNameWithoutExt + "." + newExt
         
         NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, urlBase: metadata.urlBase, viewController: self) { (errorCode, errorDescription) in
             if errorCode == 0 {
