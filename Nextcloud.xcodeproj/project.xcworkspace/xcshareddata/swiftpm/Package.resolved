@@ -65,6 +65,15 @@
         }
       },
       {
+        "package": "Queuer",
+        "repositoryURL": "https://github.com/FabrizioBrancati/Queuer",
+        "state": {
+          "branch": null,
+          "revision": "52515108d0ac4616d9e15ffcc7ad986e300d31ff",
+          "version": "2.1.1"
+        }
+      },
+      {
         "package": "QuickLayout",
         "repositoryURL": "https://github.com/huri000/QuickLayout",
         "state": {

@@ -1,7 +1,6 @@
 github "kishikawakatsumi/UICKeyChainStore"
 github "jdg/MBProgressHUD" "1.1.0"
 github "ivanbruel/MarkdownKit"
-github "FabrizioBrancati/Queuer"
 github "xmartlabs/XLForm" ~> 4.1
 github "AssistoLab/DropDown" "v2.3.13"
 

@@ -80,6 +80,8 @@
 		F7239877253D86D300257F49 /* NCEmptyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7239876253D86D300257F49 /* NCEmptyView.xib */; };
 		F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */; };
 		F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */; };
+		F7276EF025E8EF80001DEC75 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F7276EEF25E8EF80001DEC75 /* Queuer */; };
+		F7276EF625E8F748001DEC75 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F7276EF525E8F748001DEC75 /* Queuer */; };
 		F72928A0253B0937009CA4FD /* NCMainNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F729289F253B0937009CA4FD /* NCMainNavigationController.swift */; };
 		F72A47EC2487B06B005AD489 /* NCOperationQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72A47EB2487B06B005AD489 /* NCOperationQueue.swift */; };
 		F72CD63A25C19EBF00F46F9A /* NCAutoUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72CD63925C19EBF00F46F9A /* NCAutoUpload.swift */; };
@@ -146,7 +148,6 @@
 		F7632FC1218353AA00721B71 /* NCTrashSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FC0218353AA00721B71 /* NCTrashSectionFooter.xib */; };
 		F7651A8A23A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7651A8823A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard */; };
 		F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7651A8923A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift */; };
-		F765608723BF806D00765969 /* QuickLayout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F765608623BF806C00765969 /* QuickLayout.framework */; };
 		F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
 		F765609023BF813600765969 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
 		F765F73125237E3F00391DBE /* NCRecent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765F72F25237E3F00391DBE /* NCRecent.swift */; };
@@ -166,7 +167,6 @@
 		F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D3CF02428B40E005DFA87 /* NCViewerPDFSearch.swift */; };
 		F76D3CF32428B94E005DFA87 /* NCViewerPDFSearchCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F76D3CF22428B94E005DFA87 /* NCViewerPDFSearchCell.xib */; };
 		F76D3CF52428D0C1005DFA87 /* NCViewerPDF.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F76D3CF42428D0C0005DFA87 /* NCViewerPDF.storyboard */; };
-		F76FDEAB24859C3D0095B6C2 /* Queuer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F76FDEAA24859C3D0095B6C2 /* Queuer.framework */; };
 		F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */; };
 		F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D420E2392D00AFB62D /* FileProviderItem.swift */; };
 		F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D620E2392D00AFB62D /* FileProviderEnumerator.swift */; };
@@ -235,6 +235,7 @@
 		F78F3FE625E8E78A007936CF /* SwiftRichString in Frameworks */ = {isa = PBXBuildFile; productRef = F78F3FE525E8E78A007936CF /* SwiftRichString */; };
 		F78F3FF125E8E83F007936CF /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = F78F3FF025E8E83F007936CF /* FSCalendar */; };
 		F78F3FFC25E8E925007936CF /* FloatingPanel in Frameworks */ = {isa = PBXBuildFile; productRef = F78F3FFB25E8E925007936CF /* FloatingPanel */; };
+		F78F400725E8EB42007936CF /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F78F400625E8EB42007936CF /* Queuer */; };
 		F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78F74332163757000C2ADAD /* NCTrash.storyboard */; };
 		F78F74362163781100C2ADAD /* NCTrash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78F74352163781100C2ADAD /* NCTrash.swift */; };
 		F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */; };
@@ -719,6 +720,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F75E57BF25BF0EC8002B72C2 /* SVGKit in Frameworks */,
+				F7276EF025E8EF80001DEC75 /* Queuer in Frameworks */,
 				F782A585251236B7007BBABD /* RealmSwift in Frameworks */,
 				F78F3FD025E8E583007936CF /* SwiftEntryKit in Frameworks */,
 				F786D593253454CE00E3DD7B /* NCCommunication in Frameworks */,
@@ -730,6 +732,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7276EF625E8F748001DEC75 /* Queuer in Frameworks */,
 				F75E57C125BF0ECD002B72C2 /* SVGKit in Frameworks */,
 				F782A589251236CA007BBABD /* RealmSwift in Frameworks */,
 				F786D595253454D300E3DD7B /* NCCommunication in Frameworks */,
@@ -747,15 +750,14 @@
 				F7421EAF2294044B00C4B7C1 /* Accelerate.framework in Frameworks */,
 				F7C4D88D2534887E00C142DA /* Parchment in Frameworks */,
 				F7C40BF32199978B0004137E /* MBProgressHUD.framework in Frameworks */,
-				F76FDEAB24859C3D0095B6C2 /* Queuer.framework in Frameworks */,
 				F79918A221997FA300C2E308 /* UICKeyChainStore.framework in Frameworks */,
 				F7176DC8256672650017E83C /* Protobuf.framework in Frameworks */,
 				F7176DC2256672650017E83C /* PromisesObjC.framework in Frameworks */,
 				F7AF7633246BEDFE00B86E3C /* TOPasscodeViewController.framework in Frameworks */,
 				F7176DCA256672650017E83C /* FirebaseCore.framework in Frameworks */,
-				F765608723BF806D00765969 /* QuickLayout.framework in Frameworks */,
 				F7176DC0256672650017E83C /* FirebaseInstallations.framework in Frameworks */,
 				F7176DC6256672650017E83C /* nanopb.framework in Frameworks */,
+				F78F400725E8EB42007936CF /* Queuer in Frameworks */,
 				F7176DC4256672650017E83C /* GoogleUtilities.framework in Frameworks */,
 				F7176DDB256672F10017E83C /* libsqlite3.tbd in Frameworks */,
 				F7176DBE256672640017E83C /* GoogleDataTransport.framework in Frameworks */,
@@ -1602,6 +1604,7 @@
 				F786D592253454CE00E3DD7B /* NCCommunication */,
 				F75E57BE25BF0EC8002B72C2 /* SVGKit */,
 				F78F3FCF25E8E583007936CF /* SwiftEntryKit */,
+				F7276EEF25E8EF80001DEC75 /* Queuer */,
 			);
 			productName = "Share Ext";
 			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */;
@@ -1625,6 +1628,7 @@
 				F782A588251236CA007BBABD /* RealmSwift */,
 				F786D594253454D300E3DD7B /* NCCommunication */,
 				F75E57C025BF0ECD002B72C2 /* SVGKit */,
+				F7276EF525E8F748001DEC75 /* Queuer */,
 			);
 			productName = "File Provider Extension";
 			productReference = F771E3D020E2392D00AFB62D /* File Provider Extension.appex */;
@@ -1660,6 +1664,7 @@
 				F78F3FE525E8E78A007936CF /* SwiftRichString */,
 				F78F3FF025E8E83F007936CF /* FSCalendar */,
 				F78F3FFB25E8E925007936CF /* FloatingPanel */,
+				F78F400625E8EB42007936CF /* Queuer */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -1775,6 +1780,7 @@
 				F78F3FE425E8E78A007936CF /* XCRemoteSwiftPackageReference "SwiftRichString" */,
 				F78F3FEF25E8E83E007936CF /* XCRemoteSwiftPackageReference "FSCalendar" */,
 				F78F3FFA25E8E925007936CF /* XCRemoteSwiftPackageReference "FloatingPanel" */,
+				F78F400525E8EB42007936CF /* XCRemoteSwiftPackageReference "Queuer" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -1904,11 +1910,9 @@
 				"$(SRCROOT)/Carthage/Build/iOS/MBProgressHUD.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/DropDown.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/OpenSSL.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/QuickLayout.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/MarkdownKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/XLForm.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/TOPasscodeViewController.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/Queuer.framework",
 			);
 			outputPaths = (
 			);
@@ -2847,6 +2851,14 @@
 				minimumVersion = 2.2.0;
 			};
 		};
+		F78F400525E8EB42007936CF /* XCRemoteSwiftPackageReference "Queuer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/FabrizioBrancati/Queuer";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.1;
+			};
+		};
 		F7BFE2C425E8E2E300AB17BE /* XCRemoteSwiftPackageReference "TLPhotoPicker" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tilltue/TLPhotoPicker";
@@ -2874,6 +2886,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		F7276EEF25E8EF80001DEC75 /* Queuer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F78F400525E8EB42007936CF /* XCRemoteSwiftPackageReference "Queuer" */;
+			productName = Queuer;
+		};
+		F7276EF525E8F748001DEC75 /* Queuer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F78F400525E8EB42007936CF /* XCRemoteSwiftPackageReference "Queuer" */;
+			productName = Queuer;
+		};
 		F75E57BC25BF0EC1002B72C2 /* SVGKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
@@ -2978,6 +3000,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F78F3FFA25E8E925007936CF /* XCRemoteSwiftPackageReference "FloatingPanel" */;
 			productName = FloatingPanel;
+		};
+		F78F400625E8EB42007936CF /* Queuer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F78F400525E8EB42007936CF /* XCRemoteSwiftPackageReference "Queuer" */;
+			productName = Queuer;
 		};
 		F7BFE2C525E8E2E300AB17BE /* TLPhotoPicker */ = {
 			isa = XCSwiftPackageProductDependency;
