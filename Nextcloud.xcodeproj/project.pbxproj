@@ -59,18 +59,6 @@
 		F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
 		F717402D24F699A5000C87D5 /* NCFavorite.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F717402B24F699A5000C87D5 /* NCFavorite.storyboard */; };
 		F717402E24F699A5000C87D5 /* NCFavorite.swift in Sources */ = {isa = PBXBuildFile; fileRef = F717402C24F699A5000C87D5 /* NCFavorite.swift */; };
-		F7176DBA256672640017E83C /* FirebaseCrashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DAE256672630017E83C /* FirebaseCrashlytics.framework */; };
-		F7176DBC256672640017E83C /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DAF256672630017E83C /* FirebaseCoreDiagnostics.framework */; };
-		F7176DBE256672640017E83C /* GoogleDataTransport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB0256672630017E83C /* GoogleDataTransport.framework */; };
-		F7176DC0256672650017E83C /* FirebaseInstallations.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB1256672630017E83C /* FirebaseInstallations.framework */; };
-		F7176DC2256672650017E83C /* PromisesObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB2256672630017E83C /* PromisesObjC.framework */; };
-		F7176DC4256672650017E83C /* GoogleUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB3256672630017E83C /* GoogleUtilities.framework */; };
-		F7176DC6256672650017E83C /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB4256672630017E83C /* nanopb.framework */; };
-		F7176DC8256672650017E83C /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB5256672640017E83C /* Protobuf.framework */; };
-		F7176DCA256672650017E83C /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB6256672640017E83C /* FirebaseCore.framework */; };
-		F7176DCC256672660017E83C /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB7256672640017E83C /* FirebaseAnalytics.framework */; };
-		F7176DCE256672660017E83C /* GoogleAppMeasurement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB8256672640017E83C /* GoogleAppMeasurement.framework */; };
-		F7176DD0256672660017E83C /* FIRAnalyticsConnector.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB9256672640017E83C /* FIRAnalyticsConnector.framework */; };
 		F7176DDB256672F10017E83C /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DDA256672D90017E83C /* libsqlite3.tbd */; };
 		F718C24E254D507B00C5C256 /* NCViewerImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718C24D254D507B00C5C256 /* NCViewerImageDetailView.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
@@ -102,7 +90,6 @@
 		F73D5E4A246DE09200DF6467 /* NCElementsJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73D5E46246DE09200DF6467 /* NCElementsJSON.swift */; };
 		F73F537F1E929C8500F8678D /* NCMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73F537E1E929C8500F8678D /* NCMore.swift */; };
 		F7417DB3216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7417DB2216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift */; };
-		F7421EAF2294044B00C4B7C1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7421EAE2294044B00C4B7C1 /* Accelerate.framework */; };
 		F7434B3420E23FD700417916 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7434B3820E2400600417916 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
@@ -146,6 +133,7 @@
 		F76032A0252F0F8E0015A421 /* NCTransferCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F760329E252F0F8E0015A421 /* NCTransferCell.xib */; };
 		F7632FBF21832F8700721B71 /* NCTrashSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FBE21832F8700721B71 /* NCTrashSectionHeaderMenu.xib */; };
 		F7632FC1218353AA00721B71 /* NCTrashSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FC0218353AA00721B71 /* NCTrashSectionFooter.xib */; };
+		F764A75D25E919DC00F95C9E /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = F764A75C25E919DC00F95C9E /* FirebaseCrashlytics */; };
 		F7651A8A23A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7651A8823A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard */; };
 		F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7651A8923A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift */; };
 		F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
@@ -267,7 +255,6 @@
 		F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */; };
 		F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */; };
 		F7AF7633246BEDFE00B86E3C /* TOPasscodeViewController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7AF7632246BEDFE00B86E3C /* TOPasscodeViewController.framework */; };
-		F7B1076D25D3CF2800E72DE2 /* BackgroundTasks.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B1076C25D3CF2800E72DE2 /* BackgroundTasks.framework */; };
 		F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B2DEEF1F976785007CF4D2 /* NYMnemonic.m */; };
 		F7B2DEF11F976859007CF4D2 /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = F7B2DEED1F976785007CF4D2 /* english.txt */; };
 		F7B7504B2397D38F004E13EC /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */; };
@@ -744,25 +731,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7176DBA256672640017E83C /* FirebaseCrashlytics.framework in Frameworks */,
 				F78F3FF125E8E83F007936CF /* FSCalendar in Frameworks */,
 				F74C4FBB2328C3C200A23E25 /* OpenSSL.framework in Frameworks */,
-				F7421EAF2294044B00C4B7C1 /* Accelerate.framework in Frameworks */,
 				F7C4D88D2534887E00C142DA /* Parchment in Frameworks */,
 				F7813ECE25E91460002C44A2 /* MBProgressHUD in Frameworks */,
-				F7176DC8256672650017E83C /* Protobuf.framework in Frameworks */,
-				F7176DC2256672650017E83C /* PromisesObjC.framework in Frameworks */,
 				F7AF7633246BEDFE00B86E3C /* TOPasscodeViewController.framework in Frameworks */,
-				F7176DCA256672650017E83C /* FirebaseCore.framework in Frameworks */,
-				F7176DC0256672650017E83C /* FirebaseInstallations.framework in Frameworks */,
-				F7176DC6256672650017E83C /* nanopb.framework in Frameworks */,
 				F78F400725E8EB42007936CF /* Queuer in Frameworks */,
-				F7176DC4256672650017E83C /* GoogleUtilities.framework in Frameworks */,
 				F7176DDB256672F10017E83C /* libsqlite3.tbd in Frameworks */,
-				F7176DBE256672640017E83C /* GoogleDataTransport.framework in Frameworks */,
-				F7176DCC256672660017E83C /* FirebaseAnalytics.framework in Frameworks */,
 				F7BFE2D125E8E3D500AB17BE /* SwiftEntryKit in Frameworks */,
-				F7176DCE256672660017E83C /* GoogleAppMeasurement.framework in Frameworks */,
 				F786D58D253454BF00E3DD7B /* NCCommunication in Frameworks */,
 				F7C40BEF219994ED0004137E /* KTVCocoaHTTPServer.framework in Frameworks */,
 				F782A57B25123694007BBABD /* Realm in Frameworks */,
@@ -770,16 +746,14 @@
 				F78F3FFC25E8E925007936CF /* FloatingPanel in Frameworks */,
 				F78F3FD725E8E6A5007936CF /* QRCodeReader in Frameworks */,
 				F774264122EB3F7300B23912 /* DropDown.framework in Frameworks */,
+				F764A75D25E919DC00F95C9E /* FirebaseCrashlytics in Frameworks */,
 				F7DBD82C23E46A4700ECB7C6 /* MarkdownKit.framework in Frameworks */,
 				F75E57BD25BF0EC1002B72C2 /* SVGKit in Frameworks */,
 				F7813EC325E91358002C44A2 /* UICKeyChainStore in Frameworks */,
-				F7B1076D25D3CF2800E72DE2 /* BackgroundTasks.framework in Frameworks */,
 				F7813EB825E9126B002C44A2 /* XLForm in Frameworks */,
 				F782A57D25123694007BBABD /* RealmSwift in Frameworks */,
 				F78F3FE625E8E78A007936CF /* SwiftRichString in Frameworks */,
-				F7176DBC256672640017E83C /* FirebaseCoreDiagnostics.framework in Frameworks */,
 				F7BFE2C625E8E2E300AB17BE /* TLPhotoPicker in Frameworks */,
-				F7176DD0256672660017E83C /* FIRAnalyticsConnector.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1668,6 +1642,7 @@
 				F7813EB725E9126B002C44A2 /* XLForm */,
 				F7813EC225E91358002C44A2 /* UICKeyChainStore */,
 				F7813ECD25E91460002C44A2 /* MBProgressHUD */,
+				F764A75C25E919DC00F95C9E /* FirebaseCrashlytics */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -1787,6 +1762,7 @@
 				F7813EB625E9126A002C44A2 /* XCRemoteSwiftPackageReference "XLForm" */,
 				F7813EC125E91358002C44A2 /* XCRemoteSwiftPackageReference "UICKeyChainStore" */,
 				F7813ECC25E91460002C44A2 /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
+				F764A75B25E919DC00F95C9E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -2806,6 +2782,14 @@
 				kind = branch;
 			};
 		};
+		F764A75B25E919DC00F95C9E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.7.0;
+			};
+		};
 		F7813EB625E9126A002C44A2 /* XCRemoteSwiftPackageReference "XLForm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/xmartlabs/XLForm";
@@ -2942,6 +2926,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
 			productName = SVGKit;
+		};
+		F764A75C25E919DC00F95C9E /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F764A75B25E919DC00F95C9E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 		F7813EB725E9126B002C44A2 /* XLForm */ = {
 			isa = XCSwiftPackageProductDependency;

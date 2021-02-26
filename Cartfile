@@ -1,10 +1,6 @@
 github "ivanbruel/MarkdownKit"
 github "AssistoLab/DropDown" "v2.3.13"
 
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseProtobufBinary.json"
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseCrashlyticsBinary.json"
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"
-
 github "https://github.com/marinofaggiana/KTVHTTPCache" "2.0.2"
 github "https://github.com/marinofaggiana/TOPasscodeViewController" "0.0.7"
 github "https://github.com/marinofaggiana/OpenSSL" "master"
