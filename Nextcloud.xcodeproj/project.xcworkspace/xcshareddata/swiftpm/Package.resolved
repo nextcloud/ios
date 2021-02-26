@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/scenee/FloatingPanel",
         "state": {
           "branch": null,
-          "revision": "3d6c0220e0f5b0df497901a87036502fff488167",
-          "version": "2.2.0"
+          "revision": "ca7596e1cae161415f54059a8c44b82c95724160",
+          "version": "1.7.6"
         }
       },
       {
@@ -44,6 +44,15 @@
           "branch": null,
           "revision": "6dadd60065c28957201f6822183c6400fca64e51",
           "version": null
+        }
+      },
+      {
+        "package": "MBProgressHUD",
+        "repositoryURL": "https://github.com/jdg/MBProgressHUD",
+        "state": {
+          "branch": null,
+          "revision": "bca42b801100b2b3a4eda0ba8dd33d858c780b0d",
+          "version": "1.2.0"
         }
       },
       {
@@ -161,6 +170,24 @@
           "branch": null,
           "revision": "f8714a826077661171148ce1c8075f47fa1e6283",
           "version": "2.1.3"
+        }
+      },
+      {
+        "package": "UICKeyChainStore",
+        "repositoryURL": "https://github.com/kishikawakatsumi/UICKeyChainStore",
+        "state": {
+          "branch": null,
+          "revision": "8220ac38124613fb709508426f75fbac6921e261",
+          "version": "2.2.1"
+        }
+      },
+      {
+        "package": "XLForm",
+        "repositoryURL": "https://github.com/xmartlabs/XLForm",
+        "state": {
+          "branch": null,
+          "revision": "74bde2185b10e24dc7c82bc36aea839c1561d78c",
+          "version": "4.2.0"
         }
       }
     ]

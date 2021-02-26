@@ -1,7 +1,4 @@
-github "kishikawakatsumi/UICKeyChainStore"
-github "jdg/MBProgressHUD" "1.1.0"
 github "ivanbruel/MarkdownKit"
-github "xmartlabs/XLForm" ~> 4.1
 github "AssistoLab/DropDown" "v2.3.13"
 
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseProtobufBinary.json"

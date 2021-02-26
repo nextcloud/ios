@@ -195,6 +195,9 @@
 		F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
 		F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
+		F7813EB825E9126B002C44A2 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F7813EB725E9126B002C44A2 /* XLForm */; };
+		F7813EC325E91358002C44A2 /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F7813EC225E91358002C44A2 /* UICKeyChainStore */; };
+		F7813ECE25E91460002C44A2 /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F7813ECD25E91460002C44A2 /* MBProgressHUD */; };
 		F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F782A57B25123694007BBABD /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F782A57A25123694007BBABD /* Realm */; };
 		F782A57D25123694007BBABD /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F782A57C25123694007BBABD /* RealmSwift */; };
@@ -244,7 +247,6 @@
 		F798F0E225880608000DAFFD /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extensions.swift */; };
 		F798F0E725880609000DAFFD /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extensions.swift */; };
 		F798F0EC2588060A000DAFFD /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extensions.swift */; };
-		F79918A221997FA300C2E308 /* UICKeyChainStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F79918A021997F9000C2E308 /* UICKeyChainStore.framework */; };
 		F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */; };
 		F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79A65C52191D95E00FF6DCC /* NCSelect.swift */; };
 		F7A0D1352591FBC5008F8A13 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extensions.swift */; };
@@ -279,7 +281,6 @@
 		F7C1EEA525053A9C00866ACC /* NCDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C1EEA425053A9C00866ACC /* NCDataSource.swift */; };
 		F7C40BEF219994ED0004137E /* KTVCocoaHTTPServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BEE219994ED0004137E /* KTVCocoaHTTPServer.framework */; };
 		F7C40BF1219994F20004137E /* KTVHTTPCache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BF0219994F20004137E /* KTVHTTPCache.framework */; };
-		F7C40BF32199978B0004137E /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BF22199978B0004137E /* MBProgressHUD.framework */; };
 		F7C4D88D2534887E00C142DA /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = F7C4D88C2534887E00C142DA /* Parchment */; };
 		F7C7B489245EBA4100D93E60 /* NCViewerQuickLook.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */; };
 		F7C91C9925E6946D005D2490 /* NCLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C91C9825E6946D005D2490 /* NCLogin.swift */; };
@@ -293,7 +294,6 @@
 		F7CB68A0254169530050EC94 /* NCSettings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CB689F254169530050EC94 /* NCSettings.storyboard */; };
 		F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */; };
 		F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */; };
-		F7D2C773246470CA008513AE /* XLForm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D2C772246470CA008513AE /* XLForm.framework */; };
 		F7D96FCC246ED7E200536D73 /* NCNetworkingCheckRemoteUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D96FCB246ED7E100536D73 /* NCNetworkingCheckRemoteUser.swift */; };
 		F7DBC37C23325E02001A85BA /* NCAppConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37B23325E01001A85BA /* NCAppConfigView.swift */; };
 		F7DBD82C23E46A4700ECB7C6 /* MarkdownKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DBD82B23E46A4700ECB7C6 /* MarkdownKit.framework */; };
@@ -749,8 +749,7 @@
 				F74C4FBB2328C3C200A23E25 /* OpenSSL.framework in Frameworks */,
 				F7421EAF2294044B00C4B7C1 /* Accelerate.framework in Frameworks */,
 				F7C4D88D2534887E00C142DA /* Parchment in Frameworks */,
-				F7C40BF32199978B0004137E /* MBProgressHUD.framework in Frameworks */,
-				F79918A221997FA300C2E308 /* UICKeyChainStore.framework in Frameworks */,
+				F7813ECE25E91460002C44A2 /* MBProgressHUD in Frameworks */,
 				F7176DC8256672650017E83C /* Protobuf.framework in Frameworks */,
 				F7176DC2256672650017E83C /* PromisesObjC.framework in Frameworks */,
 				F7AF7633246BEDFE00B86E3C /* TOPasscodeViewController.framework in Frameworks */,
@@ -773,8 +772,9 @@
 				F774264122EB3F7300B23912 /* DropDown.framework in Frameworks */,
 				F7DBD82C23E46A4700ECB7C6 /* MarkdownKit.framework in Frameworks */,
 				F75E57BD25BF0EC1002B72C2 /* SVGKit in Frameworks */,
+				F7813EC325E91358002C44A2 /* UICKeyChainStore in Frameworks */,
 				F7B1076D25D3CF2800E72DE2 /* BackgroundTasks.framework in Frameworks */,
-				F7D2C773246470CA008513AE /* XLForm.framework in Frameworks */,
+				F7813EB825E9126B002C44A2 /* XLForm in Frameworks */,
 				F782A57D25123694007BBABD /* RealmSwift in Frameworks */,
 				F78F3FE625E8E78A007936CF /* SwiftRichString in Frameworks */,
 				F7176DBC256672640017E83C /* FirebaseCoreDiagnostics.framework in Frameworks */,
@@ -1665,6 +1665,9 @@
 				F78F3FF025E8E83F007936CF /* FSCalendar */,
 				F78F3FFB25E8E925007936CF /* FloatingPanel */,
 				F78F400625E8EB42007936CF /* Queuer */,
+				F7813EB725E9126B002C44A2 /* XLForm */,
+				F7813EC225E91358002C44A2 /* UICKeyChainStore */,
+				F7813ECD25E91460002C44A2 /* MBProgressHUD */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -1781,6 +1784,9 @@
 				F78F3FEF25E8E83E007936CF /* XCRemoteSwiftPackageReference "FSCalendar" */,
 				F78F3FFA25E8E925007936CF /* XCRemoteSwiftPackageReference "FloatingPanel" */,
 				F78F400525E8EB42007936CF /* XCRemoteSwiftPackageReference "Queuer" */,
+				F7813EB625E9126A002C44A2 /* XCRemoteSwiftPackageReference "XLForm" */,
+				F7813EC125E91358002C44A2 /* XCRemoteSwiftPackageReference "UICKeyChainStore" */,
+				F7813ECC25E91460002C44A2 /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -1904,14 +1910,11 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/UICKeyChainStore.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/KTVHTTPCache.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/KTVCocoaHTTPServer.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/MBProgressHUD.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/DropDown.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/OpenSSL.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/MarkdownKit.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/XLForm.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/TOPasscodeViewController.framework",
 			);
 			outputPaths = (
@@ -2803,6 +2806,30 @@
 				kind = branch;
 			};
 		};
+		F7813EB625E9126A002C44A2 /* XCRemoteSwiftPackageReference "XLForm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/xmartlabs/XLForm";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.2.0;
+			};
+		};
+		F7813EC125E91358002C44A2 /* XCRemoteSwiftPackageReference "UICKeyChainStore" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/UICKeyChainStore";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.2.1;
+			};
+		};
+		F7813ECC25E91460002C44A2 /* XCRemoteSwiftPackageReference "MBProgressHUD" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jdg/MBProgressHUD";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
 		F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/realm-cocoa";
@@ -2847,8 +2874,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/scenee/FloatingPanel";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.2.0;
+				kind = exactVersion;
+				version = 1.7.6;
 			};
 		};
 		F78F400525E8EB42007936CF /* XCRemoteSwiftPackageReference "Queuer" */ = {
@@ -2915,6 +2942,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
 			productName = SVGKit;
+		};
+		F7813EB725E9126B002C44A2 /* XLForm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F7813EB625E9126A002C44A2 /* XCRemoteSwiftPackageReference "XLForm" */;
+			productName = XLForm;
+		};
+		F7813EC225E91358002C44A2 /* UICKeyChainStore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F7813EC125E91358002C44A2 /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
+			productName = UICKeyChainStore;
+		};
+		F7813ECD25E91460002C44A2 /* MBProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F7813ECC25E91460002C44A2 /* XCRemoteSwiftPackageReference "MBProgressHUD" */;
+			productName = MBProgressHUD;
 		};
 		F782A57A25123694007BBABD /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
