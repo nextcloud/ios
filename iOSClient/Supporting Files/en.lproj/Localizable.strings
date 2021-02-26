@@ -35,6 +35,7 @@
 "_delete_"                  = "Delete";
 "_delete_file_n_"           = "Delete file %i of %i";
 "_rename_"                  = "Rename";
+"_rename_file_"             = "Rename file";
 "_move_"                    = "Move";
 "_move_file_n_"             = "Move file %i of %i";
 "_creating_sharing_"        = "Creating share";

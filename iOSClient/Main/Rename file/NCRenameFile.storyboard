@@ -52,8 +52,8 @@
                     </view>
                     <navigationItem key="navigationItem" id="Zon-2j-rsc"/>
                     <connections>
-                        <outlet property="fileExtension" destination="Q9G-gl-Fkc" id="PDH-Jp-0B7"/>
-                        <outlet property="fileName" destination="Ny2-wR-rxo" id="Eja-cc-9hM"/>
+                        <outlet property="ext" destination="Q9G-gl-Fkc" id="YeW-bU-cMx"/>
+                        <outlet property="fileNameWithoutExt" destination="Ny2-wR-rxo" id="2Wq-hO-cwc"/>
                         <outlet property="image" destination="t26-3S-4T4" id="h7s-v9-829"/>
                     </connections>
                 </viewController>
