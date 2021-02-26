@@ -127,6 +127,7 @@ class NCManageDatabase: NSObject {
                     if oldSchemaVersion < 162 {
                         migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
                             newObject!["userId"] = oldObject!["userID"]
+                            migration.deleteData(forType: tableMetadata.className())
                         }
                     }
                     
