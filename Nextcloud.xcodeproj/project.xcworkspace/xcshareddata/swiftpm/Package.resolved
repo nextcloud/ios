@@ -38,6 +38,15 @@
         }
       },
       {
+        "package": "QuickLayout",
+        "repositoryURL": "https://github.com/huri000/QuickLayout",
+        "state": {
+          "branch": null,
+          "revision": "6be62decbe508d8fc8f9dbafc349d05bab03c38b",
+          "version": "3.0.1"
+        }
+      },
+      {
         "package": "Realm",
         "repositoryURL": "https://github.com/realm/realm-cocoa",
         "state": {
@@ -74,6 +83,15 @@
         }
       },
       {
+        "package": "SwiftEntryKit",
+        "repositoryURL": "https://github.com/huri000/SwiftEntryKit",
+        "state": {
+          "branch": null,
+          "revision": "c2d42574e4fe4e1f9719843f35add7922942a16b",
+          "version": "1.2.7"
+        }
+      },
+      {
         "package": "SwiftyJSON",
         "repositoryURL": "https://github.com/SwiftyJSON/SwiftyJSON",
         "state": {
@@ -89,6 +107,15 @@
           "branch": null,
           "revision": "ec7f183642adf429babd867d1a38c5c6912408ba",
           "version": "5.3.0"
+        }
+      },
+      {
+        "package": "TLPhotoPicker",
+        "repositoryURL": "https://github.com/tilltue/TLPhotoPicker",
+        "state": {
+          "branch": null,
+          "revision": "f8714a826077661171148ce1c8075f47fa1e6283",
+          "version": "2.1.3"
         }
       }
     ]
