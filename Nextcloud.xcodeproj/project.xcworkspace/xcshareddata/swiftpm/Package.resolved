@@ -20,6 +20,15 @@
         }
       },
       {
+        "package": "FloatingPanel",
+        "repositoryURL": "https://github.com/scenee/FloatingPanel",
+        "state": {
+          "branch": null,
+          "revision": "3d6c0220e0f5b0df497901a87036502fff488167",
+          "version": "2.2.0"
+        }
+      },
+      {
         "package": "FSCalendar",
         "repositoryURL": "https://github.com/WenchaoD/FSCalendar",
         "state": {

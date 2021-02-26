@@ -1,6 +1,5 @@
 github "kishikawakatsumi/UICKeyChainStore"
 github "jdg/MBProgressHUD" "1.1.0"
-github "scenee/FloatingPanel" "v1.7.6"
 github "ivanbruel/MarkdownKit"
 github "FabrizioBrancati/Queuer"
 github "xmartlabs/XLForm" ~> 4.1
