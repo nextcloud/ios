@@ -11,7 +11,7 @@ import NCCommunication
 
 class NCRenameFile: UIViewController {
 
-    @IBOutlet weak var image: UIImageView!
+    @IBOutlet weak var previewFile: UIImageView!
     
     @IBOutlet weak var fileNameWithoutExt: UITextField!
     @IBOutlet weak var ext: UITextField!
@@ -24,8 +24,23 @@ class NCRenameFile: UIViewController {
         super.viewDidLoad()
         
         if let metadata = self.metadata {
+            
             fileNameWithoutExt.text = metadata.fileNameWithoutExt
             ext.text = metadata.ext
+            
+            if metadata.directory {
+                previewFile.image = NCCollectionCommon.images.cellFolderImage
+            } else {
+                if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                    previewFile.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+                } else {
+                    if metadata.iconName.count > 0 {
+                        previewFile.image = UIImage.init(named: metadata.iconName)
+                    } else {
+                        previewFile.image = NCCollectionCommon.images.cellFileImage
+                    }
+                }
+            }
         }
         
         title = NSLocalizedString("_rename_file_", comment: "")

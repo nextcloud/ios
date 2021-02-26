@@ -223,6 +223,16 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_rename_", comment: ""),
                     icon: UIImage(named: "rename")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
+                        
+                        if let navigationController = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() {
+                            navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+                            if let viewController = (navigationController as! UINavigationController).topViewController as? NCRenameFile {
+                                viewController.metadata = metadata
+                                self.present(navigationController, animated: true)
+                            }
+                        }
+                        
+                        /*
                         let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
                         
                         alertController.addTextField { (textField) in
@@ -245,6 +255,7 @@ extension NCCollectionViewCommon {
                         alertController.addAction(okAction)
 
                         self.present(alertController, animated: true, completion: nil)
+                        */
                     }
                 )
             )

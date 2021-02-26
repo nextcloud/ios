@@ -17,7 +17,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="t26-3S-4T4">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="t26-3S-4T4">
                                 <rect key="frame" x="132" y="138" width="150" height="150"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="150" id="PaU-P7-coi"/>
@@ -29,32 +29,43 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="0000" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Q9G-gl-Fkc">
-                                <rect key="frame" x="344" y="322" width="50" height="34"/>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Q9G-gl-Fkc">
+                                <rect key="frame" x="334" y="322" width="60" height="34"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="6ga-cj-dYT"/>
+                                    <constraint firstAttribute="width" constant="60" id="6ga-cj-dYT"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FOZ-fs-k7i">
+                                <rect key="frame" x="324" y="328.5" width="10" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="10" id="T5K-dj-AdT"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="1c1-7Q-WMG"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="Ny2-wR-rxo" firstAttribute="leading" secondItem="1c1-7Q-WMG" secondAttribute="leading" constant="20" id="0xL-8c-oLT"/>
                             <constraint firstItem="t26-3S-4T4" firstAttribute="top" secondItem="1c1-7Q-WMG" secondAttribute="top" constant="50" id="1rN-dK-Q8e"/>
+                            <constraint firstItem="Q9G-gl-Fkc" firstAttribute="leading" secondItem="FOZ-fs-k7i" secondAttribute="trailing" id="9XT-FO-xYu"/>
                             <constraint firstItem="1c1-7Q-WMG" firstAttribute="trailing" secondItem="Ny2-wR-rxo" secondAttribute="trailing" constant="90" id="BZO-yF-B1w"/>
                             <constraint firstItem="Ny2-wR-rxo" firstAttribute="top" secondItem="t26-3S-4T4" secondAttribute="bottom" constant="34" id="Ggg-Yg-PBS"/>
-                            <constraint firstItem="Q9G-gl-Fkc" firstAttribute="leading" secondItem="Ny2-wR-rxo" secondAttribute="trailing" constant="20" id="UlP-xb-Inh"/>
                             <constraint firstItem="Q9G-gl-Fkc" firstAttribute="centerY" secondItem="Ny2-wR-rxo" secondAttribute="centerY" id="ZYX-EF-MUc"/>
+                            <constraint firstItem="FOZ-fs-k7i" firstAttribute="centerY" secondItem="Ny2-wR-rxo" secondAttribute="centerY" id="bRG-fN-OJB"/>
                             <constraint firstItem="t26-3S-4T4" firstAttribute="centerX" secondItem="1c1-7Q-WMG" secondAttribute="centerX" id="gjy-i8-K5B"/>
+                            <constraint firstItem="FOZ-fs-k7i" firstAttribute="leading" secondItem="Ny2-wR-rxo" secondAttribute="trailing" id="zTq-r2-mRv"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Zon-2j-rsc"/>
                     <connections>
                         <outlet property="ext" destination="Q9G-gl-Fkc" id="YeW-bU-cMx"/>
                         <outlet property="fileNameWithoutExt" destination="Ny2-wR-rxo" id="2Wq-hO-cwc"/>
-                        <outlet property="image" destination="t26-3S-4T4" id="h7s-v9-829"/>
+                        <outlet property="previewFile" destination="t26-3S-4T4" id="aOo-XG-pom"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qdm-Cl-C5l" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
