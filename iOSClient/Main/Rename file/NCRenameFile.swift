@@ -14,7 +14,10 @@ class NCRenameFile: UIViewController {
     @IBOutlet weak var previewFile: UIImageView!
     
     @IBOutlet weak var fileNameWithoutExt: UITextField!
+    @IBOutlet weak var point: UILabel!
     @IBOutlet weak var ext: UITextField!
+
+    @IBOutlet weak var fileNameWithoutExtTrailingContraint: NSLayoutConstraint!
 
     var metadata: tableMetadata?
     
@@ -30,7 +33,10 @@ class NCRenameFile: UIViewController {
                 previewFile.image = NCCollectionCommon.images.cellFolderImage
                 
                 fileNameWithoutExt.text = metadata.fileName
+                
                 ext.isHidden = true
+                point.isHidden = true
+                fileNameWithoutExtTrailingContraint.constant = 20
                 
             } else {
                 
@@ -46,6 +52,8 @@ class NCRenameFile: UIViewController {
                 
                 fileNameWithoutExt.text = metadata.fileNameWithoutExt
                 ext.text = metadata.ext
+                fileNameWithoutExtTrailingContraint.constant = 90
+
             }
         }
                 

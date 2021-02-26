@@ -65,6 +65,8 @@
                     <connections>
                         <outlet property="ext" destination="Q9G-gl-Fkc" id="YeW-bU-cMx"/>
                         <outlet property="fileNameWithoutExt" destination="Ny2-wR-rxo" id="2Wq-hO-cwc"/>
+                        <outlet property="fileNameWithoutExtTrailingContraint" destination="BZO-yF-B1w" id="OBT-Ha-an7"/>
+                        <outlet property="point" destination="FOZ-fs-k7i" id="InG-ZA-GpE"/>
                         <outlet property="previewFile" destination="t26-3S-4T4" id="aOo-XG-pom"/>
                     </connections>
                 </viewController>
