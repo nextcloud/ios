@@ -24,8 +24,7 @@
 import Foundation
 import Queuer
 
-@objc protocol createFormUploadAssetsDelegate {
-    
+protocol createFormUploadAssetsDelegate {
     func dismissFormUploadAssets()
 }
 
@@ -36,13 +35,13 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     var assets: [PHAsset] = []
     var cryptated: Bool = false
     var session: String = ""
-    weak var delegate: createFormUploadAssetsDelegate?
+    var delegate: createFormUploadAssetsDelegate?
     let requestOptions = PHImageRequestOptions()
     var imagePreview: UIImage?
     let targetSizeImagePreview = CGSize(width:100, height: 100)
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    @objc convenience init(serverUrl: String, assets: [PHAsset], cryptated: Bool, session: String, delegate: createFormUploadAssetsDelegate?) {
+    convenience init(serverUrl: String, assets: [PHAsset], cryptated: Bool, session: String, delegate: createFormUploadAssetsDelegate?) {
         
         self.init()
         
