@@ -23,7 +23,7 @@
 
 import Foundation
 
-@objc class NCGlobal: NSObject {
+class NCGlobal: NSObject {
     @objc static let shared: NCGlobal = {
         let instance = NCGlobal()
         return instance
@@ -46,12 +46,12 @@ import Foundation
 
     // Service
     @objc let serviceShareKeyChain                  = "Crypto Cloud"
-    @objc let metadataKeyedUnarchiver               = "it.twsweb.nextcloud.metadata"
-    @objc let refreshTask                           = "com.nextcloud.refreshTask"
-    @objc let processingTask                        = "com.nextcloud.processingTask"
+    let metadataKeyedUnarchiver                     = "it.twsweb.nextcloud.metadata"
+    let refreshTask                                 = "com.nextcloud.refreshTask"
+    let processingTask                              = "com.nextcloud.processingTask"
     
     // Nextcloud version
-    @objc let nextcloudVersion12: Int               =  12
+    let nextcloudVersion12: Int                     =  12
     let nextcloudVersion15: Int                     =  15
     let nextcloudVersion17: Int                     =  17
     let nextcloudVersion18: Int                     =  18
@@ -63,12 +63,12 @@ import Foundation
     
     // Intro selector
     @objc let introLogin: Int                       = 0
-    @objc let introSignup: Int                      = 1
+    let introSignup: Int                            = 1
     
     // Avatar & Preview
     let avatarSize: CGFloat                         = 512
-    @objc let sizePreview: CGFloat                  = 1024
-    @objc let sizeIcon: CGFloat                     = 512
+    let sizePreview: CGFloat                        = 1024
+    let sizeIcon: CGFloat                           = 512
     
     // E2EE
     let e2eeMaxFileSize: UInt64                     = 524288000   // 500 MB
@@ -181,29 +181,29 @@ import Foundation
     @objc let metadataTypeFileImagemeter            = "imagemeter"
     
     // Filename Mask and Type
-    @objc let keyFileNameMask                       = "fileNameMask"
-    @objc let keyFileNameType                       = "fileNameType"
-    @objc let keyFileNameAutoUploadMask             = "fileNameAutoUploadMask"
-    @objc let keyFileNameAutoUploadType             = "fileNameAutoUploadType"
-    @objc let keyFileNameOriginal                   = "fileNameOriginal"
-    @objc let keyFileNameOriginalAutoUpload         = "fileNameOriginalAutoUpload"
+    let keyFileNameMask                             = "fileNameMask"
+    let keyFileNameType                             = "fileNameType"
+    let keyFileNameAutoUploadMask                   = "fileNameAutoUploadMask"
+    let keyFileNameAutoUploadType                   = "fileNameAutoUploadType"
+    let keyFileNameOriginal                         = "fileNameOriginal"
+    let keyFileNameOriginalAutoUpload               = "fileNameOriginalAutoUpload"
 
     // Selector
-    @objc let selectorDownloadFile                  = "downloadFile"
-    @objc let selectorDownloadAllFile               = "downloadAllFile"
-    @objc let selectorReadFile                      = "readFile"
-    @objc let selectorListingFavorite               = "listingFavorite"
-    @objc let selectorLoadFileView                  = "loadFileView"
-    @objc let selectorLoadFileQuickLook             = "loadFileQuickLook"
-    @objc let selectorLoadCopy                      = "loadCopy"
-    @objc let selectorLoadOffline                   = "loadOffline"
-    @objc let selectorOpenIn                        = "openIn"
-    @objc let selectorUploadAutoUpload              = "uploadAutoUpload"
-    @objc let selectorUploadAutoUploadAll           = "uploadAutoUploadAll"
-    @objc let selectorUploadFile                    = "uploadFile"
-    @objc let selectorSaveAlbum                     = "saveAlbum"
-    @objc let selectorSaveAlbumLivePhotoIMG         = "saveAlbumLivePhotoIMG"
-    @objc let selectorSaveAlbumLivePhotoMOV         = "saveAlbumLivePhotoMOV"
+    let selectorDownloadFile                        = "downloadFile"
+    let selectorDownloadAllFile                     = "downloadAllFile"
+    let selectorReadFile                            = "readFile"
+    let selectorListingFavorite                     = "listingFavorite"
+    let selectorLoadFileView                        = "loadFileView"
+    let selectorLoadFileQuickLook                   = "loadFileQuickLook"
+    let selectorLoadCopy                            = "loadCopy"
+    let selectorLoadOffline                         = "loadOffline"
+    let selectorOpenIn                              = "openIn"
+    let selectorUploadAutoUpload                    = "uploadAutoUpload"
+    let selectorUploadAutoUploadAll                 = "uploadAutoUploadAll"
+    let selectorUploadFile                          = "uploadFile"
+    let selectorSaveAlbum                           = "saveAlbum"
+    let selectorSaveAlbumLivePhotoIMG               = "saveAlbumLivePhotoIMG"
+    let selectorSaveAlbumLivePhotoMOV               = "saveAlbumLivePhotoMOV"
 
     // Metadata : Status
     //
@@ -212,22 +212,22 @@ import Foundation
     // 3) downloading/uploading
     // 4) done or error
     //
-    @objc let metadataStatusNormal: Int             = 0
+    let metadataStatusNormal: Int                   = 0
 
-    @objc let metadataStatustypeDownload: Int       = 1
+    let metadataStatustypeDownload: Int             = 1
 
-    @objc let metadataStatusWaitDownload: Int       = 2
-    @objc let metadataStatusInDownload: Int         = 3
-    @objc let metadataStatusDownloading: Int        = 4
-    @objc let metadataStatusDownloadError: Int      = 5
+    let metadataStatusWaitDownload: Int             = 2
+    let metadataStatusInDownload: Int               = 3
+    let metadataStatusDownloading: Int              = 4
+    let metadataStatusDownloadError: Int            = 5
 
-    @objc let metadataStatusTypeUpload: Int         = 6
+    let metadataStatusTypeUpload: Int               = 6
 
-    @objc let metadataStatusWaitUpload: Int         = 7
-    @objc let metadataStatusInUpload: Int           = 8
-    @objc let metadataStatusUploading: Int          = 9
-    @objc let metadataStatusUploadError: Int        = 10
-    @objc let metadataStatusUploadForcedStart: Int  = 11
+    let metadataStatusWaitUpload: Int               = 7
+    let metadataStatusInUpload: Int                 = 8
+    let metadataStatusUploading: Int                = 9
+    let metadataStatusUploadError: Int              = 10
+    let metadataStatusUploadForcedStart: Int        = 11
     
     // Notification Center
 
