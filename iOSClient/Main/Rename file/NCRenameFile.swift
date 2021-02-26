@@ -27,12 +27,13 @@ class NCRenameFile: UIViewController {
         super.viewDidLoad()
         
         if let metadata = self.metadata {
-                        
+                
+            fileNameWithoutExt.text = metadata.fileNameWithoutExt
+            ext.text = metadata.ext
+
             if metadata.directory {
                 
                 previewFile.image = NCCollectionCommon.images.cellFolderImage
-                
-                fileNameWithoutExt.text = metadata.fileName
                 
                 ext.isHidden = true
                 point.isHidden = true
@@ -49,11 +50,8 @@ class NCRenameFile: UIViewController {
                         previewFile.image = NCCollectionCommon.images.cellFileImage
                     }
                 }
-                
-                fileNameWithoutExt.text = metadata.fileNameWithoutExt
-                ext.text = metadata.ext
+                                
                 fileNameWithoutExtTrailingContraint.constant = 90
-
             }
         }
                 
