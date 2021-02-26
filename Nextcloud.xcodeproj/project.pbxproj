@@ -44,7 +44,6 @@
 		F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F70CEF5623E9C7E50007035B /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extensions.swift */; };
 		F70D8D8124A4A9BF000A5756 /* NCNetworkingAutoUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70D8D8024A4A9BF000A5756 /* NCNetworkingAutoUpload.swift */; };
-		F70F2BA5225F2D8900EBB73E /* ZIPFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70F2BA4225F2D8900EBB73E /* ZIPFoundation.framework */; };
 		F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1F42405770F00A6033D /* NCViewerPDF.swift */; };
 		F710D1FE24057E5E00A6033D /* NCActionSheetHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1FB24057E5E00A6033D /* NCActionSheetHeader.swift */; };
 		F710D1FF24057E5E00A6033D /* NCActionSheetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1FC24057E5E00A6033D /* NCActionSheetHeaderView.swift */; };
@@ -106,7 +105,6 @@
 		F7434B3420E23FD700417916 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7434B3820E2400600417916 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
-		F745B251222D871800346520 /* QRCodeReader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F745B250222D871800346520 /* QRCodeReader.framework */; };
 		F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F745B252222D88AE00346520 /* NCLoginQRCode.swift */; };
 		F747BA1F22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F747BA1E22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard */; };
 		F749C10B23C4A5340027D966 /* NCIntroCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F749C10723C4A5330027D966 /* NCIntroCollectionViewCell.swift */; };
@@ -236,6 +234,7 @@
 		F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */; };
 		F78E7065219F096B006F23E4 /* NCAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E7064219F096B006F23E4 /* NCAvatar.swift */; };
 		F78F3FD025E8E583007936CF /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F78F3FCF25E8E583007936CF /* SwiftEntryKit */; };
+		F78F3FD725E8E6A5007936CF /* QRCodeReader in Frameworks */ = {isa = PBXBuildFile; productRef = F78F3FD625E8E6A5007936CF /* QRCodeReader */; };
 		F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78F74332163757000C2ADAD /* NCTrash.storyboard */; };
 		F78F74362163781100C2ADAD /* NCTrash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78F74352163781100C2ADAD /* NCTrash.swift */; };
 		F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */; };
@@ -753,7 +752,6 @@
 				F7176DC2256672650017E83C /* PromisesObjC.framework in Frameworks */,
 				F7AF7633246BEDFE00B86E3C /* TOPasscodeViewController.framework in Frameworks */,
 				F7176DCA256672650017E83C /* FirebaseCore.framework in Frameworks */,
-				F745B251222D871800346520 /* QRCodeReader.framework in Frameworks */,
 				F765608723BF806D00765969 /* QuickLayout.framework in Frameworks */,
 				F7176DC0256672650017E83C /* FirebaseInstallations.framework in Frameworks */,
 				F7176DC6256672650017E83C /* nanopb.framework in Frameworks */,
@@ -767,6 +765,7 @@
 				F7C40BEF219994ED0004137E /* KTVCocoaHTTPServer.framework in Frameworks */,
 				F782A57B25123694007BBABD /* Realm in Frameworks */,
 				F7C40BF1219994F20004137E /* KTVHTTPCache.framework in Frameworks */,
+				F78F3FD725E8E6A5007936CF /* QRCodeReader in Frameworks */,
 				F774264122EB3F7300B23912 /* DropDown.framework in Frameworks */,
 				F78AA20621F783E900D0F205 /* SwiftRichString.framework in Frameworks */,
 				F7DBD82C23E46A4700ECB7C6 /* MarkdownKit.framework in Frameworks */,
@@ -777,7 +776,6 @@
 				F782A57D25123694007BBABD /* RealmSwift in Frameworks */,
 				F7176DBC256672640017E83C /* FirebaseCoreDiagnostics.framework in Frameworks */,
 				371B5A3323D0BD5500FAFAE9 /* FloatingPanel.framework in Frameworks */,
-				F70F2BA5225F2D8900EBB73E /* ZIPFoundation.framework in Frameworks */,
 				F7BFE2C625E8E2E300AB17BE /* TLPhotoPicker in Frameworks */,
 				F7176DD0256672660017E83C /* FIRAnalyticsConnector.framework in Frameworks */,
 			);
@@ -1658,6 +1656,7 @@
 				F75E57BC25BF0EC1002B72C2 /* SVGKit */,
 				F7BFE2C525E8E2E300AB17BE /* TLPhotoPicker */,
 				F7BFE2D025E8E3D500AB17BE /* SwiftEntryKit */,
+				F78F3FD625E8E6A5007936CF /* QRCodeReader */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -1769,6 +1768,7 @@
 				F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */,
 				F7BFE2C425E8E2E300AB17BE /* XCRemoteSwiftPackageReference "TLPhotoPicker" */,
 				F7BFE2CF25E8E3D500AB17BE /* XCRemoteSwiftPackageReference "SwiftEntryKit" */,
+				F78F3FD525E8E6A5007936CF /* XCRemoteSwiftPackageReference "QRCodeReader" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -1897,8 +1897,6 @@
 				"$(SRCROOT)/Carthage/Build/iOS/KTVCocoaHTTPServer.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/MBProgressHUD.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftRichString.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/QRCodeReader.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/ZIPFoundation.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/FSCalendar.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/DropDown.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/OpenSSL.framework",
@@ -2814,6 +2812,14 @@
 				revision = 6dadd60065c28957201f6822183c6400fca64e51;
 			};
 		};
+		F78F3FD525E8E6A5007936CF /* XCRemoteSwiftPackageReference "QRCodeReader" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/yannickl/QRCodeReader.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.1.1;
+			};
+		};
 		F7BFE2C425E8E2E300AB17BE /* XCRemoteSwiftPackageReference "TLPhotoPicker" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tilltue/TLPhotoPicker";
@@ -2925,6 +2931,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F7BFE2CF25E8E3D500AB17BE /* XCRemoteSwiftPackageReference "SwiftEntryKit" */;
 			productName = SwiftEntryKit;
+		};
+		F78F3FD625E8E6A5007936CF /* QRCodeReader */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F78F3FD525E8E6A5007936CF /* XCRemoteSwiftPackageReference "QRCodeReader" */;
+			productName = QRCodeReader;
 		};
 		F7BFE2C525E8E2E300AB17BE /* TLPhotoPicker */ = {
 			isa = XCSwiftPackageProductDependency;
