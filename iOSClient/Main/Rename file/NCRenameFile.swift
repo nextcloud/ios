@@ -62,7 +62,6 @@ class NCRenameFile: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_rename_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(rename))
     }
-
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -95,6 +94,7 @@ class NCRenameFile: UIViewController {
         if metadata.directory {
             
             fileNameNew = newFileNameWithoutExt
+            renameMetadata(metadata, fileNameNew: fileNameNew)
             
         } else {
             
@@ -107,10 +107,17 @@ class NCRenameFile: UIViewController {
             
             if newExt != metadata.ext {
                 
-            }
+            } else {
             
-            fileNameNew = newFileNameWithoutExt + "." + newExt
+                fileNameNew = newFileNameWithoutExt + "." + newExt
+                renameMetadata(metadata, fileNameNew: fileNameNew)
+            }
         }
+    }
+    
+    // MARK: - Networking
+
+    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String) {
         
         NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, urlBase: metadata.urlBase, viewController: self) { (errorCode, errorDescription) in
             if errorCode == 0 {
