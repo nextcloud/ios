@@ -228,15 +228,9 @@ extension NCCollectionViewCommon {
                             
                             viewController.metadata = metadata
 
-                            let popupVC = NCPopupViewController(contentController: viewController, popupWidth: 300, popupHeight: 400)
-                            
-                            popupVC.backgroundAlpha = 0.3
-                            popupVC.backgroundColor = .black
-                            popupVC.canTapOutsideToDismiss = true
-                            popupVC.cornerRadius = 10
-                            popupVC.shadowEnabled = true
-                            
-                            self.present(popupVC, animated: true)
+                            let popup = NCPopupViewController(contentController: viewController, popupWidth: 300, popupHeight: 400)
+                                                        
+                            self.present(popup, animated: true)
                         }
                     }
                 )

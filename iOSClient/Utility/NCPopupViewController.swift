@@ -77,8 +77,8 @@ public class NCPopupViewController: UIViewController {
     /// Popup position, default is center
     private(set) public var position: PopupPosition = .center(nil)
     
-    /// Background alpha, default is 0.5
-    public var backgroundAlpha: CGFloat = 0.5
+    /// Background alpha, default is 0.3
+    public var backgroundAlpha: CGFloat = 0.3
     
     /// Background color, default is black
     public var backgroundColor = UIColor.black
@@ -86,8 +86,8 @@ public class NCPopupViewController: UIViewController {
     /// Allow tap outside popup to dismiss, default is true
     public var canTapOutsideToDismiss = true
     
-    /// Corner radius, default is 0 (no rounded corner)
-    public var cornerRadius: CGFloat = 0
+    /// Corner radius, default is 10 (0 no rounded corner)
+    public var cornerRadius: CGFloat = 10
     
     /// Shadow enabled, default is true
     public var shadowEnabled = true

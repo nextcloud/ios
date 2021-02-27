@@ -59,6 +59,33 @@ class NCRenameFile: UIViewController {
                 
         titleLabel.text = NSLocalizedString("_rename_file_", comment: "")
         separatorHeightContraint.constant = 0.3
+        
+        cancelButton.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
+        cancelButton.setTitleColor(.white, for: .normal)
+        cancelButton.layer.cornerRadius = 15
+        cancelButton.layer.masksToBounds = true
+        cancelButton.layer.backgroundColor = UIColor.gray.cgColor
+        
+        /*
+        
+         cell.primary.isEnabled = false
+         cell.primary.isHidden = true
+         cell.primary.titleLabel?.font = .systemFont(ofSize: 14)
+         cell.primary.setTitleColor(.white, for: .normal)
+         cell.primary.layer.cornerRadius = 15
+         cell.primary.layer.masksToBounds = true
+         cell.primary.layer.backgroundColor = NCBrandColor.shared.brandElement.cgColor
+         
+         cell.secondary.isEnabled = false
+         cell.secondary.isHidden = true
+         cell.secondary.titleLabel?.font = .systemFont(ofSize: 14)
+         cell.secondary.setTitleColor(.gray, for: .normal)
+         cell.secondary.layer.cornerRadius = 15
+         cell.secondary.layer.masksToBounds = true
+         cell.secondary.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.1).cgColor
+         cell.secondary.layer.borderWidth = 0.3
+         cell.secondary.layer.borderColor = UIColor.gray.cgColor
+         */
     }
     
     override func viewDidAppear(_ animated: Bool) {
