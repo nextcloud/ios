@@ -224,38 +224,16 @@ extension NCCollectionViewCommon {
                     icon: UIImage(named: "rename")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         
-                        if let navigationController = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() {
-                            navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
-                            if let viewController = (navigationController as! UINavigationController).topViewController as? NCRenameFile {
-                                viewController.metadata = metadata
-                                self.present(navigationController, animated: true)
-                            }
+                        if let viewController = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
+                            
+                            viewController.modalPresentationStyle = .overCurrentContext
+                            viewController.modalTransitionStyle = .crossDissolve
+                            viewController.preferredContentSize = CGSize(width: 300, height: 300)
+
+                            viewController.metadata = metadata
+                            
+                            self.present(viewController, animated: true)
                         }
-                        
-                        /*
-                        let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
-                        
-                        alertController.addTextField { (textField) in
-                            textField.text = metadata.fileNameView
-                        }
-
-                        let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
-
-                        let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
-                            if let fileNameNew = alertController.textFields?.first?.text {
-                                NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, urlBase: appDelegate.urlBase, viewController: self) { (errorCode, errorDescription) in
-                                    if errorCode != 0 {
-                                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                                    }
-                                }
-                            }
-                        })
-
-                        alertController.addAction(cancelAction)
-                        alertController.addAction(okAction)
-
-                        self.present(alertController, animated: true, completion: nil)
-                        */
                     }
                 )
             )

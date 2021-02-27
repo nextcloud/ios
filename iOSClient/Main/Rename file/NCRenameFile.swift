@@ -12,12 +12,12 @@ import NCCommunication
 class NCRenameFile: UIViewController {
 
     @IBOutlet weak var previewFile: UIImageView!
-    
     @IBOutlet weak var fileNameWithoutExt: UITextField!
     @IBOutlet weak var point: UILabel!
     @IBOutlet weak var ext: UITextField!
-
     @IBOutlet weak var fileNameWithoutExtTrailingContraint: NSLayoutConstraint!
+    @IBOutlet weak var cancelButton: UIButton!
+    @IBOutlet weak var renameButton: UIButton!
 
     var metadata: tableMetadata?
     
@@ -56,9 +56,6 @@ class NCRenameFile: UIViewController {
         }
                 
         title = NSLocalizedString("_rename_file_", comment: "")
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_rename_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(rename))
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -71,12 +68,12 @@ class NCRenameFile: UIViewController {
     
     // MARK: - Action
     
-    @objc func cancel() {
+    @IBAction func cancel(_ sender: Any) {
         dismiss(animated: true)
     }
     
-    @objc func rename() {
-        
+    @IBAction func rename(_ sender: Any) {
+
         guard let metadata = metadata else { return }
         var newFileNameWithoutExt = ""
         var newExt = ""
