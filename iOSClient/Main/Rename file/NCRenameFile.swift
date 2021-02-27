@@ -79,12 +79,19 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
         renameButton.layer.backgroundColor = NCBrandColor.shared.brand.cgColor
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         if metadata == nil {
             dismiss(animated: true)
         }
+        
+        fileNameWithoutExt.selectAll(nil)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -127,6 +134,23 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             }
             
             if newExt != metadata.ext {
+                
+                let message = String(format: NSLocalizedString("_rename_ext_message_", comment: ""), newExt, metadata.ext)
+                let alertController = UIAlertController(title: NSLocalizedString("_rename_ext_title_", comment: ""), message: message, preferredStyle: .alert)
+                            
+                var title = NSLocalizedString("_use_", comment: "") + " ." + newExt
+                alertController.addAction(UIAlertAction(title: title, style: .default, handler: { action in
+                    
+                    fileNameNew = newFileNameWithoutExt + "." + newExt
+                    self.renameMetadata(metadata, fileNameNew: fileNameNew)
+                }))
+                
+                title = NSLocalizedString("_keep_", comment: "") + " ." + metadata.ext
+                alertController.addAction(UIAlertAction(title: title, style: .default, handler: { action in
+                    self.ext.text = metadata.ext
+                }))
+                
+                self.present(alertController, animated: true)
                 
             } else {
             
