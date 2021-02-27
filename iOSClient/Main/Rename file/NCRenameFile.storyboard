@@ -60,7 +60,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W5y-aT-UlI">
-                                <rect key="frame" x="20" y="367" width="100" height="30"/>
+                                <rect key="frame" x="20" y="362" width="100" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="APQ-0x-b1G"/>
                                     <constraint firstAttribute="width" constant="100" id="Amv-Gj-xDj"/>
@@ -72,7 +72,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hcV-V0-eZB">
-                                <rect key="frame" x="294" y="367" width="100" height="30"/>
+                                <rect key="frame" x="294" y="362" width="100" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="100" id="abh-UJ-Zsz"/>
                                     <constraint firstAttribute="height" constant="30" id="dF9-Gh-Ypm"/>
@@ -88,14 +88,14 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="Ny2-wR-rxo" firstAttribute="leading" secondItem="1c1-7Q-WMG" secondAttribute="leading" constant="20" id="0xL-8c-oLT"/>
-                            <constraint firstItem="W5y-aT-UlI" firstAttribute="top" secondItem="Ny2-wR-rxo" secondAttribute="bottom" constant="35" id="96v-2U-wZv"/>
+                            <constraint firstItem="W5y-aT-UlI" firstAttribute="top" secondItem="Ny2-wR-rxo" secondAttribute="bottom" constant="30" id="96v-2U-wZv"/>
                             <constraint firstItem="Q9G-gl-Fkc" firstAttribute="leading" secondItem="FOZ-fs-k7i" secondAttribute="trailing" id="9XT-FO-xYu"/>
                             <constraint firstItem="ouH-gK-Guv" firstAttribute="leading" secondItem="1c1-7Q-WMG" secondAttribute="leading" id="A6T-ed-97T"/>
                             <constraint firstItem="1c1-7Q-WMG" firstAttribute="trailing" secondItem="Ny2-wR-rxo" secondAttribute="trailing" constant="90" id="BZO-yF-B1w"/>
                             <constraint firstItem="1c1-7Q-WMG" firstAttribute="trailing" secondItem="nZr-nE-ths" secondAttribute="trailing" constant="20" id="DPW-MV-oKc"/>
                             <constraint firstItem="Ny2-wR-rxo" firstAttribute="top" secondItem="t26-3S-4T4" secondAttribute="bottom" constant="30" id="Ggg-Yg-PBS"/>
                             <constraint firstItem="nZr-nE-ths" firstAttribute="leading" secondItem="1c1-7Q-WMG" secondAttribute="leading" constant="20" id="SI9-xL-6s8"/>
-                            <constraint firstItem="hcV-V0-eZB" firstAttribute="top" secondItem="Q9G-gl-Fkc" secondAttribute="bottom" constant="35" id="UMC-zV-sZD"/>
+                            <constraint firstItem="hcV-V0-eZB" firstAttribute="top" secondItem="Q9G-gl-Fkc" secondAttribute="bottom" constant="30" id="UMC-zV-sZD"/>
                             <constraint firstItem="Q9G-gl-Fkc" firstAttribute="centerY" secondItem="Ny2-wR-rxo" secondAttribute="centerY" id="ZYX-EF-MUc"/>
                             <constraint firstItem="FOZ-fs-k7i" firstAttribute="centerY" secondItem="Ny2-wR-rxo" secondAttribute="centerY" id="bRG-fN-OJB"/>
                             <constraint firstItem="t26-3S-4T4" firstAttribute="centerX" secondItem="1c1-7Q-WMG" secondAttribute="centerX" id="gjy-i8-K5B"/>

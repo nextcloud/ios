@@ -64,7 +64,7 @@ class NCRenameFile: UIViewController {
         cancelButton.setTitleColor(.gray, for: .normal)
         cancelButton.layer.cornerRadius = 15
         cancelButton.layer.masksToBounds = true
-        cancelButton.layer.backgroundColor =  NCBrandColor.shared.graySoft.withAlphaComponent(0.1).cgColor
+        cancelButton.layer.backgroundColor =  NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         cancelButton.layer.borderWidth = 0.3
         cancelButton.layer.borderColor = UIColor.gray.cgColor
         
