@@ -63,6 +63,8 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                 fileNameWithoutExtTrailingContraint.constant = 90
             }
         }
+        previewFile.layer.cornerRadius = 10
+        previewFile.layer.masksToBounds = true
                 
         cancelButton.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
         cancelButton.setTitleColor(.gray, for: .normal)
@@ -95,6 +97,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
         textField.resignFirstResponder()
         return true
     }
@@ -102,6 +105,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     // MARK: - Action
     
     @IBAction func cancel(_ sender: Any) {
+        
         dismiss(animated: true)
     }
     
