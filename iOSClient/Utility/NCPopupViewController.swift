@@ -1,24 +1,41 @@
 //
-//  PopupViewController.swift
+//  NCPopupViewController.swift
 //  EzPopup
 //
 //  Created by Huy Nguyen on 6/4/18.
 //
-
+//  Modified by Marino Faggiana for Nextcloud progect.
+//
+//  Author Huy Nguyen
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 import UIKit
 
-public protocol PopupViewControllerDelegate: class {
+public protocol NCPopupViewControllerDelegate: class {
     
     /// It is called when pop up is dismissed by tap outside
-    func popupViewControllerDidDismissByTapGesture(_ sender: PopupViewController)
+    func popupViewControllerDidDismissByTapGesture(_ sender: NCPopupViewController)
 }
 
 // optional func
-public extension PopupViewControllerDelegate {
-    func popupViewControllerDidDismissByTapGesture(_ sender: PopupViewController) {}
+public extension NCPopupViewControllerDelegate {
+    func popupViewControllerDidDismissByTapGesture(_ sender: NCPopupViewController) {}
 }
 
-public class PopupViewController: UIViewController {
+public class NCPopupViewController: UIViewController {
     
     public enum PopupPosition {
         /// Align center X, center Y with offset param
@@ -80,7 +97,7 @@ public class PopupViewController: UIViewController {
     private(set) public var contentView: UIView?
     
     /// The delegate to receive pop up event
-    public weak var delegate: PopupViewControllerDelegate?
+    public weak var delegate: NCPopupViewControllerDelegate?
     
     private var containerView = UIView()
     
@@ -139,6 +156,41 @@ public class PopupViewController: UIViewController {
         setupUI()
         setupViews()
         addDismissGesture()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil);
+    }
+    
+    // MARK: -
+    
+    @objc internal func keyboardWillShow(_ notification : Notification?) {
+        
+        var keyboardSize: CGSize!
+                
+        if let info = notification?.userInfo {
+
+            let frameEndUserInfoKey = UIResponder.keyboardFrameEndUserInfoKey
+                    
+            //  Getting UIKeyboardSize.
+            if let keyboardFrame = info[frameEndUserInfoKey] as? CGRect {
+                        
+                let screenSize = UIScreen.main.bounds
+                        
+                //Calculating actual keyboard displayed size, keyboard frame may be different when hardware keyboard is attached (Bug ID: #469) (Bug ID: #381)
+                let intersectRect = keyboardFrame.intersection(screenSize)
+                        
+                if intersectRect.isNull {
+                    keyboardSize = CGSize(width: screenSize.size.width, height: 0)
+                } else {
+                    keyboardSize = intersectRect.size
+                }
+            }
+        }
+    }
+    
+    @objc func keyboardWillHide(_ notification: Notification) {
+        
+        print("")
     }
     
     // MARK: - Setup
@@ -301,7 +353,7 @@ public class PopupViewController: UIViewController {
 }
 
 // MARK: - UIGestureRecognizerDelegate
-extension PopupViewController: UIGestureRecognizerDelegate {
+extension NCPopupViewController: UIGestureRecognizerDelegate {
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         guard let touchView = touch.view, canTapOutsideToDismiss else {
             return false
