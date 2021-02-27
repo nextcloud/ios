@@ -9,7 +9,7 @@
 import Foundation
 import NCCommunication
 
-class NCRenameFile: UIViewController {
+class NCRenameFile: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var separatorHeightContraint: NSLayoutConstraint!
@@ -30,8 +30,15 @@ class NCRenameFile: UIViewController {
         
         if let metadata = self.metadata {
                 
+            titleLabel.text = NSLocalizedString("_rename_file_", comment: "")
+            separatorHeightContraint.constant = 0.3
+            
             fileNameWithoutExt.text = metadata.fileNameWithoutExt
+            fileNameWithoutExt.delegate = self
+            fileNameWithoutExt.becomeFirstResponder()
+            
             ext.text = metadata.ext
+            ext.delegate = self
 
             if metadata.directory {
                 
@@ -57,14 +64,11 @@ class NCRenameFile: UIViewController {
             }
         }
                 
-        titleLabel.text = NSLocalizedString("_rename_file_", comment: "")
-        separatorHeightContraint.constant = 0.3
-        
         cancelButton.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
         cancelButton.setTitleColor(.gray, for: .normal)
         cancelButton.layer.cornerRadius = 15
         cancelButton.layer.masksToBounds = true
-        cancelButton.layer.backgroundColor =  NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
+        cancelButton.layer.backgroundColor =  NCBrandColor.shared.graySoft.withAlphaComponent(0.2).cgColor
         cancelButton.layer.borderWidth = 0.3
         cancelButton.layer.borderColor = UIColor.gray.cgColor
         
@@ -81,6 +85,11 @@ class NCRenameFile: UIViewController {
         if metadata == nil {
             dismiss(animated: true)
         }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
     
     // MARK: - Action
