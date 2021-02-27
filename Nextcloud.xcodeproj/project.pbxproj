@@ -282,6 +282,7 @@
 		F7CB689A2541676B0050EC94 /* NCMore.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CB68992541676B0050EC94 /* NCMore.storyboard */; };
 		F7CB68A0254169530050EC94 /* NCSettings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CB689F254169530050EC94 /* NCSettings.storyboard */; };
 		F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */; };
+		F7CC51A125EA3AA100BAA38C /* PopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CC519F25EA3AA100BAA38C /* PopupViewController.swift */; };
 		F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */; };
 		F7D96FCC246ED7E200536D73 /* NCNetworkingCheckRemoteUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D96FCB246ED7E100536D73 /* NCNetworkingCheckRemoteUser.swift */; };
 		F7DBC37C23325E02001A85BA /* NCAppConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37B23325E01001A85BA /* NCAppConfigView.swift */; };
@@ -656,6 +657,7 @@
 		F7CB689F254169530050EC94 /* NCSettings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCSettings.storyboard; sourceTree = "<group>"; };
 		F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSortMenu.swift; sourceTree = "<group>"; };
 		F7CC04E61F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F7CC519F25EA3AA100BAA38C /* PopupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopupViewController.swift; sourceTree = "<group>"; };
 		F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nextcloud.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Share.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -1239,6 +1241,7 @@
 			isa = PBXGroup;
 			children = (
 				F7B2DEEB1F976785007CF4D2 /* NYMnemonic */,
+				F7CC519D25EA3AA100BAA38C /* EzPopup */,
 				F7514EDA1C7B1336008F3338 /* CCHud.h */,
 				F7514EDB1C7B1336008F3338 /* CCHud.m */,
 				F7053E3C1C639DF500741EA5 /* CCUtility.h */,
@@ -1331,6 +1334,14 @@
 				F73F537E1E929C8500F8678D /* NCMore.swift */,
 			);
 			path = More;
+			sourceTree = "<group>";
+		};
+		F7CC519D25EA3AA100BAA38C /* EzPopup */ = {
+			isa = PBXGroup;
+			children = (
+				F7CC519F25EA3AA100BAA38C /* PopupViewController.swift */,
+			);
+			path = EzPopup;
 			sourceTree = "<group>";
 		};
 		F7DFB7E9219C5A0500680748 /* Create cloud */ = {
@@ -2100,6 +2111,7 @@
 				F7E0E1DC22327885006B0911 /* NCAudioRecorderViewController.swift in Sources */,
 				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				F70753EB2542A99800972D44 /* NCViewerImage.swift in Sources */,
+				F7CC51A125EA3AA100BAA38C /* PopupViewController.swift in Sources */,
 				F74C0436253F1CDC009762AB /* NCShares.swift in Sources */,
 				F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */,
 				F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */,

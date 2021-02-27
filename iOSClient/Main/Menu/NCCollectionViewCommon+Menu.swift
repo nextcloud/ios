@@ -226,13 +226,17 @@ extension NCCollectionViewCommon {
                         
                         if let viewController = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
                             
-                            viewController.modalPresentationStyle = .overCurrentContext
-                            viewController.modalTransitionStyle = .crossDissolve
-                            viewController.preferredContentSize = CGSize(width: 300, height: 300)
-
                             viewController.metadata = metadata
+
+                            let popupVC = PopupViewController(contentController: viewController, popupWidth: 300, popupHeight: 300)
                             
-                            self.present(viewController, animated: true)
+                            popupVC.backgroundAlpha = 0.3
+                            popupVC.backgroundColor = .black
+                            popupVC.canTapOutsideToDismiss = true
+                            popupVC.cornerRadius = 10
+                            popupVC.shadowEnabled = true
+                            
+                            self.present(popupVC, animated: true)
                         }
                     }
                 )
