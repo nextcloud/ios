@@ -11,6 +11,7 @@ import NCCommunication
 
 class NCRenameFile: UIViewController {
 
+    @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var previewFile: UIImageView!
     @IBOutlet weak var fileNameWithoutExt: UITextField!
     @IBOutlet weak var point: UILabel!
@@ -55,7 +56,7 @@ class NCRenameFile: UIViewController {
             }
         }
                 
-        title = NSLocalizedString("_rename_file_", comment: "")
+        titleLabel.text = NSLocalizedString("_rename_file_", comment: "")
     }
     
     override func viewDidAppear(_ animated: Bool) {
