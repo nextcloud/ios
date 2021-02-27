@@ -66,6 +66,8 @@ public class NCPopupViewController: UIViewController {
         case right(CGFloat)
     }
     
+    private var centerYConstraint: NSLayoutConstraint?
+    
     /// Popup width, it's nil if width is determined by view's intrinsic size
     private(set) public var popupWidth: CGFloat?
     
@@ -90,6 +92,9 @@ public class NCPopupViewController: UIViewController {
     /// Shadow enabled, default is true
     public var shadowEnabled = true
     
+    /// Move the popup position H when show/hide keyboard
+    public var keyboardPosizionEnabled = true
+
     /// The pop up view controller. It's not mandatory.
     private(set) public var contentController: UIViewController?
     
@@ -164,9 +169,9 @@ public class NCPopupViewController: UIViewController {
     // MARK: -
     
     @objc internal func keyboardWillShow(_ notification : Notification?) {
-        
-        var keyboardSize: CGSize!
                 
+        var keyboardSize = CGSize.zero
+        
         if let info = notification?.userInfo {
 
             let frameEndUserInfoKey = UIResponder.keyboardFrameEndUserInfoKey
@@ -184,13 +189,23 @@ public class NCPopupViewController: UIViewController {
                 } else {
                     keyboardSize = intersectRect.size
                 }
+                
+                if keyboardPosizionEnabled {
+                    if centerYConstraint != nil {
+                        centerYConstraint?.constant = -(keyboardSize.height/2)
+                    }
+                }
             }
         }
     }
     
     @objc func keyboardWillHide(_ notification: Notification) {
         
-        print("")
+        if keyboardPosizionEnabled {
+            if centerYConstraint != nil {
+                centerYConstraint?.constant = 0
+            }
+        }
     }
     
     // MARK: - Setup
@@ -291,8 +306,8 @@ public class NCPopupViewController: UIViewController {
     
     private func addCenterPositionConstraints(offset: CGPoint?) {
         let centerXConstraint = NSLayoutConstraint(item: containerView, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: offset?.x ?? 0)
-        let centerYConstraint = NSLayoutConstraint(item: containerView, attribute: .centerY, relatedBy: .equal, toItem: view, attribute: .centerY, multiplier: 1, constant: offset?.y ?? 0)
-        NSLayoutConstraint.activate([centerXConstraint, centerYConstraint])
+        centerYConstraint = NSLayoutConstraint(item: containerView, attribute: .centerY, relatedBy: .equal, toItem: view, attribute: .centerY, multiplier: 1, constant: offset?.y ?? 0)
+        NSLayoutConstraint.activate([centerXConstraint, centerYConstraint!])
     }
     
     private func addTopLeftPositionConstraints(offset: CGPoint?) {
