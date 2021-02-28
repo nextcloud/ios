@@ -228,7 +228,7 @@ extension NCCollectionViewCommon {
                             
                             viewController.metadata = metadata
 
-                            let popup = NCPopupViewController(contentController: viewController, popupWidth: 300, popupHeight: 370)
+                            let popup = NCPopupViewController(contentController: viewController, popupWidth: 300, popupHeight: 360)
                                                         
                             self.present(popup, animated: true)
                         }
