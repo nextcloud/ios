@@ -191,10 +191,10 @@ public class NCPopupViewController: UIViewController {
                 }
                 
                 if keyboardPosizionEnabled {
-                    
-                    var y2 = screenSize.height - (popupHeight ?? 0)
-                    if y2 < 0 { y2 = 0 }
-                    let diff = abs(y2 - keyboardSize.height)
+                                           
+                    let popupDiffScreen = screenSize.height - ((screenSize.height - (popupHeight ?? 0)) / 2)
+                    let keyboardDiffScreen = screenSize.height - keyboardSize.height
+                    let diff = popupDiffScreen - keyboardDiffScreen
                     
                     if centerYConstraint != nil {
                         centerYConstraint?.constant = -(diff + 10)

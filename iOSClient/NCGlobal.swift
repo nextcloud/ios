@@ -271,6 +271,8 @@ class NCGlobal: NSObject {
     let notificationStatusAuthorizationChangedLocation          = "statusAuthorizationChangedLocation"
 }
 
+//let rootView = UIApplication.shared.keyWindow?.rootViewController?.view
+
 //DispatchQueue.main.async
 //DispatchQueue.main.asyncAfter(deadline: .now() + 0.1)
 //DispatchQueue.global().async
@@ -278,7 +280,6 @@ class NCGlobal: NSObject {
 
 //#if targetEnvironment(simulator)
 //#endif
-
 
 //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 //dispatch_async(dispatch_get_main_queue(), ^{
