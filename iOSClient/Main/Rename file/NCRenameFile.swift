@@ -188,6 +188,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             if errorCode == 0 {
                 
                 self.dismiss(animated: true)
+                
             } else {
                 
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
