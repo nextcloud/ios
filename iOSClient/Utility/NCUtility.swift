@@ -35,6 +35,7 @@ class NCUtility: NSObject {
     }()
     
     let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+    var viewActivityIndicator: UIView?
     
     func setLayoutForView(key: String, serverUrl: String, layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
         
@@ -194,15 +195,24 @@ class NCUtility: NSObject {
     }
     
     @objc func startActivityIndicator(view: UIView?, bottom: CGFloat = 0) {
-    
-        guard let view = view else { return }
-        
+            
         activityIndicator.color = NCBrandColor.shared.brand
         activityIndicator.hidesWhenStopped = true
-            
-        view.addSubview(activityIndicator)
-            
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+
+        if view == nil {
+            if let window = UIApplication.shared.keyWindow {
+                viewActivityIndicator?.removeFromSuperview()
+                viewActivityIndicator = UIView(frame: window.bounds)
+                window.addSubview(viewActivityIndicator!)
+                viewActivityIndicator?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            }
+        } else {
+            viewActivityIndicator = view
+        }
+        
+        guard let view = viewActivityIndicator else { return }
+        view.addSubview(activityIndicator)
             
         let horizontalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: NSLayoutConstraint.Attribute.centerX, relatedBy: NSLayoutConstraint.Relation.equal, toItem: view, attribute: NSLayoutConstraint.Attribute.centerX, multiplier: 1, constant: 0)
         view.addConstraint(horizontalConstraint)
@@ -221,6 +231,7 @@ class NCUtility: NSObject {
     @objc func stopActivityIndicator() {
         activityIndicator.stopAnimating()
         activityIndicator.removeFromSuperview()
+        viewActivityIndicator?.removeFromSuperview()
     }
     
     @objc func isSimulatorOrTestFlight() -> Bool {

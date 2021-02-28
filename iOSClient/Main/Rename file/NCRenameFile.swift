@@ -183,7 +183,11 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
     func renameMetadata(_ metadata: tableMetadata, fileNameNew: String) {
         
+        NCUtility.shared.startActivityIndicator(view: nil)
+        
         NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, urlBase: metadata.urlBase, viewController: self) { (errorCode, errorDescription) in
+            
+            NCUtility.shared.stopActivityIndicator()
             
             if errorCode == 0 {
                 
