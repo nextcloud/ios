@@ -1,12 +1,9 @@
 //
 //  NCPopupViewController.swift
-//  EzPopup
 //
-//  Created by Huy Nguyen on 6/4/18.
-//
+//  Based on  EzPopup by Huy Nguyen
 //  Modified by Marino Faggiana for Nextcloud progect.
 //
-//  Author Huy Nguyen
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
@@ -26,7 +23,7 @@ import UIKit
 
 public protocol NCPopupViewControllerDelegate: class {
     
-    /// It is called when pop up is dismissed by tap outside
+    // It is called when pop up is dismissed by tap outside
     func popupViewControllerDidDismissByTapGesture(_ sender: NCPopupViewController)
 }
 
@@ -37,78 +34,46 @@ public extension NCPopupViewControllerDelegate {
 
 public class NCPopupViewController: UIViewController {
     
-    public enum PopupPosition {
-        /// Align center X, center Y with offset param
-        case center(CGPoint?)
-        
-        /// Top left anchor point with offset param
-        case topLeft(CGPoint?)
-        
-        /// Top right anchor point with offset param
-        case topRight(CGPoint?)
-        
-        /// Bottom left anchor point with offset param
-        case bottomLeft(CGPoint?)
-        
-        /// Bottom right anchor point with offset param
-        case bottomRight(CGPoint?)
-        
-        /// Top anchor, align center X with top padding param
-        case top(CGFloat)
-        
-        /// Left anchor, align center Y with left padding param
-        case left(CGFloat)
-        
-        /// Bottom anchor, align center X with bottom padding param
-        case bottom(CGFloat)
-        
-        /// Right anchor, align center Y with right padding param
-        case right(CGFloat)
-    }
-    
     private var centerYConstraint: NSLayoutConstraint?
     
-    /// Popup width, it's nil if width is determined by view's intrinsic size
+    // Popup width, it's nil if width is determined by view's intrinsic size
     private(set) public var popupWidth: CGFloat?
     
-    /// Popup height, it's nil if width is determined by view's intrinsic size
+    // Popup height, it's nil if width is determined by view's intrinsic size
     private(set) public var popupHeight: CGFloat?
-    
-    /// Popup position, default is center
-    private(set) public var position: PopupPosition = .center(nil)
-    
-    /// Background alpha, default is 0.3
+        
+    // Background alpha, default is 0.3
     public var backgroundAlpha: CGFloat = 0.3
     
-    /// Background color, default is black
+    // Background color, default is black
     public var backgroundColor = UIColor.black
     
-    /// Allow tap outside popup to dismiss, default is true
+    // Allow tap outside popup to dismiss, default is true
     public var canTapOutsideToDismiss = true
     
-    /// Corner radius, default is 10 (0 no rounded corner)
+    // Corner radius, default is 10 (0 no rounded corner)
     public var cornerRadius: CGFloat = 10
     
-    /// Shadow enabled, default is true
+    // Shadow enabled, default is true
     public var shadowEnabled = true
     
-    /// Move the popup position H when show/hide keyboard
+    // Move the popup position H when show/hide keyboard
     public var keyboardPosizionEnabled = true
 
-    /// The pop up view controller. It's not mandatory.
+    // The pop up view controller. It's not mandatory.
     private(set) public var contentController: UIViewController?
     
-    /// The pop up view
+    // The pop up view
     private(set) public var contentView: UIView?
     
-    /// The delegate to receive pop up event
+    // The delegate to receive pop up event
     public weak var delegate: NCPopupViewControllerDelegate?
     
     private var containerView = UIView()
     
     // MARK: -
     
-    /// NOTE: Don't use this init method
+    // NOTE: Don't use this init method
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -117,17 +82,15 @@ public class NCPopupViewController: UIViewController {
      Init with content view controller. Your pop up content is a view controller (easiest way to design it is using storyboard)
      - Parameters:
         - contentController: Popup content view controller
-        - position: Position of popup content, default is center
         - popupWidth: Width of popup content. If it isn't set, width will be determine by popup content view intrinsic size.
         - popupHeight: Height of popup content. If it isn't set, height will be determine by popup content view intrinsic size.
      */
-    public init(contentController: UIViewController, position: PopupPosition = .center(nil), popupWidth: CGFloat? = nil, popupHeight: CGFloat? = nil) {
+    public init(contentController: UIViewController, popupWidth: CGFloat? = nil, popupHeight: CGFloat? = nil) {
         super.init(nibName: nil, bundle: nil)
         self.contentController = contentController
         self.contentView = contentController.view
         self.popupWidth = popupWidth
         self.popupHeight = popupHeight
-        self.position = position
         
         commonInit()
     }
@@ -136,16 +99,14 @@ public class NCPopupViewController: UIViewController {
      Init with content view
      - Parameters:
          - contentView: Popup content view
-         - position: Position of popup content, default is center
          - popupWidth: Width of popup content. If it isn't set, width will be determine by popup content view intrinsic size.
          - popupHeight: Height of popup content. If it isn't set, height will be determine by popup content view intrinsic size.
      */
-    public init(contentView: UIView, position: PopupPosition = .center(nil), popupWidth: CGFloat? = nil, popupHeight: CGFloat? = nil) {
+    public init(contentView: UIView, popupWidth: CGFloat? = nil, popupHeight: CGFloat? = nil) {
         super.init(nibName: nil, bundle: nil)
         self.contentView = contentView
         self.popupWidth = popupWidth
         self.popupHeight = popupHeight
-        self.position = position
         
         commonInit()
     }
@@ -247,7 +208,7 @@ public class NCPopupViewController: UIViewController {
         
         addViews()
         addSizeConstraints()
-        addPositionConstraints()
+        addCenterPositionConstraints()
     }
     
     private func addViews() {
@@ -278,91 +239,12 @@ public class NCPopupViewController: UIViewController {
         }
     }
     
-    private func addPositionConstraints() {
-        switch position {
-        case .center(let offset):
-            addCenterPositionConstraints(offset: offset)
-            
-        case .topLeft(let offset):
-            addTopLeftPositionConstraints(offset: offset)
-            
-        case .topRight(let offset):
-            addTopRightPositionConstraints(offset: offset)
-            
-        case .bottomLeft(let offset):
-            addBottomLeftPositionConstraints(offset: offset)
-            
-        case .bottomRight(let offset):
-            addBottomRightPositionConstraints(offset: offset)
-            
-        case .top(let offset):
-            addTopPositionConstraints(offset: offset)
-            
-        case .left(let offset):
-            addLeftPositionConstraints(offset: offset)
-            
-        case .bottom(let offset):
-            addBottomPositionConstraints(offset: offset)
-            
-        case .right(let offset):
-            addRightPositionConstraints(offset: offset)
-        }
-    }
-    
-    private func addCenterPositionConstraints(offset: CGPoint?) {
-        let centerXConstraint = NSLayoutConstraint(item: containerView, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: offset?.x ?? 0)
-        centerYConstraint = NSLayoutConstraint(item: containerView, attribute: .centerY, relatedBy: .equal, toItem: view, attribute: .centerY, multiplier: 1, constant: offset?.y ?? 0)
+    private func addCenterPositionConstraints() {
+        let centerXConstraint = NSLayoutConstraint(item: containerView, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0)
+        centerYConstraint = NSLayoutConstraint(item: containerView, attribute: .centerY, relatedBy: .equal, toItem: view, attribute: .centerY, multiplier: 1, constant: 0)
         NSLayoutConstraint.activate([centerXConstraint, centerYConstraint!])
     }
     
-    private func addTopLeftPositionConstraints(offset: CGPoint?) {
-        let topConstraint = NSLayoutConstraint(item: containerView, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1, constant: offset?.y ?? 0)
-        let leftConstraint = NSLayoutConstraint(item: containerView, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1, constant: offset?.x ?? 0)
-        NSLayoutConstraint.activate([topConstraint, leftConstraint])
-    }
-    
-    private func addTopRightPositionConstraints(offset: CGPoint?) {
-        let topConstraint = NSLayoutConstraint(item: containerView, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1, constant: offset?.y ?? 0)
-        let rightConstraint = NSLayoutConstraint(item: view as Any, attribute: .right, relatedBy: .equal, toItem: containerView, attribute: .right, multiplier: 1, constant: offset?.x ?? 0)
-        NSLayoutConstraint.activate([topConstraint, rightConstraint])
-    }
-    
-    private func addBottomLeftPositionConstraints(offset: CGPoint?) {
-        let bottomConstraint = NSLayoutConstraint(item: view as Any, attribute: .bottom, relatedBy: .equal, toItem: containerView, attribute: .bottom, multiplier: 1, constant: offset?.y ?? 0)
-        let leftConstraint = NSLayoutConstraint(item: containerView, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1, constant: offset?.x ?? 0)
-        NSLayoutConstraint.activate([bottomConstraint, leftConstraint])
-    }
-    
-    private func addBottomRightPositionConstraints(offset: CGPoint?) {
-        let bottomConstraint = NSLayoutConstraint(item: view as Any, attribute: .bottom, relatedBy: .equal, toItem: containerView, attribute: .bottom, multiplier: 1, constant: offset?.y ?? 0)
-        let rightConstraint = NSLayoutConstraint(item: view as Any, attribute: .right, relatedBy: .equal, toItem: containerView, attribute: .right, multiplier: 1, constant: offset?.x ?? 0)
-        NSLayoutConstraint.activate([bottomConstraint, rightConstraint])
-    }
-    
-    private func addTopPositionConstraints(offset: CGFloat) {
-        let topConstraint = NSLayoutConstraint(item: containerView, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1, constant: offset)
-        let centerXConstraint = NSLayoutConstraint(item: view as Any, attribute: .centerX, relatedBy: .equal, toItem: containerView, attribute: .centerX, multiplier: 1, constant: 0)
-        NSLayoutConstraint.activate([topConstraint, centerXConstraint])
-    }
-    
-    private func addLeftPositionConstraints(offset: CGFloat) {
-        let leftConstraint = NSLayoutConstraint(item: containerView, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1, constant: offset)
-        let centerYConstraint = NSLayoutConstraint(item: view as Any, attribute: .centerY, relatedBy: .equal, toItem: containerView, attribute: .centerY, multiplier: 1, constant: 0)
-        NSLayoutConstraint.activate([leftConstraint, centerYConstraint])
-    }
-    
-    private func addBottomPositionConstraints(offset: CGFloat) {
-        let bottomConstraint = NSLayoutConstraint(item: view as Any, attribute: .bottom, relatedBy: .equal, toItem: containerView, attribute: .bottom, multiplier: 1, constant: offset)
-        let centerXConstraint = NSLayoutConstraint(item: view as Any, attribute: .centerX, relatedBy: .equal, toItem: containerView, attribute: .centerX, multiplier: 1, constant: 0)
-        NSLayoutConstraint.activate([bottomConstraint, centerXConstraint])
-    }
-    
-    private func addRightPositionConstraints(offset: CGFloat) {
-        let rightConstraint = NSLayoutConstraint(item: view as Any, attribute: .right, relatedBy: .equal, toItem: containerView, attribute: .right, multiplier: 1, constant: offset)
-        let centerXConstraint = NSLayoutConstraint(item: view as Any, attribute: .centerY, relatedBy: .equal, toItem: containerView, attribute: .centerY, multiplier: 1, constant: 0)
-        NSLayoutConstraint.activate([rightConstraint, centerXConstraint])
-    }
-
     // MARK: - Actions
     
     @objc func dismissTapGesture(gesture: UIGestureRecognizer) {
