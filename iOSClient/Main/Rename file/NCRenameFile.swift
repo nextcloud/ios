@@ -127,20 +127,20 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     @IBAction func rename(_ sender: Any) {
 
         guard let metadata = metadata else { return }
-        var newFileNameWithoutExt = ""
-        var newExt = ""
+        var fileNameWithoutExtNew = ""
+        var extNew = ""
         var fileNameNew = ""
         
         if fileNameWithoutExt.text == nil || fileNameWithoutExt.text?.count == 0 {
             self.fileNameWithoutExt.text = metadata.fileNameWithoutExt
             return
         } else {
-            newFileNameWithoutExt = fileNameWithoutExt.text!
+            fileNameWithoutExtNew = fileNameWithoutExt.text!
         }
         
         if metadata.directory {
             
-            fileNameNew = newFileNameWithoutExt
+            fileNameNew = fileNameWithoutExtNew
             renameMetadata(metadata, fileNameNew: fileNameNew)
             
         } else {
@@ -149,18 +149,18 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                 self.ext.text = metadata.ext
                 return
             } else {
-                newExt = ext.text!
+                extNew = ext.text!
             }
             
-            if newExt != metadata.ext {
+            if extNew != metadata.ext {
                 
-                let message = String(format: NSLocalizedString("_rename_ext_message_", comment: ""), newExt, metadata.ext)
+                let message = String(format: NSLocalizedString("_rename_ext_message_", comment: ""), extNew, metadata.ext)
                 let alertController = UIAlertController(title: NSLocalizedString("_rename_ext_title_", comment: ""), message: message, preferredStyle: .alert)
                             
-                var title = NSLocalizedString("_use_", comment: "") + " ." + newExt
+                var title = NSLocalizedString("_use_", comment: "") + " ." + extNew
                 alertController.addAction(UIAlertAction(title: title, style: .default, handler: { action in
                     
-                    fileNameNew = newFileNameWithoutExt + "." + newExt
+                    fileNameNew = fileNameWithoutExtNew + "." + extNew
                     self.renameMetadata(metadata, fileNameNew: fileNameNew)
                 }))
                 
@@ -173,7 +173,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                 
             } else {
             
-                fileNameNew = newFileNameWithoutExt + "." + newExt
+                fileNameNew = fileNameWithoutExtNew + "." + extNew
                 renameMetadata(metadata, fileNameNew: fileNameNew)
             }
         }

@@ -1163,14 +1163,27 @@ import Queuer
                     }
                             
                 } else {
-                            
-                    NCManageDatabase.shared.setLocalFile(ocId: ocId, fileName: fileNameNew, etag: nil)
-                    // Move file system
-                    let atPath = CCUtility.getDirectoryProviderStorageOcId(ocId) + "/" + metadata.fileName
-                    let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId) + "/" + fileNameNew
-                    do {
-                        try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
-                    } catch { }
+                    
+                    let ext = (metadata.fileName as NSString).pathExtension
+                    let extNew = (fileNameNew as NSString).pathExtension
+                    
+                    if ext != extNew {
+                        
+                        if let path = CCUtility.getDirectoryProviderStorageOcId(ocId) {
+                            NCUtilityFileSystem.shared.deleteFile(filePath: path)
+                        }
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": metadata.serverUrl])
+
+                    } else {
+                    
+                        NCManageDatabase.shared.setLocalFile(ocId: ocId, fileName: fileNameNew, etag: nil)
+                        // Move file system
+                        let atPath = CCUtility.getDirectoryProviderStorageOcId(ocId) + "/" + metadata.fileName
+                        let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId) + "/" + fileNameNew
+                        do {
+                            try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
+                        } catch { }
+                    }
                 }
                 
                 if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
