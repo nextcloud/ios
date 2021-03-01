@@ -24,7 +24,6 @@
 #import <UIKit/UIKit.h>
 
 #import "CCUtility.h"
-#import "CCHud.h"
 
 @class tableMetadata;
 

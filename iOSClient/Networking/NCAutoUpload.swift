@@ -33,7 +33,6 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     public var locationManager: CLLocationManager?
-    private var hud: CCHud?
     private var endForAssetToUpload: Bool = false
 
     // MARK: -
@@ -137,12 +136,10 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
     @objc func autoUploadFullPhotos(viewController: UIViewController?, log: String) {
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.window?.rootViewController) { (hasPermission) in
             if hasPermission {
-                self.hud = CCHud.init(view: self.appDelegate.window?.rootViewController?.view)
                 NCContentPresenter.shared.messageNotification("_attention_", description: "_create_full_upload_", delay: NCGlobal.shared.dismissAfterSecondLong, type: .info, errorCode: 0, forced: true)
-                self.hud?.visibleHudTitle(NSLocalizedString("_wait_", comment: ""), mode: MBProgressHUDMode.indeterminate, color: NCBrandColor.shared.brand)
-                
+                NCUtility.shared.startActivityIndicator(view: nil)
                 self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log) { (items) in
-                    self.hud?.hideHud()
+                    NCUtility.shared.stopActivityIndicator()
                 }
             }
         }

@@ -34,8 +34,8 @@ class NCUtility: NSObject {
         return instance
     }()
     
-    let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
-    var viewActivityIndicator: UIView?
+    private let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+    private var viewActivityIndicator: UIView?
     
     func setLayoutForView(key: String, serverUrl: String, layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
         

@@ -53,7 +53,6 @@
 		F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */; };
 		F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C0F46F1C8880540059EC54 /* ShareViewController.m */; };
 		F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
-		F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
 		F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7296A661C8880ED001A7809 /* CCloadItemData.swift */; };
 		F7145A1A1D12E3B700CAFEEC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
 		F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
@@ -175,7 +174,6 @@
 		F779422025E956C900B7F9EC /* NCRenameFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F779421F25E956C900B7F9EC /* NCRenameFile.swift */; };
 		F77A697D250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77A697C250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift */; };
 		F77B0DF51D118A16002130FE /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
-		F77B0E301D118A16002130FE /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
 		F77B0E4F1D118A16002130FE /* CCManageAutoUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42F1BAC0268006C0017 /* CCManageAutoUpload.m */; };
 		F77B0E5F1D118A16002130FE /* NCSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE4311BAC0268006C0017 /* NCSettings.m */; };
 		F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42D1BAC0268006C0017 /* CCManageAccount.m */; };
@@ -187,7 +185,6 @@
 		F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F7813EB825E9126B002C44A2 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F7813EB725E9126B002C44A2 /* XLForm */; };
 		F7813EC325E91358002C44A2 /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F7813EC225E91358002C44A2 /* UICKeyChainStore */; };
-		F7813ECE25E91460002C44A2 /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F7813ECD25E91460002C44A2 /* MBProgressHUD */; };
 		F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F782A57B25123694007BBABD /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F782A57A25123694007BBABD /* Realm */; };
 		F782A57D25123694007BBABD /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F782A57C25123694007BBABD /* RealmSwift */; };
@@ -479,8 +476,6 @@
 		F7501C302212E57400FB1415 /* NCMedia.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCMedia.storyboard; sourceTree = "<group>"; };
 		F7501C312212E57400FB1415 /* NCMedia.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCMedia.swift; sourceTree = "<group>"; };
 		F7509BA925DFC69C005370D1 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		F7514EDA1C7B1336008F3338 /* CCHud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCHud.h; sourceTree = "<group>"; };
-		F7514EDB1C7B1336008F3338 /* CCHud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCHud.m; sourceTree = "<group>"; };
 		F75153232226920200323DDC /* FastScroll.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FastScroll.framework; path = Carthage/Build/iOS/FastScroll.framework; sourceTree = "<group>"; };
 		F752011C25480387000BF3A7 /* NCViewerVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerVideo.swift; sourceTree = "<group>"; };
 		F753701822723D620041C76C /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = gl.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -740,7 +735,6 @@
 				F78F3FF125E8E83F007936CF /* FSCalendar in Frameworks */,
 				F74C4FBB2328C3C200A23E25 /* OpenSSL.framework in Frameworks */,
 				F7C4D88D2534887E00C142DA /* Parchment in Frameworks */,
-				F7813ECE25E91460002C44A2 /* MBProgressHUD in Frameworks */,
 				F7AF7633246BEDFE00B86E3C /* TOPasscodeViewController.framework in Frameworks */,
 				F78F400725E8EB42007936CF /* Queuer in Frameworks */,
 				F7176DDB256672F10017E83C /* libsqlite3.tbd in Frameworks */,
@@ -1240,8 +1234,6 @@
 		F7BFFA991A24D7BB0044ED85 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
-				F7514EDA1C7B1336008F3338 /* CCHud.h */,
-				F7514EDB1C7B1336008F3338 /* CCHud.m */,
 				F7053E3C1C639DF500741EA5 /* CCUtility.h */,
 				F7053E3D1C639DF500741EA5 /* CCUtility.m */,
 				F733598025C1C188002ABA72 /* NCAskAuthorization.swift */,
@@ -1658,7 +1650,6 @@
 				F78F400625E8EB42007936CF /* Queuer */,
 				F7813EB725E9126B002C44A2 /* XLForm */,
 				F7813EC225E91358002C44A2 /* UICKeyChainStore */,
-				F7813ECD25E91460002C44A2 /* MBProgressHUD */,
 				F764A75C25E919DC00F95C9E /* FirebaseCrashlytics */,
 			);
 			productName = "Crypto Cloud";
@@ -1778,7 +1769,6 @@
 				F78F400525E8EB42007936CF /* XCRemoteSwiftPackageReference "Queuer" */,
 				F7813EB625E9126A002C44A2 /* XCRemoteSwiftPackageReference "XLForm" */,
 				F7813EC125E91358002C44A2 /* XCRemoteSwiftPackageReference "UICKeyChainStore" */,
-				F7813ECC25E91460002C44A2 /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
 				F764A75B25E919DC00F95C9E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -1958,7 +1948,6 @@
 				F7C9322725E39D4A000A14C2 /* NCGlobal.swift in Sources */,
 				F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */,
 				F7F8D71C1ED6183000E711F3 /* CCCellShareExt.m in Sources */,
-				F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */,
 				F765609023BF813600765969 /* NCContentPresenter.swift in Sources */,
 				F75A9EE723796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				F7A76DC8256A71CD00119AB3 /* UIImage+Extensions.swift in Sources */,
@@ -2051,7 +2040,6 @@
 				F769454222E9F0EE000A798A /* NCShareLinkMenuView.swift in Sources */,
 				F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */,
 				F7509BAA25DFC69C005370D1 /* AppDelegate.swift in Sources */,
-				F77B0E301D118A16002130FE /* CCHud.m in Sources */,
 				F76673ED22C901F6007ED366 /* FileProviderDomain.swift in Sources */,
 				F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */,
 				F77B0E4F1D118A16002130FE /* CCManageAutoUpload.m in Sources */,
@@ -2826,14 +2814,6 @@
 				minimumVersion = 2.2.1;
 			};
 		};
-		F7813ECC25E91460002C44A2 /* XCRemoteSwiftPackageReference "MBProgressHUD" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/jdg/MBProgressHUD";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.0;
-			};
-		};
 		F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/realm-cocoa";
@@ -2961,11 +2941,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F7813EC125E91358002C44A2 /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
 			productName = UICKeyChainStore;
-		};
-		F7813ECD25E91460002C44A2 /* MBProgressHUD */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F7813ECC25E91460002C44A2 /* XCRemoteSwiftPackageReference "MBProgressHUD" */;
-			productName = MBProgressHUD;
 		};
 		F782A57A25123694007BBABD /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;

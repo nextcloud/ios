@@ -103,9 +103,7 @@
     }
     
     self.filesName = [[NSMutableArray alloc] init];
-    
-    self.hud = [[CCHud alloc] initWithView:self.navigationController.view];
-    
+        
     [self.shareTable registerNib:[UINib nibWithNibName:@"CCCellShareExt" bundle:nil] forCellReuseIdentifier:@"ShareExtCell"];
     
     [self navigationBarToolBar];
@@ -258,7 +256,7 @@
 {
     if ([self.filesName count] > 0) {
     
-        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:NCBrandColor.shared.brandElement];
+        [[NCUtility shared] startActivityIndicatorWithView:nil bottom:0];
         
         NSString *fileName = [self.filesName objectAtIndex:0];
         NSString *fileNameLocal = [NSTemporaryDirectory() stringByAppendingString:fileName];
@@ -287,11 +285,10 @@
                         
         } progressHandler:^(NSProgress *progress) {
             
-            [self.hud progress:progress.fractionCompleted];
             
         } completionHandler:^(NSString *account, NSString *ocId, NSString *etag, NSDate *date, int64_t size, NSDictionary *allHeaderFields, NSInteger errorCode, NSString *errorDescription) {
             
-            [self.hud hideHud];
+            [[NCUtility shared] stopActivityIndicator];
             [self.filesName removeObject:fileName];
            
             if (errorCode == 0) {

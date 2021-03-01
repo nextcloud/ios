@@ -25,7 +25,6 @@
 #import <MessageUI/MessageUI.h>
 #import <XLForm/XLForm.h>
 #import "CCUtility.h"
-#import "CCHud.h"
 
 @interface NCSettings : XLFormViewController
 

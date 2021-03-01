@@ -25,7 +25,6 @@
 
 #import "CCCellShareExt.h"
 #import "NCSelectDestination.h"
-#import "CCHud.h"
 
 @interface ShareViewController : UIViewController <UITableViewDelegate, MBProgressHUDDelegate, NCSelectDestinationDelegate, UITextFieldDelegate>
 
@@ -38,8 +37,6 @@
 @property (nonatomic, weak) IBOutlet UIBarButtonItem *destinyFolderButton;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *constraintTopTableView;
 @property (nonatomic, weak) IBOutlet UIToolbar *toolBar;
-
-@property (nonatomic, strong) CCHud *hud;
 
 - (void)closeShareViewController;
 - (void)reloadData:(NSArray *)files;
