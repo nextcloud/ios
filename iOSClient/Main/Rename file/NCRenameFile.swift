@@ -119,6 +119,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
         textField.resignFirstResponder()
+        rename(textField)
         return true
     }
     
