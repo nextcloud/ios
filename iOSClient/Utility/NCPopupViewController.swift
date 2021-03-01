@@ -87,12 +87,14 @@ public class NCPopupViewController: UIViewController {
      */
     public init(contentController: UIViewController, popupWidth: CGFloat? = nil, popupHeight: CGFloat? = nil) {
         super.init(nibName: nil, bundle: nil)
+        
         self.contentController = contentController
         self.contentView = contentController.view
         self.popupWidth = popupWidth
         self.popupHeight = popupHeight
         
-        commonInit()
+        modalPresentationStyle = .overFullScreen
+        modalTransitionStyle = .crossDissolve
     }
     
     /**
@@ -104,18 +106,15 @@ public class NCPopupViewController: UIViewController {
      */
     public init(contentView: UIView, popupWidth: CGFloat? = nil, popupHeight: CGFloat? = nil) {
         super.init(nibName: nil, bundle: nil)
+        
         self.contentView = contentView
         self.popupWidth = popupWidth
         self.popupHeight = popupHeight
         
-        commonInit()
-    }
-    
-    private func commonInit() {
         modalPresentationStyle = .overFullScreen
         modalTransitionStyle = .crossDissolve
     }
-
+    
     override public func viewDidLoad() {
         super.viewDidLoad()
 
@@ -130,12 +129,14 @@ public class NCPopupViewController: UIViewController {
     // MARK: - Setup
 
     private func addDismissGesture() {
+        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissTapGesture(gesture:)))
         tapGesture.delegate = self
         view.addGestureRecognizer(tapGesture)
     }
     
     private func setupUI() {
+        
         containerView.translatesAutoresizingMaskIntoConstraints = false
         contentView?.translatesAutoresizingMaskIntoConstraints = false
         
@@ -155,6 +156,7 @@ public class NCPopupViewController: UIViewController {
     }
     
     private func setupViews() {
+        
         if let contentController = contentController {
             addChild(contentController)
         }
@@ -165,6 +167,7 @@ public class NCPopupViewController: UIViewController {
     }
     
     private func addViews() {
+        
         view.addSubview(containerView)
         
         if let contentView = contentView {
@@ -181,6 +184,7 @@ public class NCPopupViewController: UIViewController {
     // MARK: - Add constraints
     
     private func addSizeConstraints() {
+        
         if let popupWidth = popupWidth {
             let widthConstraint = NSLayoutConstraint(item: containerView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: popupWidth)
             NSLayoutConstraint.activate([widthConstraint])
@@ -193,6 +197,7 @@ public class NCPopupViewController: UIViewController {
     }
     
     private func addCenterPositionConstraints() {
+        
         let centerXConstraint = NSLayoutConstraint(item: containerView, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0)
         centerYConstraint = NSLayoutConstraint(item: containerView, attribute: .centerY, relatedBy: .equal, toItem: view, attribute: .centerY, multiplier: 1, constant: 0)
         NSLayoutConstraint.activate([centerXConstraint, centerYConstraint!])

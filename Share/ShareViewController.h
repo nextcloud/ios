@@ -21,12 +21,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import <MBProgressHUD/MBProgressHUD.h>
-
 #import "CCCellShareExt.h"
 #import "NCSelectDestination.h"
 
-@interface ShareViewController : UIViewController <UITableViewDelegate, MBProgressHUDDelegate, NCSelectDestinationDelegate, UITextFieldDelegate>
+@interface ShareViewController : UIViewController <UITableViewDelegate, NCSelectDestinationDelegate, UITextFieldDelegate>
 
 @property (nonatomic, strong) NSString *account;
 @property (nonatomic, strong) NSString *urlBase;
