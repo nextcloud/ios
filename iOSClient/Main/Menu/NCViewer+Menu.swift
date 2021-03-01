@@ -172,6 +172,7 @@ extension NCViewer {
                         if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
                             
                             vcRename.metadata = metadata
+                            vcRename.disableChangeExt = true
 
                             let popup = NCPopupViewController(contentController: vcRename, popupWidth: 300, popupHeight: 360)
                                                         

@@ -37,6 +37,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var renameButton: UIButton!
 
     var metadata: tableMetadata?
+    var disableChangeExt: Bool = false
     
     // MARK: - Life Cycle
     
@@ -54,6 +55,10 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             
             ext.text = metadata.ext
             ext.delegate = self
+            if disableChangeExt {
+                ext.isEnabled = false
+                ext.textColor = .lightGray
+            }
 
             if metadata.directory {
                 
