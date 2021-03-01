@@ -224,11 +224,11 @@ extension NCCollectionViewCommon {
                     icon: UIImage(named: "rename")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
                         
-                        if let viewController = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
+                        if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
                             
-                            viewController.metadata = metadata
+                            vcRename.metadata = metadata
 
-                            let popup = NCPopupViewController(contentController: viewController, popupWidth: 300, popupHeight: 360)
+                            let popup = NCPopupViewController(contentController: vcRename, popupWidth: 300, popupHeight: 360)
                                                         
                             self.present(popup, animated: true)
                         }

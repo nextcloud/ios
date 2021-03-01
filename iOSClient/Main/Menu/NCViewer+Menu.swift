@@ -168,22 +168,15 @@ extension NCViewer {
                     title: NSLocalizedString("_rename_", comment: ""),
                     icon: UIImage(named: "rename")!.image(color: NCBrandColor.shared.icon, size: 50),
                     action: { menuAction in
-                        let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
+                        
+                        if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
+                            
+                            vcRename.metadata = metadata
 
-                        alertController.addTextField { (textField) in textField.text = metadata.fileNameView }
-                        let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
-                        let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
-                            let fileNameNew = alertController.textFields![0].text
-                            NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, urlBase: self.appDelegate.urlBase, viewController: viewController) { (errorCode, errorDescription) in
-                                if errorCode != 0 {
-                                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                                }
-                            }
-                        })
-                        alertController.addAction(cancelAction)
-                        alertController.addAction(okAction)
-
-                        viewController.present(alertController, animated: true, completion: nil)
+                            let popup = NCPopupViewController(contentController: vcRename, popupWidth: 300, popupHeight: 360)
+                                                        
+                            viewController.present(popup, animated: true)
+                        }
                     }
                 )
             )
