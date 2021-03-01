@@ -787,7 +787,6 @@
 		F70211F31BAC56E9003FC03E /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				F779421025E9548900B7F9EC /* Rename file */,
 				F7E0E1DA22327885006B0911 /* AudioRecorder */,
 				F710D1FA24057E5E00A6033D /* ActionSheetHeaderView */,
 				371B5A2F23D0B04B00FAFAE9 /* Menu */,
@@ -1423,6 +1422,7 @@
 				F7381ED9218218A4000B1560 /* Offline */,
 				F713418B2597513800768D21 /* PushNotification */,
 				F765F72E25237E3F00391DBE /* Recent */,
+				F779421025E9548900B7F9EC /* Rename file */,
 				F7CADB3D23CCDDA1000EEC78 /* RichWorkspace */,
 				F758B41E212C516300515F55 /* ScanDocument */,
 				F7FE125B1BAC03FB0041924B /* Security */,
