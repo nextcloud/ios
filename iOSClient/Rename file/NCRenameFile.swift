@@ -46,7 +46,11 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
         
         if let metadata = self.metadata {
                 
-            titleLabel.text = NSLocalizedString("_rename_file_", comment: "")
+            if metadata.directory {
+                titleLabel.text = NSLocalizedString("_rename_folder_", comment: "")
+            } else {
+                titleLabel.text = NSLocalizedString("_rename_file_", comment: "")
+            }
             separatorHeightContraint.constant = 0.3
             
             fileNameWithoutExt.text = metadata.fileNameWithoutExt
