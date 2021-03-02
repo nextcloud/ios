@@ -173,16 +173,8 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
 
     @IBAction func host(_ sender: Any) {
         
-        //guard let url = URL(string: NCBrandOptions.shared.linkLoginHost) else { return }
-        //UIApplication.shared.open(url)
-        
-        let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as? NCBrowserWeb
-
-        browserWebVC?.urlBase = NCBrandOptions.shared.linkLoginHost
-
-        if let browserWebVC = browserWebVC {
-            appDelegate.window?.rootViewController?.present(browserWebVC, animated: true)
-        }
+        guard let url = URL(string: NCBrandOptions.shared.linkLoginHost) else { return }
+        UIApplication.shared.open(url)
     }
 }
 
