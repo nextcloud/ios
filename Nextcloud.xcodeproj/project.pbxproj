@@ -119,7 +119,6 @@
 		F7434B3420E23FD700417916 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7434B3820E2400600417916 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
-		F745B251222D871800346520 /* QRCodeReader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F745B250222D871800346520 /* QRCodeReader.framework */; };
 		F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F745B252222D88AE00346520 /* NCLoginQRCode.swift */; };
 		F747BA1F22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F747BA1E22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard */; };
 		F749C10B23C4A5340027D966 /* NCIntroCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F749C10723C4A5330027D966 /* NCIntroCollectionViewCell.swift */; };
@@ -301,6 +300,7 @@
 		F7DFB7F4219C5CA800680748 /* NCCreateFormUploadScanDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7F3219C5CA800680748 /* NCCreateFormUploadScanDocument.swift */; };
 		F7E4D9C422ED929B003675FD /* NCShareComments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E4D9C322ED929B003675FD /* NCShareComments.swift */; };
 		F7ED546425EE852500956C55 /* FSCalendar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74AFCE822E8B024003DE61F /* FSCalendar.framework */; };
+		F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */ = {isa = PBXBuildFile; productRef = F7ED547B25EEA65400956C55 /* QRCodeReader */; };
 		F7EFA47825ADBA500083159A /* NCViewerProviderContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EFA47725ADBA500083159A /* NCViewerProviderContextMenu.swift */; };
 		F7EFC0C6256BC77700461AAD /* NCMoreUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7EFC0C5256BC77700461AAD /* NCMoreUserCell.xib */; };
 		F7EFC0CD256BF8DD00461AAD /* NCUserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EFC0CC256BF8DD00461AAD /* NCUserStatus.swift */; };
@@ -750,9 +750,9 @@
 				F7ED546425EE852500956C55 /* FSCalendar.framework in Frameworks */,
 				F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */,
 				F7176DC2256672650017E83C /* PromisesObjC.framework in Frameworks */,
+				F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */,
 				F7AF7633246BEDFE00B86E3C /* TOPasscodeViewController.framework in Frameworks */,
 				F7176DCA256672650017E83C /* FirebaseCore.framework in Frameworks */,
-				F745B251222D871800346520 /* QRCodeReader.framework in Frameworks */,
 				F765608723BF806D00765969 /* QuickLayout.framework in Frameworks */,
 				F7176DC0256672650017E83C /* FirebaseInstallations.framework in Frameworks */,
 				F7176DC6256672650017E83C /* nanopb.framework in Frameworks */,
@@ -796,12 +796,12 @@
 			children = (
 				3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */,
 				F77A697C250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift */,
-				F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */,
-				F710D2012405826100A6033D /* NCViewer+Menu.swift */,
 				371B5A2D23D0B04500FAFAE9 /* NCMainMenuTableViewController.swift */,
 				3704EB2923D5A58400455C5B /* NCMenu.storyboard */,
 				37ECC83A23D0C7400082EFA2 /* NCMenuAction.swift */,
 				3757A35423D9D76300EC369E /* NCMenuPanelController.swift */,
+				F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */,
+				F710D2012405826100A6033D /* NCViewer+Menu.swift */,
 			);
 			path = Menu;
 			sourceTree = "<group>";
@@ -1660,6 +1660,7 @@
 				F786D58C253454BF00E3DD7B /* NCCommunication */,
 				F7C4D88C2534887E00C142DA /* Parchment */,
 				F75E57BC25BF0EC1002B72C2 /* SVGKit */,
+				F7ED547B25EEA65400956C55 /* QRCodeReader */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -1769,6 +1770,7 @@
 				F786D58B253454BF00E3DD7B /* XCRemoteSwiftPackageReference "ios-communication-library" */,
 				F7C4D88B2534887E00C142DA /* XCRemoteSwiftPackageReference "Parchment" */,
 				F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */,
+				F7ED547A25EEA65400956C55 /* XCRemoteSwiftPackageReference "QRCodeReader" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -1898,7 +1900,6 @@
 				"$(SRCROOT)/Carthage/Build/iOS/KTVHTTPCache.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/KTVCocoaHTTPServer.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftRichString.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/QRCodeReader.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/FSCalendar.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/DropDown.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/OpenSSL.framework",
@@ -2814,6 +2815,14 @@
 				version = 2.4.0;
 			};
 		};
+		F7ED547A25EEA65400956C55 /* XCRemoteSwiftPackageReference "QRCodeReader" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/yannickl/QRCodeReader.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.1.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -2901,6 +2910,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F7C4D88B2534887E00C142DA /* XCRemoteSwiftPackageReference "Parchment" */;
 			productName = Parchment;
+		};
+		F7ED547B25EEA65400956C55 /* QRCodeReader */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F7ED547A25EEA65400956C55 /* XCRemoteSwiftPackageReference "QRCodeReader" */;
+			productName = QRCodeReader;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

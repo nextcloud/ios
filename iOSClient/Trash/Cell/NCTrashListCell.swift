@@ -59,11 +59,11 @@ class NCTrashListCell: UICollectionViewCell {
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreListItem(with: objectId, sender: sender)
+        delegate?.tapMoreListItem(with: objectId, image: imageItem.image, sender: sender)
     }
     
     @IBAction func touchUpInsideRestore(_ sender: Any) {
-        delegate?.tapRestoreListItem(with: objectId, sender: sender)
+        delegate?.tapRestoreListItem(with: objectId, image: imageItem.image, sender: sender)
     }
     
     func selectMode(_ status: Bool) {
@@ -96,6 +96,6 @@ class NCTrashListCell: UICollectionViewCell {
 }
 
 protocol NCTrashListCellDelegate {
-    func tapRestoreListItem(with objectId: String, sender: Any)
-    func tapMoreListItem(with objectId: String, sender: Any)
+    func tapRestoreListItem(with objectId: String, image: UIImage?, sender: Any)
+    func tapMoreListItem(with objectId: String, image: UIImage?, sender: Any)
 }

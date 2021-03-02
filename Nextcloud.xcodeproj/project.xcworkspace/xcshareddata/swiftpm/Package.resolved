@@ -38,6 +38,15 @@
         }
       },
       {
+        "package": "QRCodeReader",
+        "repositoryURL": "https://github.com/yannickl/QRCodeReader.swift",
+        "state": {
+          "branch": null,
+          "revision": "5020b5a47199d8ba80c83a4b4fafd70e9dc9dc7f",
+          "version": "10.1.1"
+        }
+      },
+      {
         "package": "Realm",
         "repositoryURL": "https://github.com/realm/realm-cocoa",
         "state": {

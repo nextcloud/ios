@@ -28,12 +28,12 @@ import NCCommunication
 
 extension NCCollectionViewCommon {
 
-    func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata) {
+    func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata, image: UIImage?) {
         
         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
             
             let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-            mainMenuViewController.actions = self.initMenuMore(viewController: viewController, metadata: metadata)
+            mainMenuViewController.actions = self.initMenuMore(viewController: viewController, metadata: metadata, image: image)
 
             let menuPanelController = NCMenuPanelController()
             menuPanelController.parentPresenter = viewController
@@ -45,7 +45,7 @@ extension NCCollectionViewCommon {
         }
     }
     
-    private func initMenuMore(viewController: UIViewController, metadata: tableMetadata) -> [NCMenuAction] {
+    private func initMenuMore(viewController: UIViewController, metadata: tableMetadata, image: UIImage?) -> [NCMenuAction] {
         
         var actions = [NCMenuAction]()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -82,20 +82,25 @@ extension NCCollectionViewCommon {
         }
             
         var iconHeader: UIImage!
-        if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            iconHeader = icon
+        
+        if image != nil {
+            iconHeader = image!
         } else {
-            if metadata.directory {
-                if metadata.e2eEncrypted {
-                    iconHeader = NCCollectionCommon.images.cellFolderEncryptedImage
-                } else {
-                    iconHeader = NCCollectionCommon.images.cellFolderImage
-                }
+            if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                iconHeader = icon
             } else {
-                iconHeader = UIImage(named: metadata.iconName)
+                if metadata.directory {
+                    if metadata.e2eEncrypted {
+                        iconHeader = NCCollectionCommon.images.cellFolderEncryptedImage
+                    } else {
+                        iconHeader = NCCollectionCommon.images.cellFolderImage
+                    }
+                } else {
+                    iconHeader = UIImage(named: metadata.iconName)
+                }
             }
         }
-
+        
         actions.append(
             NCMenuAction(
                 title: metadata.fileNameView,
@@ -227,6 +232,7 @@ extension NCCollectionViewCommon {
                         if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
                             
                             vcRename.metadata = metadata
+                            vcRename.imagePreview = image
 
                             let popup = NCPopupViewController(contentController: vcRename, popupWidth: 300, popupHeight: 360)
                                                         

@@ -92,7 +92,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreListItem(with: objectId, namedButtonMore: namedButtonMore, sender: sender)
+        delegate?.tapMoreListItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, sender: sender)
     }
     
     @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
@@ -151,7 +151,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
 
 protocol NCListCellDelegate {
     func tapShareListItem(with objectId: String, sender: Any)
-    func tapMoreListItem(with objectId: String, namedButtonMore: String, sender: Any)
+    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any)
     func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer)
     func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer)
 }

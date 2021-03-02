@@ -324,10 +324,10 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     func tapMoreHeader(sender: Any) {
     }
     
-    func tapMoreListItem(with objectId: String, namedButtonMore: String, sender: Any) {
+    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
     }
     
-    func tapMoreGridItem(with objectId: String, namedButtonMore: String, sender: Any) {
+    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
     }
     
     func tapShareListItem(with objectId: String, sender: Any) {

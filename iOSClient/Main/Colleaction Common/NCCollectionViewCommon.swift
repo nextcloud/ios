@@ -654,9 +654,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     func tapMoreHeader(sender: Any) { }
     
-    func tapMoreListItem(with objectId: String, namedButtonMore: String, sender: Any) {
+    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
         
-        tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, sender: sender)
+        tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: image, sender: sender)
     }
     
     func tapShareListItem(with objectId: String, sender: Any) {
@@ -667,14 +667,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 2)
     }
         
-    func tapMoreGridItem(with objectId: String, namedButtonMore: String, sender: Any) {
+    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
         
         if isEditMode { return }
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
 
         if namedButtonMore == NCGlobal.shared.buttonMoreMore {
-            toggleMoreMenu(viewController: self, metadata: metadata)
+            toggleMoreMenu(viewController: self, metadata: metadata, image: image)
         } else if namedButtonMore == NCGlobal.shared.buttonMoreStop {
             NCNetworking.shared.cancelTransferMetadata(metadata) { }
         }

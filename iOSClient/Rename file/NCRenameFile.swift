@@ -37,6 +37,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var renameButton: UIButton!
 
     var metadata: tableMetadata?
+    var imagePreview: UIImage?
     var disableChangeExt: Bool = false
     
     // MARK: - Life Cycle
@@ -63,10 +64,16 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                 ext.isEnabled = false
                 ext.textColor = .lightGray
             }
+            
+            previewFile.image = imagePreview
+            previewFile.layer.cornerRadius = 10
+            previewFile.layer.masksToBounds = true
 
             if metadata.directory {
                 
-                previewFile.image = NCCollectionCommon.images.cellFolderImage
+                if imagePreview == nil {
+                    previewFile.image = NCCollectionCommon.images.cellFolderImage
+                }
                 
                 ext.isHidden = true
                 point.isHidden = true
@@ -74,22 +81,22 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                 
             } else {
                 
-                if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                    previewFile.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-                } else {
-                    if metadata.iconName.count > 0 {
-                        previewFile.image = UIImage.init(named: metadata.iconName)
+                if imagePreview == nil {
+                    if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                        previewFile.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
                     } else {
-                        previewFile.image = NCCollectionCommon.images.cellFileImage
+                        if metadata.iconName.count > 0 {
+                            previewFile.image = UIImage.init(named: metadata.iconName)
+                        } else {
+                            previewFile.image = NCCollectionCommon.images.cellFileImage
+                        }
                     }
                 }
-                                
+                
                 fileNameWithoutExtTrailingContraint.constant = 90
             }
         }
-        previewFile.layer.cornerRadius = 10
-        previewFile.layer.masksToBounds = true
-                
+        
         cancelButton.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
         cancelButton.setTitleColor(.gray, for: .normal)
         cancelButton.layer.cornerRadius = 15

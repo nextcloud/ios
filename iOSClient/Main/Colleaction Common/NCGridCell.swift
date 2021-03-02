@@ -82,7 +82,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, sender: sender)
+        delegate?.tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, sender: sender)
     }
     
     @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
@@ -124,7 +124,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
 }
 
 protocol NCGridCellDelegate {
-    func tapMoreGridItem(with objectId: String, namedButtonMore: String, sender: Any)
+    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any)
     func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer)
     func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer)
 }

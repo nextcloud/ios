@@ -231,7 +231,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         self.present(menuPanelController, animated: true, completion: nil)
     }
     
-    func tapRestoreListItem(with ocId: String, sender: Any) {
+    func tapRestoreListItem(with ocId: String, image: UIImage?, sender: Any) {
         
         if !isEditMode {
             restoreItem(with: ocId)
@@ -242,7 +242,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         }
     }
     
-    func tapMoreListItem(with objectId: String, sender: Any) {
+    func tapMoreListItem(with objectId: String, image: UIImage?, sender: Any) {
         if !isEditMode {
             let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
 
@@ -297,7 +297,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         }
     }
     
-    func tapMoreGridItem(with objectId: String, namedButtonMore: String, sender: Any) {
+    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
         if !isEditMode {
             let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
 
