@@ -34,63 +34,63 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     struct images {
-        static var cellFileImage = UIImage()
+        static var file = UIImage()
 
-        static var cellSharedImage = UIImage()
-        static var cellCanShareImage = UIImage()
-        static var cellShareByLinkImage = UIImage()
+        static var shared = UIImage()
+        static var canShare = UIImage()
+        static var shareByLink = UIImage()
         
-        static var cellFavouriteImage = UIImage()
-        static var cellCommentImage = UIImage()
-        static var cellLivePhotoImage = UIImage()
-        static var cellOfflineFlag = UIImage()
-        static var cellLocal = UIImage()
+        static var favorite = UIImage()
+        static var comment = UIImage()
+        static var livePhoto = UIImage()
+        static var offlineFlag = UIImage()
+        static var local = UIImage()
 
-        static var cellFolderEncryptedImage = UIImage()
-        static var cellFolderSharedWithMeImage = UIImage()
-        static var cellFolderPublicImage = UIImage()
-        static var cellFolderGroupImage = UIImage()
-        static var cellFolderExternalImage = UIImage()
-        static var cellFolderAutomaticUploadImage = UIImage()
-        static var cellFolderImage = UIImage()
+        static var folderEncrypted = UIImage()
+        static var folderSharedWithMe = UIImage()
+        static var folderPublic = UIImage()
+        static var folderGroup = UIImage()
+        static var folderExternal = UIImage()
+        static var folderAutomaticUpload = UIImage()
+        static var folder = UIImage()
         
-        static var cellCheckedYes = UIImage()
-        static var cellCheckedNo = UIImage()
+        static var checkedYes = UIImage()
+        static var checkedNo = UIImage()
         
-        static var cellButtonMore = UIImage()
-        static var cellButtonStop = UIImage()
+        static var buttonMore = UIImage()
+        static var buttonStop = UIImage()
     }
     
     // MARK: -
     
     @objc func createImagesThemingColor() {
         
-        images.cellFileImage = UIImage.init(named: "file")!
+        images.file = UIImage.init(named: "file")!
         
-        images.cellSharedImage = UIImage(named: "share")!.image(color: NCBrandColor.shared.graySoft, size: 50)
-        images.cellCanShareImage = UIImage(named: "share")!.image(color: NCBrandColor.shared.graySoft, size: 50)
-        images.cellShareByLinkImage = UIImage(named: "sharebylink")!.image(color: NCBrandColor.shared.graySoft, size: 50)
+        images.shared = UIImage(named: "share")!.image(color: NCBrandColor.shared.graySoft, size: 50)
+        images.canShare = UIImage(named: "share")!.image(color: NCBrandColor.shared.graySoft, size: 50)
+        images.shareByLink = UIImage(named: "sharebylink")!.image(color: NCBrandColor.shared.graySoft, size: 50)
         
-        images.cellFavouriteImage = UIImage(named: "favorite")!.image(color: NCBrandColor.shared.yellowFavorite, size: 50)
-        images.cellCommentImage = UIImage(named: "comment")!.image(color: NCBrandColor.shared.graySoft, size: 50)
-        images.cellLivePhotoImage = UIImage(named: "livePhoto")!.image(color: NCBrandColor.shared.textView, size: 50)
-        images.cellOfflineFlag = UIImage.init(named: "offlineFlag")!
-        images.cellLocal = UIImage.init(named: "local")!
+        images.favorite = UIImage(named: "favorite")!.image(color: NCBrandColor.shared.yellowFavorite, size: 50)
+        images.comment = UIImage(named: "comment")!.image(color: NCBrandColor.shared.graySoft, size: 50)
+        images.livePhoto = UIImage(named: "livePhoto")!.image(color: NCBrandColor.shared.textView, size: 50)
+        images.offlineFlag = UIImage.init(named: "offlineFlag")!
+        images.local = UIImage.init(named: "local")!
             
         let folderWidth: CGFloat = UIScreen.main.bounds.width / 3
-        images.cellFolderEncryptedImage = UIImage(named: "folderEncrypted")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
-        images.cellFolderSharedWithMeImage = UIImage(named: "folder_shared_with_me")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
-        images.cellFolderPublicImage = UIImage(named: "folder_public")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
-        images.cellFolderGroupImage = UIImage(named: "folder_group")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
-        images.cellFolderExternalImage = UIImage(named: "folder_external")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
-        images.cellFolderAutomaticUploadImage = UIImage(named: "folderAutomaticUpload")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
-        images.cellFolderImage =  UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
+        images.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
+        images.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
+        images.folderPublic = UIImage(named: "folder_public")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
+        images.folderGroup = UIImage(named: "folder_group")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
+        images.folderExternal = UIImage(named: "folder_external")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
+        images.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
+        images.folder =  UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
         
-        images.cellCheckedYes = UIImage(named: "checkedYes")!.image(color: .darkGray, size: 50)
-        images.cellCheckedNo = UIImage(named: "checkedNo")!.image(color: NCBrandColor.shared.graySoft, size: 50)
+        images.checkedYes = UIImage(named: "checkedYes")!.image(color: .darkGray, size: 50)
+        images.checkedNo = UIImage(named: "checkedNo")!.image(color: NCBrandColor.shared.graySoft, size: 50)
         
-        images.cellButtonMore = UIImage(named: "more")!.image(color: NCBrandColor.shared.graySoft, size: 50)
-        images.cellButtonStop = UIImage(named: "stop")!.image(color: NCBrandColor.shared.graySoft, size: 50)
+        images.buttonMore = UIImage(named: "more")!.image(color: NCBrandColor.shared.graySoft, size: 50)
+        images.buttonStop = UIImage(named: "stop")!.image(color: NCBrandColor.shared.graySoft, size: 50)
     }
     
     // MARK: - NCSelect + Delegate

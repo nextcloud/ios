@@ -86,18 +86,10 @@ extension NCCollectionViewCommon {
         if image != nil {
             iconHeader = image!
         } else {
-            if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                iconHeader = icon
+            if metadata.directory {
+                iconHeader = NCCollectionCommon.images.folder
             } else {
-                if metadata.directory {
-                    if metadata.e2eEncrypted {
-                        iconHeader = NCCollectionCommon.images.cellFolderEncryptedImage
-                    } else {
-                        iconHeader = NCCollectionCommon.images.cellFolderImage
-                    }
-                } else {
-                    iconHeader = UIImage(named: metadata.iconName)
-                }
+                iconHeader = NCCollectionCommon.images.file
             }
         }
         

@@ -113,7 +113,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
     
     func selected(_ status: Bool) {
         if status {
-            imageSelect.image = NCCollectionCommon.images.cellCheckedYes
+            imageSelect.image = NCCollectionCommon.images.checkedYes
             imageVisualEffect.isHidden = false
             imageVisualEffect.alpha = 0.4
         } else {

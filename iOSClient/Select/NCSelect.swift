@@ -497,21 +497,21 @@ extension NCSelect: UICollectionViewDataSource {
             if metadata.directory {
                 
                 if metadata.e2eEncrypted {
-                    cell.imageItem.image = NCCollectionCommon.images.cellFolderEncryptedImage
+                    cell.imageItem.image = NCCollectionCommon.images.folderEncrypted
                 } else if isShare {
-                    cell.imageItem.image = NCCollectionCommon.images.cellFolderSharedWithMeImage
+                    cell.imageItem.image = NCCollectionCommon.images.folderSharedWithMe
                 } else if (tableShare != nil && tableShare?.shareType != 3) {
-                    cell.imageItem.image = NCCollectionCommon.images.cellFolderSharedWithMeImage
+                    cell.imageItem.image = NCCollectionCommon.images.folderSharedWithMe
                 } else if (tableShare != nil && tableShare?.shareType == 3) {
-                    cell.imageItem.image = NCCollectionCommon.images.cellFolderPublicImage
+                    cell.imageItem.image = NCCollectionCommon.images.folderPublic
                 } else if metadata.mountType == "group" {
-                    cell.imageItem.image = NCCollectionCommon.images.cellFolderGroupImage
+                    cell.imageItem.image = NCCollectionCommon.images.folderGroup
                 } else if isMounted {
-                    cell.imageItem.image = NCCollectionCommon.images.cellFolderExternalImage
+                    cell.imageItem.image = NCCollectionCommon.images.folderExternal
                 } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
-                    cell.imageItem.image = NCCollectionCommon.images.cellFolderAutomaticUploadImage
+                    cell.imageItem.image = NCCollectionCommon.images.folderAutomaticUpload
                 } else {
-                    cell.imageItem.image = NCCollectionCommon.images.cellFolderImage
+                    cell.imageItem.image = NCCollectionCommon.images.folder
                 }
                 
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
@@ -521,7 +521,7 @@ extension NCSelect: UICollectionViewDataSource {
                 
                 // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {
-                    cell.imageLocal.image = NCCollectionCommon.images.cellOfflineFlag
+                    cell.imageLocal.image = NCCollectionCommon.images.offlineFlag
                 }
                 
             } else {
@@ -535,7 +535,7 @@ extension NCSelect: UICollectionViewDataSource {
                         if metadata.iconName.count > 0 {
                             cell.imageItem.image = UIImage.init(named: metadata.iconName)
                         } else {
-                            cell.imageItem.image = NCCollectionCommon.images.cellFileImage
+                            cell.imageItem.image = NCCollectionCommon.images.file
                         }
                     }
                 }
@@ -544,26 +544,26 @@ extension NCSelect: UICollectionViewDataSource {
                 
                 // image local
                 if dataSource.metadataOffLine.contains(metadata.ocId) {
-                    cell.imageLocal.image = NCCollectionCommon.images.cellOfflineFlag
+                    cell.imageLocal.image = NCCollectionCommon.images.offlineFlag
                 } else if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                    cell.imageLocal.image = NCCollectionCommon.images.cellLocal
+                    cell.imageLocal.image = NCCollectionCommon.images.local
                 }
             }
             
             // image Favorite
             if metadata.favorite {
-                cell.imageFavorite.image = NCCollectionCommon.images.cellFavouriteImage
+                cell.imageFavorite.image = NCCollectionCommon.images.favorite
             }
             
             // Share image
             if (isShare) {
-                cell.imageShared.image = NCCollectionCommon.images.cellSharedImage
+                cell.imageShared.image = NCCollectionCommon.images.shared
             } else if (tableShare != nil && tableShare?.shareType == 3) {
-                cell.imageShared.image = NCCollectionCommon.images.cellShareByLinkImage
+                cell.imageShared.image = NCCollectionCommon.images.shareByLink
             } else if (tableShare != nil && tableShare?.shareType != 3) {
-                cell.imageShared.image = NCCollectionCommon.images.cellSharedImage
+                cell.imageShared.image = NCCollectionCommon.images.shared
             } else {
-                cell.imageShared.image = NCCollectionCommon.images.cellCanShareImage
+                cell.imageShared.image = NCCollectionCommon.images.canShare
             }
             if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId {
                 var fileNameUser = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + metadata.ownerId
@@ -587,7 +587,7 @@ extension NCSelect: UICollectionViewDataSource {
     
             // Live Photo
             if metadata.livePhoto {
-                cell.imageStatus.image = NCCollectionCommon.images.cellLivePhotoImage
+                cell.imageStatus.image = NCCollectionCommon.images.livePhoto
             }
             
             // Remove last separator
@@ -625,21 +625,21 @@ extension NCSelect: UICollectionViewDataSource {
             if metadata.directory {
                 
                 if metadata.e2eEncrypted {
-                    cell.imageItem.image = NCCollectionCommon.images.cellFolderEncryptedImage
+                    cell.imageItem.image = NCCollectionCommon.images.folderEncrypted
                 } else if isShare {
-                    cell.imageItem.image = NCCollectionCommon.images.cellFolderSharedWithMeImage
+                    cell.imageItem.image = NCCollectionCommon.images.folderSharedWithMe
                 } else if (tableShare != nil && tableShare!.shareType != 3) {
-                    cell.imageItem.image = NCCollectionCommon.images.cellFolderSharedWithMeImage
+                    cell.imageItem.image = NCCollectionCommon.images.folderSharedWithMe
                 } else if (tableShare != nil && tableShare!.shareType == 3) {
-                    cell.imageItem.image = NCCollectionCommon.images.cellFolderPublicImage
+                    cell.imageItem.image = NCCollectionCommon.images.folderPublic
                 } else if metadata.mountType == "group" {
-                    cell.imageItem.image = NCCollectionCommon.images.cellFolderGroupImage
+                    cell.imageItem.image = NCCollectionCommon.images.folderGroup
                 } else if isMounted {
-                    cell.imageItem.image = NCCollectionCommon.images.cellFolderExternalImage
+                    cell.imageItem.image = NCCollectionCommon.images.folderExternal
                 } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
-                    cell.imageItem.image = NCCollectionCommon.images.cellFolderAutomaticUploadImage
+                    cell.imageItem.image = NCCollectionCommon.images.folderAutomaticUpload
                 } else {
-                    cell.imageItem.image = NCCollectionCommon.images.cellFolderImage
+                    cell.imageItem.image = NCCollectionCommon.images.folder
                 }
     
                 let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
@@ -647,7 +647,7 @@ extension NCSelect: UICollectionViewDataSource {
                                 
                 // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {
-                    cell.imageLocal.image = NCCollectionCommon.images.cellOfflineFlag
+                    cell.imageLocal.image = NCCollectionCommon.images.offlineFlag
                 }
                 
             } else {
@@ -661,22 +661,22 @@ extension NCSelect: UICollectionViewDataSource {
                         if metadata.iconName.count > 0 {
                             cell.imageItem.image = UIImage.init(named: metadata.iconName)
                         } else {
-                            cell.imageItem.image = NCCollectionCommon.images.cellFileImage
+                            cell.imageItem.image = NCCollectionCommon.images.file
                         }
                     }
                 }
                 
                 // image Local
                 if dataSource.metadataOffLine.contains(metadata.ocId) {
-                    cell.imageLocal.image = NCCollectionCommon.images.cellOfflineFlag
+                    cell.imageLocal.image = NCCollectionCommon.images.offlineFlag
                 } else if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                    cell.imageLocal.image = NCCollectionCommon.images.cellLocal
+                    cell.imageLocal.image = NCCollectionCommon.images.local
                 }
             }
             
             // image Favorite
             if metadata.favorite {
-                cell.imageFavorite.image = NCCollectionCommon.images.cellFavouriteImage
+                cell.imageFavorite.image = NCCollectionCommon.images.favorite
             }
             
             cell.imageSelect.isHidden = true
@@ -685,7 +685,7 @@ extension NCSelect: UICollectionViewDataSource {
 
             // Live Photo
             if metadata.livePhoto {
-                cell.imageStatus.image = NCCollectionCommon.images.cellLivePhotoImage
+                cell.imageStatus.image = NCCollectionCommon.images.livePhoto
             }
             
             return cell

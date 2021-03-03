@@ -473,7 +473,7 @@ extension NCTrash: UICollectionViewDataSource {
             cell.separator.backgroundColor = NCBrandColor.shared.separator
 
             if tableTrash.directory {
-                cell.imageItem.image = NCCollectionCommon.images.cellFolderImage
+                cell.imageItem.image = NCCollectionCommon.images.folder
                 cell.labelInfo.text = CCUtility.dateDiff(tableTrash.date as Date)
             } else {
                 cell.imageItem.image = image
@@ -505,7 +505,7 @@ extension NCTrash: UICollectionViewDataSource {
             cell.labelTitle.textColor = NCBrandColor.shared.textView
             
             if tableTrash.directory {
-                cell.imageItem.image = NCCollectionCommon.images.cellFolderImage
+                cell.imageItem.image = NCCollectionCommon.images.folder
             } else {
                 cell.imageItem.image = image
             }

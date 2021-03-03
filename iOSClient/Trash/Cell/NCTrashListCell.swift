@@ -79,7 +79,7 @@ class NCTrashListCell: UICollectionViewCell {
     
     func selected(_ status: Bool) {
         if status {
-            imageSelect.image = NCCollectionCommon.images.cellCheckedYes
+            imageSelect.image = NCCollectionCommon.images.checkedYes
             
             let blurEffect = UIBlurEffect(style: .extraLight)
             let blurEffectView = UIVisualEffectView(effect: blurEffect)
@@ -89,7 +89,7 @@ class NCTrashListCell: UICollectionViewCell {
             backgroundView = blurEffectView
             
         } else {
-            imageSelect.image = NCCollectionCommon.images.cellCheckedNo
+            imageSelect.image = NCCollectionCommon.images.checkedNo
             backgroundView = nil
         }
     }

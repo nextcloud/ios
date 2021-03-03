@@ -72,7 +72,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             if metadata.directory {
                 
                 if imagePreview == nil {
-                    previewFile.image = NCCollectionCommon.images.cellFolderImage
+                    previewFile.image = NCCollectionCommon.images.folder
                 }
                 
                 ext.isHidden = true
@@ -88,7 +88,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                         if metadata.iconName.count > 0 {
                             previewFile.image = UIImage.init(named: metadata.iconName)
                         } else {
-                            previewFile.image = NCCollectionCommon.images.cellFileImage
+                            previewFile.image = NCCollectionCommon.images.file
                         }
                     }
                 }
