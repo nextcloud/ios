@@ -82,15 +82,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             } else {
                 
                 if imagePreview == nil {
-                    if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                        previewFile.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-                    } else {
-                        if metadata.iconName.count > 0 {
-                            previewFile.image = UIImage.init(named: metadata.iconName)
-                        } else {
-                            previewFile.image = NCCollectionCommon.images.file
-                        }
-                    }
+                    previewFile.image = NCCollectionCommon.images.file
                 }
                 
                 fileNameWithoutExtTrailingContraint.constant = 90
