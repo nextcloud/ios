@@ -139,6 +139,9 @@
 		F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755BD9A20594AC7008C5FBB /* NCService.swift */; };
 		F755E6462525946C008DAB45 /* NCCollectionViewCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755E6442525946C008DAB45 /* NCCollectionViewCommon.swift */; };
 		F755E6472525946C008DAB45 /* NCCollectionCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755E6452525946C008DAB45 /* NCCollectionCommon.swift */; };
+		F7581D1A25EFDA61004DC699 /* NCLoginWeb+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7581D1925EFDA60004DC699 /* NCLoginWeb+Menu.swift */; };
+		F7581D2425EFDDDF004DC699 /* NCMedia+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7581D2325EFDDDF004DC699 /* NCMedia+Menu.swift */; };
+		F7581D2A25EFDF44004DC699 /* NCShareComments+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7581D2925EFDF43004DC699 /* NCShareComments+Menu.swift */; };
 		F758B45A212C564000515F55 /* Scan.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F758B457212C564000515F55 /* Scan.storyboard */; };
 		F758B45E212C569D00515F55 /* ScanCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F758B45D212C569C00515F55 /* ScanCell.swift */; };
 		F758B460212C56A400515F55 /* ScanCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F758B45F212C56A400515F55 /* ScanCollectionView.swift */; };
@@ -147,6 +150,7 @@
 		F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75AC2421F1F62450073EC19 /* NCManageAutoUploadFileName.swift */; };
 		F75B0ABD244C4DBB00E58DCA /* NCNetworkingNotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75B0ABC244C4DBB00E58DCA /* NCNetworkingNotificationCenter.swift */; };
 		F75C0C4823D1FAE300163CC8 /* NCRichWorkspaceCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75C0C4723D1FAE300163CC8 /* NCRichWorkspaceCommon.swift */; };
+		F75D19E325EFE09000D74598 /* NCTrash+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75D19E225EFE09000D74598 /* NCTrash+Menu.swift */; };
 		F75E57BD25BF0EC1002B72C2 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F75E57BC25BF0EC1002B72C2 /* SVGKit */; };
 		F75E57BF25BF0EC8002B72C2 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F75E57BE25BF0EC8002B72C2 /* SVGKit */; };
 		F75E57C125BF0ECD002B72C2 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F75E57C025BF0ECD002B72C2 /* SVGKit */; };
@@ -502,6 +506,9 @@
 		F755BD9A20594AC7008C5FBB /* NCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCService.swift; sourceTree = "<group>"; };
 		F755E6442525946C008DAB45 /* NCCollectionViewCommon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NCCollectionViewCommon.swift; path = "iOSClient/Main/Colleaction Common/NCCollectionViewCommon.swift"; sourceTree = SOURCE_ROOT; };
 		F755E6452525946C008DAB45 /* NCCollectionCommon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NCCollectionCommon.swift; path = "iOSClient/Main/Colleaction Common/NCCollectionCommon.swift"; sourceTree = SOURCE_ROOT; };
+		F7581D1925EFDA60004DC699 /* NCLoginWeb+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCLoginWeb+Menu.swift"; sourceTree = "<group>"; };
+		F7581D2325EFDDDF004DC699 /* NCMedia+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCMedia+Menu.swift"; sourceTree = "<group>"; };
+		F7581D2925EFDF43004DC699 /* NCShareComments+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCShareComments+Menu.swift"; sourceTree = "<group>"; };
 		F758B457212C564000515F55 /* Scan.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Scan.storyboard; sourceTree = "<group>"; };
 		F758B45D212C569C00515F55 /* ScanCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanCell.swift; sourceTree = "<group>"; };
 		F758B45F212C56A400515F55 /* ScanCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanCollectionView.swift; sourceTree = "<group>"; };
@@ -512,6 +519,7 @@
 		F75B91F71ECAE26300199C96 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F75B923D1ECAE55E00199C96 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F75C0C4723D1FAE300163CC8 /* NCRichWorkspaceCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCRichWorkspaceCommon.swift; sourceTree = "<group>"; };
+		F75D19E225EFE09000D74598 /* NCTrash+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCTrash+Menu.swift"; sourceTree = "<group>"; };
 		F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
 		F760329D252F0F8E0015A421 /* NCTransferCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NCTransferCell.swift; path = iOSClient/Transfers/NCTransferCell.swift; sourceTree = SOURCE_ROOT; };
@@ -794,7 +802,11 @@
 				371B5A2D23D0B04500FAFAE9 /* NCMenu.swift */,
 				3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */,
 				F77A697C250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift */,
+				F7581D1925EFDA60004DC699 /* NCLoginWeb+Menu.swift */,
+				F7581D2325EFDDDF004DC699 /* NCMedia+Menu.swift */,
+				F7581D2925EFDF43004DC699 /* NCShareComments+Menu.swift */,
 				F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */,
+				F75D19E225EFE09000D74598 /* NCTrash+Menu.swift */,
 				F710D2012405826100A6033D /* NCViewer+Menu.swift */,
 			);
 			path = Menu;
@@ -2077,7 +2089,9 @@
 				F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
 				F765F73125237E3F00391DBE /* NCRecent.swift in Sources */,
 				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
+				F7581D2A25EFDF44004DC699 /* NCShareComments+Menu.swift in Sources */,
 				F769454422E9F142000A798A /* NCShareUserMenuView.swift in Sources */,
+				F7581D2425EFDDDF004DC699 /* NCMedia+Menu.swift in Sources */,
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
 				F702F30125EE5D2C008F8E80 /* NYMnemonic.m in Sources */,
 				F7EFA47825ADBA500083159A /* NCViewerProviderContextMenu.swift in Sources */,
@@ -2092,6 +2106,7 @@
 				F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */,
 				F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */,
 				F7FAC2672549E1B5008EE2C4 /* NCKTVHTTPCache.swift in Sources */,
+				F75D19E325EFE09000D74598 /* NCTrash+Menu.swift in Sources */,
 				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				F70753EB2542A99800972D44 /* NCViewerImage.swift in Sources */,
 				F74C0436253F1CDC009762AB /* NCShares.swift in Sources */,
@@ -2111,6 +2126,7 @@
 				F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */,
 				F7C7B489245EBA4100D93E60 /* NCViewerQuickLook.swift in Sources */,
 				F758B45E212C569D00515F55 /* ScanCell.swift in Sources */,
+				F7581D1A25EFDA61004DC699 /* NCLoginWeb+Menu.swift in Sources */,
 				F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */,
 				F70D8D8124A4A9BF000A5756 /* NCNetworkingAutoUpload.swift in Sources */,
 				F7D96FCC246ED7E200536D73 /* NCNetworkingCheckRemoteUser.swift in Sources */,

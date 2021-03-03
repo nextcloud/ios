@@ -119,67 +119,7 @@ class NCLoginWeb: UIViewController {
     }
     
     @objc func changeUser(sender: UIBarButtonItem) {
-        
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
-        mainMenuViewController.actions = self.initUsersMenu()
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
-
-        self.present(menuPanelController, animated: true, completion: nil)
-    }
-    
-    // MARK: -
-    
-    private func initUsersMenu() -> [NCMenuAction] {
-        
-        var actions = [NCMenuAction]()
-        let accounts = NCManageDatabase.shared.getAllAccount()
-        var avatar = UIImage(named: "avatarCredentials")!.image(color: NCBrandColor.shared.icon, size: 50)
-        
-        for account in accounts {
-            
-            let title = account.user + " " + (URL(string: account.urlBase)?.host ?? "")
-            var fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(account.user, urlBase: account.urlBase) + "-" + account.user
-            fileNamePath = fileNamePath + ".png"
-
-            if var userImage = UIImage(contentsOfFile: fileNamePath) {
-                userImage = userImage.resizeImage(size: CGSize(width: 50, height: 50), isAspectRation: true)!
-                let userImageView = UIImageView(image: userImage)
-                userImageView.avatar(roundness: 2, borderWidth: 1, borderColor: NCBrandColor.shared.avatarBorder, backgroundColor: .clear)
-                UIGraphicsBeginImageContext(userImageView.bounds.size)
-                userImageView.layer.render(in: UIGraphicsGetCurrentContext()!)
-                if let newAvatar = UIGraphicsGetImageFromCurrentImageContext() {
-                    avatar = newAvatar
-                }
-                UIGraphicsEndImageContext()
-            }
-            
-            actions.append(
-                NCMenuAction(
-                    title: title,
-                    icon: avatar,
-                    onTitle: title,
-                    onIcon: avatar,
-                    selected: account.active == true,
-                    on: account.active == true,
-                    action: { menuAction in
-                        if self.appDelegate.account != account.account {
-                            NCManageDatabase.shared.setAccountActive(account.account)
-                            self.dismiss(animated: true) {
-                                self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
-                                self.appDelegate.initializeMain()
-                            }
-                        }
-                    }
-                )
-            )
-        }
-       
-        return actions
+        toggleMenu()
     }
 }
 

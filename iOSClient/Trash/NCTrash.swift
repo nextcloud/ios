@@ -33,10 +33,10 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     var blinkFileId: String?
     var emptyDataSet: NCEmptyDataSet?
 
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    private var isEditMode = false
-    private var selectOcId: [String] = []
+    internal var isEditMode = false
+    internal var selectOcId: [String] = []
     
     private var datasource: [tableTrash] = []
     
@@ -129,6 +129,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     }
     
     @objc func changeTheming() {
+        
         view.backgroundColor = NCBrandColor.shared.backgroundView
         collectionView.backgroundColor = NCBrandColor.shared.backgroundView
         collectionView.reloadData()
@@ -177,58 +178,8 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     }
     
     func tapMoreHeaderMenu(sender: Any) {
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         
-        var actions: [NCMenuAction] = []
-                
-        if isEditMode {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_trash_delete_selected_", comment: ""),
-                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    action: { menuAction in
-                        let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
-                            for ocId in self.selectOcId {
-                                self.deleteItem(with: ocId)
-                            }
-                            self.isEditMode = false
-                            self.selectOcId.removeAll()
-                            self.collectionView.reloadData()
-                        }))
-                        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in
-                        }))
-                        self.present(alert, animated: true, completion: nil)
-                    }
-                )
-            )
-        } else {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_trash_delete_all_", comment: ""),
-                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    action: { menuAction in
-                        let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_", comment: ""), message: "", preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
-                            self.emptyTrash()
-                        }))
-                        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in
-                        }))
-                        self.present(alert, animated: true, completion: nil)
-                    }
-                )
-            )
-        }
-        
-        mainMenuViewController.actions = actions
-        
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
-
-        self.present(menuPanelController, animated: true, completion: nil)
+        toggleMenuMoreHeader()
     }
     
     func tapRestoreListItem(with ocId: String, image: UIImage?, sender: Any) {
@@ -243,53 +194,9 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     }
     
     func tapMoreListItem(with objectId: String, image: UIImage?, sender: Any) {
+        
         if !isEditMode {
-            let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
-
-            var actions: [NCMenuAction] = []
-
-            guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: appDelegate.account) else {
-                return
-            }
-
-            var iconHeader: UIImage!
-            if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
-                iconHeader = icon
-            } else {
-                if(tableTrash.directory) {
-                    iconHeader = UIImage(named: "folder")!.image(color: NCBrandColor.shared.icon, size: 50)
-                } else {
-                    iconHeader = UIImage(named: tableTrash.iconName)
-                }
-            }
-
-            actions.append(
-                NCMenuAction(
-                    title: tableTrash.trashbinFileName,
-                    icon: iconHeader,
-                    action: nil
-                )
-            )
-
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_delete_", comment: ""),
-                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    action: { menuAction in
-                        self.deleteItem(with: objectId)
-                    }
-                )
-            )
-
-            mainMenuViewController.actions = actions
-
-            let menuPanelController = NCMenuPanelController()
-            menuPanelController.parentPresenter = self
-            menuPanelController.delegate = mainMenuViewController
-            menuPanelController.set(contentViewController: mainMenuViewController)
-            menuPanelController.track(scrollView: mainMenuViewController.tableView)
-
-            self.present(menuPanelController, animated: true, completion: nil)
+            toggleMenuMoreList(with: objectId, image: image)
         } else {
             let buttonPosition: CGPoint = (sender as! UIButton).convert(CGPoint.zero, to: collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)
@@ -298,64 +205,9 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     }
     
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
+        
         if !isEditMode {
-            let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
-
-            var actions: [NCMenuAction] = []
-
-            guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: appDelegate.account) else {
-                return
-            }
-
-            var iconHeader: UIImage!
-            if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
-                iconHeader = icon
-            } else {
-                if(tableTrash.directory) {
-                    iconHeader = UIImage(named: "folder")!.image(color: NCBrandColor.shared.icon, size: 50)
-                } else {
-                    iconHeader = UIImage(named: tableTrash.iconName)
-                }
-            }
-
-            actions.append(
-                NCMenuAction(
-                    title: tableTrash.trashbinFileName,
-                    icon: iconHeader,
-                    action: nil
-                )
-            )
-
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_restore_", comment: ""),
-                    icon: UIImage(named: "restore")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    action: { menuAction in
-                        self.restoreItem(with: objectId)
-                    }
-                )
-            )
-
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_delete_", comment: ""),
-                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    action: { menuAction in
-                        self.deleteItem(with: objectId)
-                    }
-                )
-            )
-
-            mainMenuViewController.actions = actions
-
-            let menuPanelController = NCMenuPanelController()
-            menuPanelController.parentPresenter = self
-            menuPanelController.delegate = mainMenuViewController
-            menuPanelController.set(contentViewController: mainMenuViewController)
-            menuPanelController.track(scrollView: mainMenuViewController.tableView)
-
-            self.present(menuPanelController, animated: true, completion: nil)
-
+            toggleMenuMoreGrid(with: objectId, namedButtonMore: namedButtonMore, image: image)
         } else {
             let buttonPosition: CGPoint = (sender as! UIButton).convert(CGPoint.zero, to: collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)

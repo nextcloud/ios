@@ -32,7 +32,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     private var mediaCommandView: NCMediaCommandView?
     private var gridLayout: NCGridMediaLayout!
 
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     public var metadatas: [tableMetadata] = []
     private var metadataTouch: tableMetadata?
@@ -41,11 +41,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     private var predicateDefault: NSPredicate?
     private var predicate: NSPredicate?
 
-    private var isEditMode = false
-    private var selectOcId: [String] = []
+    internal var isEditMode = false
+    internal var selectOcId: [String] = []
     
-    private var filterTypeFileImage = false
-    private var filterTypeFileVideo = false
+    internal var filterTypeFileImage = false
+    internal var filterTypeFileVideo = false
             
     private let maxImageGrid: CGFloat = 7
     private var cellHeigth: CGFloat = 0
@@ -199,176 +199,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     }
     
     @objc func openMenuButtonMore(_ sender: Any) {
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
-        var actions: [NCMenuAction] = []
-
-        if !isEditMode {
-            if metadatas.count > 0 {
-                actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString("_select_", comment: ""),
-                        icon: UIImage(named: "selectFull")!.image(color: NCBrandColor.shared.icon, size: 50),
-                        action: { menuAction in
-                            self.isEditMode = true
-                        }
-                    )
-                )
-            }
-
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString(filterTypeFileImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""),
-                    icon: UIImage(named: filterTypeFileImage ? "imageno" : "imageyes")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    action: { menuAction in
-                        self.filterTypeFileImage = !self.filterTypeFileImage
-                        self.filterTypeFileVideo = false
-                        self.reloadDataSource()
-                    }
-                )
-            )
-
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString(filterTypeFileVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""),
-                    icon: UIImage(named: filterTypeFileVideo ? "videono" : "videoyes")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    action: { menuAction in
-                        self.filterTypeFileVideo = !self.filterTypeFileVideo
-                        self.filterTypeFileImage = false
-                        self.reloadDataSource()
-                    }
-                )
-            )
-            
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_select_media_folder_", comment: ""),
-                    icon: UIImage(named: "folderAutomaticUpload")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    action: { menuAction in
-                        let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
-                        let viewController = navigationController.topViewController as! NCSelect
-                        
-                        viewController.delegate = self
-                        viewController.hideButtonCreateFolder = true
-                        viewController.includeDirectoryE2EEncryption = false
-                        viewController.includeImages = false
-                        viewController.selectFile = false
-                        viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
-                        viewController.type = "mediaFolder"
-                        
-                        navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
-                        self.present(navigationController, animated: true, completion: nil)
-                    }
-                )
-            )
-            
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_media_by_modified_date_", comment: ""),
-                    icon: UIImage(named: "sortModifiedDate")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    selected: CCUtility.getMediaSortDate() == "date",
-                    on: true,
-                    action: { menuAction in
-                        CCUtility.setMediaSortDate("date")
-                        self.reloadDataSource()
-                    }
-                )
-            )
-            
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_media_by_created_date_", comment: ""),
-                    icon: UIImage(named: "sortCreatedDate")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    selected: CCUtility.getMediaSortDate() == "creationDate",
-                    on: true,
-                    action: { menuAction in
-                        CCUtility.setMediaSortDate("creationDate")
-                        self.reloadDataSource()
-                    }
-                )
-            )
-            
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_media_by_upload_date_", comment: ""),
-                    icon: UIImage(named: "sortUploadDate")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    selected: CCUtility.getMediaSortDate() == "uploadDate",
-                    on: true,
-                    action: { menuAction in
-                        CCUtility.setMediaSortDate("uploadDate")
-                        self.reloadDataSource()
-                    }
-                )
-            )
-            
-        } else {
-           
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_cancel_", comment: ""),
-                    icon: UIImage(named: "cancel")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    action: { menuAction in
-                        self.isEditMode = false
-                        self.selectOcId.removeAll()
-                        self.reloadDataThenPerform { }
-                    }
-                )
-            )
-            
-            //
-            // COPY - MOVE
-            //
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
-                    icon: UIImage(named: "move")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    action: { menuAction in
-                        self.isEditMode = false
-                        var meradatasSelect = [tableMetadata]()
-                        for ocId in self.selectOcId {
-                            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                meradatasSelect.append(metadata)
-                            }
-                        }
-                        if meradatasSelect.count > 0 {
-                            NCCollectionCommon.shared.openSelectView(items: meradatasSelect, viewController: self)
-                        }
-                        self.selectOcId.removeAll()
-                    }
-                )
-            )
-            
-            //
-            // DELETE
-            //
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_delete_selected_files_", comment: ""),
-                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    action: { menuAction in
-                        self.isEditMode = false
-                        for ocId in self.selectOcId {
-                            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
-                                    if errorCode != 0 {
-                                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                                    }
-                                }
-                            }
-                        }
-                        self.selectOcId.removeAll()
-                    }
-                )
-            )
-        }
-
-        mainMenuViewController.actions = actions
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
-
-        self.present(menuPanelController, animated: true, completion: nil)
+        toggleMenu()
     }
     
     // MARK: Select Path
