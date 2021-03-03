@@ -32,7 +32,7 @@ extension NCCollectionViewCommon {
         
         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
             
-            let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+            let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
             mainMenuViewController.actions = self.initMenuMore(viewController: viewController, metadata: metadata, image: image)
 
             let menuPanelController = NCMenuPanelController()
@@ -357,7 +357,7 @@ extension NCCollectionViewCommon {
     
     func toggleMoreSelect(viewController: UIViewController, selectOcId: [String]) {
         
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         mainMenuViewController.actions = self.initMenuSelect(viewController: viewController, selectOcId: selectOcId)
 
         let menuPanelController = NCMenuPanelController()

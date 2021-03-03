@@ -27,7 +27,7 @@
 import UIKit
 import FloatingPanel
 
-class NCMainMenuTableViewController: UITableViewController {
+class NCMenu: UITableViewController {
 
     var actions = [NCMenuAction]()
 
@@ -85,14 +85,14 @@ class NCMainMenuTableViewController: UITableViewController {
     }
 
 }
-extension NCMainMenuTableViewController: FloatingPanelControllerDelegate {
+extension NCMenu: FloatingPanelControllerDelegate {
 
     func floatingPanel(_ vc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout? {
-        return NCMainMenuFloatingPanelLayout(height: self.actions.count * 60 + Int((UIApplication.shared.keyWindow?.rootViewController!.view.safeAreaInsets.bottom)!))
+        return NCMenuFloatingPanelLayout(height: self.actions.count * 60 + Int((UIApplication.shared.keyWindow?.rootViewController!.view.safeAreaInsets.bottom)!))
     }
 
     func floatingPanel(_ vc: FloatingPanelController, behaviorFor newCollection: UITraitCollection) -> FloatingPanelBehavior? {
-        return NCMainMenuFloatingPanelBehavior()
+        return NCMenuFloatingPanelBehavior()
     }
 
     func floatingPanelDidEndDecelerating(_ vc: FloatingPanelController) {
@@ -102,7 +102,7 @@ extension NCMainMenuTableViewController: FloatingPanelControllerDelegate {
     }
 }
 
-class NCMainMenuFloatingPanelLayout: FloatingPanelLayout {
+class NCMenuFloatingPanelLayout: FloatingPanelLayout {
 
     let height: CGFloat
 
@@ -142,7 +142,7 @@ class NCMainMenuFloatingPanelLayout: FloatingPanelLayout {
     }
 }
 
-public class NCMainMenuFloatingPanelBehavior: FloatingPanelBehavior {
+public class NCMenuFloatingPanelBehavior: FloatingPanelBehavior {
 
     public func addAnimator(_ fpc: FloatingPanelController, to: FloatingPanelPosition) -> UIViewPropertyAnimator {
         return UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut)
@@ -156,4 +156,49 @@ public class NCMainMenuFloatingPanelBehavior: FloatingPanelBehavior {
         return UIViewPropertyAnimator(duration: 0.1, curve: .easeInOut)
     }
 
+}
+
+class NCMenuPanelController: FloatingPanelController {
+
+    var parentPresenter: UIViewController?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        if #available(iOS 13.0, *) {
+            self.surfaceView.backgroundColor = .systemBackground
+        }
+        self.isRemovalInteractionEnabled = true
+        self.surfaceView.cornerRadius = 16
+    }
+}
+
+class NCMenuAction {
+
+    let title: String
+    let icon: UIImage
+    let selectable: Bool
+    var onTitle: String?
+    var onIcon: UIImage?
+    var selected: Bool = false
+    var isOn: Bool = false
+    var action: ((_ menuAction: NCMenuAction) -> Void)?
+
+    init(title: String, icon: UIImage, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+        self.title = title
+        self.icon = icon
+        self.action = action
+        self.selectable = false
+    }
+
+    init(title: String, icon: UIImage, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, on: Bool, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+        self.title = title
+        self.icon = icon
+        self.onTitle = onTitle ?? title
+        self.onIcon = onIcon ?? icon
+        self.action = action
+        self.selected = selected
+        self.isOn = on
+        self.selectable = true
+    }
 }

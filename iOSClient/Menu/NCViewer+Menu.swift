@@ -28,7 +28,7 @@ extension NCViewer {
 
     func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool) {
         
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         
         mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata, webView: webView)
         

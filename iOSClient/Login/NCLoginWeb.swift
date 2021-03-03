@@ -120,7 +120,7 @@ class NCLoginWeb: UIViewController {
     
     @objc func changeUser(sender: UIBarButtonItem) {
         
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         mainMenuViewController.actions = self.initUsersMenu()
 
         let menuPanelController = NCMenuPanelController()

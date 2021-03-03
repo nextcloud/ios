@@ -140,8 +140,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
     }
     
     func tapMenu(with tableComments: tableComments?, sender: Any) {
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
 
         actions.append(

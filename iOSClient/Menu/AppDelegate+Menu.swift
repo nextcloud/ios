@@ -30,7 +30,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
     
     public func showMenuIn(viewController: UIViewController) {
         
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         mainMenuViewController.actions = self.initMenu(viewController: viewController)
 
         let menuPanelController = NCMenuPanelController()
