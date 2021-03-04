@@ -29,6 +29,8 @@ class NCAccountRequest: UIViewController {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var okButton: UIButton!
+    
+    var accounts: [tableAccount] = []
 
     // MARK: - Life Cycle
     

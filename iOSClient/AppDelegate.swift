@@ -608,11 +608,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func requestAccount() {
               
-        guard let accounts = NCManageDatabase.shared.getAccounts() else { return }
+        let accounts = NCManageDatabase.shared.getAllAccount()
         
         if CCUtility.getAccountRequest() && accounts.count > 1 {
             
             if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
+               
+                vcAccountRequest.accounts = accounts
                 
                 let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: 360)
                 popup.backgroundAlpha = 0.8
