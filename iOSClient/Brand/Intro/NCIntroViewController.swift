@@ -172,7 +172,6 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     }
 
     @IBAction func host(_ sender: Any) {
-        
         guard let url = URL(string: NCBrandOptions.shared.linkLoginHost) else { return }
         UIApplication.shared.open(url)
     }

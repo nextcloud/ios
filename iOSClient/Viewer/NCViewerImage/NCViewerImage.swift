@@ -372,11 +372,13 @@ class NCViewerImage: UIViewController {
                     let width = Double(progressView.bounds.width)
                     interval = (0.5 * durationSeconds) / width
                 }
+                
                 let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-
-                player?.addPeriodicTimeObserver(forInterval: time, queue: nil, using: { (time) in
-                    self.updateVideoProgressBar(time: time)
-                })
+                if CMTIME_IS_VALID(time) {
+                    player?.addPeriodicTimeObserver(forInterval: time, queue: nil, using: { (time) in
+                        self.updateVideoProgressBar(time: time)
+                    })
+                }
                 
                 // At end go back to start
                 NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
