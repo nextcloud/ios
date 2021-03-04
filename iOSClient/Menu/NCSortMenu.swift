@@ -108,7 +108,7 @@ class NCSortMenu: NSObject {
             )
         )
 
-        if !(hideDirectoryOnTop ?? false) {
+        if !hideDirectoryOnTop {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_directory_on_top_no_", comment: ""),
