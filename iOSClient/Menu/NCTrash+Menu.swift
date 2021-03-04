@@ -28,7 +28,7 @@ extension NCTrash {
 
     func toggleMenuMoreHeader() {
         
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions: [NCMenuAction] = []
                 
         if isEditMode {
@@ -70,20 +70,20 @@ extension NCTrash {
             )
         }
         
-        mainMenuViewController.actions = actions
+        menuViewController.actions = actions
         
         let menuPanelController = NCMenuPanelController()
         menuPanelController.parentPresenter = self
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+        menuPanelController.delegate = menuViewController
+        menuPanelController.set(contentViewController: menuViewController)
+        menuPanelController.track(scrollView: menuViewController.tableView)
 
         self.present(menuPanelController, animated: true, completion: nil)
     }
     
     func toggleMenuMoreList(with objectId: String, image: UIImage?) {
         
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions: [NCMenuAction] = []
 
         guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: appDelegate.account) else {
@@ -119,20 +119,20 @@ extension NCTrash {
             )
         )
 
-        mainMenuViewController.actions = actions
+        menuViewController.actions = actions
 
         let menuPanelController = NCMenuPanelController()
         menuPanelController.parentPresenter = self
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+        menuPanelController.delegate = menuViewController
+        menuPanelController.set(contentViewController: menuViewController)
+        menuPanelController.track(scrollView: menuViewController.tableView)
 
         self.present(menuPanelController, animated: true, completion: nil)
     }
     
     func toggleMenuMoreGrid(with objectId: String, namedButtonMore: String, image: UIImage?) {
         
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions: [NCMenuAction] = []
 
         guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: appDelegate.account) else {
@@ -178,13 +178,13 @@ extension NCTrash {
             )
         )
 
-        mainMenuViewController.actions = actions
+        menuViewController.actions = actions
 
         let menuPanelController = NCMenuPanelController()
         menuPanelController.parentPresenter = self
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+        menuPanelController.delegate = menuViewController
+        menuPanelController.set(contentViewController: menuViewController)
+        menuPanelController.track(scrollView: menuViewController.tableView)
 
         self.present(menuPanelController, animated: true, completion: nil)
     }

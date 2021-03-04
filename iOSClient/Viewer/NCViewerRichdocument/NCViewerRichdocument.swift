@@ -135,7 +135,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     //MARK: - Action
     
     @objc func openMenuMore() {
-        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: metadata, webView: true)
+        NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: true)
     }
    
     //MARK: -

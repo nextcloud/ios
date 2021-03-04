@@ -28,23 +28,11 @@ import NCCommunication
 
 extension AppDelegate: NCAudioRecorderViewControllerDelegate {
     
-    public func showMenuIn(viewController: UIViewController) {
+    func toggleMenu(viewController: UIViewController) {
         
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
-        mainMenuViewController.actions = self.initMenu(viewController: viewController)
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = viewController
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
-
-        viewController.present(menuPanelController, animated: true, completion: nil)
-    }
-    
-    private func initMenu(viewController: UIViewController) -> [NCMenuAction] {
-        
+        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions: [NCMenuAction] = []
+        
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: appDelegate.account)
         let isEncrypted = CCUtility.isFolderEncrypted(appDelegate.activeServerUrl, e2eEncrypted: false, account: appDelegate.account, urlBase: appDelegate.urlBase)
@@ -317,7 +305,15 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
             }
         }
 
-        return actions
+        menuViewController.actions = actions
+
+        let menuPanelController = NCMenuPanelController()
+        menuPanelController.parentPresenter = viewController
+        menuPanelController.delegate = menuViewController
+        menuPanelController.set(contentViewController: menuViewController)
+        menuPanelController.track(scrollView: menuViewController.tableView)
+
+        viewController.present(menuPanelController, animated: true, completion: nil)
     }
     
     // MARK: - NCAudioRecorder ViewController Delegate

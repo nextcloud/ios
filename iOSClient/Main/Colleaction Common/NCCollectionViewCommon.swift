@@ -649,7 +649,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func tapSelectMenu(sender: Any) {
         
         guard let tabBarController = self.tabBarController else { return }
-        toggleMoreSelect(viewController: tabBarController, selectOcId: selectOcId)
+        toggleMenuSelect(viewController: tabBarController, selectOcId: selectOcId)
     }
     
     func tapMoreHeader(sender: Any) { }
@@ -674,7 +674,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
 
         if namedButtonMore == NCGlobal.shared.buttonMoreMore {
-            toggleMoreMenu(viewController: self, metadata: metadata, image: image)
+            toggleMenuMore(viewController: self, metadata: metadata, image: image)
         } else if namedButtonMore == NCGlobal.shared.buttonMoreStop {
             NCNetworking.shared.cancelTransferMetadata(metadata) { }
         }

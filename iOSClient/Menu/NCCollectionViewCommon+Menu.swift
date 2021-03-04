@@ -28,27 +28,12 @@ import NCCommunication
 
 extension NCCollectionViewCommon {
 
-    func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata, image: UIImage?) {
+    func toggleMenuMore(viewController: UIViewController, metadata: tableMetadata, image: UIImage?) {
         
-        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
-            
-            let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
-            mainMenuViewController.actions = self.initMenuMore(viewController: viewController, metadata: metadata, image: image)
-
-            let menuPanelController = NCMenuPanelController()
-            menuPanelController.parentPresenter = viewController
-            menuPanelController.delegate = mainMenuViewController
-            menuPanelController.set(contentViewController: mainMenuViewController)
-            menuPanelController.track(scrollView: mainMenuViewController.tableView)
-
-            viewController.present(menuPanelController, animated: true, completion: nil)
-        }
-    }
-    
-    private func initMenuMore(viewController: UIViewController, metadata: tableMetadata, image: UIImage?) -> [NCMenuAction] {
-        
+        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
         let serverUrl = metadata.serverUrl+"/"+metadata.fileName
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
@@ -109,7 +94,7 @@ extension NCCollectionViewCommon {
                 title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                 icon: UIImage(named: "favorite")!.image(color: NCBrandColor.shared.yellowFavorite, size: 50),
                 action: { menuAction in
-                    NCNetworking.shared.favoriteMetadata(metadata, urlBase: appDelegate.urlBase) { (errorCode, errorDescription) in
+                    NCNetworking.shared.favoriteMetadata(metadata, urlBase: self.appDelegate.urlBase) { (errorCode, errorDescription) in
                         if errorCode != 0 {
                             NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
@@ -313,7 +298,7 @@ extension NCCollectionViewCommon {
                     action: { menuAction in
                         NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: false) { (account, errorCode, errorDescription) in
                             if errorCode == 0 {
-                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
+                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: true, richWorkspace: nil, account: metadata.account)
                                 NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: true)
                                 
@@ -338,7 +323,7 @@ extension NCCollectionViewCommon {
                     action: { menuAction in
                         NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { (account, errorCode, errorDescription) in
                             if errorCode == 0 {
-                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
+                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: false, richWorkspace: nil, account: metadata.account)
                                 NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
                                 
@@ -352,24 +337,20 @@ extension NCCollectionViewCommon {
             )
         }
         
-        return actions
-    }
-    
-    func toggleMoreSelect(viewController: UIViewController, selectOcId: [String]) {
-        
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
-        mainMenuViewController.actions = self.initMenuSelect(viewController: viewController, selectOcId: selectOcId)
+        menuViewController.actions = actions
 
         let menuPanelController = NCMenuPanelController()
         menuPanelController.parentPresenter = viewController
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+        menuPanelController.delegate = menuViewController
+        menuPanelController.set(contentViewController: menuViewController)
+        menuPanelController.track(scrollView: menuViewController.tableView)
 
         viewController.present(menuPanelController, animated: true, completion: nil)
     }
     
-    private func initMenuSelect(viewController: UIViewController, selectOcId: [String]) -> [NCMenuAction] {
+    func toggleMenuSelect(viewController: UIViewController, selectOcId: [String]) {
+        
+        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
        
         //
@@ -484,7 +465,15 @@ extension NCCollectionViewCommon {
             )
         )
         
-        return actions
+        menuViewController.actions = actions
+
+        let menuPanelController = NCMenuPanelController()
+        menuPanelController.parentPresenter = viewController
+        menuPanelController.delegate = menuViewController
+        menuPanelController.set(contentViewController: menuViewController)
+        menuPanelController.track(scrollView: menuViewController.tableView)
+
+        viewController.present(menuPanelController, animated: true, completion: nil)
     }
 }
 

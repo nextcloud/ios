@@ -26,24 +26,11 @@ import NCCommunication
 
 extension NCViewer {
 
-    func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool) {
+    func toggleMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool) {
         
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
-        
-        mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata, webView: webView)
-        
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = viewController
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
-
-        viewController.present(menuPanelController, animated: true, completion: nil)
-    }
-    
-    private func initMoreMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool) -> [NCMenuAction] {
-        
+        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
+        
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
         if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
         let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -308,6 +295,14 @@ extension NCViewer {
             )
         }
         
-        return actions
+        menuViewController.actions = actions
+        
+        let menuPanelController = NCMenuPanelController()
+        menuPanelController.parentPresenter = viewController
+        menuPanelController.delegate = menuViewController
+        menuPanelController.set(contentViewController: menuViewController)
+        menuPanelController.track(scrollView: menuViewController.tableView)
+
+        viewController.present(menuPanelController, animated: true, completion: nil)
     }
 }

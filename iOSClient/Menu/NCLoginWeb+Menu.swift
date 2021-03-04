@@ -28,20 +28,8 @@ extension NCLoginWeb {
     func toggleMenu() {
         
         let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
-        menuViewController.actions = initMenu()
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-
-        self.present(menuPanelController, animated: true, completion: nil)
-    }
-    
-    private func initMenu() -> [NCMenuAction] {
-        
         var actions = [NCMenuAction]()
+        
         let accounts = NCManageDatabase.shared.getAllAccount()
         var avatar = UIImage(named: "avatarCredentials")!.image(color: NCBrandColor.shared.icon, size: 50)
         
@@ -84,7 +72,15 @@ extension NCLoginWeb {
             )
         }
        
-        return actions
+        menuViewController.actions = actions
+
+        let menuPanelController = NCMenuPanelController()
+        menuPanelController.parentPresenter = self
+        menuPanelController.delegate = menuViewController
+        menuPanelController.set(contentViewController: menuViewController)
+        menuPanelController.track(scrollView: menuViewController.tableView)
+
+        self.present(menuPanelController, animated: true, completion: nil)
     }
 }
 

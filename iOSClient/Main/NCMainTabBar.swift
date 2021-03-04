@@ -214,7 +214,7 @@ class NCMainTabBar: UITabBar {
         }
         
         if let viewController = self.window?.rootViewController {
-            appDelegate.showMenuIn(viewController: viewController)
+            appDelegate.toggleMenu(viewController: viewController)
         }
     }
     

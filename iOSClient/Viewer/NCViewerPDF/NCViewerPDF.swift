@@ -211,7 +211,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     //MARK: - Action
     
     @objc func openMenuMore() {
-        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: metadata, webView: false)
+        NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: false)
     }
     
     //MARK: - Gesture Recognizer
