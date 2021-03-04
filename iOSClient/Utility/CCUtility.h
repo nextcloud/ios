@@ -173,6 +173,9 @@
 + (BOOL)getAutomaticDownloadImage;
 + (void)setAutomaticDownloadImage:(BOOL)set;
 
++ (BOOL)getAccountRequest;
++ (void)setAccountRequest:(BOOL)set;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;

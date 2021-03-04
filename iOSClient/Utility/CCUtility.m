@@ -721,6 +721,16 @@
     [UICKeyChainStore setString:sSet forKey:@"automaticDownloadImage" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
++ (BOOL)getAccountRequest
+{
+    return [[UICKeyChainStore stringForKey:@"accountRequest" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
+}
+
++ (void)setAccountRequest:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"accountRequest" service:NCGlobal.shared.serviceShareKeyChain];
+}
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
