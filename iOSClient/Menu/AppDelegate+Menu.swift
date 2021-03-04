@@ -26,7 +26,7 @@
 import FloatingPanel
 import NCCommunication
 
-extension AppDelegate: NCAudioRecorderViewControllerDelegate {
+extension AppDelegate {
     
     func toggleMenu(viewController: UIViewController) {
         
@@ -315,19 +315,4 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
 
         viewController.present(menuPanelController, animated: true, completion: nil)
     }
-    
-    // MARK: - NCAudioRecorder ViewController Delegate
-
-    func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
-        
-        guard let navigationController = UIStoryboard(name: "NCCreateFormUploadVoiceNote", bundle: nil).instantiateInitialViewController() else { return }
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        
-        let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadVoiceNote
-        viewController.setup(serverUrl: appDelegate.activeServerUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
-        appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
-    }
-    
-    func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String) { }
 }

@@ -132,7 +132,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     //MARK: - Action
     
     @objc func openMenuMore() {
-        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: metadata, webView: true)
+        NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: true)
     }
     
     //MARK: -

@@ -28,7 +28,7 @@ import NCCommunication
 
 extension NCCollectionViewCommon {
 
-    func toggleMenuMore(viewController: UIViewController, metadata: tableMetadata, image: UIImage?) {
+    func toggleMenu(viewController: UIViewController, metadata: tableMetadata, image: UIImage?) {
         
         let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()

@@ -48,39 +48,7 @@ class NCSortMenu: NSObject {
         
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
 
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
-        mainMenuViewController.actions = self.initSortMenu()
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = viewController
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
-
-        viewController.present(menuPanelController, animated: true, completion: nil)
-    }
-    
-    func actionMenu() {
-                
-        switch sort {
-        case "fileName":
-            titleButton = ascending ? "_sorted_by_name_a_z_" : "_sorted_by_name_z_a_"
-        case "date":
-            titleButton = ascending ? "_sorted_by_date_less_recent_" : "_sorted_by_date_more_recent_"
-        case "size":
-            titleButton = ascending ? "_sorted_by_size_smallest_" : "_sorted_by_size_largest_"
-        default:
-            break
-        }
-        
-        self.sortButton?.setTitle(NSLocalizedString(titleButton, comment: ""), for: .normal)
-        
-        NCUtility.shared.setLayoutForView(key: key, serverUrl: serverUrl, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButton: titleButton, itemForLine: itemForLine)
-        
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":self.serverUrl])
-    }
-
-    private func initSortMenu() -> [NCMenuAction] {
+        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
 
         actions.append(
@@ -155,6 +123,34 @@ class NCSortMenu: NSObject {
             )
         }
         
-        return actions
+        menuViewController.actions = actions
+
+        let menuPanelController = NCMenuPanelController()
+        menuPanelController.parentPresenter = viewController
+        menuPanelController.delegate = menuViewController
+        menuPanelController.set(contentViewController: menuViewController)
+        menuPanelController.track(scrollView: menuViewController.tableView)
+
+        viewController.present(menuPanelController, animated: true, completion: nil)
+    }
+    
+    func actionMenu() {
+                
+        switch sort {
+        case "fileName":
+            titleButton = ascending ? "_sorted_by_name_a_z_" : "_sorted_by_name_z_a_"
+        case "date":
+            titleButton = ascending ? "_sorted_by_date_less_recent_" : "_sorted_by_date_more_recent_"
+        case "size":
+            titleButton = ascending ? "_sorted_by_size_smallest_" : "_sorted_by_size_largest_"
+        default:
+            break
+        }
+        
+        self.sortButton?.setTitle(NSLocalizedString(titleButton, comment: ""), for: .normal)
+        
+        NCUtility.shared.setLayoutForView(key: key, serverUrl: serverUrl, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButton: titleButton, itemForLine: itemForLine)
+        
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":self.serverUrl])
     }
 }
