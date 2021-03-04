@@ -604,6 +604,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
     
+    // MARK: - Account Request
+    
+    func requestAccount() {
+              
+        guard let accounts = NCManageDatabase.shared.getAccounts() else { return }
+        
+        if CCUtility.getAccountRequest() && accounts.count > 1 {
+            
+            if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
+                
+                let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: 360)
+                popup.backgroundAlpha = 0.8
+                             
+                UIApplication.shared.keyWindow?.rootViewController?.present(popup, animated: true)
+            }
+        }
+    }
+    
     // MARK: - Passcode
     
     func passcodeWithAutomaticallyPromptForBiometricValidation(_ automaticallyPromptForBiometricValidation: Bool) {
@@ -611,8 +629,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let laContext = LAContext()
         var error: NSError?
         
-        guard let passcode = CCUtility.getPasscode() else { return }
-        if passcode.count == 0 || account == "" || CCUtility.getNotPasscodeAtStart() { return }
+        if account == "" { return }
+        
+        guard let passcode = CCUtility.getPasscode() else {
+            requestAccount()
+            return
+        }
+        if passcode.count == 0 || CCUtility.getNotPasscodeAtStart() {
+            requestAccount()
+            return
+        }
         
         if passcodeViewController == nil {
             passcodeViewController = TOPasscodeViewController.init(style: .translucentLight, passcodeType: .sixDigits)
@@ -649,6 +675,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func didInputCorrectPasscode(in passcodeViewController: TOPasscodeViewController) {
         passcodeViewController.dismiss(animated: true) {
             self.passcodeViewController = nil
+            self.requestAccount()
         }
     }
     
@@ -662,6 +689,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     passcodeViewController.dismiss(animated: true) {
                         self.passcodeViewController = nil
+                        self.requestAccount()
                     }
                 }
             }
@@ -675,6 +703,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         self.passcodeViewController?.dismiss(animated: true) {
                             self.passcodeViewController = nil
+                            self.requestAccount()
                         }
                     }
                 }
