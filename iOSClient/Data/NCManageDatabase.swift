@@ -376,7 +376,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAccount.self)
+        let results = realm.objects(tableAccount.self).sorted(byKeyPath: "active", ascending: false)
         
         return Array(results.map { tableAccount.init(value:$0) })
     }

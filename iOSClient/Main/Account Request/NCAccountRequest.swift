@@ -35,6 +35,7 @@ class NCAccountRequest: UIViewController {
     
     private var timer: Timer?
     private var time: Float = 0
+    private let secondsAutoDismiss: Float = 3
     
     // MARK: - Life Cycle
     
@@ -43,6 +44,8 @@ class NCAccountRequest: UIViewController {
         
         titleLabel.text = NSLocalizedString("_account_request_", comment: "")
         
+        tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
+
         okButton.setTitle(NSLocalizedString("_ok_", comment: ""), for: .normal)
         okButton.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
         okButton.layer.cornerRadius = 15
@@ -66,11 +69,15 @@ class NCAccountRequest: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        
+        timer?.invalidate()
     }
-     
+
     // MARK: - Progress
     
     @objc func startTimer() {
+        time = 0
+        timer?.invalidate()
         timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateProgress), userInfo: nil, repeats: true)
     }
     
@@ -78,11 +85,10 @@ class NCAccountRequest: UIViewController {
         
         time += 0.1
         
-        if time >= 3 {
-            timer?.invalidate()
+        if time >= secondsAutoDismiss {
             dismiss(animated: true)
         } else {
-            progressView.progress = 1 - (time / 3)
+            progressView.progress = 1 - (time / secondsAutoDismiss)
         }
     }
     
@@ -95,14 +101,68 @@ class NCAccountRequest: UIViewController {
 
 extension NCAccountRequest: UITableViewDelegate {
     
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        timer?.invalidate()
+        progressView.progress = 1
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if decelerate {
+            startTimer()
+        }
+    }
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        startTimer()
+    }
 }
 
 extension NCAccountRequest: UITableViewDataSource {
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        0
+        return accounts.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return UITableViewCell()
-    }    
+       
+        let account = accounts[indexPath.row]
+        var avatar = UIImage(named: "avatarCredentials")
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        cell.tintColor = NCBrandColor.shared.customer
+       
+        let avatarImage = cell.viewWithTag(10) as? UIImageView
+        let accountLabel = cell.viewWithTag(20) as? UILabel
+        let activeImage = cell.viewWithTag(30) as? UIImageView
+        
+        avatarImage?.image = UIImage(named: "avatarCredentials")
+        avatarImage?.image = UIImage(named: "avatarCredentials")
+        
+        var fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(account.user, urlBase: account.urlBase) + "-" + account.user
+        fileNamePath = fileNamePath + ".png"
+
+        if var userImage = UIImage(contentsOfFile: fileNamePath) {
+            userImage = userImage.resizeImage(size: CGSize(width: 50, height: 50), isAspectRation: true)!
+            let userImageView = UIImageView(image: userImage)
+            userImageView.avatar(roundness: 2, borderWidth: 1, borderColor: NCBrandColor.shared.avatarBorder, backgroundColor: .clear)
+            UIGraphicsBeginImageContext(userImageView.bounds.size)
+            userImageView.layer.render(in: UIGraphicsGetCurrentContext()!)
+            if let newAvatar = UIGraphicsGetImageFromCurrentImageContext() {
+                avatar = newAvatar
+            }
+            UIGraphicsEndImageContext()
+        }
+        
+        avatarImage?.image = avatar
+        accountLabel?.text = account.user + " " + (URL(string: account.urlBase)?.host ?? "")
+        if account.active {
+            activeImage?.image = UIImage(named: "check")
+        } else {
+            activeImage?.image = nil
+        }
+
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        dismiss(animated: true)
+    }
 }

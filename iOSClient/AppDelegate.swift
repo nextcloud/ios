@@ -618,7 +618,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                
                 vcAccountRequest.accounts = accounts
                 
-                let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: 360)
+                let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: 310)
                 popup.backgroundAlpha = 0.8
                              
                 UIApplication.shared.keyWindow?.rootViewController?.present(popup, animated: true)
