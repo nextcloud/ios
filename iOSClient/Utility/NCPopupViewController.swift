@@ -57,6 +57,9 @@ public class NCPopupViewController: UIViewController {
     // Shadow enabled, default is true
     public var shadowEnabled = true
     
+    // Border enabled, default is false
+    public var borderEnabled = false
+    
     // Move the popup position H when show/hide keyboard
     public var keyboardPosizionEnabled = true
 
@@ -152,6 +155,12 @@ public class NCPopupViewController: UIViewController {
             containerView.layer.shadowColor = UIColor.black.cgColor
             containerView.layer.shadowOffset = CGSize(width: 5, height: 5)
             containerView.layer.shadowRadius = 5
+        }
+        
+        if borderEnabled {
+            containerView.layer.cornerRadius = cornerRadius
+            containerView.layer.borderWidth = 0.3
+            containerView.layer.borderColor = UIColor.gray.cgColor
         }
     }
     

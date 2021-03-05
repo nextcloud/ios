@@ -172,7 +172,7 @@ extension NCAccountRequest: UITableViewDataSource {
         avatarImage?.image = avatar
         accountLabel?.text = account.user + " " + (URL(string: account.urlBase)?.host ?? "")
         if account.active {
-            activeImage?.image = UIImage(named: "check")
+            activeImage?.image = UIImage(named: "check")!.imageColor(NCBrandColor.shared.brandText)
         } else {
             activeImage?.image = nil
         }
