@@ -233,6 +233,7 @@ class NCGlobal: NSObject {
 
     @objc let notificationCenterApplicationDidEnterBackground   = "applicationDidEnterBackground"
     let notificationCenterApplicationWillEnterForeground        = "applicationWillEnterForeground"
+    let notificationCenterApplicationDidBecomeActive            = "applicationDidBecomeActive"
 
     @objc let notificationCenterInitializeMain                  = "initializeMain"
     @objc let notificationCenterChangeTheming                   = "changeTheming"

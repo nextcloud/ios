@@ -208,6 +208,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if account == "" { return}
 
         NCNetworking.shared.verifyUploadZombie()
+        
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidBecomeActive)
     }
     
     // L' applicazione entrerà in primo piano (attivo solo dopo il background)
@@ -606,7 +608,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     // MARK: - Account Request
     
-    func requestAccount() {
+    func requestAccount(startTimer: Bool) {
               
         let accounts = NCManageDatabase.shared.getAllAccount()
         
@@ -620,6 +622,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 popup.backgroundAlpha = 0.8
                              
                 UIApplication.shared.keyWindow?.rootViewController?.present(popup, animated: true)
+                
+                if startTimer {
+                    vcAccountRequest.startTimer()
+                }
             }
         }
     }
@@ -634,11 +640,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if account == "" { return }
         
         guard let passcode = CCUtility.getPasscode() else {
-            requestAccount()
+            requestAccount(startTimer: false)
             return
         }
         if passcode.count == 0 || CCUtility.getNotPasscodeAtStart() {
-            requestAccount()
+            requestAccount(startTimer: false)
             return
         }
         
@@ -677,7 +683,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func didInputCorrectPasscode(in passcodeViewController: TOPasscodeViewController) {
         passcodeViewController.dismiss(animated: true) {
             self.passcodeViewController = nil
-            self.requestAccount()
+            self.requestAccount(startTimer: true)
         }
     }
     
@@ -691,7 +697,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     passcodeViewController.dismiss(animated: true) {
                         self.passcodeViewController = nil
-                        self.requestAccount()
+                        self.requestAccount(startTimer: true)
                     }
                 }
             }
@@ -705,7 +711,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         self.passcodeViewController?.dismiss(animated: true) {
                             self.passcodeViewController = nil
-                            self.requestAccount()
+                            self.requestAccount(startTimer: true)
                         }
                     }
                 }

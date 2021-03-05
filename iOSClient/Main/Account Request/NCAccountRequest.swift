@@ -29,9 +29,13 @@ class NCAccountRequest: UIViewController {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var okButton: UIButton!
+    @IBOutlet weak var progressView: UIProgressView!
     
-    var accounts: [tableAccount] = []
-
+    public var accounts: [tableAccount] = []
+    
+    private var timer: Timer?
+    private var time: Float = 0
+    
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
@@ -44,21 +48,47 @@ class NCAccountRequest: UIViewController {
         okButton.layer.cornerRadius = 15
         okButton.layer.masksToBounds = true
         okButton.layer.backgroundColor = NCBrandColor.shared.brand.cgColor
+        
+        progressView.tintColor = NCBrandColor.shared.brandElement
+        progressView.trackTintColor = .clear
+        progressView.progress = 1
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(startTimer), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+    }
+     
+    // MARK: - Progress
+    
+    @objc func startTimer() {
+        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateProgress), userInfo: nil, repeats: true)
+    }
+    
+    @objc func updateProgress() {
+        
+        time += 0.1
+        
+        if time >= 3 {
+            timer?.invalidate()
+            dismiss(animated: true)
+        } else {
+            progressView.progress = 1 - (time / 3)
+        }
+    }
+    
     // MARK: - Action
     
     @IBAction func ok(_ sender: Any) {
-        
         dismiss(animated: true)
     }
 }

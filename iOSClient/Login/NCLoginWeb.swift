@@ -202,6 +202,8 @@ extension NCLoginWeb: WKNavigationDelegate {
         activityIndicator.stopAnimating()
         print("didFinishProvisionalNavigation");
         
+        let url = webView.url?.absoluteString
+        
         if loginFlowV2Available {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 NCCommunication.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { (server, loginName, appPassword, errorCode, errorDescription) in
