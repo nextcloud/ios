@@ -203,7 +203,7 @@ class NCUtility: NSObject {
         if view == nil {
             if let window = UIApplication.shared.keyWindow {
                 viewActivityIndicator?.removeFromSuperview()
-                viewActivityIndicator = UIView(frame: window.bounds)
+                viewActivityIndicator = NCViewActivityIndicator(frame: window.bounds)
                 window.addSubview(viewActivityIndicator!)
                 viewActivityIndicator?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             }
@@ -231,7 +231,9 @@ class NCUtility: NSObject {
     @objc func stopActivityIndicator() {
         activityIndicator.stopAnimating()
         activityIndicator.removeFromSuperview()
-        viewActivityIndicator?.removeFromSuperview()
+        if viewActivityIndicator is NCViewActivityIndicator {
+            viewActivityIndicator?.removeFromSuperview()
+        }
     }
     
     @objc func isSimulatorOrTestFlight() -> Bool {
@@ -469,4 +471,18 @@ class NCUtility: NSObject {
         return ""
     }
 }
+
+// MARK: -
+
+class NCViewActivityIndicator: UIView {
+ 
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 

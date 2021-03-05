@@ -43,7 +43,7 @@ class NCAccountRequest: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        titleLabel.text = NSLocalizedString("_account_request_", comment: "")
+        titleLabel.text = NSLocalizedString("_accounts_", comment: "")
         
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
 
