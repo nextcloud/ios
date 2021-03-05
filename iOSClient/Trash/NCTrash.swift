@@ -95,6 +95,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        appDelegate.activeViewController = self
         
         self.navigationItem.title = titleCurrentFolder
 

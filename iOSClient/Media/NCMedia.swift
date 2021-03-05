@@ -118,6 +118,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        appDelegate.activeViewController = self
         
         // hide nagigation controller
         navigationController?.navigationBar.prefersLargeTitles = true

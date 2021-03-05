@@ -54,7 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var activeShares: NCShares?
     var activeTransfers: NCTransfers?
     var activeTrash: NCTrash?
-    var activeViewController: UIViewController?
+    @objc var activeViewController: UIViewController?
     var activeViewerVideo: NCViewerVideo?
     
     var listFilesVC: [String:NCFiles] = [:]

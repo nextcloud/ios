@@ -260,6 +260,12 @@
     [self changeTheming];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    appDelegate.activeViewController = self;
+}
+
 - (void)changeTheming
 {
     self.view.backgroundColor = NCBrandColor.shared.backgroundForm;

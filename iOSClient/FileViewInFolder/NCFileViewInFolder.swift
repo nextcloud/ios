@@ -41,7 +41,8 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-                
+        appDelegate.activeViewController = self
+        
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
             self.navigationItem.title = NCBrandOptions.shared.brand
         } else {
@@ -49,7 +50,6 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         }
         
         presentationController?.delegate = self
-        appDelegate.activeViewController = self
         
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(itemForLine)
