@@ -33,6 +33,7 @@ class NCAccountRequest: UIViewController {
     
     public var accounts: [tableAccount] = []
     
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var timer: Timer?
     private var time: Float = 0
     private let secondsAutoDismiss: Float = 3
@@ -103,16 +104,33 @@ extension NCAccountRequest: UITableViewDelegate {
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         timer?.invalidate()
-        progressView.progress = 1
+        progressView.progress = 0
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if decelerate {
-            startTimer()
+//            startTimer()
         }
     }
+    
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        startTimer()
+//        startTimer()
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let account = accounts[indexPath.row]
+        if account.account != appDelegate.account {
+            NCManageDatabase.shared.setAccountActive(account.account)
+            dismiss(animated: true) {
+                self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
+                self.appDelegate.initializeMain()
+                self.appDelegate.activeViewController?.viewWillAppear(true)
+                self.appDelegate.activeViewController?.viewDidAppear(true)
+            }
+        } else {
+            dismiss(animated: true)
+        }
     }
 }
 
@@ -160,9 +178,5 @@ extension NCAccountRequest: UITableViewDataSource {
         }
 
         return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        dismiss(animated: true)
     }
 }
