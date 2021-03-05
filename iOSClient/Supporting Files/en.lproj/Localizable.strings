@@ -160,7 +160,7 @@
 "_use_"                     = "Use";
 "_keep_"                    = "Keep";
 "_account_request_"         = "Request account";
-"_settings_account_request_" = "At startup request the account";
+"_settings_account_request_" = "Request account at startup";
 
 /* User status */
 "_online_"                  = "Online";
