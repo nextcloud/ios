@@ -215,6 +215,9 @@
     [super viewWillAppear:animated];
     appDelegate.activeViewController = self;
 
+    [self initializeForm];
+    [self reloadForm];
+    
     // Request permission for camera roll access
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
         switch (status) {

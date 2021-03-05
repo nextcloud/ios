@@ -189,13 +189,17 @@
 {
     [super viewWillAppear:animated];
     appDelegate.activeViewController = self;
+    
+    [self.tableView reloadData];
+    [self initializeForm];
 }
 
 - (void)changeTheming
 {
     self.view.backgroundColor = NCBrandColor.shared.backgroundForm;
     self.tableView.backgroundColor = NCBrandColor.shared.backgroundForm;
-    [self.tableView reloadData];    
+    
+    [self.tableView reloadData];
     [self initializeForm];
 }
 

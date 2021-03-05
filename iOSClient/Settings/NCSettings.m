@@ -193,6 +193,9 @@
 {
     [super viewWillAppear:animated];
     appDelegate.activeViewController = self;
+    
+    [self initializeForm];
+    [self reloadForm];
 }
 
 - (void)changeTheming

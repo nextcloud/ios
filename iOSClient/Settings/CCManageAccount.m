@@ -365,6 +365,9 @@
 {
     [super viewWillAppear:animated];
     appDelegate.activeViewController = self;
+    
+    [self.tableView reloadData];
+    [self initializeForm];
 }
 
 - (void)changeTheming
