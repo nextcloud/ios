@@ -162,7 +162,10 @@ extension NCViewer {
                             vcRename.disableChangeExt = true
 
                             let popup = NCPopupViewController(contentController: vcRename, popupWidth: 300, popupHeight: 360)
-                                                        
+                            if CCUtility.getDarkMode() {
+                                popup.borderEnabled = true
+                            }
+                            
                             viewController.present(popup, animated: true)
                         }
                     }
