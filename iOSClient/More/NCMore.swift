@@ -191,12 +191,12 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
 
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundForm
-        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
+        view.backgroundColor = NCBrandColor.shared.backgroundView
+        tableView.backgroundColor = NCBrandColor.shared.backgroundView
         tableView.separatorColor = NCBrandColor.shared.separator
         tableView.reloadData()
         
-        viewQuota.backgroundColor = NCBrandColor.shared.backgroundForm
+        viewQuota.backgroundColor = NCBrandColor.shared.backgroundView
         progressQuota.progressTintColor = NCBrandColor.shared.brandElement
     }
 
@@ -319,7 +319,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
 
             cell.selectedBackgroundView = selectionColor
-            cell.backgroundColor = NCBrandColor.shared.backgroundCell
+            cell.backgroundColor = NCBrandColor.shared.backgroundForm
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
             
             if NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false) {
@@ -356,7 +356,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.labelText.textColor = NCBrandColor.shared.textView
             
             cell.selectedBackgroundView = selectionColor
-            cell.backgroundColor = NCBrandColor.shared.backgroundCell
+            cell.backgroundColor = NCBrandColor.shared.backgroundForm
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
             
             return cell
