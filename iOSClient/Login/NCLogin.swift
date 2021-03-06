@@ -196,7 +196,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 self.loginButton.isEnabled = true
                 self.activity.stopAnimating()
                 
-                self.standardLogin(urlBase: url, user: username, token: token ?? "", errorCode: errorCode, errorDescription: errorDescription)
+                self.standardLogin(urlBase: url, user: username, password: token ?? "", errorCode: errorCode, errorDescription: errorDescription)
             }
         }
     }
@@ -326,7 +326,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
     
-    func standardLogin(urlBase: String, user: String, token: String, errorCode: Int, errorDescription: String) {
+    func standardLogin(urlBase: String, user: String, password: String, errorCode: Int, errorDescription: String) {
         
         if errorCode == 0 {
             
@@ -337,7 +337,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             }
             
             NCManageDatabase.shared.deleteAccount(account)
-            NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, password: token)
+            NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, password: password)
             
             if let activeAccount = NCManageDatabase.shared.setAccountActive(account) {
                 appDelegate.settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
@@ -406,7 +406,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     self.activity.stopAnimating()
                     self.loginButton.isEnabled = true
                     
-                    self.standardLogin(urlBase: urlBase, user: user, token: password, errorCode: errorCode, errorDescription: errorDescription)
+                    self.standardLogin(urlBase: urlBase, user: user, password: password, errorCode: errorCode, errorDescription: errorDescription)
                 }
             }
         }
