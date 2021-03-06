@@ -153,7 +153,6 @@ extension NCAccountRequest: UITableViewDataSource {
         let activeImage = cell.viewWithTag(30) as? UIImageView
         
         avatarImage?.image = UIImage(named: "avatarCredentials")
-        avatarImage?.image = UIImage(named: "avatarCredentials")
         
         var fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(account.user, urlBase: account.urlBase) + "-" + account.user
         fileNamePath = fileNamePath + ".png"
