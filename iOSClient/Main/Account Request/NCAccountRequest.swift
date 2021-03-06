@@ -70,6 +70,8 @@ class NCAccountRequest: UIViewController {
         timer?.invalidate()
     }
     
+    // MARK: - NotificationCenter
+
     @objc func changeTheming() {
         view.backgroundColor = NCBrandColor.shared.backgroundForm
         tableView.backgroundColor = NCBrandColor.shared.backgroundForm
