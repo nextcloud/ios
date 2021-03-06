@@ -28,7 +28,6 @@ class NCAccountRequest: UIViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var okButton: UIButton!
     @IBOutlet weak var progressView: UIProgressView!
     
     public var accounts: [tableAccount] = []
@@ -47,12 +46,6 @@ class NCAccountRequest: UIViewController {
         
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
 
-        okButton.setTitle(NSLocalizedString("_ok_", comment: ""), for: .normal)
-        okButton.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
-        okButton.layer.cornerRadius = 15
-        okButton.layer.masksToBounds = true
-        okButton.layer.backgroundColor = NCBrandColor.shared.brand.cgColor
-        
         progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.trackTintColor = .clear
         progressView.progress = 1
@@ -101,12 +94,6 @@ class NCAccountRequest: UIViewController {
             progressView.progress = 1 - (time / secondsAutoDismiss)
         }
     }
-    
-    // MARK: - Action
-    
-    @IBAction func ok(_ sender: Any) {
-        dismiss(animated: true)
-    }
 }
 
 extension NCAccountRequest: UITableViewDelegate {
@@ -153,8 +140,8 @@ extension NCAccountRequest: UITableViewDataSource {
        
         let account = accounts[indexPath.row]
         var avatar = UIImage(named: "avatarCredentials")
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.tintColor = NCBrandColor.shared.customer
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        cell.backgroundColor = NCBrandColor.shared.backgroundForm
        
         let avatarImage = cell.viewWithTag(10) as? UIImageView
         let accountLabel = cell.viewWithTag(20) as? UILabel

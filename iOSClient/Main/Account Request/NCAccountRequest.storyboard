@@ -17,7 +17,7 @@
                         <viewControllerLayoutGuide type="bottom" id="hTI-Bw-Fws"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="gzh-6E-hc4">
-                        <rect key="frame" x="0.0" y="0.0" width="300" height="350"/>
+                        <rect key="frame" x="0.0" y="0.0" width="300" height="310"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ouH-gK-Guv" userLabel="Separator">
@@ -33,26 +33,11 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W5y-aT-UlI">
-                                <rect key="frame" x="100" y="308" width="100" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="APQ-0x-b1G"/>
-                                    <constraint firstAttribute="width" constant="100" id="Amv-Gj-xDj"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <state key="normal" title="Ok"/>
-                                <connections>
-                                    <action selector="ok:" destination="V0q-CP-xMJ" eventType="touchUpInside" id="aPX-ae-b3k"/>
-                                </connections>
-                            </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Pdo-MB-AhU">
-                                <rect key="frame" x="10" y="113" width="280" height="180"/>
+                                <rect key="frame" x="10" y="113" width="280" height="187"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="180" id="ZUy-pC-C0i"/>
-                                </constraints>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="cell" rowHeight="43.5" id="Q4K-la-J3W">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="Cell" rowHeight="43.5" id="Q4K-la-J3W">
                                         <rect key="frame" x="0.0" y="28" width="280" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Q4K-la-J3W" id="IkA-cK-iZV">
@@ -98,7 +83,7 @@
                                 </connections>
                             </tableView>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="e8R-j7-ObS">
-                                <rect key="frame" x="0.0" y="348" width="300" height="2"/>
+                                <rect key="frame" x="0.0" y="308" width="300" height="2"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="2" id="G3U-2x-imL"/>
                                 </constraints>
@@ -112,20 +97,18 @@
                             <constraint firstItem="hTI-Bw-Fws" firstAttribute="top" secondItem="e8R-j7-ObS" secondAttribute="bottom" id="Cko-PC-TiW"/>
                             <constraint firstAttribute="trailing" secondItem="nZr-nE-ths" secondAttribute="trailing" constant="20" id="DPW-MV-oKc"/>
                             <constraint firstItem="Pdo-MB-AhU" firstAttribute="top" secondItem="ouH-gK-Guv" secondAttribute="bottom" constant="10" id="HnJ-03-7W5"/>
+                            <constraint firstItem="hTI-Bw-Fws" firstAttribute="top" secondItem="Pdo-MB-AhU" secondAttribute="bottom" constant="10" id="Ife-Ku-hGQ"/>
                             <constraint firstItem="nZr-nE-ths" firstAttribute="leading" secondItem="gzh-6E-hc4" secondAttribute="leading" constant="20" id="SI9-xL-6s8"/>
                             <constraint firstItem="Pdo-MB-AhU" firstAttribute="leading" secondItem="gzh-6E-hc4" secondAttribute="leading" constant="10" id="Y5n-ju-hts"/>
                             <constraint firstAttribute="trailing" secondItem="e8R-j7-ObS" secondAttribute="trailing" id="chh-t9-vJN"/>
-                            <constraint firstItem="W5y-aT-UlI" firstAttribute="centerX" secondItem="gzh-6E-hc4" secondAttribute="centerX" id="nhM-cg-paa"/>
                             <constraint firstItem="nZr-nE-ths" firstAttribute="top" secondItem="4vK-ua-S0e" secondAttribute="bottom" constant="20" id="oyJ-sj-j5N"/>
-                            <constraint firstItem="W5y-aT-UlI" firstAttribute="top" secondItem="Pdo-MB-AhU" secondAttribute="bottom" constant="15" id="pfI-HG-ci4"/>
                             <constraint firstAttribute="trailing" secondItem="ouH-gK-Guv" secondAttribute="trailing" id="r1N-R6-iZg"/>
                             <constraint firstItem="ouH-gK-Guv" firstAttribute="top" secondItem="nZr-nE-ths" secondAttribute="bottom" constant="20" id="yuT-iN-zVv"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Zon-2j-rsc"/>
-                    <size key="freeformSize" width="300" height="350"/>
+                    <size key="freeformSize" width="300" height="310"/>
                     <connections>
-                        <outlet property="okButton" destination="W5y-aT-UlI" id="59a-ck-kGF"/>
                         <outlet property="progressView" destination="e8R-j7-ObS" id="2gM-MB-IhE"/>
                         <outlet property="tableView" destination="Pdo-MB-AhU" id="AcD-SW-2ga"/>
                         <outlet property="titleLabel" destination="nZr-nE-ths" id="UbA-Dl-0Ad"/>
