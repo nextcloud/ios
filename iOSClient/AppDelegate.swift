@@ -620,9 +620,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 
                 let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: 310)
                 popup.backgroundAlpha = 0.8
-                if CCUtility.getDarkMode() {
-                    popup.borderEnabled = true
-                }
                 
                 UIApplication.shared.keyWindow?.rootViewController?.present(popup, animated: true)
                 

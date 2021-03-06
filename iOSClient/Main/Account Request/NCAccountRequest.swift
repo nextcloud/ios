@@ -58,6 +58,9 @@ class NCAccountRequest: UIViewController {
         progressView.progress = 1
         
         NotificationCenter.default.addObserver(self, selector: #selector(startTimer), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+        
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -72,6 +75,12 @@ class NCAccountRequest: UIViewController {
         super.viewWillDisappear(animated)
         
         timer?.invalidate()
+    }
+    
+    @objc func changeTheming() {
+        view.backgroundColor = NCBrandColor.shared.backgroundForm
+        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
+        tableView.reloadData()
     }
 
     // MARK: - Progress

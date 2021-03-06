@@ -212,9 +212,6 @@ extension NCCollectionViewCommon {
                             vcRename.imagePreview = image
 
                             let popup = NCPopupViewController(contentController: vcRename, popupWidth: 300, popupHeight: 360)
-                            if CCUtility.getDarkMode() {
-                                popup.borderEnabled = true
-                            }
                                                         
                             self.present(popup, animated: true)
                         }
