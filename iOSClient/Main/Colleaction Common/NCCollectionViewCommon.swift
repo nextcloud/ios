@@ -253,6 +253,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         appDelegate.listFilesVC.removeAll()
         appDelegate.listFavoriteVC.removeAll()
         appDelegate.listOfflineVC.removeAll()
+        selectOcId.removeAll()
         
         reloadDataSource()
     }
