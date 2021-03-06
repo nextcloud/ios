@@ -53,7 +53,7 @@ class NCAccountRequest: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(startTimer), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         
-        changeTheming()
+        changeTheming()        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -122,9 +122,8 @@ extension NCAccountRequest: UITableViewDelegate {
             NCManageDatabase.shared.setAccountActive(account.account)
             dismiss(animated: true) {
                 self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
-                self.appDelegate.initializeMain()
-                self.appDelegate.activeViewController?.viewWillAppear(true)
-                self.appDelegate.activeViewController?.viewDidAppear(true)
+                
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
             }
         } else {
             dismiss(animated: true)
@@ -170,7 +169,7 @@ extension NCAccountRequest: UITableViewDataSource {
         avatarImage?.image = avatar
         accountLabel?.text = account.user + " " + (URL(string: account.urlBase)?.host ?? "")
         if account.active {
-            activeImage?.image = UIImage(named: "check")!.imageColor(NCBrandColor.shared.brandText)
+            activeImage?.image = UIImage(named: "check")!.imageColor(NCBrandColor.shared.textView)
         } else {
             activeImage?.image = nil
         }

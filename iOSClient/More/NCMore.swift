@@ -60,7 +60,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         labelQuotaExternalSite.addGestureRecognizer(tapQuota)
 
         // Notification
-        NotificationCenter.default.addObserver(self, selector: #selector(changeUserProfile), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUserProfile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(initializeMain), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitializeMain), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         
         changeTheming()
@@ -71,6 +71,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         appDelegate.activeViewController = self
         
         var item = NCCommunicationExternalSite()
+        var quota: String = ""
 
         // Clear
         functionMenu.removeAll()
@@ -156,8 +157,34 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             labelQuotaExternalSite.text = item.name
         }
         
-        changeUserProfile()
+        // Display Name user & Quota
 
+        if let tabAccount = NCManageDatabase.shared.getAccountActive() {
+      
+            self.tabAccount = tabAccount
+
+            if (tabAccount.quotaRelative > 0) {
+                progressQuota.progress = Float(tabAccount.quotaRelative) / 100
+            } else {
+                progressQuota.progress = 0
+            }
+
+            switch tabAccount.quotaTotal {
+            case -1:
+                quota = "0"
+            case -2:
+                quota = NSLocalizedString("_quota_space_unknown_", comment: "")
+            case -3:
+                quota = NSLocalizedString("_quota_space_unlimited_", comment: "")
+            default:
+                quota = CCUtility.transformedSize(tabAccount.quotaTotal)
+            }
+
+            let quotaUsed: String = CCUtility.transformedSize(tabAccount.quotaUsed)
+
+            labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+        }
+        
         // ITEM : External
         if NCBrandOptions.shared.disable_more_external_site == false {
             if let externalSites = NCManageDatabase.shared.getAllExternalSites(account: appDelegate.account) {
@@ -195,42 +222,36 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.separatorColor = NCBrandColor.shared.separator
         tableView.reloadData()
     }
+    
+    @objc func initializeMain() {
+        viewWillAppear(true)
+    }
 
-    @objc func changeUserProfile() {
-        // Display Name user & Quota
-        var quota: String = ""
+    // MARK: - Action
 
-        guard let tabAccount = NCManageDatabase.shared.getAccountActive() else {
-            return
-        }
-        self.tabAccount = tabAccount
+    @objc func tapLabelQuotaExternalSite() {
 
-        if (tabAccount.quotaRelative > 0) {
-            progressQuota.progress = Float(tabAccount.quotaRelative) / 100
-        } else {
-            progressQuota.progress = 0
-        }
+        if (quotaMenu.count > 0) {
 
-        switch tabAccount.quotaTotal {
-        case -1:
-            quota = "0"
-        case -2:
-            quota = NSLocalizedString("_quota_space_unknown_", comment: "")
-        case -3:
-            quota = NSLocalizedString("_quota_space_unlimited_", comment: "")
-        default:
-            quota = CCUtility.transformedSize(tabAccount.quotaTotal)
-        }
+            let item = quotaMenu[0]
+            let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
+            browserWebVC.urlBase = item.url
+            browserWebVC.isHiddenButtonExit = true
 
-        let quotaUsed: String = CCUtility.transformedSize(tabAccount.quotaUsed)
-
-        labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.tableView.reloadData()
+            self.navigationController?.pushViewController(browserWebVC, animated: true)
+            self.navigationController?.navigationBar.isHidden = false
         }
     }
 
+    @objc func tapImageLogoManageAccount() {
+
+        let controller = CCManageAccount.init()
+
+        self.navigationController?.pushViewController(controller, animated: true)
+    }
+    
+    // MARK: -
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 0 {
             return 100
@@ -426,27 +447,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             alertController.addAction(actionNo)
             self.present(alertController, animated: true, completion: nil)
         }
-    }
-
-    @objc func tapLabelQuotaExternalSite() {
-
-        if (quotaMenu.count > 0) {
-
-            let item = quotaMenu[0]
-            let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
-            browserWebVC.urlBase = item.url
-            browserWebVC.isHiddenButtonExit = true
-
-            self.navigationController?.pushViewController(browserWebVC, animated: true)
-            self.navigationController?.navigationBar.isHidden = false
-        }
-    }
-
-    @objc func tapImageLogoManageAccount() {
-
-        let controller = CCManageAccount.init()
-
-        self.navigationController?.pushViewController(controller, animated: true)
     }
 }
 

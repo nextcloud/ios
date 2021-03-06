@@ -93,6 +93,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 0, delegate: self)
       
         // Notification
+        NotificationCenter.default.addObserver(self, selector: #selector(initializeMain), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitializeMain), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
@@ -147,6 +148,14 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     }
     
     //MARK: - Notification
+    
+    @objc func initializeMain() {
+        
+        self.reloadDataSourceWithCompletion { (_) in
+            self.timerSearchNewMedia?.invalidate()
+            self.timerSearchNewMedia = Timer.scheduledTimer(timeInterval: self.timeIntervalSearchNewMedia, target: self, selector: #selector(self.searchNewMediaTimer), userInfo: nil, repeats: false)
+        }
+    }
     
     @objc func applicationWillEnterForeground() {
         if self.view.window != nil {

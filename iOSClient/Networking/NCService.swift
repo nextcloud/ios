@@ -92,8 +92,6 @@ class NCService: NSObject {
                         }
                     }
                           
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUserProfile)
-                                        
                     self.requestServerCapabilities()
                 }
                 
