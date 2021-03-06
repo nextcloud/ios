@@ -154,6 +154,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         self.reloadDataSourceWithCompletion { (_) in
             self.timerSearchNewMedia?.invalidate()
             self.timerSearchNewMedia = Timer.scheduledTimer(timeInterval: self.timeIntervalSearchNewMedia, target: self, selector: #selector(self.searchNewMediaTimer), userInfo: nil, repeats: false)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.mediaCommandTitle()
+            }
         }
     }
     

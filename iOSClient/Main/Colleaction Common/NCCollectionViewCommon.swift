@@ -246,7 +246,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
         
-        self.navigationController?.popToRootViewController(animated: false)
+        if self is NCFiles || self is NCFavorite || self is NCOffline {
+            self.navigationController?.popToRootViewController(animated: false)
+        }
         
         appDelegate.listFilesVC.removeAll()
         appDelegate.listFavoriteVC.removeAll()
