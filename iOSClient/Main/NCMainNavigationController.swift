@@ -35,22 +35,6 @@ class NCMainNavigationController: UINavigationController {
         changeTheming()
     }
 
-    /*
-    // https://stackoverflow.com/questions/37829721/pushing-view-controller-twice
-    override func pushViewController(_ viewController: UIViewController, animated: Bool) {
-        
-        if !isPushing {
-            isPushing = true
-            CATransaction.begin()
-            CATransaction.setCompletionBlock {
-                self.isPushing = false
-            }
-            super.pushViewController(viewController, animated: animated)
-            CATransaction.commit()
-        }
-    }
-    */
-    
     @objc func changeTheming() {
                   
         if #available(iOS 13.0, *) {
