@@ -167,6 +167,8 @@
     self.form = form;
 }
 
+#pragma mark - Life Cycle
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -178,9 +180,9 @@
     self.endToEndInitialize = [NCEndToEndInitialize new];
     self.endToEndInitialize.delegate = self;
     
-    // changeTheming
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:NCGlobal.shared.notificationCenterChangeTheming object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground) name:NCGlobal.shared.notificationCenterApplicationDidEnterBackground object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain) name:NCGlobal.shared.notificationCenterInitializeMain object:nil];
 
     [self changeTheming];
 }
@@ -190,9 +192,11 @@
     [super viewWillAppear:animated];
     appDelegate.activeViewController = self;
     
-    [self.tableView reloadData];
     [self initializeForm];
+    [self.tableView reloadData];
 }
+
+#pragma mark - NotificationCenter
 
 - (void)changeTheming
 {
@@ -208,6 +212,11 @@
     if (passcodeViewController.view.window != nil) {
         [passcodeViewController dismissViewControllerAnimated:true completion:nil];
     }
+}
+
+- (void)initializeMain
+{
+    [[self navigationController] popViewControllerAnimated:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------

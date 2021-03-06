@@ -348,6 +348,8 @@
     }
 }
 
+#pragma mark - Life Cycle
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -355,8 +357,8 @@
     self.title = NSLocalizedString(@"_credentials_", nil);
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    // changeTheming
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:NCGlobal.shared.notificationCenterChangeTheming object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain) name:NCGlobal.shared.notificationCenterInitializeMain object:nil];
     
     [self changeTheming];
 }
@@ -366,9 +368,11 @@
     [super viewWillAppear:animated];
     appDelegate.activeViewController = self;
     
-    [self.tableView reloadData];
     [self initializeForm];
+    [self.tableView reloadData];
 }
+
+#pragma mark - NotificationCenter
 
 - (void)changeTheming
 {
@@ -378,9 +382,13 @@
     [self initializeForm];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Delegate ===
-#pragma --------------------------------------------------------------------------------------------
+- (void)initializeMain
+{
+    [self initializeForm];
+    [self.tableView reloadData];
+}
+
+#pragma mark -
 
 -(void)formRowDescriptorValueHasChanged:(XLFormRowDescriptor *)rowDescriptor oldValue:(id)oldValue newValue:(id)newValue
 {
@@ -409,9 +417,7 @@
     [self initializeForm];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Add Account ===
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark -
 
 - (void)addAccount:(XLFormRowDescriptor *)sender
 {
@@ -420,9 +426,7 @@
     [appDelegate openLoginWithViewController:self selector:NCGlobal.shared.introLogin openLoginWeb:false];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Delete Account  ===
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark -
 
 - (void)deleteAccount:(XLFormRowDescriptor *)sender
 {
@@ -456,9 +460,7 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Set User Status  ===
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark -
 
 - (void)setUserStatus:(XLFormRowDescriptor *)sender
 {
@@ -470,9 +472,7 @@
     }
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Change Default Account ===
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark -
 
 - (void)ChangeDefaultAccount:(NSString *)account
 {
@@ -484,8 +484,6 @@
         // Init home
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
     }
-    
-    [self initializeForm];
 }
 
 @end

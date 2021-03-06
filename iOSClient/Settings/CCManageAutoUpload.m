@@ -197,6 +197,8 @@
     self.form = form;
 }
 
+#pragma mark - Life Cycle
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -204,8 +206,8 @@
     self.title = NSLocalizedString(@"_settings_autoupload_", nil);
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    // changeTheming
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:NCGlobal.shared.notificationCenterChangeTheming object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain) name:NCGlobal.shared.notificationCenterInitializeMain object:nil];
     
     [self changeTheming];
 }
@@ -233,6 +235,13 @@
     }];
 }
 
+- (void)initializeMain
+{
+    [[self navigationController] popViewControllerAnimated:YES];
+}
+
+#pragma mark - NotificationCenter
+
 - (void)changeTheming
 {
     self.view.backgroundColor = NCBrandColor.shared.backgroundView;
@@ -241,6 +250,8 @@
     [self initializeForm];
     [self reloadForm];
 }
+
+#pragma mark -
 
 -(void)formRowDescriptorValueHasChanged:(XLFormRowDescriptor *)rowDescriptor oldValue:(id)oldValue newValue:(id)newValue
 {

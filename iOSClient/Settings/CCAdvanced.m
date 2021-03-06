@@ -257,6 +257,8 @@
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:NCGlobal.shared.notificationCenterChangeTheming object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain) name:NCGlobal.shared.notificationCenterInitializeMain object:nil];
+    
     [self changeTheming];
 }
 
@@ -265,18 +267,28 @@
     [super viewWillAppear:animated];
     appDelegate.activeViewController = self;
     
-    [self.tableView reloadData];
     [self initializeForm];
+    [self.tableView reloadData];
 }
+
+#pragma mark - NotificationCenter
 
 - (void)changeTheming
 {
     self.view.backgroundColor = NCBrandColor.shared.backgroundView;
     self.tableView.backgroundColor = NCBrandColor.shared.backgroundView;
     
-    [self.tableView reloadData];
     [self initializeForm];
+    [self.tableView reloadData];
 }
+
+- (void)initializeMain
+{
+    [self initializeForm];
+    [self.tableView reloadData];
+}
+
+#pragma mark -
 
 - (void)formRowDescriptorValueHasChanged:(XLFormRowDescriptor *)rowDescriptor oldValue:(id)oldValue newValue:(id)newValue
 {

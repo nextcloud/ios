@@ -176,6 +176,8 @@
     self.form = form;
 }
 
+#pragma mark - Life Cycle
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -185,6 +187,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:NCGlobal.shared.notificationCenterChangeTheming object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground) name:NCGlobal.shared.notificationCenterApplicationDidEnterBackground object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain) name:NCGlobal.shared.notificationCenterInitializeMain object:nil];
 
     [self changeTheming];
 }
@@ -198,11 +201,19 @@
     [self reloadForm];
 }
 
+#pragma mark - NotificationCenter
+
 - (void)changeTheming
 {
     self.view.backgroundColor = NCBrandColor.shared.backgroundView;
     self.tableView.backgroundColor = NCBrandColor.shared.backgroundView;
-    [self.tableView reloadData];    
+    
+    [self initializeForm];
+    [self reloadForm];
+}
+
+- (void)initializeMain
+{
     [self initializeForm];
     [self reloadForm];
 }
@@ -217,9 +228,7 @@
     }
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Chiamate dal Form ===
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark -
 
 - (void)reloadForm
 {
@@ -307,7 +316,7 @@
     }
 }
 
-#pragma mark - Passcode -
+#pragma mark - Passcode
 
 - (void)didPerformBiometricValidationRequestInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
 {
@@ -403,9 +412,7 @@
     }
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Table View ===
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark -
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
 {
