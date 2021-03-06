@@ -29,7 +29,6 @@ class NCShares: NCCollectionViewCommon  {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        appDelegate.activeShares = self
         titleCurrentFolder = NSLocalizedString("_list_shares_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewShares 
         enableSearchBar = false

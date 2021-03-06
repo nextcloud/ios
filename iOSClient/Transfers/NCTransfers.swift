@@ -31,7 +31,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        appDelegate.activeTransfers = self
         titleCurrentFolder = NSLocalizedString("_transfers_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewTransfers
         enableSearchBar = false

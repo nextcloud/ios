@@ -29,7 +29,6 @@ class NCFavorite: NCCollectionViewCommon  {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        appDelegate.activeFavorite = self
         titleCurrentFolder = NSLocalizedString("_favorites_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewFavorite
         enableSearchBar = true

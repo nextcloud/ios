@@ -29,7 +29,6 @@ class NCOffline: NCCollectionViewCommon  {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        appDelegate.activeOffline = self
         titleCurrentFolder = NSLocalizedString("_manage_file_offline_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewOffline
         enableSearchBar = true

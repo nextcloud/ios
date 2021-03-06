@@ -42,11 +42,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     var tabAccount: tableAccount?
 
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-
-        appDelegate.activeMore = self
-    }
+    // MARK: - Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -190,14 +186,14 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
     }
 
+    // MARK: - NotificationCenter
+
     @objc func changeTheming() {
         view.backgroundColor = NCBrandColor.shared.backgroundView
+        progressQuota.progressTintColor = NCBrandColor.shared.brandElement
         tableView.backgroundColor = NCBrandColor.shared.backgroundView
         tableView.separatorColor = NCBrandColor.shared.separator
         tableView.reloadData()
-        
-        viewQuota.backgroundColor = NCBrandColor.shared.backgroundView
-        progressQuota.progressTintColor = NCBrandColor.shared.brandElement
     }
 
     @objc func changeUserProfile() {

@@ -41,19 +41,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc var password: String = ""
     
     var activeAppConfigView: NCAppConfigView?
-    var activeFavorite: NCFavorite?
     var activeFiles: NCFiles?
     var activeFileViewInFolder: NCFileViewInFolder?
     var activeLogin: NCLogin?
     var activeLoginWeb: NCLoginWeb?
     @objc var activeMedia: NCMedia?
-    var activeMore: NCMore?
-    var activeOffline: NCOffline?
-    var activeRecent: NCRecent?
     var activeServerUrl: String = ""
-    var activeShares: NCShares?
-    var activeTransfers: NCTransfers?
-    var activeTrash: NCTrash?
     @objc var activeViewController: UIViewController?
     var activeViewerVideo: NCViewerVideo?
     
