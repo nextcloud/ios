@@ -73,6 +73,7 @@ class NCAccountRequest: UIViewController {
     // MARK: - NotificationCenter
 
     @objc func changeTheming() {
+        
         view.backgroundColor = NCBrandColor.shared.backgroundForm
         tableView.backgroundColor = NCBrandColor.shared.backgroundForm
         tableView.reloadData()
@@ -81,6 +82,7 @@ class NCAccountRequest: UIViewController {
     // MARK: - Progress
     
     @objc func startTimer() {
+        
         time = 0
         timer?.invalidate()
         timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateProgress), userInfo: nil, repeats: true)
@@ -89,7 +91,6 @@ class NCAccountRequest: UIViewController {
     @objc func updateProgress() {
         
         time += 0.1
-        
         if time >= secondsAutoDismiss {
             dismiss(animated: true)
         } else {
@@ -101,6 +102,7 @@ class NCAccountRequest: UIViewController {
 extension NCAccountRequest: UITableViewDelegate {
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        
         timer?.invalidate()
         progressView.progress = 0
     }
