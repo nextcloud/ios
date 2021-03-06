@@ -87,17 +87,20 @@
 
     // Section : REQUEST ACCOUNT -------------------------------------------
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_account_request_", nil)];
-    [form addFormSection:section];
+    if (NCBrandOptions.shared.disable_request_account == NO) {
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"accountRequest" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_settings_account_request_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundForm;
-    [row.cellConfig setObject:[[UIImage imageNamed:@"users"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
-    if ([CCUtility getAccountRequest]) row.value = @1;
-    else row.value = @0;
-    [section addFormRow:row];
+        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_account_request_", nil)];
+        [form addFormSection:section];
+        
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"accountRequest" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_settings_account_request_", nil)];
+        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundForm;
+        [row.cellConfig setObject:[[UIImage imageNamed:@"users"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
+        if ([CCUtility getAccountRequest]) row.value = @1;
+        else row.value = @0;
+        [section addFormRow:row];
+    }
     
     // Section : MANAGE ACCOUNT -------------------------------------------
     
