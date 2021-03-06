@@ -1908,8 +1908,13 @@ class NCManageDatabase: NSObject {
                     let resultsType = NCCommunicationCommon.shared.getInternalType(fileName: fileNameTo, mimeType: "", directory: result.directory)
                     result.fileName = fileNameTo
                     result.fileNameView = fileNameTo
-                    result.fileNameWithoutExt = (fileNameTo as NSString).deletingPathExtension
-                    result.ext = resultsType.ext
+                    if result.directory {
+                        result.fileNameWithoutExt = fileNameTo
+                        result.ext = ""
+                    } else {
+                        result.fileNameWithoutExt = (fileNameTo as NSString).deletingPathExtension
+                        result.ext = resultsType.ext
+                    }
                     result.iconName = resultsType.iconName
                     result.contentType = resultsType.mimeType
                     result.typeFile = resultsType.typeFile
