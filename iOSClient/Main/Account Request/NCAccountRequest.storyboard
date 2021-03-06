@@ -34,7 +34,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Pdo-MB-AhU">
-                                <rect key="frame" x="10" y="113" width="280" height="187"/>
+                                <rect key="frame" x="10" y="103" width="280" height="207"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="Cell" rowHeight="60" id="Q4K-la-J3W">
@@ -96,8 +96,8 @@
                             <constraint firstItem="ouH-gK-Guv" firstAttribute="leading" secondItem="gzh-6E-hc4" secondAttribute="leading" id="A6T-ed-97T"/>
                             <constraint firstItem="hTI-Bw-Fws" firstAttribute="top" secondItem="e8R-j7-ObS" secondAttribute="bottom" id="Cko-PC-TiW"/>
                             <constraint firstAttribute="trailing" secondItem="nZr-nE-ths" secondAttribute="trailing" constant="20" id="DPW-MV-oKc"/>
-                            <constraint firstItem="Pdo-MB-AhU" firstAttribute="top" secondItem="ouH-gK-Guv" secondAttribute="bottom" constant="10" id="HnJ-03-7W5"/>
-                            <constraint firstItem="hTI-Bw-Fws" firstAttribute="top" secondItem="Pdo-MB-AhU" secondAttribute="bottom" constant="10" id="Ife-Ku-hGQ"/>
+                            <constraint firstItem="Pdo-MB-AhU" firstAttribute="top" secondItem="ouH-gK-Guv" secondAttribute="bottom" id="HnJ-03-7W5"/>
+                            <constraint firstItem="hTI-Bw-Fws" firstAttribute="top" secondItem="Pdo-MB-AhU" secondAttribute="bottom" id="Ife-Ku-hGQ"/>
                             <constraint firstItem="nZr-nE-ths" firstAttribute="leading" secondItem="gzh-6E-hc4" secondAttribute="leading" constant="20" id="SI9-xL-6s8"/>
                             <constraint firstItem="Pdo-MB-AhU" firstAttribute="leading" secondItem="gzh-6E-hc4" secondAttribute="leading" constant="10" id="Y5n-ju-hts"/>
                             <constraint firstAttribute="trailing" secondItem="e8R-j7-ObS" secondAttribute="trailing" id="chh-t9-vJN"/>
