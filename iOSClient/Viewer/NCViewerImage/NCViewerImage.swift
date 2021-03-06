@@ -59,6 +59,7 @@ class NCViewerImage: UIViewController {
     private var videoLayer: AVPlayerLayer?
     private var timeObserverToken: Any?
     private var rateObserverToken: Any?
+    private var timeObserver: Any?
     var pictureInPictureOcId: String = ""
     var textColor: UIColor = NCBrandColor.shared.textView
 
@@ -375,7 +376,7 @@ class NCViewerImage: UIViewController {
                 
                 let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
                 if CMTIME_IS_VALID(time) {
-                    player?.addPeriodicTimeObserver(forInterval: time, queue: nil, using: { (time) in
+                    timeObserver = player?.addPeriodicTimeObserver(forInterval: time, queue: nil, using: { (time) in
                         self.updateVideoProgressBar(time: time)
                     })
                 }
@@ -401,6 +402,10 @@ class NCViewerImage: UIViewController {
         
         player?.pause()
         player?.seek(to: CMTime.zero)
+        
+        if let timeObserver = timeObserver {
+            player?.removeTimeObserver(timeObserver)
+        }
         
         if rateObserverToken != nil {
             player?.removeObserver(self, forKeyPath: "rate")
