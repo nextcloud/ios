@@ -70,6 +70,27 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         super.viewWillAppear(animated)
         appDelegate.activeViewController = self
         
+        loadItems()
+    }
+    
+    // MARK: - NotificationCenter
+
+    @objc func changeTheming() {
+        view.backgroundColor = NCBrandColor.shared.backgroundView
+        progressQuota.progressTintColor = NCBrandColor.shared.brandElement
+        tableView.backgroundColor = NCBrandColor.shared.backgroundView
+        tableView.separatorColor = NCBrandColor.shared.separator
+        tableView.reloadData()
+    }
+    
+    @objc func initializeMain() {
+        loadItems()
+    }
+    
+    // MARK: -
+    
+    func loadItems() {
+        
         var item = NCCommunicationExternalSite()
         var quota: String = ""
 
@@ -211,20 +232,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         } else {
             tableView.reloadData()
         }
-    }
-
-    // MARK: - NotificationCenter
-
-    @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundView
-        progressQuota.progressTintColor = NCBrandColor.shared.brandElement
-        tableView.backgroundColor = NCBrandColor.shared.backgroundView
-        tableView.separatorColor = NCBrandColor.shared.separator
-        tableView.reloadData()
-    }
-    
-    @objc func initializeMain() {
-        viewWillAppear(true)
     }
 
     // MARK: - Action
