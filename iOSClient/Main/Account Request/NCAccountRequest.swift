@@ -128,8 +128,8 @@ extension NCAccountRequest: UITableViewDelegate {
             NCManageDatabase.shared.setAccountActive(account.account)
             dismiss(animated: true) {
                 
-                NCNetworking.shared.cancelAllTask()
                 NCOperationQueue.shared.cancelAllQueue()
+                NCNetworking.shared.cancelAllTask()
                 
                 self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
                 
