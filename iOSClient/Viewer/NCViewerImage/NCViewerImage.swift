@@ -400,13 +400,16 @@ class NCViewerImage: UIViewController {
     
     func videoStop() {
         
-        player?.pause()
-        player?.seek(to: CMTime.zero)
-        
         if let timeObserver = timeObserver {
-            player?.removeTimeObserver(timeObserver)
+            if player?.rate == 1 {
+                player?.removeTimeObserver(timeObserver)
+            }
         }
         
+        player?.pause()
+        player?.seek(to: CMTime.zero)
+        progressView.progress = 0
+                
         if rateObserverToken != nil {
             player?.removeObserver(self, forKeyPath: "rate")
             NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
@@ -482,9 +485,11 @@ class NCViewerImage: UIViewController {
     @objc func playerPause() {
         player?.pause()
     }
+    
     @objc func playerPlay() {
         player?.play()
     }
+    
     @objc func SetMute() {
         let mute = CCUtility.getAudioMute()
         CCUtility.setAudioMute(!mute)
