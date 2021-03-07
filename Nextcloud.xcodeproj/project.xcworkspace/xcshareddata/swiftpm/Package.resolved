@@ -83,6 +83,15 @@
         }
       },
       {
+        "package": "SwiftRichString",
+        "repositoryURL": "https://github.com/malcommac/SwiftRichString",
+        "state": {
+          "branch": null,
+          "revision": "9bf4b5af6bb4386865636fc504d6c588c2b65040",
+          "version": "3.7.2"
+        }
+      },
+      {
         "package": "SwiftyJSON",
         "repositoryURL": "https://github.com/SwiftyJSON/SwiftyJSON",
         "state": {
