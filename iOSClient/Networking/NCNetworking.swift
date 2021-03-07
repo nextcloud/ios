@@ -234,6 +234,22 @@ import Queuer
         return result
     }
         
+    //MARK: - Utility
+    
+    func cancelTaskWithUrl(_ url: URL) {
+        NCCommunication.shared.getSessionManager().getAllTasks  { tasks in
+            tasks.filter { $0.state == .running }.filter { $0.originalRequest?.url == url }.first?.cancel()
+        }
+    }
+    
+    func cancelAllTask() {
+        NCCommunication.shared.getSessionManager().getAllTasks  { tasks in
+            for task in tasks {
+                task.cancel()
+            }
+        }
+    }
+    
     //MARK: - Download
     
     @objc func cancelDownload(ocId: String, serverUrl:String, fileNameView: String) {

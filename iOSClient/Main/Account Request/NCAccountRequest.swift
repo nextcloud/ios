@@ -127,6 +127,10 @@ extension NCAccountRequest: UITableViewDelegate {
         if account.account != appDelegate.account {
             NCManageDatabase.shared.setAccountActive(account.account)
             dismiss(animated: true) {
+                
+                NCNetworking.shared.cancelAllTask()
+                NCOperationQueue.shared.cancelAllQueue()
+                
                 self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
                 
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
