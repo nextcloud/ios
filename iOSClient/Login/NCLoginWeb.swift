@@ -161,9 +161,16 @@ extension NCLoginWeb: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         
-        let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.localizedDescription, preferredStyle: .alert)
+        var errorMessage = error.localizedDescription
+        
+        for (key, value) in (error as NSError).userInfo {
+            let message = "\(key) \(value)\n"
+            errorMessage = errorMessage + message
+        }
+        
+        let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorMessage, preferredStyle: .alert)
                     
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in }))
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
         
         self.present(alertController, animated: true)
     }
@@ -178,15 +185,16 @@ extension NCLoginWeb: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         
-        if let data = navigationAction.request.httpBody {
-            let str = String(decoding: data, as: UTF8.self)
-            print(str)
-        }
-        
         decisionHandler(.allow)
 
         /* TEST NOT GOOD DON'T WORKS
-        guard let url = navigationAction.request.url else {
+        
+         if let data = navigationAction.request.httpBody {
+             let str = String(decoding: data, as: UTF8.self)
+             print(str)
+         }
+         
+         guard let url = navigationAction.request.url else {
             decisionHandler(.allow)
             return
         }
