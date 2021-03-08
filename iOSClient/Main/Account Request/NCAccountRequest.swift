@@ -31,6 +31,7 @@ class NCAccountRequest: UIViewController {
     @IBOutlet weak var progressView: UIProgressView!
     
     public var accounts: [tableAccount] = []
+    public let heightCell: CGFloat = 80
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var timer: Timer?
@@ -118,7 +119,7 @@ extension NCAccountRequest: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
+        return heightCell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -155,8 +156,9 @@ extension NCAccountRequest: UITableViewDataSource {
         cell.backgroundColor = NCBrandColor.shared.backgroundForm
        
         let avatarImage = cell.viewWithTag(10) as? UIImageView
-        let accountLabel = cell.viewWithTag(20) as? UILabel
-        let activeImage = cell.viewWithTag(30) as? UIImageView
+        let userLabel = cell.viewWithTag(20) as? UILabel
+        let urlLabel = cell.viewWithTag(30) as? UILabel
+        let activeImage = cell.viewWithTag(40) as? UIImageView
         
         avatarImage?.image = UIImage(named: "avatarCredentials")
         
@@ -176,7 +178,10 @@ extension NCAccountRequest: UITableViewDataSource {
         }
         
         avatarImage?.image = avatar
-        accountLabel?.text = account.user + " " + (URL(string: account.urlBase)?.host ?? "")
+        
+        userLabel?.text = account.user.uppercased()
+        urlLabel?.text = (URL(string: account.urlBase)?.host ?? "")
+
         if account.active {
             activeImage?.image = UIImage(named: "check")!.imageColor(NCBrandColor.shared.textView)
         } else {

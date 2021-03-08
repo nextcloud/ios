@@ -611,8 +611,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                
                 vcAccountRequest.accounts = accounts
                 
-                let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/100)
-                let height = min(CGFloat(accounts.count * 60 + 65), screenHeighMax)
+                let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
+                let height = min(CGFloat(accounts.count * Int(vcAccountRequest.heightCell) + 65), screenHeighMax)
                 
                 let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height)
                 popup.backgroundAlpha = 0.8
