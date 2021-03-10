@@ -442,13 +442,15 @@ class NCViewerImage: UIViewController {
                 if rateObserverToken != nil {
                     if let duration = self.player?.currentItem?.asset.duration {
                         let durationSeconds = Double(CMTimeGetSeconds(duration))
-                        let width = Double(self.progressView.bounds.width)
-                        let interval = (0.5 * durationSeconds) / width
-                        let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-                        if CMTIME_IS_VALID(time) {
-                            self.timeObserver = self.player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
-                                self?.updateVideoProgressBar(time: time)
-                            })
+                        if durationSeconds > 0 {
+                            let width = Double(self.progressView.bounds.width)
+                            let interval = (0.5 * durationSeconds) / width
+                            let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+                            if CMTIME_IS_VALID(time) && CMTimeCompare(time, .zero) != 0 {
+                                self.timeObserver = self.player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
+                                    self?.updateVideoProgressBar(time: time)
+                                })
+                            }
                         }
                     }
                 }
