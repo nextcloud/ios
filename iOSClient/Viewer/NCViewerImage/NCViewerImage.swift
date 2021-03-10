@@ -367,20 +367,6 @@ class NCViewerImage: UIViewController {
                 
                 currentViewerImageZoom!.imageView.layer.addSublayer(videoLayer!)
                 
-                /*
-                if let duration = player?.currentItem?.asset.duration {
-                    let durationSeconds = Double(CMTimeGetSeconds(duration))
-                    let width = Double(progressView.bounds.width)
-                    let interval = (0.5 * durationSeconds) / width
-                    let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-                    if CMTIME_IS_VALID(time) {
-                        timeObserver = player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
-                            self?.updateVideoProgressBar(time: time)
-                        })
-                    }
-                }
-                */
-                
                 // At end go back to start
                 NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
                     if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
@@ -392,7 +378,9 @@ class NCViewerImage: UIViewController {
                 rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
                 
                 if pictureInPictureOcId != metadata.ocId {
-                    player?.play()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        self.player?.play()
+                    }
                 }
             }
         }
@@ -445,11 +433,28 @@ class NCViewerImage: UIViewController {
             setToolBar()
             
             if ((player?.rate) == 1) {
+                
                 if let time = NCManageDatabase.shared.getVideoTime(metadata: self.currentMetadata) {
                     player?.seek(to: time)
                     player?.isMuted = CCUtility.getAudioMute()
                 }
+                
+                if rateObserverToken != nil {
+                    if let duration = self.player?.currentItem?.asset.duration {
+                        let durationSeconds = Double(CMTimeGetSeconds(duration))
+                        let width = Double(self.progressView.bounds.width)
+                        let interval = (0.5 * durationSeconds) / width
+                        let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+                        if CMTIME_IS_VALID(time) {
+                            self.timeObserver = self.player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
+                                self?.updateVideoProgressBar(time: time)
+                            })
+                        }
+                    }
+                }
+                
             } else {
+                
                 NCManageDatabase.shared.addVideoTime(metadata: self.currentMetadata, time: player?.currentTime())
                 print("Pause")
             }
