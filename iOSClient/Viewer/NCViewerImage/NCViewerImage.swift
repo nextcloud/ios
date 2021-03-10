@@ -376,8 +376,8 @@ class NCViewerImage: UIViewController {
                 
                 let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
                 if CMTIME_IS_VALID(time) {
-                    timeObserver = player?.addPeriodicTimeObserver(forInterval: time, queue: nil, using: { (time) in
-                        self.updateVideoProgressBar(time: time)
+                    timeObserver = player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
+                        self?.updateVideoProgressBar(time: time)
                     })
                 }
                 
