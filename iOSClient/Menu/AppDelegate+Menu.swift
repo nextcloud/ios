@@ -63,16 +63,6 @@ extension AppDelegate {
             )
         )
 
-        #if HC
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_im_create_new_file", tableName: "IMLocalizable", bundle: Bundle.main, value: "", comment: ""), icon: UIImage(named: "imagemeter")!.image(color: NCBrandColor.shared.icon, size: 50), action: { menuAction in
-                    _ = IMCreate.init(serverUrl: appDelegate.activeServerUrl, imagemeterViewerDelegate: NCNetworkingMain.shared)
-                }
-            )
-        )
-        #endif
-      
         if NCCommunication.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == NCGlobal.shared.editorText}) && !isEncrypted {
             let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
             actions.append(
