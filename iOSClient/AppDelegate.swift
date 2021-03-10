@@ -198,7 +198,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         NCSettingsBundleHelper.setVersionAndBuildNumber()
         
-        if account == "" { return}
+        if account == "" { return }
 
         NCNetworking.shared.verifyUploadZombie()
         
@@ -208,7 +208,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // L' applicazione entrerà in primo piano (attivo solo dopo il background)
     func applicationWillEnterForeground(_ application: UIApplication) {
         
-        if account == "" { return}
+        if account == "" { return }
 
         NCCommunicationCommon.shared.writeLog("Application will enter in foreground")
         
@@ -232,7 +232,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // L' applicazione si dimetterà dallo stato di attivo
     func applicationWillResignActive(_ application: UIApplication) {
         
-        if account == "" { return}
+        if account == "" { return }
         
         // Dismiss FileViewInFolder
         if activeFileViewInFolder != nil {
@@ -245,7 +245,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // L' applicazione è entrata nello sfondo
     func applicationDidEnterBackground(_ application: UIApplication) {
         
-        if account == "" { return}
+        if account == "" { return }
         
         NCCommunicationCommon.shared.writeLog("Application did enter in background")
         
@@ -269,7 +269,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc func initializeMain() {
         
-        if account == "" { return}
+        if account == "" { return }
 
         NCCommunicationCommon.shared.writeLog("initialize Main")
         
