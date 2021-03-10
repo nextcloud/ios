@@ -351,9 +351,7 @@ class NCViewerImage: UIViewController {
     //MARK: - Video
     
     func videoPlay(metadata: tableMetadata) {
-                
-        let widthProgressView = Double(self.progressView.bounds.width)
-        
+                                
         NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
 
         if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
@@ -369,19 +367,19 @@ class NCViewerImage: UIViewController {
                 
                 currentViewerImageZoom!.imageView.layer.addSublayer(videoLayer!)
                 
-                DispatchQueue.global().async {
-                    if let duration = self.player?.currentItem?.asset.duration {
-                        let durationSeconds = Double(CMTimeGetSeconds(duration))
-                        let interval = (0.5 * durationSeconds) / widthProgressView
-                        
-                        let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-                        if CMTIME_IS_VALID(time) {
-                            self.timeObserver = self.player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
-                                self?.updateVideoProgressBar(time: time)
-                            })
-                        }
+                /*
+                if let duration = player?.currentItem?.asset.duration {
+                    let durationSeconds = Double(CMTimeGetSeconds(duration))
+                    let width = Double(progressView.bounds.width)
+                    let interval = (0.5 * durationSeconds) / width
+                    let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+                    if CMTIME_IS_VALID(time) {
+                        timeObserver = player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
+                            self?.updateVideoProgressBar(time: time)
+                        })
                     }
                 }
+                */
                 
                 // At end go back to start
                 NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
