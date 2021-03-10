@@ -378,7 +378,7 @@ class NCViewerImage: UIViewController {
                 rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
                 
                 if pictureInPictureOcId != metadata.ocId {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         self.player?.play()
                     }
                 }
@@ -440,7 +440,7 @@ class NCViewerImage: UIViewController {
                 }
                 
                 if rateObserverToken != nil {
-                    if let duration = self.player?.currentItem?.asset.duration {
+                    if let duration = player?.currentItem?.asset.duration {
                         let durationSeconds = Double(CMTimeGetSeconds(duration))
                         if durationSeconds > 0 {
                             let width = Double(self.progressView.bounds.width)
