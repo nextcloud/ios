@@ -378,9 +378,7 @@ class NCViewerImage: UIViewController {
                 rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
                 
                 if pictureInPictureOcId != metadata.ocId {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        self.player?.play()
-                    }
+                    self.player?.play()
                 }
             }
         }
@@ -440,16 +438,18 @@ class NCViewerImage: UIViewController {
                 }
                 
                 if rateObserverToken != nil {
-                    if let duration = player?.currentItem?.asset.duration {
-                        let durationSeconds = Double(CMTimeGetSeconds(duration))
-                        if durationSeconds > 0 {
-                            let width = Double(self.progressView.bounds.width)
-                            let interval = (0.5 * durationSeconds) / width
-                            let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-                            if CMTIME_IS_VALID(time) && CMTimeCompare(time, .zero) != 0 {
-                                self.timeObserver = self.player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
-                                    self?.updateVideoProgressBar(time: time)
-                                })
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        if let duration = self.player?.currentItem?.asset.duration {
+                            let durationSeconds = Double(CMTimeGetSeconds(duration))
+                            if durationSeconds > 0 {
+                                let width = Double(self.progressView.bounds.width)
+                                let interval = (0.5 * durationSeconds) / width
+                                let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+                                if CMTIME_IS_VALID(time) && CMTimeCompare(time, .zero) != 0 {
+                                    self.timeObserver = self.player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
+                                        self?.updateVideoProgressBar(time: time)
+                                    })
+                                }
                             }
                         }
                     }
