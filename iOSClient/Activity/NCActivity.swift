@@ -222,8 +222,7 @@ extension NCActivity: UITableViewDataSource {
                 cell.subjectTrailingConstraint.constant = 50
                 cell.avatar.isHidden = false
                 
-                var fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + activity.user
-                fileNameLocalPath = fileNameLocalPath + ".png"
+                let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + activity.user + ".png"
                 if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                     if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                         cell.avatar.image = image

@@ -151,7 +151,6 @@ extension NCAccountRequest: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
        
         let account = accounts[indexPath.row]
-        var avatar = UIImage(named: "avatarCredentials")
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         cell.backgroundColor = NCBrandColor.shared.backgroundForm
        
@@ -161,24 +160,14 @@ extension NCAccountRequest: UITableViewDataSource {
         let activeImage = cell.viewWithTag(40) as? UIImageView
         
         avatarImage?.image = UIImage(named: "avatarCredentials")
+    
+        let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(account.user, urlBase: account.urlBase)) + "-" + account.user + ".png"
         
-        var fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(account.user, urlBase: account.urlBase) + "-" + account.user
-        fileNamePath = fileNamePath + ".png"
-
-        if var userImage = UIImage(contentsOfFile: fileNamePath) {
-            userImage = userImage.resizeImage(size: CGSize(width: 50, height: 50), isAspectRation: true)!
-            let userImageView = UIImageView(image: userImage)
-            userImageView.avatar(roundness: 2, borderWidth: 1, borderColor: NCBrandColor.shared.avatarBorder, backgroundColor: .clear)
-            UIGraphicsBeginImageContext(userImageView.bounds.size)
-            userImageView.layer.render(in: UIGraphicsGetCurrentContext()!)
-            if let newAvatar = UIGraphicsGetImageFromCurrentImageContext() {
-                avatar = newAvatar
-            }
-            UIGraphicsEndImageContext()
+        if let userImage = UIImage(contentsOfFile: fileNamePath) {
+            avatarImage?.avatar(roundness: 2, borderWidth: 1, borderColor: NCBrandColor.shared.avatarBorder, backgroundColor: .clear)
+            avatarImage?.image = userImage
         }
-        
-        avatarImage?.image = avatar
-        
+                
         userLabel?.text = account.user.uppercased()
         urlLabel?.text = (URL(string: account.urlBase)?.host ?? "")
 

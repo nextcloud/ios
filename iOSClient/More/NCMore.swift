@@ -327,8 +327,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.status.text = ""
             cell.displayName.text = ""
             
-            var fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + appDelegate.user
-            fileNamePath = fileNamePath + ".png"
+            let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
             
             if let themingAvatarFile = UIImage.init(contentsOfFile: fileNamePath) {
                 cell.avatar?.image = themingAvatarFile

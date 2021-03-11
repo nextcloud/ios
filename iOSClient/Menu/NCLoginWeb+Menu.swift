@@ -36,8 +36,7 @@ extension NCLoginWeb {
         for account in accounts {
             
             let title = account.user + " " + (URL(string: account.urlBase)?.host ?? "")
-            var fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(account.user, urlBase: account.urlBase) + "-" + account.user
-            fileNamePath = fileNamePath + ".png"
+            let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(account.user, urlBase: account.urlBase)) + "-" + account.user + ".png"
 
             if var userImage = UIImage(contentsOfFile: fileNamePath) {
                 userImage = userImage.resizeImage(size: CGSize(width: 50, height: 50), isAspectRation: true)!
