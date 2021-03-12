@@ -287,6 +287,26 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         })
     }
     
+    // MARK: - Print
+    
+    func printDocument(metadata: tableMetadata) {
+    
+        let fileNameURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
+        
+        if UIPrintInteractionController.canPrint(fileNameURL) {
+            
+            let printInfo = UIPrintInfo(dictionary: nil)
+            printInfo.jobName = fileNameURL.lastPathComponent
+            printInfo.outputType = .photo
+
+            let printController = UIPrintInteractionController.shared
+            printController.printInfo = printInfo
+            printController.showsNumberOfCopies = false
+            printController.printingItem = fileNameURL
+            printController.present(animated: true, completionHandler: nil)
+        }
+    }
+    
     // MARK: - Context Menu COnfiguration
     
     @available(iOS 13.0, *)

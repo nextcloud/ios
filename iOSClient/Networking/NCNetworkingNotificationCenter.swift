@@ -108,6 +108,10 @@ import Foundation
                         
                         NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: true)
                        
+                    case NCGlobal.shared.selectorPrint:
+                        
+                        NCCollectionCommon.shared.printDocument(metadata: metadata)
+                        
                     case NCGlobal.shared.selectorSaveAlbum:
                         
                         NCCollectionCommon.shared.saveAlbum(metadata: metadata)

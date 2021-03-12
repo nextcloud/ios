@@ -166,6 +166,25 @@ extension NCCollectionViewCommon {
         }
         
         //
+        // PRINT
+        //
+        if !metadata.directory && (metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf") {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_print_", comment: ""),
+                    icon: UIImage(named: "print")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    action: { menuAction in
+                        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                            NCCollectionCommon.shared.printDocument(metadata: metadata)
+                        } else {
+                            NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorPrint)
+                        }
+                    }
+                )
+            )
+        }
+        
+        //
         // SAVE
         //
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {

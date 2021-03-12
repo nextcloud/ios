@@ -198,6 +198,7 @@ class NCGlobal: NSObject {
     let selectorLoadCopy                            = "loadCopy"
     let selectorLoadOffline                         = "loadOffline"
     let selectorOpenIn                              = "openIn"
+    let selectorPrint                               = "print"
     let selectorUploadAutoUpload                    = "uploadAutoUpload"
     let selectorUploadAutoUploadAll                 = "uploadAutoUploadAll"
     let selectorUploadFile                          = "uploadFile"
