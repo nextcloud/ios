@@ -385,6 +385,10 @@ class NCViewerImage: UIViewController {
     
     func videoStop() {
         
+        player?.pause()
+        player?.seek(to: CMTime.zero)
+        progressView.progress = 0
+        
         if let timeObserver = timeObserver {
             player?.removeTimeObserver(timeObserver)
             self.timeObserver = nil
@@ -396,11 +400,7 @@ class NCViewerImage: UIViewController {
             NCKTVHTTPCache.shared.stopProxy()
             self.rateObserver = nil
         }
-        
-        player?.pause()
-        player?.seek(to: CMTime.zero)
-        progressView.progress = 0
-        
+               
         videoLayer?.removeFromSuperlayer()
     }
     
