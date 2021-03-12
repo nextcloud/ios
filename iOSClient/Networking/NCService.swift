@@ -83,9 +83,15 @@ class NCService: NSObject {
                             DispatchQueue.global().async {
                                 
                                 if let image = UIImage(data: data!) {
-                                    try? FileManager.default.removeItem(atPath: fileNamePath)
-                                    if let data = image.pngData() {
-                                        try? data.write(to: URL(fileURLWithPath: fileNamePath))
+                                    
+                                    NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
+                                    
+                                    do {
+                                        if let data = image.pngData() {
+                                            try data.write(to: URL(fileURLWithPath: fileNamePath))
+                                        }
+                                    } catch {
+                                        print(error)
                                     }
                                 }
                             }

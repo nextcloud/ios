@@ -242,7 +242,7 @@ import Queuer
         }
     }
     
-    func cancelAllTask() {
+    @objc func cancelAllTask() {
         NCCommunication.shared.getSessionManager().getAllTasks  { tasks in
             for task in tasks {
                 task.cancel()

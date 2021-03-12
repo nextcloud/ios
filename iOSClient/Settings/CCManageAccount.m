@@ -482,6 +482,9 @@
     tableAccount *tableAccount = [[NCManageDatabase shared] setAccountActive:account];
     if (tableAccount) {
         
+        [[NCOperationQueue shared] cancelAllQueue];
+        [[NCNetworking shared] cancelAllTask];
+        
         [appDelegate settingAccount:tableAccount.account urlBase:tableAccount.urlBase user:tableAccount.user userId:tableAccount.userId password:[CCUtility getPassword:tableAccount.account]];
  
         // Init home

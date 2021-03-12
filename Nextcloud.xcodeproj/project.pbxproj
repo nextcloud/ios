@@ -819,7 +819,6 @@
 		F70211F31BAC56E9003FC03E /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				F7CA213725F1372B00826ABB /* Account Request */,
 				F710D1FA24057E5E00A6033D /* ActionSheetHeaderView */,
 				F702F2E325EE5C82008F8E80 /* AudioRecorder */,
 				F7DFB7E9219C5A0500680748 /* Create cloud */,
@@ -1447,6 +1446,7 @@
 				F7C1CDD91E6DFC6F005D92BE /* Brand */,
 				F70211F31BAC56E9003FC03E /* Main */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
+				F7CA213725F1372B00826ABB /* Account Request */,
 				F7A321621E9E37960069AD1B /* Activity */,
 				F7AE00F6230E8191007ACF8A /* BrowserWeb */,
 				F7BAAD951ED5A63D00B7EAD4 /* Data */,

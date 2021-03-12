@@ -353,7 +353,8 @@
 {
     [[NCNetworking shared] cancelAllTransferWithAccount:appDelegate.account completion:^{ }];
     [[NCOperationQueue shared] cancelAllQueue];
-
+    [[NCNetworking shared] cancelAllTask];
+    
     [[NSURLCache sharedURLCache] setMemoryCapacity:0];
     [[NSURLCache sharedURLCache] setDiskCapacity:0];
     [KTVHTTPCache cacheDeleteAllCaches];

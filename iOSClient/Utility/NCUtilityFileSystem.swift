@@ -51,7 +51,9 @@ class NCUtilityFileSystem: NSObject {
         do {
             let attributes = try fileManager.attributesOfItem(atPath: filePath)
             return attributes[FileAttributeKey.size] as? Int64 ?? 0
-        } catch { }
+        } catch {
+            print(error)
+        }
         return 0
     }
     
@@ -60,7 +62,9 @@ class NCUtilityFileSystem: NSObject {
         do {
             let attributes = try fileManager.attributesOfItem(atPath: filePath)
             return attributes[FileAttributeKey.modificationDate] as? NSDate
-        } catch { }
+        } catch {
+            print(error)
+        }
         return nil
     }
     
@@ -69,7 +73,9 @@ class NCUtilityFileSystem: NSObject {
         do {
             let attributes = try fileManager.attributesOfItem(atPath: filePath)
             return attributes[FileAttributeKey.creationDate] as? NSDate
-        } catch { }
+        } catch {
+            print(error)
+        }
         return nil
     }
     
@@ -78,13 +84,16 @@ class NCUtilityFileSystem: NSObject {
         do {
             try FileManager.default.removeItem(at: fileURL)
         }
-        catch {}
+        catch {
+            print(error)
+        }
         
         do {
             try text.write(to: fileURL, atomically: true, encoding: .utf8)
             return true
         }
         catch {
+            print(error)
             return false
         }
     }
@@ -94,7 +103,9 @@ class NCUtilityFileSystem: NSObject {
         do {
             try FileManager.default.removeItem(atPath: filePath)
         }
-        catch {}
+        catch {
+            print(error)
+        }
     }
     
     @objc func moveFile(atPath: String, toPath: String) {
