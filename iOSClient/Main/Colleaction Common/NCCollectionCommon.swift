@@ -93,6 +93,23 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         images.buttonStop = UIImage(named: "stop")!.image(color: NCBrandColor.shared.graySoft, size: 50)
     }
     
+    func loadImage(named: String, systemName: String, color: UIColor, size: CGFloat) -> UIImage {
+        
+        var image: UIImage?
+        
+        if #available(iOS 13.0, *) {
+            image = UIImage(systemName: systemName)
+        } else {
+            image = UIImage(named: named)
+        }
+        
+        if image != nil {
+            return image!.image(color: color, size: size)
+        }
+        
+        return  UIImage(named: "file")!.image(color: color, size: size)
+    }
+    
     // MARK: - NCSelect + Delegate
     
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool) {
@@ -301,7 +318,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
 
             let printController = UIPrintInteractionController.shared
             printController.printInfo = printInfo
-            printController.showsNumberOfCopies = false
+            printController.showsNumberOfCopies = true
             printController.printingItem = fileNameURL
             printController.present(animated: true, completionHandler: nil)
         }
