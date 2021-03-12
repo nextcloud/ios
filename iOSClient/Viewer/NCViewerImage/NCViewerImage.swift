@@ -385,10 +385,11 @@ class NCViewerImage: UIViewController {
     
     func videoStop() {
         
-        player?.pause()
-        player?.seek(to: CMTime.zero)
-        progressView.progress = 0
-                
+        if let timeObserver = timeObserver {
+            player?.removeTimeObserver(timeObserver)
+            self.timeObserver = nil
+        }
+        
         if rateObserver != nil {
             player?.removeObserver(self, forKeyPath: "rate")
             NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
@@ -396,18 +397,15 @@ class NCViewerImage: UIViewController {
             self.rateObserver = nil
         }
         
-        if let timeObserver = timeObserver {
-            player?.removeTimeObserver(timeObserver)
-            self.timeObserver = nil
-        }
+        player?.pause()
+        player?.seek(to: CMTime.zero)
+        progressView.progress = 0
         
         videoLayer?.removeFromSuperlayer()
     }
     
     func updateVideoProgressBar(time: CMTime) {
-        
-        if currentMetadata.livePhoto { return }
-        
+                
         if let duration = player?.currentItem?.asset.duration {
             let durationSeconds = Float(CMTimeGetSeconds(duration))
             if durationSeconds > 0 {
@@ -432,7 +430,7 @@ class NCViewerImage: UIViewController {
                     player?.isMuted = CCUtility.getAudioMute()
                 }
                 
-                if rateObserver != nil {
+                if rateObserver != nil && !currentMetadata.livePhoto {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         if let duration = self.player?.currentItem?.asset.duration {
                             let durationSeconds = Double(CMTimeGetSeconds(duration))
