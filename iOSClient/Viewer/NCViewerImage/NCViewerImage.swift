@@ -57,9 +57,8 @@ class NCViewerImage: UIViewController {
     
     private var player: AVPlayer?
     private var videoLayer: AVPlayerLayer?
-    private var timeObserverToken: Any?
-    private var rateObserverToken: Any?
     private var timeObserver: Any?
+    private var rateObserver: Any?
     var pictureInPictureOcId: String = ""
     var textColor: UIColor = NCBrandColor.shared.textView
 
@@ -375,7 +374,7 @@ class NCViewerImage: UIViewController {
                     }
                 }
                             
-                rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+                rateObserver = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
                 
                 if pictureInPictureOcId != metadata.ocId {
                     self.player?.play()
@@ -386,32 +385,28 @@ class NCViewerImage: UIViewController {
     
     func videoStop() {
         
-        if let timeObserver = timeObserver {
-            if player?.rate == 1 {
-                player?.removeTimeObserver(timeObserver)
-            }
-        }
-        
         player?.pause()
         player?.seek(to: CMTime.zero)
         progressView.progress = 0
                 
-        if rateObserverToken != nil {
+        if rateObserver != nil {
             player?.removeObserver(self, forKeyPath: "rate")
             NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
             NCKTVHTTPCache.shared.stopProxy()
-            self.rateObserverToken = nil
+            self.rateObserver = nil
         }
         
-        if let timeObserverToken = timeObserverToken {
-            player?.removeTimeObserver(timeObserverToken)
-            self.timeObserverToken = nil
+        if let timeObserver = timeObserver {
+            player?.removeTimeObserver(timeObserver)
+            self.timeObserver = nil
         }
         
         videoLayer?.removeFromSuperlayer()
     }
     
     func updateVideoProgressBar(time: CMTime) {
+        
+        if currentMetadata.livePhoto { return }
         
         if let duration = player?.currentItem?.asset.duration {
             let durationSeconds = Float(CMTimeGetSeconds(duration))
@@ -437,8 +432,8 @@ class NCViewerImage: UIViewController {
                     player?.isMuted = CCUtility.getAudioMute()
                 }
                 
-                if rateObserverToken != nil {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                if rateObserver != nil {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         if let duration = self.player?.currentItem?.asset.duration {
                             let durationSeconds = Double(CMTimeGetSeconds(duration))
                             if durationSeconds > 0 {
