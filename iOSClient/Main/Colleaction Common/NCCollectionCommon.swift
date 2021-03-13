@@ -98,16 +98,16 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         var image: UIImage?
         
         if #available(iOS 13.0, *) {
-            image = UIImage(systemName: named)
+            image = UIImage(systemName: named)?.imageColor(color)
             if image == nil {
-                image = UIImage(named: named)
+                image = UIImage(named: named)?.image(color: color, size: size)
             }
         } else {
-            image = UIImage(named: named)
+            image = UIImage(named: named)?.image(color: color, size: size)
         }
         
         if image != nil {
-            return image!.image(color: color, size: size)
+            return image!
         }
         
         return  UIImage(named: "file")!.image(color: color, size: size)

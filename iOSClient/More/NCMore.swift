@@ -104,14 +104,14 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // ITEM : Transfer
         item = NCCommunicationExternalSite()
         item.name = "_transfers_"
-        item.icon = "load"
+        item.icon = "arrow.left.arrow.right"
         item.url = "segueTransfers"
         functionMenu.append(item)
 
         // ITEM : Recent
         item = NCCommunicationExternalSite()
         item.name = "_recent_"
-        item.icon = "recent"
+        item.icon = "clock.arrow.circlepath"
         item.url = "segueRecent"
         functionMenu.append(item)
         
