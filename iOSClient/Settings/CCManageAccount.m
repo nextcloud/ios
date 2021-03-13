@@ -72,7 +72,7 @@
             
         } else {
             
-            avatar = [[NCCollectionCommon shared] loadImageWithNamed:@"avatar" color:NCBrandColor.shared.icon size:35];
+            avatar = [[NCCollectionCommon shared] loadImageWithNamed:@"avatar" color:NCBrandColor.shared.icon size:35 forcedResizeSF:false];
         }
         
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
@@ -127,7 +127,7 @@
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
         [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[[NCCollectionCommon shared] loadImageWithNamed:@"trash" color:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[NCCollectionCommon shared] loadImageWithNamed:@"trash" color:NCBrandColor.shared.icon size:25 forcedResizeSF:false] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         row.action.formSelector = @selector(deleteAccount:);
         if (accounts.count == 0) row.disabled = @YES;
@@ -240,7 +240,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[NCCollectionCommon shared] loadImageWithNamed:@"network" color:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[NCCollectionCommon shared] loadImageWithNamed:@"network" color:NCBrandColor.shared.icon size:25 forcedResizeSF:false] forKey:@"imageView.image"];
         row.value = accountActive.webpage;
         [section addFormRow:row];
     }
