@@ -74,7 +74,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     
     func emptyDataSetView(_ view: NCEmptyView) {
         
-        view.emptyImage.image = UIImage.init(named: "notification")?.image(color: .gray, size: UIScreen.main.bounds.width)
+        view.emptyImage.image = UIImage.init(named: "bell")?.image(color: .gray, size: UIScreen.main.bounds.width)
         view.emptyTitle.text = NSLocalizedString("_no_notification_", comment: "")
         view.emptyDescription.text = ""
     }
@@ -107,7 +107,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         if let image = image {
             cell.icon.image = image.image(color:  NCBrandColor.shared.brandElement, size: 25)
         } else {
-            cell.icon.image = #imageLiteral(resourceName: "notification").image(color: NCBrandColor.shared.brandElement, size: 25)
+            cell.icon.image = NCCollectionCommon.shared.loadImage(named: "bell", color: NCBrandColor.shared.brandElement)
         }
         
         // Avatar
