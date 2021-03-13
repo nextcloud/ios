@@ -110,7 +110,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
-                    icon: UIImage(named: "details")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCCollectionCommon.shared.loadImage(named: "info"),
                     action: { menuAction in
                         NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
                     }
@@ -222,7 +222,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
-                    icon: UIImage(named: "rename")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCCollectionCommon.shared.loadImage(named: "pencil"),
                     action: { menuAction in
                         
                         if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
