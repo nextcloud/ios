@@ -149,7 +149,7 @@
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[[UIImage imageNamed:@"settings"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[NCCollectionCommon shared] loadImageWithNamed:@"gear" color:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
     row.action.viewControllerClass = [CCAdvanced class];
     [section addFormRow:row];
 

@@ -169,7 +169,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // ITEM : Settings
         item = NCCommunicationExternalSite()
         item.name = "_settings_"
-        item.icon = "settings"
+        item.icon = "gear"
         item.url = "segueSettings"
         settingsMenu.append(item)
 
@@ -214,11 +214,11 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                         item = NCCommunicationExternalSite()
                         item.name = externalSite.name
                         item.url = externalSite.url
-                        item.icon = "world"
+                        item.icon = "network"
                         externalSiteMenu.append(item)
                     }
                     if (externalSite.type == "settings") {
-                        item.icon = "settings"
+                        item.icon = "gear"
                         settingsMenu.append(item)
                     }
                     if (externalSite.type == "quota") {
