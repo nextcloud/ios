@@ -327,7 +327,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         }
     }
     
-    // MARK: - Context Menu COnfiguration
+    // MARK: - Context Menu Configuration
     
     @available(iOS 13.0, *)
     func contextMenuConfiguration(metadata: tableMetadata, viewController: UIViewController, enableDeleteLocal: Bool, enableViewInFolder: Bool) -> UIMenu {
