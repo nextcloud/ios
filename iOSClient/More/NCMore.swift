@@ -150,7 +150,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         if #available(iOS 13.0, *) {
             item = NCCommunicationExternalSite()
             item.name = "_scanned_images_"
-            item.icon = "scan"
+            item.icon = "doc.text.viewfinder"
             item.url = "openStoryboardScan"
             functionMenu.append(item)
         }
@@ -374,7 +374,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 item = settingsMenu[indexPath.row]
             }
 
-            cell.imageIcon?.image = UIImage.init(named: item.icon)?.image(color: NCBrandColor.shared.icon, size: 25)
+            cell.imageIcon?.image = NCCollectionCommon.shared.loadImage(named: item.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
             cell.labelText.textColor = NCBrandColor.shared.textView
             
