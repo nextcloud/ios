@@ -171,7 +171,7 @@ extension NCMedia {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_delete_selected_files_", comment: ""),
-                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCCollectionCommon.shared.loadImage(named: "trash"),
                     action: { menuAction in
                         self.isEditMode = false
                         for ocId in self.selectOcId {

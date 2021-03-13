@@ -35,7 +35,7 @@ extension NCTrash {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_trash_delete_selected_", comment: ""),
-                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCCollectionCommon.shared.loadImage(named: "trash"),
                     action: { menuAction in
                         let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
@@ -56,7 +56,7 @@ extension NCTrash {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_trash_delete_all_", comment: ""),
-                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCCollectionCommon.shared.loadImage(named: "trash"),
                     action: { menuAction in
                         let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_", comment: ""), message: "", preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
@@ -112,7 +112,7 @@ extension NCTrash {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_", comment: ""),
-                icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
+                icon: NCCollectionCommon.shared.loadImage(named: "trash"),
                 action: { menuAction in
                     self.deleteItem(with: objectId)
                 }
@@ -171,7 +171,7 @@ extension NCTrash {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_", comment: ""),
-                icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
+                icon: NCCollectionCommon.shared.loadImage(named: "trash"),
                 action: { menuAction in
                     self.deleteItem(with: objectId)
                 }

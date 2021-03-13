@@ -93,7 +93,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         images.buttonStop = UIImage(named: "stop")!.image(color: NCBrandColor.shared.graySoft, size: 50)
     }
     
-    func loadImage(named: String, color: UIColor = NCBrandColor.shared.icon, size: CGFloat = 50) -> UIImage {
+    @objc func loadImage(named: String, color: UIColor = NCBrandColor.shared.icon, size: CGFloat = 50) -> UIImage {
         
         var image: UIImage?
         

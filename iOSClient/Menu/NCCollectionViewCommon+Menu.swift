@@ -291,7 +291,7 @@ extension NCCollectionViewCommon {
         actions.append(
             NCMenuAction(
                 title: titleDelete,
-                icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
+                icon: NCCollectionCommon.shared.loadImage(named: "trash"),
                 action: { menuAction in
                     let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
@@ -459,7 +459,7 @@ extension NCCollectionViewCommon {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_selected_files_", comment: ""),
-                icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
+                icon: NCCollectionCommon.shared.loadImage(named: "trash"),
                 action: { menuAction in
                     let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in

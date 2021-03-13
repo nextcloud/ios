@@ -292,7 +292,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: titleDelete,
-                    icon: UIImage(named: "trash")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCCollectionCommon.shared.loadImage(named: "trash"),
                     action: { menuAction in
                         
                         let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
