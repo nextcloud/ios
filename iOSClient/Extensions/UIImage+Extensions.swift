@@ -142,8 +142,7 @@ extension UIImage {
         if #available(iOS 13.0, *) {
             return self.withTintColor(color, renderingMode: .alwaysOriginal)
         } else {
-            let format = imageRendererFormat
-            return UIGraphicsImageRenderer(size: size, format: format).image { _ in
+            return UIGraphicsImageRenderer(size: size, format: imageRendererFormat).image { _ in
                 color.set()
                 withRenderingMode(.alwaysTemplate).draw(at: .zero)
             }
