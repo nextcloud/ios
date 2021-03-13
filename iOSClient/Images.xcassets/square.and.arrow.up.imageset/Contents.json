@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "export-variant.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

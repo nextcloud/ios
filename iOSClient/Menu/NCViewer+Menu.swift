@@ -110,7 +110,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_open_in_", comment: ""),
-                    icon: UIImage(named: "openFile")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCCollectionCommon.shared.loadImage(named: "square.and.arrow.up"),
                     action: { menuAction in
                         NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
                     }
@@ -143,7 +143,7 @@ extension NCViewer {
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
             
             var title: String = NSLocalizedString("_save_selected_files_", comment: "")
-            var icon = UIImage(named: "saveSelectedFiles")!.image(color: NCBrandColor.shared.icon, size: 50)
+            var icon = NCCollectionCommon.shared.loadImage(named: "square.and.arrow.down")
             let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
             if metadataMOV != nil {
                 title = NSLocalizedString("_livephoto_save_", comment: "")
@@ -228,7 +228,7 @@ extension NCViewer {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_copy_file_", comment: ""),
-                icon: UIImage(named: "copy")!.image(color: NCBrandColor.shared.icon, size: 50),
+                icon: NCCollectionCommon.shared.loadImage(named: "doc.on.doc"),
                 action: { menuAction in
                     self.appDelegate.pasteboardOcIds = [metadata.ocId];
                     NCCollectionCommon.shared.copyPasteboard()
