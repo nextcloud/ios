@@ -196,7 +196,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_move_or_copy_", comment: ""),
-                    icon: UIImage(named: "move")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCCollectionCommon.shared.loadImage(named: "arrow.up.right.square"),
                     action: { menuAction in
                         
                         let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
@@ -244,7 +244,7 @@ extension NCViewer {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_view_in_folder_", comment: ""),
-                        icon: NCCollectionCommon.shared.loadImage(named: "arrow.up.forward.app"),
+                        icon: NCCollectionCommon.shared.loadImage(named: "folder-search-outline"),
                         action: { menuAction in
                             NCCollectionCommon.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
                         }
@@ -261,7 +261,7 @@ extension NCViewer {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_download_image_max_", comment: ""),
-                        icon: UIImage(named: "downloadImageFullRes")!.image(color: NCBrandColor.shared.icon, size: 50),
+                        icon: NCCollectionCommon.shared.loadImage(named: "square.and.arrow.down"),
                         action: { menuAction in
                             NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
                         }

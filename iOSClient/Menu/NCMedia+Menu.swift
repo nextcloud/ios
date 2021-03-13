@@ -148,7 +148,7 @@ extension NCMedia {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
-                    icon: UIImage(named: "move")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCCollectionCommon.shared.loadImage(named: "arrow.up.right.square"),
                     action: { menuAction in
                         self.isEditMode = false
                         var meradatasSelect = [tableMetadata]()

@@ -246,7 +246,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_move_or_copy_", comment: ""),
-                    icon: UIImage(named: "move")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCCollectionCommon.shared.loadImage(named: "arrow.up.right.square"),
                     action: { menuAction in
                         NCCollectionCommon.shared.openSelectView(items: [metadata], viewController: self)
                     }
@@ -419,7 +419,7 @@ extension NCCollectionViewCommon {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
-                icon: UIImage(named: "move")!.image(color: NCBrandColor.shared.icon, size: 50),
+                icon: NCCollectionCommon.shared.loadImage(named: "arrow.up.right.square"),
                 action: { menuAction in
                     var meradatasSelect = [tableMetadata]()
                     for ocId in selectOcId {
