@@ -119,6 +119,25 @@ extension NCViewer {
         }
         
         //
+        // PRINT
+        //
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_print_", comment: ""),
+                    icon: NCCollectionCommon.shared.loadImage(named: "printer"),
+                    action: { menuAction in
+                        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                            NCCollectionCommon.shared.printDocument(metadata: metadata)
+                        } else {
+                            NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorPrint)
+                        }
+                    }
+                )
+            )
+        }
+        
+        //
         // SAVE IMAGE / VIDEO
         //
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
