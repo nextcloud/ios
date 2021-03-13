@@ -72,8 +72,7 @@
             
         } else {
             
-            UIImage *image = [UIImage imageNamed:@"avatarCredentials"];
-            avatar = [image imageWithColor:NCBrandColor.shared.icon size:35];
+            avatar = [[NCCollectionCommon shared] loadImageWithNamed:@"avatar" color:NCBrandColor.shared.icon size:35];
         }
         
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
