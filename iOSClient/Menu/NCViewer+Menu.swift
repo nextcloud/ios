@@ -90,7 +90,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: titleOffline,
-                    icon: UIImage(named: "offline")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCCollectionCommon.shared.loadImage(named: "tray.and.arrow.down"),
                     action: { menuAction in
                         if ((localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) && metadata.session == "") {
                             

@@ -143,7 +143,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         imageFileSharing.image = UIImage.init(named: "share")!.image(color: .gray, size: 50)
         imageExternalSite.image = UIImage.init(named: "externalsites")!.image(color: .gray, size: 50)
         imageEndToEndEncryption.image = UIImage.init(named: "lock")!.image(color: .gray, size: 50)
-        imageActivity.image = UIImage.init(named: "activity")!.image(color: .gray, size: 50)
+        imageActivity.image = UIImage.init(named: "bolt")!.image(color: .gray, size: 50)
         imageNotification.image = NCCollectionCommon.shared.loadImage(named: "bell", color: .gray)
         imageDeletedFiles.image = UIImage.init(named: "delete")!.image(color: .gray, size: 50)
         imageText.image = UIImage.init(named: "text")!.image(color: .gray, size: 50)

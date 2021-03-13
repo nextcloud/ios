@@ -125,7 +125,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
-                    icon: UIImage(named: "offline")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCCollectionCommon.shared.loadImage(named: "tray.and.arrow.down"),
                     action: { menuAction in
                         if isOffline {
                             if metadata.directory {

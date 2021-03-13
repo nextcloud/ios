@@ -125,7 +125,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // ITEM : Activity
         item = NCCommunicationExternalSite()
         item.name = "_activity_"
-        item.icon = "activity"
+        item.icon = "bolt"
         item.url = "segueActivity"
         functionMenu.append(item)
 
@@ -134,7 +134,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         if isFilesSharingEnabled {
             item = NCCommunicationExternalSite()
             item.name = "_list_shares_"
-            item.icon = "shareFill"
+            item.icon = "share"
             item.url = "segueShares"
             functionMenu.append(item)
         }
@@ -142,7 +142,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // ITEM : Offline
         item = NCCommunicationExternalSite()
         item.name = "_manage_file_offline_"
-        item.icon = "offline"
+        item.icon = "tray.and.arrow.down"
         item.url = "segueOffline"
         functionMenu.append(item)
 
