@@ -88,7 +88,7 @@ class NCViewerImageZoom: UIViewController {
         }
         
         if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
-            statusViewImage.image = UIImage.init(named: "livePhoto")!.image(color: .gray, size: 50)
+            statusViewImage.image = NCUtility.shared.loadImage(named: "livephoto", color: .gray)
             statusLabel.text = "LIVE"
         }  else {
             statusViewImage.image = nil

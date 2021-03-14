@@ -110,7 +110,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
-                    icon: NCCollectionCommon.shared.loadImage(named: "info"),
+                    icon: NCUtility.shared.loadImage(named: "info"),
                     action: { menuAction in
                         NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
                     }
@@ -125,7 +125,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
-                    icon: NCCollectionCommon.shared.loadImage(named: "tray.and.arrow.down"),
+                    icon: NCUtility.shared.loadImage(named: "tray.and.arrow.down"),
                     action: { menuAction in
                         if isOffline {
                             if metadata.directory {
@@ -157,7 +157,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_open_in_", comment: ""),
-                    icon: NCCollectionCommon.shared.loadImage(named: "square.and.arrow.up"),
+                    icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
                     action: { menuAction in
                         NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
                     }
@@ -172,7 +172,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_print_", comment: ""),
-                    icon: NCCollectionCommon.shared.loadImage(named: "printer"),
+                    icon: NCUtility.shared.loadImage(named: "printer"),
                     action: { menuAction in
                         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                             NCCollectionCommon.shared.printDocument(metadata: metadata)
@@ -189,11 +189,11 @@ extension NCCollectionViewCommon {
         //
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
             var title: String = NSLocalizedString("_save_selected_files_", comment: "")
-            var icon = NCCollectionCommon.shared.loadImage(named: "square.and.arrow.down")
+            var icon = NCUtility.shared.loadImage(named: "square.and.arrow.down")
             let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
             if metadataMOV != nil {
                 title = NSLocalizedString("_livephoto_save_", comment: "")
-                icon = UIImage(named: "livePhoto")!.image(color: NCBrandColor.shared.icon, size: 50)
+                icon = NCUtility.shared.loadImage(named: "livephoto")
             }
             
             actions.append(
@@ -222,7 +222,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
-                    icon: NCCollectionCommon.shared.loadImage(named: "pencil"),
+                    icon: NCUtility.shared.loadImage(named: "pencil"),
                     action: { menuAction in
                         
                         if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
@@ -246,7 +246,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_move_or_copy_", comment: ""),
-                    icon: NCCollectionCommon.shared.loadImage(named: "arrow.up.right.square"),
+                    icon: NCUtility.shared.loadImage(named: "arrow.up.right.square"),
                     action: { menuAction in
                         NCCollectionCommon.shared.openSelectView(items: [metadata], viewController: self)
                     }
@@ -261,7 +261,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_copy_file_", comment: ""),
-                    icon: NCCollectionCommon.shared.loadImage(named: "doc.on.doc"),
+                    icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
                     action: { menuAction in
                         self.appDelegate.pasteboardOcIds = [metadata.ocId];
                         NCCollectionCommon.shared.copyPasteboard()
@@ -277,7 +277,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
-                    icon: NCCollectionCommon.shared.loadImage(named: "arrow.up.forward.app"),
+                    icon: NCUtility.shared.loadImage(named: "arrow.up.forward.app"),
                     action: { menuAction in
                         NCCollectionCommon.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
                     }
@@ -291,7 +291,7 @@ extension NCCollectionViewCommon {
         actions.append(
             NCMenuAction(
                 title: titleDelete,
-                icon: NCCollectionCommon.shared.loadImage(named: "trash"),
+                icon: NCUtility.shared.loadImage(named: "trash"),
                 action: { menuAction in
                     let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
@@ -391,7 +391,7 @@ extension NCCollectionViewCommon {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_save_selected_files_", comment: ""),
-                icon: NCCollectionCommon.shared.loadImage(named: "square.and.arrow.down"),
+                icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
                 action: { menuAction in
                     for ocId in selectOcId {
                         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
@@ -419,7 +419,7 @@ extension NCCollectionViewCommon {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
-                icon: NCCollectionCommon.shared.loadImage(named: "arrow.up.right.square"),
+                icon: NCUtility.shared.loadImage(named: "arrow.up.right.square"),
                 action: { menuAction in
                     var meradatasSelect = [tableMetadata]()
                     for ocId in selectOcId {
@@ -441,7 +441,7 @@ extension NCCollectionViewCommon {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_copy_file_", comment: ""),
-                icon: NCCollectionCommon.shared.loadImage(named: "doc.on.doc"),
+                icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
                 action: { menuAction in
                     self.appDelegate.pasteboardOcIds.removeAll()
                     for ocId in selectOcId {
@@ -459,7 +459,7 @@ extension NCCollectionViewCommon {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_selected_files_", comment: ""),
-                icon: NCCollectionCommon.shared.loadImage(named: "trash"),
+                icon: NCUtility.shared.loadImage(named: "trash"),
                 action: { menuAction in
                     let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in

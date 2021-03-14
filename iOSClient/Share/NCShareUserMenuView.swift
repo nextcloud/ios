@@ -102,7 +102,7 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         fieldSetExpirationDate.inputView = UIView()
         
         imageNoteToRecipient.image = UIImage.init(named: "file_txt")!.image(color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
-        imageUnshare.image = NCCollectionCommon.shared.loadImage(named: "trash", color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
+        imageUnshare.image = NCUtility.shared.loadImage(named: "trash", color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
     }
     
     override func willMove(toWindow newWindow: UIWindow?) {

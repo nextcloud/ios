@@ -63,7 +63,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
     
     // MARK: -
     
-    @objc func createImagesThemingColor() {
+    func createImagesThemingColor() {
         
         images.file = UIImage.init(named: "file")!
         
@@ -73,7 +73,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         
         images.favorite = UIImage(named: "favorite")!.image(color: NCBrandColor.shared.yellowFavorite, size: 50)
         images.comment = UIImage(named: "comment")!.image(color: NCBrandColor.shared.graySoft, size: 50)
-        images.livePhoto = UIImage(named: "livePhoto")!.image(color: NCBrandColor.shared.textView, size: 50)
+        images.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: NCBrandColor.shared.textView)
         images.offlineFlag = UIImage.init(named: "offlineFlag")!
         images.local = UIImage.init(named: "local")!
             
@@ -91,31 +91,6 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         
         images.buttonMore = UIImage(named: "more")!.image(color: NCBrandColor.shared.graySoft, size: 50)
         images.buttonStop = UIImage(named: "stop")!.image(color: NCBrandColor.shared.graySoft, size: 50)
-    }
-    
-    @objc func loadImage(named: String, color: UIColor = NCBrandColor.shared.icon, size: CGFloat = 50, forcedResizeSF: Bool = false) -> UIImage {
-        
-        var image: UIImage?
-        
-        if #available(iOS 13.0, *) {
-            if forcedResizeSF {
-                let configuration = UIImage.SymbolConfiguration(pointSize: size)
-                image = UIImage(systemName: named, withConfiguration: configuration)?.imageColor(color)
-            } else {
-                image = UIImage(systemName: named)?.imageColor(color)
-            }
-            if image == nil {
-                image = UIImage(named: named)?.image(color: color, size: size)
-            }
-        } else {
-            image = UIImage(named: named)?.image(color: color, size: size)
-        }
-        
-        if image != nil {
-            return image!
-        }
-        
-        return  UIImage(named: "file")!.image(color: color, size: size)
     }
     
     // MARK: - NCSelect + Delegate

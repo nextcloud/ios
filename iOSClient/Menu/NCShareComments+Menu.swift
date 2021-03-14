@@ -68,7 +68,7 @@ extension NCShareComments {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_comment_", comment: ""),
-                icon: NCCollectionCommon.shared.loadImage(named: "trash"),
+                icon: NCUtility.shared.loadImage(named: "trash"),
                 action: { menuAction in
                     guard let metadata = self.metadata else { return }
                     guard let tableComments = tableComments else { return }

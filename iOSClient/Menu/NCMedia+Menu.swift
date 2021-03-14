@@ -148,7 +148,7 @@ extension NCMedia {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
-                    icon: NCCollectionCommon.shared.loadImage(named: "arrow.up.right.square"),
+                    icon: NCUtility.shared.loadImage(named: "arrow.up.right.square"),
                     action: { menuAction in
                         self.isEditMode = false
                         var meradatasSelect = [tableMetadata]()
@@ -171,7 +171,7 @@ extension NCMedia {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_delete_selected_files_", comment: ""),
-                    icon: NCCollectionCommon.shared.loadImage(named: "trash"),
+                    icon: NCUtility.shared.loadImage(named: "trash"),
                     action: { menuAction in
                         self.isEditMode = false
                         for ocId in self.selectOcId {

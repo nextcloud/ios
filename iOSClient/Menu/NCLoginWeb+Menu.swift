@@ -31,7 +31,7 @@ extension NCLoginWeb {
         var actions = [NCMenuAction]()
         
         let accounts = NCManageDatabase.shared.getAllAccount()
-        var avatar = NCCollectionCommon.shared.loadImage(named: "person.crop.circle")
+        var avatar = NCUtility.shared.loadImage(named: "person.crop.circle")
         
         for account in accounts {
             

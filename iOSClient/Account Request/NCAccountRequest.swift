@@ -159,7 +159,7 @@ extension NCAccountRequest: UITableViewDataSource {
         let urlLabel = cell.viewWithTag(30) as? UILabel
         let activeImage = cell.viewWithTag(40) as? UIImageView
         
-        avatarImage?.image = NCCollectionCommon.shared.loadImage(named: "person.crop.circle")
+        avatarImage?.image = NCUtility.shared.loadImage(named: "person.crop.circle")
     
         let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(account.user, urlBase: account.urlBase)) + "-" + account.user + ".png"
         
@@ -172,7 +172,7 @@ extension NCAccountRequest: UITableViewDataSource {
         urlLabel?.text = (URL(string: account.urlBase)?.host ?? "")
 
         if account.active {
-            activeImage?.image = NCCollectionCommon.shared.loadImage(named: "checkmark")
+            activeImage?.image = NCUtility.shared.loadImage(named: "checkmark")
         } else {
             activeImage?.image = nil
         }

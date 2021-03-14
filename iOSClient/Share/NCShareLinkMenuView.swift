@@ -123,7 +123,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         fieldSetExpirationDate.inputView = UIView()
         
         imageNoteToRecipient.image = UIImage.init(named: "file_txt")!.image(color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
-        imageDeleteShareLink.image = NCCollectionCommon.shared.loadImage(named: "trash", color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
+        imageDeleteShareLink.image = NCUtility.shared.loadImage(named: "trash", color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
         imageAddAnotherLink.image = UIImage.init(named: "add")!.image(color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50) 
     }
     

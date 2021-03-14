@@ -225,7 +225,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[[NCCollectionCommon shared] loadImageWithNamed:@"trash" color:NCBrandColor.shared.icon size:25 forcedResizeSF:false] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[NCUtility shared] loadImageWithNamed:@"trash" color:NCBrandColor.shared.icon size:25 forcedResizeSF:false] forKey:@"imageView.image"];
     row.action.formSelector = @selector(clearCacheRequest:);
     [section addFormRow:row];
 

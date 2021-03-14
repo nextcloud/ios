@@ -234,7 +234,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         collectionView.backgroundColor = NCBrandColor.shared.backgroundView
         collectionView.reloadData()
         
-        cacheImages.cellLivePhotoImage = UIImage.init(named: "livePhoto")!.image(color: .white, size: 50)
+        cacheImages.cellLivePhotoImage = NCUtility.shared.loadImage(named: "livephoto", color: .white)
         cacheImages.cellPlayImage = UIImage.init(named: "play")!.image(color: .white, size: 50)
     }
 

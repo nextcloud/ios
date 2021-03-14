@@ -374,7 +374,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 item = settingsMenu[indexPath.row]
             }
 
-            cell.imageIcon?.image = NCCollectionCommon.shared.loadImage(named: item.icon)
+            cell.imageIcon?.image = NCUtility.shared.loadImage(named: item.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
             cell.labelText.textColor = NCBrandColor.shared.textView
             

@@ -470,6 +470,31 @@ class NCUtility: NSObject {
         }
         return ""
     }
+    
+    @objc func loadImage(named: String, color: UIColor = NCBrandColor.shared.icon, size: CGFloat = 50, forcedResizeSF: Bool = false) -> UIImage {
+        
+        var image: UIImage?
+        
+        if #available(iOS 13.0, *) {
+            if forcedResizeSF {
+                let configuration = UIImage.SymbolConfiguration(pointSize: size)
+                image = UIImage(systemName: named, withConfiguration: configuration)?.imageColor(color)
+            } else {
+                image = UIImage(systemName: named)?.imageColor(color)
+            }
+            if image == nil {
+                image = UIImage(named: named)?.image(color: color, size: size)
+            }
+        } else {
+            image = UIImage(named: named)?.image(color: color, size: size)
+        }
+        
+        if image != nil {
+            return image!
+        }
+        
+        return  UIImage(named: "file")!.image(color: color, size: size)
+    }
 }
 
 // MARK: -
