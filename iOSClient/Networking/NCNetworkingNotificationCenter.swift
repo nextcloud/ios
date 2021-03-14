@@ -110,7 +110,7 @@ import Foundation
                        
                     case NCGlobal.shared.selectorPrint:
                         
-                        NCCollectionCommon.shared.printDocument(metadata: metadata)
+                        printDocument(metadata: metadata)
                         
                     case NCGlobal.shared.selectorSaveAlbum:
                         
@@ -160,7 +160,9 @@ import Foundation
         }
     }
     
-    @objc func openShare(ViewController: UIViewController, metadata: tableMetadata, indexPage: Int) {
+    // MARK: -
+
+    func openShare(ViewController: UIViewController, metadata: tableMetadata, indexPage: Int) {
         
         let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as! UINavigationController
         let shareViewController = shareNavigationController.topViewController as! NCSharePaging
@@ -172,7 +174,7 @@ import Foundation
         ViewController.present(shareNavigationController, animated: true, completion: nil)
     }
         
-    @objc func downloadOpen(metadata: tableMetadata, selector: String) {
+    func downloadOpen(metadata: tableMetadata, selector: String) {
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             
@@ -181,6 +183,24 @@ import Foundation
         } else {
             
             NCNetworking.shared.download(metadata: metadata, selector: selector) { (_) in }
+        }
+    }
+        
+    func printDocument(metadata: tableMetadata) {
+    
+        let fileNameURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
+        
+        if UIPrintInteractionController.canPrint(fileNameURL) {
+            
+            let printInfo = UIPrintInfo(dictionary: nil)
+            printInfo.jobName = fileNameURL.lastPathComponent
+            printInfo.outputType = .photo
+
+            let printController = UIPrintInteractionController.shared
+            printController.printInfo = printInfo
+            printController.showsNumberOfCopies = true
+            printController.printingItem = fileNameURL
+            printController.present(animated: true, completionHandler: nil)
         }
     }
     

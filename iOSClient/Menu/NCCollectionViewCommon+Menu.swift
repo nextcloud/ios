@@ -175,7 +175,7 @@ extension NCCollectionViewCommon {
                     icon: NCUtility.shared.loadImage(named: "printer"),
                     action: { menuAction in
                         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                            NCCollectionCommon.shared.printDocument(metadata: metadata)
+                            NCNetworkingNotificationCenter.shared.printDocument(metadata: metadata)
                         } else {
                             NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorPrint)
                         }
