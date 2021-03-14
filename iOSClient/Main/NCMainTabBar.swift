@@ -150,7 +150,7 @@ class NCMainTabBar: UITabBar {
         // Favorite
         if let item = items?[1] {
             item.title = NSLocalizedString("_favorites_", comment: "")
-            item.image = UIImage(named: "favorite")?.image(color: NCBrandColor.shared.brandElement, size: 25)
+            item.image = NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.brandElement, size: 25)
             item.selectedImage = item.image
         }
         

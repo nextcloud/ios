@@ -71,7 +71,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         images.canShare = UIImage(named: "share")!.image(color: NCBrandColor.shared.graySoft, size: 50)
         images.shareByLink = UIImage(named: "sharebylink")!.image(color: NCBrandColor.shared.graySoft, size: 50)
         
-        images.favorite = UIImage(named: "favorite")!.image(color: NCBrandColor.shared.yellowFavorite, size: 50)
+        images.favorite = NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite)
         images.comment = UIImage(named: "comment")!.image(color: NCBrandColor.shared.graySoft, size: 50)
         images.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: NCBrandColor.shared.textView)
         images.offlineFlag = UIImage.init(named: "offlineFlag")!
