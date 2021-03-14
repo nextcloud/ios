@@ -434,18 +434,16 @@ class NCViewerImage: UIViewController {
                 
                 /*
                 if rateObserver != nil && !currentMetadata.livePhoto {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        if let duration = self.player?.currentItem?.asset.duration {
-                            let durationSeconds = Double(CMTimeGetSeconds(duration))
-                            if durationSeconds > 0 {
-                                let width = Double(self.progressView.bounds.width)
-                                let interval = (0.5 * durationSeconds) / width
-                                let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-                                if CMTIME_IS_VALID(time) && CMTimeCompare(time, .zero) != 0 {
-                                    self.timeObserver = self.player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
-                                        self?.updateVideoProgressBar(time: time)
-                                    })
-                                }
+                    if let duration = self.player?.currentItem?.asset.duration {
+                        let durationSeconds = Double(CMTimeGetSeconds(duration))
+                        if durationSeconds > 0 {
+                            let width = Double(self.progressView.bounds.width)
+                            let interval = (0.5 * durationSeconds) / width
+                            let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+                            if CMTIME_IS_VALID(time) && CMTimeCompare(time, .zero) != 0 {
+                                self.timeObserver = self.player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
+                                    self?.updateVideoProgressBar(time: time)
+                                })
                             }
                         }
                     }
@@ -715,7 +713,9 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         toolBar.isHidden = true
         
         if (currentMetadata.typeFile == NCGlobal.shared.metadataTypeFileVideo || currentMetadata.typeFile == NCGlobal.shared.metadataTypeFileAudio) {
-            videoPlay(metadata: metadata)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.videoPlay(metadata: metadata)
+            }
             toolBar.isHidden = false
         }
             
