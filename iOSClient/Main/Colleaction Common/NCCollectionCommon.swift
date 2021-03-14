@@ -223,7 +223,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         
         let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc") ) { action in
             self.appDelegate.pasteboardOcIds = [metadata.ocId]
-            self.copyPasteboard()
+            NCNetworkingNotificationCenter.shared.copyPasteboard()
         }
         
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info") ) { action in
@@ -300,77 +300,6 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         }
         
         return UIMenu(title: "", image: nil, identifier: nil, children: children)
-    }
-    
-    // MARK: - Copy & Paste
-
-    func copyPasteboard() {
-        
-        var metadatas: [tableMetadata] = []
-        var items = [[String : Any]]()
-        
-        for ocId in appDelegate.pasteboardOcIds {
-            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                metadatas.append(metadata)
-            }
-        }
-        
-        for metadata in metadatas {
-            
-            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                do {
-                    // Get Data
-                    let data = try Data.init(contentsOf: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
-                    // Pasteboard item
-                    if let unmanagedFileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (metadata.fileNameView as NSString).pathExtension as CFString, nil) {
-                        let fileUTI = unmanagedFileUTI.takeRetainedValue() as String
-                        items.append([fileUTI:data])
-                    }
-                } catch {
-                    print("error")
-                }
-            } else {
-                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadCopy) { (_) in }
-            }
-        }
-        
-        UIPasteboard.general.setItems(items, options: [:])
-    }
-
-    func pastePasteboard(serverUrl: String) {
-                
-        for (index, items) in UIPasteboard.general.items.enumerated() {
-            for item in items {
-                let pasteboardType = item.key
-                if let data = UIPasteboard.general.data(forPasteboardType: pasteboardType, inItemSet: IndexSet([index]))?.first {
-                    let results = NCCommunicationCommon.shared.getDescriptionFile(inUTI: pasteboardType as CFString)
-                    if results.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue {
-                        uploadPasteFile(fileName: results.resultFilename, ext: results.resultExtension, contentType: pasteboardType, serverUrl: serverUrl, data: data)
-                    }
-                }
-            }
-        }
-    }
-
-    private func uploadPasteFile(fileName: String, ext: String, contentType: String, serverUrl: String, data: Data) {
-        
-        do {
-            let fileNameView = fileName + "_" + CCUtility.getIncrementalNumber() + "." + ext
-            let ocId = UUID().uuidString
-            let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)!
-            
-            try data.write(to: URL(fileURLWithPath: filePath))
-           
-            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: contentType, livePhoto: false)
-            
-            metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
-            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-            metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
-            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-            
-            NCManageDatabase.shared.addMetadata(metadataForUpload)
-            
-        } catch { }
     }
 }
 

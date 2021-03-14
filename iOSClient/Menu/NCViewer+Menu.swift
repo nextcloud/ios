@@ -231,7 +231,7 @@ extension NCViewer {
                 icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
                 action: { menuAction in
                     self.appDelegate.pasteboardOcIds = [metadata.ocId];
-                    NCCollectionCommon.shared.copyPasteboard()
+                    NCNetworkingNotificationCenter.shared.copyPasteboard()
                 }
             )
         )

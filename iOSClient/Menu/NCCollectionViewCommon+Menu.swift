@@ -264,7 +264,7 @@ extension NCCollectionViewCommon {
                     icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
                     action: { menuAction in
                         self.appDelegate.pasteboardOcIds = [metadata.ocId];
-                        NCCollectionCommon.shared.copyPasteboard()
+                        NCNetworkingNotificationCenter.shared.copyPasteboard()
                     }
                 )
             )
@@ -447,7 +447,7 @@ extension NCCollectionViewCommon {
                     for ocId in selectOcId {
                         self.appDelegate.pasteboardOcIds.append(ocId)
                     }
-                    NCCollectionCommon.shared.copyPasteboard()
+                    NCNetworkingNotificationCenter.shared.copyPasteboard()
                     self.tapSelect(sender: self)
                 }
             )
