@@ -156,7 +156,7 @@ extension NCViewer {
                     icon: icon,
                     action: { menuAction in
                         if metadataMOV != nil {
-                            NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
+                            NCNetworkingNotificationCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
                         } else {
                             NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
                         }

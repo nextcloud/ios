@@ -202,10 +202,10 @@ extension NCCollectionViewCommon {
                     icon: icon,
                     action: { menuAction in
                         if metadataMOV != nil {
-                            NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
+                            NCNetworkingNotificationCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
                         } else {
                             if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                                NCCollectionCommon.shared.saveAlbum(metadata: metadata)
+                                NCNetworkingNotificationCenter.shared.saveAlbum(metadata: metadata)
                             } else {
                                 NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
                             }
@@ -397,10 +397,10 @@ extension NCCollectionViewCommon {
                         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                             if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
                                 if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                                    NCCollectionCommon.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
+                                    NCNetworkingNotificationCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
                                 } else {
                                     if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                                        NCCollectionCommon.shared.saveAlbum(metadata: metadata)
+                                        NCNetworkingNotificationCenter.shared.saveAlbum(metadata: metadata)
                                     } else {
                                         NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
                                     }

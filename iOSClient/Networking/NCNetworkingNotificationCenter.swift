@@ -114,7 +114,7 @@ import Foundation
                         
                     case NCGlobal.shared.selectorSaveAlbum:
                         
-                        NCCollectionCommon.shared.saveAlbum(metadata: metadata)
+                        saveAlbum(metadata: metadata)
                         
                     case NCGlobal.shared.selectorSaveAlbumLivePhotoIMG, NCGlobal.shared.selectorSaveAlbumLivePhotoMOV:
                         
@@ -131,7 +131,7 @@ import Foundation
                         }
                             
                         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
-                            NCCollectionCommon.shared.saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV, progressView: nil, viewActivity: self.appDelegate.window?.rootViewController?.view)
+                            saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV, progressView: nil, viewActivity: self.appDelegate.window?.rootViewController?.view)
                         }
                         
                     default:
@@ -204,6 +204,82 @@ import Foundation
         }
     }
     
+    func saveAlbum(metadata: tableMetadata) {
+        
+        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let status = PHPhotoLibrary.authorizationStatus()
+
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && status == PHAuthorizationStatus.authorized {
+            
+            if let image = UIImage.init(contentsOfFile: fileNamePath) {
+                UIImageWriteToSavedPhotosAlbum(image, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
+            } else {
+                NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorFileNotSaved)
+            }
+            
+        } else if metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo && status == PHAuthorizationStatus.authorized {
+            
+            if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath) {
+                UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
+            } else {
+                NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorFileNotSaved)
+            }
+            
+        } else if status != PHAuthorizationStatus.authorized {
+            
+            NCContentPresenter.shared.messageNotification("_access_photo_not_enabled_", description: "_access_photo_not_enabled_msg_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorFileNotSaved)
+        }
+    }
+    
+    @objc private func SaveAlbum(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        
+        if error != nil {
+            NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorFileNotSaved)
+        }
+    }
+    
+    func saveLivePhoto(metadata: tableMetadata, metadataMOV: tableMetadata) {
+        
+        if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbumLivePhotoIMG)
+        }
+        
+        if !CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
+            NCOperationQueue.shared.download(metadata: metadataMOV, selector: NCGlobal.shared.selectorSaveAlbumLivePhotoMOV)
+        }
+        
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
+            saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV, progressView: nil, viewActivity: self.appDelegate.window?.rootViewController?.view)
+        }
+    }
+    
+    func saveLivePhotoToDisk(metadata: tableMetadata, metadataMov: tableMetadata, progressView: UIProgressView?, viewActivity: UIView?) {
+        
+        let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
+        let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
+        
+        if let view = viewActivity {
+            NCUtility.shared.startActivityIndicator(view: view)
+        }
+        
+        NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
+            DispatchQueue.main.async {
+                progressView?.progress = Float(progress)
+            }
+        }, completion: { livePhoto, resources in
+            NCUtility.shared.stopActivityIndicator()
+            progressView?.progress = 0
+            if resources != nil {
+                NCLivePhoto.saveToLibrary(resources!) { (result) in
+                    if !result {
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError)
+                    }
+                }
+            } else {
+                NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError)
+            }
+        })
+    }
     //MARK: - Upload
 
     @objc func uploadedFile(_ notification: NSNotification) {
