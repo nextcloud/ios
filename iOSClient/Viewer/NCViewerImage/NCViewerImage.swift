@@ -57,7 +57,7 @@ class NCViewerImage: UIViewController {
     
     private var player: AVPlayer?
     private var videoLayer: AVPlayerLayer?
-    //private var timeObserver: Any?
+    private var timeObserver: Any?
     private var rateObserver: Any?
     var pictureInPictureOcId: String = ""
     var textColor: UIColor = NCBrandColor.shared.textView
@@ -389,10 +389,10 @@ class NCViewerImage: UIViewController {
         player?.seek(to: CMTime.zero)
         progressView.progress = 0
         
-//        if let timeObserver = timeObserver {
-//            player?.removeTimeObserver(timeObserver)
-//            self.timeObserver = nil
-//        }
+        if let timeObserver = timeObserver {
+            player?.removeTimeObserver(timeObserver)
+            self.timeObserver = nil
+        }
         
         if rateObserver != nil {
             player?.removeObserver(self, forKeyPath: "rate")
@@ -403,21 +403,6 @@ class NCViewerImage: UIViewController {
                
         videoLayer?.removeFromSuperlayer()
     }
-    
-    /*
-    func updateVideoProgressBar(time: CMTime) {
-                
-        if let duration = player?.currentItem?.asset.duration {
-            let durationSeconds = Float(CMTimeGetSeconds(duration))
-            if durationSeconds > 0 {
-                let currentTimeSeconds = Float(CMTimeGetSeconds(time))
-                progressView.progress = currentTimeSeconds / durationSeconds
-                return
-            }
-        }
-        progressView.progress = 0
-    }
-    */
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         
@@ -432,7 +417,6 @@ class NCViewerImage: UIViewController {
                     player?.isMuted = CCUtility.getAudioMute()
                 }
                 
-                /*
                 if rateObserver != nil && !currentMetadata.livePhoto {
                     if let duration = self.player?.currentItem?.asset.duration {
                         let durationSeconds = Double(CMTimeGetSeconds(duration))
@@ -442,13 +426,19 @@ class NCViewerImage: UIViewController {
                             let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
                             if CMTIME_IS_VALID(time) && CMTimeCompare(time, .zero) != 0 {
                                 self.timeObserver = self.player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
-                                    self?.updateVideoProgressBar(time: time)
+                                    
+                                    let durationSeconds = Float(CMTimeGetSeconds(duration))
+                                    if durationSeconds > 0 {
+                                        let currentTimeSeconds = Float(CMTimeGetSeconds(time))
+                                        self?.progressView.progress = currentTimeSeconds / durationSeconds
+                                    } else {
+                                        self?.progressView.progress = 0
+                                    }
                                 })
                             }
                         }
                     }
                 }
-                */
                 
             } else {
                 
