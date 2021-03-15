@@ -35,7 +35,7 @@ extension NCMedia {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_select_", comment: ""),
-                        icon: UIImage(named: "selectFull")!.image(color: NCBrandColor.shared.icon, size: 50),
+                        icon: NCUtility.shared.loadImage(named: "checkmark.circle.fill"),
                         action: { menuAction in
                             self.isEditMode = true
                         }
@@ -134,10 +134,13 @@ extension NCMedia {
             
         } else {
            
+            //
+            // CANCEL
+            //
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_cancel_", comment: ""),
-                    icon: UIImage(named: "cancel")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCUtility.shared.loadImage(named: "xmark"),
                     action: { menuAction in
                         self.isEditMode = false
                         self.selectOcId.removeAll()

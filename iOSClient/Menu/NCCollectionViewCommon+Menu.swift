@@ -378,7 +378,7 @@ extension NCCollectionViewCommon {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_select_all_", comment: ""),
-                icon: UIImage(named: "selectFull")!.image(color: NCBrandColor.shared.icon, size: 50),
+                icon: NCUtility.shared.loadImage(named: "checkmark.circle.fill"),
                 action: { menuAction in
                     self.collectionViewSelectAll()
                 }
