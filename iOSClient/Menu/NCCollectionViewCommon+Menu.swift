@@ -112,7 +112,7 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_details_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "info"),
                     action: { menuAction in
-                        NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
+                        NCFunctionCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
                     }
                 )
             )
@@ -159,7 +159,7 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_open_in_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
                     action: { menuAction in
-                        NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
+                        NCFunctionCenter.shared.downloadOpen(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
                     }
                 )
             )
@@ -175,7 +175,7 @@ extension NCCollectionViewCommon {
                     icon: NCUtility.shared.loadImage(named: "printer"),
                     action: { menuAction in
                         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                            NCNetworkingNotificationCenter.shared.printDocument(metadata: metadata)
+                            NCFunctionCenter.shared.printDocument(metadata: metadata)
                         } else {
                             NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorPrint)
                         }
@@ -202,10 +202,10 @@ extension NCCollectionViewCommon {
                     icon: icon,
                     action: { menuAction in
                         if metadataMOV != nil {
-                            NCNetworkingNotificationCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
+                            NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
                         } else {
                             if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                                NCNetworkingNotificationCenter.shared.saveAlbum(metadata: metadata)
+                                NCFunctionCenter.shared.saveAlbum(metadata: metadata)
                             } else {
                                 NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
                             }
@@ -264,7 +264,7 @@ extension NCCollectionViewCommon {
                     icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
                     action: { menuAction in
                         self.appDelegate.pasteboardOcIds = [metadata.ocId];
-                        NCNetworkingNotificationCenter.shared.copyPasteboard()
+                        NCFunctionCenter.shared.copyPasteboard()
                     }
                 )
             )
@@ -279,7 +279,7 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "arrow.up.forward.app"),
                     action: { menuAction in
-                        NCCollectionCommon.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+                        NCFunctionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
                     }
                 )
             )
@@ -397,10 +397,10 @@ extension NCCollectionViewCommon {
                         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                             if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
                                 if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                                    NCNetworkingNotificationCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
+                                    NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
                                 } else {
                                     if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                                        NCNetworkingNotificationCenter.shared.saveAlbum(metadata: metadata)
+                                        NCFunctionCenter.shared.saveAlbum(metadata: metadata)
                                     } else {
                                         NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
                                     }
@@ -447,7 +447,7 @@ extension NCCollectionViewCommon {
                     for ocId in selectOcId {
                         self.appDelegate.pasteboardOcIds.append(ocId)
                     }
-                    NCNetworkingNotificationCenter.shared.copyPasteboard()
+                    NCFunctionCenter.shared.copyPasteboard()
                     self.tapSelect(sender: self)
                 }
             )

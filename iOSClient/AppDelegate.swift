@@ -554,7 +554,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.userId = userId
         self.password = password
         
-        _ = NCNetworkingNotificationCenter.shared
+        _ = NCFunctionCenter.shared
         
         NCCommunicationCommon.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
         NCCommunicationCommon.shared.setup(webDav: NCUtilityFileSystem.shared.getWebDAV(account: account))
@@ -768,7 +768,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         }
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            NCCollectionCommon.shared.openFileViewInFolder(serverUrl: serverUrl, fileName: fileName)
+                            NCFunctionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileName: fileName)
                         }
                         
                     } else {

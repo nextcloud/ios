@@ -77,7 +77,7 @@ extension NCViewer {
                     title: NSLocalizedString("_details_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "info"),
                     action: { menuAction in
-                        NCNetworkingNotificationCenter.shared.openShare(ViewController: viewController, metadata: metadata, indexPage: 0)
+                        NCFunctionCenter.shared.openShare(ViewController: viewController, metadata: metadata, indexPage: 0)
                     }
                 )
             )
@@ -112,7 +112,7 @@ extension NCViewer {
                     title: NSLocalizedString("_open_in_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
                     action: { menuAction in
-                        NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
+                        NCFunctionCenter.shared.downloadOpen(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
                     }
                 )
             )
@@ -128,7 +128,7 @@ extension NCViewer {
                     icon: NCUtility.shared.loadImage(named: "printer"),
                     action: { menuAction in
                         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                            NCNetworkingNotificationCenter.shared.printDocument(metadata: metadata)
+                            NCFunctionCenter.shared.printDocument(metadata: metadata)
                         } else {
                             NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorPrint)
                         }
@@ -156,7 +156,7 @@ extension NCViewer {
                     icon: icon,
                     action: { menuAction in
                         if metadataMOV != nil {
-                            NCNetworkingNotificationCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
+                            NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
                         } else {
                             NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
                         }
@@ -231,7 +231,7 @@ extension NCViewer {
                 icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
                 action: { menuAction in
                     self.appDelegate.pasteboardOcIds = [metadata.ocId];
-                    NCNetworkingNotificationCenter.shared.copyPasteboard()
+                    NCFunctionCenter.shared.copyPasteboard()
                 }
             )
         )
@@ -246,7 +246,7 @@ extension NCViewer {
                         title: NSLocalizedString("_view_in_folder_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "folder-search-outline"),
                         action: { menuAction in
-                            NCCollectionCommon.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+                            NCFunctionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
                         }
                     )
                 )

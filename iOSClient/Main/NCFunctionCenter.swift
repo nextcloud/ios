@@ -1,5 +1,5 @@
 //
-//  NCNetworkingNotificationCenter.swift
+//  NCFunctionCenter.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 19/04/2020.
@@ -24,9 +24,9 @@
 import Foundation
 import NCCommunication
 
-@objc class NCNetworkingNotificationCenter: NSObject, UIDocumentInteractionControllerDelegate {
-    @objc public static let shared: NCNetworkingNotificationCenter = {
-        let instance = NCNetworkingNotificationCenter()
+@objc class NCFunctionCenter: NSObject, UIDocumentInteractionControllerDelegate {
+    @objc public static let shared: NCFunctionCenter = {
+        let instance = NCFunctionCenter()
         
         NotificationCenter.default.addObserver(instance, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.addObserver(instance, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
@@ -367,6 +367,49 @@ import NCCommunication
             NCManageDatabase.shared.addMetadata(metadataForUpload)
             
         } catch { }
+    }
+    
+    func openFileViewInFolder(serverUrl: String, fileName: String) {
+        
+        let viewController = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as! NCFileViewInFolder
+        let navigationController = UINavigationController.init(rootViewController: viewController)
+
+        let topViewController = viewController
+        var listViewController = [NCFileViewInFolder]()
+        var serverUrl = serverUrl
+        let homeUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        
+        while true {
+            
+            var viewController: NCFileViewInFolder?
+            if serverUrl != homeUrl {
+                viewController = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as? NCFileViewInFolder
+                if viewController == nil {
+                    return
+                }
+                viewController!.titleCurrentFolder = (serverUrl as NSString).lastPathComponent
+            } else {
+                viewController = topViewController
+            }
+            guard let vc = viewController else { return }
+            
+            vc.serverUrl = serverUrl
+            vc.fileName = fileName
+            
+            vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
+            listViewController.insert(vc, at: 0)
+            
+            if serverUrl != homeUrl {
+                serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)
+            } else {
+                break
+            }
+        }
+        
+        navigationController.setViewControllers(listViewController, animated: false)
+        navigationController.modalPresentationStyle = .formSheet
+        
+        appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
 }
 

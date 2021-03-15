@@ -165,49 +165,6 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         viewController.present(navigationController, animated: true, completion: nil)
     }
     
-    @objc func openFileViewInFolder(serverUrl: String, fileName: String) {
-        
-        let viewController = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as! NCFileViewInFolder
-        let navigationController = UINavigationController.init(rootViewController: viewController)
-
-        let topViewController = viewController
-        var listViewController = [NCFileViewInFolder]()
-        var serverUrl = serverUrl
-        let homeUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
-        
-        while true {
-            
-            var viewController: NCFileViewInFolder?
-            if serverUrl != homeUrl {
-                viewController = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as? NCFileViewInFolder
-                if viewController == nil {
-                    return
-                }
-                viewController!.titleCurrentFolder = (serverUrl as NSString).lastPathComponent
-            } else {
-                viewController = topViewController
-            }
-            guard let vc = viewController else { return }
-            
-            vc.serverUrl = serverUrl
-            vc.fileName = fileName
-            
-            vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
-            listViewController.insert(vc, at: 0)
-            
-            if serverUrl != homeUrl {
-                serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)
-            } else {
-                break
-            }
-        }
-        
-        navigationController.setViewControllers(listViewController, animated: false)
-        navigationController.modalPresentationStyle = .formSheet
-        
-        appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
-    }
-    
     // MARK: - Context Menu Configuration
     
     @available(iOS 13.0, *)
@@ -223,19 +180,19 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         
         let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc") ) { action in
             self.appDelegate.pasteboardOcIds = [metadata.ocId]
-            NCNetworkingNotificationCenter.shared.copyPasteboard()
+            NCFunctionCenter.shared.copyPasteboard()
         }
         
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info") ) { action in
-            NCNetworkingNotificationCenter.shared.openShare(ViewController: viewController, metadata: metadata, indexPage: 0)
+            NCFunctionCenter.shared.openShare(ViewController: viewController, metadata: metadata, indexPage: 0)
         }
         
         let save = UIAction(title: titleSave, image: UIImage(systemName: "square.and.arrow.down")) { action in
             if metadataMOV != nil {
-                NCNetworkingNotificationCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
+                NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
             } else {
                 if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                    NCNetworkingNotificationCenter.shared.saveAlbum(metadata: metadata)
+                    NCFunctionCenter.shared.saveAlbum(metadata: metadata)
                 } else {
                     NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
                 }
@@ -243,15 +200,15 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         }
         
         let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""), image: UIImage(systemName: "arrow.forward.square")) { action in
-            NCCollectionCommon.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+            NCFunctionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
         }
         
         let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { action in
-            NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
+            NCFunctionCenter.shared.downloadOpen(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
         }
         
         let openQuickLook = UIAction(title: NSLocalizedString("_open_quicklook_", comment: ""), image: UIImage(systemName: "eye")) { action in
-            NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
+            NCFunctionCenter.shared.downloadOpen(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
         }
         
         let open = UIMenu(title: NSLocalizedString("_open_", comment: ""), image: UIImage(systemName: "square.and.arrow.up"), children: [openIn, openQuickLook])
