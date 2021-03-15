@@ -27,71 +27,10 @@ import NCCommunication
 class NCCollectionCommon: NSObject, NCSelectDelegate {
     @objc static let shared: NCCollectionCommon = {
         let instance = NCCollectionCommon()
-        instance.createImagesThemingColor()
         return instance
     }()
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
-    struct images {
-        static var file = UIImage()
-
-        static var shared = UIImage()
-        static var canShare = UIImage()
-        static var shareByLink = UIImage()
-        
-        static var favorite = UIImage()
-        static var comment = UIImage()
-        static var livePhoto = UIImage()
-        static var offlineFlag = UIImage()
-        static var local = UIImage()
-
-        static var folderEncrypted = UIImage()
-        static var folderSharedWithMe = UIImage()
-        static var folderPublic = UIImage()
-        static var folderGroup = UIImage()
-        static var folderExternal = UIImage()
-        static var folderAutomaticUpload = UIImage()
-        static var folder = UIImage()
-        
-        static var checkedYes = UIImage()
-        static var checkedNo = UIImage()
-        
-        static var buttonMore = UIImage()
-        static var buttonStop = UIImage()
-    }
-    
-    // MARK: -
-    
-    func createImagesThemingColor() {
-        
-        images.file = UIImage.init(named: "file")!
-        
-        images.shared = UIImage(named: "share")!.image(color: NCBrandColor.shared.graySoft, size: 50)
-        images.canShare = UIImage(named: "share")!.image(color: NCBrandColor.shared.graySoft, size: 50)
-        images.shareByLink = UIImage(named: "sharebylink")!.image(color: NCBrandColor.shared.graySoft, size: 50)
-        
-        images.favorite = NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite)
-        images.comment = UIImage(named: "comment")!.image(color: NCBrandColor.shared.graySoft, size: 50)
-        images.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: NCBrandColor.shared.textView)
-        images.offlineFlag = UIImage.init(named: "offlineFlag")!
-        images.local = UIImage.init(named: "local")!
-            
-        let folderWidth: CGFloat = UIScreen.main.bounds.width / 3
-        images.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
-        images.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
-        images.folderPublic = UIImage(named: "folder_public")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
-        images.folderGroup = UIImage(named: "folder_group")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
-        images.folderExternal = UIImage(named: "folder_external")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
-        images.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
-        images.folder =  UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
-        
-        images.checkedYes = NCUtility.shared.loadImage(named: "checkmark.circle.fill", color: .darkGray) //UIImage(named: "checkedYes")!.image(color: .darkGray, size: 50)
-        images.checkedNo = NCUtility.shared.loadImage(named: "circle", color: NCBrandColor.shared.graySoft) //UIImage(named: "checkedNo")!.image(color: NCBrandColor.shared.graySoft, size: 50)
-        
-        images.buttonMore = UIImage(named: "more")!.image(color: NCBrandColor.shared.graySoft, size: 50)
-        images.buttonStop = UIImage(named: "stop")!.image(color: NCBrandColor.shared.graySoft, size: 50)
-    }
     
     // MARK: - NCSelect + Delegate
     

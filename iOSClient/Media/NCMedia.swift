@@ -416,7 +416,7 @@ extension NCMedia: UICollectionViewDataSource {
                 if metadata.iconName.count > 0 {
                     cell.imageItem.image = UIImage.init(named: metadata.iconName)
                 } else {
-                    cell.imageItem.image = NCCollectionCommon.images.file
+                    cell.imageItem.image = NCBrandColor.cacheImages.file
                 }
             }
             cell.date = metadata.date as Date

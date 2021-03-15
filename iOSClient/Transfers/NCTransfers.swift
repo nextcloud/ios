@@ -187,7 +187,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         if pathText == "" { pathText = "/" }
         cell.labelPath.text = pathText
         
-        cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.buttonStop)
+        cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
 
         cell.progressView.progress = 0.0
         cell.separator.backgroundColor = NCBrandColor.shared.separator
@@ -199,7 +199,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         }
         
         if cell.imageItem.image == nil {
-            cell.imageItem.image = NCCollectionCommon.images.file
+            cell.imageItem.image = NCBrandColor.cacheImages.file
         }
         
         cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)

@@ -101,8 +101,37 @@ class NCBrandColor: NSObject {
     @objc static let shared: NCBrandColor = {
         let instance = NCBrandColor()
         instance.setDarkMode()
+        instance.createImagesThemingColor()
         return instance
     }()
+    
+    struct cacheImages {
+        static var file = UIImage()
+
+        static var shared = UIImage()
+        static var canShare = UIImage()
+        static var shareByLink = UIImage()
+        
+        static var favorite = UIImage()
+        static var comment = UIImage()
+        static var livePhoto = UIImage()
+        static var offlineFlag = UIImage()
+        static var local = UIImage()
+
+        static var folderEncrypted = UIImage()
+        static var folderSharedWithMe = UIImage()
+        static var folderPublic = UIImage()
+        static var folderGroup = UIImage()
+        static var folderExternal = UIImage()
+        static var folderAutomaticUpload = UIImage()
+        static var folder = UIImage()
+        
+        static var checkedYes = UIImage()
+        static var checkedNo = UIImage()
+        
+        static var buttonMore = UIImage()
+        static var buttonStop = UIImage()
+    }
 
     // Color
     @objc public let customer:              UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
@@ -135,6 +164,36 @@ class NCBrandColor: NSObject {
         self.brandText = self.customerText        
     }
     
+    private func createImagesThemingColor() {
+        
+        cacheImages.file = UIImage.init(named: "file")!
+        
+        cacheImages.shared = UIImage(named: "share")!.image(color: graySoft, size: 50)
+        cacheImages.canShare = UIImage(named: "share")!.image(color: graySoft, size: 50)
+        cacheImages.shareByLink = UIImage(named: "sharebylink")!.image(color: graySoft, size: 50)
+        
+        cacheImages.favorite = NCUtility.shared.loadImage(named: "star.fill", color: yellowFavorite)
+        cacheImages.comment = UIImage(named: "comment")!.image(color: graySoft, size: 50)
+        cacheImages.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: textView)
+        cacheImages.offlineFlag = UIImage.init(named: "offlineFlag")!
+        cacheImages.local = UIImage.init(named: "local")!
+            
+        let folderWidth: CGFloat = UIScreen.main.bounds.width / 3
+        cacheImages.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement, size: folderWidth)
+        cacheImages.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: brandElement, size: folderWidth)
+        cacheImages.folderPublic = UIImage(named: "folder_public")!.image(color: brandElement, size: folderWidth)
+        cacheImages.folderGroup = UIImage(named: "folder_group")!.image(color: brandElement, size: folderWidth)
+        cacheImages.folderExternal = UIImage(named: "folder_external")!.image(color: brandElement, size: folderWidth)
+        cacheImages.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement, size: folderWidth)
+        cacheImages.folder =  UIImage(named: "folder")!.image(color: brandElement, size: folderWidth)
+        
+        cacheImages.checkedYes = NCUtility.shared.loadImage(named: "checkmark.circle.fill", color: .darkGray)
+        cacheImages.checkedNo = NCUtility.shared.loadImage(named: "circle", color: graySoft)
+        
+        cacheImages.buttonMore = UIImage(named: "more")!.image(color: graySoft, size: 50)
+        cacheImages.buttonStop = UIImage(named: "stop")!.image(color: graySoft, size: 50)
+    }
+    
     @objc public func setDarkMode() {
         let darkMode = CCUtility.getDarkMode()
         if darkMode {
@@ -157,7 +216,7 @@ class NCBrandColor: NSObject {
     }
     
 #if !EXTENSION
-    @objc public func settingThemingColor(account: String) {
+    public func settingThemingColor(account: String) {
         
         let darker: CGFloat = 30    // %
         let lighter: CGFloat = 30   // %
@@ -203,7 +262,7 @@ class NCBrandColor: NSObject {
         setDarkMode()
         
         DispatchQueue.main.async {
-            NCCollectionCommon.shared.createImagesThemingColor()
+            self.createImagesThemingColor()
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
         }
     }

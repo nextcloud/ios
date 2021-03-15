@@ -72,9 +72,9 @@ extension NCCollectionViewCommon {
             iconHeader = image!
         } else {
             if metadata.directory {
-                iconHeader = NCCollectionCommon.images.folder
+                iconHeader = NCBrandColor.cacheImages.folder
             } else {
-                iconHeader = NCCollectionCommon.images.file
+                iconHeader = NCBrandColor.cacheImages.file
             }
         }
         

@@ -520,7 +520,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                             if progress > 0 {
                                 cell.progressView?.isHidden = false
                                 cell.progressView?.progress = progress
-                                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.buttonStop)
+                                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
                                 if status == NCGlobal.shared.metadataStatusInDownload {
                                     cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
                                 } else if status == NCGlobal.shared.metadataStatusInUpload {
@@ -532,7 +532,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                             if progress > 0 {
                                 cell.progressView?.isHidden = false
                                 cell.progressView?.progress = progress
-                                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.buttonStop)
+                                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
                                 if status == NCGlobal.shared.metadataStatusInDownload {
                                     cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
                                 } else if status == NCGlobal.shared.metadataStatusInUpload {
@@ -544,7 +544,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                             if progress > 0 {
                                 cell.progressView.isHidden = false
                                 cell.progressView.progress = progress
-                                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.buttonStop)
+                                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
                             }
                         }
                     }
@@ -1202,21 +1202,21 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             if metadata.directory {
                 
                 if metadata.e2eEncrypted {
-                    cell.imageItem.image = NCCollectionCommon.images.folderEncrypted
+                    cell.imageItem.image = NCBrandColor.cacheImages.folderEncrypted
                 } else if isShare {
-                    cell.imageItem.image = NCCollectionCommon.images.folderSharedWithMe
+                    cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
                 } else if (tableShare != nil && tableShare?.shareType != 3) {
-                    cell.imageItem.image = NCCollectionCommon.images.folderSharedWithMe
+                    cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
                 } else if (tableShare != nil && tableShare?.shareType == 3) {
-                    cell.imageItem.image = NCCollectionCommon.images.folderPublic
+                    cell.imageItem.image = NCBrandColor.cacheImages.folderPublic
                 } else if metadata.mountType == "group" {
-                    cell.imageItem.image = NCCollectionCommon.images.folderGroup
+                    cell.imageItem.image = NCBrandColor.cacheImages.folderGroup
                 } else if isMounted {
-                    cell.imageItem.image = NCCollectionCommon.images.folderExternal
+                    cell.imageItem.image = NCBrandColor.cacheImages.folderExternal
                 } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
-                    cell.imageItem.image = NCCollectionCommon.images.folderAutomaticUpload
+                    cell.imageItem.image = NCBrandColor.cacheImages.folderAutomaticUpload
                 } else {
-                    cell.imageItem.image = NCCollectionCommon.images.folder
+                    cell.imageItem.image = NCBrandColor.cacheImages.folder
                 }
                 
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
@@ -1226,7 +1226,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 
                 // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {
-                    cell.imageLocal.image = NCCollectionCommon.images.offlineFlag
+                    cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
                 }
                 
             } else {
@@ -1240,7 +1240,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         if metadata.iconName.count > 0 {
                             cell.imageItem.image = UIImage.init(named: metadata.iconName)
                         } else {
-                            cell.imageItem.image = NCCollectionCommon.images.file
+                            cell.imageItem.image = NCBrandColor.cacheImages.file
                         }
                     }
                 }
@@ -1249,26 +1249,26 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                                 
                 // image local
                 if dataSource.metadataOffLine.contains(metadata.ocId) {
-                    cell.imageLocal.image = NCCollectionCommon.images.offlineFlag
+                    cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
                 } else if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                    cell.imageLocal.image = NCCollectionCommon.images.local
+                    cell.imageLocal.image = NCBrandColor.cacheImages.local
                 }
             }
             
             // image Favorite
             if metadata.favorite {
-                cell.imageFavorite.image = NCCollectionCommon.images.favorite
+                cell.imageFavorite.image = NCBrandColor.cacheImages.favorite
             }
             
             // Share image
             if (isShare) {
-                cell.imageShared.image = NCCollectionCommon.images.shared
+                cell.imageShared.image = NCBrandColor.cacheImages.shared
             } else if (tableShare != nil && tableShare?.shareType == 3) {
-                cell.imageShared.image = NCCollectionCommon.images.shareByLink
+                cell.imageShared.image = NCBrandColor.cacheImages.shareByLink
             } else if (tableShare != nil && tableShare?.shareType != 3) {
-                cell.imageShared.image = NCCollectionCommon.images.shared
+                cell.imageShared.image = NCBrandColor.cacheImages.shared
             } else {
-                cell.imageShared.image = NCCollectionCommon.images.canShare
+                cell.imageShared.image = NCBrandColor.cacheImages.canShare
             }
             if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId {
                 var fileNameUser = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + metadata.ownerId
@@ -1295,11 +1295,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             if metadata.status == NCGlobal.shared.metadataStatusInDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading ||  metadata.status >= NCGlobal.shared.metadataStatusTypeUpload {
                 cell.progressView.isHidden = false
-                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.buttonStop)
+                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
             } else {
                 cell.progressView.isHidden = true
                 cell.progressView.progress = progress
-                cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCCollectionCommon.images.buttonMore)
+                cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
             }
             // Write status on Label Info
             switch metadata.status {
@@ -1327,7 +1327,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             
             // Live Photo
             if metadata.livePhoto {
-                cell.imageStatus.image = NCCollectionCommon.images.livePhoto
+                cell.imageStatus.image = NCBrandColor.cacheImages.livePhoto
             }
             
             // E2EE
@@ -1390,21 +1390,21 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             if metadata.directory {
                 
                 if metadata.e2eEncrypted {
-                    cell.imageItem.image = NCCollectionCommon.images.folderEncrypted
+                    cell.imageItem.image = NCBrandColor.cacheImages.folderEncrypted
                 } else if isShare {
-                    cell.imageItem.image = NCCollectionCommon.images.folderSharedWithMe
+                    cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
                 } else if (tableShare != nil && tableShare!.shareType != 3) {
-                    cell.imageItem.image = NCCollectionCommon.images.folderSharedWithMe
+                    cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
                 } else if (tableShare != nil && tableShare!.shareType == 3) {
-                    cell.imageItem.image = NCCollectionCommon.images.folderPublic
+                    cell.imageItem.image = NCBrandColor.cacheImages.folderPublic
                 } else if metadata.mountType == "group" {
-                    cell.imageItem.image = NCCollectionCommon.images.folderGroup
+                    cell.imageItem.image = NCBrandColor.cacheImages.folderGroup
                 } else if isMounted {
-                    cell.imageItem.image = NCCollectionCommon.images.folderExternal
+                    cell.imageItem.image = NCBrandColor.cacheImages.folderExternal
                 } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
-                    cell.imageItem.image = NCCollectionCommon.images.folderAutomaticUpload
+                    cell.imageItem.image = NCBrandColor.cacheImages.folderAutomaticUpload
                 } else {
-                    cell.imageItem.image = NCCollectionCommon.images.folder
+                    cell.imageItem.image = NCBrandColor.cacheImages.folder
                 }
     
                 let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
@@ -1412,7 +1412,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                                 
                 // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {
-                    cell.imageLocal.image = NCCollectionCommon.images.offlineFlag
+                    cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
                 }
                 
             } else {
@@ -1426,37 +1426,37 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         if metadata.iconName.count > 0 {
                             cell.imageItem.image = UIImage.init(named: metadata.iconName)
                         } else {
-                            cell.imageItem.image = NCCollectionCommon.images.file
+                            cell.imageItem.image = NCBrandColor.cacheImages.file
                         }
                     }
                 }
                 
                 // image Local
                 if dataSource.metadataOffLine.contains(metadata.ocId) {
-                    cell.imageLocal.image = NCCollectionCommon.images.offlineFlag
+                    cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
                 } else if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                    cell.imageLocal.image = NCCollectionCommon.images.local
+                    cell.imageLocal.image = NCBrandColor.cacheImages.local
                 }
             }
             
             // image Favorite
             if metadata.favorite {
-                cell.imageFavorite.image = NCCollectionCommon.images.favorite
+                cell.imageFavorite.image = NCBrandColor.cacheImages.favorite
             }
             
             // Transfer
             if metadata.status == NCGlobal.shared.metadataStatusInDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading ||  metadata.status >= NCGlobal.shared.metadataStatusTypeUpload {
                 cell.progressView.isHidden = false
-                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.buttonStop)
+                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
             } else {
                 cell.progressView.isHidden = true
                 cell.progressView.progress = 0.0
-                cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCCollectionCommon.images.buttonMore)
+                cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
             }
             
             // Live Photo
             if metadata.livePhoto {
-                cell.imageStatus.image = NCCollectionCommon.images.livePhoto
+                cell.imageStatus.image = NCBrandColor.cacheImages.livePhoto
             }
             
             // Edit mode

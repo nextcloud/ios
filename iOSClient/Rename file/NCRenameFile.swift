@@ -72,7 +72,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             if metadata.directory {
                 
                 if imagePreview == nil {
-                    previewFile.image = NCCollectionCommon.images.folder
+                    previewFile.image = NCBrandColor.cacheImages.folder
                 }
                 
                 ext.isHidden = true
@@ -82,7 +82,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             } else {
                 
                 if imagePreview == nil {
-                    previewFile.image = NCCollectionCommon.images.file
+                    previewFile.image = NCBrandColor.cacheImages.file
                 }
                 
                 fileNameWithoutExtTrailingContraint.constant = 90

@@ -76,7 +76,7 @@ class NCGridMediaCell: UICollectionViewCell, NCImageCellProtocol {
     
     func selected(_ status: Bool) {
         if status {
-            imageSelect.image = NCCollectionCommon.images.checkedYes
+            imageSelect.image = NCBrandColor.cacheImages.checkedYes
             imageVisualEffect.isHidden = false
             imageVisualEffect.alpha = 0.4
         } else {
