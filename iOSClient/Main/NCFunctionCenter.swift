@@ -192,8 +192,10 @@ import NCCommunication
         shareNavigationController.modalPresentationStyle = .formSheet
         ViewController.present(shareNavigationController, animated: true, completion: nil)
     }
-        
-    func downloadOpen(metadata: tableMetadata, selector: String) {
+     
+    // MARK: -
+    
+    func openDownload(metadata: tableMetadata, selector: String) {
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             
@@ -205,6 +207,8 @@ import NCCommunication
         }
     }
         
+    // MARK: - Print
+    
     func printDocument(metadata: tableMetadata) {
     
         let fileNameURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
@@ -222,6 +226,8 @@ import NCCommunication
             printController.present(animated: true, completionHandler: nil)
         }
     }
+    
+    // MARK: - Save photo
     
     func saveAlbum(metadata: tableMetadata) {
         
@@ -300,6 +306,8 @@ import NCCommunication
         })
     }
     
+    // MARK: - Copy & Paste
+    
     func copyPasteboard() {
         
         var metadatas: [tableMetadata] = []
@@ -368,6 +376,8 @@ import NCCommunication
             
         } catch { }
     }
+    
+    // MARK: -
     
     func openFileViewInFolder(serverUrl: String, fileName: String) {
         
@@ -499,19 +509,19 @@ import NCCommunication
         
         let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc") ) { action in
             self.appDelegate.pasteboardOcIds = [metadata.ocId]
-            NCFunctionCenter.shared.copyPasteboard()
+            self.copyPasteboard()
         }
         
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info") ) { action in
-            NCFunctionCenter.shared.openShare(ViewController: viewController, metadata: metadata, indexPage: 0)
+            self.openShare(ViewController: viewController, metadata: metadata, indexPage: 0)
         }
         
         let save = UIAction(title: titleSave, image: UIImage(systemName: "square.and.arrow.down")) { action in
             if metadataMOV != nil {
-                NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
+                self.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
             } else {
                 if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                    NCFunctionCenter.shared.saveAlbum(metadata: metadata)
+                    self.saveAlbum(metadata: metadata)
                 } else {
                     NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
                 }
@@ -519,21 +529,21 @@ import NCCommunication
         }
         
         let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""), image: UIImage(systemName: "arrow.forward.square")) { action in
-            NCFunctionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+            self.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
         }
         
         let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { action in
-            NCFunctionCenter.shared.downloadOpen(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
+            self.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
         }
         
         let openQuickLook = UIAction(title: NSLocalizedString("_open_quicklook_", comment: ""), image: UIImage(systemName: "eye")) { action in
-            NCFunctionCenter.shared.downloadOpen(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
+            self.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
         }
         
         let open = UIMenu(title: NSLocalizedString("_open_", comment: ""), image: UIImage(systemName: "square.and.arrow.up"), children: [openIn, openQuickLook])
         
         let moveCopy = UIAction(title: NSLocalizedString("_move_or_copy_", comment: ""), image: UIImage(systemName: "arrow.up.right.square")) { action in
-            NCFunctionCenter.shared.openSelectView(items: [metadata], viewController: viewController)
+            self.openSelectView(items: [metadata], viewController: viewController)
         }
         
         let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile, image: UIImage(systemName: "trash"), attributes: .destructive) { action in

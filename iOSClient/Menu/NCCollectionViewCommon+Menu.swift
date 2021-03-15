@@ -159,7 +159,7 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_open_in_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
                     action: { menuAction in
-                        NCFunctionCenter.shared.downloadOpen(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
+                        NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
                     }
                 )
             )
