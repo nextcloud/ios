@@ -46,7 +46,9 @@ extension NCMedia {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString(filterTypeFileImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""),
-                    icon: UIImage(named: filterTypeFileImage ? "imageno" : "imageyes")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCUtility.shared.loadImage(named: "photo"),
+                    selected: filterTypeFileImage,
+                    on: true,
                     action: { menuAction in
                         self.filterTypeFileImage = !self.filterTypeFileImage
                         self.filterTypeFileVideo = false
@@ -58,7 +60,9 @@ extension NCMedia {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString(filterTypeFileVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""),
-                    icon: UIImage(named: filterTypeFileVideo ? "videono" : "videoyes")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCUtility.shared.loadImage(named: "video"),
+                    selected: filterTypeFileVideo,
+                    on: true,
                     action: { menuAction in
                         self.filterTypeFileVideo = !self.filterTypeFileVideo
                         self.filterTypeFileImage = false
@@ -70,7 +74,7 @@ extension NCMedia {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_select_media_folder_", comment: ""),
-                    icon: UIImage(named: "folderAutomaticUpload")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCUtility.shared.loadImage(named: "folder-search-outline"),
                     action: { menuAction in
                         let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
                         let viewController = navigationController.topViewController as! NCSelect
@@ -92,7 +96,7 @@ extension NCMedia {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_modified_date_", comment: ""),
-                    icon: UIImage(named: "sortModifiedDate")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCUtility.shared.loadImage(named: "circle.grid.cross.up.fill"),
                     selected: CCUtility.getMediaSortDate() == "date",
                     on: true,
                     action: { menuAction in
@@ -105,7 +109,7 @@ extension NCMedia {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_created_date_", comment: ""),
-                    icon: UIImage(named: "sortCreatedDate")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCUtility.shared.loadImage(named: "circle.grid.cross.down.fill"),
                     selected: CCUtility.getMediaSortDate() == "creationDate",
                     on: true,
                     action: { menuAction in
@@ -118,7 +122,7 @@ extension NCMedia {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_upload_date_", comment: ""),
-                    icon: UIImage(named: "sortUploadDate")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCUtility.shared.loadImage(named: "circle.grid.cross.right.fill"),
                     selected: CCUtility.getMediaSortDate() == "uploadDate",
                     on: true,
                     action: { menuAction in
