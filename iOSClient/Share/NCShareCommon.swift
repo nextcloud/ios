@@ -45,7 +45,7 @@ class NCShareCommon: NSObject {
         
         let size: CGFloat = 200
         
-        let bottomImage = UIImage.init(named: "circle")!.image(color: colorCircle, size: size/2)
+        let bottomImage = UIImage.init(named: "circle.fill")!.image(color: colorCircle, size: size/2)
         let topImage = UIImage.init(named: imageName)!.image(color: .white, size: size/2)
         UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, UIScreen.main.scale)
         bottomImage.draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: size, height: size)))

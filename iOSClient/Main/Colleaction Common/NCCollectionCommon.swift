@@ -86,8 +86,8 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         images.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
         images.folder =  UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: folderWidth)
         
-        images.checkedYes = UIImage(named: "checkedYes")!.image(color: .darkGray, size: 50)
-        images.checkedNo = UIImage(named: "checkedNo")!.image(color: NCBrandColor.shared.graySoft, size: 50)
+        images.checkedYes = NCUtility.shared.loadImage(named: "checkmark.circle.fill", color: .darkGray) //UIImage(named: "checkedYes")!.image(color: .darkGray, size: 50)
+        images.checkedNo = NCUtility.shared.loadImage(named: "circle", color: NCBrandColor.shared.graySoft) //UIImage(named: "checkedNo")!.image(color: NCBrandColor.shared.graySoft, size: 50)
         
         images.buttonMore = UIImage(named: "more")!.image(color: NCBrandColor.shared.graySoft, size: 50)
         images.buttonStop = UIImage(named: "stop")!.image(color: NCBrandColor.shared.graySoft, size: 50)
