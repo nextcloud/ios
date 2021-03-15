@@ -471,14 +471,17 @@ class NCUtility: NSObject {
         return ""
     }
     
-    @objc func loadImage(named: String, color: UIColor = NCBrandColor.shared.icon, size: CGFloat = 50, forcedResizeSF: Bool = false) -> UIImage {
+    @objc func loadImage(named: String, color: UIColor, size: CGFloat) -> UIImage {
+        loadImage(named: named, color: color, size: size, symbolConfiguration: nil)
+    }
+
+    func loadImage(named: String, color: UIColor = NCBrandColor.shared.icon, size: CGFloat = 50, symbolConfiguration: Any? = nil) -> UIImage {
         
         var image: UIImage?
         
         if #available(iOS 13.0, *) {
-            if forcedResizeSF {
-                let configuration = UIImage.SymbolConfiguration(pointSize: size)
-                image = UIImage(systemName: named, withConfiguration: configuration)?.imageColor(color)
+            if let symbolConfiguration = symbolConfiguration {
+                image = UIImage(systemName: named, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.imageColor(color)
             } else {
                 image = UIImage(systemName: named)?.imageColor(color)
             }
