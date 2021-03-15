@@ -128,3 +128,57 @@ protocol NCGridCellDelegate {
     func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer)
     func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer)
 }
+
+// MARK: - Grid Layout
+
+class NCGridLayout: UICollectionViewFlowLayout {
+    
+    var heightLabelPlusButton: CGFloat = 45
+    var marginLeftRight: CGFloat = 6
+    var itemForLine: CGFloat = 3
+    var itemWidthDefault: CGFloat = 120
+
+    override init() {
+        super.init()
+        
+        sectionHeadersPinToVisibleBounds = false
+        
+        minimumInteritemSpacing = 1
+        minimumLineSpacing = marginLeftRight
+        
+        self.scrollDirection = .vertical
+        self.sectionInset = UIEdgeInsets(top: 10, left: marginLeftRight, bottom: 0, right:  marginLeftRight)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override var itemSize: CGSize {
+        get {
+            if let collectionView = collectionView {
+                
+                if collectionView.frame.width < 400 {
+                    itemForLine = 3
+                } else {
+                    itemForLine = collectionView.frame.width / itemWidthDefault
+                }
+                
+                let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
+                let itemHeight: CGFloat = itemWidth + heightLabelPlusButton
+                
+                return CGSize(width: itemWidth, height: itemHeight)
+            }
+            
+            // Default fallback
+            return CGSize(width: itemWidthDefault, height: itemWidthDefault)
+        }
+        set {
+            super.itemSize = newValue
+        }
+    }
+    
+    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
+        return proposedContentOffset
+    }
+}
