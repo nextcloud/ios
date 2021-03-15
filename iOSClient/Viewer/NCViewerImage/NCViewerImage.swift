@@ -418,6 +418,7 @@ class NCViewerImage: UIViewController {
                 }
                 
                 if rateObserver != nil && !currentMetadata.livePhoto {
+                    self.progressView.progress = 0
                     if let duration = self.player?.currentItem?.asset.duration {
                         let durationSeconds = Double(CMTimeGetSeconds(duration))
                         if durationSeconds > 0 {
