@@ -313,7 +313,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
-                    icon: UIImage(named: "lock")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon:NCUtility.shared.loadImage(named: "lock"),
                     action: { menuAction in
                         NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: false) { (account, errorCode, errorDescription) in
                             if errorCode == 0 {
@@ -338,7 +338,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
-                    icon: UIImage(named: "lock")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: NCUtility.shared.loadImage(named: "lock"),
                     action: { menuAction in
                         NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { (account, errorCode, errorDescription) in
                             if errorCode == 0 {

@@ -34,7 +34,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="50"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ybA-XY-jKA">
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ybA-XY-jKA">
                                                     <rect key="frame" x="20" y="12.5" width="25" height="25"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="25" id="97R-Fz-3Om"/>
@@ -42,17 +42,17 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E8e-56-e81">
-                                                    <rect key="frame" x="68" y="15" width="326" height="20"/>
+                                                    <rect key="frame" x="65" y="15" width="329" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="E8e-56-e81" firstAttribute="centerY" secondItem="1FG-Yi-cbC" secondAttribute="centerY" id="AbY-di-6qv"/>
+                                                <constraint firstItem="E8e-56-e81" firstAttribute="centerY" secondItem="1FG-Yi-cbC" secondAttribute="centerY" id="7hX-BA-LAg"/>
+                                                <constraint firstItem="E8e-56-e81" firstAttribute="leading" secondItem="ybA-XY-jKA" secondAttribute="trailing" constant="20" id="KY9-RM-FdA"/>
                                                 <constraint firstAttribute="leadingMargin" secondItem="ybA-XY-jKA" secondAttribute="leading" id="VBx-FZ-Ld2"/>
                                                 <constraint firstItem="ybA-XY-jKA" firstAttribute="centerY" secondItem="1FG-Yi-cbC" secondAttribute="centerY" id="ZLU-lg-ptd"/>
-                                                <constraint firstItem="E8e-56-e81" firstAttribute="leading" secondItem="1FG-Yi-cbC" secondAttribute="leadingMargin" constant="48" id="gzk-tH-oDr"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="E8e-56-e81" secondAttribute="trailing" id="mcH-pH-ru3"/>
                                             </constraints>
                                         </tableViewCellContentView>
