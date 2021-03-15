@@ -248,7 +248,7 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_move_or_copy_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "arrow.up.right.square"),
                     action: { menuAction in
-                        NCCollectionCommon.shared.openSelectView(items: [metadata], viewController: self)
+                        NCFunctionCenter.shared.openSelectView(items: [metadata], viewController: self)
                     }
                 )
             )
@@ -428,7 +428,7 @@ extension NCCollectionViewCommon {
                         }
                     }
                     if meradatasSelect.count > 0 {
-                        NCCollectionCommon.shared.openSelectView(items: meradatasSelect, viewController: self)
+                        NCFunctionCenter.shared.openSelectView(items: meradatasSelect, viewController: self)
                     }
                     self.tapSelect(sender: self)
                 }

@@ -165,7 +165,7 @@ extension NCMedia {
                             }
                         }
                         if meradatasSelect.count > 0 {
-                            NCCollectionCommon.shared.openSelectView(items: meradatasSelect, viewController: self)
+                            NCFunctionCenter.shared.openSelectView(items: meradatasSelect, viewController: self)
                         }
                         self.selectOcId.removeAll()
                     }
