@@ -62,7 +62,7 @@
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[[UIImage imageNamed:@"autoUpload"] imageWithColor:NCBrandColor.shared.icon size:20] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"autoUpload"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
     row.action.viewControllerClass = [CCManageAutoUpload class];
     [section addFormRow:row];
 
@@ -74,7 +74,7 @@
     // Lock active YES/NO
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"bloccopasscode" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_lock_not_active_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
-    [row.cellConfig setObject:[[NCUtility shared] loadImageWithNamed:@"lock.open" color:NCBrandColor.shared.icon size:20] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"lock.open"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -104,7 +104,7 @@
         
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"darkModeDetect" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_dark_mode_detect_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
-        [row.cellConfig setObject:[[NCUtility shared] loadImageWithNamed:@"moon.circle" color:NCBrandColor.shared.icon size:20] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"themeLightDark"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
         if ([CCUtility getDarkModeDetect]) row.value = @1;
@@ -115,7 +115,7 @@
         
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"darkMode" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_dark_mode_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
-        [row.cellConfig setObject:[[UIImage imageNamed:@"themeLightDark"] imageWithColor:NCBrandColor.shared.icon size:20] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"themeLightDark"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
         if ([CCUtility getDarkMode]) row.value = @1;
@@ -134,7 +134,7 @@
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[[NCUtility shared] loadImageWithNamed:@"lock" color:NCBrandColor.shared.icon size:20] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
     row.action.viewControllerClass = [NCManageEndToEndEncryption class];
     
     [section addFormRow:row];
@@ -149,7 +149,7 @@
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[[NCUtility shared] loadImageWithNamed:@"gear" color:NCBrandColor.shared.icon size:20] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"gear"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
     row.action.viewControllerClass = [CCAdvanced class];
     [section addFormRow:row];
 
@@ -164,7 +164,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[[UIImage imageNamed:@"acknowledgements"] imageWithColor:NCBrandColor.shared.icon size:20] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"acknowledgements"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
     row.action.formBlock = ^(XLFormRowDescriptor * sender){
         [self performSegueWithIdentifier:@"AcknowledgementsSegue" sender:sender];
         [self deselectFormRow:sender];
@@ -246,10 +246,10 @@
     
     if ([[CCUtility getPasscode] length]) {
         rowBloccoPasscode.title = NSLocalizedString(@"_lock_active_", nil);
-        [rowBloccoPasscode.cellConfig setObject:[[NCUtility shared] loadImageWithNamed:@"lock" color:NCBrandColor.shared.icon size:20] forKey:@"imageView.image"];
+        [rowBloccoPasscode.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
     } else {
         rowBloccoPasscode.title = NSLocalizedString(@"_lock_not_active_", nil);
-        [rowBloccoPasscode.cellConfig setObject:[[NCUtility shared] loadImageWithNamed:@"lock.open" color:NCBrandColor.shared.icon size:20] forKey:@"imageView.image"];
+        [rowBloccoPasscode.cellConfig setObject:[[UIImage imageNamed:@"lock.open"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
     }
     
     if ([CCUtility getEnableTouchFaceID]) [rowEnableTouchDaceID setValue:@1]; else [rowEnableTouchDaceID setValue:@0];
