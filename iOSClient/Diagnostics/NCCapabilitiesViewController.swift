@@ -141,11 +141,11 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         statusComments.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         imageFileSharing.image = UIImage.init(named: "share")!.image(color: .gray, size: 50)
-        imageExternalSite.image = UIImage.init(named: "externalsites")!.image(color: .gray, size: 50)
+        imageExternalSite.image = NCUtility.shared.loadImage(named: "network", color: .gray)
         imageEndToEndEncryption.image = NCUtility.shared.loadImage(named: "lock", color: .gray)
         imageActivity.image = UIImage.init(named: "bolt")!.image(color: .gray, size: 50)
         imageNotification.image = NCUtility.shared.loadImage(named: "bell", color: .gray)
-        imageDeletedFiles.image = UIImage.init(named: "delete")!.image(color: .gray, size: 50)
+        imageDeletedFiles.image = NCUtility.shared.loadImage(named: "trash", color: .gray)
         imageText.image = UIImage.init(named: "text")!.image(color: .gray, size: 50)
         imageCollabora.image = UIImage.init(named: "collabora")!.image(color: .gray, size: 50)
         imageOnlyOffice.image = UIImage.init(named: "onlyoffice")!.image(color: .gray, size: 50)
