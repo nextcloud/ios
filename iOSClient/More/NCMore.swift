@@ -111,7 +111,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // ITEM : Recent
         item = NCCommunicationExternalSite()
         item.name = "_recent_"
-        item.icon = "clock.arrow.circlepath"
+        item.icon = "recent"
         item.url = "segueRecent"
         functionMenu.append(item)
         
