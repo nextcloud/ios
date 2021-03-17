@@ -124,7 +124,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         
         imageNoteToRecipient.image = UIImage.init(named: "file_txt")!.image(color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
         imageDeleteShareLink.image = NCUtility.shared.loadImage(named: "trash", color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
-        imageAddAnotherLink.image = UIImage.init(named: "add")!.image(color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50) 
+        imageAddAnotherLink.image =  NCUtility.shared.loadImage(named: "plus", color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
     }
     
     override func willMove(toWindow newWindow: UIWindow?) {

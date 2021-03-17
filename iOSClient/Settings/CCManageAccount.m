@@ -115,7 +115,7 @@
             row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_account_", nil)];
             row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
             [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-            [row.cellConfig setObject:[[UIImage imageNamed:@"add"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
+            [row.cellConfig setObject:[[UIImage imageNamed:@"plus"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
             [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
             [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
             row.action.formSelector = @selector(addAccount:);

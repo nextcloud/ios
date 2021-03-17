@@ -77,7 +77,7 @@ class DragDropViewController: UIViewController {
         segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 1)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_bn_", comment: ""), forSegmentAt: 2)
 
-        add.setImage(UIImage(named: "add")?.image(color: NCBrandColor.shared.brandElement, size: 25), for: .normal)
+        add.setImage(UIImage(named: "plus")?.image(color: NCBrandColor.shared.brandElement, size: 25), for: .normal)
         transferDown.setImage(UIImage(named: "transferDown")?.image(color: NCBrandColor.shared.brandElement, size: 25), for: .normal)
         
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
