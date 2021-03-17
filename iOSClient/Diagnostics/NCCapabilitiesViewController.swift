@@ -87,57 +87,57 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         
         statusFileSharing.layer.cornerRadius = 12.5
         statusFileSharing.layer.borderWidth = 0.5
-        statusFileSharing.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusFileSharing.layer.borderColor = UIColor.gray.cgColor
         statusFileSharing.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         statusExternalSite.layer.cornerRadius = 12.5
         statusExternalSite.layer.borderWidth = 0.5
-        statusExternalSite.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusExternalSite.layer.borderColor = UIColor.gray.cgColor
         statusExternalSite.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         statusEndToEndEncryption.layer.cornerRadius = 12.5
         statusEndToEndEncryption.layer.borderWidth = 0.5
-        statusEndToEndEncryption.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusEndToEndEncryption.layer.borderColor = UIColor.gray.cgColor
         statusEndToEndEncryption.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         statusActivity.layer.cornerRadius = 12.5
         statusActivity.layer.borderWidth = 0.5
-        statusActivity.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusActivity.layer.borderColor = UIColor.gray.cgColor
         statusActivity.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         statusNotification.layer.cornerRadius = 12.5
         statusNotification.layer.borderWidth = 0.5
-        statusNotification.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusNotification.layer.borderColor = UIColor.gray.cgColor
         statusNotification.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         statusDeletedFiles.layer.cornerRadius = 12.5
         statusDeletedFiles.layer.borderWidth = 0.5
-        statusDeletedFiles.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusDeletedFiles.layer.borderColor = UIColor.gray.cgColor
         statusDeletedFiles.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         statusText.layer.cornerRadius = 12.5
         statusText.layer.borderWidth = 0.5
-        statusText.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusText.layer.borderColor = UIColor.gray.cgColor
         statusText.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
 
         statusCollabora.layer.cornerRadius = 12.5
         statusCollabora.layer.borderWidth = 0.5
-        statusCollabora.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusCollabora.layer.borderColor = UIColor.gray.cgColor
         statusCollabora.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
  
         statusOnlyOffice.layer.cornerRadius = 12.5
         statusOnlyOffice.layer.borderWidth = 0.5
-        statusOnlyOffice.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusOnlyOffice.layer.borderColor = UIColor.gray.cgColor
         statusOnlyOffice.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         statusUserStatus.layer.cornerRadius = 12.5
         statusUserStatus.layer.borderWidth = 0.5
-        statusUserStatus.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusUserStatus.layer.borderColor = UIColor.gray.cgColor
         statusUserStatus.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         statusComments.layer.cornerRadius = 12.5
         statusComments.layer.borderWidth = 0.5
-        statusComments.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusComments.layer.borderColor = UIColor.gray.cgColor
         statusComments.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         imageFileSharing.image = UIImage.init(named: "share")!.image(color: .gray, size: 50)
