@@ -67,24 +67,22 @@
     [self.cancel setTitle:NSLocalizedString(@"_cancel_", nil)];
     [self.create setTitle:NSLocalizedString(@"_create_folder_", nil)];
     
+    UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0,0, self.navigationItem.titleView.frame.size.width, 40)];
+    label.textColor = NCBrandColor.shared.brandText;
+    label.backgroundColor =[UIColor clearColor];
+    label.textAlignment = NSTextAlignmentCenter;
+    
     if (![_serverUrl length]) {
                 
         _serverUrl = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase account:account];
-        
-//        [self.navigationController.navigationBar.topItem setTitleView:[[UIImageView alloc] initWithImage: [UIImage imageNamed:@"themingLogo"]]];
-//        self.title = @"Home";
+        label.text = NSLocalizedString(@"_home_dir_", nil);
         
     } else {
-        
-        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0,0, self.navigationItem.titleView.frame.size.width, 40)];
+               
         label.text = self.passMetadata.fileNameView;
-        
-        label.textColor = NCBrandColor.shared.brandText;
-        
-        label.backgroundColor =[UIColor clearColor];
-        label.textAlignment = NSTextAlignmentCenter;
-        self.navigationItem.titleView=label;
     }
+    
+    self.navigationItem.titleView = label;
     
     // TableView : at the end of rows nothing
     self.tableView.tableFooterView = [UIView new];

@@ -55,6 +55,8 @@
 "_select_all_"              = "Select all";
 "_upload_"                  = "Upload";
 "_home_"                    = "Files";
+"_files_"                   = "Files";
+"_home_dir_"                = "Home";
 "_file_to_upload_"          = "File to upload";
 "_destination_"             = "Destination";
 "_ok_"                      = "OK";
