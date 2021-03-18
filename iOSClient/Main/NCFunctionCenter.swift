@@ -536,6 +536,10 @@ import NCCommunication
             self.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
         }
         
+        let print = UIAction(title: NSLocalizedString("_print_", comment: ""), image: UIImage(systemName: "printer") ) { action in
+            self.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorPrint)
+        }
+        
         let openQuickLook = UIAction(title: NSLocalizedString("_open_quicklook_", comment: ""), image: UIImage(systemName: "eye")) { action in
             self.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
         }
@@ -579,6 +583,10 @@ import NCCommunication
 
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
             children.insert(save, at: 2)
+        }
+        
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf" {
+            children.insert(print, at: 2)
         }
         
         if enableViewInFolder {
