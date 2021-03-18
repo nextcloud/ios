@@ -71,8 +71,8 @@
                 
         _serverUrl = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase account:account];
         
-        [self.navigationController.navigationBar.topItem setTitleView:[[UIImageView alloc] initWithImage: [UIImage imageNamed:@"themingLogo"]]];
-        self.title = @"Home";
+//        [self.navigationController.navigationBar.topItem setTitleView:[[UIImageView alloc] initWithImage: [UIImage imageNamed:@"themingLogo"]]];
+//        self.title = @"Home";
         
     } else {
         
