@@ -174,11 +174,7 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_print_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "printer"),
                     action: { menuAction in
-                        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                            NCFunctionCenter.shared.printDocument(metadata: metadata)
-                        } else {
-                            NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorPrint)
-                        }
+                        NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorPrint)
                     }
                 )
             )
