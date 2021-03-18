@@ -149,6 +149,9 @@
         _password.hidden = YES;
         self.navigationItem.leftBarButtonItem = cancelButton;
     }
+    
+    // Fix line shadow nav bar
+    [self.navigationController.navigationBar setValue:@(YES) forKeyPath:@"hidesShadow"];
 }
 
 - (void)viewDidAppear:(BOOL)animated
