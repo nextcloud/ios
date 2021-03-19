@@ -1298,6 +1298,43 @@ import Queuer
     
     //MARK: - TEST API
     
+    func fileChunks(path: String, fileName: String, size: Int) -> [String]? {
+           
+        let filesNameOut: [String] = []
+        
+        do {
+            let data = try Data(contentsOf: URL(fileURLWithPath: path + "/" + fileName))
+            let dataLen = (data as NSData).length
+            let chunkSize = ((1024 * 1000) * size) // MB
+            let fullChunks = Int(dataLen / chunkSize)
+            let totalChunks = fullChunks + (dataLen % 1024 != 0 ? 1 : 0)
+                
+            var chunks: [Data] = []
+            for chunkCounter in 0..<totalChunks {
+                
+                var chunk:Data
+                let chunkBase = chunkCounter * 1024
+                var diff = 1024
+                if chunkCounter == totalChunks - 1 {
+                    diff = dataLen - chunkBase
+                }
+                    
+                let range:Range<Data.Index> = chunkBase..<(chunkBase + diff)
+                chunk = data.subdata(in: range)
+                    
+                chunks.append(chunk)
+            }
+                
+            // Send chunks as you want
+            debugPrint(chunks)
+            
+        } catch {
+            return nil
+        }
+        
+        return filesNameOut
+    }
+    
     /*
     @objc public func getAppPassword(serverUrl: String, username: String, password: String, customUserAgent: String? = nil, completionHandler: @escaping (_ token: String?, _ errorCode: Int, _ errorDescription: String) -> Void) {
                 
