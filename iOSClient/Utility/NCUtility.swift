@@ -194,48 +194,6 @@ class NCUtility: NSObject {
         }
     }
     
-    @objc func startActivityIndicator(view: UIView?, bottom: CGFloat = 0) {
-            
-        activityIndicator.color = NCBrandColor.shared.brand
-        activityIndicator.hidesWhenStopped = true
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-
-        if view == nil {
-            if let window = UIApplication.shared.keyWindow {
-                viewActivityIndicator?.removeFromSuperview()
-                viewActivityIndicator = NCViewActivityIndicator(frame: window.bounds)
-                window.addSubview(viewActivityIndicator!)
-                viewActivityIndicator?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            }
-        } else {
-            viewActivityIndicator = view
-        }
-        
-        guard let view = viewActivityIndicator else { return }
-        view.addSubview(activityIndicator)
-            
-        let horizontalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: NSLayoutConstraint.Attribute.centerX, relatedBy: NSLayoutConstraint.Relation.equal, toItem: view, attribute: NSLayoutConstraint.Attribute.centerX, multiplier: 1, constant: 0)
-        view.addConstraint(horizontalConstraint)
-        
-        var verticalConstant: CGFloat = 0
-        if bottom > 0 {
-            verticalConstant = (view.frame.size.height / 2) - bottom
-        }
-        
-        let verticalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: NSLayoutConstraint.Attribute.centerY, relatedBy: NSLayoutConstraint.Relation.equal, toItem: view, attribute: NSLayoutConstraint.Attribute.centerY, multiplier: 1, constant: verticalConstant)
-        view.addConstraint(verticalConstraint)
-
-        activityIndicator.startAnimating()
-    }
-    
-    @objc func stopActivityIndicator() {
-        activityIndicator.stopAnimating()
-        activityIndicator.removeFromSuperview()
-        if viewActivityIndicator is NCViewActivityIndicator {
-            viewActivityIndicator?.removeFromSuperview()
-        }
-    }
-    
     @objc func isSimulatorOrTestFlight() -> Bool {
         guard let path = Bundle.main.appStoreReceiptURL?.path else {
             return false
@@ -493,6 +451,50 @@ class NCUtility: NSObject {
         }
         
         return  UIImage(named: "file")!.image(color: color, size: size)
+    }
+    
+    // MARK: -
+
+    @objc func startActivityIndicator(view: UIView?, bottom: CGFloat = 0) {
+            
+        activityIndicator.color = NCBrandColor.shared.brand
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+
+        if view == nil {
+            if let window = UIApplication.shared.keyWindow {
+                viewActivityIndicator?.removeFromSuperview()
+                viewActivityIndicator = NCViewActivityIndicator(frame: window.bounds)
+                window.addSubview(viewActivityIndicator!)
+                viewActivityIndicator?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            }
+        } else {
+            viewActivityIndicator = view
+        }
+        
+        guard let view = viewActivityIndicator else { return }
+        view.addSubview(activityIndicator)
+            
+        let horizontalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: NSLayoutConstraint.Attribute.centerX, relatedBy: NSLayoutConstraint.Relation.equal, toItem: view, attribute: NSLayoutConstraint.Attribute.centerX, multiplier: 1, constant: 0)
+        view.addConstraint(horizontalConstraint)
+        
+        var verticalConstant: CGFloat = 0
+        if bottom > 0 {
+            verticalConstant = (view.frame.size.height / 2) - bottom
+        }
+        
+        let verticalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: NSLayoutConstraint.Attribute.centerY, relatedBy: NSLayoutConstraint.Relation.equal, toItem: view, attribute: NSLayoutConstraint.Attribute.centerY, multiplier: 1, constant: verticalConstant)
+        view.addConstraint(verticalConstraint)
+
+        activityIndicator.startAnimating()
+    }
+    
+    @objc func stopActivityIndicator() {
+        activityIndicator.stopAnimating()
+        activityIndicator.removeFromSuperview()
+        if viewActivityIndicator is NCViewActivityIndicator {
+            viewActivityIndicator?.removeFromSuperview()
+        }
     }
 }
 

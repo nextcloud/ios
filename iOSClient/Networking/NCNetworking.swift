@@ -267,7 +267,7 @@ import Queuer
         }
     }
     
-    @objc func download(metadata: tableMetadata, selector: String, completion: @escaping (_ errorCode: Int)->()) {
+    @objc func download(metadata: tableMetadata, activityIndicator: Bool, selector: String, completion: @escaping (_ errorCode: Int)->()) {
         
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
@@ -280,6 +280,10 @@ import Queuer
                 
         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierDownload, sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusInDownload)
                     
+        if activityIndicator {
+            NCUtility.shared.startActivityIndicator(view: nil)
+        }
+        
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (request) in
             
             self.downloadRequest[fileNameLocalPath] = request
@@ -294,7 +298,11 @@ import Queuer
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInDownload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
             
         }) { (account, etag, date, length, allHeaderFields, error, errorCode, errorDescription) in
-                       
+              
+            if activityIndicator {
+                NCUtility.shared.stopActivityIndicator()
+            }
+            
             if error?.isExplicitlyCancelledError ?? false {
                             
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)

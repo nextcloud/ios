@@ -94,7 +94,7 @@ extension NCViewer {
                     action: { menuAction in
                         if ((localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) && metadata.session == "") {
                             
-                            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { (_) in }
+                            NCNetworking.shared.download(metadata: metadata, activityIndicator: true, selector: NCGlobal.shared.selectorLoadOffline) { (_) in }
                         } else {
                             NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
                         }
@@ -259,7 +259,7 @@ extension NCViewer {
                         title: NSLocalizedString("_download_image_max_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
                         action: { menuAction in
-                            NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
+                            NCNetworking.shared.download(metadata: metadata, activityIndicator: false, selector: "") { (_) in }
                         }
                     )
                 )
