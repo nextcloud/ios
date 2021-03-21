@@ -469,7 +469,6 @@ class NCUtility: NSObject {
         viewActivityIndicator = UIView.init(frame: CGRect(x: 0, y: 0, width: sizeActivityIndicator, height: sizeActivityIndicator))
         viewActivityIndicator?.translatesAutoresizingMaskIntoConstraints = false
         viewActivityIndicator?.layer.cornerRadius = 10
-        viewActivityIndicator?.layer.masksToBounds = true
         viewActivityIndicator?.backgroundColor = UIColor.black.withAlphaComponent(0.3)
 
         if backgroundView == nil {
@@ -478,24 +477,39 @@ class NCUtility: NSObject {
                 viewBackgroundActivityIndicator = NCViewActivityIndicator(frame: window.bounds)
                 window.addSubview(viewBackgroundActivityIndicator!)
                 viewBackgroundActivityIndicator?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                viewBackgroundActivityIndicator?.backgroundColor = .clear
             }
         } else {
             viewBackgroundActivityIndicator = backgroundView
         }
         
-        guard let view = viewBackgroundActivityIndicator else { return }
-        view.addSubview(activityIndicator)
+        // VIEW ACTIVITY INDICATOR
+        
+        guard let viewActivityIndicator = self.viewActivityIndicator else { return }
+        viewActivityIndicator.addSubview(activityIndicator)
+        
+        NSLayoutConstraint.activate([
+            viewActivityIndicator.widthAnchor.constraint(equalToConstant: viewActivityIndicator.bounds.width),
+            viewActivityIndicator.heightAnchor.constraint(equalToConstant: viewActivityIndicator.bounds.height),
+            activityIndicator.centerXAnchor.constraint(equalTo: viewActivityIndicator.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: viewActivityIndicator.centerYAnchor),
+        ])
+        
+        // BACKGROUD VIEW ACTIVITY INDICATOR
+        
+        guard let viewBackgroundActivityIndicator = self.viewBackgroundActivityIndicator else { return }
+        viewBackgroundActivityIndicator.addSubview(viewActivityIndicator)
             
-        let horizontalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: NSLayoutConstraint.Attribute.centerX, relatedBy: NSLayoutConstraint.Relation.equal, toItem: view, attribute: NSLayoutConstraint.Attribute.centerX, multiplier: 1, constant: 0)
-        view.addConstraint(horizontalConstraint)
+        let horizontalConstraint = NSLayoutConstraint(item: viewActivityIndicator, attribute: NSLayoutConstraint.Attribute.centerX, relatedBy: NSLayoutConstraint.Relation.equal, toItem: viewBackgroundActivityIndicator, attribute: NSLayoutConstraint.Attribute.centerX, multiplier: 1, constant: 0)
+        viewBackgroundActivityIndicator.addConstraint(horizontalConstraint)
         
         var verticalConstant: CGFloat = 0
         if bottom > 0 {
-            verticalConstant = (view.frame.size.height / 2) - bottom
+            verticalConstant = (viewBackgroundActivityIndicator.frame.size.height / 2) - bottom
         }
         
-        let verticalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: NSLayoutConstraint.Attribute.centerY, relatedBy: NSLayoutConstraint.Relation.equal, toItem: view, attribute: NSLayoutConstraint.Attribute.centerY, multiplier: 1, constant: verticalConstant)
-        view.addConstraint(verticalConstraint)
+        let verticalConstraint = NSLayoutConstraint(item: viewActivityIndicator, attribute: NSLayoutConstraint.Attribute.centerY, relatedBy: NSLayoutConstraint.Relation.equal, toItem: viewBackgroundActivityIndicator, attribute: NSLayoutConstraint.Attribute.centerY, multiplier: 1, constant: verticalConstant)
+        viewBackgroundActivityIndicator.addConstraint(verticalConstraint)
 
         activityIndicator.startAnimating()
     }
