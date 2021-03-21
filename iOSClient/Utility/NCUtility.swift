@@ -493,8 +493,13 @@ class NCUtility: NSObject {
     }
     
     @objc func stopActivityIndicator() {
+        
         activityIndicator.stopAnimating()
         activityIndicator.removeFromSuperview()
+        
+        viewActivityIndicator?.removeFromSuperview()
+        viewActivityIndicator = nil
+        
         if viewBackgroundActivityIndicator is NCViewActivityIndicator {
             viewBackgroundActivityIndicator?.removeFromSuperview()
         }
