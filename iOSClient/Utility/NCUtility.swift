@@ -460,16 +460,22 @@ class NCUtility: NSObject {
         
         if viewBackgroundActivityIndicator != nil { return }
         
+        let blurEffect = UIBlurEffect(style: .regular)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.layer.cornerRadius = 10
+        blurEffectView.layer.masksToBounds = true
+
         activityIndicator.color = NCBrandColor.shared.brand
         activityIndicator.hidesWhenStopped = true
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 
-        let sizeActivityIndicator = activityIndicator.bounds.height + 10
+        let sizeActivityIndicator = activityIndicator.bounds.height + 100
         
         viewActivityIndicator = UIView.init(frame: CGRect(x: 0, y: 0, width: sizeActivityIndicator, height: sizeActivityIndicator))
         viewActivityIndicator?.translatesAutoresizingMaskIntoConstraints = false
         viewActivityIndicator?.layer.cornerRadius = 10
-        viewActivityIndicator?.backgroundColor = UIColor.black.withAlphaComponent(0.3)
+        viewActivityIndicator?.layer.masksToBounds = true
+        viewActivityIndicator?.backgroundColor = .clear
 
         if backgroundView == nil {
             if let window = UIApplication.shared.keyWindow {
@@ -487,12 +493,14 @@ class NCUtility: NSObject {
         
         guard let viewActivityIndicator = self.viewActivityIndicator else { return }
         viewActivityIndicator.addSubview(activityIndicator)
-        
+        blurEffectView.frame = viewActivityIndicator.frame
+        viewActivityIndicator.insertSubview(blurEffectView, at: 0)
+
         NSLayoutConstraint.activate([
-            viewActivityIndicator.widthAnchor.constraint(equalToConstant: viewActivityIndicator.bounds.width),
-            viewActivityIndicator.heightAnchor.constraint(equalToConstant: viewActivityIndicator.bounds.height),
+            viewActivityIndicator.widthAnchor.constraint(equalToConstant: sizeActivityIndicator),
+            viewActivityIndicator.heightAnchor.constraint(equalToConstant: sizeActivityIndicator),
             activityIndicator.centerXAnchor.constraint(equalTo: viewActivityIndicator.centerXAnchor),
-            activityIndicator.centerYAnchor.constraint(equalTo: viewActivityIndicator.centerYAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: viewActivityIndicator.centerYAnchor)
         ])
         
         // BACKGROUD VIEW ACTIVITY INDICATOR
@@ -500,22 +508,23 @@ class NCUtility: NSObject {
         guard let viewBackgroundActivityIndicator = self.viewBackgroundActivityIndicator else { return }
         viewBackgroundActivityIndicator.addSubview(viewActivityIndicator)
             
-        let horizontalConstraint = NSLayoutConstraint(item: viewActivityIndicator, attribute: NSLayoutConstraint.Attribute.centerX, relatedBy: NSLayoutConstraint.Relation.equal, toItem: viewBackgroundActivityIndicator, attribute: NSLayoutConstraint.Attribute.centerX, multiplier: 1, constant: 0)
-        viewBackgroundActivityIndicator.addConstraint(horizontalConstraint)
-        
         var verticalConstant: CGFloat = 0
         if bottom > 0 {
             verticalConstant = (viewBackgroundActivityIndicator.frame.size.height / 2) - bottom
         }
         
-        let verticalConstraint = NSLayoutConstraint(item: viewActivityIndicator, attribute: NSLayoutConstraint.Attribute.centerY, relatedBy: NSLayoutConstraint.Relation.equal, toItem: viewBackgroundActivityIndicator, attribute: NSLayoutConstraint.Attribute.centerY, multiplier: 1, constant: verticalConstant)
-        viewBackgroundActivityIndicator.addConstraint(verticalConstraint)
-
+        NSLayoutConstraint.activate([
+            viewActivityIndicator.centerXAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerXAnchor),
+            viewActivityIndicator.centerYAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerYAnchor, constant: verticalConstant)
+        ])
+        
         activityIndicator.startAnimating()
     }
     
     @objc func stopActivityIndicator() {
         
+        return
+            
         activityIndicator.stopAnimating()
         activityIndicator.removeFromSuperview()
         
