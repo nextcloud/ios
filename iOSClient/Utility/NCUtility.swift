@@ -464,6 +464,14 @@ class NCUtility: NSObject {
         activityIndicator.hidesWhenStopped = true
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 
+        let sizeActivityIndicator = activityIndicator.bounds.height + 10
+        
+        viewActivityIndicator = UIView.init(frame: CGRect(x: 0, y: 0, width: sizeActivityIndicator, height: sizeActivityIndicator))
+        viewActivityIndicator?.translatesAutoresizingMaskIntoConstraints = false
+        viewActivityIndicator?.layer.cornerRadius = 10
+        viewActivityIndicator?.layer.masksToBounds = true
+        viewActivityIndicator?.backgroundColor = UIColor.black.withAlphaComponent(0.3)
+
         if backgroundView == nil {
             if let window = UIApplication.shared.keyWindow {
                 viewBackgroundActivityIndicator?.removeFromSuperview()
