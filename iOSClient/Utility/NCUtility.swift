@@ -36,7 +36,8 @@ class NCUtility: NSObject {
     
     private let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
     private var viewActivityIndicator: UIView?
-    
+    private var viewBackgroundActivityIndicator: UIView?
+
     func setLayoutForView(key: String, serverUrl: String, layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
         
         let string =  layout + "|" + sort + "|" + "\(ascending)" + "|" + groupBy + "|" + "\(directoryOnTop)" + "|" + titleButton + "|" + "\(itemForLine)"
@@ -456,23 +457,25 @@ class NCUtility: NSObject {
     // MARK: -
 
     @objc func startActivityIndicator(view: UIView?, bottom: CGFloat = 0) {
-            
+        
+        if viewBackgroundActivityIndicator != nil { return }
+        
         activityIndicator.color = NCBrandColor.shared.brand
         activityIndicator.hidesWhenStopped = true
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 
         if view == nil {
             if let window = UIApplication.shared.keyWindow {
-                viewActivityIndicator?.removeFromSuperview()
-                viewActivityIndicator = NCViewActivityIndicator(frame: window.bounds)
-                window.addSubview(viewActivityIndicator!)
-                viewActivityIndicator?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                viewBackgroundActivityIndicator?.removeFromSuperview()
+                viewBackgroundActivityIndicator = NCViewActivityIndicator(frame: window.bounds)
+                window.addSubview(viewBackgroundActivityIndicator!)
+                viewBackgroundActivityIndicator?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             }
         } else {
-            viewActivityIndicator = view
+            viewBackgroundActivityIndicator = view
         }
         
-        guard let view = viewActivityIndicator else { return }
+        guard let view = viewBackgroundActivityIndicator else { return }
         view.addSubview(activityIndicator)
             
         let horizontalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: NSLayoutConstraint.Attribute.centerX, relatedBy: NSLayoutConstraint.Relation.equal, toItem: view, attribute: NSLayoutConstraint.Attribute.centerX, multiplier: 1, constant: 0)
@@ -492,9 +495,10 @@ class NCUtility: NSObject {
     @objc func stopActivityIndicator() {
         activityIndicator.stopAnimating()
         activityIndicator.removeFromSuperview()
-        if viewActivityIndicator is NCViewActivityIndicator {
-            viewActivityIndicator?.removeFromSuperview()
+        if viewBackgroundActivityIndicator is NCViewActivityIndicator {
+            viewBackgroundActivityIndicator?.removeFromSuperview()
         }
+        viewBackgroundActivityIndicator = nil
     }
 }
 
