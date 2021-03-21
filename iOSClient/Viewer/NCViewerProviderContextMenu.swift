@@ -150,7 +150,7 @@ class NCViewerProviderContextMenu: UIViewController  {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String {
                 if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
-                    NCUtility.shared.startActivityIndicator(view: self.view)
+                    NCUtility.shared.startActivityIndicator(backgroundView: self.view)
                 }
             }
         }

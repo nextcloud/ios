@@ -456,7 +456,7 @@ class NCUtility: NSObject {
     
     // MARK: -
 
-    @objc func startActivityIndicator(view: UIView?, bottom: CGFloat = 0) {
+    @objc func startActivityIndicator(backgroundView: UIView?, bottom: CGFloat = 0) {
         
         if viewBackgroundActivityIndicator != nil { return }
         
@@ -464,7 +464,7 @@ class NCUtility: NSObject {
         activityIndicator.hidesWhenStopped = true
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 
-        if view == nil {
+        if backgroundView == nil {
             if let window = UIApplication.shared.keyWindow {
                 viewBackgroundActivityIndicator?.removeFromSuperview()
                 viewBackgroundActivityIndicator = NCViewActivityIndicator(frame: window.bounds)
@@ -472,7 +472,7 @@ class NCUtility: NSObject {
                 viewBackgroundActivityIndicator?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             }
         } else {
-            viewBackgroundActivityIndicator = view
+            viewBackgroundActivityIndicator = backgroundView
         }
         
         guard let view = viewBackgroundActivityIndicator else { return }

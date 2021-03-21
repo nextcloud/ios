@@ -281,7 +281,7 @@ import Queuer
         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierDownload, sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusInDownload)
                     
         if activityIndicator {
-            NCUtility.shared.startActivityIndicator(view: nil)
+            NCUtility.shared.startActivityIndicator(backgroundView: nil)
         }
         
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (request) in
