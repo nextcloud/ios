@@ -548,7 +548,7 @@ extension NCMedia {
         }
         
         let height = self.tabBarController?.tabBar.frame.size.height ?? 0
-        NCUtility.shared.startActivityIndicator(backgroundView: self.view, bottom: height + 50)
+        NCUtility.shared.startActivityIndicator(backgroundView: self.view, bottom: height + 100)
 
         NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 120) { (account, files, errorCode, errorDescription) in
             
