@@ -492,8 +492,6 @@ class NCUtility: NSObject {
         if blurEffect {
             let blurEffect = UIBlurEffect(style: .regular)
             let blurEffectView = UIVisualEffectView(effect: blurEffect)
-            blurEffectView.layer.cornerRadius = 10
-            blurEffectView.layer.masksToBounds = true
             blurEffectView.frame = viewActivityIndicator.frame
             viewActivityIndicator.insertSubview(blurEffectView, at: 0)
         }
