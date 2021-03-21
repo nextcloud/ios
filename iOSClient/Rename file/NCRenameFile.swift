@@ -202,7 +202,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
     func renameMetadata(_ metadata: tableMetadata, fileNameNew: String) {
         
-        NCUtility.shared.startActivityIndicator(backgroundView: nil)
+        NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
         
         NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, urlBase: metadata.urlBase, viewController: self) { (errorCode, errorDescription) in
             

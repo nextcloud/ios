@@ -256,7 +256,7 @@
 {
     if ([self.filesName count] > 0) {
     
-        [[NCUtility shared] startActivityIndicatorWithBackgroundView:nil bottom:0];
+        [[NCUtility shared] startActivityIndicatorWithBackgroundView:nil blurEffect:true bottom:0];
         
         NSString *fileName = [self.filesName objectAtIndex:0];
         NSString *fileNameLocal = [NSTemporaryDirectory() stringByAppendingString:fileName];

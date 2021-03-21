@@ -456,15 +456,10 @@ class NCUtility: NSObject {
     
     // MARK: -
 
-    @objc func startActivityIndicator(backgroundView: UIView?, bottom: CGFloat = 0) {
+    @objc func startActivityIndicator(backgroundView: UIView?, blurEffect: Bool, bottom: CGFloat = 0) {
         
         if viewBackgroundActivityIndicator != nil { return }
         
-        let blurEffect = UIBlurEffect(style: .regular)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.layer.cornerRadius = 10
-        blurEffectView.layer.masksToBounds = true
-
         activityIndicator.color = NCBrandColor.shared.textView
         activityIndicator.hidesWhenStopped = true
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
@@ -493,9 +488,16 @@ class NCUtility: NSObject {
         
         guard let viewActivityIndicator = self.viewActivityIndicator else { return }
         viewActivityIndicator.addSubview(activityIndicator)
-        blurEffectView.frame = viewActivityIndicator.frame
-        viewActivityIndicator.insertSubview(blurEffectView, at: 0)
-
+        
+        if blurEffect {
+            let blurEffect = UIBlurEffect(style: .regular)
+            let blurEffectView = UIVisualEffectView(effect: blurEffect)
+            blurEffectView.layer.cornerRadius = 10
+            blurEffectView.layer.masksToBounds = true
+            blurEffectView.frame = viewActivityIndicator.frame
+            viewActivityIndicator.insertSubview(blurEffectView, at: 0)
+        }
+            
         NSLayoutConstraint.activate([
             viewActivityIndicator.widthAnchor.constraint(equalToConstant: sizeActivityIndicator),
             viewActivityIndicator.heightAnchor.constraint(equalToConstant: sizeActivityIndicator),

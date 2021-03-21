@@ -137,7 +137,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.window?.rootViewController) { (hasPermission) in
             if hasPermission {
                 NCContentPresenter.shared.messageNotification("_attention_", description: "_create_full_upload_", delay: NCGlobal.shared.dismissAfterSecondLong, type: .info, errorCode: 0, forced: true)
-                NCUtility.shared.startActivityIndicator(backgroundView: nil)
+                NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
                 self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log) { (items) in
                     NCUtility.shared.stopActivityIndicator()
                 }

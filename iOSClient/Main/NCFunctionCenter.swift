@@ -284,7 +284,7 @@ import NCCommunication
         let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
         
         if let view = viewActivity {
-            NCUtility.shared.startActivityIndicator(backgroundView: view)
+            NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: true)
         }
         
         NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in

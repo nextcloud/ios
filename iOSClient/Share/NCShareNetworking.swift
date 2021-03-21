@@ -42,7 +42,7 @@ class NCShareNetworking: NSObject {
     }
     
     func readShare() {
-        NCUtility.shared.startActivityIndicator(backgroundView: view)
+        NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: true)
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
         NCCommunication.shared.readShares(path: filenamePath) { (account, shares, errorCode, errorDescription) in
             NCUtility.shared.stopActivityIndicator()
@@ -57,7 +57,7 @@ class NCShareNetworking: NSObject {
     }
     
     func createShareLink(password: String?) {
-        NCUtility.shared.startActivityIndicator(backgroundView: view)
+        NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: true)
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
         NCCommunication.shared.createShareLink(path: filenamePath, password: password) { (account, share, errorCode, errorDescription) in
             NCUtility.shared.stopActivityIndicator()
@@ -72,7 +72,7 @@ class NCShareNetworking: NSObject {
     }
     
     func createShare(shareWith: String, shareType: Int, metadata: tableMetadata) {
-        NCUtility.shared.startActivityIndicator(backgroundView: view)
+        NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: true)
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
         var permission: Int = 1
         if metadata.directory { permission = NCGlobal.shared.permissionMaxFolderShare } else { permission = NCGlobal.shared.permissionMaxFileShare }
@@ -89,7 +89,7 @@ class NCShareNetworking: NSObject {
     }
     
     func unShare(idShare: Int) {
-        NCUtility.shared.startActivityIndicator(backgroundView: view)
+        NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: true)
         NCCommunication.shared.deleteShare(idShare: idShare) { (account, errorCode, errorDescription) in
             NCUtility.shared.stopActivityIndicator()
             if errorCode == 0 {
@@ -102,7 +102,7 @@ class NCShareNetworking: NSObject {
     }
     
     func updateShare(idShare: Int, password: String?, permission: Int, note: String?, expirationDate: String?, hideDownload: Bool) {
-        NCUtility.shared.startActivityIndicator(backgroundView: view)
+        NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: true)
         NCCommunication.shared.updateShare(idShare: idShare, password: password, expireDate: expirationDate, permissions: permission, note: note, hideDownload: hideDownload) { (account, share, errorCode, errorDescription) in
             NCUtility.shared.stopActivityIndicator()
             if errorCode == 0 && share != nil {
@@ -117,7 +117,7 @@ class NCShareNetworking: NSObject {
     }
     
     func getSharees(searchString: String) {
-        NCUtility.shared.startActivityIndicator(backgroundView: view)
+        NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: true)
         NCCommunication.shared.searchSharees(search: searchString) { (account, sharees, errorCode, errorDescription) in
             NCUtility.shared.stopActivityIndicator()
             if errorCode == 0 {
