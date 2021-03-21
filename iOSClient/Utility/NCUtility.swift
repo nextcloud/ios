@@ -465,11 +465,11 @@ class NCUtility: NSObject {
         blurEffectView.layer.cornerRadius = 10
         blurEffectView.layer.masksToBounds = true
 
-        activityIndicator.color = NCBrandColor.shared.brand
+        activityIndicator.color = NCBrandColor.shared.textView
         activityIndicator.hidesWhenStopped = true
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 
-        let sizeActivityIndicator = activityIndicator.bounds.height + 100
+        let sizeActivityIndicator = activityIndicator.frame.height + 50
         
         viewActivityIndicator = UIView.init(frame: CGRect(x: 0, y: 0, width: sizeActivityIndicator, height: sizeActivityIndicator))
         viewActivityIndicator?.translatesAutoresizingMaskIntoConstraints = false
@@ -522,9 +522,7 @@ class NCUtility: NSObject {
     }
     
     @objc func stopActivityIndicator() {
-        
-        return
-            
+                    
         activityIndicator.stopAnimating()
         activityIndicator.removeFromSuperview()
         
