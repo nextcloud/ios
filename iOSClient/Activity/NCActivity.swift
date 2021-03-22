@@ -574,7 +574,7 @@ extension NCActivity {
         canFetchActivity = false
         
         if idActivity > 0 {
-            NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: true, bottom: 100)
+            NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: 50)
         }
         
         NCCommunication.shared.getActivity(since: idActivity, limit: 200, objectId: filterFileId, objectType: objectType, previews: true) { (account, activities, errorCode, errorDescription) in
