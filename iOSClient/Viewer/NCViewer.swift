@@ -78,7 +78,7 @@ class NCViewer: NSObject {
                 return
             }
             
-            // DirectEditinf: Nextcloud Text - OnlyOffice
+            // DirectEditing: Nextcloud Text - OnlyOffice
             if NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil && NCCommunication.shared.isNetworkReachable() {
                 
                 guard let editor = NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) else { return }
