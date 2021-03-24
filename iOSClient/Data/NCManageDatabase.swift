@@ -2120,6 +2120,20 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    func setMetadataChunked(ocId: String, chunk: Bool) {
+           
+        let realm = try! Realm()
+        
+        do {
+            try realm.safeWrite {
+                let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
+                result?.chunk = chunk
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
     @objc func getMetadata(predicate: NSPredicate) -> tableMetadata? {
         
         let realm = try! Realm()
