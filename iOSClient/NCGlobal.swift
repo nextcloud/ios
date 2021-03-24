@@ -78,6 +78,9 @@ class NCGlobal: NSObject {
     // Max Size Upload
     let uploadMaxFileSize: UInt64                   = 524288000   // 500 MB
     
+    // Chunck size MB
+    let chunckSize                                  = 10          // 10 MB
+    
     // Max Cache Proxy Video
     let maxHTTPCache: Int64                         = 10737418240 // 10 GB
     
