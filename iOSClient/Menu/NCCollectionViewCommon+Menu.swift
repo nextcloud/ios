@@ -273,7 +273,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "arrow.up.forward.app"),
+                    icon: NCUtility.shared.loadImage(named: "arrow.forward.square"),
                     action: { menuAction in
                         NCFunctionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
                     }
