@@ -372,7 +372,7 @@ import NCCommunication
             metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
             metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
             
-            NCManageDatabase.shared.addMetadata(metadataForUpload)
+            appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: [metadataForUpload])
             
         } catch { }
     }

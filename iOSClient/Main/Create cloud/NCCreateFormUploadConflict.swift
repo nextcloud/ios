@@ -227,9 +227,7 @@ extension NCCreateFormUploadConflictDelegate {
             
         } else {
             
-            NCManageDatabase.shared.addMetadatas(metadatasNOConflict)
-            
-            appDelegate.networkingProcessUpload?.startProcess()
+            appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadatasNOConflict)
         }
                 
         dismiss(animated: true)

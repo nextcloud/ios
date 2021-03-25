@@ -257,10 +257,8 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         
         CCUtility.copyFile(atPath: self.fileNamePath, toPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                    
-        NCManageDatabase.shared.addMetadata(metadata)
-                
-        appDelegate.networkingProcessUpload?.startProcess()
-        
+        appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: [metadata])
+
         self.dismiss(animated: true, completion: nil)
     }
     

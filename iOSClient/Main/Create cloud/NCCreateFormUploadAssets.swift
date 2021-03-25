@@ -461,10 +461,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 
             } else {
                 
-                NCManageDatabase.shared.addMetadatas(metadatasNOConflict)
-                NCManageDatabase.shared.addMetadatas(metadatasMOV)
-                
-                self.appDelegate.networkingProcessUpload?.startProcess()
+                self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadatasNOConflict)
+                self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadatasMOV)                
             }
         
             DispatchQueue.main.async {self.dismiss(animated: true, completion: nil)  }

@@ -167,5 +167,22 @@ class NCNetworkingProcessUpload: NSObject {
             }
         })
     }
+    
+    //MARK: -
+    
+    @objc func createProcessUploads(metadatas: [tableMetadata], autoUpload: Bool = false) {
+        
+        var metadatasForUpload: [tableMetadata] = []
+        
+        for metadata in metadatas {
+            metadatasForUpload.append(metadata)
+            
+            //NCManageDatabase.shared.addMetadataForAutoUpload(metadata)
+        }
+        
+        NCManageDatabase.shared.addMetadatas(metadatasForUpload)
+        
+        startProcess()
+    }
 }
 
