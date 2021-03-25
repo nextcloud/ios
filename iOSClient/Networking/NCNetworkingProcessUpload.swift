@@ -170,7 +170,7 @@ class NCNetworkingProcessUpload: NSObject {
     
     //MARK: -
     
-    @objc func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false) {
+    @objc func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false, activityIndicator: Bool = false) {
         
         var metadatasForUpload: [tableMetadata] = []
         
@@ -182,7 +182,7 @@ class NCNetworkingProcessUpload: NSObject {
                 }
             }
             
-            metadatasForUpload.append(metadata)            
+            metadatasForUpload.append(tableMetadata.init(value: metadata))
         }
         
         NCManageDatabase.shared.addMetadatas(metadatasForUpload)
