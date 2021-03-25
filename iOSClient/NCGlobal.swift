@@ -71,18 +71,18 @@ class NCGlobal: NSObject {
     let sizeIcon: CGFloat                           = 512
     
     // E2EE
-    let e2eeMaxFileSize: UInt64                     = 524288000   // 500 MB
+    let e2eeMaxFileSize: UInt64                     = 500000000     // 500 MB
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
     @objc let e2eeVersion                           = "1.1"
     
     // Max Size Upload
-    let uploadMaxFileSize: UInt64                   = 524288000   // 500 MB
+    let uploadMaxFileSize: UInt64                   = 500000000     // 500 MB
     
     // Chunck size MB
-    let chunckSize                                  = 10          // 10 MB
+    let chunckSize: Int64                           = 10000000      // 10 MB
     
     // Max Cache Proxy Video
-    let maxHTTPCache: Int64                         = 10737418240 // 10 GB
+    let maxHTTPCache: Int64                         = 10000000000   // 10 GB
     
     // NCSharePaging
     let indexPageActivity: Int                      = 0
@@ -90,8 +90,8 @@ class NCGlobal: NSObject {
     let indexPageSharing: Int                       = 2
     
     // NCViewerProviderContextMenu
-    let maxAutoDownload: UInt64                     = 104857600 // 100MB
-    let maxAutoDownloadCellular: UInt64             = 10485760  // 10MB
+    let maxAutoDownload: UInt64                     = 100000000     // 100MB
+    let maxAutoDownloadCellular: UInt64             = 10000000      // 10MB
 
     // Nextcloud unsupported
     let nextcloud_unsupported_version: Int          = 13
