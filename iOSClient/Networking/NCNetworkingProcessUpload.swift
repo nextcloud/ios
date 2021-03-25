@@ -185,6 +185,7 @@ class NCNetworkingProcessUpload: NSObject {
             if metadata.size <= NCGlobal.shared.chunckSize {
                 metadatasForUpload.append(metadata)
             } else {
+                // CHUNCK
                 metadatasForUpload.append(tableMetadata.init(value: metadata))
             }
         }
