@@ -1882,6 +1882,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    /*
     @objc func addMetadataForAutoUpload(_ metadata: tableMetadata) {
 
         let realm = try! Realm()
@@ -1899,6 +1900,7 @@ class NCManageDatabase: NSObject {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
+    */
     
     @objc func renameMetadata(fileNameTo: String, ocId: String) {
         

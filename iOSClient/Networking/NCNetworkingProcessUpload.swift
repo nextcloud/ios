@@ -170,11 +170,18 @@ class NCNetworkingProcessUpload: NSObject {
     
     //MARK: -
     
-    @objc func createProcessUploads(metadatas: [tableMetadata], autoUpload: Bool = false) {
+    @objc func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false) {
         
         var metadatasForUpload: [tableMetadata] = []
         
         for metadata in metadatas {
+            
+            if verifyAlreadyExists {
+                if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''", metadata.account, metadata.serverUrl, metadata.fileName)) != nil {
+                    continue
+                }
+            }
+            
             metadatasForUpload.append(metadata)
             
             //NCManageDatabase.shared.addMetadataForAutoUpload(metadata)
