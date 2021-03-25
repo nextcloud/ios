@@ -285,7 +285,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                                 if counterLivePhoto == 0 && self.endForAssetToUpload {
                                     DispatchQueue.main.async {
                                         if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                                            NCManageDatabase.shared.addMetadatas(metadataFull)
+                                            self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadataFull)
                                         }
                                         completion(counterItemsUpload)
                                     }
@@ -300,7 +300,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                 if counterLivePhoto == 0 {
                     DispatchQueue.main.async {
                         if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                            NCManageDatabase.shared.addMetadatas(metadataFull)
+                            self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadataFull)
                         }
                         completion(counterItemsUpload)
                     }

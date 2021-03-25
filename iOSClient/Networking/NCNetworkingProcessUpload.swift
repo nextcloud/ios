@@ -182,9 +182,7 @@ class NCNetworkingProcessUpload: NSObject {
                 }
             }
             
-            metadatasForUpload.append(metadata)
-            
-            //NCManageDatabase.shared.addMetadataForAutoUpload(metadata)
+            metadatasForUpload.append(metadata)            
         }
         
         NCManageDatabase.shared.addMetadatas(metadatasForUpload)
