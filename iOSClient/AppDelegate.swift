@@ -57,7 +57,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
-    var networkingAutoUpload: NCNetworkingAutoUpload?
+    var networkingProcessUpload: NCNetworkingProcessUpload?
     var passcodeViewController: TOPasscodeViewController?
     var pasteboardOcIds: [String] = []
     var shares: [tableShare] = []
@@ -120,8 +120,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationCenter.default.addObserver(self, selector: #selector(initializeMain), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitializeMain), object: nil)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
         
-        // Auto upload
-        networkingAutoUpload = NCNetworkingAutoUpload.init()
+        // Process upload
+        networkingProcessUpload = NCNetworkingProcessUpload.init()
         
         // Push Notification & display notification
         application.registerForRemoteNotifications()

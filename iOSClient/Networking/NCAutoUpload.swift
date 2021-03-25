@@ -70,7 +70,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                         self.uploadAssetsNewAndFull(viewController: nil, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Change location") { (items) in
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
                             if items > 0 {
-                                self.appDelegate.networkingAutoUpload?.startProcess()
+                                self.appDelegate.networkingProcessUpload?.startProcess()
                             }
                         }
                     }
@@ -104,7 +104,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                     if hasPermission {
                         self.uploadAssetsNewAndFull(viewController:viewController, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload") { (items) in
                             if items > 0 {
-                                self.appDelegate.networkingAutoUpload?.startProcess()
+                                self.appDelegate.networkingProcessUpload?.startProcess()
                             }
                             completion(items)
                         }

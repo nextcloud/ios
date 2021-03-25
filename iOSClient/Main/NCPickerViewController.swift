@@ -174,7 +174,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                         } else {
                             
                             NCManageDatabase.shared.addMetadata(metadataForUpload)
-                            appDelegate.networkingAutoUpload?.startProcess()
+                            appDelegate.networkingProcessUpload?.startProcess()
                         }
                         
                     } catch {

@@ -1,5 +1,5 @@
 //
-//  NCNetworkingAutoUpload.swift
+//  NCNetworkingProcessUpload.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 25/06/2020.
@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCNetworkingAutoUpload: NSObject {
+class NCNetworkingProcessUpload: NSObject {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var timerProcess: Timer?
@@ -62,7 +62,7 @@ class NCNetworkingAutoUpload: NSObject {
         
         timerProcess?.invalidate()
         
-        print("[LOG] PROCESS-AUTO-UPLOAD \(counterUpload)")
+        print("[LOG] PROCESS-UPLOAD \(counterUpload)")
     
         NCNetworking.shared.getOcIdInBackgroundSession { (listOcId) in
             
@@ -77,7 +77,7 @@ class NCNetworkingAutoUpload: NSObject {
                     }
                     let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: predicate, page: 1, limit: limit, sorted: "date", ascending: true)
                     if metadatas.count > 0 {
-                        NCCommunicationCommon.shared.writeLog("PROCESS-AUTO-UPLOAD find \(metadatas.count) items")
+                        NCCommunicationCommon.shared.writeLog("PROCESS-UPLOAD find \(metadatas.count) items")
                     }
                     
                     for metadata in metadatas {

@@ -549,7 +549,7 @@ import Queuer
                 self.getOcIdInBackgroundSession { (listOcId) in
                     if listOcId.count == 0 && self.uploadRequest.count == 0 {
                         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                        appDelegate.networkingAutoUpload?.startProcess()
+                        appDelegate.networkingProcessUpload?.startProcess()
                     }
                 }
                 CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensMode) in };
