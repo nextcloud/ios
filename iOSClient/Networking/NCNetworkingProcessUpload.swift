@@ -170,7 +170,7 @@ class NCNetworkingProcessUpload: NSObject {
     
     //MARK: -
     
-    @objc func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false, activityIndicator: Bool = false) {
+    @objc func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false, activityIndicator: String? = nil) {
         
         var metadatasForUpload: [tableMetadata] = []
         
