@@ -186,6 +186,7 @@ class NCNetworkingProcessUpload: NSObject {
                 metadatasForUpload.append(metadata)
             } else {
                 // CHUNCK
+                metadata.chunk = true
                 metadatasForUpload.append(tableMetadata.init(value: metadata))
             }
         }
