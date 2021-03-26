@@ -406,7 +406,8 @@ import Queuer
                 /*
                 if metadata.chunk {
                     let path = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId)!
-                    _ = self.fileChunks(path: path, fileName: metadata.fileName, pathChunks: path, size: 10)
+                    let filesNameOut = self.fileChunks(path: path, fileName: metadata.fileName, pathChunks: path, size: 10)
+                } else {
                 }
                 */
                 
