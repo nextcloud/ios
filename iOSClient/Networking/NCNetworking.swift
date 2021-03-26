@@ -405,9 +405,8 @@ import Queuer
 
                 if metadata.chunk {
                     let path = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId)
-                    _ = self.fileChunks(path: path!, fileName: metadata.fileName, size: 10)
+                    _ = self.fileChunks(path: path!, fileName: metadata.fileName, size: 9)
                 }
-                
                 
                 NCManageDatabase.shared.addMetadata(extractMetadata)
                
@@ -1343,7 +1342,7 @@ import Queuer
         do {
             let data = try Data(contentsOf: URL(fileURLWithPath: path + "/" + fileName))
             let dataLen = data.count
-            let chunkSize = ((1024 * 1000) * 4) // MB
+            let chunkSize = ((1024 * 1000) * size) // MB
             let fullChunks = Int(dataLen / chunkSize)
             let totalChunks = fullChunks + (dataLen % 1024 != 0 ? 1 : 0)
                 
