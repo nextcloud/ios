@@ -403,12 +403,11 @@ import Queuer
                 fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId, fileNameView: extractMetadata.fileNameView)
                 NCUtilityFileSystem.shared.moveFileInBackground(atPath: fileNamePath!, toPath: fileNameLocalPath)
 
-                /*
                 if metadata.chunk {
                     let path = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId)
                     _ = self.fileChunks(path: path!, fileName: metadata.fileName, size: 10)
                 }
-                */
+                
                 
                 NCManageDatabase.shared.addMetadata(extractMetadata)
                
@@ -1314,6 +1313,42 @@ import Queuer
     //MARK: - TEST API
         
     
+    func fileChunks(path: String, fileName: String, size: Int) -> [String]? {
+           
+        let filesNameOut: [String] = []
+        let path = URL(fileURLWithPath: path + "/" + fileName)
+            
+        do {
+            let data = try Data(contentsOf: path)
+            let dataLen = (data as NSData).length
+            let fullChunks = Int(dataLen / 1024) // 1 Kbyte
+            let totalChunks = fullChunks + (dataLen % 1024 != 0 ? 1 : 0)
+                
+            var chunks:[Data] = [Data]()
+            for chunkCounter in 0..<totalChunks {
+                
+                var chunk:Data
+                let chunkBase = chunkCounter * 1024
+                var diff = 1024
+                if chunkCounter == totalChunks - 1 {
+                    diff = dataLen - chunkBase
+                }
+                    
+                let range:Range<Data.Index> = chunkBase..<(chunkBase + diff)
+                chunk = data.subdata(in: range)
+                    
+                chunks.append(chunk)
+            }
+                
+            // Send chunks as you want
+            debugPrint(chunks)
+        }
+        catch {
+            return nil
+        }
+        
+        return filesNameOut
+    }
     
     /*
     @objc public func getAppPassword(serverUrl: String, username: String, password: String, customUserAgent: String? = nil, completionHandler: @escaping (_ token: String?, _ errorCode: Int, _ errorDescription: String) -> Void) {
