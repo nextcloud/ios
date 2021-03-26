@@ -404,8 +404,8 @@ import Queuer
                 NCUtilityFileSystem.shared.moveFileInBackground(atPath: fileNamePath!, toPath: fileNameLocalPath)
 
                 if metadata.chunk {
-                    let path = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId)
-                    _ = self.fileChunks(path: path!, fileName: metadata.fileName, size: 10)
+                    let path = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId)!
+                    _ = self.fileChunks(path: path, fileName: metadata.fileName, pathChunks: path, size: 10)
                 }
                 
                 NCManageDatabase.shared.addMetadata(extractMetadata)
@@ -1323,9 +1323,9 @@ import Queuer
      
      */
     
-    func fileChunks(path: String, fileName: String, size: Int) -> [String]? {
+    func fileChunks(path: String, fileName: String, pathChunks: String, size: Int) -> [String]? {
            
-        let filesNameOut: [String] = []
+        var filesNameOut: [String] = []
         
         do {
             let data = try Data(contentsOf: URL(fileURLWithPath: path + "/" + fileName))
@@ -1344,12 +1344,10 @@ import Queuer
                     
                 let range:Range<Data.Index> = chunkBase..<(chunkBase + diff)
                 let chunk = data.subdata(in: range)
-                
-                print("The size is \(chunk.count)")
-                
+                                
                 let fileNameOut = fileName + "." + String(format: "%010d", chunkCounter)
-                
-                try chunk.write(to: URL(fileURLWithPath: path + "/" + fileNameOut))
+                try chunk.write(to: URL(fileURLWithPath: pathChunks + "/" + fileNameOut))
+                filesNameOut.append(fileNameOut)
             }
         } catch {
             return nil
