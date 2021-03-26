@@ -1326,7 +1326,7 @@ import Queuer
     func fileChunks(path: String, fileName: String, size: Int) -> [String]? {
            
         let filesNameOut: [String] = []
-            
+        
         do {
             let data = try Data(contentsOf: URL(fileURLWithPath: path + "/" + fileName))
             let dataLen = data.count
@@ -1344,10 +1344,10 @@ import Queuer
                     
                 let range:Range<Data.Index> = chunkBase..<(chunkBase + diff)
                 let chunk = data.subdata(in: range)
-                    
+                
                 print("The size is \(chunk.count)")
                 
-                let fileNameOut = fileName + "\(chunkCounter)"
+                let fileNameOut = fileName + "." + String(format: "%010d", chunkCounter)
                 
                 try chunk.write(to: URL(fileURLWithPath: path + "/" + fileNameOut))
             }
