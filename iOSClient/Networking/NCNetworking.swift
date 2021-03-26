@@ -405,7 +405,7 @@ import Queuer
 
                 if metadata.chunk {
                     let path = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId)
-                    _ = self.fileChunks(path: path!, fileName: metadata.fileName, size: 9)
+                    _ = self.fileChunks(path: path!, fileName: metadata.fileName, size: 10)
                 }
                 
                 NCManageDatabase.shared.addMetadata(extractMetadata)
@@ -1312,27 +1312,15 @@ import Queuer
     //MARK: - TEST API
         
     /*
-     import Foundation
+     
+     XXXXXXXXXXXXXXX-YYYYYYYYYYYYYYY
 
-     let data = try Data(contentsOf: URL(fileURLWithPath: "path/to/large/file.jpg"))
-     let dataLen = data.count
-     let chunkSize = ((1024 * 1000) * 4) // MB
-     let fullChunks = Int(dataLen / chunkSize)
-     let totalChunks = fullChunks + (dataLen % 1024 != 0 ? 1 : 0)
+     Where XXXXXXXXXXXXXXX is the start byte of the chunk (with leading zeros) and YYYYYYYYYYYYYYY is the end byte of the chunk with leading zeros.
 
-     var chunks:[Data] = [Data]()
-     for chunkCounter in 0..<totalChunks {
-       var chunk:Data
-       let chunkBase = chunkCounter * chunkSize
-       var diff = chunkSize
-       if(chunkCounter == totalChunks - 1) {
-         diff = dataLen - chunkBase
-       }
+     curl -X PUT -u roeland:pass https://server/remote.php/dav/uploads/roeland/myapp-e1663913-4423-4efe-a9cd-26e7beeca3c0/000000000000000-000000010485759 -d @chunk1 curl -X PUT -u roeland:pass https://server/remote.php/dav/uploads/roeland/myapp-e1663913-4423-4efe-a9cd-26e7beeca3c0/000000010485760-000000015728640 -d @chunk2
 
-       let range:Range<Data.Index> = Range<Data.Index>(chunkBase..<(chunkBase + diff))
-       chunk = data.subdata(in: range)
-       print("The size is \(chunk.count)")
-     }
+     This will upload 2 chunks of a file. The first chunk is 10MB in size and the second chunk is 5MB in size.
+     
      */
     
     func fileChunks(path: String, fileName: String, size: Int) -> [String]? {
