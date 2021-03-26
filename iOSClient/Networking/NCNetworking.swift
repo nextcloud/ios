@@ -614,6 +614,35 @@ import Queuer
         }
     }
     
+    func createChunk(metadata: tableMetadata, account: tableAccount) -> tableMetadata? {
+        
+        if metadata.chunk {
+            
+            // https://server/remote.php/dav/uploads/roeland/myapp-e1663913-4423-4efe-a9cd-26e7beeca3c0
+
+            let folder = NSUUID().uuidString
+            let serverUrlFileName = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/upload/" + account.userId + "/" + folder
+                        
+            NCCommunication.shared.createFolder(serverUrlFileName) { (account, ocId, date, errorCode, errorDescription) in
+                
+                if errorCode == 0 {
+                    
+                    let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
+                    let filesNameOut = self.fileChunks(path: path, fileName: metadata.fileName, pathChunks: path, size: 10)
+                    
+                } else {
+                    
+                }
+            }
+            
+        } else {
+            
+            return metadata
+        }
+        
+        return nil
+    }
+    
     @objc func verifyUploadZombie() {
         
         var session: URLSession?
