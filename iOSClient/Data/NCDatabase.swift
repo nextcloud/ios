@@ -188,6 +188,13 @@ class tableComments: Object {
     }
 }
 
+class tableChunk: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var folder = ""
+    @objc dynamic var ocId = ""
+}
+
 class tableDirectEditingCreators: Object {
     
     @objc dynamic var account = ""
