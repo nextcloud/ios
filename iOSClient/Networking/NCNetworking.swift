@@ -403,10 +403,12 @@ import Queuer
                 fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId, fileNameView: extractMetadata.fileNameView)
                 NCUtilityFileSystem.shared.moveFileInBackground(atPath: fileNamePath!, toPath: fileNameLocalPath)
 
+                /*
                 if metadata.chunk {
                     let path = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId)!
                     _ = self.fileChunks(path: path, fileName: metadata.fileName, pathChunks: path, size: 10)
                 }
+                */
                 
                 NCManageDatabase.shared.addMetadata(extractMetadata)
                
