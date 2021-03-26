@@ -188,13 +188,6 @@ class tableComments: Object {
     }
 }
 
-class tableChunk: Object {
-    
-    @objc dynamic var account = ""
-    @objc dynamic var folder = ""
-    @objc dynamic var ocId = ""
-}
-
 class tableDirectEditingCreators: Object {
     
     @objc dynamic var account = ""
@@ -313,6 +306,7 @@ class tableMetadata: Object {
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
     @objc dynamic var chunk: Bool = false
+    @objc dynamic var chunkFolder = ""
     @objc dynamic var commentsUnread: Bool = false
     @objc dynamic var contentType = ""
     @objc dynamic var creationDate = NSDate()
