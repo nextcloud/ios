@@ -257,7 +257,7 @@ class NCGlobal: NSObject {
 
     let notificationCenterUploadStartFile                       = "uploadStartFile"                  // userInfo: ocId
     @objc let notificationCenterUploadedFile                    = "uploadedFile"                     // userInfo: ocId, ocIdTemp, errorCode, errorDescription
-    let notificationCenterUploadCancelFile                      = "uploadCancelFile"                 // userInfo: ocId
+    let notificationCenterUploadCancelFile                      = "uploadCancelFile"                 // userInfo: ocId, serverUrl, account
 
     let notificationCenterProgressTask                          = "progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
     
