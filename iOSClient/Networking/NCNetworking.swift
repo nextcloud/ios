@@ -1312,6 +1312,29 @@ import Queuer
     
     //MARK: - TEST API
         
+    /*
+     import Foundation
+
+     let data = try Data(contentsOf: URL(fileURLWithPath: "path/to/large/file.jpg"))
+     let dataLen = data.count
+     let chunkSize = ((1024 * 1000) * 4) // MB
+     let fullChunks = Int(dataLen / chunkSize)
+     let totalChunks = fullChunks + (dataLen % 1024 != 0 ? 1 : 0)
+
+     var chunks:[Data] = [Data]()
+     for chunkCounter in 0..<totalChunks {
+       var chunk:Data
+       let chunkBase = chunkCounter * chunkSize
+       var diff = chunkSize
+       if(chunkCounter == totalChunks - 1) {
+         diff = dataLen - chunkBase
+       }
+
+       let range:Range<Data.Index> = Range<Data.Index>(chunkBase..<(chunkBase + diff))
+       chunk = data.subdata(in: range)
+       print("The size is \(chunk.count)")
+     }
+     */
     
     func fileChunks(path: String, fileName: String, size: Int) -> [String]? {
            
@@ -1320,16 +1343,17 @@ import Queuer
             
         do {
             let data = try Data(contentsOf: path)
-            let dataLen = (data as NSData).length
-            let fullChunks = Int(dataLen / 1024) // 1 Kbyte
+            let dataLen = data.count
+            let chunkSize = ((1024 * 1000) * 4) // MB
+            let fullChunks = Int(dataLen / chunkSize)
             let totalChunks = fullChunks + (dataLen % 1024 != 0 ? 1 : 0)
                 
             var chunks:[Data] = [Data]()
             for chunkCounter in 0..<totalChunks {
                 
                 var chunk:Data
-                let chunkBase = chunkCounter * 1024
-                var diff = 1024
+                let chunkBase = chunkCounter * chunkSize
+                var diff = chunkSize
                 if chunkCounter == totalChunks - 1 {
                     diff = dataLen - chunkBase
                 }
@@ -1337,6 +1361,7 @@ import Queuer
                 let range:Range<Data.Index> = chunkBase..<(chunkBase + diff)
                 chunk = data.subdata(in: range)
                     
+                print("The size is \(chunk.count)")
                 chunks.append(chunk)
             }
                 
