@@ -1339,19 +1339,16 @@ import Queuer
     func fileChunks(path: String, fileName: String, size: Int) -> [String]? {
            
         let filesNameOut: [String] = []
-        let path = URL(fileURLWithPath: path + "/" + fileName)
             
         do {
-            let data = try Data(contentsOf: path)
+            let data = try Data(contentsOf: URL(fileURLWithPath: path + "/" + fileName))
             let dataLen = data.count
             let chunkSize = ((1024 * 1000) * 4) // MB
             let fullChunks = Int(dataLen / chunkSize)
             let totalChunks = fullChunks + (dataLen % 1024 != 0 ? 1 : 0)
                 
-            var chunks:[Data] = [Data]()
             for chunkCounter in 0..<totalChunks {
                 
-                var chunk:Data
                 let chunkBase = chunkCounter * chunkSize
                 var diff = chunkSize
                 if chunkCounter == totalChunks - 1 {
@@ -1359,16 +1356,15 @@ import Queuer
                 }
                     
                 let range:Range<Data.Index> = chunkBase..<(chunkBase + diff)
-                chunk = data.subdata(in: range)
+                let chunk = data.subdata(in: range)
                     
                 print("The size is \(chunk.count)")
-                chunks.append(chunk)
-            }
                 
-            // Send chunks as you want
-            debugPrint(chunks)
-        }
-        catch {
+                let fileNameOut = fileName + "\(chunkCounter)"
+                
+                try chunk.write(to: URL(fileURLWithPath: path + "/" + fileNameOut))
+            }
+        } catch {
             return nil
         }
         
