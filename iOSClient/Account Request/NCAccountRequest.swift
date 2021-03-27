@@ -34,6 +34,7 @@ class NCAccountRequest: UIViewController {
     public let heightCell: CGFloat = 80
     public var enableTimerProgress: Bool = true
     public var enableAddAccount: Bool = false
+    public var viewController: UIViewController?
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var timer: Timer?
@@ -138,6 +139,9 @@ extension NCAccountRequest: UITableViewDelegate {
         
         if indexPath.row == accounts.count {
             
+            dismiss(animated: true)
+            appDelegate.openLogin(viewController: viewController, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+            
         } else {
         
             let account = accounts[indexPath.row]
@@ -182,7 +186,8 @@ extension NCAccountRequest: UITableViewDataSource {
         if indexPath.row == accounts.count {
            
             avatarImage?.image = NCUtility.shared.loadImage(named: "plus")
-            urlLabel?.text = NSLocalizedString("_add_account_", comment: "")
+            userLabel?.text = NSLocalizedString("_add_account_", comment: "")
+            urlLabel?.text = ""
             
         } else {
         
