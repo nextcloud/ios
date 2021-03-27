@@ -230,7 +230,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             
             // PROFILE BUTTON
             
-            if layoutKey == NCGlobal.shared.layoutViewFiles && serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)  {
+            if layoutKey == NCGlobal.shared.layoutViewFiles { //&& serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)  {
             
                 let profileButton = UIButton.init(type: .custom)
                 profileButton.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
@@ -253,6 +253,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 profileButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
 
                 navigationItem.setLeftBarButton(UIBarButtonItem(customView: profileButton), animated: true)
+                
+                navigationItem.leftItemsSupplementBackButton = true
             }
         }
     }
