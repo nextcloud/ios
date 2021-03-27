@@ -217,13 +217,43 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func setNavigationItem() {
         
         if isEditMode {
+            
             navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "navigationMore"), style: .plain, target: self, action:#selector(tapSelectMenu(sender:)))
             navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain, target: self, action: #selector(tapSelect(sender:)))
             navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(dataSource.metadatas.count)"
+            
         } else {
+            
             navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_select_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(tapSelect(sender:)))
             navigationItem.leftBarButtonItem = nil
             navigationItem.title = titleCurrentFolder
+            
+            // PROFILE BUTTON
+            
+            if layoutKey == NCGlobal.shared.layoutViewFiles {
+            
+                let profileButton = UIButton.init(type: .custom)
+                profileButton.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+                profileButton.addTarget(self, action: #selector(profileButtonTapped(sender:)), for: .touchUpInside)
+
+                var image = NCUtility.shared.loadImage(named: "person.crop.circle")
+                let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
+                if let userImage = UIImage(contentsOfFile: fileNamePath) {
+                    image = userImage
+                }
+                
+                UIGraphicsBeginImageContextWithOptions(profileButton.bounds.size, false, 3.0)
+                UIBezierPath.init(roundedRect: profileButton.bounds, cornerRadius: profileButton.bounds.size.height).addClip()
+                image.draw(in: profileButton.bounds)
+                image = UIGraphicsGetImageFromCurrentImageContext() ?? NCUtility.shared.loadImage(named: "person.crop.circle")
+                UIGraphicsEndImageContext()
+
+                profileButton.setImage(image, for: .normal)
+                profileButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
+                profileButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+
+                navigationItem.setLeftBarButton(UIBarButtonItem(customView: profileButton), animated: true)
+            }
         }
     }
     
@@ -255,6 +285,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         appDelegate.listOfflineVC.removeAll()
         selectOcId.removeAll()
         
+        setNavigationItem()
+    
         reloadDataSource()
     }
     
@@ -616,6 +648,27 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         setNavigationItem()
         
         self.collectionView.reloadData()
+    }
+    
+    @objc func profileButtonTapped(sender: Any) {
+        
+        let accounts = NCManageDatabase.shared.getAllAccount()
+        if accounts.count > 1 {
+            
+            if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
+               
+                vcAccountRequest.accounts = accounts
+                vcAccountRequest.enableTimerProgress = false
+                
+                let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
+                let height = min(CGFloat(accounts.count * Int(vcAccountRequest.heightCell) + 65), screenHeighMax)
+                
+                let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height)
+                popup.backgroundAlpha = 0.8
+                
+                UIApplication.shared.keyWindow?.rootViewController?.present(popup, animated: true)
+            }
+        }
     }
     
     func tapSwitchHeader(sender: Any) {

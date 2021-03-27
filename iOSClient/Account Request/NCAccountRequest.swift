@@ -32,6 +32,7 @@ class NCAccountRequest: UIViewController {
     
     public var accounts: [tableAccount] = []
     public let heightCell: CGFloat = 80
+    public var enableTimerProgress: Bool = true
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var timer: Timer?
@@ -84,9 +85,14 @@ class NCAccountRequest: UIViewController {
     
     @objc func startTimer() {
         
-        time = 0
-        timer?.invalidate()
-        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateProgress), userInfo: nil, repeats: true)
+        if enableTimerProgress {
+            time = 0
+            timer?.invalidate()
+            timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateProgress), userInfo: nil, repeats: true)
+            progressView.isHidden = false
+        } else {
+            progressView.isHidden = true
+        }
     }
     
     @objc func updateProgress() {
