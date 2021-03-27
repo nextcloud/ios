@@ -229,8 +229,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             navigationItem.title = titleCurrentFolder
             
             // PROFILE BUTTON
+            let rootViewController = navigationController?.viewControllers.first
             
-            if layoutKey == NCGlobal.shared.layoutViewFiles {
+            if layoutKey == NCGlobal.shared.layoutViewFiles && rootViewController == self  {
             
                 let profileButton = UIButton.init(type: .custom)
                 profileButton.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
@@ -653,7 +654,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func profileButtonTapped(sender: Any) {
         
         let accounts = NCManageDatabase.shared.getAllAccount()
-        if accounts.count > 1 {
+        if accounts.count > 0 {
             
             if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
                
