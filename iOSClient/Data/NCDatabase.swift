@@ -28,6 +28,7 @@ class tableAccount: Object {
     @objc dynamic var account = ""
     @objc dynamic var active: Bool = false
     @objc dynamic var address = ""
+    @objc dynamic var alias = ""
     @objc dynamic var autoUpload: Bool = false
     @objc dynamic var autoUploadBackground: Bool = false
     @objc dynamic var autoUploadCreateSubfolder: Bool = false

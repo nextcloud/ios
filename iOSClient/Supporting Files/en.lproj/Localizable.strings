@@ -164,6 +164,7 @@
 "_account_request_"         = "Request account";
 "_settings_account_request_" = "Request account at startup";
 "_print_"                   = "Print";
+"_alias_"                   = "Alias";
 
 /* User status */
 "_online_"                  = "Online";

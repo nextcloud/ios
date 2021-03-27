@@ -101,6 +101,18 @@
         [section addFormRow:row];
     }
     
+    // Section : ALIAS --------------------------------------------------
+    
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_alias_", nil)];
+    [form addFormSection:section];
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"alias" rowType:XLFormRowDescriptorTypeAccount];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textField.font"];
+    [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textField.textColor"];
+    row.value = accountActive.alias;
+    [section addFormRow:row];
+    
     // Section : MANAGE ACCOUNT -------------------------------------------
     
     if ([NCBrandOptions shared].disable_manage_account == NO) {
@@ -403,6 +415,7 @@
         if ([rowDescriptor.tag isEqualToString:account.account]) {
             if (![account.account isEqualToString:accountActive.account]) {
                 [self ChangeDefaultAccount:account.account];
+                [self initializeForm];
             }
         }
     }
@@ -416,7 +429,13 @@
         }
     }
     
-    [self initializeForm];
+    if ([rowDescriptor.tag isEqualToString:@"alias"]) {
+        if ([newValue isEqual:[NSNull null]]) {
+            [[NCManageDatabase shared] setAccountAlias:@""];
+        } else {
+            [[NCManageDatabase shared] setAccountAlias:newValue];
+        }
+    }
 }
 
 #pragma mark -
