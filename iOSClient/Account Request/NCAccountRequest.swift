@@ -77,6 +77,9 @@ class NCAccountRequest: UIViewController {
         super.viewWillDisappear(animated)
         
         timer?.invalidate()
+        if enableAddAccount {
+            dismiss(animated: false)
+        }
     }
     
     // MARK: - NotificationCenter
