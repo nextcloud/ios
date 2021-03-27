@@ -611,6 +611,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                
                 vcAccountRequest.accounts = accounts
                 vcAccountRequest.enableTimerProgress = true
+                vcAccountRequest.enableAddAccount = false
                 
                 let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
                 let height = min(CGFloat(accounts.count * Int(vcAccountRequest.heightCell) + 65), screenHeighMax)

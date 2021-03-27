@@ -33,7 +33,8 @@ class NCAccountRequest: UIViewController {
     public var accounts: [tableAccount] = []
     public let heightCell: CGFloat = 80
     public var enableTimerProgress: Bool = true
-    
+    public var enableAddAccount: Bool = false
+
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var timer: Timer?
     private var time: Float = 0
@@ -156,12 +157,15 @@ extension NCAccountRequest: UITableViewDelegate {
 extension NCAccountRequest: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return accounts.count
+        if enableAddAccount {
+            return accounts.count + 1
+        } else {
+            return accounts.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-       
-        let account = accounts[indexPath.row]
+               
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         cell.backgroundColor = NCBrandColor.shared.backgroundForm
        
@@ -169,7 +173,9 @@ extension NCAccountRequest: UITableViewDataSource {
         let userLabel = cell.viewWithTag(20) as? UILabel
         let urlLabel = cell.viewWithTag(30) as? UILabel
         let activeImage = cell.viewWithTag(40) as? UIImageView
-        
+
+        let account = accounts[indexPath.row]
+
         avatarImage?.image = NCUtility.shared.loadImage(named: "person.crop.circle")
     
         let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(account.user, urlBase: account.urlBase)) + "-" + account.user + ".png"
