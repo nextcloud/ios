@@ -610,6 +610,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
                
                 vcAccountRequest.accounts = accounts
+                vcAccountRequest.enableTimerProgress = true
                 
                 let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
                 let height = min(CGFloat(accounts.count * Int(vcAccountRequest.heightCell) + 65), screenHeighMax)
