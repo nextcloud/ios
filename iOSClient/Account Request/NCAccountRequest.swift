@@ -35,6 +35,7 @@ class NCAccountRequest: UIViewController {
     public var enableTimerProgress: Bool = true
     public var enableAddAccount: Bool = false
     public var viewController: UIViewController?
+    public var dismissDidEnterBackground: Bool = false
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var timer: Timer?
@@ -61,6 +62,7 @@ class NCAccountRequest: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(startTimer), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         
         changeTheming()        
     }
@@ -77,9 +79,6 @@ class NCAccountRequest: UIViewController {
         super.viewWillDisappear(animated)
         
         timer?.invalidate()
-        if enableAddAccount {
-            dismiss(animated: false)
-        }
     }
     
     // MARK: - NotificationCenter
@@ -89,6 +88,13 @@ class NCAccountRequest: UIViewController {
         view.backgroundColor = NCBrandColor.shared.backgroundForm
         tableView.backgroundColor = NCBrandColor.shared.backgroundForm
         tableView.reloadData()
+    }
+    
+    @objc func applicationDidEnterBackground() {
+        
+        if dismissDidEnterBackground {
+            dismiss(animated: false)
+        }
     }
 
     // MARK: - Progress

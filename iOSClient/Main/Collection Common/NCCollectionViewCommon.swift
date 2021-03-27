@@ -661,6 +661,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 vcAccountRequest.enableTimerProgress = false
                 vcAccountRequest.enableAddAccount = true
                 vcAccountRequest.viewController = self
+                vcAccountRequest.dismissDidEnterBackground = true
 
                 let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
                 let numberCell = accounts.count + 1
