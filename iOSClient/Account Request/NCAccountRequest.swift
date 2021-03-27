@@ -136,20 +136,25 @@ extension NCAccountRequest: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let account = accounts[indexPath.row]
-        if account.account != appDelegate.account {
-            NCManageDatabase.shared.setAccountActive(account.account)
-            dismiss(animated: true) {
-                
-                NCOperationQueue.shared.cancelAllQueue()
-                NCNetworking.shared.cancelAllTask()
-                
-                self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
-                
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
-            }
+        if indexPath.row == accounts.count {
+            
         } else {
-            dismiss(animated: true)
+        
+            let account = accounts[indexPath.row]
+            if account.account != appDelegate.account {
+                NCManageDatabase.shared.setAccountActive(account.account)
+                dismiss(animated: true) {
+                    
+                    NCOperationQueue.shared.cancelAllQueue()
+                    NCNetworking.shared.cancelAllTask()
+                    
+                    self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
+                    
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+                }
+            } else {
+                dismiss(animated: true)
+            }
         }
     }
 }
@@ -174,26 +179,34 @@ extension NCAccountRequest: UITableViewDataSource {
         let urlLabel = cell.viewWithTag(30) as? UILabel
         let activeImage = cell.viewWithTag(40) as? UIImageView
 
-        let account = accounts[indexPath.row]
-
-        avatarImage?.image = NCUtility.shared.loadImage(named: "person.crop.circle")
-    
-        let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(account.user, urlBase: account.urlBase)) + "-" + account.user + ".png"
-        
-        if let userImage = UIImage(contentsOfFile: fileNamePath) {
-            avatarImage?.avatar(roundness: 2, borderWidth: 1, borderColor: NCBrandColor.shared.avatarBorder, backgroundColor: .clear)
-            avatarImage?.image = userImage
-        }
-                
-        userLabel?.text = account.user.uppercased()
-        urlLabel?.text = (URL(string: account.urlBase)?.host ?? "")
-
-        if account.active {
-            activeImage?.image = NCUtility.shared.loadImage(named: "checkmark")
+        if indexPath.row == accounts.count {
+           
+            avatarImage?.image = NCUtility.shared.loadImage(named: "plus")
+            urlLabel?.text = NSLocalizedString("_add_account_", comment: "")
+            
         } else {
-            activeImage?.image = nil
-        }
+        
+            let account = accounts[indexPath.row]
 
+            avatarImage?.image = NCUtility.shared.loadImage(named: "person.crop.circle")
+        
+            let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(account.user, urlBase: account.urlBase)) + "-" + account.user + ".png"
+            
+            if let userImage = UIImage(contentsOfFile: fileNamePath) {
+                avatarImage?.avatar(roundness: 2, borderWidth: 1, borderColor: NCBrandColor.shared.avatarBorder, backgroundColor: .clear)
+                avatarImage?.image = userImage
+            }
+                    
+            userLabel?.text = account.user.uppercased()
+            urlLabel?.text = (URL(string: account.urlBase)?.host ?? "")
+
+            if account.active {
+                activeImage?.image = NCUtility.shared.loadImage(named: "checkmark")
+            } else {
+                activeImage?.image = nil
+            }
+        }
+        
         return cell
     }
 }
