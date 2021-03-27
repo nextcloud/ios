@@ -185,7 +185,8 @@ extension NCAccountRequest: UITableViewDataSource {
 
         if indexPath.row == accounts.count {
            
-            avatarImage?.image = NCUtility.shared.loadImage(named: "plus")
+            avatarImage?.image = NCUtility.shared.loadImage(named: "plus").image(color: .black, size: 25)
+            avatarImage?.contentMode = .center
             userLabel?.text = NSLocalizedString("_add_account_", comment: "")
             urlLabel?.text = ""
             
