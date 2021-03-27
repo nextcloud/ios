@@ -212,8 +212,12 @@ extension NCAccountRequest: UITableViewDataSource {
                 avatarImage?.image = userImage
             }
                     
-            userLabel?.text = account.user.uppercased()
-            urlLabel?.text = (URL(string: account.urlBase)?.host ?? "")
+            if account.alias != "" {
+                userLabel?.text = account.alias.uppercased()
+            } else {
+                userLabel?.text = account.user.uppercased()
+                urlLabel?.text = (URL(string: account.urlBase)?.host ?? "")
+            }
 
             if account.active {
                 activeImage?.image = NCUtility.shared.loadImage(named: "checkmark")
