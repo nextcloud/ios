@@ -25,8 +25,6 @@ import Foundation
 
 class NCMainNavigationController: UINavigationController {
     
-    var isPushing = false
-
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
