@@ -337,10 +337,13 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.avatar?.layer.masksToBounds = true
             cell.avatar?.layer.cornerRadius = cell.avatar.frame.size.width / 2
             if let account = tabAccount {
-                cell.displayName?.text = account.displayName
+                if account.alias == "" {
+                    cell.displayName?.text = account.displayName
+                } else {
+                    cell.displayName?.text = account.displayName + " (" + account.alias + ")"
+                }
                 cell.displayName.textColor = NCBrandColor.shared.textView
             }
-
             cell.selectedBackgroundView = selectionColor
             cell.backgroundColor = NCBrandColor.shared.backgroundView
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator

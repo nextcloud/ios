@@ -230,30 +230,37 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             
             // PROFILE BUTTON
             
-            if layoutKey == NCGlobal.shared.layoutViewFiles { //&& serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)  {
+            if layoutKey == NCGlobal.shared.layoutViewFiles {
             
-                let profileButton = UIButton.init(type: .custom)
-                profileButton.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
-                profileButton.addTarget(self, action: #selector(profileButtonTapped(sender:)), for: .touchUpInside)
-
                 var image = NCUtility.shared.loadImage(named: "person.crop.circle")
                 let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
                 if let userImage = UIImage(contentsOfFile: fileNamePath) {
                     image = userImage
                 }
                 
-                UIGraphicsBeginImageContextWithOptions(profileButton.bounds.size, false, 3.0)
-                UIBezierPath.init(roundedRect: profileButton.bounds, cornerRadius: profileButton.bounds.size.height).addClip()
-                image.draw(in: profileButton.bounds)
+                let rect = CGRect(x: 0, y: 0, width: 30, height: 30)
+                UIGraphicsBeginImageContextWithOptions(rect.size, false, 3.0)
+                UIBezierPath.init(roundedRect: rect, cornerRadius: rect.size.height).addClip()
+                image.draw(in: rect)
                 image = UIGraphicsGetImageFromCurrentImageContext() ?? NCUtility.shared.loadImage(named: "person.crop.circle")
                 UIGraphicsEndImageContext()
 
-                profileButton.setImage(image, for: .normal)
-                profileButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
-                profileButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-
-                navigationItem.setLeftBarButton(UIBarButtonItem(customView: profileButton), animated: true)
+                let button = UIButton(type: .custom)
+                button.setImage(image, for: .normal)
                 
+                if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
+                 
+                    let account = NCManageDatabase.shared.getAccountActive()
+                    if account?.alias != "" {
+                        button.setTitle("  " + (account?.alias ?? ""), for: .normal)
+                        button.setTitleColor(NCBrandColor.shared.textView, for: .normal)
+                    }
+                }
+                
+                button.semanticContentAttribute = .forceLeftToRight
+                button.sizeToFit()
+                       
+                navigationItem.setLeftBarButton(UIBarButtonItem(customView: button), animated: true)
                 navigationItem.leftItemsSupplementBackButton = true
             }
         }
