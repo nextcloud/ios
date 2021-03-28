@@ -88,20 +88,21 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             searchFieldTopConstraint.constant = 65
             sharedWithYouByView.isHidden = false
             sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata!.ownerDisplayName
-            
+            sharedWithYouByImage.image = UIImage(named: "avatar")
+
             var fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + metadata!.ownerId
             fileNameLocalPath = fileNameLocalPath + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                if let image = UIImage(contentsOfFile: fileNameLocalPath) { sharedWithYouByImage.image = image }
+                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                    sharedWithYouByImage.image = NCUtility.shared.createAvatar(image: image, size: 40)
+                }
             } else {
                 NCCommunication.shared.downloadAvatar(userId: metadata!.ownerId, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
                     if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
                         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                            self.sharedWithYouByImage.image = image
+                            self.sharedWithYouByImage.image = NCUtility.shared.createAvatar(image: image, size: 40)
                         }
-                    } else {
-                        self.sharedWithYouByImage.image = UIImage(named: "avatar")
-                    }
+                    } 
                 }
             }
         } 
