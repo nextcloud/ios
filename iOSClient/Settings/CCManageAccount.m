@@ -84,6 +84,19 @@
         [section addFormRow:row];
     }
 
+    // Section : ALIAS --------------------------------------------------
+    
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_alias_", nil)];
+    section.footerTitle = NSLocalizedString(@"_alias_footer_", nil);
+    [form addFormSection:section];
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"alias" rowType:XLFormRowDescriptorTypeAccount];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textField.font"];
+    [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textField.textColor"];
+    row.value = accountActive.alias;
+    [section addFormRow:row];
+    
     // Section : REQUEST ACCOUNT -------------------------------------------
     
     if (NCBrandOptions.shared.disable_request_account == NO) {
@@ -100,18 +113,6 @@
         else row.value = @0;
         [section addFormRow:row];
     }
-    
-    // Section : ALIAS --------------------------------------------------
-    
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_alias_", nil)];
-    [form addFormSection:section];
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"alias" rowType:XLFormRowDescriptorTypeAccount];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textField.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textField.textColor"];
-    row.value = accountActive.alias;
-    [section addFormRow:row];
     
     // Section : MANAGE ACCOUNT -------------------------------------------
     
