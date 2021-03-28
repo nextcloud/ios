@@ -454,6 +454,20 @@ class NCUtility: NSObject {
         return  UIImage(named: "file")!.image(color: color, size: size)
     }
     
+    @objc func createAvatar(image: UIImage, size: CGFloat) -> UIImage {
+        
+        var avatarImage = image
+        let rect = CGRect(x: 0, y: 0, width: size, height: size)
+        
+        UIGraphicsBeginImageContextWithOptions(rect.size, false, 3.0)
+        UIBezierPath.init(roundedRect: rect, cornerRadius: rect.size.height).addClip()
+        avatarImage.draw(in: rect)
+        avatarImage = UIGraphicsGetImageFromCurrentImageContext() ?? image
+        UIGraphicsEndImageContext()
+        
+        return avatarImage
+    }
+    
     // MARK: -
 
     @objc func startActivityIndicator(backgroundView: UIView?, blurEffect: Bool, bottom: CGFloat = 0) {

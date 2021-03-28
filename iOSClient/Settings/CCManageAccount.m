@@ -54,25 +54,14 @@
         
         NSString *title = [NSString stringWithFormat:@"%@ %@", account.user, [NSURL URLWithString:account.urlBase].host];
         row = [XLFormRowDescriptor formRowDescriptorWithTag:account.account rowType:XLFormRowDescriptorTypeBooleanCheck title:title];
+        
         // Avatar
         NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:account.user urlBase:account.urlBase], account.user];
         UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
         if (avatar) {
-            
-            avatar = [avatar resizeImageWithSize:CGSizeMake(35, 35) isAspectRation:false];
-            UIImageView *avatarImageView = [[UIImageView alloc] initWithImage:avatar];
-            [avatarImageView avatarWithRoundness:2 borderWidth:1 borderColor:NCBrandColor.shared.avatarBorder backgroundColor:[UIColor clearColor]];
-            
-            CGSize imageSize = avatarImageView.bounds.size;
-            UIGraphicsBeginImageContextWithOptions(imageSize, NO, UIScreen.mainScreen.scale);
-            CGContextRef context = UIGraphicsGetCurrentContext();
-            [avatarImageView.layer renderInContext:context];
-            avatar = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-            
+            avatar = [[NCUtility shared] createAvatarWithImage:avatar size:30];
         } else {
-            
-            avatar = [[UIImage imageNamed:@"avatar"] imageWithColor:NCBrandColor.shared.icon size:35];
+            avatar = [[UIImage imageNamed:@"avatar"] imageWithColor:NCBrandColor.shared.icon size:30];
         }
         
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;

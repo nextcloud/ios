@@ -238,13 +238,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     image = userImage
                 }
                 
-                let rect = CGRect(x: 0, y: 0, width: 30, height: 30)
-                UIGraphicsBeginImageContextWithOptions(rect.size, false, 3.0)
-                UIBezierPath.init(roundedRect: rect, cornerRadius: rect.size.height).addClip()
-                image.draw(in: rect)
-                image = UIGraphicsGetImageFromCurrentImageContext() ?? NCUtility.shared.loadImage(named: "person.crop.circle")
-                UIGraphicsEndImageContext()
-
+                image = NCUtility.shared.createAvatar(image: image, size: 30)
+                
                 let button = UIButton(type: .custom)
                 button.setImage(image, for: .normal)
                 
