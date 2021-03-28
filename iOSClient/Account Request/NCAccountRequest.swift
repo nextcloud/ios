@@ -209,9 +209,8 @@ extension NCAccountRequest: UITableViewDataSource {
         
             let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(account.user, urlBase: account.urlBase)) + "-" + account.user + ".png"
             
-            if let userImage = UIImage(contentsOfFile: fileNamePath) {
-                avatarImage?.avatar(roundness: 2, borderWidth: 1, borderColor: NCBrandColor.shared.avatarBorder, backgroundColor: .clear)
-                avatarImage?.image = userImage
+            if let image = UIImage(contentsOfFile: fileNamePath) {
+                avatarImage?.image = NCUtility.shared.createAvatar(image: image, size: 40)
             }
                     
             if account.alias != "" {

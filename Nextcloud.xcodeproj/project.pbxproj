@@ -244,7 +244,6 @@
 		F78B9685234F785300F54315 /* NCSelectDestination.m in Sources */ = {isa = PBXBuildFile; fileRef = F78B9682234F785300F54315 /* NCSelectDestination.m */; };
 		F78B9686234F785300F54315 /* NCSelectDestination.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78B9684234F785300F54315 /* NCSelectDestination.storyboard */; };
 		F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */; };
-		F78E7065219F096B006F23E4 /* NCAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E7064219F096B006F23E4 /* NCAvatar.swift */; };
 		F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78F74332163757000C2ADAD /* NCTrash.storyboard */; };
 		F78F74362163781100C2ADAD /* NCTrash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78F74352163781100C2ADAD /* NCTrash.swift */; };
 		F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */; };
@@ -610,7 +609,6 @@
 		F78D6F461F0B7CB9002F9619 /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F78D6F4D1F0B7CE4002F9619 /* nb-NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "nb-NO"; path = "nb-NO.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F78D6F541F0B7D47002F9619 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
-		F78E7064219F096B006F23E4 /* NCAvatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAvatar.swift; sourceTree = "<group>"; };
 		F78F74332163757000C2ADAD /* NCTrash.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCTrash.storyboard; sourceTree = "<group>"; };
 		F78F74352163781100C2ADAD /* NCTrash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrash.swift; sourceTree = "<group>"; };
 		F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerRichdocument.swift; sourceTree = "<group>"; };
@@ -1273,7 +1271,6 @@
 				F7053E3C1C639DF500741EA5 /* CCUtility.h */,
 				F7053E3D1C639DF500741EA5 /* CCUtility.m */,
 				F733598025C1C188002ABA72 /* NCAskAuthorization.swift */,
-				F78E7064219F096B006F23E4 /* NCAvatar.swift */,
 				F765608E23BF813500765969 /* NCContentPresenter.swift */,
 				F702F30725EE5D47008F8E80 /* NCPopupViewController.swift */,
 				F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */,
@@ -2039,7 +2036,6 @@
 				F78ACD4221903CE00088454D /* NCListCell.swift in Sources */,
 				F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */,
 				F73F537F1E929C8500F8678D /* NCMore.swift in Sources */,
-				F78E7065219F096B006F23E4 /* NCAvatar.swift in Sources */,
 				F702F2CF25EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
 				F72CD63A25C19EBF00F46F9A /* NCAutoUpload.swift in Sources */,
 				F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */,

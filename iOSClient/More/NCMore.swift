@@ -329,13 +329,12 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             
             let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
             
-            if let themingAvatarFile = UIImage.init(contentsOfFile: fileNamePath) {
-                cell.avatar?.image = themingAvatarFile
+            if let image = UIImage.init(contentsOfFile: fileNamePath) {
+                cell.avatar?.image = NCUtility.shared.createAvatar(image: image, size: 50)
             } else {
                 cell.avatar?.image = UIImage.init(named: "moreAvatar")
             }
-            cell.avatar?.layer.masksToBounds = true
-            cell.avatar?.layer.cornerRadius = cell.avatar.frame.size.width / 2
+           
             if let account = tabAccount {
                 if account.alias == "" {
                     cell.displayName?.text = account.displayName
