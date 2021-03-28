@@ -678,7 +678,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 let height = min(CGFloat(numberCell * Int(vcAccountRequest.heightCell) + 65), screenHeighMax)
                 
                 let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height)
-                popup.backgroundAlpha = 0.8
                 
                 UIApplication.shared.keyWindow?.rootViewController?.present(popup, animated: true)
             }
