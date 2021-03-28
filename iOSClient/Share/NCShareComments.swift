@@ -67,11 +67,12 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
             labelUser.text = tabAccount.displayName
         }
         
+        imageItem.image = UIImage(named: "avatar")
         var fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + appDelegate.user
         fileNameLocalPath = fileNameLocalPath + ".png"
         if FileManager.default.fileExists(atPath: fileNameLocalPath) {
             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                imageItem.image = image
+                imageItem.image = NCUtility.shared.createAvatar(image: image, size: 40)
             }
         }
         
@@ -179,15 +180,21 @@ extension NCShareComments: UITableViewDataSource {
             cell.sizeToFit()
             
             // Image
+            cell.imageItem.image = UIImage(named: "avatar")
+
             var fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + tableComments.actorId
             fileNameLocalPath = fileNameLocalPath + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
+                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                    cell.imageItem.image = NCUtility.shared.createAvatar(image: image, size: 40)
+                }
             } else {
                 DispatchQueue.global().async {
                     NCCommunication.shared.downloadAvatar(userId: tableComments.actorId, fileNameLocalPath: fileNameLocalPath, size: 128) { (account, data, errorCode, errorMessage) in
                         if errorCode == 0 && UIImage(data: data!) != nil {
-                            cell.imageItem.image = UIImage(named: "avatar")
+                            if let image = UIImage(data: data!) {
+                                cell.imageItem.image = NCUtility.shared.createAvatar(image: image, size: 40)
+                            }
                         }
                     }
                     /*

@@ -1258,7 +1258,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.imageLocal.image = nil
             cell.imageFavorite.image = nil
             cell.imageShared.image = nil
-            cell.imageShared.clearLayerMask()
             cell.imageMore.image = nil
             
             cell.imageItem.image = nil
@@ -1341,13 +1340,15 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 var fileNameUser = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + metadata.ownerId
                 fileNameUser = fileNameUser + ".png"
                 if FileManager.default.fileExists(atPath: fileNameUser) {
-                    cell.imageShared.avatar()
-                    cell.imageShared.image = UIImage(contentsOfFile: fileNameUser)
+                    if let image = UIImage(contentsOfFile: fileNameUser) {
+                        cell.imageShared.image = NCUtility.shared.createAvatar(image: image, size: 30)
+                    }
                 } else {
                     NCCommunication.shared.downloadAvatar(userId: metadata.ownerId, fileNameLocalPath: fileNameUser, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.account {
-                            cell.imageShared.avatar()
-                            cell.imageShared.image = UIImage(contentsOfFile: fileNameUser)
+                            if let image = UIImage(contentsOfFile: fileNameUser) {
+                                cell.imageShared.image = NCUtility.shared.createAvatar(image: image, size: 30)
+                            }
                         }
                     }
                 }

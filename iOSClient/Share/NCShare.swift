@@ -302,7 +302,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         dropDown.customCellConfiguration = { (index: Index, item: String, cell: DropDownCell) -> Void in
             guard let cell = cell as? NCShareUserDropDownCell else { return }
             let sharee = sharees[index]
-            cell.imageItem.clearLayerMask()
             cell.imageItem.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
             let status = NCUtility.shared.getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
             cell.imageStatus.image = status.onlineStatus
@@ -317,8 +316,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             fileNameLocalPath = fileNameLocalPath + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                    cell.imageItem.image = image
-                    cell.imageItem.avatar()
+                    cell.imageItem.image = NCUtility.shared.createAvatar(image: image, size: 30)
                 }
             } else {
                 DispatchQueue.global().async {
@@ -326,8 +324,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                         if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
                             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                                 DispatchQueue.main.async {
-                                    cell.imageItem.image = image
-                                    cell.imageItem.avatar()
+                                    cell.imageItem.image = NCUtility.shared.createAvatar(image: image, size: 30)
                                 }
                             }
                         } 
@@ -414,16 +411,14 @@ extension NCShare: UITableViewDataSource {
                 fileNameLocalPath = fileNameLocalPath + ".png"
                 if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                     if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                        cell.imageItem.avatar()
-                        cell.imageItem.image = image
+                        cell.imageItem.image = NCUtility.shared.createAvatar(image: image, size: 40)
                     }
                 } else {
                     DispatchQueue.global().async {
                         NCCommunication.shared.downloadAvatar(userId: tableShare.shareWith, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
                             if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
                                 if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                                    cell.imageItem.avatar()
-                                    cell.imageItem.image = image
+                                    cell.imageItem.image = NCUtility.shared.createAvatar(image: image, size: 40)
                                 }
                             }
                         }

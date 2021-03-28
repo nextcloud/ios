@@ -38,16 +38,8 @@ extension NCLoginWeb {
             let title = account.user + " " + (URL(string: account.urlBase)?.host ?? "")
             let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(account.user, urlBase: account.urlBase)) + "-" + account.user + ".png"
 
-            if var userImage = UIImage(contentsOfFile: fileNamePath) {
-                userImage = userImage.resizeImage(size: CGSize(width: 50, height: 50), isAspectRation: true)!
-                let userImageView = UIImageView(image: userImage)
-                userImageView.avatar(roundness: 2, borderWidth: 1, borderColor: NCBrandColor.shared.avatarBorder, backgroundColor: .clear)
-                UIGraphicsBeginImageContext(userImageView.bounds.size)
-                userImageView.layer.render(in: UIGraphicsGetCurrentContext()!)
-                if let newAvatar = UIGraphicsGetImageFromCurrentImageContext() {
-                    avatar = newAvatar
-                }
-                UIGraphicsEndImageContext()
+            if let image = UIImage(contentsOfFile: fileNamePath) {
+                avatar = NCUtility.shared.createAvatar(image: image, size: 50)
             }
             
             actions.append(
