@@ -251,14 +251,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
                  
                     let account = NCManageDatabase.shared.getAccountActive()
-                    if account?.alias != "" {
-                        button.setTitle("  " + (account?.alias ?? ""), for: .normal)
-                        button.setTitleColor(NCBrandColor.shared.textView, for: .normal)
+                    var title = "  "
+                    if account?.alias == "" {
+                        title = title + (account?.user ?? "")
+                    } else {
+                        title = title + (account?.alias ?? "")
                     }
+                    
+                    button.setTitle(title, for: .normal)
+                    button.setTitleColor(NCBrandColor.shared.textView, for: .normal)
                 }
                 
                 button.semanticContentAttribute = .forceLeftToRight
                 button.sizeToFit()
+                button.addTarget(self, action: #selector(profileButtonTapped(sender:)), for: .touchUpInside)
                        
                 navigationItem.setLeftBarButton(UIBarButtonItem(customView: button), animated: true)
                 navigationItem.leftItemsSupplementBackButton = true
