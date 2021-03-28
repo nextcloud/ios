@@ -1337,8 +1337,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.imageShared.image = NCBrandColor.cacheImages.canShare
             }
             if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId {
-                var fileNameUser = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + metadata.ownerId
-                fileNameUser = fileNameUser + ".png"
+                cell.imageShared.image = UIImage(named: "avatar")
+                let fileNameUser = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + metadata.ownerId + ".png"
                 if FileManager.default.fileExists(atPath: fileNameUser) {
                     if let image = UIImage(contentsOfFile: fileNameUser) {
                         cell.imageShared.image = NCUtility.shared.createAvatar(image: image, size: 30)

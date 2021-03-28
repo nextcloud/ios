@@ -173,7 +173,7 @@ import NCCommunication
         // image
         let imagePreview = cell.viewWithTag(100) as! UIImageView
         if template.preview != "" {
-            let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + template.name + ".png"
+            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + template.name + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 let imageURL = URL(fileURLWithPath: fileNameLocalPath)
                 if let image = UIImage(contentsOfFile: imageURL.path) {
@@ -505,7 +505,7 @@ import NCCommunication
     
     func getImageFromTemplate(name: String, preview: String, indexPath: IndexPath) {
         
-        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + name + ".png"
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + name + ".png"
 
         NCCommunication.shared.download(serverUrlFileName: preview, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
             

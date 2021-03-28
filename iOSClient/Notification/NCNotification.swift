@@ -100,7 +100,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         var image : UIImage?
         
         if let urlIcon = urlIcon {
-            let pathFileName = CCUtility.getDirectoryUserData() + "/" + urlIcon.deletingPathExtension().lastPathComponent + ".png"
+            let pathFileName = String(CCUtility.getDirectoryUserData()) + "/" + urlIcon.deletingPathExtension().lastPathComponent + ".png"
             image = UIImage(contentsOfFile: pathFileName)
         }
         

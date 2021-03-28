@@ -566,8 +566,7 @@ extension NCSelect: UICollectionViewDataSource {
                 cell.imageShared.image = NCBrandColor.cacheImages.canShare
             }
             if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId {
-                var fileNameUser = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + metadata.ownerId
-                fileNameUser = fileNameUser + ".png"
+                let fileNameUser = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + metadata.ownerId + ".png"
                 if FileManager.default.fileExists(atPath: fileNameUser) {
                     cell.imageShared.image = UIImage(contentsOfFile: fileNameUser)
                 } else {

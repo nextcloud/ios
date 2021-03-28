@@ -90,8 +90,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata!.ownerDisplayName
             sharedWithYouByImage.image = UIImage(named: "avatar")
 
-            var fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + metadata!.ownerId
-            fileNameLocalPath = fileNameLocalPath + ".png"
+            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + metadata!.ownerId + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                     sharedWithYouByImage.image = NCUtility.shared.createAvatar(image: image, size: 40)
@@ -313,22 +312,19 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                 cell.centerTitle.constant = 0
             }
 
-            var fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(self.appDelegate.user, urlBase: self.appDelegate.urlBase) + "-" + sharee.label
-            fileNameLocalPath = fileNameLocalPath + ".png"
+            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(self.appDelegate.user, urlBase: self.appDelegate.urlBase)) + "-" + sharee.label + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                     cell.imageItem.image = NCUtility.shared.createAvatar(image: image, size: 30)
                 }
             } else {
-                DispatchQueue.global().async {
-                    NCCommunication.shared.downloadAvatar(userId: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
-                        if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
-                            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                                DispatchQueue.main.async {
-                                    cell.imageItem.image = NCUtility.shared.createAvatar(image: image, size: 30)
-                                }
+                NCCommunication.shared.downloadAvatar(userId: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
+                    if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
+                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                            DispatchQueue.main.async {
+                                cell.imageItem.image = NCUtility.shared.createAvatar(image: image, size: 30)
                             }
-                        } 
+                        }
                     }
                 }
             }
@@ -408,19 +404,16 @@ extension NCShare: UITableViewDataSource {
                 cell.imageStatus.image = status.onlineStatus
                 cell.status.text = status.statusMessage
                 
-                var fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + tableShare.shareWith
-                fileNameLocalPath = fileNameLocalPath + ".png"
+                let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + tableShare.shareWith + ".png"
                 if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                     if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                         cell.imageItem.image = NCUtility.shared.createAvatar(image: image, size: 40)
                     }
                 } else {
-                    DispatchQueue.global().async {
-                        NCCommunication.shared.downloadAvatar(userId: tableShare.shareWith, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
-                            if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
-                                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                                    cell.imageItem.image = NCUtility.shared.createAvatar(image: image, size: 40)
-                                }
+                    NCCommunication.shared.downloadAvatar(userId: tableShare.shareWith, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
+                        if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
+                            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                                cell.imageItem.image = NCUtility.shared.createAvatar(image: image, size: 40)
                             }
                         }
                     }

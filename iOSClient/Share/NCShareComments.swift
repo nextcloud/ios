@@ -68,8 +68,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         }
         
         imageItem.image = UIImage(named: "avatar")
-        var fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + appDelegate.user
-        fileNameLocalPath = fileNameLocalPath + ".png"
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
         if FileManager.default.fileExists(atPath: fileNameLocalPath) {
             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                 imageItem.image = NCUtility.shared.createAvatar(image: image, size: 40)
@@ -182,36 +181,33 @@ extension NCShareComments: UITableViewDataSource {
             // Image
             cell.imageItem.image = UIImage(named: "avatar")
 
-            var fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + tableComments.actorId
-            fileNameLocalPath = fileNameLocalPath + ".png"
+            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + tableComments.actorId + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                     cell.imageItem.image = NCUtility.shared.createAvatar(image: image, size: 40)
                 }
             } else {
-                DispatchQueue.global().async {
-                    NCCommunication.shared.downloadAvatar(userId: tableComments.actorId, fileNameLocalPath: fileNameLocalPath, size: 128) { (account, data, errorCode, errorMessage) in
-                        if errorCode == 0 && UIImage(data: data!) != nil {
-                            if let image = UIImage(data: data!) {
-                                cell.imageItem.image = NCUtility.shared.createAvatar(image: image, size: 40)
-                            }
+                NCCommunication.shared.downloadAvatar(userId: tableComments.actorId, fileNameLocalPath: fileNameLocalPath, size: 128) { (account, data, errorCode, errorMessage) in
+                    if errorCode == 0 && UIImage(data: data!) != nil {
+                        if let image = UIImage(data: data!) {
+                            cell.imageItem.image = NCUtility.shared.createAvatar(image: image, size: 40)
                         }
                     }
-                    /*
-                    let url = self.appDelegate.urlBase + k_avatar + tableComments.actorId + "/" + k_avatar_size
-                    let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                    OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
-                        if errorCode == 0 && UIImage(data: data!) != nil {
-                            do {
-                                try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
-                                if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
-                            } catch { return }
-                        } else {
-                            cell.imageItem.image = UIImage(named: "avatar")
-                        }
-                    })
-                    */
                 }
+                /*
+                let url = self.appDelegate.urlBase + k_avatar + tableComments.actorId + "/" + k_avatar_size
+                let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
+                    if errorCode == 0 && UIImage(data: data!) != nil {
+                        do {
+                            try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                            if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
+                        } catch { return }
+                    } else {
+                        cell.imageItem.image = UIImage(named: "avatar")
+                    }
+                })
+                */
             }
             // Username
             cell.labelUser.text = tableComments.actorDisplayName
