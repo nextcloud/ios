@@ -662,7 +662,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func profileButtonTapped(sender: Any) {
         
-        let accounts = NCManageDatabase.shared.getAllAccount()
+        let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
         if accounts.count > 0 {
             
             if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {

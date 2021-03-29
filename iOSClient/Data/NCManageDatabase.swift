@@ -382,6 +382,16 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableAccount.init(value:$0) })
     }
     
+    @objc func getAllAccountOrderAlias() -> [tableAccount] {
+        
+        let realm = try! Realm()
+        
+        let sorted = [SortDescriptor(keyPath: "active", ascending: false), SortDescriptor(keyPath: "alias", ascending: true), SortDescriptor(keyPath: "user", ascending: true)]
+        let results = realm.objects(tableAccount.self).sorted(by: sorted)
+        
+        return Array(results.map { tableAccount.init(value:$0) })
+    }
+    
     @objc func getAccountAutoUploadFileName() -> String {
         
         let realm = try! Realm()
