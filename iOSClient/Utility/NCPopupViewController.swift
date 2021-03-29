@@ -212,6 +212,37 @@ public class NCPopupViewController: UIViewController {
         NSLayoutConstraint.activate([centerXConstraint, centerYConstraint!])
     }
     
+    // MARK: -
+    
+    func addPath() {
+        
+        let balloon = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 250))
+        balloon.backgroundColor = UIColor.clear
+
+
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: 0, y: 0))
+        path.addLine(to: CGPoint(x: 200, y: 0))
+        path.addLine(to: CGPoint(x: 200, y: 200))
+
+        // Draw arrow
+        path.addLine(to: CGPoint(x: 120, y: 200))
+        path.addLine(to: CGPoint(x: 100, y: 250))
+        path.addLine(to: CGPoint(x: 80, y: 200))
+
+        path.addLine(to: CGPoint(x: 0, y: 200))
+        path.close()
+
+        let shape = CAShapeLayer()
+        //shape.backgroundColor = UIColor.blue.cgColor
+        shape.fillColor = UIColor.blue.cgColor
+        shape.path = path.cgPath
+        balloon.layer.addSublayer(shape)
+
+        // [self.view addSubview:balloonView];
+
+    }
+    
     // MARK: - Actions
     
     @objc func dismissTapGesture(gesture: UIGestureRecognizer) {
