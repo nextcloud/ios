@@ -165,7 +165,7 @@
 "_settings_account_request_" = "Request account at startup";
 "_print_"                   = "Print";
 "_alias_"                   = "Alias";
-"_alias_footer_"            = "Make your users more readable like home, office, school ...";
+"_alias_footer_"            = "Make your users more readable like home, office, school …";
 
 /* User status */
 "_online_"                  = "Online";
