@@ -48,7 +48,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
         
         buttonOrder.setTitle("", for: .normal)
-        buttonOrder.setTitleColor(NCBrandColor.shared.brandElement, for: .normal)
+        buttonOrder.setTitleColor(.systemBlue, for: .normal)
         
         buttonMore.setImage(UIImage.init(named: "more")!.image(color:  NCBrandColor.shared.icon, size: 25), for: .normal)
                 
@@ -75,7 +75,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         
         backgroundColor = NCBrandColor.shared.backgroundView
         separator.backgroundColor = NCBrandColor.shared.separator
-        buttonOrder.setTitleColor(NCBrandColor.shared.brandElement, for: .normal)
+        buttonOrder.setTitleColor(.systemBlue, for: .normal)
         
         if textViewColor != NCBrandColor.shared.textView {
             markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.textView)
