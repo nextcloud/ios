@@ -254,7 +254,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     }
                     
                     button.setTitle(title, for: .normal)
-                    button.setTitleColor(NCBrandColor.shared.textView, for: .normal)
+                    button.setTitleColor(.systemBlue, for: .normal)
                 }
                 
                 button.semanticContentAttribute = .forceLeftToRight

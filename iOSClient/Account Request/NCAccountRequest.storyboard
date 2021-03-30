@@ -52,22 +52,22 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="20" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pWI-iZ-BTy" userLabel="User">
-                                                    <rect key="frame" x="50" y="30.5" width="205" height="19.5"/>
+                                                    <rect key="frame" x="50" y="30.5" width="210" height="19.5"/>
                                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="30" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sWT-NJ-ihR" userLabel="Url">
-                                                    <rect key="frame" x="50" y="57" width="205" height="16"/>
+                                                    <rect key="frame" x="50" y="57" width="210" height="16"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" tag="40" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="x47-dQ-alI" userLabel="Active">
-                                                    <rect key="frame" x="260" y="30" width="20" height="20"/>
+                                                    <rect key="frame" x="265" y="32.5" width="15" height="15"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="height" constant="20" id="SXt-LG-c5N"/>
-                                                        <constraint firstAttribute="width" constant="20" id="vdZ-4R-gY5"/>
+                                                        <constraint firstAttribute="height" constant="15" id="SXt-LG-c5N"/>
+                                                        <constraint firstAttribute="width" constant="15" id="vdZ-4R-gY5"/>
                                                     </constraints>
                                                 </imageView>
                                             </subviews>

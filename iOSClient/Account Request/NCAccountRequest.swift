@@ -221,7 +221,7 @@ extension NCAccountRequest: UITableViewDataSource {
             }
 
             if account.active {
-                activeImage?.image = NCUtility.shared.loadImage(named: "checkmark")
+                activeImage?.image = NCUtility.shared.loadImage(named: "checkmark").image(color: .systemBlue, size: 30)
             } else {
                 activeImage?.image = nil
             }
