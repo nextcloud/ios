@@ -37,14 +37,11 @@ class NCMainNavigationController: UINavigationController {
                   
         if #available(iOS 13.0, *) {
             
-            var appearance = UINavigationBarAppearance()
+            let appearance = UINavigationBarAppearance()
             
             appearance.configureWithOpaqueBackground()
             appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.shared.textView]
             appearance.backgroundColor = NCBrandColor.shared.backgroundView
-            
-            appearance = UINavigationBarAppearance()
-            
             appearance.configureWithOpaqueBackground()
             appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.shared.textView]
             appearance.backgroundColor = NCBrandColor.shared.tabBar
