@@ -37,20 +37,20 @@ class NCMainNavigationController: UINavigationController {
                   
         if #available(iOS 13.0, *) {
             
-            var navBarAppearance = UINavigationBarAppearance()
+            var appearance = UINavigationBarAppearance()
             
-            navBarAppearance.configureWithOpaqueBackground()
-            navBarAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.shared.textView]
-            navBarAppearance.backgroundColor = NCBrandColor.shared.backgroundView
+            appearance.configureWithOpaqueBackground()
+            appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.shared.textView]
+            appearance.backgroundColor = NCBrandColor.shared.backgroundView
             
-            navBarAppearance = UINavigationBarAppearance()
+            appearance = UINavigationBarAppearance()
             
-            navBarAppearance.configureWithOpaqueBackground()
-            navBarAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.shared.textView]
-            navBarAppearance.backgroundColor = NCBrandColor.shared.tabBar
+            appearance.configureWithOpaqueBackground()
+            appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.shared.textView]
+            appearance.backgroundColor = NCBrandColor.shared.tabBar
 
-            navigationBar.scrollEdgeAppearance = navBarAppearance
-            navigationBar.standardAppearance = navBarAppearance
+            navigationBar.scrollEdgeAppearance = appearance
+            navigationBar.standardAppearance = appearance
             
         } else {
             
