@@ -1,23 +1,41 @@
-### Expected behaviour                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+### Steps to reproduce
 
-### Actual behaviour                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+1.
+2.
+3.
 
-### Steps to reproduce     
+### Expected behaviour
+
+Tell us what should happen.
+
+### Actual behaviour
+
+Tell was what instead happens.
+
+### Screenshots
+
+If applicable, add a screenshot showing the issue.
+
+### Logs
+
+```
+If applicable, you can post the iOS app or server logs (removing any sensitive information).
+```
 
 ### Reasoning or why should it be changed/implemented?
 
-### iOS version
+### Environment data
 
-### App version
+**iOS version:** e.g. iOS 14.4.1
 
-### Server configuration
+**Nextcloud iOS app version:** see More > Settings
 
-**Operating system:**
+**Server operating system:**
 
-**Web server:**
+**Web server:** Apache, nginx
 
 **Database:**
 
 **PHP version:**
 
-**Nextcloud version:** (see Nextcloud admin page)
+**Nextcloud version:** see Nextcloud admin page
