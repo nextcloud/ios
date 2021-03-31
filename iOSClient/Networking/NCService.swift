@@ -79,20 +79,14 @@ class NCService: NSObject {
                     NCCommunication.shared.downloadContent(serverUrl: avatarUrl) { (account, data, errorCode, errorMessage) in
                         
                         if errorCode == 0 && account == self.appDelegate.account {
-                            
-                            DispatchQueue.global().async {
-                                
-                                if let image = UIImage(data: data!) {
-                                    
-                                    NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
-                                    
-                                    do {
-                                        if let data = image.pngData() {
-                                            try data.write(to: URL(fileURLWithPath: fileNamePath))
-                                        }
-                                    } catch {
-                                        print(error)
+                                                            
+                            if let image = UIImage(data: data!) {
+                                do {
+                                    if let data = image.pngData() {
+                                        try data.write(to: URL(fileURLWithPath: fileNamePath))
                                     }
+                                } catch {
+                                    print(error)
                                 }
                             }
                         }
