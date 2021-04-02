@@ -135,6 +135,7 @@ class NCGlobal: NSObject {
     @objc let dismissAfterSecondLong: TimeInterval  = 10
     
     // Error
+    @objc let ErrorRequestExplicityCancelled: Int   = 15
     @objc let ErrorBadRequest: Int                  = 400
     @objc let ErrorResourceNotFound: Int            = 404
     @objc let ErrorConflict: Int                    = 409

@@ -555,7 +555,7 @@ import Queuer
                 
             } else {
                 
-                if errorCode == NSURLErrorCancelled {
+                if errorCode == NSURLErrorCancelled || errorCode == NCGlobal.shared.ErrorRequestExplicityCancelled {
                 
                     if metadata.status == NCGlobal.shared.metadataStatusUploadForcedStart {
                         
