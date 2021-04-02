@@ -192,6 +192,7 @@ class NCNetworkingProcessUpload: NSObject {
                 metadatasForUpload.append(metadata)
             } else {
                 metadata.chunk = true
+                metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
                 metadatasForUpload.append(tableMetadata.init(value: metadata))
             }
         }
