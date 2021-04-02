@@ -499,7 +499,7 @@ import Queuer
 
                         } else {
                             
-                            // delete
+                            // Aborting the upload
                             
                             //curl -X DELETE -u roeland:pass https://server/remote.php/dav/uploads/roeland/myapp-e1663913-4423-4efe-a9cd-26e7beeca3c0/
                         }
