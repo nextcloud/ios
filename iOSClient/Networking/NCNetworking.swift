@@ -449,24 +449,48 @@ import Queuer
     
     private func uploadChunkFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
-        /*
-         // https://server/remote.php/dav/uploads/roeland/myapp-e1663913-4423-4efe-a9cd-26e7beeca3c0
-
-         let folder = NSUUID().uuidString
-         let serverUrlFileName = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/upload/" + account.userId + "/" + folder
-                     
-         NCCommunication.shared.createFolder(serverUrlFileName) { (account, ocId, date, errorCode, errorDescription) in
-             
-             if errorCode == 0 {
-                 
-                 let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
-                 let filesNameOut = self.fileChunks(path: path, fileName: metadata.fileName, pathChunks: path, size: 10)
-                 
-             } else {
-                 
-             }
-         }
-         */
+        let folder = NSUUID().uuidString
+        let uploadFolder = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/uploads/" + account.userId + "/" + folder
+        var uploadErrorCode: Int = 0
+        var uploadErrorDescription = ""
+        
+        NCCommunication.shared.createFolder(uploadFolder) { (account, ocId, date, errorCode, errorDescription) in
+            
+            if errorCode == 0 {
+                
+                let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
+                if let filesNames = self.fileChunks(path: path, fileName: metadata.fileName, pathChunks: path, size: 10) {
+                    
+                    for fileName in filesNames {
+                                                
+                        let serverUrlFileName = uploadFolder + "/" + fileName
+                        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)!
+                       
+                        NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, customUserAgent: nil, addCustomHeaders: nil, requestHandler: { (request) in
+                            //
+                        }, taskHandler: { (task) in
+                            //
+                        }, progressHandler: { (progress) in
+                            //
+                        }) { (account, ocId, etag, date, size, allHeaderFields, error, errorCode, errorDescription) in
+                            
+                            uploadErrorCode = errorCode
+                            uploadErrorDescription = errorDescription
+                        }
+                        
+                        if uploadErrorCode != 0 {
+                            break
+                        }
+                    }
+                    
+                } else {
+                    print("error")
+                }
+                
+            } else {
+                print("error")
+            }
+        }
     }
     
     private func uploadFileInBackground(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
