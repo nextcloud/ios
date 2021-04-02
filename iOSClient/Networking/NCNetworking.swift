@@ -495,8 +495,8 @@ import Queuer
                             
                             // Assembling the chunks
                             
-                            //curl -X MOVE -u roeland:pass --header 'Destination:https://server/remote.php/dav/files/roeland/dest/file.zip' https://server/remote.php/dav/uploads/roeland/myapp-e1663913-4423-4efe-a9cd-26e7beeca3c0/.file
-
+                            //curl -X MOVE -u roeland:pass --header 'X-OC-Mtime:1547545326' --header 'Destination:https://server/remote.php/dav/files/roeland/dest/file.zip' https://server/remote.php/dav/uploads/roeland/myapp-e1663913-4423-4efe-a9cd-26e7beeca3c0/.file”
+                            
                         } else {
                             
                             // Aborting the upload
