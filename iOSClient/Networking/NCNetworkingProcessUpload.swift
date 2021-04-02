@@ -182,10 +182,15 @@ class NCNetworkingProcessUpload: NSObject {
                 }
             }
             
+            // E2EE
+            if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
+                metadata.e2eEncrypted = true
+            }
+            
+            // CHUNCK
             if metadata.size <= NCGlobal.shared.chunckSize {
                 metadatasForUpload.append(metadata)
             } else {
-                // CHUNCK
                 metadata.chunk = true
                 metadatasForUpload.append(tableMetadata.init(value: metadata))
             }

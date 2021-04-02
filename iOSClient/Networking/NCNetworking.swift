@@ -349,7 +349,6 @@ import Queuer
     @objc func upload(metadata: tableMetadata, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->())  {
            
         let metadata = tableMetadata.init(value: metadata)
-        var e2eEncrypted = false
 
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -359,10 +358,6 @@ import Queuer
         
         var fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                    
-        if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
-            e2eEncrypted = true
-        }
-        
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             let metadata = tableMetadata.init(value: metadata)
             
@@ -380,7 +375,7 @@ import Queuer
                
             NCManageDatabase.shared.addMetadata(metadata)
            
-            if e2eEncrypted {
+            if metadata.e2eEncrypted {
                 #if !EXTENSION
                 NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: metadata), account: account, completion: completion)
                 #endif
@@ -403,17 +398,9 @@ import Queuer
                 fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId, fileNameView: extractMetadata.fileNameView)
                 NCUtilityFileSystem.shared.moveFileInBackground(atPath: fileNamePath!, toPath: fileNameLocalPath)
 
-                /*
-                if metadata.chunk {
-                    let path = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId)!
-                    let filesNameOut = self.fileChunks(path: path, fileName: metadata.fileName, pathChunks: path, size: 10)
-                } else {
-                }
-                */
-                
                 NCManageDatabase.shared.addMetadata(extractMetadata)
                
-                if e2eEncrypted {
+                if metadata.e2eEncrypted {
                     #if !EXTENSION
                     NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: extractMetadata), account: account, completion: completion)
                     #endif
