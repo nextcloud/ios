@@ -485,16 +485,31 @@ import Queuer
                             semaphore.wait()
                             
                             if uploadErrorCode != 0 {
+                                print("error upload")
                                 break
                             }
                         }
+                        
+                        
+                        if uploadErrorCode == 0 {
+                            
+                            // Assembling the chunks
+                            
+                            //curl -X MOVE -u roeland:pass --header 'Destination:https://server/remote.php/dav/files/roeland/dest/file.zip' https://server/remote.php/dav/uploads/roeland/myapp-e1663913-4423-4efe-a9cd-26e7beeca3c0/.file
+
+                        } else {
+                            
+                            // delete
+                            
+                            //curl -X DELETE -u roeland:pass https://server/remote.php/dav/uploads/roeland/myapp-e1663913-4423-4efe-a9cd-26e7beeca3c0/
+                        }
                     }
                 } else {
-                    print("error")
+                    print("error chunk filename")
                 }
                 
             } else {
-                print("error")
+                print("error create directory")
             }
         }
     }
