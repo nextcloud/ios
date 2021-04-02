@@ -289,7 +289,7 @@ extension NCCollectionViewCommon {
                 title: titleDelete,
                 icon: NCUtility.shared.loadImage(named: "trash"),
                 action: { menuAction in
-                    let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
+                    let alertController = UIAlertController(title: "", message: metadata.fileNameView + "\n\n" + NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
                         NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: false)
                     })
