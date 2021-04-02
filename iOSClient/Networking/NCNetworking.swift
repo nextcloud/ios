@@ -461,28 +461,34 @@ import Queuer
                 let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
                 if let filesNames = self.fileChunks(path: path, fileName: metadata.fileName, pathChunks: path, size: 10) {
                     
-                    for fileName in filesNames {
-                                                
-                        let serverUrlFileName = uploadFolder + "/" + fileName
-                        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)!
-                       
-                        NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, customUserAgent: nil, addCustomHeaders: nil, requestHandler: { (request) in
-                            //
-                        }, taskHandler: { (task) in
-                            //
-                        }, progressHandler: { (progress) in
-                            //
-                        }) { (account, ocId, etag, date, size, allHeaderFields, error, errorCode, errorDescription) in
-                            
-                            uploadErrorCode = errorCode
-                            uploadErrorDescription = errorDescription
-                        }
+                    DispatchQueue.global(qos: .background).async {
                         
-                        if uploadErrorCode != 0 {
-                            break
+                        for fileName in filesNames {
+                                                    
+                            let serverUrlFileName = uploadFolder + "/" + fileName
+                            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)!
+                            let semaphore = Semaphore()
+
+                            NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, customUserAgent: nil, addCustomHeaders: nil, requestHandler: { (request) in
+                                //
+                            }, taskHandler: { (task) in
+                                //
+                            }, progressHandler: { (progress) in
+                                //
+                            }) { (account, ocId, etag, date, size, allHeaderFields, error, errorCode, errorDescription) in
+                                
+                                uploadErrorCode = errorCode
+                                uploadErrorDescription = errorDescription
+                                semaphore.continue()
+                            }
+                            
+                            semaphore.wait()
+                            
+                            if uploadErrorCode != 0 {
+                                break
+                            }
                         }
                     }
-                    
                 } else {
                     print("error")
                 }
