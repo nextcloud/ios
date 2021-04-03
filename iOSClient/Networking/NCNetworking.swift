@@ -449,12 +449,10 @@ import Queuer
     
     private func uploadChunkFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
-        let userId = account.userId
-        let ocId = metadata.ocId
         let serverUrl = metadata.serverUrl
         let folderChunk = NSUUID().uuidString
-        let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(ocId)!
-        let uploadFolder = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/uploads/" + userId + "/" + folderChunk
+        let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
+        let uploadFolder = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/uploads/" + account.userId + "/" + folderChunk
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         var uploadErrorCode: Int = 0
         var counterFileNameInUpload: Int = 0
@@ -471,12 +469,12 @@ import Queuer
                             
                         NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
                         
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": ocId])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId])
                             
                         for fileName in filesNames {
                                                         
                             let serverUrlFileName = uploadFolder + "/" + fileName
-                            let fileNameChunkLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+                            let fileNameChunkLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)!
                             let semaphore = Semaphore()
                                                         
                             NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, requestHandler: { (request) in
@@ -493,7 +491,7 @@ import Queuer
                                 
                             }, taskHandler: { (task) in
                                 
-                                NCManageDatabase.shared.setMetadataSession(ocId: ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
+                                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
                                
                             }, progressHandler: { (_) in                               
                                 
@@ -515,7 +513,7 @@ import Queuer
                                 
                             let serverUrlFileNameSource = uploadFolder + "/.file"
                             let pathServerUrl = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
-                            let serverUrlFileNameDestination = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/files/" + userId + pathServerUrl + "/" + metadata.fileName
+                            let serverUrlFileNameDestination = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/files/" + account.userId + pathServerUrl + "/" + metadata.fileName
                             var addCustomHeaders: [String:String] = [:]
                             let creationDate = "\(metadata.creationDate.timeIntervalSince1970)"
                             let modificationDate = "\(metadata.date.timeIntervalSince1970)"
@@ -527,7 +525,7 @@ import Queuer
                                                         
                                 if errorCode == 0 {
                                     
-                                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
+                                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                                     NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
                                     self.readFile(serverUrlFileName: serverUrlFileNameDestination, account: account) { (account, metadata, errorCode, errorDescription) in
                                             
@@ -546,7 +544,7 @@ import Queuer
                                     
                                 } else {
                                     
-                                    self.uploadChunkFileError(ocId: ocId, serverUrl: serverUrl)
+                                    self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: serverUrl)
                                 }
                             }
                                                             
@@ -555,20 +553,20 @@ import Queuer
                             // Aborting the upload
                             NCCommunication.shared.deleteFileOrFolder(uploadFolder) { (_, _, _) in
                                     
-                                self.uploadChunkFileError(ocId: ocId, serverUrl: serverUrl)
+                                self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: serverUrl)
                             }
                         }
                     }
                     
                 } else {
                     
-                    self.uploadChunkFileError(ocId: ocId, serverUrl: serverUrl)
+                    self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: serverUrl)
                 }
             }
             
         } else {
             
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         }
     }
     
