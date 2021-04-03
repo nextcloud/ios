@@ -450,6 +450,7 @@ import Queuer
     private func uploadChunkFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         let userId = account.userId
+        let serverUrl = metadata.serverUrl
         let folder = NSUUID().uuidString
         let uploadFolder = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/uploads/" + userId + "/" + folder
         var uploadErrorCode: Int = 0
@@ -492,13 +493,22 @@ import Queuer
                             
                             // Assembling the chunks
                             let serverUrlFileNameSource = uploadFolder + "/.file"
-                            let pathServerUrl = CCUtility.returnPathfromServerUrl(metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+                            let pathServerUrl = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
                             let serverUrlFileNameDestination = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/files/" + userId + pathServerUrl + "/" + metadata.fileName
 
                             NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true) { (account, errorCode, errorDescription) in
                                                     
                                 if errorCode == 0 {
-                                    
+                                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                                    self.readFile(serverUrlFileName: serverUrlFileNameDestination, account: account) { (account, metadata, errorCode, errorDescription) in
+                                        
+                                        if errorCode == 0, let metadata = metadata {
+                                            NCManageDatabase.shared.addMetadata(metadata)
+                                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":serverUrl])
+                                        } else {
+                                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
+                                        }
+                                    }
                                 } else {
                                     print("error Assembling the chunks")
                                 }
