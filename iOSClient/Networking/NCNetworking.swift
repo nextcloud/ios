@@ -450,25 +450,29 @@ import Queuer
     private func uploadChunkFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         let userId = account.userId
+        let ocId = metadata.ocId
         let serverUrl = metadata.serverUrl
         let folder = NSUUID().uuidString
         let uploadFolder = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/uploads/" + userId + "/" + folder
         var uploadErrorCode: Int = 0
-        var uploadErrorDescription = ""
         
-        NCCommunication.shared.createFolder(uploadFolder) { (account, ocId, date, errorCode, errorDescription) in
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":serverUrl])
+        
+        NCCommunication.shared.createFolder(uploadFolder) { (account, _, date, errorCode, errorDescription) in
             
             if errorCode == 0 {
                 
-                let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
+                let path = CCUtility.getDirectoryProviderStorageOcId(ocId)!
                 if let filesNames = self.fileChunks(path: path, fileName: metadata.fileName, pathChunks: path, size: 10) {
                     
                     DispatchQueue.global(qos: .background).async {
                         
+                        NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+                        
                         for fileName in filesNames {
                                                     
                             let serverUrlFileName = uploadFolder + "/" + fileName
-                            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)!
+                            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
                             let semaphore = Semaphore()
 
                             NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, customUserAgent: nil, addCustomHeaders: nil, requestHandler: { (request) in
@@ -480,7 +484,6 @@ import Queuer
                             }) { (account, ocId, etag, date, size, allHeaderFields, error, errorCode, errorDescription) in
                                 
                                 uploadErrorCode = errorCode
-                                uploadErrorDescription = errorDescription
                                 semaphore.continue()
                             }
                             
@@ -499,7 +502,7 @@ import Queuer
                             NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true) { (account, errorCode, errorDescription) in
                                                     
                                 if errorCode == 0 {
-                                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
                                     self.readFile(serverUrlFileName: serverUrlFileNameDestination, account: account) { (account, metadata, errorCode, errorDescription) in
                                         
                                         if errorCode == 0, let metadata = metadata {
@@ -510,7 +513,7 @@ import Queuer
                                         }
                                     }
                                 } else {
-                                    print("error Assembling the chunks")
+                                    self.uploadChunkFileError(ocId: ocId, serverUrl: serverUrl)
                                 }
                             }
                                                         
@@ -518,18 +521,33 @@ import Queuer
                             
                             // Aborting the upload
                             NCCommunication.shared.deleteFileOrFolder(uploadFolder) { (account, errorCode, errorDescription) in
-                                print("")
+                                
+                                self.uploadChunkFileError(ocId: ocId, serverUrl: serverUrl)
                             }
                         }
+                        
+                        NCUtility.shared.stopActivityIndicator()
                     }
+                    
                 } else {
-                    print("error chunk filename")
+                    
+                    self.uploadChunkFileError(ocId: ocId, serverUrl: serverUrl)
                 }
                 
             } else {
-                print("error create directory")
+                
+                self.uploadChunkFileError(ocId: ocId, serverUrl: serverUrl)
             }
         }
+    }
+    
+    private func uploadChunkFileError(ocId: String, serverUrl: String) {
+        
+        NCManageDatabase.shared.setMetadataSession(ocId: ocId, session: nil, sessionError: NSLocalizedString("_err_upload_chunk_", comment: ""), sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
+        
+        NCContentPresenter.shared.messageNotification("_error_", description: "_err_upload_chunk_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError, forced: true)
+        
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":serverUrl])
     }
     
     private func uploadFileInBackground(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {

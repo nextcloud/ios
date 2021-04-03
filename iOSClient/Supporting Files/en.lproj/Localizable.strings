@@ -858,6 +858,7 @@
 "_err_permission_microphone_"           = "Please allow Microphone usage from Settings";
 "_err_permission_photolibrary_"         = "Please allow Photos from Settings";
 "_err_permission_locationmanager_"      = "Please allow Location - Always from Settings";
+"_err_upload_chunk_"                    = "Upload error";
 
 // QRCode
 

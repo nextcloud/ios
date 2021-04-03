@@ -472,81 +472,87 @@ class NCUtility: NSObject {
 
     @objc func startActivityIndicator(backgroundView: UIView?, blurEffect: Bool, bottom: CGFloat = 0) {
         
-        if viewBackgroundActivityIndicator != nil { return }
-        
-        activityIndicator.color = NCBrandColor.shared.textView
-        activityIndicator.hidesWhenStopped = true
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        DispatchQueue.main.async {
+            
+            if self.viewBackgroundActivityIndicator != nil { return }
+            
+            self.activityIndicator.color = NCBrandColor.shared.textView
+            self.activityIndicator.hidesWhenStopped = true
+            self.activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 
-        let sizeActivityIndicator = activityIndicator.frame.height + 50
-        
-        viewActivityIndicator = UIView.init(frame: CGRect(x: 0, y: 0, width: sizeActivityIndicator, height: sizeActivityIndicator))
-        viewActivityIndicator?.translatesAutoresizingMaskIntoConstraints = false
-        viewActivityIndicator?.layer.cornerRadius = 10
-        viewActivityIndicator?.layer.masksToBounds = true
-        viewActivityIndicator?.backgroundColor = .clear
+            let sizeActivityIndicator = self.activityIndicator.frame.height + 50
+            
+            self.viewActivityIndicator = UIView.init(frame: CGRect(x: 0, y: 0, width: sizeActivityIndicator, height: sizeActivityIndicator))
+            self.viewActivityIndicator?.translatesAutoresizingMaskIntoConstraints = false
+            self.viewActivityIndicator?.layer.cornerRadius = 10
+            self.viewActivityIndicator?.layer.masksToBounds = true
+            self.viewActivityIndicator?.backgroundColor = .clear
 
-        if backgroundView == nil {
-            if let window = UIApplication.shared.keyWindow {
-                viewBackgroundActivityIndicator?.removeFromSuperview()
-                viewBackgroundActivityIndicator = NCViewActivityIndicator(frame: window.bounds)
-                window.addSubview(viewBackgroundActivityIndicator!)
-                viewBackgroundActivityIndicator?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                viewBackgroundActivityIndicator?.backgroundColor = .clear
+            if backgroundView == nil {
+                if let window = UIApplication.shared.keyWindow {
+                    self.viewBackgroundActivityIndicator?.removeFromSuperview()
+                    self.viewBackgroundActivityIndicator = NCViewActivityIndicator(frame: window.bounds)
+                    window.addSubview(self.viewBackgroundActivityIndicator!)
+                    self.viewBackgroundActivityIndicator?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                    self.viewBackgroundActivityIndicator?.backgroundColor = .clear
+                }
+            } else {
+                self.viewBackgroundActivityIndicator = backgroundView
             }
-        } else {
-            viewBackgroundActivityIndicator = backgroundView
-        }
-        
-        // VIEW ACTIVITY INDICATOR
-        
-        guard let viewActivityIndicator = self.viewActivityIndicator else { return }
-        viewActivityIndicator.addSubview(activityIndicator)
-        
-        if blurEffect {
-            let blurEffect = UIBlurEffect(style: .regular)
-            let blurEffectView = UIVisualEffectView(effect: blurEffect)
-            blurEffectView.frame = viewActivityIndicator.frame
-            viewActivityIndicator.insertSubview(blurEffectView, at: 0)
-        }
             
-        NSLayoutConstraint.activate([
-            viewActivityIndicator.widthAnchor.constraint(equalToConstant: sizeActivityIndicator),
-            viewActivityIndicator.heightAnchor.constraint(equalToConstant: sizeActivityIndicator),
-            activityIndicator.centerXAnchor.constraint(equalTo: viewActivityIndicator.centerXAnchor),
-            activityIndicator.centerYAnchor.constraint(equalTo: viewActivityIndicator.centerYAnchor)
-        ])
-        
-        // BACKGROUD VIEW ACTIVITY INDICATOR
-        
-        guard let viewBackgroundActivityIndicator = self.viewBackgroundActivityIndicator else { return }
-        viewBackgroundActivityIndicator.addSubview(viewActivityIndicator)
+            // VIEW ACTIVITY INDICATOR
             
-        var verticalConstant: CGFloat = 0
-        if bottom > 0 {
-            verticalConstant = (viewBackgroundActivityIndicator.frame.size.height / 2) - bottom
+            guard let viewActivityIndicator = self.viewActivityIndicator else { return }
+            viewActivityIndicator.addSubview(self.activityIndicator)
+            
+            if blurEffect {
+                let blurEffect = UIBlurEffect(style: .regular)
+                let blurEffectView = UIVisualEffectView(effect: blurEffect)
+                blurEffectView.frame = viewActivityIndicator.frame
+                viewActivityIndicator.insertSubview(blurEffectView, at: 0)
+            }
+                
+            NSLayoutConstraint.activate([
+                viewActivityIndicator.widthAnchor.constraint(equalToConstant: sizeActivityIndicator),
+                viewActivityIndicator.heightAnchor.constraint(equalToConstant: sizeActivityIndicator),
+                self.activityIndicator.centerXAnchor.constraint(equalTo: viewActivityIndicator.centerXAnchor),
+                self.activityIndicator.centerYAnchor.constraint(equalTo: viewActivityIndicator.centerYAnchor)
+            ])
+            
+            // BACKGROUD VIEW ACTIVITY INDICATOR
+            
+            guard let viewBackgroundActivityIndicator = self.viewBackgroundActivityIndicator else { return }
+            viewBackgroundActivityIndicator.addSubview(viewActivityIndicator)
+                
+            var verticalConstant: CGFloat = 0
+            if bottom > 0 {
+                verticalConstant = (viewBackgroundActivityIndicator.frame.size.height / 2) - bottom
+            }
+            
+            NSLayoutConstraint.activate([
+                viewActivityIndicator.centerXAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerXAnchor),
+                viewActivityIndicator.centerYAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerYAnchor, constant: verticalConstant)
+            ])
+            
+            self.activityIndicator.startAnimating()
         }
-        
-        NSLayoutConstraint.activate([
-            viewActivityIndicator.centerXAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerXAnchor),
-            viewActivityIndicator.centerYAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerYAnchor, constant: verticalConstant)
-        ])
-        
-        activityIndicator.startAnimating()
     }
     
     @objc func stopActivityIndicator() {
                     
-        activityIndicator.stopAnimating()
-        activityIndicator.removeFromSuperview()
-        
-        viewActivityIndicator?.removeFromSuperview()
-        viewActivityIndicator = nil
-        
-        if viewBackgroundActivityIndicator is NCViewActivityIndicator {
-            viewBackgroundActivityIndicator?.removeFromSuperview()
+        DispatchQueue.main.async {
+            
+            self.activityIndicator.stopAnimating()
+            self.activityIndicator.removeFromSuperview()
+            
+            self.viewActivityIndicator?.removeFromSuperview()
+            self.viewActivityIndicator = nil
+            
+            if self.viewBackgroundActivityIndicator is NCViewActivityIndicator {
+                self.viewBackgroundActivityIndicator?.removeFromSuperview()
+            }
+            self.viewBackgroundActivityIndicator = nil
         }
-        viewBackgroundActivityIndicator = nil
     }
 }
 
