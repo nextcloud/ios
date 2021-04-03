@@ -455,12 +455,11 @@ import Queuer
         let folderChunk = NSUUID().uuidString
         let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(ocId)!
         let uploadFolder = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/uploads/" + userId + "/" + folderChunk
+        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         var uploadErrorCode: Int = 0
                 
         if let filesNames = NCCommunicationCommon.shared.fileChunks(path: directoryProviderStorageOcId, fileName: metadata.fileName, pathChunks: directoryProviderStorageOcId, sizeInMB: 10) {
         
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":serverUrl])
-            
             NCContentPresenter.shared.messageNotification("_info_", description: "_upload_chunk_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode:0, forced: true)
             
             NCCommunication.shared.createFolder(uploadFolder) { (account, _, date, errorCode, errorDescription) in
@@ -474,17 +473,23 @@ import Queuer
                         for fileName in filesNames {
                                                         
                             let serverUrlFileName = uploadFolder + "/" + fileName
-                            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+                            let fileNameChunkLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
                             let semaphore = Semaphore()
 
-                            NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (request) in
-                                    //
-                            }, taskHandler: { (task) in
-                                    //
-                            }, progressHandler: { (progress) in
-                                    //
-                            }) { (account, ocId, etag, date, size, allHeaderFields, error, errorCode, errorDescription) in
+                            NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, requestHandler: { (request) in
                                     
+                                self.uploadRequest[fileNameLocalPath] = request
+                                
+                            }, taskHandler: { (task) in
+                                
+                                NCManageDatabase.shared.setMetadataSession(ocId: ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
+                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": ocId])
+                                
+                            }, progressHandler: { (progress) in
+                                //
+                            }) { (account, ocId, etag, date, size, allHeaderFields, error, errorCode, errorDescription) in
+                                   
+                                self.uploadRequest[fileNameLocalPath] = nil
                                 uploadErrorCode = errorCode
                                 semaphore.continue()
                             }
