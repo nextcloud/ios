@@ -476,8 +476,14 @@ import Queuer
                             let serverUrlFileName = uploadFolder + "/" + fileName
                             let fileNameChunkLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
                             let semaphore = Semaphore()
+                            
                             counterFileNameInUpload += 1
+                            let progress: Float = Float(counterFileNameInUpload) / Float(filesNames.count)
+                            let totalBytes: Int64 = (metadata.size / Int64(filesNames.count)) * Int64(counterFileNameInUpload)
+                            let totalBytesExpected: Int64 = metadata.size - totalBytes
 
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress":NSNumber(value: progress), "totalBytes":NSNumber(value: totalBytes), "totalBytesExpected":NSNumber(value: totalBytesExpected)])
+                            
                             NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, requestHandler: { (request) in
                                     
                                 self.uploadRequest[fileNameLocalPath] = request
@@ -489,11 +495,7 @@ import Queuer
                                 
                             }, progressHandler: { (_) in
                                 
-                                let progress: Float = Float(counterFileNameInUpload) / Float(filesNames.count)
-                                let totalBytes: Int64 = (metadata.size / Int64(filesNames.count)) * Int64(counterFileNameInUpload)
-                                let totalBytesExpected: Int64 = metadata.size - totalBytes
-
-                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress":NSNumber(value: progress), "totalBytes":NSNumber(value: totalBytes), "totalBytesExpected":NSNumber(value: totalBytesExpected)])
+                                
                                 
                             }) { (account, ocId, etag, date, size, allHeaderFields, error, errorCode, errorDescription) in
                                    
