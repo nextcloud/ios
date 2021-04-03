@@ -204,7 +204,8 @@ class NCNetworkingProcessUpload: NSObject {
             }
             
             // CHUNCK
-            if metadata.size <= NCGlobal.shared.chunckSize {
+            let chunckSize = NCGlobal.shared.chunckSize * 1000000
+            if metadata.size <= chunckSize {
                 metadatasForUpload.append(metadata)
             } else {
                 metadata.chunk = true
