@@ -103,8 +103,7 @@ class NCNetworkingProcessUpload: NSObject {
                         }
                         
                         // Chunk 
-                        if metadata.chunk {
-                            if UIApplication.shared.applicationState == .background { break }
+                        if metadata.chunk && UIApplication.shared.applicationState == .active {
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
                             }
@@ -113,8 +112,7 @@ class NCNetworkingProcessUpload: NSObject {
                         }
                         
                         // E2EE
-                        if metadata.e2eEncrypted {
-                            if UIApplication.shared.applicationState == .background { break }
+                        if metadata.e2eEncrypted && UIApplication.shared.applicationState == .active {
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
                             }
