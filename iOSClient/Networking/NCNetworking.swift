@@ -449,8 +449,9 @@ import Queuer
     
     private func uploadChunkFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
+        let userId = account.userId
         let folder = NSUUID().uuidString
-        let uploadFolder = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/uploads/" + account.userId + "/" + folder
+        let uploadFolder = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/uploads/" + userId + "/" + folder
         var uploadErrorCode: Int = 0
         var uploadErrorDescription = ""
         
@@ -494,9 +495,16 @@ import Queuer
                         if uploadErrorCode == 0 {
                             
                             // Assembling the chunks
-                            
-                            //curl -X MOVE -u roeland:pass --header 'X-OC-Mtime:1547545326' --header 'Destination:https://server/remote.php/dav/files/roeland/dest/file.zip' https://server/remote.php/dav/uploads/roeland/myapp-e1663913-4423-4efe-a9cd-26e7beeca3c0/.file”
-                            
+                            let serverUrlFileNameSource = uploadFolder + "/.file"
+                            let serverUrlFileNameDestination = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/files/" + userId + "/xxx.mov"
+
+                            NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true) { (account, errorCode, errorDescription) in
+                                                    
+                                if errorCode == 0 {
+                        
+                                }
+                            }
+                                                        
                         } else {
                             
                             // Aborting the upload
