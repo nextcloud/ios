@@ -526,14 +526,18 @@ import Queuer
                             NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders) { (account, errorCode, errorDescription) in
                                                         
                                 if errorCode == 0 {
+                                    
                                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
                                     NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
                                     self.readFile(serverUrlFileName: serverUrlFileNameDestination, account: account) { (account, metadata, errorCode, errorDescription) in
                                             
                                         if errorCode == 0, let metadata = metadata {
+                                            
                                             NCManageDatabase.shared.addMetadata(metadata)
                                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":serverUrl])
+                                            
                                         } else {
+                                            
                                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
                                         }
                                         
