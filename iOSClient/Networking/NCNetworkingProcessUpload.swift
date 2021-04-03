@@ -93,7 +93,8 @@ class NCNetworkingProcessUpload: NSObject {
                             continue
                         }
                         
-                        if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
+                        // Chunk
+                        if metadata.chunk {
                             if UIApplication.shared.applicationState == .background { break }
                             maxConcurrentOperationUpload = 1
                             counterUpload += 1
@@ -102,16 +103,28 @@ class NCNetworkingProcessUpload: NSObject {
                             }
                             self.startTimer()
                             return
-                        } else {
+                        }
+                        
+                        // E2EE
+                        if metadata.e2eEncrypted {
+                            if UIApplication.shared.applicationState == .background { break }
+                            maxConcurrentOperationUpload = 1
                             counterUpload += 1
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
                             }
-                            sizeUpload = sizeUpload + Int(metadata.size)
-                            if sizeUpload > NCGlobal.shared.uploadMaxFileSize {
-                                self.startTimer()
-                                return
-                            }
+                            self.startTimer()
+                            return
+                        }
+                        
+                        counterUpload += 1
+                        if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
+                            NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
+                        }
+                        sizeUpload = sizeUpload + Int(metadata.size)
+                        if sizeUpload > NCGlobal.shared.uploadMaxFileSize {
+                            self.startTimer()
+                            return
                         }
                     }
                     
