@@ -457,6 +457,7 @@ import Queuer
         let uploadFolder = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/uploads/" + userId + "/" + folderChunk
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         var uploadErrorCode: Int = 0
+        var counterFileNameInUpload: Int = 0
                 
         if let filesNames = NCCommunicationCommon.shared.fileChunks(path: directoryProviderStorageOcId, fileName: metadata.fileName, pathChunks: directoryProviderStorageOcId, sizeInMB: 10) {
         
@@ -475,6 +476,7 @@ import Queuer
                             let serverUrlFileName = uploadFolder + "/" + fileName
                             let fileNameChunkLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
                             let semaphore = Semaphore()
+                            counterFileNameInUpload += 1
 
                             NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, requestHandler: { (request) in
                                     
@@ -485,8 +487,14 @@ import Queuer
                                 NCManageDatabase.shared.setMetadataSession(ocId: ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
                                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": ocId])
                                 
-                            }, progressHandler: { (progress) in
-                                //
+                            }, progressHandler: { (_) in
+                                
+                                let progress: Float = Float(counterFileNameInUpload) / Float(filesNames.count)
+                                let totalBytes: Int64 = (metadata.size / Int64(filesNames.count)) * Int64(counterFileNameInUpload)
+                                let totalBytesExpected: Int64 = metadata.size - totalBytes
+
+                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress":NSNumber(value: progress), "totalBytes":NSNumber(value: totalBytes), "totalBytesExpected":NSNumber(value: totalBytesExpected)])
+                                
                             }) { (account, ocId, etag, date, size, allHeaderFields, error, errorCode, errorDescription) in
                                    
                                 self.uploadRequest[fileNameLocalPath] = nil
