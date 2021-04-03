@@ -485,12 +485,8 @@ import Queuer
                             
                             semaphore.wait()
                             
-                            if uploadErrorCode != 0 {
-                                print("error upload")
-                                break
-                            }
+                            if uploadErrorCode != 0 { break }
                         }
-                        
                         
                         if uploadErrorCode == 0 {
                             
@@ -502,12 +498,16 @@ import Queuer
                                                     
                                 if errorCode == 0 {
                         
+                                } else {
+                                    print("error Assembling the chunks")
                                 }
                             }
                                                         
                         } else {
                             
                             // Aborting the upload
+                            NCCommunication.shared.deleteFileOrFolder(uploadFolder) { (account, errorCode, errorDescription) in }
+                            
                             
                             //curl -X DELETE -u roeland:pass https://server/remote.php/dav/uploads/roeland/myapp-e1663913-4423-4efe-a9cd-26e7beeca3c0/
                         }
