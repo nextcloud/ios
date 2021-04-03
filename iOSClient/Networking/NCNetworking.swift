@@ -470,6 +470,8 @@ import Queuer
                     DispatchQueue.global(qos: .background).async {
                             
                         NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+                        
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": ocId])
                             
                         for fileName in filesNames {
                                                         
@@ -492,8 +494,7 @@ import Queuer
                             }, taskHandler: { (task) in
                                 
                                 NCManageDatabase.shared.setMetadataSession(ocId: ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
-                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": ocId])
-                                
+                               
                             }, progressHandler: { (_) in                               
                                 
                             }) { (_, _, _, _, _, _, _, errorCode, errorDescription) in
