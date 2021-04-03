@@ -456,8 +456,8 @@ import Queuer
         let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(ocId)!
         let uploadFolder = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/uploads/" + userId + "/" + folderChunk
         var uploadErrorCode: Int = 0
-        
-        if let filesNames = self.fileChunks(path: directoryProviderStorageOcId, fileName: metadata.fileName, pathChunks: directoryProviderStorageOcId, size: 10) {
+                
+        if let filesNames = NCCommunicationCommon.shared.fileChunks(path: directoryProviderStorageOcId, fileName: metadata.fileName, pathChunks: directoryProviderStorageOcId, sizeInMB: 10) {
         
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":serverUrl])
             
@@ -477,7 +477,7 @@ import Queuer
                             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
                             let semaphore = Semaphore()
 
-                            NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, requestHandler: { (request) in
+                            NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (request) in
                                     //
                             }, taskHandler: { (task) in
                                     //
@@ -1422,51 +1422,6 @@ import Queuer
     
     //MARK: - TEST API
         
-    /*
-     
-     XXXXXXXXXXXXXXX-YYYYYYYYYYYYYYY
-
-     Where XXXXXXXXXXXXXXX is the start byte of the chunk (with leading zeros) and YYYYYYYYYYYYYYY is the end byte of the chunk with leading zeros.
-
-     curl -X PUT -u roeland:pass https://server/remote.php/dav/uploads/roeland/myapp-e1663913-4423-4efe-a9cd-26e7beeca3c0/000000000000000-000000010485759 -d @chunk1 curl -X PUT -u roeland:pass https://server/remote.php/dav/uploads/roeland/myapp-e1663913-4423-4efe-a9cd-26e7beeca3c0/000000010485760-000000015728640 -d @chunk2
-
-     This will upload 2 chunks of a file. The first chunk is 10MB in size and the second chunk is 5MB in size.
-     
-     */
-    
-    func fileChunks(path: String, fileName: String, pathChunks: String, size: Int) -> [String]? {
-           
-        var filesNameOut: [String] = []
-        
-        do {
-            let data = try Data(contentsOf: URL(fileURLWithPath: path + "/" + fileName))
-            let dataLen = data.count
-            let chunkSize = ((1024 * 1000) * size) // MB
-            let fullChunks = Int(dataLen / chunkSize)
-            let totalChunks = fullChunks + (dataLen % 1024 != 0 ? 1 : 0)
-                
-            for chunkCounter in 0..<totalChunks {
-                
-                let chunkBase = chunkCounter * chunkSize
-                var diff = chunkSize
-                if chunkCounter == totalChunks - 1 {
-                    diff = dataLen - chunkBase
-                }
-                    
-                let range:Range<Data.Index> = chunkBase..<(chunkBase + diff)
-                let chunk = data.subdata(in: range)
-                                
-                let fileNameOut = fileName + "." + String(format: "%010d", chunkCounter)
-                try chunk.write(to: URL(fileURLWithPath: pathChunks + "/" + fileNameOut))
-                filesNameOut.append(fileNameOut)
-            }
-        } catch {
-            return nil
-        }
-        
-        return filesNameOut
-    }
-    
     /*
     @objc public func getAppPassword(serverUrl: String, username: String, password: String, customUserAgent: String? = nil, completionHandler: @escaping (_ token: String?, _ errorCode: Int, _ errorDescription: String) -> Void) {
                 
