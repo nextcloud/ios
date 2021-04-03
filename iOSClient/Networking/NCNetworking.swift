@@ -520,8 +520,12 @@ import Queuer
                                         } else {
                                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
                                         }
+                                        
+                                        NCUtility.shared.stopActivityIndicator()
                                     }
+                                    
                                 } else {
+                                    
                                     self.uploadChunkFileError(ocId: ocId, serverUrl: serverUrl)
                                 }
                             }
@@ -534,8 +538,6 @@ import Queuer
                                 self.uploadChunkFileError(ocId: ocId, serverUrl: serverUrl)
                             }
                         }
-                            
-                        NCUtility.shared.stopActivityIndicator()
                     }
                     
                 } else {
@@ -543,6 +545,7 @@ import Queuer
                     self.uploadChunkFileError(ocId: ocId, serverUrl: serverUrl)
                 }
             }
+            
         } else {
             
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
@@ -551,6 +554,8 @@ import Queuer
     
     private func uploadChunkFileError(ocId: String, serverUrl: String) {
         
+        NCUtility.shared.stopActivityIndicator()
+
         NCManageDatabase.shared.setMetadataSession(ocId: ocId, session: nil, sessionError: NSLocalizedString("_err_upload_chunk_", comment: ""), sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
         
         NCContentPresenter.shared.messageNotification("_error_", description: "_err_upload_chunk_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError, forced: true)
