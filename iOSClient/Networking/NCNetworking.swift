@@ -452,9 +452,9 @@ import Queuer
         let userId = account.userId
         let ocId = metadata.ocId
         let serverUrl = metadata.serverUrl
-        let folder = NSUUID().uuidString
+        let folderChunk = NSUUID().uuidString
         let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(ocId)!
-        let uploadFolder = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/uploads/" + userId + "/" + folder
+        let uploadFolder = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/uploads/" + userId + "/" + folderChunk
         var uploadErrorCode: Int = 0
         
         if let filesNames = self.fileChunks(path: directoryProviderStorageOcId, fileName: metadata.fileName, pathChunks: directoryProviderStorageOcId, size: 10) {
@@ -512,6 +512,7 @@ import Queuer
                                                         
                                 if errorCode == 0 {
                                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
+                                    NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
                                     self.readFile(serverUrlFileName: serverUrlFileNameDestination, account: account) { (account, metadata, errorCode, errorDescription) in
                                             
                                         if errorCode == 0, let metadata = metadata {
