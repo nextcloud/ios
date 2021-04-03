@@ -492,12 +492,13 @@ import Queuer
                             
                             // Assembling the chunks
                             let serverUrlFileNameSource = uploadFolder + "/.file"
-                            let serverUrlFileNameDestination = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/files/" + userId + "/xxx.mov"
+                            let pathServerUrl = CCUtility.returnPathfromServerUrl(metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+                            let serverUrlFileNameDestination = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/files/" + userId + pathServerUrl + "/" + metadata.fileName
 
                             NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true) { (account, errorCode, errorDescription) in
                                                     
                                 if errorCode == 0 {
-                        
+                                    
                                 } else {
                                     print("error Assembling the chunks")
                                 }
@@ -506,10 +507,9 @@ import Queuer
                         } else {
                             
                             // Aborting the upload
-                            NCCommunication.shared.deleteFileOrFolder(uploadFolder) { (account, errorCode, errorDescription) in }
-                            
-                            
-                            //curl -X DELETE -u roeland:pass https://server/remote.php/dav/uploads/roeland/myapp-e1663913-4423-4efe-a9cd-26e7beeca3c0/
+                            NCCommunication.shared.deleteFileOrFolder(uploadFolder) { (account, errorCode, errorDescription) in
+                                print("")
+                            }
                         }
                     }
                 } else {
