@@ -463,7 +463,7 @@ import Queuer
         
             NCContentPresenter.shared.messageNotification("_info_", description: "_upload_chunk_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode:0, forced: true)
             
-            NCCommunication.shared.createFolder(uploadFolder) { (account, _, date, errorCode, errorDescription) in
+            NCCommunication.shared.createFolder(uploadFolder) { (_, _, _, errorCode, errorDescription) in
             
                 if errorCode == 0 {
                         
@@ -495,7 +495,7 @@ import Queuer
 
                                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress":NSNumber(value: progress), "totalBytes":NSNumber(value: totalBytes), "totalBytesExpected":NSNumber(value: totalBytesExpected)])
                                 
-                            }) { (account, ocId, etag, date, size, allHeaderFields, error, errorCode, errorDescription) in
+                            }) { (_, _, _, _, _, _, _, errorCode, errorDescription) in
                                    
                                 self.uploadRequest[fileNameLocalPath] = nil
                                 uploadErrorCode = errorCode
@@ -547,7 +547,7 @@ import Queuer
                         } else {
                                 
                             // Aborting the upload
-                            NCCommunication.shared.deleteFileOrFolder(uploadFolder) { (account, errorCode, errorDescription) in
+                            NCCommunication.shared.deleteFileOrFolder(uploadFolder) { (_, _, _) in
                                     
                                 self.uploadChunkFileError(ocId: ocId, serverUrl: serverUrl)
                             }
