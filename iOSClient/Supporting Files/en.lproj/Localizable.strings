@@ -166,6 +166,8 @@
 "_print_"                   = "Print";
 "_alias_"                   = "Alias";
 "_alias_footer_"            = "Give your account names a descriptive name such as Home, Office, School …";
+"_upload_chunk_"            = "The file you are uploading is large, keep the app in the foreground until complete";
+
 
 /* User status */
 "_online_"                  = "Online";
