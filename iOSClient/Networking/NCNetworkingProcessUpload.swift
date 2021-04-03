@@ -29,6 +29,8 @@ class NCNetworkingProcessUpload: NSObject {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var timerProcess: Timer?
     
+    let maxConcurrentOperationUpload = 5
+    
     override init() {
         super.init()
         startTimer()
@@ -50,7 +52,6 @@ class NCNetworkingProcessUpload: NSObject {
         
         var counterUpload: Int = 0
         var sizeUpload = 0
-        var maxConcurrentOperationUpload = 5
         let sessionSelectors = [NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
         
         let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
@@ -67,8 +68,8 @@ class NCNetworkingProcessUpload: NSObject {
         NCNetworking.shared.getOcIdInBackgroundSession { (listOcId) in
             
             for sessionSelector in sessionSelectors {
-                if counterUpload < maxConcurrentOperationUpload {
-                    let limit = maxConcurrentOperationUpload - counterUpload
+                if counterUpload < self.maxConcurrentOperationUpload {
+                    let limit = self.maxConcurrentOperationUpload - counterUpload
                     var predicate = NSPredicate()
                     if UIApplication.shared.applicationState == .background {
                         predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d AND (typeFile != %@ || livePhoto == true)", sessionSelector, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataTypeFileVideo)
@@ -93,11 +94,17 @@ class NCNetworkingProcessUpload: NSObject {
                             continue
                         }
                         
-                        // Chunk
+                        // Is already in upload E2EE / CHUNK ? exit
+                        for metadata in metadatasUpload {
+                            if metadata.chunk || metadata.e2eEncrypted {
+                                self.startTimer()
+                                return
+                            }
+                        }
+                        
+                        // Chunk 
                         if metadata.chunk {
                             if UIApplication.shared.applicationState == .background { break }
-                            maxConcurrentOperationUpload = 1
-                            counterUpload += 1
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
                             }
@@ -108,8 +115,6 @@ class NCNetworkingProcessUpload: NSObject {
                         // E2EE
                         if metadata.e2eEncrypted {
                             if UIApplication.shared.applicationState == .background { break }
-                            maxConcurrentOperationUpload = 1
-                            counterUpload += 1
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
                             }
