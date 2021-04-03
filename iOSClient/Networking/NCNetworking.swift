@@ -449,9 +449,12 @@ import Queuer
     
     private func uploadChunkFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
+        let userId = account.userId
+        let ocId = metadata.ocId
+        let serverUrl = metadata.serverUrl
         let folderChunk = NSUUID().uuidString
-        let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
-        let uploadFolder = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/uploads/" + account.userId + "/" + folderChunk
+        let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(ocId)!
+        let uploadFolder = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/uploads/" + userId + "/" + folderChunk
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         var uploadErrorCode: Int = 0
         var counterFileNameInUpload: Int = 0
@@ -460,7 +463,7 @@ import Queuer
         
             NCContentPresenter.shared.messageNotification("_info_", description: "_upload_chunk_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode:0, forced: true)
             
-            NCCommunication.shared.createFolder(uploadFolder) { (_, _, _, errorCode, _) in
+            NCCommunication.shared.createFolder(uploadFolder) { (account, _, date, errorCode, errorDescription) in
             
                 if errorCode == 0 {
                         
@@ -471,18 +474,18 @@ import Queuer
                         for fileName in filesNames {
                                                         
                             let serverUrlFileName = uploadFolder + "/" + fileName
-                            let fileNameChunkLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)!
+                            let fileNameChunkLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
                             let semaphore = Semaphore()
+                            counterFileNameInUpload += 1
 
                             NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, requestHandler: { (request) in
                                     
                                 self.uploadRequest[fileNameLocalPath] = request
-                                counterFileNameInUpload += 1
                                 
                             }, taskHandler: { (task) in
                                 
-                                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
-                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId])
+                                NCManageDatabase.shared.setMetadataSession(ocId: ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
+                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": ocId])
                                 
                             }, progressHandler: { (_) in
                                 
@@ -492,7 +495,7 @@ import Queuer
 
                                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress":NSNumber(value: progress), "totalBytes":NSNumber(value: totalBytes), "totalBytesExpected":NSNumber(value: totalBytesExpected)])
                                 
-                            }) { (_, _, _, _, _, _, _, errorCode, _) in
+                            }) { (account, ocId, etag, date, size, allHeaderFields, error, errorCode, errorDescription) in
                                    
                                 self.uploadRequest[fileNameLocalPath] = nil
                                 uploadErrorCode = errorCode
@@ -509,8 +512,8 @@ import Queuer
                             // Assembling the chunks
                                 
                             let serverUrlFileNameSource = uploadFolder + "/.file"
-                            let pathServerUrl = CCUtility.returnPathfromServerUrl(metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
-                            let serverUrlFileNameDestination = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/files/" + account.userId + pathServerUrl + "/" + metadata.fileName
+                            let pathServerUrl = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+                            let serverUrlFileNameDestination = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/files/" + userId + pathServerUrl + "/" + metadata.fileName
                             var addCustomHeaders: [String:String] = [:]
                             let creationDate = "\(metadata.creationDate.timeIntervalSince1970)"
                             let modificationDate = "\(metadata.date.timeIntervalSince1970)"
@@ -518,18 +521,18 @@ import Queuer
                             addCustomHeaders["X-OC-CTime"] = creationDate
                             addCustomHeaders["X-OC-MTime"] = modificationDate
 
-                            NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders) { (_, errorCode, _) in
+                            NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders) { (account, errorCode, errorDescription) in
                                                         
                                 if errorCode == 0 {
-                                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
                                     NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
-                                    self.readFile(serverUrlFileName: serverUrlFileNameDestination, account: account.account) { (_, _, errorCode, _) in
+                                    self.readFile(serverUrlFileName: serverUrlFileNameDestination, account: account) { (account, metadata, errorCode, errorDescription) in
                                             
-                                        if errorCode == 0 {
+                                        if errorCode == 0, let metadata = metadata {
                                             NCManageDatabase.shared.addMetadata(metadata)
-                                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":metadata.serverUrl])
+                                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":serverUrl])
                                         } else {
-                                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": metadata.serverUrl])
+                                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
                                         }
                                         
                                         NCUtility.shared.stopActivityIndicator()
@@ -537,29 +540,29 @@ import Queuer
                                     
                                 } else {
                                     
-                                    self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: metadata.serverUrl)
+                                    self.uploadChunkFileError(ocId: ocId, serverUrl: serverUrl)
                                 }
                             }
                                                             
                         } else {
                                 
                             // Aborting the upload
-                            NCCommunication.shared.deleteFileOrFolder(uploadFolder) { (_, _, _) in
+                            NCCommunication.shared.deleteFileOrFolder(uploadFolder) { (account, errorCode, errorDescription) in
                                     
-                                self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: metadata.serverUrl)
+                                self.uploadChunkFileError(ocId: ocId, serverUrl: serverUrl)
                             }
                         }
                     }
                     
                 } else {
                     
-                    self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: metadata.serverUrl)
+                    self.uploadChunkFileError(ocId: ocId, serverUrl: serverUrl)
                 }
             }
             
         } else {
             
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
         }
     }
     
