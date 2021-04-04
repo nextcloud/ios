@@ -172,7 +172,7 @@ class tableCapabilities: Object {
 class tableChunk: Object {
     
     @objc dynamic var account = ""
-    @objc dynamic var directory = ""
+    @objc dynamic var folderChunk = ""
     @objc dynamic var index = ""
     @objc dynamic var fileName = ""
     @objc dynamic var ocId = ""
