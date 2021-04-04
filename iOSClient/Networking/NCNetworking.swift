@@ -462,8 +462,8 @@ import Queuer
         
         if filesNames.count == 0 {
             
-            if let tmp = NCCommunicationCommon.shared.fileChunks(path: directoryProviderStorageOcId, fileName: metadata.fileName, pathChunks: directoryProviderStorageOcId, sizeInMB: chunkSize) {
-                filesNames = tmp
+            if let chunkedFilesNames = NCCommunicationCommon.shared.fileChunks(path: directoryProviderStorageOcId, fileName: metadata.fileName, pathChunks: directoryProviderStorageOcId, sizeInMB: chunkSize) {
+                filesNames = chunkedFilesNames
                 NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, folderChunk: folderChunk, fileNames: filesNames)
                 
             } else {
@@ -533,6 +533,7 @@ import Queuer
                         let serverUrlFileNameSource = uploadFolder + "/.file"
                         let pathServerUrl = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
                         let serverUrlFileNameDestination = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/files/" + account.userId + pathServerUrl + "/" + metadata.fileName
+                        
                         var addCustomHeaders: [String:String] = [:]
                         let creationDate = "\(metadata.creationDate.timeIntervalSince1970)"
                         let modificationDate = "\(metadata.date.timeIntervalSince1970)"
