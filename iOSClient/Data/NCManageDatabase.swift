@@ -1001,15 +1001,17 @@ class NCManageDatabase: NSObject {
         return NSUUID().uuidString
     }
     
-    func existsChunks(account: String, ocId: String) -> Bool {
+    func getChunks(account: String, ocId: String) -> [String] {
         
         let realm = try! Realm()
+        var filesNames: [String] = []
 
-        if realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).first == nil {
-            return true
+        let results = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).sorted(byKeyPath: "fileName", ascending: false)
+        for result in results {
+            filesNames.append(result.fileName)
         }
         
-        return false
+        return filesNames
     }
     
     func existsChunk(account: String, ocId: String, fileName: String) -> Bool {

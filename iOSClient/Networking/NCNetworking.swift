@@ -458,16 +458,16 @@ import Queuer
         var uploadErrorDescription: String = ""
         var counterFileNameInUpload: Int = 0
         let chunkSize = CCUtility.getChunkSize()
-        var filesNames: [String] = []
+        var filesNames = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
         
-        if !NCManageDatabase.shared.existsChunks(account: metadata.account, ocId: metadata.ocId) {
+        if filesNames.count == 0 {
             if let tmp = NCCommunicationCommon.shared.fileChunks(path: directoryProviderStorageOcId, fileName: metadata.fileName, pathChunks: directoryProviderStorageOcId, sizeInMB: chunkSize) {
                 filesNames = tmp
+                NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, folderChunk: folderChunk, fileNames: filesNames)
             } else {
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 return
             }
-            NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, folderChunk: folderChunk, fileNames: filesNames)
         }
         
         NCContentPresenter.shared.messageNotification("_info_", description: "_upload_chunk_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode:0, forced: false)
