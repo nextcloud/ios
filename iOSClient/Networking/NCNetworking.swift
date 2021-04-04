@@ -455,6 +455,7 @@ import Queuer
         let uploadFolder = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/uploads/" + account.userId + "/" + folderChunk
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         var uploadErrorCode: Int = 0
+        var uploadErrorDescription: String = ""
         var counterFileNameInUpload: Int = 0
                 
         if let filesNames = NCCommunicationCommon.shared.fileChunks(path: directoryProviderStorageOcId, fileName: metadata.fileName, pathChunks: directoryProviderStorageOcId, sizeInMB: NCGlobal.shared.chunckSize) {
@@ -466,9 +467,7 @@ import Queuer
                 if errorCode == 0 {
                         
                     DispatchQueue.global(qos: .background).async {
-                            
-                        NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
-                        
+                                                    
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId])
                             
                         for fileName in filesNames {
@@ -499,6 +498,7 @@ import Queuer
                                    
                                 self.uploadRequest[fileNameLocalPath] = nil
                                 uploadErrorCode = errorCode
+                                uploadErrorDescription = errorDescription
                                 semaphore.continue()
                             }
                                 
@@ -538,13 +538,11 @@ import Queuer
                                             
                                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
                                         }
-                                        
-                                        NCUtility.shared.stopActivityIndicator()
                                     }
                                     
                                 } else {
                                     
-                                    self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: serverUrl)
+                                    self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: serverUrl, errorCode: errorCode, errorDescription: errorDescription)
                                 }
                             }
                                                             
@@ -553,14 +551,14 @@ import Queuer
                             // Aborting the upload
                             NCCommunication.shared.deleteFileOrFolder(uploadFolder) { (_, _, _) in
                                     
-                                self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: serverUrl)
+                                self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: serverUrl, errorCode: uploadErrorCode, errorDescription: uploadErrorDescription)
                             }
                         }
                     }
                     
                 } else {
                     
-                    self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: serverUrl)
+                    self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: serverUrl, errorCode: errorCode, errorDescription: errorDescription)
                 }
             }
             
@@ -570,13 +568,21 @@ import Queuer
         }
     }
     
-    private func uploadChunkFileError(ocId: String, serverUrl: String) {
+    private func uploadChunkFileError(ocId: String, serverUrl: String, errorCode: Int, errorDescription: String) {
         
-        NCUtility.shared.stopActivityIndicator()
+        if errorCode == NSURLErrorCancelled || errorCode == NCGlobal.shared.ErrorRequestExplicityCancelled {
+            
+            let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(ocId)!
 
-        NCManageDatabase.shared.setMetadataSession(ocId: ocId, session: nil, sessionError: NSLocalizedString("_err_upload_chunk_", comment: ""), sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
-        
-        NCContentPresenter.shared.messageNotification("_error_", description: "_err_upload_chunk_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError, forced: true)
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
+            NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
+            
+        } else {
+            
+            NCManageDatabase.shared.setMetadataSession(ocId: ocId, session: nil, sessionError: NSLocalizedString("_err_upload_chunk_", comment: ""), sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
+            
+            NCContentPresenter.shared.messageNotification("_error_", description: "_err_upload_chunk_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError, forced: true)
+        }
         
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":serverUrl])
     }
