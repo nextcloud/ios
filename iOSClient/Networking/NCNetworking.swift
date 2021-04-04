@@ -578,10 +578,11 @@ import Queuer
             NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
             
         } else {
+                        
+            NCManageDatabase.shared.setMetadataSession(ocId: ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
             
-            NCManageDatabase.shared.setMetadataSession(ocId: ocId, session: nil, sessionError: NSLocalizedString("_err_upload_chunk_", comment: ""), sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
-            
-            NCContentPresenter.shared.messageNotification("_error_", description: "_err_upload_chunk_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError, forced: true)
+            let description = errorDescription + " code: \(errorCode)"
+            NCContentPresenter.shared.messageNotification("_error_", description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError, forced: true)
         }
         
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":serverUrl])
