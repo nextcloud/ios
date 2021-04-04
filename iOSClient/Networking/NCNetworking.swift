@@ -461,10 +461,15 @@ import Queuer
         var filesNames = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
         
         if filesNames.count == 0 {
+            
             if let tmp = NCCommunicationCommon.shared.fileChunks(path: directoryProviderStorageOcId, fileName: metadata.fileName, pathChunks: directoryProviderStorageOcId, sizeInMB: chunkSize) {
                 filesNames = tmp
                 NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, folderChunk: folderChunk, fileNames: filesNames)
+                
             } else {
+                
+                NCContentPresenter.shared.messageNotification("_error_", description: "_err_file_not_found_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode:NCGlobal.shared.errorReadFile, forced: true)
+                
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 return
             }
