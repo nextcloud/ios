@@ -122,6 +122,20 @@
         [section addFormRow:row];
     }
     
+    // Section : Chunk --------------------------------------------------------------
+
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    section.footerTitle = NSLocalizedString(@"_chunk_footer_title_", nil);
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"chunk" rowType:XLFormRowDescriptorTypeStepCounter title:NSLocalizedString(@"_chunk_size_mb_", nil)];
+    row.value = [NSString stringWithFormat:@"%ld", CCUtility.getChunkSize];
+    [row.cellConfigAtConfigure setObject:@YES forKey:@"stepControl.wraps"];
+    [row.cellConfigAtConfigure setObject:@1 forKey:@"stepControl.stepValue"];
+    [row.cellConfigAtConfigure setObject:@1 forKey:@"stepControl.minimumValue"];
+    [row.cellConfigAtConfigure setObject:@100 forKey:@"stepControl.maximumValue"];
+    [section addFormRow:row];
+
     // Section : Privacy --------------------------------------------------------------
 
     if (!NCBrandOptions.shared.disable_crash_service) {
@@ -342,6 +356,12 @@
         NSInteger levelLog = [[rowDescriptor.value valueData] intValue];
         [CCUtility setLogLevel:levelLog];
         [[NCCommunicationCommon shared] setLevelLog:levelLog];
+    }
+    
+    if ([rowDescriptor.tag isEqualToString:@"chunk"]) {
+        
+        NSInteger chunkSize = [[rowDescriptor.value valueData] intValue];
+        [CCUtility setChunkSize:chunkSize];
     }
 }
 

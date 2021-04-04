@@ -176,6 +176,9 @@
 + (BOOL)getAccountRequest;
 + (void)setAccountRequest:(BOOL)set;
 
++ (NSInteger)getChunkSize;
++ (void)setChunkSize:(NSInteger)size;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;

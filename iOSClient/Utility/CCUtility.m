@@ -732,6 +732,23 @@
     [UICKeyChainStore setString:sSet forKey:@"accountRequest" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
++ (NSInteger)getChunkSize
+{
+    NSString *size = [UICKeyChainStore stringForKey:@"chunkSize" service:NCGlobal.shared.serviceShareKeyChain];
+    
+    if (size == nil) {
+        return 10;
+    } else {
+        return [size integerValue];
+    }
+}
+
++ (void)setChunkSize:(NSInteger)size
+{
+    NSString *sizeString = [@(size) stringValue];
+    [UICKeyChainStore setString:sizeString forKey:@"chunkSize" service:NCGlobal.shared.serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------
