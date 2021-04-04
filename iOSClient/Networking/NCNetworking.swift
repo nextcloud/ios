@@ -548,7 +548,6 @@ import Queuer
                                                             
                         } else {
                                 
-                            // Aborting the upload
                             NCCommunication.shared.deleteFileOrFolder(uploadFolder) { (_, _, _) in
                                     
                                 self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: serverUrl, errorCode: uploadErrorCode, errorDescription: uploadErrorDescription)
