@@ -307,7 +307,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                                     NCManageDatabase.shared.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, richWorkspace: metadataFolder.richWorkspace, account: metadataFolder.account)
                                 }
                             
-                            } else if errorCode == NCGlobal.shared.ErrorResourceNotFound && self.metadata.directory {
+                            } else if errorCode == NCGlobal.shared.errorResourceNotFound && self.metadata.directory {
                                 NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
                             }
                             

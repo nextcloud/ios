@@ -173,7 +173,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                 if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase) {
                     DispatchQueue.main.async {
                         if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                            NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCGlobal.shared.dismissAfterSecond, type: .error, errorCode: NCGlobal.shared.ErrorInternalError, forced: true)
+                            NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCGlobal.shared.dismissAfterSecond, type: .error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
                         }
                         completion(counterItemsUpload)
                         return

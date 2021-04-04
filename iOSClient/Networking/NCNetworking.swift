@@ -352,7 +352,7 @@ import Queuer
 
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            completion(NCGlobal.shared.ErrorInternalError, "Internal error")
+            completion(NCGlobal.shared.errorInternalError, "Internal error")
             return
         }
         
@@ -393,7 +393,7 @@ import Queuer
                    
                 guard let extractMetadata = extractMetadata else {
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    completion(NCGlobal.shared.ErrorInternalError, "Internal error")
+                    completion(NCGlobal.shared.errorInternalError, "Internal error")
                     return
                 }
                        
@@ -474,7 +474,7 @@ import Queuer
         
         NCCommunication.shared.createFolder(uploadFolder) { (_, _, _, errorCode, errorDescription) in
         
-            if errorCode == 0 || errorCode == 405 {
+            if errorCode == 0 || errorCode == NCGlobal.shared.errordMethodNotSupported {
                     
                 DispatchQueue.global(qos: .background).async {
                                                 
@@ -579,7 +579,7 @@ import Queuer
     
     private func uploadChunkFileError(metadata: tableMetadata, uploadFolder: String, errorCode: Int, errorDescription: String) {
         
-        if errorCode == NSURLErrorCancelled || errorCode == NCGlobal.shared.ErrorRequestExplicityCancelled {
+        if errorCode == NSURLErrorCancelled || errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
             
             let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
 
@@ -594,7 +594,7 @@ import Queuer
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
             
             let description = errorDescription + " code: \(errorCode)"
-            NCContentPresenter.shared.messageNotification("_error_", description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError, forced: true)
+            NCContentPresenter.shared.messageNotification("_error_", description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
         }
         
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":metadata.serverUrl])
@@ -632,7 +632,7 @@ import Queuer
             } else {
                 
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                completion(NCGlobal.shared.ErrorInternalError, "task null")
+                completion(NCGlobal.shared.errorInternalError, "task null")
             }
         }
     }
@@ -712,7 +712,7 @@ import Queuer
                 
             } else {
                 
-                if errorCode == NSURLErrorCancelled || errorCode == NCGlobal.shared.ErrorRequestExplicityCancelled {
+                if errorCode == NSURLErrorCancelled || errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
                 
                     if metadata.status == NCGlobal.shared.metadataStatusUploadForcedStart {
                         
@@ -1175,14 +1175,14 @@ import Queuer
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanDelete)
         if metadata.permissions != "" && permission == false {
             
-            completion(NCGlobal.shared.ErrorInternalError, "_no_permission_delete_file_")
+            completion(NCGlobal.shared.errorInternalError, "_no_permission_delete_file_")
             return
         }
                 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         NCCommunication.shared.deleteFileOrFolder(serverUrlFileName, customUserAgent: nil, addCustomHeaders: addCustomHeaders) { (account, errorCode, errorDescription) in
         
-            if errorCode == 0 || errorCode == NCGlobal.shared.ErrorResourceNotFound {
+            if errorCode == 0 || errorCode == NCGlobal.shared.errorResourceNotFound {
                 
                 do {
                     try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
@@ -1307,7 +1307,7 @@ import Queuer
         
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {
-            completion(NCGlobal.shared.ErrorInternalError, "_no_permission_modify_file_")
+            completion(NCGlobal.shared.errorInternalError, "_no_permission_modify_file_")
             return
         }
         guard let fileNameNew = CCUtility.removeForbiddenCharactersServer(fileNameNew) else {
@@ -1392,7 +1392,7 @@ import Queuer
     
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {
-            completion(NCGlobal.shared.ErrorInternalError, "_no_permission_modify_file_")
+            completion(NCGlobal.shared.errorInternalError, "_no_permission_modify_file_")
             return
         }
         
@@ -1438,7 +1438,7 @@ import Queuer
     
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {
-            completion(NCGlobal.shared.ErrorInternalError, "_no_permission_modify_file_")
+            completion(NCGlobal.shared.errorInternalError, "_no_permission_modify_file_")
             return
         }
         

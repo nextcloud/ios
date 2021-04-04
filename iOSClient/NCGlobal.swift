@@ -132,19 +132,19 @@ class NCGlobal: NSObject {
     @objc let dismissAfterSecondLong: TimeInterval  = 10
     
     // Error
-    @objc let ErrorRequestExplicityCancelled: Int   = 15
-    @objc let ErrorBadRequest: Int                  = 400
-    @objc let ErrorResourceNotFound: Int            = 404
-    @objc let Errord: Int            = 405
-    @objc let ErrorConflict: Int                    = 409
-    @objc let ErrorBadServerResponse: Int           = -1011
-    @objc let ErrorInternalError: Int               = -99999
-    @objc let ErrorFileNotSaved: Int                = -99998
-    @objc let ErrorDecodeMetadata: Int              = -99997
-    @objc let ErrorE2EENotEnabled: Int              = -99996
-    @objc let ErrorOffline: Int                     = -99994
-    @objc let ErrorCharactersForbidden: Int         = -99993
-    @objc let ErrorCreationFile: Int                = -99992
+    @objc let errorRequestExplicityCancelled: Int   = 15
+    @objc let errorBadRequest: Int                  = 400
+    @objc let errorResourceNotFound: Int            = 404
+    @objc let errordMethodNotSupported: Int         = 405
+    @objc let errorConflict: Int                    = 409
+    @objc let errorBadServerResponse: Int           = -1011
+    @objc let errorInternalError: Int               = -99999
+    @objc let errorFileNotSaved: Int                = -99998
+    @objc let errorDecodeMetadata: Int              = -99997
+    @objc let errorE2EENotEnabled: Int              = -99996
+    @objc let errorOffline: Int                     = -99994
+    @objc let errorCharactersForbidden: Int         = -99993
+    @objc let errorCreationFile: Int                = -99992
     
     // Constants to identify the different permissions of a file
     @objc let permissionShared                      = "S"
