@@ -1006,7 +1006,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         if realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).first == nil {
-            return false
+            return true
         }
         
         return false
@@ -1017,7 +1017,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         if realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@ AND fileName == %@", account, ocId, fileName).first == nil {
-            return false
+            return true
         }
         
         return false
