@@ -1014,17 +1014,6 @@ class NCManageDatabase: NSObject {
         return filesNames
     }
     
-    func existsChunk(account: String, ocId: String, fileName: String) -> Bool {
-        
-        let realm = try! Realm()
-
-        if realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@ AND fileName == %@", account, ocId, fileName).first != nil {
-            return true
-        }
-        
-        return false
-    }
-    
     func addChunks(account: String, ocId: String, folderChunk: String, fileNames: [String]) {
         
         let realm = try! Realm()

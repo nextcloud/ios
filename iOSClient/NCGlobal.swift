@@ -135,6 +135,7 @@ class NCGlobal: NSObject {
     @objc let ErrorRequestExplicityCancelled: Int   = 15
     @objc let ErrorBadRequest: Int                  = 400
     @objc let ErrorResourceNotFound: Int            = 404
+    @objc let Errord: Int            = 405
     @objc let ErrorConflict: Int                    = 409
     @objc let ErrorBadServerResponse: Int           = -1011
     @objc let ErrorInternalError: Int               = -99999

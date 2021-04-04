@@ -474,7 +474,7 @@ import Queuer
         
         NCCommunication.shared.createFolder(uploadFolder) { (_, _, _, errorCode, errorDescription) in
         
-            if errorCode == 0 {
+            if errorCode == 0 || errorCode == 405 {
                     
                 DispatchQueue.global(qos: .background).async {
                                                 
@@ -482,10 +482,6 @@ import Queuer
                         
                     for fileName in filesNames {
                                                 
-                        if !NCManageDatabase.shared.existsChunk(account: metadata.account, ocId: metadata.ocId, fileName: fileName) {
-                            continue
-                        }
-                        
                         let serverUrlFileName = uploadFolder + "/" + fileName
                         let fileNameChunkLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)!
                         let semaphore = Semaphore()
