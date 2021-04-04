@@ -1006,7 +1006,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         var filesNames: [String] = []
 
-        let results = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).sorted(byKeyPath: "fileName", ascending: false)
+        let results = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).sorted(byKeyPath: "fileName", ascending: true)
         for result in results {
             filesNames.append(result.fileName)
         }
