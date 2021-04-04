@@ -527,7 +527,7 @@ import Queuer
                                     
                                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                                     NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
-                                    self.readFile(serverUrlFileName: serverUrlFileNameDestination, account: account) { (account, metadata, errorCode, errorDescription) in
+                                    self.readFile(serverUrlFileName: serverUrlFileNameDestination, account: account) { (_, metadata, _, _) in
                                             
                                         if errorCode == 0, let metadata = metadata {
                                             
