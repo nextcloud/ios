@@ -1055,7 +1055,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.safeWrite {
                 
-                let result = realm.objects(tableTrash.self).filter(NSPredicate(format: "account == %@ AND ocId == %@ AND fileName == %@", account, ocId, fileName))
+                let result = realm.objects(tableChunk.self).filter(NSPredicate(format: "account == %@ AND ocId == %@ AND fileName == %@", account, ocId, fileName))
                 realm.delete(result)
             }
         } catch let error {
@@ -1070,7 +1070,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.safeWrite {
                 
-                let result = realm.objects(tableTrash.self).filter(NSPredicate(format: "account == %@ AND ocId == %@", account, ocId))
+                let result = realm.objects(tableChunk.self).filter(NSPredicate(format: "account == %@ AND ocId == %@", account, ocId))
                 realm.delete(result)
             }
         } catch let error {
