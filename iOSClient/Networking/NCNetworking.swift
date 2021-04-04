@@ -542,7 +542,7 @@ import Queuer
                                     
                                 } else {
                                     
-                                    self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: serverUrl, errorCode: errorCode, errorDescription: errorDescription)
+                                    self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: serverUrl, uploadFolder: uploadFolder, errorCode: errorCode, errorDescription: errorDescription)
                                 }
                             }
                                                             
@@ -550,14 +550,14 @@ import Queuer
                                 
                             NCCommunication.shared.deleteFileOrFolder(uploadFolder) { (_, _, _) in
                                     
-                                self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: serverUrl, errorCode: uploadErrorCode, errorDescription: uploadErrorDescription)
+                                self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: serverUrl, uploadFolder: uploadFolder, errorCode: uploadErrorCode, errorDescription: uploadErrorDescription)
                             }
                         }
                     }
                     
                 } else {
                     
-                    self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: serverUrl, errorCode: errorCode, errorDescription: errorDescription)
+                    self.uploadChunkFileError(ocId: metadata.ocId, serverUrl: serverUrl, uploadFolder: uploadFolder, errorCode: errorCode, errorDescription: errorDescription)
                 }
             }
             
@@ -567,7 +567,7 @@ import Queuer
         }
     }
     
-    private func uploadChunkFileError(ocId: String, serverUrl: String, errorCode: Int, errorDescription: String) {
+    private func uploadChunkFileError(ocId: String, serverUrl: String, uploadFolder: String,errorCode: Int, errorDescription: String) {
         
         if errorCode == NSURLErrorCancelled || errorCode == NCGlobal.shared.ErrorRequestExplicityCancelled {
             
@@ -575,6 +575,8 @@ import Queuer
 
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
             NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
+            
+            NCCommunication.shared.deleteFileOrFolder(uploadFolder) { (_, _, _) in }
             
         } else {
                         
