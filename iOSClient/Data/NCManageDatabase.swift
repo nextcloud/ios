@@ -988,6 +988,86 @@ class NCManageDatabase: NSObject {
     }
     
     //MARK: -
+    //MARK: Table Chunk
+    
+    func existsChunks(account: String, ocId: String) -> Bool {
+        
+        let realm = try! Realm()
+
+        if realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).first == nil {
+            return false
+        }
+        
+        return false
+    }
+    
+    func existsChunk(account: String, ocId: String, fileName: String) -> Bool {
+        
+        let realm = try! Realm()
+
+        if realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@ AND fileName == %@", account, ocId, fileName).first == nil {
+            return false
+        }
+        
+        return false
+    }
+    
+    func addChunks(account: String, ocId: String, directory: String, fileNames: [String]) {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.safeWrite {
+                
+                for fileName in fileNames {
+                    
+                    let object = tableChunk()
+                    
+                    object.account = account
+                    object.directory = directory
+                    object.index = ocId + fileName
+                    object.fileName = fileName
+                    object.ocId = ocId
+                    
+                    realm.add(object, update: .all)
+                }
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    func deleteChunk(account: String, ocId: String, fileName: String) {
+        
+        let realm = try! Realm()
+
+        do {
+            try realm.safeWrite {
+                
+                let result = realm.objects(tableTrash.self).filter(NSPredicate(format: "account == %@ AND ocId == %@ AND fileName == %@", account, ocId, fileName))
+                realm.delete(result)
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    func deleteChunks(account: String, ocId: String) {
+        
+        let realm = try! Realm()
+
+        do {
+            try realm.safeWrite {
+                
+                let result = realm.objects(tableTrash.self).filter(NSPredicate(format: "account == %@ AND ocId == %@", account, ocId))
+                realm.delete(result)
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    //MARK: -
     //MARK: Table Comments
     
     @objc func addComments(_ comments: [NCCommunicationComments], account: String, objectId: String) {

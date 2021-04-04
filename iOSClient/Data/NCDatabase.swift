@@ -172,9 +172,14 @@ class tableCapabilities: Object {
 class tableChunk: Object {
     
     @objc dynamic var account = ""
-    @objc dynamic var direcroty = ""
+    @objc dynamic var directory = ""
+    @objc dynamic var index = ""
     @objc dynamic var fileName = ""
     @objc dynamic var ocId = ""
+    
+    override static func primaryKey() -> String {
+        return "index"
+    }
 }
 
 class tableComments: Object {
