@@ -474,11 +474,11 @@ import Queuer
         
         NCCommunication.shared.createFolder(uploadFolder) { (_, _, _, errorCode, errorDescription) in
         
-            if errorCode == 0 || errorCode == NCGlobal.shared.errordMethodNotSupported {
+            if errorCode == 0 || errorCode == NCGlobal.shared.errordMethodNotSupported { // errordMethodNotSupported = already exists
                     
-                DispatchQueue.global(qos: .background).async {
-                                                
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId])
+                
+                DispatchQueue.global(qos: .background).async {                   
                         
                     for fileName in filesNames {
                                                 
