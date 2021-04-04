@@ -169,6 +169,14 @@ class tableCapabilities: Object {
     }
 }
 
+class tableChunk: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var direcroty = ""
+    @objc dynamic var fileName = ""
+    @objc dynamic var ocId = ""
+}
+
 class tableComments: Object {
     
     @objc dynamic var account = ""
