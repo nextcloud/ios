@@ -380,7 +380,7 @@ import Queuer
                 NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: metadata), account: account, completion: completion)
                 #endif
             } else if metadata.chunk {
-                uploadChunkFile(metadata: tableMetadata.init(value: metadata), userId: account.userId, completion: completion)
+                uploadChunkedFile(metadata: tableMetadata.init(value: metadata), userId: account.userId, completion: completion)
             } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
                 uploadFile(metadata: tableMetadata.init(value: metadata), account: account, completion: completion)
             } else {
@@ -407,7 +407,7 @@ import Queuer
                     NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: extractMetadata), account: account, completion: completion)
                     #endif
                 } else if metadata.chunk {
-                    self.uploadChunkFile(metadata: tableMetadata.init(value: extractMetadata), userId: account.userId, completion: completion)
+                    self.uploadChunkedFile(metadata: tableMetadata.init(value: extractMetadata), userId: account.userId, completion: completion)
                 } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
                     self.uploadFile(metadata: tableMetadata.init(value: extractMetadata), account: account, completion: completion)
                 } else {

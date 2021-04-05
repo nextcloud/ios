@@ -27,7 +27,7 @@ import Queuer
 
 extension NCNetworking {
     
-    internal func uploadChunkFile(metadata: tableMetadata, userId: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    internal func uploadChunkedFile(metadata: tableMetadata, userId: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
         let chunkFolder = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
