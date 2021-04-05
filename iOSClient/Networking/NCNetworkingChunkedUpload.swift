@@ -44,7 +44,7 @@ extension NCNetworking {
         
         createChunkFolder(chunkFolderPath: chunkFolderPath, account: metadata.account) { (errorCode, errorDescription) in
             
-            if errorCode == 0 || errorCode == NCGlobal.shared.errordMethodNotSupported { // errordMethodNotSupported = already exists
+            if errorCode == 0 {
                     
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId])
                 
