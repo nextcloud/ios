@@ -29,20 +29,20 @@ extension NCNetworking {
     
     internal func uploadChunkFile(metadata: tableMetadata, userId: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
-        let serverUrl = metadata.serverUrl
         let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
         let chunkFolder = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
         let chunkFolderPath = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/uploads/" + userId + "/" + chunkFolder
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let chunkSize = CCUtility.getChunkSize()
+        
         var uploadErrorCode: Int = 0
         var uploadErrorDescription: String = ""
         var counterFileNameInUpload: Int = 0
-        let chunkSize = CCUtility.getChunkSize()
         var filesNames = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
         
         if filesNames.count == 0 {
-            
-            if let chunkedFilesNames = NCCommunicationCommon.shared.fileChunks(path: directoryProviderStorageOcId, fileName: metadata.fileName, pathChunks: directoryProviderStorageOcId, sizeInMB: chunkSize) {
+                        
+            if let chunkedFilesNames = NCCommunicationCommon.shared.chunkedFile(path: directoryProviderStorageOcId, fileName: metadata.fileName, outPath: directoryProviderStorageOcId, sizeInMB: chunkSize) {
                 filesNames = chunkedFilesNames
                 NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, fileNames: filesNames)
                 
@@ -111,7 +111,7 @@ extension NCNetworking {
                         // Assembling the chunks
                             
                         let serverUrlFileNameSource = chunkFolderPath + "/.file"
-                        let pathServerUrl = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+                        let pathServerUrl = CCUtility.returnPathfromServerUrl(metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
                         let serverUrlFileNameDestination = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/files/" + userId + pathServerUrl + "/" + metadata.fileName
                         
                         var addCustomHeaders: [String:String] = [:]
@@ -125,10 +125,12 @@ extension NCNetworking {
                                                     
                             if errorCode == 0 {
                                 
+                                let serverUrl = metadata.serverUrl
+
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                                 NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
                                 NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
-                                
+
                                 self.readFile(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account) { (_, metadata, _, _) in
                                         
                                     if errorCode == 0, let metadata = metadata {
@@ -144,7 +146,7 @@ extension NCNetworking {
                                 
                             } else {
                                 
-                                self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, errorCode: errorCode, errorDescription: errorDescription)
+                                self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: errorCode, errorDescription: errorDescription)
                             }
                         }
                                                         
@@ -152,14 +154,14 @@ extension NCNetworking {
                             
                         NCCommunication.shared.deleteFileOrFolder(chunkFolderPath) { (_, _, _) in
                                 
-                            self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, errorCode: uploadErrorCode, errorDescription: uploadErrorDescription)
+                            self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: uploadErrorCode, errorDescription: uploadErrorDescription)
                         }
                     }
                 }
                 
             } else {
                 
-                self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, errorCode: errorCode, errorDescription: errorDescription)
+                self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: errorCode, errorDescription: errorDescription)
             }
         }
     }
@@ -180,12 +182,10 @@ extension NCNetworking {
         }
     }
 
-    private func uploadChunkFileError(metadata: tableMetadata, chunkFolderPath: String, errorCode: Int, errorDescription: String) {
+    private func uploadChunkFileError(metadata: tableMetadata, chunkFolderPath: String, directoryProviderStorageOcId: String, errorCode: Int, errorDescription: String) {
         
         if errorCode == NSURLErrorCancelled || errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
             
-            let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
-
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
             NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
