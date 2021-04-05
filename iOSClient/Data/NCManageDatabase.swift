@@ -990,12 +990,12 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Chunk
     
-    func getFolderChunk(account: String, ocId: String) -> String {
+    func getChunkFolder(account: String, ocId: String) -> String {
         
         let realm = try! Realm()
 
         if let result = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).first {
-            return result.folderChunk
+            return result.chunkFolder
         }
         
         return NSUUID().uuidString
@@ -1014,7 +1014,7 @@ class NCManageDatabase: NSObject {
         return filesNames
     }
     
-    func addChunks(account: String, ocId: String, folderChunk: String, fileNames: [String]) {
+    func addChunks(account: String, ocId: String, chunkFolder: String, fileNames: [String]) {
         
         let realm = try! Realm()
         
@@ -1026,7 +1026,7 @@ class NCManageDatabase: NSObject {
                     let object = tableChunk()
                     
                     object.account = account
-                    object.folderChunk = folderChunk
+                    object.chunkFolder = chunkFolder
                     object.index = ocId + fileName
                     object.fileName = fileName
                     object.ocId = ocId
