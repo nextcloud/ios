@@ -46,8 +46,6 @@ extension NCNetworking {
                 filesNames = chunkedFilesNames
                 NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, fileNames: filesNames)
                 
-                completion(uploadErrorCode, uploadErrorDescription)
-
             } else {
                 
                 NCContentPresenter.shared.messageNotification("_error_", description: "_err_file_not_found_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode:NCGlobal.shared.errorReadFile, forced: true)
@@ -63,6 +61,8 @@ extension NCNetworking {
         
         createChunkedFolder(chunkFolderPath: chunkFolderPath, account: metadata.account) { (errorCode, errorDescription) in
             
+            completion(errorCode, errorDescription)
+
             if errorCode == 0 {
                     
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId])
