@@ -27,7 +27,7 @@ import Queuer
 
 extension NCNetworking {
     
-    func uploadChunkFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    internal func uploadChunkFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         let serverUrl = metadata.serverUrl
         let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
