@@ -69,6 +69,7 @@ extension NCNetworking {
                                                 
                         let serverUrlFileName = chunkFolderPath + "/" + fileName
                         let fileNameChunkLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)!
+                        
                         let semaphore = Semaphore()
                                                     
                         NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, requestHandler: { (request) in
