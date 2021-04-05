@@ -856,8 +856,8 @@
 "_error_decode_xml_"                    = "Invalid response, error decode XML";
 "_internal_generic_error_"              = "internal error";
 "_editor_unknown_"                      = "Failed to open file: Editor is unknown";
-"_err_file_not_found_"                  = "Error: file not found, removed";
-"_err_e2ee_app_version_"                = "Error: The version of app End-to-End encryption is not compatible, please update your server";
+"_err_file_not_found_"                  = "File not found, removed";
+"_err_e2ee_app_version_"                = "The version of app End-to-End encryption is not compatible, please update your server";
 "_err_permission_microphone_"           = "Please allow Microphone usage from Settings";
 "_err_permission_photolibrary_"         = "Please allow Photos from Settings";
 "_err_permission_locationmanager_"      = "Please allow Location - Always from Settings";
