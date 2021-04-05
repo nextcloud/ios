@@ -57,7 +57,7 @@ extension NCNetworking {
         
         NCContentPresenter.shared.messageNotification("_info_", description: "_upload_chunk_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode:0, forced: false)
         
-        createChunkFolder(chunkFolderPath: chunkFolderPath, account: metadata.account) { (errorCode, errorDescription) in
+        createChunkedFolder(chunkFolderPath: chunkFolderPath, account: metadata.account) { (errorCode, errorDescription) in
             
             if errorCode == 0 {
                     
@@ -166,7 +166,7 @@ extension NCNetworking {
         }
     }
     
-    private func createChunkFolder(chunkFolderPath: String, account: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    private func createChunkedFolder(chunkFolderPath: String, account: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         NCCommunication.shared.readFileOrFolder(serverUrlFileName: chunkFolderPath, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (_, _, _, errorCode, errorDescription) in
         
