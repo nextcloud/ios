@@ -117,7 +117,9 @@ class NCNetworkingProcessUpload: NSObject {
                         // E2EE
                         if metadata.e2eEncrypted && UIApplication.shared.applicationState == .active {
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                                NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
+                                NCNetworking.shared.upload(metadata: metadata) { (_, _) in
+                                    
+                                }
                             }
                             self.startTimer()
                             return
@@ -125,7 +127,9 @@ class NCNetworkingProcessUpload: NSObject {
                         
                         counterUpload += 1
                         if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                            NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
+                            NCNetworking.shared.upload(metadata: metadata) { (_, _) in
+                                
+                            }
                         }
                         sizeUpload = sizeUpload + Int(metadata.size)
                         if sizeUpload > NCGlobal.shared.uploadMaxFileSize {
