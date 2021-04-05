@@ -255,6 +255,7 @@ import Alamofire
         if let getMetadata = NCManageDatabase.shared.getMetadataFromOcId(ocIdTemp) {
             metadata = getMetadata
         } else {
+            completion(NCGlobal.shared.errorInternalError, "_e2e_error_create_encrypted_")
             return
         }
         
@@ -280,7 +281,9 @@ import Alamofire
                 }) { (account, ocId, etag, date, size, allHeaderFields, error, errorCode, errorDescription) in
                 
                     NCNetworking.shared.uploadRequest[fileNameLocalPath] = nil
-                    guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
+                    guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else {
+                        return
+                    }
 
                     if error?.isExplicitlyCancelledError ?? false {
                     
@@ -290,7 +293,10 @@ import Alamofire
 
                     } else if errorCode == 0 && ocId != nil {
                         
-                        guard let metadataTemp = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
+                        guard let metadataTemp = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else {
+                            return
+                        }
+                        
                         let metadata = tableMetadata.init(value: metadataTemp)
                         
                         NCUtilityFileSystem.shared.moveFileInBackground(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath: CCUtility.getDirectoryProviderStorageOcId(ocId))
