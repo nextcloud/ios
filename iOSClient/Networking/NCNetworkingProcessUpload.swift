@@ -95,7 +95,7 @@ class NCNetworkingProcessUpload: NSObject {
                             continue
                         }
                         
-                        // Is already in upload E2EE / CHUNK ? exit
+                        // Is already in upload E2EE / CHUNK ? exit [ ONLY ONE IN QUEUE ]
                         for metadata in metadatasUpload {
                             if metadata.chunk || metadata.e2eEncrypted {
                                 self.startTimer()
