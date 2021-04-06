@@ -1462,10 +1462,12 @@
                     NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView];
                     NSURL *fileNamePathURL = [[NSURL alloc] initFileURLWithPath:fileNamePath];
                     NSError *error = nil;
-                                       
+                    //NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys: modificationDate, NSFileModificationDate, creationDate, NSFileCreationDate, NULL];
+
                     [[NSFileManager defaultManager] removeItemAtURL:fileNamePathURL error:nil];
                     [[NSFileManager defaultManager] copyItemAtURL:[(AVURLAsset *)asset URL] toURL:fileNamePathURL error:&error];
-                        
+                    //[[NSFileManager defaultManager] setAttributes: attributes ofItemAtPath:fileNamePath error:nil];
+
                     dispatch_async(dispatch_get_main_queue(), ^{
                         
                         if (error) {
