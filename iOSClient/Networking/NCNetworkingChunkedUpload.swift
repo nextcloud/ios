@@ -55,6 +55,10 @@ extension NCNetworking {
                 completion(uploadErrorCode, uploadErrorDescription)
                 return
             }
+            
+        } else {
+            
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":metadata.serverUrl])
         }
 
         NCContentPresenter.shared.messageNotification("_info_", description: "_upload_chunk_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode:0, forced: false)
