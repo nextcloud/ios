@@ -130,6 +130,9 @@ extension NCNetworking {
                                                     
                             if errorCode == 0 {
                                 
+                                // Delete chunk folder
+                                NCCommunication.shared.deleteFileOrFolder(chunkFolderPath) { (_, _, _) in }
+                                
                                 let serverUrl = metadata.serverUrl
 
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -188,6 +191,7 @@ extension NCNetworking {
         
         if errorCode == NSURLErrorCancelled || errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
             
+            // Delete chunk folder
             NCCommunication.shared.deleteFileOrFolder(chunkFolderPath) { (_, _, _) in }
             
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
