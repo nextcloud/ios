@@ -98,7 +98,7 @@ import Alamofire
                                     if errorCode == 0 {
                                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: nil)
                                     }
-                                    completion(errorCode, errorDescription ?? "")
+                                    completion(errorCode, errorDescription)
                                 }
                                 
                             } else {
@@ -140,7 +140,7 @@ import Alamofire
                             if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
                                 NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
                             }
-                            completion(errorCode, errorDescription ?? "")
+                            completion(errorCode, errorDescription)
                         }
                     } else {
                         // unlock
@@ -261,7 +261,11 @@ import Alamofire
         
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
         
+        NCContentPresenter.shared.messageNotification("_info_", description: "_upload_e2ee_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode:0, forced: false)
+        
         NCNetworkingE2EE.shared.sendE2EMetadata(account: metadata.account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: account.urlBase, upload: true) { (e2eToken, errorCode, errorDescription) in
+            
+            completion(errorCode, errorDescription)
             
             if errorCode == 0 && e2eToken != nil {
                                                 
@@ -340,7 +344,6 @@ import Alamofire
                     
                     NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: serverUrl) { (_, _, _, _) in }
         
-                    completion(errorCode, errorDescription)                    
                 }
                 
             } else {
@@ -348,10 +351,8 @@ import Alamofire
                 if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocIdTemp) {
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
 
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":errorDescription ?? ""])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":errorDescription])
                 }
-                
-                completion(errorCode, errorDescription ?? "")
             }
         }
     }
@@ -400,7 +401,7 @@ import Alamofire
         }
     }
     
-    @objc func sendE2EMetadata(account: String, serverUrl: String, fileNameRename: String?, fileNameNewRename: String?, deleteE2eEncryption : NSPredicate?, urlBase: String, upload: Bool = false, completion: @escaping (_ e2eToken: String?, _ errorCode: Int, _ errorDescription: String?)->()) {
+    @objc func sendE2EMetadata(account: String, serverUrl: String, fileNameRename: String?, fileNameNewRename: String?, deleteE2eEncryption : NSPredicate?, urlBase: String, upload: Bool = false, completion: @escaping (_ e2eToken: String?, _ errorCode: Int, _ errorDescription: String)->()) {
             
         self.lock(account: account, serverUrl: serverUrl) { (directory, e2eToken, errorCode, errorDescription) in
             if errorCode == 0 && e2eToken != nil && directory != nil {
@@ -447,7 +448,7 @@ import Alamofire
                     }
                 }
             } else {
-                completion(e2eToken, errorCode, errorDescription)
+                completion(e2eToken, errorCode, errorDescription ?? "")
             }
         }
     }
