@@ -1006,10 +1006,10 @@
 			children = (
 				F72CD63925C19EBF00F46F9A /* NCAutoUpload.swift */,
 				F75A9EE523796C6F0044CFCE /* NCNetworking.swift */,
-				F7B8CD90261AF3F7007C1359 /* NCNetworkingChunkedUpload.swift */,
-				F70D8D8024A4A9BF000A5756 /* NCNetworkingProcessUpload.swift */,
 				F7D96FCB246ED7E100536D73 /* NCNetworkingCheckRemoteUser.swift */,
+				F7B8CD90261AF3F7007C1359 /* NCNetworkingChunkedUpload.swift */,
 				F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */,
+				F70D8D8024A4A9BF000A5756 /* NCNetworkingProcessUpload.swift */,
 				F72A47EB2487B06B005AD489 /* NCOperationQueue.swift */,
 				F755BD9A20594AC7008C5FBB /* NCService.swift */,
 			);
