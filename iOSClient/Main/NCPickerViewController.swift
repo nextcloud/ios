@@ -111,8 +111,8 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
     override func makeUI() {
         super.makeUI()
         
-        self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.shared.brandElement
-        self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.shared.brandElement
+        self.customNavItem.leftBarButtonItem?.tintColor = .systemBlue
+        self.customNavItem.rightBarButtonItem?.tintColor = .systemBlue
     }
 }
 
