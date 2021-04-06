@@ -119,9 +119,11 @@ class NCNetworkingProcessUpload: NSObject {
                         if metadata.e2eEncrypted && UIApplication.shared.applicationState == .active {
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata) { (_, _) in
+                                    self.startTimer()
                                 }
+                            } else {
+                                self.startTimer()
                             }
-                            self.startTimer()
                             return
                         }
                         
