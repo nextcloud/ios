@@ -129,7 +129,10 @@
     section.footerTitle = NSLocalizedString(@"_chunk_footer_title_", nil);
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"chunk" rowType:XLFormRowDescriptorTypeStepCounter title:NSLocalizedString(@"_chunk_size_mb_", nil)];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
     row.value = [NSString stringWithFormat:@"%ld", CCUtility.getChunkSize];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+    [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
     [row.cellConfigAtConfigure setObject:@YES forKey:@"stepControl.wraps"];
     [row.cellConfigAtConfigure setObject:@1 forKey:@"stepControl.stepValue"];
     [row.cellConfigAtConfigure setObject:@1 forKey:@"stepControl.minimumValue"];
