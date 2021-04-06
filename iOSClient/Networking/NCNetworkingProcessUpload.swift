@@ -69,6 +69,7 @@ class NCNetworkingProcessUpload: NSObject {
             
             for sessionSelector in sessionSelectors {
                 if counterUpload < self.maxConcurrentOperationUpload {
+                    
                     let limit = self.maxConcurrentOperationUpload - counterUpload
                     var predicate = NSPredicate()
                     if UIApplication.shared.applicationState == .background {
