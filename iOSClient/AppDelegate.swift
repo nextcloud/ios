@@ -200,7 +200,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if account == "" { return }
 
-        NCNetworking.shared.verifyUploadZombie()
+        networkingProcessUpload?.verifyUploadZombie()
         
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidBecomeActive)
     }
