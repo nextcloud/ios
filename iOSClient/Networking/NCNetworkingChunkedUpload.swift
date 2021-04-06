@@ -156,11 +156,8 @@ extension NCNetworking {
                         }
                                                         
                     } else {
-                            
-                        NCCommunication.shared.deleteFileOrFolder(chunkFolderPath) { (_, _, _) in
-                                
-                            self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: uploadErrorCode, errorDescription: uploadErrorDescription)
-                        }
+                                                            
+                        self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: uploadErrorCode, errorDescription: uploadErrorDescription)
                     }
                 }
                 
@@ -190,6 +187,8 @@ extension NCNetworking {
     private func uploadChunkFileError(metadata: tableMetadata, chunkFolderPath: String, directoryProviderStorageOcId: String, errorCode: Int, errorDescription: String) {
         
         if errorCode == NSURLErrorCancelled || errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
+            
+            NCCommunication.shared.deleteFileOrFolder(chunkFolderPath) { (_, _, _) in }
             
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
