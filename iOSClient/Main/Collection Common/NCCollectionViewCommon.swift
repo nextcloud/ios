@@ -1368,6 +1368,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.progressView.progress = progress
                 cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
             }
+            
             // Write status on Label Info
             switch metadata.status {
             case NCGlobal.shared.metadataStatusWaitDownload:
