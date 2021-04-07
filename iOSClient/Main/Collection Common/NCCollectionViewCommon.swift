@@ -1388,6 +1388,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             case NCGlobal.shared.metadataStatusUploading:
                 cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
                 break
+            case NCGlobal.shared.metadataStatusUploadError:
+                cell.labelInfo.text = metadata.sessionError
+                break
             default:
                 break
             }
