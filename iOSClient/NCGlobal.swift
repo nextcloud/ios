@@ -137,6 +137,7 @@ class NCGlobal: NSObject {
     @objc let errorResourceNotFound: Int            = 404
     @objc let errordMethodNotSupported: Int         = 405
     @objc let errorConflict: Int                    = 409
+    @objc let errorConnectionLost: Int              = -1005
     @objc let errorBadServerResponse: Int           = -1011
     @objc let errorInternalError: Int               = -99999
     @objc let errorFileNotSaved: Int                = -99998

@@ -191,6 +191,8 @@ extension NCNetworking {
     }
 
     private func uploadChunkFileError(metadata: tableMetadata, chunkFolderPath: String, directoryProviderStorageOcId: String, errorCode: Int, errorDescription: String) {
+              
+        var errorDescription = errorDescription
         
         if errorCode == NSURLErrorCancelled || errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
             
@@ -204,11 +206,16 @@ extension NCNetworking {
             NCCommunication.shared.deleteFileOrFolder(chunkFolderPath) { (_, _, _) in }
             
         } else {
+            
+            // NO report for the connection lost
+            if errorCode == NCGlobal.shared.errorConnectionLost {
+                errorDescription = ""
+            } else {
+                let description = errorDescription + " code: \(errorCode)"
+                NCContentPresenter.shared.messageNotification("_error_", description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
+            }
                         
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: NCGlobal.shared.metadataStatusNormal, status: NCGlobal.shared.metadataStatusUploadError)
-            
-            let description = errorDescription + " code: \(errorCode)"
-            NCContentPresenter.shared.messageNotification("_error_", description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
         }
         
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":metadata.serverUrl])
