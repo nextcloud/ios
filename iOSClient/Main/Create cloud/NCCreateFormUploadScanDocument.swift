@@ -752,6 +752,7 @@ class NCCreateScanDocument : NSObject, VNDocumentCameraViewControllerDelegate {
             let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: NCGlobal.shared.keyFileNameMask, keyFileNameType: NCGlobal.shared.keyFileNameType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal)!
             let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
             let image = scan.imageOfPage(at: pageNumber)
+            NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
             do {
                 try image.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath))
             } catch { }
