@@ -132,10 +132,7 @@ extension NCNetworking {
                         NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders) { (_, errorCode, errorDescription) in
                                                     
                             if errorCode == 0 {
-                                
-                                // Delete chunk folder
-                                NCCommunication.shared.deleteFileOrFolder(chunkFolderPath) { (_, _, _) in }
-                                
+                                                                
                                 let serverUrl = metadata.serverUrl
 
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
