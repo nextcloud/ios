@@ -114,30 +114,26 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.avatar.isHidden = true
         cell.avatarLeadingMargin.constant = 10
 
-//        if let subjectRichParameters = notification.subjectRichParameters {
-//            if let jsonParameter = JSON(subjectRichParameters).dictionary {
-//                print("")
-//            }
-//        }
-        /*
-        if let parameter = notification.subjectRichParameters as?  Dictionary<String, Any> {
-            if let user = parameter["user"] as? Dictionary<String, Any> {
-                if let name = user["id"] as? String {
-                    let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + name + ".png"
-                    if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                            cell.avatar.isHidden = false
-                            cell.avatarLeadingMargin.constant = 50
-                            cell.avatar.image = image
-                        }
-                    } else {
-                        DispatchQueue.global().async {
-                            NCCommunication.shared.downloadAvatar(userId: name, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size), customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.account) { (account, data, errorCode, errorMessage) in
-                                if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
-                                    if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                                        cell.avatar.isHidden = false
-                                        cell.avatarLeadingMargin.constant = 50
-                                        cell.avatar.image = image
+        if let subjectRichParameters = notification.subjectRichParameters {
+            if let parameter = JSON(subjectRichParameters).dictionary {
+                if let user = JSON(parameter).dictionary {
+                    if let userId = user["id"]?.string {
+                        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + userId + ".png"
+                        if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+                            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                                cell.avatar.isHidden = false
+                                cell.avatarLeadingMargin.constant = 50
+                                cell.avatar.image = image
+                            }
+                        } else {
+                            DispatchQueue.global().async {
+                                NCCommunication.shared.downloadAvatar(userId: userId, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
+                                    if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
+                                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                                            cell.avatar.isHidden = false
+                                            cell.avatarLeadingMargin.constant = 50
+                                            cell.avatar.image = image
+                                        }
                                     }
                                 }
                             }
@@ -146,11 +142,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 }
             }
         }
-        */
         
-        //
-        //cell.date.text = DateFormatter.localizedString(from: notification.date, dateStyle: .medium, timeStyle: .medium)
-        //
+        cell.date.text = DateFormatter.localizedString(from: notification.date as Date, dateStyle: .medium, timeStyle: .medium)
         cell.notification = notification
         cell.date.text = CCUtility.dateDiff(notification.date as Date)
         cell.date.textColor = .gray
