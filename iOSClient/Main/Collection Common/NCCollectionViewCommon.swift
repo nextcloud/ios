@@ -188,8 +188,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        pushed = false
         reloadDataSourceNetwork()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        pushed = false
     }
         
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
