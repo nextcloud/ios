@@ -97,7 +97,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         
         let notification = notifications[indexPath.row]
         let urlIcon = URL(string: notification.icon)
-        var image : UIImage?
+        var image: UIImage?
         
         if let urlIcon = urlIcon {
             let pathFileName = String(CCUtility.getDirectoryUserData()) + "/" + urlIcon.deletingPathExtension().lastPathComponent + ".png"
@@ -105,7 +105,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         }
         
         if let image = image {
-            cell.icon.image = image.image(color:  NCBrandColor.shared.brandElement, size: 25)
+            cell.icon.image = image.imageColor(NCBrandColor.shared.brandElement)
         } else {
             cell.icon.image = NCUtility.shared.loadImage(named: "bell", color: NCBrandColor.shared.brandElement)
         }
