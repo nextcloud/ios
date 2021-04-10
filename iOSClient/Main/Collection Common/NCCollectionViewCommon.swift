@@ -69,7 +69,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var isReloadDataSourceNetworkInProgress: Bool = false
     
     var selectedIndexPath: IndexPath!
-   
+    private var pushed: Bool = false
     
     // DECLARE
     internal var layoutKey = ""
@@ -188,6 +188,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        pushed = false
         reloadDataSourceNetwork()
     }
         
@@ -980,126 +981,126 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadataTouch!.serverUrl, addFileName: metadataTouch!.fileName) else { return }
             
             // FILES
-            if layoutKey == NCGlobal.shared.layoutViewFiles {
+            if layoutKey == NCGlobal.shared.layoutViewFiles && !pushed {
                 
                 if let viewController = appDelegate.listFilesVC[serverUrlPush] {
                     
                     if viewController.isViewLoaded {
-                        self.navigationController?.pushViewController(viewController, animated: true)
+                        pushViewController(viewController: viewController)
                     }
                     
                 } else {
                     
-                    let vcFiles:NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as! NCFiles
+                    let viewController:NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as! NCFiles
                     
-                    vcFiles.isRoot = false
-                    vcFiles.serverUrl = serverUrlPush
-                    vcFiles.titleCurrentFolder = metadataTouch!.fileNameView
+                    viewController.isRoot = false
+                    viewController.serverUrl = serverUrlPush
+                    viewController.titleCurrentFolder = metadataTouch!.fileNameView
                     
-                    appDelegate.listFilesVC[serverUrlPush] = vcFiles
-                                        
-                    self.navigationController?.pushViewController(vcFiles, animated: true)
+                    appDelegate.listFilesVC[serverUrlPush] = viewController
+                                   
+                    pushViewController(viewController: viewController)
                 }
             }
             
             // FAVORITE
-            if layoutKey == NCGlobal.shared.layoutViewFavorite {
+            if layoutKey == NCGlobal.shared.layoutViewFavorite && !pushed {
             
                 if let viewController = appDelegate.listFavoriteVC[serverUrlPush] {
                     
                     if viewController.isViewLoaded {
-                        self.navigationController?.pushViewController(viewController, animated: true)
+                        pushViewController(viewController: viewController)
                     }
 
                 } else {
                                         
-                    let vcFavorite:NCFavorite = UIStoryboard(name: "NCFavorite", bundle: nil).instantiateInitialViewController() as! NCFavorite
+                    let viewController:NCFavorite = UIStoryboard(name: "NCFavorite", bundle: nil).instantiateInitialViewController() as! NCFavorite
                 
-                    vcFavorite.serverUrl = serverUrlPush
-                    vcFavorite.titleCurrentFolder = metadataTouch!.fileNameView
+                    viewController.serverUrl = serverUrlPush
+                    viewController.titleCurrentFolder = metadataTouch!.fileNameView
                 
-                    appDelegate.listFavoriteVC[serverUrlPush] = vcFavorite
+                    appDelegate.listFavoriteVC[serverUrlPush] = viewController
                     
-                    self.navigationController?.pushViewController(vcFavorite, animated: true)
+                    pushViewController(viewController: viewController)
                 }
             }
             
             // OFFLINE
-            if layoutKey == NCGlobal.shared.layoutViewOffline {
+            if layoutKey == NCGlobal.shared.layoutViewOffline && !pushed {
                 
                 if let viewController = appDelegate.listOfflineVC[serverUrlPush] {
                     
                     if viewController.isViewLoaded {
-                        self.navigationController?.pushViewController(viewController, animated: true)
+                        pushViewController(viewController: viewController)
                     }
                     
                 } else {
                     
-                    let vcOffline:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
+                    let viewController:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
                     
-                    vcOffline.serverUrl = serverUrlPush
-                    vcOffline.titleCurrentFolder = metadataTouch!.fileNameView
+                    viewController.serverUrl = serverUrlPush
+                    viewController.titleCurrentFolder = metadataTouch!.fileNameView
                     
-                    appDelegate.listOfflineVC[serverUrlPush] = vcOffline
+                    appDelegate.listOfflineVC[serverUrlPush] = viewController
                     
-                    self.navigationController?.pushViewController(vcOffline, animated: true)
+                    pushViewController(viewController: viewController)
                 }
             }
             
             // RECENT ( for push use Files ... he he he )
-            if layoutKey == NCGlobal.shared.layoutViewRecent {
+            if layoutKey == NCGlobal.shared.layoutViewRecent && !pushed {
                 
                 if let viewController = appDelegate.listFilesVC[serverUrlPush] {
                     
                     if viewController.isViewLoaded {
-                        self.navigationController?.pushViewController(viewController, animated: true)
+                        pushViewController(viewController: viewController)
                     }
                     
                 } else {
                     
-                    let vcFiles:NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as! NCFiles
+                    let viewController:NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as! NCFiles
                     
-                    vcFiles.isRoot = false
-                    vcFiles.serverUrl = serverUrlPush
-                    vcFiles.titleCurrentFolder = metadataTouch!.fileNameView
+                    viewController.isRoot = false
+                    viewController.serverUrl = serverUrlPush
+                    viewController.titleCurrentFolder = metadataTouch!.fileNameView
                     
-                    appDelegate.listFilesVC[serverUrlPush] = vcFiles
+                    appDelegate.listFilesVC[serverUrlPush] = viewController
                     
-                    self.navigationController?.pushViewController(vcFiles, animated: true)
+                    pushViewController(viewController: viewController)
                 }
             }
             
             //VIEW IN FOLDER
-            if layoutKey == NCGlobal.shared.layoutViewViewInFolder {
+            if layoutKey == NCGlobal.shared.layoutViewViewInFolder && !pushed {
                 
-                let vcFileViewInFolder:NCFileViewInFolder = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as! NCFileViewInFolder
+                let viewController:NCFileViewInFolder = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as! NCFileViewInFolder
                 
-                vcFileViewInFolder.serverUrl = serverUrlPush
-                vcFileViewInFolder.titleCurrentFolder = metadataTouch!.fileNameView
+                viewController.serverUrl = serverUrlPush
+                viewController.titleCurrentFolder = metadataTouch!.fileNameView
                                 
-                self.navigationController?.pushViewController(vcFileViewInFolder, animated: true)
+                pushViewController(viewController: viewController)
             }
             
             // SHARES ( for push use Files ... he he he )
-            if layoutKey == NCGlobal.shared.layoutViewShares {
+            if layoutKey == NCGlobal.shared.layoutViewShares && !pushed {
                 
                 if let viewController = appDelegate.listFilesVC[serverUrlPush] {
                     
                     if viewController.isViewLoaded {
-                        self.navigationController?.pushViewController(viewController, animated: true)
+                        pushViewController(viewController: viewController)
                     }
                     
                 } else {
                     
-                    let vcFiles:NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as! NCFiles
+                    let viewController:NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as! NCFiles
                     
-                    vcFiles.isRoot = false
-                    vcFiles.serverUrl = serverUrlPush
-                    vcFiles.titleCurrentFolder = metadataTouch!.fileNameView
+                    viewController.isRoot = false
+                    viewController.serverUrl = serverUrlPush
+                    viewController.titleCurrentFolder = metadataTouch!.fileNameView
                     
-                    appDelegate.listFilesVC[serverUrlPush] = vcFiles
+                    appDelegate.listFilesVC[serverUrlPush] = viewController
                     
-                    self.navigationController?.pushViewController(vcFiles, animated: true)
+                    pushViewController(viewController: viewController)
                 }
             }
             
@@ -1126,6 +1127,12 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorOffline, forced: true)
             }
         }
+    }
+    
+    func pushViewController(viewController: UIViewController) {
+        
+        self.pushed = true
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
     
     func collectionViewSelectAll() {
