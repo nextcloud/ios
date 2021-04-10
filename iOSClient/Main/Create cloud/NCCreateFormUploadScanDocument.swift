@@ -755,7 +755,10 @@ class NCCreateScanDocument : NSObject, VNDocumentCameraViewControllerDelegate {
             NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
             do {
                 try image.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath))
-            } catch { }
+                
+            } catch {
+                
+            }
         }
         
         controller.dismiss(animated: true) {
