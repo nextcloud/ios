@@ -1130,8 +1130,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     }
     
     func pushViewController(viewController: UIViewController) {
+        if pushed { return }
         
-        self.pushed = true
+        pushed = true
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
