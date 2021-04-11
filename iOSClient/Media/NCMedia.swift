@@ -458,9 +458,9 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
     }
 }
 
-// MARK: - NC API & Algorithm
-
 extension NCMedia {
+
+    // MARK: - Datasource
 
     @objc func reloadDataSource() {
         self.reloadDataSourceWithCompletion { (_) in }
@@ -527,6 +527,8 @@ extension NCMedia {
         }
     }
     
+    // MARK: - Search media
+
     private func searchOldMedia(value: Int = -30, limit: Int = 300) {
         
         if oldInProgress { return }
@@ -604,8 +606,9 @@ extension NCMedia {
         self.searchNewMedia()
     }
     
-    @objc func searchNewMedia(limit: Int = 300) {
+    @objc func searchNewMedia() {
         
+        var limit = 300
         guard var lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
         guard var greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
         
@@ -616,6 +619,7 @@ extension NCMedia {
                     if cell.date != nil {
                         if cell.date != self.metadatas.first?.date as Date? {
                             lessDate = Calendar.current.date(byAdding: .second, value: 1, to: cell.date!)!
+                            limit = 0
                         }
                     }
                 }
@@ -640,8 +644,8 @@ extension NCMedia {
                             self.reloadDataSource()
                         }
                     }
-                } else if errorCode == 0 && files.count == 0 && limit > 0 {
-                    self.searchNewMedia(limit: 0)
+                // } else if errorCode == 0 && files.count == 0 && limit > 0 {
+                //     self.searchNewMedia(limit: 0)
                 } else if errorCode == 0 && files.count == 0 && self.metadatas.count == 0 {
                     self.searchOldMedia()
                 }
