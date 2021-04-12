@@ -568,19 +568,16 @@ extension NCMedia {
                         let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
                         
                         if metadatasChanged.metadatasUpdate.count == 0 {
-                            
                             self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
-                            
                         } else {
-                            
                             self.reloadDataSource()
                         }
                     }
-
                 } else {
-                    
                     self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: false)
                 }
+            } else if errorCode != 0 {
+                NCCommunicationCommon.shared.writeLog("Media search old media error code \(errorCode) " + errorDescription)
             }
         }
     }
@@ -640,7 +637,6 @@ extension NCMedia {
                 
                 self.newInProgress = false
                 self.mediaCommandView?.activityIndicator.stopAnimating()
-                print("Limit: \(limit)")
                 
                 if errorCode == 0 && account == self.appDelegate.account && files.count > 0 {
                     NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (_, _, metadatas) in
@@ -652,10 +648,10 @@ extension NCMedia {
                             self.reloadDataSource()
                         }
                     }
-                // } else if errorCode == 0 && files.count == 0 && limit > 0 {
-                //     self.searchNewMedia(limit: 0)
                 } else if errorCode == 0 && files.count == 0 && self.metadatas.count == 0 {
                     self.searchOldMedia()
+                } else if errorCode != 0 {
+                    NCCommunicationCommon.shared.writeLog("Media search new media error code \(errorCode) " + errorDescription)
                 }
             }
         }
