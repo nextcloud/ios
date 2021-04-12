@@ -135,14 +135,14 @@
                     <blurEffect style="regular"/>
                 </visualEffectView>
                 <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="XVj-jD-9KA">
-                    <rect key="frame" x="150" y="0.0" width="20" height="20"/>
+                    <rect key="frame" x="150" y="-9" width="20" height="20"/>
                     <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </activityIndicatorView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="XVj-jD-9KA" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="Cpb-Vg-sov"/>
+                <constraint firstItem="XVj-jD-9KA" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="-9" id="Cpb-Vg-sov"/>
                 <constraint firstItem="i1s-Qa-dG1" firstAttribute="leading" secondItem="IxY-xH-yZQ" secondAttribute="trailing" constant="8" id="Owq-aa-Sr6"/>
                 <constraint firstItem="enp-xt-Y5y" firstAttribute="leading" secondItem="i1s-Qa-dG1" secondAttribute="trailing" constant="8" id="XcU-G8-k0a"/>
                 <constraint firstItem="IxY-xH-yZQ" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="8" id="ZhO-pY-Qwi"/>
