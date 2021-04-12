@@ -747,20 +747,15 @@ class NCCreateScanDocument : NSObject, VNDocumentCameraViewControllerDelegate {
     }
     
     func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
-        
-        var fileNames: String = ""
-        
+                
         for pageNumber in 0..<scan.pageCount {
             let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: NCGlobal.shared.keyFileNameMask, keyFileNameType: NCGlobal.shared.keyFileNameType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal)!
-            fileNames = fileNames + " | " + fileName
             let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
             let image = scan.imageOfPage(at: pageNumber)
             do {
                 try image.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath))
             } catch { }
         }
-        
-        NCContentPresenter.shared.messageNotification("DEBUG", description: fileNames, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.success, errorCode: 0, forced: true)
         
         controller.dismiss(animated: true) {
             if self.viewController is DragDropViewController {
