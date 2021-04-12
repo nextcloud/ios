@@ -370,7 +370,9 @@ class NCViewerImage: UIViewController {
                 NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
                     if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
                         self.player?.seek(to: .zero)
-                        NCManageDatabase.shared.deleteVideoTime(metadata: self.currentMetadata)
+                        if !self.currentMetadata.livePhoto {
+                            NCManageDatabase.shared.deleteVideoTime(metadata: self.currentMetadata)
+                        }
                     }
                 }
                             
