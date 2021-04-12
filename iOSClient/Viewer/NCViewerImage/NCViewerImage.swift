@@ -449,7 +449,6 @@ class NCViewerImage: UIViewController {
                         NCManageDatabase.shared.addVideoTime(metadata: self.currentMetadata, time: player?.currentTime())
                     }
                 }
-                print("Pause")
             }
         }
     }
