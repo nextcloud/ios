@@ -609,10 +609,12 @@ extension NCMedia {
     @objc func searchNewMedia() {
         
         if newInProgress { return }
-        else { newInProgress = true }
+        else {
+            newInProgress = true
+            mediaCommandView?.activityIndicator.startAnimating()
+        }
         
-        var limit: Int = 300
-        var timeout: Double = 120
+        var limit: Int = 1000
         guard var lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
         guard var greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
         
@@ -622,8 +624,7 @@ extension NCMedia {
                     if cell.date != nil {
                         if cell.date != self.metadatas.first?.date as Date? {
                             lessDate = Calendar.current.date(byAdding: .second, value: 1, to: cell.date!)!
-                            limit = 1000
-                            timeout = 240
+                            limit = 0
                         }
                     }
                 }
@@ -634,9 +635,11 @@ extension NCMedia {
                 }
             }
 
-            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: timeout) { (account, files, errorCode, errorDescription) in
+            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 120) { (account, files, errorCode, errorDescription) in
                 
                 self.newInProgress = false
+                self.mediaCommandView?.activityIndicator.stopAnimating()
+                print("Limit: \(limit)")
                 
                 if errorCode == 0 && account == self.appDelegate.account && files.count > 0 {
                     NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (_, _, metadatas) in
@@ -720,7 +723,8 @@ class NCMediaCommandView: UIView {
     @IBOutlet weak var moreButton: UIButton!
     @IBOutlet weak var controlButtonView: UIVisualEffectView!
     @IBOutlet weak var title : UILabel!
-    
+    @IBOutlet weak var activityIndicator : UIActivityIndicatorView!
+
     var mediaView:NCMedia?
     private let gradient: CAGradientLayer = CAGradientLayer()
     
