@@ -369,7 +369,7 @@ class NCViewerImage: UIViewController {
                 // At end go back to start
                 NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
                     if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
-                        self.player?.seek(to: CMTime.zero)
+                        self.player?.seek(to: .zero)
                         NCManageDatabase.shared.deleteVideoTime(metadata: self.currentMetadata)
                     }
                 }
@@ -440,7 +440,7 @@ class NCViewerImage: UIViewController {
                         }
                     }
                 }
-            } else if !self.currentMetadata.livePhoto && player?.status != AVPlayer.Status.readyToPlay {
+            } else if !self.currentMetadata.livePhoto {
                 
                 NCManageDatabase.shared.addVideoTime(metadata: self.currentMetadata, time: player?.currentTime())
                 print("Pause")
