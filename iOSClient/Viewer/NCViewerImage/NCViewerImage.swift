@@ -427,7 +427,6 @@ class NCViewerImage: UIViewController {
                             let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
                             if CMTIME_IS_VALID(time) && CMTimeCompare(time, .zero) != 0 {
                                 self.timeObserver = self.player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
-                                    
                                     let durationSeconds = Float(CMTimeGetSeconds(duration))
                                     if durationSeconds > 0 {
                                         let currentTimeSeconds = Float(CMTimeGetSeconds(time))
@@ -440,9 +439,16 @@ class NCViewerImage: UIViewController {
                         }
                     }
                 }
+                
             } else if !self.currentMetadata.livePhoto {
                 
-                NCManageDatabase.shared.addVideoTime(metadata: self.currentMetadata, time: player?.currentTime())
+                if let time = player?.currentTime(), let duration = self.player?.currentItem?.asset.duration {
+                    let timeSecond = Double(CMTimeGetSeconds(time))
+                    let durationSeconds = Double(CMTimeGetSeconds(duration))
+                    if timeSecond < durationSeconds {
+                        NCManageDatabase.shared.addVideoTime(metadata: self.currentMetadata, time: player?.currentTime())
+                    }
+                }
                 print("Pause")
             }
         }
