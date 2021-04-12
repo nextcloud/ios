@@ -433,6 +433,11 @@ class NCViewerImage: UIViewController {
                     }
                 }
                 
+            } else if player?.status == AVPlayer.Status.readyToPlay {
+                
+                NCManageDatabase.shared.deleteVideoTime(metadata: self.currentMetadata)
+                player?.seek(to: .zero)
+            
             } else if !self.currentMetadata.livePhoto {
                 
                 NCManageDatabase.shared.addVideoTime(metadata: self.currentMetadata, time: player?.currentTime())

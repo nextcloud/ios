@@ -2991,6 +2991,20 @@ class NCManageDatabase: NSObject {
         return time
     }
     
+    func deleteVideoTime(metadata: tableMetadata) {
+        
+        let realm = try! Realm()
+
+        do {
+            try realm.safeWrite {
+                let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId)
+                realm.delete(result)
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
     //MARK: -
 }
 
