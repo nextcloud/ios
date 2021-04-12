@@ -550,7 +550,7 @@ extension NCMedia {
         }
         
         let height = self.tabBarController?.tabBar.frame.size.height ?? 0
-        NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: height + 50)
+        NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: height + 50, style: .gray)
 
         NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 120) { (account, files, errorCode, errorDescription) in
             
@@ -617,23 +617,24 @@ extension NCMedia {
         var limit: Int = 1000
         guard var lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
         guard var greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
-        
-        reloadDataThenPerform {
-            if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
-                if let cell = visibleCells.first as? NCGridMediaCell {
-                    if cell.date != nil {
-                        if cell.date != self.metadatas.first?.date as Date? {
-                            lessDate = Calendar.current.date(byAdding: .second, value: 1, to: cell.date!)!
-                            limit = 0
-                        }
-                    }
-                }
-                if let cell = visibleCells.last as? NCGridMediaCell {
-                    if cell.date != nil {
-                        greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: cell.date!)!
+
+        if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
+            if let cell = visibleCells.first as? NCGridMediaCell {
+                if cell.date != nil {
+                    if cell.date != self.metadatas.first?.date as Date? {
+                        lessDate = Calendar.current.date(byAdding: .second, value: 1, to: cell.date!)!
+                        limit = 0
                     }
                 }
             }
+            if let cell = visibleCells.last as? NCGridMediaCell {
+                if cell.date != nil {
+                    greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: cell.date!)!
+                }
+            }
+        }
+        
+        reloadDataThenPerform {
 
             NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 120) { (account, files, errorCode, errorDescription) in
                 

@@ -34,7 +34,7 @@ class NCUtility: NSObject {
         return instance
     }()
     
-    private let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+    private var activityIndicator: UIActivityIndicatorView? // = UIActivityIndicatorView(style: .whiteLarge)
     private var viewActivityIndicator: UIView?
     private var viewBackgroundActivityIndicator: UIView?
 
@@ -470,17 +470,24 @@ class NCUtility: NSObject {
     
     // MARK: -
 
-    @objc func startActivityIndicator(backgroundView: UIView?, blurEffect: Bool, bottom: CGFloat = 0) {
+    @objc func startActivityIndicator(backgroundView: UIView?, blurEffect: Bool, bottom: CGFloat = 0, style: UIActivityIndicatorView.Style = .whiteLarge) {
+        
+        if self.activityIndicator != nil {
+            stopActivityIndicator()
+        }
+        
+        self.activityIndicator = UIActivityIndicatorView(style: style)
+        guard let activityIndicator = self.activityIndicator else { return }
         
         DispatchQueue.main.async {
             
             if self.viewBackgroundActivityIndicator != nil { return }
             
-            self.activityIndicator.color = NCBrandColor.shared.textView
-            self.activityIndicator.hidesWhenStopped = true
-            self.activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+            activityIndicator.color = NCBrandColor.shared.textView
+            activityIndicator.hidesWhenStopped = true
+            activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 
-            let sizeActivityIndicator = self.activityIndicator.frame.height + 50
+            let sizeActivityIndicator = activityIndicator.frame.height + 50
             
             self.viewActivityIndicator = UIView.init(frame: CGRect(x: 0, y: 0, width: sizeActivityIndicator, height: sizeActivityIndicator))
             self.viewActivityIndicator?.translatesAutoresizingMaskIntoConstraints = false
@@ -503,7 +510,7 @@ class NCUtility: NSObject {
             // VIEW ACTIVITY INDICATOR
             
             guard let viewActivityIndicator = self.viewActivityIndicator else { return }
-            viewActivityIndicator.addSubview(self.activityIndicator)
+            viewActivityIndicator.addSubview(activityIndicator)
             
             if blurEffect {
                 let blurEffect = UIBlurEffect(style: .regular)
@@ -515,8 +522,8 @@ class NCUtility: NSObject {
             NSLayoutConstraint.activate([
                 viewActivityIndicator.widthAnchor.constraint(equalToConstant: sizeActivityIndicator),
                 viewActivityIndicator.heightAnchor.constraint(equalToConstant: sizeActivityIndicator),
-                self.activityIndicator.centerXAnchor.constraint(equalTo: viewActivityIndicator.centerXAnchor),
-                self.activityIndicator.centerYAnchor.constraint(equalTo: viewActivityIndicator.centerYAnchor)
+                activityIndicator.centerXAnchor.constraint(equalTo: viewActivityIndicator.centerXAnchor),
+                activityIndicator.centerYAnchor.constraint(equalTo: viewActivityIndicator.centerYAnchor)
             ])
             
             // BACKGROUD VIEW ACTIVITY INDICATOR
@@ -534,7 +541,7 @@ class NCUtility: NSObject {
                 viewActivityIndicator.centerYAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerYAnchor, constant: verticalConstant)
             ])
             
-            self.activityIndicator.startAnimating()
+            activityIndicator.startAnimating()
         }
     }
     
@@ -542,8 +549,9 @@ class NCUtility: NSObject {
                     
         DispatchQueue.main.async {
             
-            self.activityIndicator.stopAnimating()
-            self.activityIndicator.removeFromSuperview()
+            self.activityIndicator?.stopAnimating()
+            self.activityIndicator?.removeFromSuperview()
+            self.activityIndicator = nil
             
             self.viewActivityIndicator?.removeFromSuperview()
             self.viewActivityIndicator = nil
