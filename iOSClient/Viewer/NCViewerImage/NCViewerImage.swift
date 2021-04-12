@@ -366,6 +366,14 @@ class NCViewerImage: UIViewController {
                 
                 currentViewerImageZoom!.imageView.layer.addSublayer(videoLayer!)
                 
+                // At end go back to start
+                NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
+                    if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
+                        self.player?.seek(to: CMTime.zero)
+                        NCManageDatabase.shared.deleteVideoTime(metadata: self.currentMetadata)
+                    }
+                }
+                            
                 rateObserver = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
                 
                 if pictureInPictureOcId != metadata.ocId {
@@ -432,13 +440,7 @@ class NCViewerImage: UIViewController {
                         }
                     }
                 }
-                
-            } else if player?.status == AVPlayer.Status.readyToPlay {
-                
-                NCManageDatabase.shared.deleteVideoTime(metadata: self.currentMetadata)
-                player?.seek(to: .zero)
-            
-            } else if !self.currentMetadata.livePhoto {
+            } else if !self.currentMetadata.livePhoto && player?.status != AVPlayer.Status.readyToPlay {
                 
                 NCManageDatabase.shared.addVideoTime(metadata: self.currentMetadata, time: player?.currentTime())
                 print("Pause")
