@@ -608,18 +608,22 @@ extension NCMedia {
     
     @objc func searchNewMedia() {
         
-        var limit = 300
+        if newInProgress { return }
+        else { newInProgress = true }
+        
+        var limit: Int = 300
+        var timeout: Double = 120
         guard var lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
         guard var greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
         
-        newInProgress = true
         reloadDataThenPerform {
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
                 if let cell = visibleCells.first as? NCGridMediaCell {
                     if cell.date != nil {
                         if cell.date != self.metadatas.first?.date as Date? {
                             lessDate = Calendar.current.date(byAdding: .second, value: 1, to: cell.date!)!
-                            limit = 0
+                            limit = 1000
+                            timeout = 240
                         }
                     }
                 }
@@ -630,7 +634,7 @@ extension NCMedia {
                 }
             }
 
-            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 120) { (account, files, errorCode, errorDescription) in
+            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: timeout) { (account, files, errorCode, errorDescription) in
                 
                 self.newInProgress = false
                 
