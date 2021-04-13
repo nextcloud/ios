@@ -152,6 +152,7 @@ class NCBrandColor: NSObject {
     @objc public var textView:              UIColor = .black
     @objc public var separator:             UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
     @objc public var tabBar:                UIColor = .white
+    @objc public var navigationBar:         UIColor = .white
     @objc public let nextcloud:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
     @objc public let nextcloudSoft:         UIColor = UIColor(red: 90.0/255.0, green: 160.0/255.0, blue: 210.0/255.0, alpha: 1.0)
     @objc public let icon:                  UIColor = UIColor(red: 104.0/255.0, green: 104.0/255.0, blue: 104.0/255.0, alpha: 1.0)
@@ -201,7 +202,8 @@ class NCBrandColor: NSObject {
     @objc public func setDarkMode() {
         let darkMode = CCUtility.getDarkMode()
         if darkMode {
-            tabBar = UIColor(red: 25.0/255.0, green: 25.0/255.0, blue: 25.0/255.0, alpha: 1.0)
+            tabBar = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)                          // Gray (6) Dark
+            navigationBar = .black
             backgroundView = .black
             backgroundForm = UIColor(red: 32.0/255.0, green: 32.0/255.0, blue: 32.0/255.0, alpha: 1.0)
             cellSettings = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)                    // Gray (6) Dark
@@ -212,6 +214,7 @@ class NCBrandColor: NSObject {
             avatarBorder = .black
         } else {
             tabBar = .white
+            navigationBar = .white
             backgroundView = .white
             backgroundForm = UIColor(red: 242.0/255.0, green: 242.0/255.0, blue: 242.0/255.0, alpha: 1.0)
             backgroundSettings = UIColor(red: 242.0/255.0, green: 242.0/255.0, blue: 247.0/255.0, alpha: 1.0)           // Gray (6) Light

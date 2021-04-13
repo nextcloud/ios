@@ -44,7 +44,7 @@ class NCMainNavigationController: UINavigationController {
             appearance.backgroundColor = NCBrandColor.shared.backgroundView
             appearance.configureWithOpaqueBackground()
             appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.shared.textView]
-            appearance.backgroundColor = NCBrandColor.shared.tabBar
+            appearance.backgroundColor = NCBrandColor.shared.navigationBar
 
             navigationBar.scrollEdgeAppearance = appearance
             navigationBar.standardAppearance = appearance
