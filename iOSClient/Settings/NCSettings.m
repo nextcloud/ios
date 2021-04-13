@@ -173,7 +173,25 @@
     
     if (!NCBrandOptions.shared.disable_crash_service) {
         
+        // Privacy
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"privacy" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_privacy_", nil)];
+        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+        [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"shield.checkerboard"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
+        row.action.formSelector = @selector(privacy:);
+        [section addFormRow:row];
         
+        // Source code
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sourcecode" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_source_code_", nil)];
+        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+        [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"gitHub"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
+        row.action.formSelector = @selector(sourceCode:);
+        [section addFormRow:row];
     }
     
     self.tableView.showsVerticalScrollIndicator = NO;
@@ -319,6 +337,34 @@
         
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterChangeTheming object:nil];
     }
+}
+
+#pragma mark -
+
+- (void)privacy:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
+    
+    NCBrowserWeb* browserWebVC = [[UIStoryboard storyboardWithName:@"NCBrowserWeb" bundle:nil] instantiateInitialViewController];
+    
+    browserWebVC.urlBase = NCBrandOptions.shared.privacy;
+    browserWebVC.isHiddenButtonExit = false;
+    browserWebVC.titleBrowser = NSLocalizedString(@"_privacy_", nil);
+    
+    [self presentViewController:browserWebVC animated:YES completion:nil];
+}
+
+- (void)sourceCode:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
+    
+    NCBrowserWeb* browserWebVC = [[UIStoryboard storyboardWithName:@"NCBrowserWeb" bundle:nil] instantiateInitialViewController];
+    
+    browserWebVC.urlBase = NCBrandOptions.shared.sourceCode;
+    browserWebVC.isHiddenButtonExit = false;
+    browserWebVC.titleBrowser = NSLocalizedString(@"_source_code_", nil);
+    
+    [self presentViewController:browserWebVC animated:YES completion:nil];
 }
 
 #pragma mark - Passcode
