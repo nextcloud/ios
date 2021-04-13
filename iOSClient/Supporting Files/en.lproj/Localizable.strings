@@ -170,6 +170,8 @@
 "_upload_e2ee_"             = "The file you are uploading is encrypted, keep the app in the foreground until complete";
 "_chunk_size_mb_"           = "Chunk size in MB";
 "_chunk_footer_title_"      = "Chunked file upload";
+"_privacy_"                 = "Privacy";
+"_source_code_"             = "Get source code";
 
 /* User status */
 "_online_"                  = "Online";
