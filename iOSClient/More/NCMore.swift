@@ -210,10 +210,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         if NCBrandOptions.shared.disable_more_external_site == false {
             if let externalSites = NCManageDatabase.shared.getAllExternalSites(account: appDelegate.account) {
                 for externalSite in externalSites {
-                    if (externalSite.type == "link" && externalSite.name != "" && externalSite.url != "") {
+                    if (externalSite.type == "link" && externalSite.name != "" && externalSite.url != ""), let urlEncoded = externalSite.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
                         item = NCCommunicationExternalSite()
                         item.name = externalSite.name
-                        item.url = externalSite.url
+                        item.url = urlEncoded
                         item.icon = "network"
                         externalSiteMenu.append(item)
                     }
