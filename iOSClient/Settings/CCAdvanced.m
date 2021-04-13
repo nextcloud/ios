@@ -135,7 +135,7 @@
     [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
     [row.cellConfigAtConfigure setObject:@YES forKey:@"stepControl.wraps"];
     [row.cellConfigAtConfigure setObject:@1 forKey:@"stepControl.stepValue"];
-    [row.cellConfigAtConfigure setObject:@1 forKey:@"stepControl.minimumValue"];
+    [row.cellConfigAtConfigure setObject:@0 forKey:@"stepControl.minimumValue"];
     [row.cellConfigAtConfigure setObject:@100 forKey:@"stepControl.maximumValue"];
     [section addFormRow:row];
 
