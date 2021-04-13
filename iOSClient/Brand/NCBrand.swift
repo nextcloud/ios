@@ -54,7 +54,9 @@ import UIKit
     @objc public var linkLoginHost:                     String = "https://nextcloud.com/install"
     @objc public var linkloginPreferredProviders:       String = "https://nextcloud.com/signup-ios";
     @objc public var webLoginAutenticationProtocol:     String = "nc://"                                            // example "abc://"
-    
+    @objc public var privacy:                           String = "https://nextcloud.com/privacy"
+    @objc public var sourceCode:                        String = "https://github.com/nextcloud/ios"
+
     // Personalized
     @objc public var webCloseViewProtocolPersonalized:  String = ""                                                 // example "abc://change/plan"      Don't touch me !!
     @objc public var folderBrandAutoUpload:             String = ""                                                 // example "_auto_upload_folder_"   Don't touch me !!
