@@ -147,6 +147,8 @@ class NCBrandColor: NSObject {
     @objc public var encrypted:             UIColor = .red
     @objc public var backgroundView:        UIColor = .white
     @objc public var backgroundForm:        UIColor = UIColor(red: 244.0/255.0, green: 244.0/255.0, blue: 244.0/255.0, alpha: 1.0)
+    @objc public var backgroundSettings:    UIColor = UIColor(red: 242.0/255.0, green: 242.0/255.0, blue: 247.0/255.0, alpha: 1.0)  // Gray (6) Light
+    @objc public var cellSettings:          UIColor = .white
     @objc public var textView:              UIColor = .black
     @objc public var separator:             UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
     @objc public var tabBar:                UIColor = .white
@@ -202,6 +204,8 @@ class NCBrandColor: NSObject {
             tabBar = UIColor(red: 25.0/255.0, green: 25.0/255.0, blue: 25.0/255.0, alpha: 1.0)
             backgroundView = .black
             backgroundForm = UIColor(red: 32.0/255.0, green: 32.0/255.0, blue: 32.0/255.0, alpha: 1.0)
+            cellSettings = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)                    // Gray (6) Dark
+            backgroundSettings = .black
             textView = .white
             separator = UIColor(red: 60.0/255.0, green: 60.0/255.0, blue: 60.0/255.0, alpha: 1.0)
             select = UIColor.white.withAlphaComponent(0.2)
@@ -210,6 +214,8 @@ class NCBrandColor: NSObject {
             tabBar = .white
             backgroundView = .white
             backgroundForm = UIColor(red: 242.0/255.0, green: 242.0/255.0, blue: 242.0/255.0, alpha: 1.0)
+            backgroundSettings = UIColor(red: 242.0/255.0, green: 242.0/255.0, blue: 247.0/255.0, alpha: 1.0)           // Gray (6) Light
+            cellSettings = .white
             textView = .black
             separator = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
             select = self.brandElement.withAlphaComponent(0.1)

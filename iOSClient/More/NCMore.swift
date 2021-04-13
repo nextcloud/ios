@@ -76,9 +76,9 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // MARK: - NotificationCenter
 
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundForm
+        view.backgroundColor = NCBrandColor.shared.backgroundSettings
         progressQuota.progressTintColor = NCBrandColor.shared.brandElement
-        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
+        tableView.backgroundColor = NCBrandColor.shared.backgroundSettings
         tableView.separatorColor = NCBrandColor.shared.separator
         tableView.reloadData()
     }
@@ -344,7 +344,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 cell.displayName.textColor = NCBrandColor.shared.textView
             }
             cell.selectedBackgroundView = selectionColor
-            cell.backgroundColor = NCBrandColor.shared.backgroundView
+            cell.backgroundColor = NCBrandColor.shared.cellSettings
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
             
             if NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false) {
@@ -381,7 +381,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.labelText.textColor = NCBrandColor.shared.textView
             
             cell.selectedBackgroundView = selectionColor
-            cell.backgroundColor = NCBrandColor.shared.backgroundView
+            cell.backgroundColor = NCBrandColor.shared.cellSettings
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
             
             return cell
