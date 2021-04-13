@@ -171,6 +171,11 @@
     };
     [section addFormRow:row];
     
+    if (!NCBrandOptions.shared.disable_crash_service) {
+        
+        
+    }
+    
     self.tableView.showsVerticalScrollIndicator = NO;
     self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 35, 0);
     self.form = form;
