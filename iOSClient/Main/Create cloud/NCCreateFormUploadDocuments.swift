@@ -83,9 +83,9 @@ import NCCommunication
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundForm
-        collectionView.backgroundColor = NCBrandColor.shared.backgroundForm
-        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
+        view.backgroundColor = NCBrandColor.shared.backgroundSettings
+        collectionView.backgroundColor = NCBrandColor.shared.backgroundSettings
+        tableView.backgroundColor = NCBrandColor.shared.backgroundSettings
         collectionView.reloadData()
         tableView.reloadData()
         initializeForm()
@@ -109,7 +109,7 @@ import NCCommunication
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: fileNameFolder)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         row.value = fileNameFolder
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
 
         row.cellConfig["imageView.image"] =  UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
         
@@ -126,7 +126,7 @@ import NCCommunication
         
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         row.value = fileName
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
         
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
@@ -145,7 +145,7 @@ import NCCommunication
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         header.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
         header.textLabel?.textColor = .gray
-        header.tintColor = NCBrandColor.shared.backgroundForm
+        header.tintColor = NCBrandColor.shared.cellSettings
     }
 
     // MARK: - CollectionView
@@ -187,7 +187,7 @@ import NCCommunication
         // name
         let name = cell.viewWithTag(200) as! UILabel
         name.text = template.name
-        name.textColor = NCBrandColor.shared.backgroundView
+        name.textColor = NCBrandColor.shared.cellSettings
         
         // select
         let imageSelect = cell.viewWithTag(300) as! UIImageView
@@ -196,7 +196,7 @@ import NCCommunication
             imageSelect.image = UIImage(named: "plus100")
             imageSelect.isHidden = false
         } else {
-            cell.backgroundColor = NCBrandColor.shared.backgroundView
+            cell.backgroundColor = NCBrandColor.shared.cellSettings
             imageSelect.isHidden = true
         }
         
