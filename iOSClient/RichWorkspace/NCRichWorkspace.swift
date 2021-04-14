@@ -31,6 +31,8 @@ import MarkdownKit
     @IBOutlet weak var sortButton: UIButton!
     @objc @IBOutlet weak var textView: UITextView!
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     private var markdownParser = MarkdownParser()
     private var richWorkspaceText: String?
     private var textViewColor: UIColor?
@@ -61,7 +63,7 @@ import MarkdownKit
             }
             textViewColor = NCBrandColor.shared.textView
             
-            if CCUtility.getDarkMode() {
+            if appDelegate.darkMode {
                 gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
             } else {
                 gradient.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]

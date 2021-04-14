@@ -102,7 +102,6 @@ import UIKit
 class NCBrandColor: NSObject {
     @objc static let shared: NCBrandColor = {
         let instance = NCBrandColor()
-        instance.setDarkMode()
         instance.createImagesThemingColor()
         return instance
     }()
@@ -146,7 +145,7 @@ class NCBrandColor: NSObject {
     @objc public var connectionNo:          UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
     @objc public var encrypted:             UIColor = .red
     @objc public var backgroundView:        UIColor = .white
-    @objc public var backgroundForm:        UIColor = UIColor(red: 244.0/255.0, green: 244.0/255.0, blue: 244.0/255.0, alpha: 1.0)
+    @objc public var backgroundForm:        UIColor = UIColor(red: 229.0/255.0, green: 229.0/255.0, blue: 234.0/255.0, alpha: 1.0)  // Gray (5) Light
     @objc public var backgroundSettings:    UIColor = UIColor(red: 242.0/255.0, green: 242.0/255.0, blue: 247.0/255.0, alpha: 1.0)  // Gray (6) Light
     @objc public var cellSettings:          UIColor = .white
     @objc public var textView:              UIColor = .black
@@ -160,7 +159,7 @@ class NCBrandColor: NSObject {
     @objc public let graySoft:              UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
     @objc public let yellowFavorite:        UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
     @objc public let textInfo:              UIColor = UIColor(red: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 1.0)
-    @objc public var select:                UIColor = .white
+    @objc public var select:                UIColor = .lightGray
     @objc public var avatarBorder:          UIColor = .white
 
     override init() {
@@ -199,9 +198,9 @@ class NCBrandColor: NSObject {
         cacheImages.buttonStop = UIImage(named: "stop")!.image(color: graySoft, size: 50)
     }
     
-    @objc public func setDarkMode() {
-        let darkMode = CCUtility.getDarkMode()
-        if darkMode {
+    @objc public func setDarkMode(_ dark: Bool) {
+
+        if dark {
             
             tabBar = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)                          // Gray (6) Dark
             navigationBar = .black
@@ -236,7 +235,7 @@ class NCBrandColor: NSObject {
     }
     
 #if !EXTENSION
-    public func settingThemingColor(account: String) {
+public func settingThemingColor(account: String, darkMode: Bool) {
         
         let darker: CGFloat = 30    // %
         let lighter: CGFloat = 30   // %
@@ -279,7 +278,7 @@ class NCBrandColor: NSObject {
             NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
         }
         
-        setDarkMode()
+        setDarkMode(darkMode)
         
         DispatchQueue.main.async {
             self.createImagesThemingColor()

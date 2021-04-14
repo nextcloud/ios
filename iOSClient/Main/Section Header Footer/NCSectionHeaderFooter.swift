@@ -35,6 +35,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var textViewRichWorkspace: UITextView!
     @IBOutlet weak var separator: UIView!
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     var delegate: NCSectionHeaderMenuDelegate?
     
     private var markdownParser = MarkdownParser()
@@ -85,7 +87,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
             }
             textViewColor = NCBrandColor.shared.textView
             
-            if CCUtility.getDarkMode() {
+            if appDelegate.darkMode {
                 gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
             } else {
                 gradient.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]

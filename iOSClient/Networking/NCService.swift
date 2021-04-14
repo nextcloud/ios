@@ -146,7 +146,7 @@ class NCService: NSObject {
                     NCCommunicationCommon.shared.setup(dav: NCUtilityFileSystem.shared.getDAV())
                     
                     // Theming
-                    NCBrandColor.shared.settingThemingColor(account: account)
+                    NCBrandColor.shared.settingThemingColor(account: account, darkMode: self.appDelegate.darkMode)
                 
                     // File Sharing
                     let isFilesSharingEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
@@ -232,14 +232,14 @@ class NCService: NSObject {
                 
             } else if errorCode != 0 {
                 
-                NCBrandColor.shared.settingThemingColor(account: account)
+                NCBrandColor.shared.settingThemingColor(account: account, darkMode: self.appDelegate.darkMode)
                 
                 if errorCode == 401 || errorCode == 403 {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account)
                 }
                 
             } else {
-                NCBrandColor.shared.settingThemingColor(account: account)
+                NCBrandColor.shared.settingThemingColor(account: account, darkMode: self.appDelegate.darkMode)
             }
         }
     }

@@ -49,14 +49,16 @@ class NCMainTabBar: UITabBar {
         super.traitCollectionDidChange(previousTraitCollection)
         
         if #available(iOS 13.0, *) {
-            if CCUtility.getDarkModeDetect() {
-                if traitCollection.userInterfaceStyle == .dark {
-                    CCUtility.setDarkMode(true)
-                } else {
-                    CCUtility.setDarkMode(false)
-                }
+            
+            if traitCollection.userInterfaceStyle == .dark {
+                appDelegate.darkMode = true
+            } else {
+                appDelegate.darkMode = false
             }
-            NCBrandColor.shared.settingThemingColor(account: appDelegate.account)
+            
+            NCBrandColor.shared.settingThemingColor(account: appDelegate.account, darkMode: appDelegate.darkMode)
+        } else {
+            appDelegate.darkMode = false
         }
     }
     

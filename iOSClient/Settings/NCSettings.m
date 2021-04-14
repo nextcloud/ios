@@ -99,30 +99,6 @@
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_screen_", nil)];
     [form addFormSection:section];
     
-    // Dark Mode
-    if (@available(iOS 13.0, *)) {
-        
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"darkModeDetect" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_dark_mode_detect_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.cellSettings;
-        [row.cellConfig setObject:[[UIImage imageNamed:@"themeLightDark"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
-        if ([CCUtility getDarkModeDetect]) row.value = @1;
-        else row.value = @0;
-        [section addFormRow:row];
-        
-    } else {
-        
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"darkMode" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_dark_mode_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.cellSettings;
-        [row.cellConfig setObject:[[UIImage imageNamed:@"themeLightDark"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
-        if ([CCUtility getDarkMode]) row.value = @1;
-        else row.value = @0;
-        [section addFormRow:row];
-    }
-    
     // Section : E2EEncryption --------------------------------------------------------------
         
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_title_", nil)];
@@ -262,8 +238,6 @@
     XLFormRowDescriptor *rowBloccoPasscode = [self.form formRowWithTag:@"bloccopasscode"];
     XLFormRowDescriptor *rowNotPasscodeAtStart = [self.form formRowWithTag:@"notPasscodeAtStart"];
     XLFormRowDescriptor *rowEnableTouchDaceID = [self.form formRowWithTag:@"enableTouchDaceID"];
-    XLFormRowDescriptor *rowDarkModeDetect = [self.form formRowWithTag:@"darkModeDetect"];
-    XLFormRowDescriptor *rowDarkMode = [self.form formRowWithTag:@"darkMode"];
 
     // ------------------------------------------------------------------
     
@@ -277,8 +251,6 @@
     
     if ([CCUtility getEnableTouchFaceID]) [rowEnableTouchDaceID setValue:@1]; else [rowEnableTouchDaceID setValue:@0];
     if ([CCUtility getNotPasscodeAtStart]) [rowNotPasscodeAtStart setValue:@1]; else [rowNotPasscodeAtStart setValue:@0];
-    if ([CCUtility getDarkModeDetect]) [rowDarkModeDetect setValue:@1]; else [rowDarkModeDetect setValue:@0];
-    if ([CCUtility getDarkMode]) [rowDarkMode setValue:@1]; else [rowDarkMode setValue:@0];
 
     // -----------------------------------------------------------------
     
@@ -307,35 +279,6 @@
         } else {
             [CCUtility setEnableTouchFaceID:false];
         }
-    }
-    
-    if ([rowDescriptor.tag isEqualToString:@"darkMode"]) {
-        
-        if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setDarkMode:true];
-        } else {
-            [CCUtility setDarkMode:false];
-        }
-        
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterChangeTheming object:nil];
-    }
-    
-    if ([rowDescriptor.tag isEqualToString:@"darkModeDetect"]) {
-        
-        if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setDarkModeDetect:true];
-            // detect Dark Mode
-            if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-                [CCUtility setDarkMode:YES];
-            } else {
-                [CCUtility setDarkMode:NO];
-            }
-        } else {
-            [CCUtility setDarkModeDetect:false];
-            [CCUtility setDarkMode:false];
-        }
-        
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterChangeTheming object:nil];
     }
 }
 

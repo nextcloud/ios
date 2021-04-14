@@ -147,12 +147,6 @@
 + (BOOL)getDisableLocalCacheAfterUpload;
 + (void)setDisableLocalCacheAfterUpload:(BOOL)disable;
 
-+ (BOOL)getDarkMode;
-+ (void)setDarkMode:(BOOL)disable;
-
-+ (BOOL)getDarkModeDetect;
-+ (void)setDarkModeDetect:(BOOL)disable;
-
 + (BOOL)getLivePhoto;
 + (void)setLivePhoto:(BOOL)set;
 

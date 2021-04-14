@@ -55,6 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var listOfflineVC: [String:NCOffline] = [:]
     var listProgress: [String:NCGlobal.progressType] = [:]
     
+    @objc var darkMode: Bool = false
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
     var networkingProcessUpload: NCNetworkingProcessUpload?
@@ -146,13 +147,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         // Detect Dark mode
         if #available(iOS 13.0, *) {
-            if CCUtility.getDarkModeDetect() {
-                if UITraitCollection.current.userInterfaceStyle == .dark {
-                    CCUtility.setDarkMode(true)
-                } else {
-                    CCUtility.setDarkMode(false)
-                }
+            if UITraitCollection.current.userInterfaceStyle == .dark {
+                darkMode = true
+            } else {
+                darkMode = false
             }
+        } else {
+            darkMode = false
         }
         
         // Background task: register
@@ -280,7 +281,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCPushNotification.shared().pushNotification()
         
         // Setting Theming
-        NCBrandColor.shared.settingThemingColor(account: account)
+        NCBrandColor.shared.settingThemingColor(account: account, darkMode: darkMode)
         
         // Start Auto Upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { (_) in }
@@ -650,10 +651,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if passcodeViewController == nil {
             passcodeViewController = TOPasscodeViewController.init(style: .translucentLight, passcodeType: .sixDigits)
-            if #available(iOS 13.0, *) {
-                if UITraitCollection.current.userInterfaceStyle == .dark {
-                    passcodeViewController?.style = .translucentDark
-                }
+            if darkMode {
+                passcodeViewController?.style = .translucentDark
             }
             passcodeViewController?.delegate = self
             passcodeViewController?.keypadButtonShowLettering = false
