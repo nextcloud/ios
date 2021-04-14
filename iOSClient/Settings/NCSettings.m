@@ -94,11 +94,6 @@
     [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
-    // Section : Screen --------------------------------------------------------------
-    
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_screen_", nil)];
-    [form addFormSection:section];
-    
     // Section : E2EEncryption --------------------------------------------------------------
         
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_title_", nil)];
