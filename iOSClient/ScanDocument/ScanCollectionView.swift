@@ -105,12 +105,6 @@ class DragDropViewController: UIViewController {
         labelTitlePDFzone.backgroundColor = .systemBackground
     }
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        
-        appDelegate.setDarkMode(style: traitCollection.userInterfaceStyle)
-    }
-    
     //MARK: Button Action
 
     @IBAction func cancelAction(sender: UIBarButtonItem) {

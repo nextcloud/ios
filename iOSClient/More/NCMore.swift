@@ -423,6 +423,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let nameStoryboard = item.url.replacingOccurrences(of: "openStoryboard", with: "")
             let storyboard = UIStoryboard(name: nameStoryboard, bundle: nil)
             let controller = storyboard.instantiateInitialViewController()! //instantiateViewController(withIdentifier: nameStoryboard)
+            
+            controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
             self.present(controller, animated: true, completion: nil)
 
         } else if item.url.contains("//") {
