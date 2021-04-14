@@ -70,6 +70,12 @@ import MarkdownKit
         }
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        appDelegate.setDarkMode(style: traitCollection.userInterfaceStyle)
+    }
+    
     public func presentationControllerWillDismiss(_ presentationController: UIPresentationController) {
         self.viewWillAppear(true)
     }
