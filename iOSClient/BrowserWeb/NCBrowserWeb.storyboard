@@ -22,7 +22,7 @@
                                     <constraint firstAttribute="height" constant="30" id="ckh-Eb-Ze8"/>
                                     <constraint firstAttribute="width" constant="30" id="oHS-Ba-9eq"/>
                                 </constraints>
-                                <state key="normal" image="exitCircle"/>
+                                <state key="normal" image="exit"/>
                                 <connections>
                                     <action selector="touchUpInsideButtonExit:" destination="OOi-qQ-BCK" eventType="touchUpInside" id="hcA-Hb-TJd"/>
                                 </connections>
@@ -45,6 +45,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="exitCircle" width="329" height="329"/>
+        <image name="exit" width="300" height="300"/>
     </resources>
 </document>

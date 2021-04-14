@@ -57,6 +57,7 @@ class NCBrowserWeb: UIViewController {
             buttonExit.isHidden = true
         } else {
             self.view.bringSubviewToFront(buttonExit)
+            buttonExit.setImage(UIImage.init(named: "exit")?.imageColor(.systemBlue), for: .normal)
         }
         
         loadWebPage(webView: webView!, url: URL(string: urlBase)!)
