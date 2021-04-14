@@ -74,7 +74,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         //        self.tableView.sectionHeaderHeight = 10
         //        self.tableView.sectionFooterHeight = 10
-        //        self.tableView.backgroundColor = NCBrandColor.shared.backgroundView
+        //        self.tableView.backgroundColor = NCBrandColor.shared.backgroundSettings
         
         
         //        let row : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
@@ -90,8 +90,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundForm
-        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
+        view.backgroundColor = NCBrandColor.shared.backgroundSettings
+        tableView.backgroundColor = NCBrandColor.shared.backgroundSettings
         tableView.reloadData()
         initializeForm()
     }
@@ -113,7 +113,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
 
         row.cellConfig["imageView.image"] =  UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
         
@@ -131,7 +131,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         row = XLFormRowDescriptor(tag: "compressionQuality", rowType: XLFormRowDescriptorTypeSlider)
         row.value = 0.5
         row.title = NSLocalizedString("_quality_medium_", comment: "")
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
 
         row.cellConfig["slider.minimumTrackTintColor"] = NCBrandColor.shared.brandElement
         
@@ -151,7 +151,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         form.addFormSection(section)
         
         row = XLFormRowDescriptor(tag: "password", rowType: XLFormRowDescriptorTypePassword, title: NSLocalizedString("_password_", comment: ""))
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
@@ -169,7 +169,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             
         row = XLFormRowDescriptor(tag: "textRecognition", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_text_recognition_", comment: ""))
         row.value = 0
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
 
         row.cellConfig["imageView.image"] = UIImage(named: "textRecognition")!.image(color: NCBrandColor.shared.brandElement, size: 25) 
         
@@ -190,7 +190,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             row.selectorOptions = ["PDF"]
         }
         row.value = "PDF"
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
 
         row.cellConfig["tintColor"] = NCBrandColor.shared.brandElement
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
@@ -201,7 +201,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         row.value = self.fileName
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
