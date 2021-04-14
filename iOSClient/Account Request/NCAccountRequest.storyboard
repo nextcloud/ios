@@ -58,7 +58,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="30" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sWT-NJ-ihR" userLabel="Url">
-                                                    <rect key="frame" x="50" y="57" width="210" height="16"/>
+                                                    <rect key="frame" x="50" y="55" width="210" height="16"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -78,7 +78,7 @@
                                                 <constraint firstItem="sWT-NJ-ihR" firstAttribute="leading" secondItem="4cH-oC-YBd" secondAttribute="trailing" constant="10" id="MxV-Du-vUw"/>
                                                 <constraint firstItem="4cH-oC-YBd" firstAttribute="centerY" secondItem="IkA-cK-iZV" secondAttribute="centerY" id="WuT-iT-3xk"/>
                                                 <constraint firstItem="x47-dQ-alI" firstAttribute="leading" secondItem="pWI-iZ-BTy" secondAttribute="trailing" constant="5" id="e8E-uH-gvt"/>
-                                                <constraint firstAttribute="bottom" secondItem="sWT-NJ-ihR" secondAttribute="bottom" constant="7" id="gvc-Ij-KqI"/>
+                                                <constraint firstAttribute="bottom" secondItem="sWT-NJ-ihR" secondAttribute="bottom" constant="9" id="gvc-Ij-KqI"/>
                                                 <constraint firstItem="pWI-iZ-BTy" firstAttribute="centerY" secondItem="IkA-cK-iZV" secondAttribute="centerY" id="jUS-89-RRO"/>
                                                 <constraint firstItem="x47-dQ-alI" firstAttribute="leading" secondItem="sWT-NJ-ihR" secondAttribute="trailing" constant="5" id="lIk-Sj-EgC"/>
                                                 <constraint firstItem="pWI-iZ-BTy" firstAttribute="leading" secondItem="4cH-oC-YBd" secondAttribute="trailing" constant="10" id="mlI-8s-1Ae"/>
