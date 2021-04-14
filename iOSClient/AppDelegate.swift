@@ -277,7 +277,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCPushNotification.shared().pushNotification()
         
         // Setting Theming
-        NCBrandColor.shared.settingThemingColor(account: account, darkMode: darkMode)
+        NCBrandColor.shared.settingThemingColor(account: account)
         
         // Start Auto Upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { (_) in }

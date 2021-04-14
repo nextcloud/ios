@@ -235,7 +235,7 @@ class NCBrandColor: NSObject {
     }
     
 #if !EXTENSION
-    public func settingThemingColor(account: String, darkMode: Bool) {
+    public func settingThemingColor(account: String) {
         
         let darker: CGFloat = 30    // %
         let lighter: CGFloat = 30   // %
