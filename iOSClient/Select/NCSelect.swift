@@ -207,6 +207,10 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         }
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)        
+    }
+    
     @objc func changeTheming() {
         view.backgroundColor = NCBrandColor.shared.backgroundView
         collectionView.backgroundColor = NCBrandColor.shared.backgroundView
