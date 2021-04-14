@@ -152,7 +152,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
         cell.message.textColor = .gray
         
-        cell.remove.setImage(UIImage(named: "exit")!.image(color: .gray, size: 20), for: .normal)
+        cell.remove.setImage(UIImage(named: "xmark")!.image(color: .gray, size: 20), for: .normal)
         
         cell.primary.isEnabled = false
         cell.primary.isHidden = true
