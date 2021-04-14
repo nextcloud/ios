@@ -350,15 +350,11 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                                 if mediaType == PHAssetMediaType.image {
                                     let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath!))
                                     if let image = UIImage(data: data) {
-                                        DispatchQueue.main.async {
-                                            cell.imageNewFile.image = image
-                                        }
+                                        cell.imageNewFile.image = image
                                     }
                                 } else if mediaType == PHAssetMediaType.video {
                                     if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: fileNamePath!), at: 0) {
-                                        DispatchQueue.main.async {
-                                            cell.imageNewFile.image = image
-                                        }
+                                        cell.imageNewFile.image = image
                                     }
                                 }
                                 
