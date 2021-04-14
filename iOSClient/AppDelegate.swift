@@ -75,6 +75,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             FirebaseApp.configure()
         }
         
+        if #available(iOS 13.0, *) {
+            setDarkMode(style: UITraitCollection.current.userInterfaceStyle)
+        } else {
+            darkMode = false
+        }
+        
         CCUtility.createDirectoryStandard()
         CCUtility.emptyTemporaryDirectory()
         
@@ -143,13 +149,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let review = NCStoreReview()
             review.incrementAppRuns()
             review.showStoreReview()
-        }
-        
-        // Detect Dark mode
-        if #available(iOS 13.0, *) {
-            setDarkMode(style: UITraitCollection.current.userInterfaceStyle)
-        } else {
-            darkMode = false
         }
         
         // Background task: register
