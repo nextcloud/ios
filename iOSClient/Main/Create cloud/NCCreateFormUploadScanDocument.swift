@@ -96,6 +96,12 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         initializeForm()
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        appDelegate.setDarkMode(style: traitCollection.userInterfaceStyle)
+    }
+    
     //MARK: XLForm
     
     func initializeForm() {

@@ -235,7 +235,7 @@ class NCBrandColor: NSObject {
     }
     
 #if !EXTENSION
-public func settingThemingColor(account: String, darkMode: Bool) {
+    public func settingThemingColor(account: String, darkMode: Bool) {
         
         let darker: CGFloat = 30    // %
         let lighter: CGFloat = 30   // %
@@ -277,9 +277,7 @@ public func settingThemingColor(account: String, darkMode: Bool) {
             NCBrandColor.shared.brand = NCBrandColor.shared.customer
             NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
         }
-        
-        setDarkMode(darkMode)
-        
+                
         DispatchQueue.main.async {
             self.createImagesThemingColor()
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)

@@ -48,16 +48,7 @@ class NCMainTabBar: UITabBar {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
-        if #available(iOS 13.0, *) {
-            if traitCollection.userInterfaceStyle == .dark {
-                appDelegate.darkMode = true
-            } else {
-                appDelegate.darkMode = false
-            }
-        } else {
-            appDelegate.darkMode = false
-        }
-        NCBrandColor.shared.settingThemingColor(account: appDelegate.account, darkMode: appDelegate.darkMode)
+        appDelegate.setDarkMode(style: traitCollection.userInterfaceStyle)
     }
     
     @objc func changeTheming() {

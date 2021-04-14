@@ -147,11 +147,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         // Detect Dark mode
         if #available(iOS 13.0, *) {
-            if UITraitCollection.current.userInterfaceStyle == .dark {
-                darkMode = true
-            } else {
-                darkMode = false
-            }
+            setDarkMode(style: UITraitCollection.current.userInterfaceStyle)
         } else {
             darkMode = false
         }
@@ -296,6 +292,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         //FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
         //[fileProviderDomain removeAllDomains];
         //[fileProviderDomain registerDomains];
+    }
+    
+    @objc func setDarkMode(style: UIUserInterfaceStyle) {
+        
+        if style == .dark {
+            darkMode = true
+        } else {
+            darkMode = false
+        }
+        
+        NCBrandColor.shared.setDarkMode(darkMode)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
     }
   
     // MARK: - Background Task
