@@ -98,8 +98,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundForm
-        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
+        view.backgroundColor = NCBrandColor.shared.backgroundSettings
+        tableView.backgroundColor = NCBrandColor.shared.backgroundSettings
         tableView.reloadData()
         initializeForm()
         self.reloadForm()
@@ -122,7 +122,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
 
         row.cellConfig["imageView.image"] = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
@@ -134,7 +134,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         // User folder Autoupload
         row = XLFormRowDescriptor(tag: "useFolderAutoUpload", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_use_folder_auto_upload_", comment: ""))
         row.value = 0
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
@@ -165,7 +165,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         
         row = XLFormRowDescriptor(tag: "maintainOriginalFileName", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_maintain_original_filename_", comment: ""))
         row.value = CCUtility.getOriginalFileName(NCGlobal.shared.keyFileNameOriginal)
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
@@ -177,7 +177,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         row = XLFormRowDescriptor(tag: "addFileNameType", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_add_filenametype_", comment: ""))
         row.value = CCUtility.getFileNameType(NCGlobal.shared.keyFileNameType)
         row.hidden = "$\("maintainOriginalFileName") == 1"
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
@@ -195,7 +195,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             row.value = fileNameMask
         }
         row.hidden = "$\("maintainOriginalFileName") == 1"
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
@@ -211,9 +211,9 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
         row.height = 180
         row.disabled = true
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
 
-        row.cellConfig["textView.backgroundColor"] = NCBrandColor.shared.backgroundForm
+        row.cellConfig["textView.backgroundColor"] = NCBrandColor.shared.cellSettings
         row.cellConfig["textView.font"] = UIFont.systemFont(ofSize: 14.0)
         row.cellConfig["textView.textColor"] = NCBrandColor.shared.textView
 
