@@ -69,9 +69,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return self.dark
         }
         set(value) {
-            self.dark = value
-            NCBrandColor.shared.setDarkMode(value)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
+            if value != self.dark {
+                self.dark = value
+                NCBrandColor.shared.setDarkMode(value)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
+            }
         }
     }
 
@@ -84,16 +86,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UserDefaults.standard.register(defaults: ["UserAgent" : userAgent])
         if !CCUtility.getDisableCrashservice() && !NCBrandOptions.shared.disable_crash_service {
             FirebaseApp.configure()
-        }
-        
-        if #available(iOS 13.0, *) {
-            if UITraitCollection.current.userInterfaceStyle == .dark {
-                darkMode = true
-            } else {
-                darkMode = false
-            }            
-        } else {
-            darkMode = false
         }
         
         CCUtility.createDirectoryStandard()
