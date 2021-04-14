@@ -338,36 +338,33 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 } else {
                     
                     CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadataNewFile, notification: false) { (metadataNew, fileNamePath) in
-                        DispatchQueue.global(qos: .background).async {
-                            if metadataNew != nil {
-                                self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
+                       
+                        if metadataNew != nil {
+                            self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
+                            
+                            do {
                                 
-                                do {
-                                    
-                                    let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath!)
-                                    let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
-                                    
-                                    if mediaType == PHAssetMediaType.image {
-                                        let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath!))
-                                        if let image = UIImage(data: data) {
-                                            DispatchQueue.main.async {
-                                                cell.imageNewFile.image = image
-                                            }
-                                        }
-                                    } else if mediaType == PHAssetMediaType.video {
-                                        if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: fileNamePath!), at: 0) {
-                                            DispatchQueue.main.async {
-                                                cell.imageNewFile.image = image
-                                            }
+                                let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath!)
+                                let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
+                                
+                                if mediaType == PHAssetMediaType.image {
+                                    let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath!))
+                                    if let image = UIImage(data: data) {
+                                        DispatchQueue.main.async {
+                                            cell.imageNewFile.image = image
                                         }
                                     }
-                                    
-                                    DispatchQueue.main.async {
-                                        cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
+                                } else if mediaType == PHAssetMediaType.video {
+                                    if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: fileNamePath!), at: 0) {
+                                        DispatchQueue.main.async {
+                                            cell.imageNewFile.image = image
+                                        }
                                     }
-                                    
-                                } catch { print("Error: \(error)") }
-                            }
+                                }
+                                
+                                cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
+                               
+                            } catch { print("Error: \(error)") }
                         }
                     }
                 }
