@@ -1,8 +1,19 @@
 {
   "images" : [
     {
-      "filename" : "GitHub-Mark-120px-plus.png",
-      "idiom" : "universal"
+      "filename" : "github.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "github@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "github@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {
