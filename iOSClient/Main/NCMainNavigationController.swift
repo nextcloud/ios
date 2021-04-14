@@ -32,12 +32,8 @@ class NCMainNavigationController: UINavigationController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         
-        if #available(iOS 13.0, *) {
-            if traitCollection.userInterfaceStyle == .dark {
-                appDelegate.darkMode = true
-            } else {
-                appDelegate.darkMode = false
-            }
+        if traitCollection.userInterfaceStyle == .dark {
+            appDelegate.darkMode = true
         } else {
             appDelegate.darkMode = false
         }

@@ -42,12 +42,8 @@ class NCMainTabBar: UITabBar {
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
-        if #available(iOS 13.0, *) {
-            if traitCollection.userInterfaceStyle == .dark {
-                appDelegate.darkMode = true
-            } else {
-                appDelegate.darkMode = false
-            }
+        if traitCollection.userInterfaceStyle == .dark {
+            appDelegate.darkMode = true
         } else {
             appDelegate.darkMode = false
         }
