@@ -205,7 +205,7 @@ class NCBrandColor: NSObject {
             tabBar = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)                          // Gray (6) Dark
             navigationBar = .black
             backgroundView = .black
-            backgroundForm = UIColor(red: 32.0/255.0, green: 32.0/255.0, blue: 32.0/255.0, alpha: 1.0)
+            backgroundForm = UIColor(red: 44.0/255.0, green: 44.0/255.0, blue: 46.0/255.0, alpha: 1.0)                  // Gray (5) Dark
             cellSettings = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)                    // Gray (6) Dark
             backgroundSettings = .black
             textView = .white
@@ -216,7 +216,7 @@ class NCBrandColor: NSObject {
             tabBar = .white
             navigationBar = .white
             backgroundView = .white
-            backgroundForm = UIColor(red: 242.0/255.0, green: 242.0/255.0, blue: 242.0/255.0, alpha: 1.0)
+            backgroundForm = UIColor(red: 229.0/255.0, green: 229.0/255.0, blue: 234.0/255.0, alpha: 1.0)               // Gray (5) Light
             backgroundSettings = UIColor(red: 242.0/255.0, green: 242.0/255.0, blue: 247.0/255.0, alpha: 1.0)           // Gray (6) Light
             cellSettings = .white
             textView = .black
