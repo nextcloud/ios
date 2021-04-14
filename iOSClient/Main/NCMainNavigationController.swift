@@ -38,7 +38,6 @@ class NCMainNavigationController: UINavigationController {
             appDelegate.darkMode = false
         }
         
-        NCBrandColor.shared.setDarkMode(appDelegate.darkMode)
         changeTheming()
     }
 

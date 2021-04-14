@@ -133,7 +133,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     // MARK: - NotificationCenter
 
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundForm
+        view.backgroundColor = NCBrandColor.shared.backgroundView
     }
     
     // MARK: - Action

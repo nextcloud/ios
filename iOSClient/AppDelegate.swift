@@ -55,7 +55,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var listOfflineVC: [String:NCOffline] = [:]
     var listProgress: [String:NCGlobal.progressType] = [:]
     
-    @objc var darkMode: Bool = false
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
     var networkingProcessUpload: NCNetworkingProcessUpload?
@@ -63,6 +62,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var pasteboardOcIds: [String] = []
     var shares: [tableShare] = []
     var timerErrorNetworking: Timer?
+    
+    private var dark: Bool = false
+    var darkMode: Bool {
+        get {
+            return self.dark
+        }
+        set(value) {
+            self.dark = value
+            NCBrandColor.shared.setDarkMode(value)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
+        }
+    }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
@@ -76,7 +87,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         if #available(iOS 13.0, *) {
-            setDarkMode(style: UITraitCollection.current.userInterfaceStyle)
+            if UITraitCollection.current.userInterfaceStyle == .dark {
+                darkMode = true
+            } else {
+                darkMode = false
+            }            
         } else {
             darkMode = false
         }
@@ -291,18 +306,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         //FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
         //[fileProviderDomain removeAllDomains];
         //[fileProviderDomain registerDomains];
-    }
-    
-    @objc func setDarkMode(style: UIUserInterfaceStyle) {
-        
-        if style == .dark {
-            darkMode = true
-        } else {
-            darkMode = false
-        }
-        
-        NCBrandColor.shared.setDarkMode(darkMode)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
     }
   
     // MARK: - Background Task
