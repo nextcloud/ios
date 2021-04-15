@@ -332,7 +332,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             if let image = UIImage.init(contentsOfFile: fileNamePath) {
                 cell.avatar?.image = NCUtility.shared.createAvatar(image: image, size: 50)
             } else {
-                cell.avatar?.image = UIImage.init(named: "moreAvatar")
+                cell.avatar?.image = UIImage.init(named: "avatar")?.imageColor(NCBrandColor.shared.icon)
             }
            
             if let account = tabAccount {
