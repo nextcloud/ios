@@ -206,7 +206,7 @@ class NCBrandColor: NSObject {
             navigationBar = .black
             
             backgroundView = .black
-            backgroundViewForm = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)
+            backgroundViewForm = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)              // Gray (6) Dark
             textView = .white
 
             cellSettings = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)                    // Gray (6) Dark
