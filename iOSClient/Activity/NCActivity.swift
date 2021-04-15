@@ -80,15 +80,9 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
     
     @objc func changeTheming() {
         
-        if filterFileId == nil {
-            view.backgroundColor = NCBrandColor.shared.backgroundView
-            tableView.backgroundColor = NCBrandColor.shared.backgroundView
-            tableView.reloadData()
-        } else {
-            view.backgroundColor = NCBrandColor.shared.backgroundForm
-            tableView.backgroundColor = NCBrandColor.shared.backgroundForm
-            tableView.reloadData()
-        }
+        view.backgroundColor = NCBrandColor.shared.backgroundView
+        tableView.backgroundColor = NCBrandColor.shared.backgroundView
+        tableView.reloadData()
     }
     
     // MARK: - Empty

@@ -94,10 +94,10 @@ class DragDropViewController: UIViewController {
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundForm
+        view.backgroundColor = NCBrandColor.shared.backgroundView
 
-        collectionViewSource.backgroundColor = NCBrandColor.shared.backgroundForm
-        collectionViewDestination.backgroundColor = NCBrandColor.shared.backgroundForm
+        collectionViewSource.backgroundColor = NCBrandColor.shared.backgroundView
+        collectionViewDestination.backgroundColor = NCBrandColor.shared.backgroundView
         collectionViewSource.reloadData()
         collectionViewDestination.reloadData()
 

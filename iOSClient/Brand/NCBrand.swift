@@ -145,7 +145,6 @@ class NCBrandColor: NSObject {
     @objc public var connectionNo:          UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
     @objc public var encrypted:             UIColor = .red
     @objc public var backgroundView:        UIColor = .white
-    @objc public var backgroundForm:        UIColor = UIColor(red: 229.0/255.0, green: 229.0/255.0, blue: 234.0/255.0, alpha: 1.0)  // Gray (5) Light
     @objc public var backgroundSettings:    UIColor = UIColor(red: 242.0/255.0, green: 242.0/255.0, blue: 247.0/255.0, alpha: 1.0)  // Gray (6) Light
     @objc public var cellSettings:          UIColor = .white
     @objc public var textView:              UIColor = .black
@@ -206,12 +205,11 @@ class NCBrandColor: NSObject {
             navigationBar = .black
             
             backgroundView = .black
-            backgroundForm = UIColor(red: 44.0/255.0, green: 44.0/255.0, blue: 46.0/255.0, alpha: 1.0)                  // Gray (5) Dark
-            
+            textView = .white
+
             cellSettings = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)                    // Gray (6) Dark
             backgroundSettings = .black
             
-            textView = .white
             separator = UIColor(red: 60.0/255.0, green: 60.0/255.0, blue: 60.0/255.0, alpha: 1.0)
             select = UIColor.white.withAlphaComponent(0.2)
             avatarBorder = .black
@@ -222,12 +220,11 @@ class NCBrandColor: NSObject {
             navigationBar = .white
             
             backgroundView = .white
-            backgroundForm = UIColor(red: 229.0/255.0, green: 229.0/255.0, blue: 234.0/255.0, alpha: 1.0)               // Gray (5) Light
-            
+            textView = .black
+
             backgroundSettings = UIColor(red: 242.0/255.0, green: 242.0/255.0, blue: 247.0/255.0, alpha: 1.0)           // Gray (6) Light
             cellSettings = .white
             
-            textView = .black
             separator = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
             select = self.brandElement.withAlphaComponent(0.1)
             avatarBorder = .white
