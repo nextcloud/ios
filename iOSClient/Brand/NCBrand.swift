@@ -145,6 +145,7 @@ class NCBrandColor: NSObject {
     @objc public var connectionNo:          UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
     @objc public var encrypted:             UIColor = .red
     @objc public var backgroundView:        UIColor = .white
+    @objc public var backgroundViewForm:    UIColor = .white
     @objc public var backgroundSettings:    UIColor = UIColor(red: 242.0/255.0, green: 242.0/255.0, blue: 247.0/255.0, alpha: 1.0)  // Gray (6) Light
     @objc public var cellSettings:          UIColor = .white
     @objc public var textView:              UIColor = .black
@@ -205,6 +206,7 @@ class NCBrandColor: NSObject {
             navigationBar = .black
             
             backgroundView = .black
+            backgroundViewForm = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)
             textView = .white
 
             cellSettings = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)                    // Gray (6) Dark
@@ -220,6 +222,7 @@ class NCBrandColor: NSObject {
             navigationBar = .white
             
             backgroundView = .white
+            backgroundViewForm = .white
             textView = .black
 
             backgroundSettings = UIColor(red: 242.0/255.0, green: 242.0/255.0, blue: 247.0/255.0, alpha: 1.0)           // Gray (6) Light

@@ -85,8 +85,8 @@ class NCAccountRequest: UIViewController {
 
     @objc func changeTheming() {
         
-        view.backgroundColor = NCBrandColor.shared.backgroundView
-        tableView.backgroundColor = NCBrandColor.shared.backgroundView
+        view.backgroundColor = NCBrandColor.shared.backgroundViewForm
+        tableView.backgroundColor = NCBrandColor.shared.backgroundViewForm
         tableView.reloadData()
     }
     
@@ -185,7 +185,7 @@ extension NCAccountRequest: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
                
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.backgroundColor = NCBrandColor.shared.backgroundView
+        cell.backgroundColor = NCBrandColor.shared.backgroundViewForm
        
         let avatarImage = cell.viewWithTag(10) as? UIImageView
         let userLabel = cell.viewWithTag(20) as? UILabel
