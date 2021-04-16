@@ -153,9 +153,8 @@ class NCViewerImage: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String {
+            if let ocId = userInfo["ocId"] as? String, let progressNumber = userInfo["progress"] as? NSNumber {
                 if self.metadatas.first(where: { $0.ocId == ocId }) != nil {
-                    let progressNumber = userInfo["progress"] as? NSNumber ?? 0
                     let progress = progressNumber.floatValue
                     if progress == 1 {
                         self.progressView.progress = 0

@@ -549,16 +549,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func triggerProgressTask(_ notification: NSNotification) {
         if self.view?.window == nil { return }
         
-        if let userInfo = notification.userInfo as NSDictionary? {
+        if let userInfo = notification.userInfo as NSDictionary?, let progressNumber = userInfo["progress"] as? NSNumber, let totalBytes = userInfo["totalBytes"] as? Int64, let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64 {
             if let ocId = userInfo["ocId"] as? String {
                 
-                let _ = userInfo["account"] as? String ?? ""
-                let _ = userInfo["serverUrl"] as? String ?? ""
-                let progressNumber = userInfo["progress"] as? NSNumber ?? 0
                 let progress = progressNumber.floatValue
                 let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
-                let totalBytes = userInfo["totalBytes"] as? Int64 ?? 0
-                let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64 ?? 0
                         
                 let progressType = NCGlobal.progressType(progress: progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected)
                 appDelegate.listProgress[ocId] = progressType
