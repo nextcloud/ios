@@ -38,6 +38,7 @@ extension NCNetworking {
         var uploadErrorCode: Int = 0
         var uploadErrorDescription: String = ""
         var filesNames = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
+        var progress: Float = 0
         
         if filesNames.count == 0 {
                         
@@ -87,7 +88,13 @@ extension NCNetworking {
                             
                             let totalBytes = counter * chunkSize
                             let totalBytesExpected: Int64 = metadata.size
-                            let progress: Float = Float(totalBytes) / Float(totalBytesExpected)
+                            
+                            let tempProgress: Float = Float(totalBytes) / Float(totalBytesExpected)
+                            if tempProgress >= progress {
+                                progress = tempProgress
+                            } else {
+                                progress = 1
+                            }
                             
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress":NSNumber(value: progress), "totalBytes":NSNumber(value: totalBytes), "totalBytesExpected":NSNumber(value: totalBytesExpected)])
                             
