@@ -340,13 +340,13 @@
 
 "_show_hidden_files_"           = "Show hidden files";
 "_format_compatibility_"        = "Most Compatible";
-"_format_compatibility_footer_" = "\"Most compatible\" will save, when possible, photos as JPEG";
+"_format_compatibility_footer_" = "\"Most compatible\" will save photos as JPEG, if possible.";
 "_privacy_"                     = "Privacy";
 "_privacy_footer_"              = "Nextcloud iOS uses a service for the analysis of a crash. Your personal information is not sent with the report. If you want disable it, please change the setting \"Disable crash reporter\" to ON";
 "_crashservice_title_"          = "Disable crash reporter";
 "_crashservice_alert_"          = "This option requires a restart of the app to take effect";
 "_upload_mov_livephoto_"        = "Live Photo";
-"_upload_mov_livephoto_footer_" = "\"Live Photo\" will save, when possible, the photo selected in \"Live Photo\" format";
+"_upload_mov_livephoto_footer_" = "\"Live Photo\" will save the selected photo in \"Live Photo\" format, if possible.";
 "_view_capabilities_"           = "View the capabilities";
 "_capabilities_"                = "Capabilities";
 "_no_capabilities_found_"       = "Capabilities not found";
