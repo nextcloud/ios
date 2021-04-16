@@ -203,7 +203,7 @@ import NCCommunication
                                     
         } else {
             
-            NCNetworking.shared.download(metadata: metadata, activityIndicator: true, selector: selector) { (_) in }
+            NCNetworking.shared.download(metadata: metadata, selector: selector) { (_) in }
         }
     }
         
@@ -334,7 +334,7 @@ import NCCommunication
                     print("error")
                 }
             } else {
-                NCNetworking.shared.download(metadata: metadata, activityIndicator: true, selector: NCGlobal.shared.selectorLoadCopy) { (_) in }
+                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadCopy) { (_) in }
             }
         }
         

@@ -1128,7 +1128,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             if CCUtility.fileProviderStorageExists(metadataTouch.ocId, fileNameView: metadataTouch.fileNameView) {
                 NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
             } else if NCCommunication.shared.isNetworkReachable() {
-                NCNetworking.shared.download(metadata: metadataTouch, activityIndicator: false, selector: NCGlobal.shared.selectorLoadFileView) { (_) in }
+                NCNetworking.shared.download(metadata: metadataTouch, selector: NCGlobal.shared.selectorLoadFileView) { (_) in }
             } else {
                 NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorOffline, forced: true)
             }
