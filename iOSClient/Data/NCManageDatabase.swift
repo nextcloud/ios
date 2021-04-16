@@ -1001,19 +1001,17 @@ class NCManageDatabase: NSObject {
         return NSUUID().uuidString
     }
     
-    func getChunks(account: String, ocId: String) -> (fileNames: [String], total: Int) {
+    func getChunks(account: String, ocId: String) -> [String] {
         
         let realm = try! Realm()
         var filesNames: [String] = []
-        var total: Int = 0
 
         let results = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).sorted(byKeyPath: "fileName", ascending: true)
         for result in results {
             filesNames.append(result.fileName)
-            total = result.total
         }
         
-        return (filesNames, total)
+        return filesNames
     }
     
     func addChunks(account: String, ocId: String, chunkFolder: String, fileNames: [String]) {
@@ -1032,7 +1030,6 @@ class NCManageDatabase: NSObject {
                     object.fileName = fileName
                     object.index = ocId + fileName
                     object.ocId = ocId
-                    object.total = fileNames.count
 
                     realm.add(object, update: .all)
                 }

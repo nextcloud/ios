@@ -37,16 +37,13 @@ extension NCNetworking {
         
         var uploadErrorCode: Int = 0
         var uploadErrorDescription: String = ""
-        let out = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
-        var filesNames = out.fileNames
-        var total = out.total
+        var filesNames = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
         
         if filesNames.count == 0 {
                         
             if let chunkedFilesNames = NCCommunicationCommon.shared.chunkedFile(path: directoryProviderStorageOcId, fileName: metadata.fileName, outPath: directoryProviderStorageOcId, sizeInMB: chunkSize) {
                 
                 filesNames = chunkedFilesNames
-                total = chunkedFilesNames.count
                 NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, fileNames: filesNames)
                 
             } else {
@@ -77,9 +74,10 @@ extension NCNetworking {
                     for fileName in filesNames {
                                                 
                         let counterString = (fileName as NSString).pathExtension
-                        let counter = Int(counterString) ?? 0
+                        let counter = Int64(counterString) ?? 0
                         let serverUrlFileName = chunkFolderPath + "/" + fileName
                         let fileNameChunkLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)!
+                        let chunkSize = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameChunkLocalPath)
                         
                         let semaphore = Semaphore()
                                                     
@@ -87,11 +85,11 @@ extension NCNetworking {
                                 
                             self.uploadRequest[fileNameLocalPath] = request
                             
-                            //let progress: Float = Float(counterFileNameInUpload) / Float(filesNames.count)
-                            //let totalBytes: Int64 = (metadata.size / Int64(filesNames.count)) * Int64(counterFileNameInUpload)
-                            //let totalBytesExpected: Int64 = metadata.size
-
-                            //NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress":NSNumber(value: progress), "totalBytes":NSNumber(value: totalBytes), "totalBytesExpected":NSNumber(value: totalBytesExpected)])
+                            let totalBytes = counter * chunkSize
+                            let totalBytesExpected: Int64 = metadata.size
+                            let progress: Float = Float(totalBytes) / Float(totalBytesExpected)
+                            
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress":NSNumber(value: progress), "totalBytes":NSNumber(value: totalBytes), "totalBytesExpected":NSNumber(value: totalBytesExpected)])
                             
                         }, taskHandler: { (task) in
                             
