@@ -173,10 +173,11 @@ class tableChunk: Object {
     
     @objc dynamic var account = ""
     @objc dynamic var chunkFolder = ""
-    @objc dynamic var index = ""
     @objc dynamic var fileName = ""
+    @objc dynamic var index = ""
     @objc dynamic var ocId = ""
-    
+    @objc dynamic var total: Int = 0
+
     override static func primaryKey() -> String {
         return "index"
     }
