@@ -84,7 +84,7 @@ class NCGlobal: NSObject {
     let indexPageSharing: Int                       = 2
     
     // NCViewerProviderContextMenu
-    let maxAutoDownload: UInt64                     = 100000000     // 100MB
+    let maxAutoDownload: UInt64                     = 50000000      // 50MB
     let maxAutoDownloadCellular: UInt64             = 10000000      // 10MB
 
     // Nextcloud unsupported
