@@ -75,9 +75,6 @@ class NCGlobal: NSObject {
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
     @objc let e2eeVersion                           = "1.1"
     
-    // Max Size Upload
-    let uploadMaxFileSize: UInt64                   = 500000000     // 500 MB
-        
     // Max Cache Proxy Video
     let maxHTTPCache: Int64                         = 10000000000   // 10 GB
     

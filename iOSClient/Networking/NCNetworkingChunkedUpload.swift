@@ -86,6 +86,7 @@ extension NCNetworking {
                                 
                             self.uploadRequest[fileNameLocalPath] = request
                             
+                            let chunksremains = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId).count
                             let totalBytes = counter * chunkSize
                             let totalBytesExpected: Int64 = metadata.size
                             
