@@ -492,7 +492,7 @@
     return sectionName;
 }
 
-- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type items:(NSArray *)items buttonType:(NSString *)buttonType overwrite:(BOOL)overwrite
+- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type items:(NSArray *)items cancel:(BOOL)cancel overwrite:(BOOL)overwrite select:(BOOL)select copy:(BOOL)copy move:(BOOL)move
 {
     if (serverUrl != nil) {
         
@@ -513,13 +513,7 @@
      NCSelect *viewController = (NCSelect *)navigationController.topViewController;
      
      viewController.delegate = self;
-     viewController.typeOfCommandView = 0;
-     viewController.includeDirectoryE2EEncryption = false;
-     viewController.includeImages = false;
-     viewController.type = @"";
-//     viewController.hideButtonCreateFolder = false;
-//     viewController.selectFile = false;
-//     viewController.titleButtonDone = NSLocalizedString(@"_select_", nil);
+     viewController.typeOfCommandView = 1;
      
      [navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
      [self presentViewController:navigationController animated:YES completion:^{

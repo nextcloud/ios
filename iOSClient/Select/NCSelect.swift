@@ -47,6 +47,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     
     @objc var includeDirectoryE2EEncryption = false
     @objc var includeImages = false
+    @objc var enableSelectFile = false
     @objc var type = ""
     @objc var items: [Any] = []
     
@@ -409,6 +410,7 @@ extension NCSelect: UICollectionViewDelegate {
             visualController.typeOfCommandView = typeOfCommandView
             visualController.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
             visualController.includeImages = includeImages
+            visualController.enableSelectFile = enableSelectFile
             visualController.type = type
             visualController.overwrite = overwrite
             visualController.items = items

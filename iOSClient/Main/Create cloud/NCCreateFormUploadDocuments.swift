@@ -243,17 +243,8 @@ import NCCommunication
         let viewController = navigationController.topViewController as! NCSelect
         
         viewController.delegate = self
-        viewController.typeOfCommandView = .select
-        viewController.includeDirectoryE2EEncryption = false
-        viewController.includeImages = false
-        
-        //viewController.hideButtonCreateFolder = false
-        //viewController.selectFile = false
-        //viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
-        
-        viewController.type = ""
+        viewController.typeOfCommandView = .selectCreateFolder
 
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
         self.present(navigationController, animated: true, completion: nil)
     }
     

@@ -620,16 +620,9 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         let viewController = navigationController.topViewController as! NCSelect
         
         viewController.delegate = self
-        viewController.typeOfCommandView = .select
+        viewController.typeOfCommandView = .selectCreateFolder
         viewController.includeDirectoryE2EEncryption = true
-        viewController.includeImages = false
-        viewController.type = ""
-        
-//        viewController.hideButtonCreateFolder = false
-//        viewController.selectFile = false
-//        viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
-        
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
+                
         self.present(navigationController, animated: true, completion: nil)
     }
     
