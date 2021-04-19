@@ -215,7 +215,7 @@ import NCCommunication
     
     // MARK: - Action
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], cancel: Bool, overwrite: Bool, select: Bool, copy: Bool, move: Bool) {
         
         guard let serverUrl = serverUrl else {
             return

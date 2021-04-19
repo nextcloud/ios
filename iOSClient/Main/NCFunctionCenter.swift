@@ -424,13 +424,16 @@ import NCCommunication
     
     // MARK: - NCSelect + Delegate
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], cancel: Bool, overwrite: Bool, select: Bool, copy: Bool, move: Bool) {
         if (serverUrl != nil && items.count > 0) {
-            var move = true
-            if buttonType == "done1" { move = false }
-            
-            for metadata in items as! [tableMetadata] {
-                NCOperationQueue.shared.copyMove(metadata: metadata, serverUrl: serverUrl!, overwrite: overwrite, move: move)
+            if copy {
+                for metadata in items as! [tableMetadata] {
+                    NCOperationQueue.shared.copyMove(metadata: metadata, serverUrl: serverUrl!, overwrite: overwrite, move: false)
+                }
+            } else if move {
+                for metadata in items as! [tableMetadata] {
+                    NCOperationQueue.shared.copyMove(metadata: metadata, serverUrl: serverUrl!, overwrite: overwrite, move: true)
+                }
             }
         }
     }

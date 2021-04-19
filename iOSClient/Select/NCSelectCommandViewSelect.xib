@@ -21,6 +21,7 @@
                         <constraint firstAttribute="width" constant="120" id="hNM-l8-5EZ"/>
                         <constraint firstAttribute="height" constant="30" id="u76-eq-MhY"/>
                     </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <state key="normal" title="Button"/>
                     <connections>
                         <action selector="selectButtonPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="Sv5-p0-quT"/>

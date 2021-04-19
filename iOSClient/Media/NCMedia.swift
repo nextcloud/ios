@@ -217,7 +217,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     
     // MARK: Select Path
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], cancel: Bool, overwrite: Bool, select: Bool, copy: Bool, move: Bool) {
         if serverUrl != nil {
             let path = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account) ?? ""
             NCManageDatabase.shared.setAccountMediaPath(path, account: appDelegate.account)

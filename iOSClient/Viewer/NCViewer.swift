@@ -197,18 +197,17 @@ class NCViewer: NSObject {
 //MARK: - SELECT
 
 extension NCViewer: NCSelectDelegate {
-    
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], cancel: Bool, overwrite: Bool, select: Bool, copy: Bool, move: Bool) {
         if let serverUrl = serverUrl {
             let metadata = items[0] as! tableMetadata
-            if buttonType == "done" {
+            if move {
                 NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { (errorCode, errorDescription) in
                     if errorCode != 0 {
                         
                         NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     }
                 }
-            } else {
+            } else if copy {
                 NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { (errorCode, errorDescription) in
                     if errorCode != 0 {
                         

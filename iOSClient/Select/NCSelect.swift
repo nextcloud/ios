@@ -25,7 +25,7 @@ import Foundation
 import NCCommunication
 
 @objc protocol NCSelectDelegate {
-    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool)
+    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], cancel: Bool, overwrite: Bool, select: Bool, copy: Bool, move: Bool)
 }
 
 class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
@@ -37,9 +37,10 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     
     @objc enum selectType: Int {
         case select
+        case selectCreateFolder
         case copyMove
     }
-    
+
     // ------ external settings ------------------------------------
     @objc var delegate: NCSelectDelegate?
     @objc var typeOfCommandView: selectType = .select
@@ -133,8 +134,12 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 0, delegate: self)
 
         // Type of command view
-        if typeOfCommandView == .select {
-            selectCommandViewSelect = Bundle.main.loadNibNamed("NCSelectCommandViewSelect", owner: self, options: nil)?.first as? NCSelectCommandView
+        if typeOfCommandView == .select || typeOfCommandView == .selectCreateFolder {
+            if typeOfCommandView == .select {
+                selectCommandViewSelect = Bundle.main.loadNibNamed("NCSelectCommandViewSelect", owner: self, options: nil)?.first as? NCSelectCommandView
+            } else {
+                selectCommandViewSelect = Bundle.main.loadNibNamed("NCSelectCommandViewSelect+CreateFolder", owner: self, options: nil)?.first as? NCSelectCommandView
+            }
             self.view.addSubview(selectCommandViewSelect!)
             selectCommandViewSelect?.selectView = self
             selectCommandViewSelect?.translatesAutoresizingMaskIntoConstraints = false
@@ -144,7 +149,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             selectCommandViewSelect?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
             selectCommandViewSelect?.heightAnchor.constraint(equalToConstant: 80).isActive = true
         }
-                
+        
+        
         /*
         // title button
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
@@ -246,7 +252,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
     
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
-        delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type, items: items, buttonType: "cancel", overwrite: overwrite)
+        delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type, items: items, cancel: true, overwrite: overwrite, select: false, copy: false, move: false)
     }
     
     // MARK: - Empty
@@ -271,25 +277,16 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     // MARK: ACTION
     
     @IBAction func actionCancel(_ sender: Any) {
-        delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type, items: items, buttonType: "cancel", overwrite: overwrite)
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    @IBAction func actionDone(_ sender: Any) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, buttonType: "done", overwrite: overwrite)
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    @IBAction func actionDone1(_ sender: Any) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, buttonType: "done1", overwrite: overwrite)
+        delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type, items: items, cancel: true, overwrite: overwrite, select: false, copy: false, move: false)
         self.dismiss(animated: true, completion: nil)
     }
     
     func selectButtonPressed(_ sender: UIButton) {
-        
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, cancel: false, overwrite: overwrite, select: true, copy: false, move: false)
+        self.dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func actionCreateFolder(_ sender: Any) {
+    func createFolderButtonPressed(_ sender: UIButton) {
         
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message:"", preferredStyle: .alert)
         
@@ -423,7 +420,7 @@ extension NCSelect: UICollectionViewDelegate {
             
         } else {
             
-            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, items: items, buttonType: "select", overwrite: overwrite)
+            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, items: items, cancel: false, overwrite: overwrite, select: true, copy: false, move: false)
             self.dismiss(animated: true, completion: nil)
         }
     }
@@ -820,7 +817,8 @@ extension NCSelect {
 class NCSelectCommandView: UIView {
 
     @IBOutlet weak var separatorView: UIView!
-    @IBOutlet weak var selectButton: UIButton!
+    @IBOutlet weak var createFolderButton: UIButton?
+    @IBOutlet weak var selectButton: UIButton?
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
     var selectView: NCSelect?
@@ -831,11 +829,21 @@ class NCSelectCommandView: UIView {
         separatorHeightConstraint.constant = 0.5
         separatorView.backgroundColor = NCBrandColor.shared.separator
         
-        selectButton.layer.cornerRadius = 15
-        selectButton.layer.masksToBounds = true
-        selectButton.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
-        selectButton.setTitleColor(.black, for: .normal)
-        selectButton.setTitle(NSLocalizedString("_select_", comment: ""), for: .normal)
+        selectButton?.layer.cornerRadius = 15
+        selectButton?.layer.masksToBounds = true
+        selectButton?.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
+        selectButton?.setTitleColor(.black, for: .normal)
+        selectButton?.setTitle(NSLocalizedString("_select_", comment: ""), for: .normal)
+        
+        createFolderButton?.layer.cornerRadius = 15
+        createFolderButton?.layer.masksToBounds = true
+        createFolderButton?.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
+        createFolderButton?.setTitleColor(.black, for: .normal)
+        createFolderButton?.setTitle(NSLocalizedString("_create_folder_", comment: ""), for: .normal)
+    }
+    
+    @IBAction func createFolderButtonPressed(_ sender: UIButton) {
+        selectView?.createFolderButtonPressed(sender)
     }
     
     @IBAction func selectButtonPressed(_ sender: UIButton) {
