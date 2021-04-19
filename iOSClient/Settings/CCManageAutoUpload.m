@@ -504,6 +504,8 @@
         // Settings new folder Automatatic upload
         [[NCManageDatabase shared] setAccountAutoUploadFileName:serverUrl.lastPathComponent];
         [[NCManageDatabase shared] setAccountAutoUploadDirectory:[[NCUtilityFileSystem shared] deletingLastPathComponentWithServerUrl:serverUrl urlBase:appDelegate.urlBase account:appDelegate.account] urlBase:appDelegate.urlBase account:appDelegate.account];
+        // Reload
+        [self.tableView reloadData];
     }
 }
 
