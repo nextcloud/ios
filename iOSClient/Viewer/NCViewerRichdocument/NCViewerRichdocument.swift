@@ -262,7 +262,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     
     //MARK: -
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], cancel: Bool, overwrite: Bool, select: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
         
         if serverUrl != nil && metadata != nil {
             

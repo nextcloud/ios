@@ -25,7 +25,7 @@ import Foundation
 import NCCommunication
 
 @objc protocol NCSelectDelegate {
-    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], cancel: Bool, overwrite: Bool, select: Bool, copy: Bool, move: Bool)
+    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool)
 }
 
 class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
@@ -215,7 +215,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
     
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
-        delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type, items: items, cancel: true, overwrite: overwrite, select: false, copy: false, move: false)
+        // Dismission
     }
     
     // MARK: - Empty
@@ -240,22 +240,21 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     // MARK: ACTION
     
     @IBAction func actionCancel(_ sender: UIBarButtonItem) {
-        delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type, items: items, cancel: true, overwrite: overwrite, select: false, copy: false, move: false)
         self.dismiss(animated: true, completion: nil)
     }
     
     func selectButtonPressed(_ sender: UIButton) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, cancel: false, overwrite: overwrite, select: true, copy: false, move: false)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, overwrite: overwrite, copy: false, move: false)
         self.dismiss(animated: true, completion: nil)
     }
     
     func copyButtonPressed(_ sender: UIButton) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, cancel: false, overwrite: overwrite, select: false, copy: true, move: false)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, overwrite: overwrite, copy: true, move: false)
         self.dismiss(animated: true, completion: nil)
     }
     
     func moveButtonPressed(_ sender: UIButton) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, cancel: false, overwrite: overwrite, select: false, copy: false, move: true)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, overwrite: overwrite, copy: false, move: true)
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -388,7 +387,7 @@ extension NCSelect: UICollectionViewDelegate {
             
         } else {
             
-            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, items: items, cancel: false, overwrite: overwrite, select: true, copy: false, move: false)
+            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, items: items, overwrite: overwrite, copy: false, move: false)
             self.dismiss(animated: true, completion: nil)
         }
     }

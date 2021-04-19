@@ -492,7 +492,7 @@
     return sectionName;
 }
 
-- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type items:(NSArray *)items cancel:(BOOL)cancel overwrite:(BOOL)overwrite select:(BOOL)select copy:(BOOL)copy move:(BOOL)move
+- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type items:(NSArray *)items overwrite:(BOOL)overwrite copy:(BOOL)copy move:(BOOL)move
 {
     if (serverUrl != nil) {
         

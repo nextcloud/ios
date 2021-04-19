@@ -424,7 +424,7 @@ import NCCommunication
     
     // MARK: - NCSelect + Delegate
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], cancel: Bool, overwrite: Bool, select: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
         if (serverUrl != nil && items.count > 0) {
             if copy {
                 for metadata in items as! [tableMetadata] {
