@@ -65,7 +65,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var isEditMode = false
     private var networkInProgress = false
     private var selectOcId: [String] = []
-    private var overwrite = false
+    private var overwrite = true
     
     private var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
@@ -151,7 +151,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             selectCommandViewSelect?.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
             selectCommandViewSelect?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
             selectCommandViewSelect?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
-            selectCommandViewSelect?.heightAnchor.constraint(equalToConstant: 120).isActive = true
+            selectCommandViewSelect?.heightAnchor.constraint(equalToConstant: 150).isActive = true
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
@@ -164,22 +164,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         super.viewWillAppear(animated)
         
         self.navigationItem.title = titleCurrentFolder
-        
-        /*
-        buttonDone.setTitle(titleButtonDone, for: .normal)
-        buttonDone1.setTitle(titleButtonDone1, for: .normal)
-        buttonDone1.isHidden = isButtonDone1Hide
-        overwriteSwitch.isOn = overwrite
-        overwriteView.isHidden = isOverwriteHide
-        
-        if selectFile {
-            buttonDone.isHidden = true
-        }
-        
-        if hideButtonCreateFolder {
-            buttonCreateFolder.isHidden = true
-        }
-        */
         
         // set the serverUrl
         if serverUrl == "" {
@@ -227,8 +211,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         collectionView.backgroundColor = NCBrandColor.shared.backgroundView
         collectionView.reloadData()
         refreshControl.backgroundColor = NCBrandColor.shared.backgroundView
-        //toolbar.backgroundColor = NCBrandColor.shared.tabBar
-        //separator.backgroundColor = NCBrandColor.shared.graySoft
+        selectCommandViewSelect?.separatorView.backgroundColor = NCBrandColor.shared.separator
     }
     
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
@@ -256,7 +239,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     
     // MARK: ACTION
     
-    @IBAction func actionCancel(_ sender: Any) {
+    @IBAction func actionCancel(_ sender: UIBarButtonItem) {
         delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type, items: items, cancel: true, overwrite: overwrite, select: false, copy: false, move: false)
         self.dismiss(animated: true, completion: nil)
     }

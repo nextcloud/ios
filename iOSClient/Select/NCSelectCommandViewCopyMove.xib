@@ -23,16 +23,16 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DhT-bZ-rgC" userLabel="Command View">
-                    <rect key="frame" x="0.0" y="180" width="320" height="120"/>
+                    <rect key="frame" x="0.0" y="190" width="320" height="100"/>
                     <subviews>
                         <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="h1j-Bi-at4">
-                            <rect key="frame" x="20" y="10" width="51" height="31"/>
+                            <rect key="frame" x="20" y="0.0" width="51" height="31"/>
                             <connections>
                                 <action selector="valueChangedSwitchOverwrite:" destination="iN0-l3-epB" eventType="valueChanged" id="GaC-ye-b4N"/>
                             </connections>
                         </switch>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Overwrite" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tE2-bY-JfT">
-                            <rect key="frame" x="77" y="17.5" width="100" height="16"/>
+                            <rect key="frame" x="77" y="7.5" width="100" height="16"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="100" id="C4z-aI-zCo"/>
                             </constraints>
@@ -41,7 +41,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WCL-bl-0j0">
-                            <rect key="frame" x="20" y="80" width="120" height="30"/>
+                            <rect key="frame" x="20" y="70" width="120" height="30"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="30" id="AHg-gX-UT0"/>
                                 <constraint firstAttribute="width" constant="120" id="e9E-Zi-Svf"/>
@@ -53,7 +53,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mg4-vG-Xr7">
-                            <rect key="frame" x="180" y="10" width="120" height="30"/>
+                            <rect key="frame" x="180" y="0.0" width="120" height="30"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="30" id="aRa-Cb-dIJ"/>
                                 <constraint firstAttribute="width" constant="120" id="q7x-Zg-aFX"/>
@@ -65,7 +65,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Oq2-Kg-sDp">
-                            <rect key="frame" x="180" y="80" width="120" height="30"/>
+                            <rect key="frame" x="180" y="70" width="120" height="30"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="120" id="JyD-uF-cFT"/>
                                 <constraint firstAttribute="height" constant="30" id="QAO-kF-IOZ"/>
@@ -82,13 +82,13 @@
                         <constraint firstItem="tE2-bY-JfT" firstAttribute="leading" secondItem="h1j-Bi-at4" secondAttribute="trailing" constant="8" symbolic="YES" id="BBW-Mt-T2Q"/>
                         <constraint firstItem="h1j-Bi-at4" firstAttribute="leading" secondItem="DhT-bZ-rgC" secondAttribute="leading" constant="20" id="BK8-FJ-PCw"/>
                         <constraint firstAttribute="trailing" secondItem="Mg4-vG-Xr7" secondAttribute="trailing" constant="20" id="Efe-Jl-OSp"/>
-                        <constraint firstItem="h1j-Bi-at4" firstAttribute="top" secondItem="DhT-bZ-rgC" secondAttribute="top" constant="10" id="H3s-ru-V9X"/>
-                        <constraint firstAttribute="bottom" secondItem="WCL-bl-0j0" secondAttribute="bottom" constant="10" id="TzK-c5-jnE"/>
+                        <constraint firstItem="h1j-Bi-at4" firstAttribute="top" secondItem="DhT-bZ-rgC" secondAttribute="top" id="H3s-ru-V9X"/>
+                        <constraint firstAttribute="bottom" secondItem="WCL-bl-0j0" secondAttribute="bottom" id="TzK-c5-jnE"/>
                         <constraint firstItem="WCL-bl-0j0" firstAttribute="leading" secondItem="DhT-bZ-rgC" secondAttribute="leading" constant="20" id="caB-Op-vpM"/>
-                        <constraint firstAttribute="height" constant="120" id="dTc-rJ-Jrz"/>
+                        <constraint firstAttribute="height" constant="100" id="dTc-rJ-Jrz"/>
                         <constraint firstItem="tE2-bY-JfT" firstAttribute="centerY" secondItem="h1j-Bi-at4" secondAttribute="centerY" id="fRN-zY-g9L"/>
-                        <constraint firstItem="Mg4-vG-Xr7" firstAttribute="top" secondItem="DhT-bZ-rgC" secondAttribute="top" constant="10" id="fzS-ny-eXi"/>
-                        <constraint firstAttribute="bottom" secondItem="Oq2-Kg-sDp" secondAttribute="bottom" constant="10" id="omd-Zc-koD"/>
+                        <constraint firstItem="Mg4-vG-Xr7" firstAttribute="top" secondItem="DhT-bZ-rgC" secondAttribute="top" id="fzS-ny-eXi"/>
+                        <constraint firstAttribute="bottom" secondItem="Oq2-Kg-sDp" secondAttribute="bottom" id="omd-Zc-koD"/>
                         <constraint firstAttribute="trailing" secondItem="Oq2-Kg-sDp" secondAttribute="trailing" constant="20" id="pkS-bX-XZ5"/>
                     </constraints>
                 </view>
