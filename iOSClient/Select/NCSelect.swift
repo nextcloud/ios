@@ -51,15 +51,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     @objc var type = ""
     @objc var items: [Any] = []
     
-    /*
-    @objc var selectFile = false
-    @objc var hideButtonCreateFolder = false
-    @objc var titleButtonDone = NSLocalizedString("_move_", comment: "")
-    @objc var titleButtonDone1 = NSLocalizedString("_copy_", comment: "")
-    @objc var isButtonDone1Hide = true
-    @objc var isOverwriteHide = true
-    */
-    
     var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
     // -------------------------------------------------------------
@@ -151,29 +142,17 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             selectCommandViewSelect?.heightAnchor.constraint(equalToConstant: 80).isActive = true
         }
         
+        if typeOfCommandView == .copyMove {
+            selectCommandViewSelect = Bundle.main.loadNibNamed("NCSelectCommandViewCopyMove", owner: self, options: nil)?.first as? NCSelectCommandView
+            self.view.addSubview(selectCommandViewSelect!)
+            selectCommandViewSelect?.selectView = self
+            selectCommandViewSelect?.translatesAutoresizingMaskIntoConstraints = false
         
-        /*
-        // title button
-        buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
-        buttonCreateFolder.setTitle(NSLocalizedString("_create_folder_", comment: ""), for: .normal)
-        overwriteLabel.text = NSLocalizedString("_overwrite_", comment: "")
-        
-        // button
-        buttonCreateFolder.layer.cornerRadius = 15
-        buttonCreateFolder.layer.masksToBounds = true
-        buttonCreateFolder.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
-        buttonCreateFolder.setTitleColor(.black, for: .normal)
-
-        buttonDone.layer.cornerRadius = 15
-        buttonDone.layer.masksToBounds = true
-        buttonDone.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
-        buttonDone.setTitleColor(.black, for: .normal)
-        
-        buttonDone1.layer.cornerRadius = 15
-        buttonDone1.layer.masksToBounds = true
-        buttonDone1.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
-        buttonDone1.setTitleColor(.black, for: .normal)
-        */
+            selectCommandViewSelect?.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+            selectCommandViewSelect?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+            selectCommandViewSelect?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+            selectCommandViewSelect?.heightAnchor.constraint(equalToConstant: 120).isActive = true
+        }
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
@@ -287,6 +266,16 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         self.dismiss(animated: true, completion: nil)
     }
     
+    func copyButtonPressed(_ sender: UIButton) {
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, cancel: false, overwrite: overwrite, select: false, copy: true, move: false)
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func moveButtonPressed(_ sender: UIButton) {
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, cancel: false, overwrite: overwrite, select: false, copy: false, move: true)
+        self.dismiss(animated: true, completion: nil)
+    }
+    
     func createFolderButtonPressed(_ sender: UIButton) {
         
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message:"", preferredStyle: .alert)
@@ -311,14 +300,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         self.present(alertController, animated: true, completion:nil)
     }
     
-    @IBAction func valueChangedSwitchOverwrite(_ sender: Any) {
-        if let viewControllers = self.navigationController?.viewControllers {
-            for viewController in viewControllers {
-                if viewController is NCSelect {
-                    //(viewController as! NCSelect).overwrite = overwriteSwitch.isOn
-                }
-            }
-        }
+    @IBAction func valueChangedSwitchOverwrite(_ sender: UISwitch) {
+        overwrite = sender.isOn
     }
     
     // MARK: TAP EVENT
@@ -821,6 +804,10 @@ class NCSelectCommandView: UIView {
     @IBOutlet weak var separatorView: UIView!
     @IBOutlet weak var createFolderButton: UIButton?
     @IBOutlet weak var selectButton: UIButton?
+    @IBOutlet weak var copyButton: UIButton?
+    @IBOutlet weak var moveButton: UIButton?
+    @IBOutlet weak var overwriteSwitch: UISwitch?
+    @IBOutlet weak var overwriteLabel: UILabel?
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
     var selectView: NCSelect?
@@ -830,6 +817,8 @@ class NCSelectCommandView: UIView {
         
         separatorHeightConstraint.constant = 0.5
         separatorView.backgroundColor = NCBrandColor.shared.separator
+        
+        overwriteLabel?.text = NSLocalizedString("_overwrite_", comment: "")
         
         selectButton?.layer.cornerRadius = 15
         selectButton?.layer.masksToBounds = true
@@ -842,6 +831,18 @@ class NCSelectCommandView: UIView {
         createFolderButton?.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
         createFolderButton?.setTitleColor(.black, for: .normal)
         createFolderButton?.setTitle(NSLocalizedString("_create_folder_", comment: ""), for: .normal)
+        
+        copyButton?.layer.cornerRadius = 15
+        copyButton?.layer.masksToBounds = true
+        copyButton?.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
+        copyButton?.setTitleColor(.black, for: .normal)
+        copyButton?.setTitle(NSLocalizedString("_copy_", comment: ""), for: .normal)
+        
+        moveButton?.layer.cornerRadius = 15
+        moveButton?.layer.masksToBounds = true
+        moveButton?.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
+        moveButton?.setTitleColor(.black, for: .normal)
+        moveButton?.setTitle(NSLocalizedString("_move_", comment: ""), for: .normal)
     }
     
     @IBAction func createFolderButtonPressed(_ sender: UIButton) {
@@ -850,5 +851,17 @@ class NCSelectCommandView: UIView {
     
     @IBAction func selectButtonPressed(_ sender: UIButton) {
         selectView?.selectButtonPressed(sender)
+    }
+    
+    @IBAction func copyButtonPressed(_ sender: UIButton) {
+        selectView?.copyButtonPressed(sender)
+    }
+    
+    @IBAction func moveButtonPressed(_ sender: UIButton) {
+        selectView?.moveButtonPressed(sender)
+    }
+    
+    @IBAction func valueChangedSwitchOverwrite(_ sender: UISwitch) {
+        selectView?.valueChangedSwitchOverwrite(sender)
     }
 }
