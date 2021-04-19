@@ -155,14 +155,11 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                 let viewController = navigationController.topViewController as! NCSelect
                 
                 viewController.delegate = self
+                viewController.typeOfCommandView = .select
                 viewController.enableSelectFile = true
-//                viewController.hideButtonCreateFolder = true
-//                viewController.selectFile = true
-                viewController.includeDirectoryE2EEncryption = false
                 viewController.includeImages = true
                 viewController.type = ""
                 
-                navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
                 self.present(navigationController, animated: true, completion: nil)
             }
             

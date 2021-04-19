@@ -515,7 +515,6 @@
      viewController.delegate = self;
      viewController.typeOfCommandView = 1;
      
-     [navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
      [self presentViewController:navigationController animated:YES completion:^{
          [self.tableView reloadData];
      }];
