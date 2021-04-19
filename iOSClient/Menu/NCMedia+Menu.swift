@@ -80,14 +80,15 @@ extension NCMedia {
                         let viewController = navigationController.topViewController as! NCSelect
                         
                         viewController.delegate = self
-                        viewController.hideButtonCreateFolder = true
+                        viewController.typeOfCommandView = .select
                         viewController.includeDirectoryE2EEncryption = false
                         viewController.includeImages = false
-                        viewController.selectFile = false
-                        viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
                         viewController.type = "mediaFolder"
+
+//                        viewController.hideButtonCreateFolder = true
+//                        viewController.selectFile = false
+//                        viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
                         
-                        navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
                         self.present(navigationController, animated: true, completion: nil)
                     }
                 )

@@ -466,15 +466,16 @@ import NCCommunication
             guard let vc = viewController else { return }
 
             vc.delegate = self
-            vc.hideButtonCreateFolder = false
-            vc.selectFile = false
+            vc.typeOfCommandView = .copyMove
+//            vc.hideButtonCreateFolder = false
+//            vc.selectFile = false
             vc.includeDirectoryE2EEncryption = false
             vc.includeImages = false
             vc.type = ""
-            vc.titleButtonDone = NSLocalizedString("_move_", comment: "")
-            vc.titleButtonDone1 = NSLocalizedString("_copy_",comment: "")
-            vc.isButtonDone1Hide = false
-            vc.isOverwriteHide = false
+//            vc.titleButtonDone = NSLocalizedString("_move_", comment: "")
+//            vc.titleButtonDone1 = NSLocalizedString("_copy_",comment: "")
+//            vc.isButtonDone1Hide = false
+//            vc.isOverwriteHide = false
             vc.items = copyItems
             vc.serverUrl = serverUrl
             

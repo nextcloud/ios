@@ -31,31 +31,32 @@ import NCCommunication
 class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
-    @IBOutlet fileprivate weak var toolbar: UIView!
-    @IBOutlet fileprivate weak var separator: UIView!
-    @IBOutlet fileprivate weak var overwriteView: UIView!
-
     @IBOutlet fileprivate weak var buttonCancel: UIBarButtonItem!
-    @IBOutlet fileprivate weak var buttonCreateFolder: UIButton!
-    @IBOutlet fileprivate weak var buttonDone: UIButton!
-    @IBOutlet fileprivate weak var buttonDone1: UIButton!
+   
+    private var selectCommandViewSelect: NCSelectCommandView?
     
-    @IBOutlet fileprivate weak var overwriteSwitch: UISwitch!
-    @IBOutlet fileprivate weak var overwriteLabel: UILabel!
+    @objc enum selectType: Int {
+        case select
+        case copyMove
+    }
     
     // ------ external settings ------------------------------------
     @objc var delegate: NCSelectDelegate?
+    @objc var typeOfCommandView: selectType = .select
     
-    @objc var hideButtonCreateFolder = false
-    @objc var selectFile = false
     @objc var includeDirectoryE2EEncryption = false
     @objc var includeImages = false
     @objc var type = ""
+    @objc var items: [Any] = []
+    
+    /*
+    @objc var selectFile = false
+    @objc var hideButtonCreateFolder = false
     @objc var titleButtonDone = NSLocalizedString("_move_", comment: "")
     @objc var titleButtonDone1 = NSLocalizedString("_copy_", comment: "")
     @objc var isButtonDone1Hide = true
     @objc var isOverwriteHide = true
-    @objc var items: [Any] = []
+    */
     
     var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
@@ -117,7 +118,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         
         // Footer
         collectionView.register(UINib.init(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
-        
         collectionView.alwaysBounceVertical = true
         
         listLayout = NCListLayout()
@@ -131,7 +131,21 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         
         // Empty
         emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 0, delegate: self)
+
+        // Type of command view
+        if typeOfCommandView == .select {
+            selectCommandViewSelect = Bundle.main.loadNibNamed("NCSelectCommandViewSelect", owner: self, options: nil)?.first as? NCSelectCommandView
+            self.view.addSubview(selectCommandViewSelect!)
+            selectCommandViewSelect?.selectView = self
+            selectCommandViewSelect?.translatesAutoresizingMaskIntoConstraints = false
         
+            selectCommandViewSelect?.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+            selectCommandViewSelect?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+            selectCommandViewSelect?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+            selectCommandViewSelect?.heightAnchor.constraint(equalToConstant: 80).isActive = true
+        }
+                
+        /*
         // title button
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
         buttonCreateFolder.setTitle(NSLocalizedString("_create_folder_", comment: ""), for: .normal)
@@ -152,7 +166,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         buttonDone1.layer.masksToBounds = true
         buttonDone1.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
         buttonDone1.setTitleColor(.black, for: .normal)
-                
+        */
+        
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
 
@@ -164,6 +179,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         
         self.navigationItem.title = titleCurrentFolder
         
+        /*
         buttonDone.setTitle(titleButtonDone, for: .normal)
         buttonDone1.setTitle(titleButtonDone1, for: .normal)
         buttonDone1.isHidden = isButtonDone1Hide
@@ -177,6 +193,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         if hideButtonCreateFolder {
             buttonCreateFolder.isHidden = true
         }
+        */
         
         // set the serverUrl
         if serverUrl == "" {
@@ -210,7 +227,13 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)        
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if traitCollection.userInterfaceStyle == .dark {
+            
+        } else {
+            
+        }
     }
     
     @objc func changeTheming() {
@@ -218,8 +241,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         collectionView.backgroundColor = NCBrandColor.shared.backgroundView
         collectionView.reloadData()
         refreshControl.backgroundColor = NCBrandColor.shared.backgroundView
-        toolbar.backgroundColor = NCBrandColor.shared.tabBar
-        separator.backgroundColor = NCBrandColor.shared.graySoft
+        //toolbar.backgroundColor = NCBrandColor.shared.tabBar
+        //separator.backgroundColor = NCBrandColor.shared.graySoft
     }
     
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
@@ -262,6 +285,10 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         self.dismiss(animated: true, completion: nil)
     }
     
+    func selectButtonPressed(_ sender: UIButton) {
+        
+    }
+    
     @IBAction func actionCreateFolder(_ sender: Any) {
         
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message:"", preferredStyle: .alert)
@@ -290,7 +317,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         if let viewControllers = self.navigationController?.viewControllers {
             for viewController in viewControllers {
                 if viewController is NCSelect {
-                    (viewController as! NCSelect).overwrite = overwriteSwitch.isOn
+                    //(viewController as! NCSelect).overwrite = overwriteSwitch.isOn
                 }
             }
         }
@@ -382,15 +409,10 @@ extension NCSelect: UICollectionViewDelegate {
             self.metadataTouch = metadata
             
             visualController.delegate = delegate
-            visualController.hideButtonCreateFolder = hideButtonCreateFolder
-            visualController.selectFile = selectFile
+            visualController.typeOfCommandView = typeOfCommandView
             visualController.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
             visualController.includeImages = includeImages
             visualController.type = type
-            visualController.titleButtonDone = titleButtonDone
-            visualController.titleButtonDone1 = titleButtonDone1
-            visualController.isButtonDone1Hide = isButtonDone1Hide
-            visualController.isOverwriteHide = isOverwriteHide
             visualController.overwrite = overwrite
             visualController.items = items
 
@@ -791,5 +813,32 @@ extension NCSelect {
             self.networkInProgress = false
             self.loadDatasource(withLoadFolder: false)
         }
+    }
+}
+
+
+class NCSelectCommandView: UIView {
+
+    @IBOutlet weak var separatorView: UIView!
+    @IBOutlet weak var selectButton: UIButton!
+    @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
+
+    var selectView: NCSelect?
+    private let gradient: CAGradientLayer = CAGradientLayer()
+    
+    override func awakeFromNib() {
+        
+        separatorHeightConstraint.constant = 0.5
+        separatorView.backgroundColor = NCBrandColor.shared.separator
+        
+        selectButton.layer.cornerRadius = 15
+        selectButton.layer.masksToBounds = true
+        selectButton.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
+        selectButton.setTitleColor(.black, for: .normal)
+        selectButton.setTitle(NSLocalizedString("_select_", comment: ""), for: .normal)
+    }
+    
+    @IBAction func selectButtonPressed(_ sender: UIButton) {
+        selectView?.selectButtonPressed(sender)
     }
 }

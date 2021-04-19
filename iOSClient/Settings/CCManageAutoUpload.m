@@ -513,12 +513,13 @@
      NCSelect *viewController = (NCSelect *)navigationController.topViewController;
      
      viewController.delegate = self;
-     viewController.hideButtonCreateFolder = false;
-     viewController.selectFile = false;
+     viewController.typeOfCommandView = 0;
      viewController.includeDirectoryE2EEncryption = false;
      viewController.includeImages = false;
      viewController.type = @"";
-     viewController.titleButtonDone = NSLocalizedString(@"_select_", nil);
+//     viewController.hideButtonCreateFolder = false;
+//     viewController.selectFile = false;
+//     viewController.titleButtonDone = NSLocalizedString(@"_select_", nil);
      
      [navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
      [self presentViewController:navigationController animated:YES completion:^{

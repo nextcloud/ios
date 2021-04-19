@@ -155,8 +155,8 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                 let viewController = navigationController.topViewController as! NCSelect
                 
                 viewController.delegate = self
-                viewController.hideButtonCreateFolder = true
-                viewController.selectFile = true
+//                viewController.hideButtonCreateFolder = true
+//                viewController.selectFile = true
                 viewController.includeDirectoryE2EEncryption = false
                 viewController.includeImages = true
                 viewController.type = ""

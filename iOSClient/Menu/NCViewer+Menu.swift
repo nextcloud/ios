@@ -200,16 +200,19 @@ extension NCViewer {
                         let viewController = navigationController.topViewController as! NCSelect
                         
                         viewController.delegate = NCViewer.shared
-                        viewController.hideButtonCreateFolder = false
+                        viewController.typeOfCommandView = .copyMove
+                        
+//                        viewController.hideButtonCreateFolder = false
+//                        viewController.titleButtonDone = NSLocalizedString("_move_", comment: "")
+//                        viewController.titleButtonDone1 = NSLocalizedString("_copy_", comment: "")
+//                        viewController.isButtonDone1Hide = false
+//                        viewController.isOverwriteHide = false
+                        
                         viewController.items = [metadata]
-                        viewController.selectFile = false
                         viewController.includeDirectoryE2EEncryption = false
                         viewController.includeImages = false
                         viewController.type = ""
-                        viewController.titleButtonDone = NSLocalizedString("_move_", comment: "")
-                        viewController.titleButtonDone1 = NSLocalizedString("_copy_", comment: "")
-                        viewController.isButtonDone1Hide = false
-                        viewController.isOverwriteHide = false
+                       
                         
                         navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
                         self.appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
