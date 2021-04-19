@@ -256,6 +256,10 @@
 {
     if ([self.filesName count] > 0) {
     
+        
+        
+        
+        
         [[NCUtility shared] startActivityIndicatorWithBackgroundView:nil blurEffect:true bottom:0 style: UIActivityIndicatorViewStyleWhiteLarge];
         
         NSString *fileName = [self.filesName objectAtIndex:0];
