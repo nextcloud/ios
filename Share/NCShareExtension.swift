@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCShareExtension: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
+class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
     
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var buttonCancel: UIBarButtonItem!
@@ -32,6 +32,7 @@ class NCShareExtension: UIViewController, UIGestureRecognizerDelegate, UIAdaptiv
     // -------------------------------------------------------------
     var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
+    var filesName: [String] = []
     // -------------------------------------------------------------
         
     private var emptyDataSet: NCEmptyDataSet?
@@ -73,9 +74,6 @@ class NCShareExtension: UIViewController, UIGestureRecognizerDelegate, UIAdaptiv
         super.viewDidLoad()
         
         self.navigationController?.navigationBar.prefersLargeTitles = true
-        self.navigationController?.presentationController?.delegate = self
-        
-        activeAccount = NCManageDatabase.shared.getAccountActive()
         
         // Cell
         collectionView.register(UINib.init(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
@@ -103,6 +101,41 @@ class NCShareExtension: UIViewController, UIGestureRecognizerDelegate, UIAdaptiv
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        guard let account = NCManageDatabase.shared.getAccountActive() else {
+            extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
+            return
+        }
+        self.activeAccount = account
+        
+        loadFiles(NSTemporaryDirectory()) { (filesName) in
+            self.filesName = filesName
+        }
+        if filesName.count == 0 {
+            extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
+            return
+        }
+        
+        let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
+        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
+        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+      
+        // LOG
+        let levelLog = CCUtility.getLogLevel()
+        NCCommunicationCommon.shared.levelLog = levelLog
+        
+        if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
+            NCCommunicationCommon.shared.pathLog = pathDirectoryGroup
+        }
+        
+        if isSimulatorOrTestFlight {
+            NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+        } else {
+            NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
+        }
+        
+        // NETWORKING
+        NCCommunicationCommon.shared.setup(account: account.account, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account), urlBase: account.urlBase, userAgent: CCUtility.getUserAgent(), webDav: NCUtilityFileSystem.shared.getWebDAV(account: account.account), dav: NCUtilityFileSystem.shared.getDAV(), nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
         
         self.navigationItem.title = titleCurrentFolder
         
@@ -145,10 +178,6 @@ class NCShareExtension: UIViewController, UIGestureRecognizerDelegate, UIAdaptiv
         } else {
             
         }
-    }
-    
-    func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
-        // Dismission
     }
     
     // MARK: - Empty
@@ -275,7 +304,6 @@ extension NCShareExtension: UICollectionViewDelegate {
             viewController.serverUrl = serverUrlPush
                    
             self.navigationController?.pushViewController(viewController, animated: true)
-            
         }
     }
 }
@@ -606,7 +634,7 @@ extension NCShareExtension {
                 
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
                 
-        let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account, serverUrl))
+        let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", activeAccount.account, serverUrl))
         self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
         
         if withLoadFolder {
@@ -644,6 +672,178 @@ extension NCShareExtension {
             }
             self.networkInProgress = false
             self.loadDatasource(withLoadFolder: false)
+        }
+    }
+    
+    func loadFiles(_ directory: String, completion: @escaping (_ filesName: [String])->())  {
+        
+        var filesName: [String] = []
+        var conuter = 0
+        
+        CCUtility.emptyTemporaryDirectory()
+                
+        if let inputItems : [NSExtensionItem] = extensionContext?.inputItems as? [NSExtensionItem] {
+            
+            for item : NSExtensionItem in inputItems {
+                
+                if let attachments = item.attachments {
+                    
+                    if attachments.isEmpty {
+                        
+                        extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
+                        completion(filesName)
+                        return
+                    }
+                    
+                    for (index, current) in (attachments.enumerated()) {
+                        
+                        if current.hasItemConformingToTypeIdentifier(kUTTypeItem as String) || current.hasItemConformingToTypeIdentifier("public.url") {
+                            
+                            var typeIdentifier = ""
+                            if current.hasItemConformingToTypeIdentifier(kUTTypeItem as String) { typeIdentifier = kUTTypeItem as String }
+                            if current.hasItemConformingToTypeIdentifier("public.url") { typeIdentifier = "public.url" }
+                            
+                            current.loadItem(forTypeIdentifier: typeIdentifier, options: nil, completionHandler: {(item, error) -> Void in
+                                
+                                var fileNameOriginal: String?
+                                var fileName: String = ""
+                                
+                                let dateFormatter = DateFormatter()
+                                dateFormatter.dateFormat = "yyyy-MM-dd HH-mm-ss-"
+                                conuter += 1
+                                
+                                if let url = item as? NSURL {
+                                    fileNameOriginal = url.lastPathComponent!
+                                }
+                                
+                                if error == nil {
+                                                                        
+                                    if let image = item as? UIImage {
+                                        
+                                        print("item as UIImage")
+                                        
+                                        if let pngImageData = image.pngData() {
+                                        
+                                            if fileNameOriginal != nil {
+                                                fileName =  fileNameOriginal!
+                                            } else {
+                                                fileName = "\(dateFormatter.string(from: Date()))\(conuter).png"
+                                            }
+                                            
+                                            let filenamePath = directory + fileName
+                                            
+                                            let result = (try? pngImageData.write(to: URL(fileURLWithPath: filenamePath), options: [.atomic])) != nil
+                                        
+                                            if result {
+                                                filesName.append(fileName)
+                                            }
+                                            
+                                        } else {
+                                         
+                                            print("Error image nil")
+                                        }
+                                    }
+                                    
+                                    if let url = item as? URL {
+                                        
+                                        print("item as url: \(String(describing: item))")
+                                        
+                                        if fileNameOriginal != nil {
+                                            fileName =  fileNameOriginal!
+                                        } else {
+                                            let ext = url.pathExtension
+                                            fileName = "\(dateFormatter.string(from: Date()))\(conuter)." + ext
+                                        }
+                                        
+                                        let filenamePath = directory + fileName
+                                      
+                                        do {
+                                            try FileManager.default.removeItem(atPath: filenamePath)
+                                        }
+                                        catch { }
+                                        
+                                        do {
+                                            try FileManager.default.copyItem(atPath: url.path, toPath:filenamePath)
+                                            
+                                            do {
+                                                let attr : NSDictionary? = try FileManager.default.attributesOfItem(atPath: filenamePath) as NSDictionary?
+                                                
+                                                if let _attr = attr {
+                                                    if _attr.fileSize() > 0 {
+                                                        
+                                                        filesName.append(fileName)
+                                                    }
+                                                }
+                                                
+                                            } catch let error as NSError {
+                                                
+                                                print("Error: \(error.localizedDescription)")
+                                            }
+                                        } catch let error as NSError {
+                                            
+                                            print("Cannot copy file: \(error.localizedDescription)")
+                                        }
+                                    }
+                                    
+                                    if let data = item as? Data {
+                                        
+                                        if data.count > 0 {
+                                        
+                                            print("item as NSdata")
+                                        
+                                            if fileNameOriginal != nil {
+                                                fileName =  fileNameOriginal!
+                                            } else {
+                                                let description = current.description
+                                                let fullNameArr = description.components(separatedBy: "\"")
+                                                let fileExtArr = fullNameArr[1].components(separatedBy: ".")
+                                                let pathExtention = (fileExtArr[fileExtArr.count-1]).uppercased()
+                                                fileName = "\(dateFormatter.string(from: Date()))\(conuter).\(pathExtention)"
+                                            }
+                                            
+                                            let filenamePath = directory + fileName
+                                            
+                                            FileManager.default.createFile(atPath: filenamePath, contents:data, attributes:nil)
+                                                                                
+                                            filesName.append(fileName)
+                                        }
+                                    }
+                                    
+                                    if let data = item as? NSString {
+                                        
+                                        if data.length > 0 {
+                                        
+                                            print("item as NSString")
+                                        
+                                            let fileName = "\(dateFormatter.string(from: Date()))\(conuter).txt"
+                                            let filenamePath = directory + fileName
+                                        
+                                            FileManager.default.createFile(atPath: filenamePath, contents:data.data(using: String.Encoding.utf8.rawValue), attributes:nil)
+                                        
+                                            filesName.append(fileName)
+                                        }
+                                    }
+                                    
+                                    if index + 1 == attachments.count {
+                                        
+                                        completion(filesName)
+                                    }
+                                    
+                                }
+                            })
+                        }
+                        
+                    } // end for
+
+                } else {
+                    
+                    completion(filesName)
+                }
+            }
+            
+        } else {
+            
+            completion(filesName)
         }
     }
 }
