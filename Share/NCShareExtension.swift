@@ -184,7 +184,7 @@ class NCShareExtension: UIViewController, UIGestureRecognizerDelegate, UIAdaptiv
     // MARK: ACTION
     
     @IBAction func actionCancel(_ sender: UIBarButtonItem) {
-        self.dismiss(animated: true, completion: nil)
+        extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
     }
     
     func createFolderButtonPressed(_ sender: UIButton) {
