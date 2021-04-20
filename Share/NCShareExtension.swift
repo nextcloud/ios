@@ -108,14 +108,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
         }
         self.activeAccount = account
         
-        loadFiles(NSTemporaryDirectory()) { (filesName) in
-            self.filesName = filesName
-        }
-        if filesName.count == 0 {
-            extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
-            return
-        }
-        
         let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
@@ -139,11 +131,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
         
         self.navigationItem.title = titleCurrentFolder
         
-        // set the serverUrl
-        if serverUrl == "" {
-            serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account)
-        }
-                
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: activeAccount.urlBase, account: activeAccount.account)
@@ -157,7 +144,22 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
             collectionView.collectionViewLayout = gridLayout
         }
         
-        loadDatasource(withLoadFolder: true)
+        // Load data source
+        if serverUrl == "" {
+            serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account)
+            // ROOT load files
+            loadFiles(NSTemporaryDirectory()) { (filesName, error) in
+                self.filesName = filesName
+                if filesName.count == 0 {
+                    self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+                    return
+                } else {
+                    self.loadDatasource(withLoadFolder: true)
+                }
+            }
+        } else {
+            loadDatasource(withLoadFolder: true)
+        }
 
         shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
     }
@@ -295,13 +297,14 @@ extension NCShareExtension: UICollectionViewDelegate {
         if metadata.directory {
             
             guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else { return }
-            guard let viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
+            guard let viewController = UIStoryboard(name: "MainInterface", bundle: nil).instantiateViewController(withIdentifier: "NCShareExtension.storyboard") as? NCShareExtension else { return }
 
             self.serverUrlPush = serverUrlPush
             self.metadataTouch = metadata
             
             viewController.titleCurrentFolder = metadataTouch!.fileNameView
             viewController.serverUrl = serverUrlPush
+            viewController.filesName = filesName
                    
             self.navigationController?.pushViewController(viewController, animated: true)
         }
@@ -675,10 +678,11 @@ extension NCShareExtension {
         }
     }
     
-    func loadFiles(_ directory: String, completion: @escaping (_ filesName: [String])->())  {
+    func loadFiles(_ directory: String, completion: @escaping (_ filesName: [String], _ error: Error?)->())  {
         
         var filesName: [String] = []
         var conuter = 0
+        var outError: Error? = nil
         
         CCUtility.emptyTemporaryDirectory()
                 
@@ -691,7 +695,7 @@ extension NCShareExtension {
                     if attachments.isEmpty {
                         
                         extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
-                        completion(filesName)
+                        completion(filesName, outError)
                         return
                     }
                     
@@ -775,13 +779,12 @@ extension NCShareExtension {
                                                     }
                                                 }
                                                 
-                                            } catch let error as NSError {
-                                                
-                                                print("Error: \(error.localizedDescription)")
+                                            } catch let error {
+                                                outError = error
                                             }
-                                        } catch let error as NSError {
                                             
-                                            print("Cannot copy file: \(error.localizedDescription)")
+                                        } catch let error {
+                                            outError = error
                                         }
                                     }
                                     
@@ -826,9 +829,11 @@ extension NCShareExtension {
                                     
                                     if index + 1 == attachments.count {
                                         
-                                        completion(filesName)
+                                        completion(filesName, outError)
                                     }
                                     
+                                } else {
+                                    completion( filesName, error)
                                 }
                             })
                         }
@@ -837,13 +842,13 @@ extension NCShareExtension {
 
                 } else {
                     
-                    completion(filesName)
+                    completion(filesName, outError)
                 }
             }
             
         } else {
             
-            completion(filesName)
+            completion(filesName, outError)
         }
     }
 }
