@@ -560,7 +560,7 @@
 "_find_sharee_title_"           = "Search";
 "_find_sharee_"                 = "Search for user or group…";
 "_find_sharee_footer_"          = "Enter part of the name of the user or group to search for (at least 2 characters) followed by 'Return', select the users that should be allowed to access the share followed by 'Done' to confirm";
-"_user_is_group_"               = " (group)";
+"_user_is_group_"               = "(Group)";
 "_direct_sharee_title_"         = "Share";
 "_direct_sharee_footer_"        = "If you already know the name, enter it, then select the share type and press 'Done' to confirm";
 "_direct_sharee_"               = "Enter the username…";
