@@ -12,7 +12,7 @@
         <!--Share Extension-->
         <scene sceneID="d4X-6u-1HM">
             <objects>
-                <viewController id="VYq-xA-D35" customClass="NCShareExtension" customModule="Share" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NCShareExtension.storyboard" id="VYq-xA-D35" customClass="NCShareExtension" customModule="Share" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="MaM-Im-7sc">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

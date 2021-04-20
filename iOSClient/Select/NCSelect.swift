@@ -366,24 +366,24 @@ extension NCSelect: UICollectionViewDelegate {
         if metadata.directory {
             
             guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else { return }
-            guard let visualController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
+            guard let viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
 
             self.serverUrlPush = serverUrlPush
             self.metadataTouch = metadata
             
-            visualController.delegate = delegate
-            visualController.typeOfCommandView = typeOfCommandView
-            visualController.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
-            visualController.includeImages = includeImages
-            visualController.enableSelectFile = enableSelectFile
-            visualController.type = type
-            visualController.overwrite = overwrite
-            visualController.items = items
+            viewController.delegate = delegate
+            viewController.typeOfCommandView = typeOfCommandView
+            viewController.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
+            viewController.includeImages = includeImages
+            viewController.enableSelectFile = enableSelectFile
+            viewController.type = type
+            viewController.overwrite = overwrite
+            viewController.items = items
 
-            visualController.titleCurrentFolder = metadataTouch!.fileNameView
-            visualController.serverUrl = serverUrlPush
+            viewController.titleCurrentFolder = metadataTouch!.fileNameView
+            viewController.serverUrl = serverUrlPush
                    
-            self.navigationController?.pushViewController(visualController, animated: true)
+            self.navigationController?.pushViewController(viewController, animated: true)
             
         } else {
             

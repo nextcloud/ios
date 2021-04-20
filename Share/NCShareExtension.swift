@@ -266,15 +266,15 @@ extension NCShareExtension: UICollectionViewDelegate {
         if metadata.directory {
             
             guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else { return }
-            guard let visualController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
+            guard let viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
 
             self.serverUrlPush = serverUrlPush
             self.metadataTouch = metadata
             
-            visualController.titleCurrentFolder = metadataTouch!.fileNameView
-            visualController.serverUrl = serverUrlPush
+            viewController.titleCurrentFolder = metadataTouch!.fileNameView
+            viewController.serverUrl = serverUrlPush
                    
-            self.navigationController?.pushViewController(visualController, animated: true)
+            self.navigationController?.pushViewController(viewController, animated: true)
             
         }
     }
