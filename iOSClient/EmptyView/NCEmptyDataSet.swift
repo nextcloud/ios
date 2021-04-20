@@ -6,7 +6,7 @@
 //  Copyright © 2020 Marino Faggiana. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 @objc public protocol NCEmptyDataSetDelegate {
     @objc optional func emptyDataSetView(_ view: NCEmptyView)

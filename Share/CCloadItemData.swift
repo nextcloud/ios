@@ -26,7 +26,7 @@ import MobileCoreServices
 
 class CCloadItemData: NSObject {
     
-    @objc func loadFiles(_ directory: String, extensionContext: NSExtensionContext, vc: ShareViewController) {
+    @objc func loadFiles(_ directory: String, extensionContext: NSExtensionContext, vc: UIViewController) {
         
         var filesName: [String] = []
         var conuter = 0
@@ -43,7 +43,7 @@ class CCloadItemData: NSObject {
                         
                         extensionContext.completeRequest(returningItems: nil, completionHandler: nil)
                         
-                        vc.performSelector(onMainThread: #selector(vc.close), with: nil, waitUntilDone: false);
+                        //vc.performSelector(onMainThread: #selector(vc.close), with: nil, waitUntilDone: false);
                         
                         return
                     }
@@ -181,7 +181,7 @@ class CCloadItemData: NSObject {
                                     
                                     if index + 1 == attachments.count {
                                         
-                                        vc.performSelector(onMainThread: #selector(vc.reloadData), with:filesName, waitUntilDone: false)
+                                        //vc.performSelector(onMainThread: #selector(vc.reloadData), with:filesName, waitUntilDone: false)
                                     }
                                     
                                 }
@@ -193,13 +193,13 @@ class CCloadItemData: NSObject {
 
                 } else {
                     
-                    vc.performSelector(onMainThread: #selector(vc.close), with: nil, waitUntilDone: false);
+                    //vc.performSelector(onMainThread: #selector(vc.close), with: nil, waitUntilDone: false);
                 }
             }
             
         } else {
             
-            vc.performSelector(onMainThread: #selector(vc.close), with: nil, waitUntilDone: false);
+            //vc.performSelector(onMainThread: #selector(vc.close), with: nil, waitUntilDone: false);
         }
     }
 }
