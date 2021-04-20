@@ -18,11 +18,8 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="0HI-k1-SD0">
-                                <rect key="frame" x="0.0" y="88" width="414" height="300"/>
+                                <rect key="frame" x="0.0" y="88" width="414" height="725"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="300" id="fJa-nH-6ON"/>
-                                </constraints>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="D7P-75-aB1">
                                     <size key="itemSize" width="0.0" height="0.0"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -35,10 +32,6 @@
                                     <outlet property="delegate" destination="VYq-xA-D35" id="EXB-bA-tje"/>
                                 </connections>
                             </collectionView>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="tb6-e3-4GA">
-                                <rect key="frame" x="0.0" y="418" width="414" height="395"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                            </tableView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="d1F-Sb-G9O">
                                 <rect key="frame" x="0.0" y="813" width="414" height="49"/>
                                 <items>
@@ -51,12 +44,9 @@
                         <constraints>
                             <constraint firstItem="0HI-k1-SD0" firstAttribute="top" secondItem="vaA-85-uNN" secondAttribute="top" id="552-sP-Paj"/>
                             <constraint firstItem="vaA-85-uNN" firstAttribute="trailing" secondItem="0HI-k1-SD0" secondAttribute="trailing" id="KT1-YT-Lps"/>
-                            <constraint firstItem="tb6-e3-4GA" firstAttribute="leading" secondItem="vaA-85-uNN" secondAttribute="leading" id="LQY-br-5G0"/>
                             <constraint firstItem="vaA-85-uNN" firstAttribute="bottom" secondItem="d1F-Sb-G9O" secondAttribute="bottom" id="Wmt-Y6-V8T"/>
-                            <constraint firstItem="vaA-85-uNN" firstAttribute="trailing" secondItem="tb6-e3-4GA" secondAttribute="trailing" id="YQt-e1-B7Z"/>
                             <constraint firstItem="d1F-Sb-G9O" firstAttribute="leading" secondItem="vaA-85-uNN" secondAttribute="leading" id="aCp-9X-sbV"/>
-                            <constraint firstItem="d1F-Sb-G9O" firstAttribute="top" secondItem="tb6-e3-4GA" secondAttribute="bottom" id="fsb-cn-A4e"/>
-                            <constraint firstItem="tb6-e3-4GA" firstAttribute="top" secondItem="0HI-k1-SD0" secondAttribute="bottom" constant="30" id="gCq-mK-zAm"/>
+                            <constraint firstItem="d1F-Sb-G9O" firstAttribute="top" secondItem="0HI-k1-SD0" secondAttribute="bottom" id="buJ-18-IOK"/>
                             <constraint firstItem="vaA-85-uNN" firstAttribute="trailing" secondItem="d1F-Sb-G9O" secondAttribute="trailing" id="o2P-Vd-ejX"/>
                             <constraint firstItem="0HI-k1-SD0" firstAttribute="leading" secondItem="vaA-85-uNN" secondAttribute="leading" id="uLL-RT-YFO"/>
                         </constraints>
@@ -71,7 +61,6 @@
                     <connections>
                         <outlet property="buttonCancel" destination="qHj-AF-EN7" id="Fky-XJ-BxL"/>
                         <outlet property="collectionView" destination="0HI-k1-SD0" id="xme-mG-bnz"/>
-                        <outlet property="tableView" destination="tb6-e3-4GA" id="6nq-jb-rai"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vH8-UY-9MN" userLabel="First Responder" sceneMemberID="firstResponder"/>

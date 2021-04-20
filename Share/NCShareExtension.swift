@@ -27,9 +27,7 @@ import NCCommunication
 class NCShareExtension: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
     
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var tableView: UITableView!
-
-    @IBOutlet fileprivate weak var buttonCancel: UIBarButtonItem!
+    @IBOutlet weak var buttonCancel: UIBarButtonItem!
    
     // -------------------------------------------------------------
     var titleCurrentFolder = NCBrandOptions.shared.brand
@@ -37,8 +35,7 @@ class NCShareExtension: UIViewController, UIGestureRecognizerDelegate, UIAdaptiv
     // -------------------------------------------------------------
         
     private var emptyDataSet: NCEmptyDataSet?
-    
-    private let keyLayout = NCGlobal.shared.layoutViewMove
+    private let keyLayout = NCGlobal.shared.layoutViewShareExtension
     private var serverUrlPush = ""
     private var metadataTouch: tableMetadata?
     private var metadataFolder = tableMetadata()
@@ -97,16 +94,11 @@ class NCShareExtension: UIViewController, UIGestureRecognizerDelegate, UIAdaptiv
         // Add Refresh Control
         collectionView.addSubview(refreshControl)
         refreshControl.tintColor = NCBrandColor.shared.brandText
-        refreshControl.backgroundColor = NCBrandColor.shared.brandElement
+        refreshControl.backgroundColor = NCBrandColor.shared.backgroundView
         refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
         // Empty
         emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 0, delegate: self)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
-
-        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -153,13 +145,6 @@ class NCShareExtension: UIViewController, UIGestureRecognizerDelegate, UIAdaptiv
         } else {
             
         }
-    }
-    
-    @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundView
-        collectionView.backgroundColor = NCBrandColor.shared.backgroundView
-        collectionView.reloadData()
-        refreshControl.backgroundColor = NCBrandColor.shared.backgroundView
     }
     
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
