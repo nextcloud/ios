@@ -27,8 +27,15 @@ import NCCommunication
 class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
     
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var buttonCancel: UIBarButtonItem!
-   
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var cancelButton: UIBarButtonItem!
+    @IBOutlet weak var separatorView: UIView!
+    @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var commandViewHeightConstraint: NSLayoutConstraint!
+
+    //@IBOutlet weak var createFolderButton: UIBarButtonItem!
+    //@IBOutlet weak var uploadButton: UIBarButtonItem!
+
     // -------------------------------------------------------------
     var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
@@ -63,7 +70,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
     private let headerHeight: CGFloat = 50
     private var headerRichWorkspaceHeight: CGFloat = 0
     private let footerHeight: CGFloat = 100
-    
+    private let heightCell: CGFloat = 50
+
     private var shares: [tableShare]?
     
     private let refreshControl = UIRefreshControl()
@@ -73,7 +81,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.navigationController?.navigationBar.prefersLargeTitles = false
         
         // Cell
         collectionView.register(UINib.init(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
@@ -97,6 +105,12 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
         
         // Empty
         emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 0, delegate: self)
+
+        separatorView.backgroundColor = NCBrandColor.shared.separator
+        
+        cancelButton.title = NSLocalizedString("_cancel_", comment: "")
+        //createFolderButton.title = NSLocalizedString("_create_folder_", comment: "")
+        //uploadButton.title = NSLocalizedString("_upload_", comment: "")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -155,13 +169,13 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
                         self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
                         return
                     } else {
-                        self.loadDatasource(withLoadFolder: true)
+                        self.tableView.reloadData()
                     }
                 }
             }
-        } else {
-            loadDatasource(withLoadFolder: true)
         }
+            
+        loadDatasource(withLoadFolder: true)
 
         shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
     }
@@ -205,7 +219,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
         extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
     }
     
-    func createFolderButtonPressed(_ sender: UIButton) {
+    @IBAction func actionCreateFolder(_ sender: UIButton) {
         
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message:"", preferredStyle: .alert)
         
@@ -227,6 +241,10 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
         alertController.addAction(actionCancel)
         
         self.present(alertController, animated: true, completion:nil)
+    }
+    
+    @IBAction func actionUpload(_ sender: UIButton) {
+        
     }
     
     // MARK: TAP EVENT
@@ -612,18 +630,58 @@ extension NCShareExtension: UICollectionViewDelegateFlowLayout {
         
         headerRichWorkspaceHeight = 0
         
+        /*
         if let richWorkspaceText = richWorkspaceText {
             let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
             if trimmed.count > 0 {
                 headerRichWorkspaceHeight = UIScreen.main.bounds.size.height / 4
             }
         }
+        */
         
         return CGSize(width: collectionView.frame.width, height: headerHeight + headerRichWorkspaceHeight)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: footerHeight)
+    }
+}
+
+
+
+extension NCShareExtension: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return heightCell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+    }
+}
+
+extension NCShareExtension: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        filesName.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+               
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+       
+        let imageCell = cell.viewWithTag(10) as? UIImageView
+        let fileNameCell = cell.viewWithTag(20) as? UILabel
+
+        let fileName = filesName[indexPath.row]
+        imageCell?.image = NCUtility.shared.loadImage(named: "file")
+        if let image = UIImage(contentsOfFile: (NSTemporaryDirectory() + fileName)) {
+            imageCell?.image = image
+        }
+        
+        fileNameCell?.text = fileName
+        
+        return cell
     }
 }
 
