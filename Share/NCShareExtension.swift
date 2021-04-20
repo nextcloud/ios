@@ -148,13 +148,15 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
         if serverUrl == "" {
             serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account)
             // ROOT load files
-            loadFiles(NSTemporaryDirectory()) { (filesName, error) in
-                self.filesName = filesName
-                if filesName.count == 0 {
-                    self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
-                    return
-                } else {
-                    self.loadDatasource(withLoadFolder: true)
+            getFilesExtensionContext { (filesName, error) in
+                DispatchQueue.main.async {
+                    self.filesName = filesName
+                    if filesName.count == 0 {
+                        self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+                        return
+                    } else {
+                        self.loadDatasource(withLoadFolder: true)
+                    }
                 }
             }
         } else {
@@ -678,7 +680,7 @@ extension NCShareExtension {
         }
     }
     
-    func loadFiles(_ directory: String, completion: @escaping (_ filesName: [String], _ error: Error?)->())  {
+    func getFilesExtensionContext(completion: @escaping (_ filesName: [String], _ error: Error?)->())  {
         
         var filesName: [String] = []
         var conuter = 0
@@ -734,7 +736,7 @@ extension NCShareExtension {
                                                 fileName = "\(dateFormatter.string(from: Date()))\(conuter).png"
                                             }
                                             
-                                            let filenamePath = directory + fileName
+                                            let filenamePath = NSTemporaryDirectory() + fileName
                                             
                                             let result = (try? pngImageData.write(to: URL(fileURLWithPath: filenamePath), options: [.atomic])) != nil
                                         
@@ -759,7 +761,7 @@ extension NCShareExtension {
                                             fileName = "\(dateFormatter.string(from: Date()))\(conuter)." + ext
                                         }
                                         
-                                        let filenamePath = directory + fileName
+                                        let filenamePath = NSTemporaryDirectory() + fileName
                                       
                                         do {
                                             try FileManager.default.removeItem(atPath: filenamePath)
@@ -804,7 +806,7 @@ extension NCShareExtension {
                                                 fileName = "\(dateFormatter.string(from: Date()))\(conuter).\(pathExtention)"
                                             }
                                             
-                                            let filenamePath = directory + fileName
+                                            let filenamePath = NSTemporaryDirectory() + fileName
                                             
                                             FileManager.default.createFile(atPath: filenamePath, contents:data, attributes:nil)
                                                                                 
@@ -819,7 +821,7 @@ extension NCShareExtension {
                                             print("item as NSString")
                                         
                                             let fileName = "\(dateFormatter.string(from: Date()))\(conuter).txt"
-                                            let filenamePath = directory + fileName
+                                            let filenamePath = NSTemporaryDirectory() + fileName
                                         
                                             FileManager.default.createFile(atPath: filenamePath, contents:data.data(using: String.Encoding.utf8.rawValue), attributes:nil)
                                         
@@ -828,7 +830,6 @@ extension NCShareExtension {
                                     }
                                     
                                     if index + 1 == attachments.count {
-                                        
                                         completion(filesName, outError)
                                     }
                                     
@@ -837,17 +838,12 @@ extension NCShareExtension {
                                 }
                             })
                         }
-                        
                     } // end for
-
                 } else {
-                    
                     completion(filesName, outError)
                 }
             }
-            
         } else {
-            
             completion(filesName, outError)
         }
     }
