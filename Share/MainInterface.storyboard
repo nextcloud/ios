@@ -75,6 +75,7 @@
                                                         <constraint firstAttribute="trailing" secondItem="rz6-pe-DB5" secondAttribute="trailing" constant="15" id="mZN-du-84X"/>
                                                     </constraints>
                                                 </tableViewCellContentView>
+                                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                             </tableViewCell>
                                         </prototypes>
                                         <connections>
