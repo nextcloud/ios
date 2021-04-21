@@ -171,9 +171,9 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         // BACK BUTTON
 
         let backButton = UIButton(type: .custom)
-        backButton.setImage(UIImage(named: "back")?.image(color: .systemBlue, size: 30), for: .normal)
+        backButton.setImage(UIImage(named: "back"), for: .normal)
+        backButton.tintColor = .systemBlue
         backButton.semanticContentAttribute = .forceLeftToRight
-        backButton.sizeToFit()
         backButton.setTitle(" "+NSLocalizedString("_back_", comment: ""), for: .normal)
         backButton.setTitleColor(.systemBlue, for: .normal)
         backButton.addTarget(self, action: #selector(backButtonTapped(sender:)), for: .touchUpInside)
