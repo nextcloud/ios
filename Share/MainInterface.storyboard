@@ -83,9 +83,9 @@
                                         </connections>
                                     </tableView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="create folder" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WHW-J5-8gq">
-                                        <rect key="frame" x="10" y="38" width="72.333333333333329" height="13.333333333333336"/>
+                                        <rect key="frame" x="10" y="40" width="72.333333333333329" height="13.333333333333336"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                        <color key="textColor" systemColor="systemBlueColor"/>
+                                        <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1xT-vl-sQp">
@@ -96,7 +96,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="USb-OF-Gaq">
-                                        <rect key="frame" x="31.333333333333329" y="7" width="30" height="30"/>
+                                        <rect key="frame" x="31.333333333333329" y="9" width="30" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="5HP-Gs-tLd"/>
                                             <constraint firstAttribute="width" constant="30" id="NUe-Vv-dOz"/>
@@ -119,7 +119,7 @@
                                     <constraint firstItem="1xT-vl-sQp" firstAttribute="centerX" secondItem="FaV-kz-PEs" secondAttribute="centerX" id="bUe-Dp-BNI"/>
                                     <constraint firstItem="LAs-iQ-u1X" firstAttribute="leading" secondItem="FaV-kz-PEs" secondAttribute="leading" id="dr0-zN-pwa"/>
                                     <constraint firstItem="LAs-iQ-u1X" firstAttribute="top" secondItem="FaV-kz-PEs" secondAttribute="top" id="gvj-gm-XbO"/>
-                                    <constraint firstItem="WHW-J5-8gq" firstAttribute="top" secondItem="FaV-kz-PEs" secondAttribute="top" constant="38" id="lWV-vn-0kj"/>
+                                    <constraint firstItem="WHW-J5-8gq" firstAttribute="top" secondItem="FaV-kz-PEs" secondAttribute="top" constant="40" id="lWV-vn-0kj"/>
                                     <constraint firstAttribute="trailing" secondItem="eU0-LW-AnG" secondAttribute="trailing" id="qQA-Ix-Ge1"/>
                                     <constraint firstAttribute="bottom" secondItem="eU0-LW-AnG" secondAttribute="bottom" constant="70" id="r6E-QV-nj7"/>
                                     <constraint firstAttribute="trailing" secondItem="LAs-iQ-u1X" secondAttribute="trailing" id="v8j-JB-2Io"/>
@@ -187,9 +187,6 @@
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemBlueColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray6Color">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
