@@ -141,9 +141,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
         
         // NETWORKING
         NCCommunicationCommon.shared.setup(account: account.account, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account), urlBase: account.urlBase, userAgent: CCUtility.getUserAgent(), webDav: NCUtilityFileSystem.shared.getWebDAV(account: account.account), dav: NCUtilityFileSystem.shared.getDAV(), nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
-        
-        self.navigationItem.title = titleCurrentFolder
-        
+                
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: activeAccount.urlBase, account: activeAccount.account)
@@ -158,25 +156,25 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
         }
         
         // Load data source
-        if serverUrl == "" {
-            serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account)
-            // ROOT load files
-            getFilesExtensionContext { (filesName, error) in
-                DispatchQueue.main.async {
-                    self.filesName = filesName
-                    if filesName.count == 0 {
-                        self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
-                        return
-                    } else {
-                        self.tableView.reloadData()
-                    }
+        serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account)
+        // ROOT load files
+        getFilesExtensionContext { (filesName, error) in
+            DispatchQueue.main.async {
+                self.filesName = filesName
+                if filesName.count == 0 {
+                    self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+                    return
+                } else {
+                    self.tableView.reloadData()
                 }
             }
         }
-            
+        
+        shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
+        
         loadDatasource(withLoadFolder: true)
 
-        shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
+        navigationButtons()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -206,6 +204,14 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
         navigationItem.leftBarButtonItem = nil
         navigationItem.title = titleCurrentFolder
         
+        // BACK BUTTON
+
+        let backButton = UIButton(type: .custom)
+        backButton.setImage(UIImage(named: "back"), for: .normal)
+        backButton.setTitle("Back", for: .normal)
+        backButton.setTitleColor(.systemBlue, for: .normal)
+        backButton.addTarget(self, action: #selector(backButtonTapped(sender:)), for: .touchUpInside)
+        
         // PROFILE BUTTON
                 
         var image = NCUtility.shared.loadImage(named: "person.crop.circle")
@@ -216,8 +222,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
             
         image = NCUtility.shared.createAvatar(image: image, size: 30)
             
-        let button = UIButton(type: .custom)
-        button.setImage(image, for: .normal)
+        let profileButton = UIButton(type: .custom)
+        profileButton.setImage(image, for: .normal)
             
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account) {
              
@@ -229,16 +235,25 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
                 title = title + (account?.alias ?? "")
             }
                 
-            button.setTitle(title, for: .normal)
-            button.setTitleColor(.systemBlue, for: .normal)
+            profileButton.setTitle(title, for: .normal)
+            profileButton.setTitleColor(.systemBlue, for: .normal)
         }
             
-        button.semanticContentAttribute = .forceLeftToRight
-        button.sizeToFit()
-        //button.addTarget(self, action: #selector(profileButtonTapped(sender:)), for: .touchUpInside)
+        profileButton.semanticContentAttribute = .forceLeftToRight
+        profileButton.sizeToFit()
+        profileButton.addTarget(self, action: #selector(profileButtonTapped(sender:)), for: .touchUpInside)
                    
-        navigationItem.setLeftBarButton(UIBarButtonItem(customView: button), animated: true)
-        navigationItem.leftItemsSupplementBackButton = true
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account) {
+
+            navigationItem.setLeftBarButton(UIBarButtonItem(customView: profileButton), animated: true)
+
+        } else {
+
+            let space = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
+            space.width = 20
+            
+            self.navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: backButton), space, UIBarButtonItem(customView: profileButton)], animated: true)
+        }
     }
     
     
@@ -288,6 +303,14 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
     }
     
     @IBAction func actionUpload(_ sender: UIButton) {
+        
+    }
+    
+    @objc func backButtonTapped(sender: Any) {
+        
+    }
+    
+    @objc func profileButtonTapped(sender: Any) {
         
     }
     
