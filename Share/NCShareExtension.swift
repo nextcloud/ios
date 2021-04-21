@@ -141,7 +141,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
             reloadDatasource(withLoadFolder: true)
             setNavigationBar()
-            navigationItem.title = titleCurrentFolder
         }
     }
     
@@ -213,6 +212,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account) {
 
             navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: profileButton)], animated: true)
+            navigationItem.title = titleCurrentFolder
             
         } else {
 
@@ -220,6 +220,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             space.width = 20
             
             navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: backButton), space, UIBarButtonItem(customView: profileButton)], animated: true)
+            navigationItem.title = ""
         }
     }
     
