@@ -789,6 +789,19 @@
     return fileName;
 }
 
++ (NSString *)deleteLastPathServerUrl:(NSString *)serverUrl
+{
+    NSURL *url = [NSURL URLWithString:serverUrl];
+    url = [url URLByDeletingLastPathComponent];
+    
+    NSString *path = url.absoluteString;
+    if ([path hasSuffix:@"/"]) {
+        path = [path substringToIndex:[path length]-1];
+    }
+
+    return path;
+}
+
 + (NSString*)stringAppendServerUrl:(NSString *)serverUrl addFileName:(NSString *)addFileName
 {
     NSString *result;

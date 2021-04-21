@@ -79,9 +79,24 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         refreshControl.addTarget(self, action: #selector(reloadDatasource), for: .valueChanged)
         
         // Empty
-        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 0, delegate: self)
+        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -50, delegate: self)
 
         separatorView.backgroundColor = NCBrandColor.shared.separator
+        
+        // LOG
+        let levelLog = CCUtility.getLogLevel()
+        let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
+        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
+        
+        NCCommunicationCommon.shared.levelLog = levelLog
+        if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
+            NCCommunicationCommon.shared.pathLog = pathDirectoryGroup
+        }
+        if isSimulatorOrTestFlight {
+            NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+        } else {
+            NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -93,24 +108,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         }
         self.activeAccount = account
         
-        let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
-        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
       
-        // LOG
-        let levelLog = CCUtility.getLogLevel()
-        NCCommunicationCommon.shared.levelLog = levelLog
-        
-        if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-            NCCommunicationCommon.shared.pathLog = pathDirectoryGroup
-        }
-        
-        if isSimulatorOrTestFlight {
-            NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
-        } else {
-            NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
-        }
-        
         // NETWORKING
         NCCommunicationCommon.shared.setup(account: account.account, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account), urlBase: account.urlBase, userAgent: CCUtility.getUserAgent(), webDav: NCUtilityFileSystem.shared.getWebDAV(account: account.account), dav: NCUtilityFileSystem.shared.getDAV(), nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
                 
@@ -122,7 +121,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                
         // Load data source
         serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account)
-        // ROOT load files
         getFilesExtensionContext { (filesName, error) in
             DispatchQueue.main.async {
                 self.filesName = filesName
@@ -136,9 +134,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         }
         
         shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
-        
         reloadDatasource(withLoadFolder: true)
-        
         setNavigationBar()
     }
     
@@ -170,8 +166,10 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         // BACK BUTTON
 
         let backButton = UIButton(type: .custom)
-        backButton.setImage(UIImage(named: "back"), for: .normal)
-        backButton.setTitle("Back", for: .normal)
+        backButton.setImage(UIImage(named: "back")?.image(color: .systemBlue, size: 30), for: .normal)
+        backButton.semanticContentAttribute = .forceLeftToRight
+        backButton.sizeToFit()
+        backButton.setTitle(" "+NSLocalizedString("_back_", comment: ""), for: .normal)
         backButton.setTitleColor(.systemBlue, for: .normal)
         backButton.addTarget(self, action: #selector(backButtonTapped(sender:)), for: .touchUpInside)
         
@@ -270,6 +268,13 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     
     @objc func backButtonTapped(sender: Any) {
         
+        if let serverUrlTemp = CCUtility.deleteLastPathServerUrl(serverUrl) {
+        
+            serverUrl = serverUrlTemp
+            shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
+            reloadDatasource(withLoadFolder: true)
+            setNavigationBar()
+        }
     }
     
     @objc func profileButtonTapped(sender: Any) {
@@ -296,23 +301,12 @@ extension NCShareExtension: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
-                
-        if metadata.directory {
+        guard let serverUrlTemp = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else { return }
             
-            /*
-            guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else { return }
-            guard let viewController = UIStoryboard(name: "MainInterface", bundle: nil).instantiateViewController(withIdentifier: "NCShareExtension.storyboard") as? NCShareExtension else { return }
-
-            self.serverUrlPush = serverUrlPush
-            self.metadataTouch = metadata
-            
-            viewController.titleCurrentFolder = metadataTouch!.fileNameView
-            viewController.serverUrl = serverUrlPush
-            viewController.filesName = filesName
-                   
-            self.navigationController?.pushViewController(viewController, animated: true)
-            */
-        }
+        serverUrl = serverUrlTemp
+        shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
+        reloadDatasource(withLoadFolder: true)
+        setNavigationBar()
     }
 }
 
