@@ -44,12 +44,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         
     private var emptyDataSet: NCEmptyDataSet?
     private let keyLayout = NCGlobal.shared.layoutViewShareExtension
-    private var serverUrlPush = ""
-    private var metadataTouch: tableMetadata?
     private var metadataFolder = tableMetadata()
-    
     private var networkInProgress = false
-    
     private var dataSource = NCDataSource()
 
     private var sort: String = ""
@@ -63,12 +59,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
     
-    private var listLayout: NCListLayout!
-        
     private var shares: [tableShare]?
-    
     private let refreshControl = UIRefreshControl()
-    
     private var activeAccount: tableAccount!
         
     override func viewDidLoad() {
@@ -78,10 +70,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         
         // Cell
         collectionView.register(UINib.init(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
-        collectionView.register(UINib.init(nibName: "NCGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
-        
-        listLayout = NCListLayout()
-        
+        collectionView.collectionViewLayout = NCListLayout()
+
         // Add Refresh Control
         collectionView.addSubview(refreshControl)
         refreshControl.tintColor = NCBrandColor.shared.brandText
@@ -129,9 +119,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: activeAccount.urlBase, account: activeAccount.account)
         
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
-        
-        collectionView.collectionViewLayout = listLayout
-       
+               
         // Load data source
         serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account)
         // ROOT load files
@@ -150,6 +138,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
         
         reloadDatasource(withLoadFolder: true)
+        
+        setNavigationBar()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -526,8 +516,6 @@ extension NCShareExtension {
 
     @objc func reloadDatasource(withLoadFolder: Bool) {
                 
-        setNavigationBar()
-
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
                 
         let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", activeAccount.account, serverUrl))
