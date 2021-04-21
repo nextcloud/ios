@@ -83,6 +83,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
 
         separatorView.backgroundColor = NCBrandColor.shared.separator
         tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        tableView.backgroundColor = .clear
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
         uploadButton.setTitle(NSLocalizedString("_save_files_", comment: ""), for: .normal)
         
