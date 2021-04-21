@@ -144,7 +144,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                                 self.commandViewHeightConstraint.constant = 140 + (self.heightRowTableView * 3)
                             }
                         } completion: { (_) in
-                            if filesName.count > 3 {
+                            if filesName.count <= 3 {
                                 self.tableView.isScrollEnabled = false
                             }
                             self.tableView.reloadData()
