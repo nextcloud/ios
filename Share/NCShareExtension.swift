@@ -32,12 +32,12 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     @IBOutlet weak var separatorView: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var commandViewHeightConstraint: NSLayoutConstraint!
-
-    //@IBOutlet weak var createFolderButton: UIBarButtonItem!
-    //@IBOutlet weak var uploadButton: UIBarButtonItem!
+    @IBOutlet weak var createFolderButton: UIButton!
+    @IBOutlet weak var createFolderLabel: UILabel!
+    @IBOutlet weak var uploadButton: UIButton!
 
     // -------------------------------------------------------------
-    var titleCurrentFolder = NCBrandOptions.shared.brand
+    //var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
     var filesName: [String] = []
     // -------------------------------------------------------------
@@ -83,6 +83,9 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
 
         separatorView.backgroundColor = NCBrandColor.shared.separator
         
+        createFolderButton.setTitle(NSLocalizedString("_create_folder_", comment: ""), for: .normal)
+        uploadButton.setTitle(NSLocalizedString("_save_files_", comment: ""), for: .normal)
+        
         // LOG
         let levelLog = CCUtility.getLogLevel()
         let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
@@ -102,40 +105,43 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        guard let account = NCManageDatabase.shared.getAccountActive() else {
-            extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
-            return
-        }
-        self.activeAccount = account
+        if serverUrl == "" {
         
-        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-      
-        // NETWORKING
-        NCCommunicationCommon.shared.setup(account: account.account, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account), urlBase: account.urlBase, userAgent: CCUtility.getUserAgent(), webDav: NCUtilityFileSystem.shared.getWebDAV(account: account.account), dav: NCUtilityFileSystem.shared.getDAV(), nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
-                
-        // get auto upload folder
-        autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: activeAccount.urlBase, account: activeAccount.account)
-        
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
-               
-        // Load data source
-        serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account)
-        getFilesExtensionContext { (filesName, error) in
-            DispatchQueue.main.async {
-                self.filesName = filesName
-                if filesName.count == 0 {
-                    self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
-                    return
-                } else {
-                    self.tableView.reloadData()
+            guard let account = NCManageDatabase.shared.getAccountActive() else {
+                extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
+                return
+            }
+            self.activeAccount = account
+            
+            let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+          
+            // NETWORKING
+            NCCommunicationCommon.shared.setup(account: account.account, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account), urlBase: account.urlBase, userAgent: CCUtility.getUserAgent(), webDav: NCUtilityFileSystem.shared.getWebDAV(account: account.account), dav: NCUtilityFileSystem.shared.getDAV(), nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
+                    
+            // get auto upload folder
+            autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
+            autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: activeAccount.urlBase, account: activeAccount.account)
+            
+            (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
+                   
+            // Load data source
+            serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account)
+            getFilesExtensionContext { (filesName, error) in
+                DispatchQueue.main.async {
+                    self.filesName = filesName
+                    if filesName.count == 0 {
+                        self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+                        return
+                    } else {
+                        self.tableView.reloadData()
+                    }
                 }
             }
+                
+            shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
+            reloadDatasource(withLoadFolder: true)
+            setNavigationBar()
         }
-        
-        shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
-        reloadDatasource(withLoadFolder: true)
-        setNavigationBar()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -161,7 +167,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     func setNavigationBar() {
         
         cancelButton.title = NSLocalizedString("_cancel_", comment: "")
-        navigationItem.title = titleCurrentFolder
 
         // BACK BUTTON
 

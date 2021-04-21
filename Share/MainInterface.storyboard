@@ -82,17 +82,48 @@
                                             <outlet property="delegate" destination="VYq-xA-D35" id="DAj-hF-SRY"/>
                                         </connections>
                                     </tableView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="USb-OF-Gaq">
+                                        <rect key="frame" x="10" y="5" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="5HP-Gs-tLd"/>
+                                            <constraint firstAttribute="width" constant="40" id="NUe-Vv-dOz"/>
+                                        </constraints>
+                                        <state key="normal" image="folder"/>
+                                        <connections>
+                                            <action selector="actionCreateFolder:" destination="VYq-xA-D35" eventType="touchUpInside" id="VKJ-l5-aU0"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="create folder" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WHW-J5-8gq">
+                                        <rect key="frame" x="60" y="16.666666666666629" width="344" height="17"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1xT-vl-sQp">
+                                        <rect key="frame" x="175" y="250" width="64" height="30"/>
+                                        <state key="normal" title="save files"/>
+                                        <connections>
+                                            <action selector="actionUpload:" destination="VYq-xA-D35" eventType="touchUpInside" id="ENy-P1-SDo"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
+                                    <constraint firstItem="WHW-J5-8gq" firstAttribute="leading" secondItem="USb-OF-Gaq" secondAttribute="trailing" constant="10" id="0vb-fF-r1z"/>
                                     <constraint firstItem="eU0-LW-AnG" firstAttribute="top" secondItem="LAs-iQ-u1X" secondAttribute="bottom" constant="50" id="14j-96-VwG"/>
+                                    <constraint firstItem="WHW-J5-8gq" firstAttribute="centerY" secondItem="USb-OF-Gaq" secondAttribute="centerY" id="1g9-zC-1OC"/>
+                                    <constraint firstItem="USb-OF-Gaq" firstAttribute="top" secondItem="FaV-kz-PEs" secondAttribute="top" constant="5" id="1tj-Mf-QjF"/>
                                     <constraint firstAttribute="height" constant="300" id="50u-lA-AUo"/>
+                                    <constraint firstAttribute="bottom" secondItem="1xT-vl-sQp" secondAttribute="bottom" constant="20" id="7vg-42-5oO"/>
                                     <constraint firstItem="eU0-LW-AnG" firstAttribute="leading" secondItem="FaV-kz-PEs" secondAttribute="leading" id="E40-Ul-MEV"/>
+                                    <constraint firstItem="1xT-vl-sQp" firstAttribute="centerX" secondItem="FaV-kz-PEs" secondAttribute="centerX" id="bUe-Dp-BNI"/>
                                     <constraint firstItem="LAs-iQ-u1X" firstAttribute="leading" secondItem="FaV-kz-PEs" secondAttribute="leading" id="dr0-zN-pwa"/>
+                                    <constraint firstAttribute="trailing" secondItem="WHW-J5-8gq" secondAttribute="trailing" constant="10" id="gsu-fn-Jei"/>
                                     <constraint firstItem="LAs-iQ-u1X" firstAttribute="top" secondItem="FaV-kz-PEs" secondAttribute="top" id="gvj-gm-XbO"/>
                                     <constraint firstAttribute="trailing" secondItem="eU0-LW-AnG" secondAttribute="trailing" id="qQA-Ix-Ge1"/>
                                     <constraint firstAttribute="bottom" secondItem="eU0-LW-AnG" secondAttribute="bottom" constant="50" id="r6E-QV-nj7"/>
                                     <constraint firstAttribute="trailing" secondItem="LAs-iQ-u1X" secondAttribute="trailing" id="v8j-JB-2Io"/>
+                                    <constraint firstItem="USb-OF-Gaq" firstAttribute="leading" secondItem="FaV-kz-PEs" secondAttribute="leading" constant="10" id="zNy-EW-uZN"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -119,9 +150,12 @@
                         <outlet property="cancelButton" destination="qHj-AF-EN7" id="ArV-Vj-BiO"/>
                         <outlet property="collectionView" destination="0HI-k1-SD0" id="xme-mG-bnz"/>
                         <outlet property="commandViewHeightConstraint" destination="50u-lA-AUo" id="ygm-ah-cHw"/>
+                        <outlet property="createFolderButton" destination="USb-OF-Gaq" id="mHT-mC-VL1"/>
+                        <outlet property="createFolderLabel" destination="WHW-J5-8gq" id="N93-Bs-sc9"/>
                         <outlet property="separatorHeightConstraint" destination="wOp-so-23c" id="r8x-LQ-sxb"/>
                         <outlet property="separatorView" destination="LAs-iQ-u1X" id="53E-lW-30T"/>
                         <outlet property="tableView" destination="eU0-LW-AnG" id="mLD-VN-uyz"/>
+                        <outlet property="uploadButton" destination="1xT-vl-sQp" id="POZ-yK-W9P"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vH8-UY-9MN" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -148,6 +182,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="folder" width="300" height="300"/>
         <systemColor name="separatorColor">
             <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.28999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
