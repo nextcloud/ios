@@ -55,7 +55,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     private var groupBy = ""
     private var titleButton = ""
     private var itemForLine = 0
-
+    private var heightRowTableView: CGFloat = 50
+    
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
     
@@ -81,7 +82,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         // Empty
         emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -50, delegate: self)
         separatorView.backgroundColor = NCBrandColor.shared.separator
-        tableView.separatorColor = NCBrandColor.shared.separator
+        tableView.separatorColor = .red //NCBrandColor.shared.separator
         tableView.layer.borderColor = NCBrandColor.shared.separator.cgColor
         tableView.layer.borderWidth = 1.0
         tableView.layer.cornerRadius = 10.0
@@ -136,7 +137,18 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                         self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
                         return
                     } else {
-                        self.tableView.reloadData()
+                        UIView.animate(withDuration: 1) {
+                            if filesName.count < 3 {
+                                self.commandViewHeightConstraint.constant = 140 + (self.heightRowTableView * CGFloat(filesName.count))
+                            } else  {
+                                self.commandViewHeightConstraint.constant = 140 + (self.heightRowTableView * 3)
+                            }
+                        } completion: { (_) in
+                            if filesName.count > 3 {
+                                self.tableView.isScrollEnabled = false
+                            }
+                            self.tableView.reloadData()
+                        }
                     }
                 }
             }
@@ -485,7 +497,7 @@ extension NCShareExtension: UICollectionViewDataSource {
 extension NCShareExtension: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 50
+        return heightRowTableView
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
