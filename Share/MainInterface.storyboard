@@ -43,7 +43,7 @@
                                         </constraints>
                                     </view>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="eU0-LW-AnG">
-                                        <rect key="frame" x="0.0" y="51" width="414" height="199"/>
+                                        <rect key="frame" x="0.0" y="61" width="414" height="169"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <prototypes>
                                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="6Kt-n0-i8J">
@@ -83,20 +83,20 @@
                                         </connections>
                                     </tableView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="create folder" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WHW-J5-8gq">
-                                        <rect key="frame" x="10" y="33" width="67" height="13.333333333333336"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                        <rect key="frame" x="10" y="38" width="72.333333333333329" height="13.333333333333336"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1xT-vl-sQp">
-                                        <rect key="frame" x="175" y="250" width="64" height="30"/>
+                                        <rect key="frame" x="175" y="240" width="64" height="30"/>
                                         <state key="normal" title="save files"/>
                                         <connections>
                                             <action selector="actionUpload:" destination="VYq-xA-D35" eventType="touchUpInside" id="ENy-P1-SDo"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="USb-OF-Gaq">
-                                        <rect key="frame" x="28.666666666666671" y="2" width="30" height="30"/>
+                                        <rect key="frame" x="31.333333333333329" y="7" width="30" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="5HP-Gs-tLd"/>
                                             <constraint firstAttribute="width" constant="30" id="NUe-Vv-dOz"/>
@@ -107,11 +107,11 @@
                                         </connections>
                                     </button>
                                 </subviews>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" systemColor="systemGray6Color"/>
                                 <constraints>
-                                    <constraint firstItem="eU0-LW-AnG" firstAttribute="top" secondItem="LAs-iQ-u1X" secondAttribute="bottom" constant="50" id="14j-96-VwG"/>
+                                    <constraint firstItem="eU0-LW-AnG" firstAttribute="top" secondItem="LAs-iQ-u1X" secondAttribute="bottom" constant="60" id="14j-96-VwG"/>
                                     <constraint firstAttribute="height" constant="300" id="50u-lA-AUo"/>
-                                    <constraint firstAttribute="bottom" secondItem="1xT-vl-sQp" secondAttribute="bottom" constant="20" id="7vg-42-5oO"/>
+                                    <constraint firstAttribute="bottom" secondItem="1xT-vl-sQp" secondAttribute="bottom" constant="30" id="7vg-42-5oO"/>
                                     <constraint firstItem="eU0-LW-AnG" firstAttribute="leading" secondItem="FaV-kz-PEs" secondAttribute="leading" id="E40-Ul-MEV"/>
                                     <constraint firstItem="WHW-J5-8gq" firstAttribute="leading" secondItem="FaV-kz-PEs" secondAttribute="leading" constant="10" id="FQu-Xp-l7a"/>
                                     <constraint firstItem="WHW-J5-8gq" firstAttribute="top" secondItem="USb-OF-Gaq" secondAttribute="bottom" constant="1" id="KVN-cR-x3K"/>
@@ -119,9 +119,9 @@
                                     <constraint firstItem="1xT-vl-sQp" firstAttribute="centerX" secondItem="FaV-kz-PEs" secondAttribute="centerX" id="bUe-Dp-BNI"/>
                                     <constraint firstItem="LAs-iQ-u1X" firstAttribute="leading" secondItem="FaV-kz-PEs" secondAttribute="leading" id="dr0-zN-pwa"/>
                                     <constraint firstItem="LAs-iQ-u1X" firstAttribute="top" secondItem="FaV-kz-PEs" secondAttribute="top" id="gvj-gm-XbO"/>
-                                    <constraint firstItem="WHW-J5-8gq" firstAttribute="top" secondItem="FaV-kz-PEs" secondAttribute="top" constant="33" id="lWV-vn-0kj"/>
+                                    <constraint firstItem="WHW-J5-8gq" firstAttribute="top" secondItem="FaV-kz-PEs" secondAttribute="top" constant="38" id="lWV-vn-0kj"/>
                                     <constraint firstAttribute="trailing" secondItem="eU0-LW-AnG" secondAttribute="trailing" id="qQA-Ix-Ge1"/>
-                                    <constraint firstAttribute="bottom" secondItem="eU0-LW-AnG" secondAttribute="bottom" constant="50" id="r6E-QV-nj7"/>
+                                    <constraint firstAttribute="bottom" secondItem="eU0-LW-AnG" secondAttribute="bottom" constant="70" id="r6E-QV-nj7"/>
                                     <constraint firstAttribute="trailing" secondItem="LAs-iQ-u1X" secondAttribute="trailing" id="v8j-JB-2Io"/>
                                 </constraints>
                             </view>
@@ -187,6 +187,9 @@
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGray6Color">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
