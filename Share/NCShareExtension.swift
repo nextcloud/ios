@@ -108,7 +108,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
 
         separatorView.backgroundColor = NCBrandColor.shared.separator
         
-        cancelButton.title = NSLocalizedString("_cancel_", comment: "")
         //createFolderButton.title = NSLocalizedString("_create_folder_", comment: "")
         //uploadButton.title = NSLocalizedString("_upload_", comment: "")
     }
@@ -197,6 +196,51 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCGridCellDelegate
             
         }
     }
+    
+    // MARK: -
+    
+    func navigationButtons() {
+        
+        cancelButton.title = NSLocalizedString("_cancel_", comment: "")
+        
+        navigationItem.leftBarButtonItem = nil
+        navigationItem.title = titleCurrentFolder
+        
+        // PROFILE BUTTON
+                
+        var image = NCUtility.shared.loadImage(named: "person.crop.circle")
+        let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(activeAccount.user, urlBase: activeAccount.urlBase)) + "-" + activeAccount.user + ".png"
+        if let userImage = UIImage(contentsOfFile: fileNamePath) {
+            image = userImage
+        }
+            
+        image = NCUtility.shared.createAvatar(image: image, size: 30)
+            
+        let button = UIButton(type: .custom)
+        button.setImage(image, for: .normal)
+            
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account) {
+             
+            let account = NCManageDatabase.shared.getAccountActive()
+            var title = "  "
+            if account?.alias == "" {
+                title = title + (account?.user ?? "")
+            } else {
+                title = title + (account?.alias ?? "")
+            }
+                
+            button.setTitle(title, for: .normal)
+            button.setTitleColor(.systemBlue, for: .normal)
+        }
+            
+        button.semanticContentAttribute = .forceLeftToRight
+        button.sizeToFit()
+        //button.addTarget(self, action: #selector(profileButtonTapped(sender:)), for: .touchUpInside)
+                   
+        navigationItem.setLeftBarButton(UIBarButtonItem(customView: button), animated: true)
+        navigationItem.leftItemsSupplementBackButton = true
+    }
+    
     
     // MARK: - Empty
     
@@ -334,9 +378,7 @@ extension NCShareExtension: UICollectionViewDelegate {
 extension NCShareExtension: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        
-        self.navigationItem.title = titleCurrentFolder
-        
+                
         if kind == UICollectionView.elementKindSectionHeader {
             
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
@@ -697,6 +739,8 @@ extension NCShareExtension {
     
     @objc func loadDatasource(withLoadFolder: Bool) {
                 
+        self.navigationItem.title = titleCurrentFolder
+
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
                 
         let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", activeAccount.account, serverUrl))

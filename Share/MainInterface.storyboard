@@ -43,7 +43,7 @@
                                         </constraints>
                                     </view>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="eU0-LW-AnG">
-                                        <rect key="frame" x="0.0" y="11" width="414" height="239"/>
+                                        <rect key="frame" x="0.0" y="51" width="414" height="199"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <prototypes>
                                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="6Kt-n0-i8J">
@@ -85,7 +85,7 @@
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
-                                    <constraint firstItem="eU0-LW-AnG" firstAttribute="top" secondItem="LAs-iQ-u1X" secondAttribute="bottom" constant="10" id="14j-96-VwG"/>
+                                    <constraint firstItem="eU0-LW-AnG" firstAttribute="top" secondItem="LAs-iQ-u1X" secondAttribute="bottom" constant="50" id="14j-96-VwG"/>
                                     <constraint firstAttribute="height" constant="300" id="50u-lA-AUo"/>
                                     <constraint firstItem="eU0-LW-AnG" firstAttribute="leading" secondItem="FaV-kz-PEs" secondAttribute="leading" id="E40-Ul-MEV"/>
                                     <constraint firstItem="LAs-iQ-u1X" firstAttribute="leading" secondItem="FaV-kz-PEs" secondAttribute="leading" id="dr0-zN-pwa"/>
