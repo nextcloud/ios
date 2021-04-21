@@ -185,7 +185,6 @@
 + (NSString *)removeForbiddenCharactersServer:(NSString *)fileName;
 + (NSString *)removeForbiddenCharactersFileSystem:(NSString *)fileName;
 
-+ (NSString *)deleteLastPathServerUrl:(NSString *)serverUrl;
 + (NSString *)stringAppendServerUrl:(NSString *)serverUrl addFileName:(NSString *)addFileName;
 
 + (NSString *)createRandomString:(int)numChars;

@@ -37,14 +37,14 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     @IBOutlet weak var uploadButton: UIButton!
 
     // -------------------------------------------------------------
-    //var titleCurrentFolder = NCBrandOptions.shared.brand
+    var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
     var filesName: [String] = []
     // -------------------------------------------------------------
         
     private var emptyDataSet: NCEmptyDataSet?
     private let keyLayout = NCGlobal.shared.layoutViewShareExtension
-    private var metadataFolder = tableMetadata()
+    private var metadataFolder: tableMetadata?
     private var networkInProgress = false
     private var dataSource = NCDataSource()
 
@@ -141,6 +141,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
             reloadDatasource(withLoadFolder: true)
             setNavigationBar()
+            navigationItem.title = titleCurrentFolder
         }
     }
     
@@ -211,14 +212,14 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                    
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account) {
 
-            navigationItem.setLeftBarButton(UIBarButtonItem(customView: profileButton), animated: true)
-
+            navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: profileButton)], animated: true)
+            
         } else {
 
             let space = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
             space.width = 20
             
-            self.navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: backButton), space, UIBarButtonItem(customView: profileButton)], animated: true)
+            navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: backButton), space, UIBarButtonItem(customView: profileButton)], animated: true)
         }
     }
     
@@ -273,13 +274,14 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     
     @objc func backButtonTapped(sender: Any) {
         
-        if let serverUrlTemp = CCUtility.deleteLastPathServerUrl(serverUrl) {
-        
-            serverUrl = serverUrlTemp
-            shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
-            reloadDatasource(withLoadFolder: true)
-            setNavigationBar()
+        while serverUrl.last != "/" {
+            serverUrl.removeLast()
         }
+        serverUrl.removeLast()
+        
+        shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
+        reloadDatasource(withLoadFolder: true)
+        setNavigationBar()
     }
     
     @objc func profileButtonTapped(sender: Any) {
@@ -307,7 +309,7 @@ extension NCShareExtension: UICollectionViewDelegate {
         
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
         guard let serverUrlTemp = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else { return }
-            
+        
         serverUrl = serverUrlTemp
         shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
         reloadDatasource(withLoadFolder: true)
@@ -340,8 +342,10 @@ extension NCShareExtension: UICollectionViewDataSource {
         // Download preview
         NCOperationQueue.shared.downloadThumbnail(metadata: metadata, urlBase: activeAccount.urlBase, view: collectionView, indexPath: indexPath)
         
-        isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionShared)
-        isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionMounted)
+        if let metadataFolder = metadataFolder {
+            isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionShared)
+            isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionMounted)
+        }
         
         if dataSource.metadataShare[metadata.ocId] != nil {
             tableShare = dataSource.metadataShare[metadata.ocId]
@@ -546,11 +550,12 @@ extension NCShareExtension {
         networkInProgress = true
         collectionView.reloadData()
         
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { (_, _, _, _, _, errorCode, errorDescription) in
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { (_, metadataFolder, _, _, _, errorCode, errorDescription) in
             if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
             self.networkInProgress = false
+            self.metadataFolder = metadataFolder
             self.reloadDatasource(withLoadFolder: false)
         }
     }
