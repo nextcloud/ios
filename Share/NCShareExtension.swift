@@ -105,10 +105,12 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         
         // Empty
         emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -50, delegate: self)
+        
+        separatorHeightConstraint.constant = 0.3
         separatorView.backgroundColor = separatorColor
         tableView.separatorColor = separatorColor
         //tableView.layer.borderColor = separatorColor.cgColor
-        tableView.layer.borderWidth = 0
+        //tableView.layer.borderWidth = 0
         tableView.layer.cornerRadius = 10.0
         tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: 1)))
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
