@@ -24,6 +24,15 @@
 import Foundation
 import NCCommunication
 
+public protocol NCRenameFileDelegate {
+    func rename(fileName: String, fileNameNew: String)
+}
+
+// optional func
+public extension NCRenameFileDelegate {
+    func rename(fileName: String, fileNameNew: String) {}
+}
+
 class NCRenameFile: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var titleLabel: UILabel!
@@ -37,8 +46,10 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var renameButton: UIButton!
 
     var metadata: tableMetadata?
+    var fileName: String?
     var imagePreview: UIImage?
     var disableChangeExt: Bool = false
+    var delegate: NCRenameFileDelegate?
     
     // MARK: - Life Cycle
     
@@ -87,6 +98,26 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                 
                 fileNameWithoutExtTrailingContraint.constant = 90
             }
+            
+        } else if let fileName = self.fileName {
+        
+            titleLabel.text = NSLocalizedString("_rename_file_", comment: "")
+
+            fileNameWithoutExt.text = (fileName as NSString).deletingPathExtension
+            fileNameWithoutExt.delegate = self
+            fileNameWithoutExt.becomeFirstResponder()
+            fileNameWithoutExtTrailingContraint.constant = 90
+
+            ext.text = (fileName as NSString).pathExtension
+            ext.delegate = self
+            
+            if imagePreview == nil {
+                previewFile.image = NCBrandColor.cacheImages.file
+            } else {
+                previewFile.image = imagePreview
+            }
+            previewFile.layer.cornerRadius = 10
+            previewFile.layer.masksToBounds = true
         }
         
         cancelButton.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
@@ -116,7 +147,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if metadata == nil {
+        if metadata == nil && fileName == nil {
             dismiss(animated: true)
         }
         
@@ -145,56 +176,72 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     
     @IBAction func rename(_ sender: Any) {
 
-        guard let metadata = metadata else { return }
         var fileNameWithoutExtNew = ""
         var extNew = ""
         var fileNameNew = ""
         
-        if fileNameWithoutExt.text == nil || fileNameWithoutExt.text?.count == 0 {
-            self.fileNameWithoutExt.text = metadata.fileNameWithoutExt
-            return
-        } else {
-            fileNameWithoutExtNew = fileNameWithoutExt.text!
-        }
+        if let metadata = self.metadata {
         
-        if metadata.directory {
-            
-            fileNameNew = fileNameWithoutExtNew
-            renameMetadata(metadata, fileNameNew: fileNameNew)
-            
-        } else {
-            
-            if ext.text == nil || ext.text?.count == 0 {
-                self.ext.text = metadata.ext
+            if fileNameWithoutExt.text == nil || fileNameWithoutExt.text?.count == 0 {
+                self.fileNameWithoutExt.text = metadata.fileNameWithoutExt
                 return
             } else {
-                extNew = ext.text!
+                fileNameWithoutExtNew = fileNameWithoutExt.text!
             }
             
-            if extNew != metadata.ext {
+            if metadata.directory {
                 
-                let message = String(format: NSLocalizedString("_rename_ext_message_", comment: ""), extNew, metadata.ext)
-                let alertController = UIAlertController(title: NSLocalizedString("_rename_ext_title_", comment: ""), message: message, preferredStyle: .alert)
-                            
-                var title = NSLocalizedString("_use_", comment: "") + " ." + extNew
-                alertController.addAction(UIAlertAction(title: title, style: .default, handler: { action in
-                    
-                    fileNameNew = fileNameWithoutExtNew + "." + extNew
-                    self.renameMetadata(metadata, fileNameNew: fileNameNew)
-                }))
-                
-                title = NSLocalizedString("_keep_", comment: "") + " ." + metadata.ext
-                alertController.addAction(UIAlertAction(title: title, style: .default, handler: { action in
-                    self.ext.text = metadata.ext
-                }))
-                
-                self.present(alertController, animated: true)
+                fileNameNew = fileNameWithoutExtNew
+                renameMetadata(metadata, fileNameNew: fileNameNew)
                 
             } else {
-            
-                fileNameNew = fileNameWithoutExtNew + "." + extNew
-                renameMetadata(metadata, fileNameNew: fileNameNew)
+                
+                if ext.text == nil || ext.text?.count == 0 {
+                    self.ext.text = metadata.ext
+                    return
+                } else {
+                    extNew = ext.text!
+                }
+                
+                if extNew != metadata.ext {
+                    
+                    let message = String(format: NSLocalizedString("_rename_ext_message_", comment: ""), extNew, metadata.ext)
+                    let alertController = UIAlertController(title: NSLocalizedString("_rename_ext_title_", comment: ""), message: message, preferredStyle: .alert)
+                                
+                    var title = NSLocalizedString("_use_", comment: "") + " ." + extNew
+                    alertController.addAction(UIAlertAction(title: title, style: .default, handler: { action in
+                        
+                        fileNameNew = fileNameWithoutExtNew + "." + extNew
+                        self.renameMetadata(metadata, fileNameNew: fileNameNew)
+                    }))
+                    
+                    title = NSLocalizedString("_keep_", comment: "") + " ." + metadata.ext
+                    alertController.addAction(UIAlertAction(title: title, style: .default, handler: { action in
+                        self.ext.text = metadata.ext
+                    }))
+                    
+                    self.present(alertController, animated: true)
+                    
+                } else {
+                
+                    fileNameNew = fileNameWithoutExtNew + "." + extNew
+                    renameMetadata(metadata, fileNameNew: fileNameNew)
+                }
             }
+            
+        } else if let fileName = self.fileName {
+            
+            if fileNameWithoutExt.text == nil || fileNameWithoutExt.text?.count == 0 {
+                fileNameWithoutExt.text = (fileName as NSString).deletingPathExtension
+                return
+            } else if ext.text == nil || ext.text?.count == 0 {
+                ext.text = (fileName as NSString).pathExtension
+                return
+            }
+            
+            fileNameNew = (fileNameWithoutExt.text ?? "") + "." + (ext.text ?? "")
+            self.delegate?.rename(fileName: fileName, fileNameNew: fileNameNew)
+            self.dismiss(animated: true)
         }
     }
     

@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDelegate {
+class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDelegate, NCRenameFileDelegate {
     
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var tableView: UITableView!
@@ -323,8 +323,28 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         setNavigationBar()
     }
     
+    func rename(fileName: String, fileNameNew: String) {
+        
+        if let row = self.filesName.firstIndex(where: {$0 == fileName}) {
+            filesName[row] = fileNameNew
+            tableView.reloadData()
+        }
+    }
+    
     @objc func renameButtonPressed(sender: NCShareExtensionButtonWithIndexPath) {
         
+        if let fileName = sender.fileName {
+            if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
+            
+                vcRename.delegate = self
+                vcRename.fileName = fileName
+                vcRename.imagePreview = sender.image
+
+                let popup = NCPopupViewController(contentController: vcRename, popupWidth: 300, popupHeight: 360)
+                                        
+                self.present(popup, animated: true)
+            }
+        }
     }
     
     @objc func deleteButtonPressed(sender: NCShareExtensionButtonWithIndexPath) {
@@ -566,10 +586,14 @@ extension NCShareExtension: UITableViewDataSource {
         
         renameButton?.setImage(NCUtility.shared.loadImage(named: "pencil").image(color: labelColor, size: 15), for: .normal)
         renameButton?.indexPath = indexPath
+        renameButton?.fileName = fileName
+        renameButton?.image = imageCell?.image
         renameButton?.addTarget(self, action:#selector(renameButtonPressed(sender:)), for: .touchUpInside)
 
         deleteButton?.setImage(NCUtility.shared.loadImage(named: "trash").image(color: .red, size: 15), for: .normal)
         deleteButton?.indexPath = indexPath
+        deleteButton?.fileName = fileName
+        deleteButton?.image = imageCell?.image
         deleteButton?.addTarget(self, action:#selector(deleteButtonPressed(sender:)), for: .touchUpInside)
         
         return cell
@@ -794,4 +818,6 @@ extension NCShareExtension {
 
 class NCShareExtensionButtonWithIndexPath: UIButton {
     var indexPath:IndexPath?
+    var fileName: String?
+    var image: UIImage?
 }
