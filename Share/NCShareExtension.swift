@@ -326,8 +326,11 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     func rename(fileName: String, fileNameNew: String) {
         
         if let row = self.filesName.firstIndex(where: {$0 == fileName}) {
-            filesName[row] = fileNameNew
-            tableView.reloadData()
+            
+            if NCUtilityFileSystem.shared.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: (NSTemporaryDirectory() + fileNameNew)) {
+                filesName[row] = fileNameNew
+                tableView.reloadData()
+            }
         }
     }
     
