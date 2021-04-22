@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate  {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate  {
     
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -663,6 +663,22 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.collectionView.reloadData()
     }
     
+    func changeAccountRequestAddAccount() {
+        if let activeAccount = NCManageDatabase.shared.getAccountActive() {
+            
+            NCOperationQueue.shared.cancelAllQueue()
+            NCNetworking.shared.cancelAllTask()
+            
+            appDelegate.settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
+            
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+        }
+    }
+    
+    func accountRequestAddAccount() {
+        appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+    }
+    
     @objc func profileButtonTapped(sender: Any) {
         
         let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
@@ -673,7 +689,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 vcAccountRequest.accounts = accounts
                 vcAccountRequest.enableTimerProgress = false
                 vcAccountRequest.enableAddAccount = true
-                vcAccountRequest.viewController = self
+                vcAccountRequest.delegate = self
                 vcAccountRequest.dismissDidEnterBackground = true
 
                 let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)

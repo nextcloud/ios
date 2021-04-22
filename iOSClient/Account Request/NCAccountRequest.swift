@@ -24,6 +24,17 @@
 import Foundation
 import NCCommunication
 
+public protocol NCAccountRequestDelegate {
+    func accountRequestAddAccount()
+    func changeAccountRequestAddAccount()
+}
+
+// optional func
+public extension NCAccountRequestDelegate {
+    func accountRequestAddAccount() {}
+    func changeAccountRequestAddAccount() {}
+}
+
 class NCAccountRequest: UIViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
@@ -34,10 +45,9 @@ class NCAccountRequest: UIViewController {
     public let heightCell: CGFloat = 80
     public var enableTimerProgress: Bool = true
     public var enableAddAccount: Bool = false
-    public var viewController: UIViewController?
     public var dismissDidEnterBackground: Bool = false
+    public var delegate: NCAccountRequestDelegate?
 
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var timer: Timer?
     private var time: Float = 0
     private let secondsAutoDismiss: Float = 3
@@ -149,21 +159,16 @@ extension NCAccountRequest: UITableViewDelegate {
         if indexPath.row == accounts.count {
             
             dismiss(animated: true)
-            appDelegate.openLogin(viewController: viewController, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+            delegate?.accountRequestAddAccount()
             
         } else {
         
             let account = accounts[indexPath.row]
-            if account.account != appDelegate.account {
+            let activeAccount = NCManageDatabase.shared.getAccountActive()
+            if account.account != activeAccount?.account {
                 NCManageDatabase.shared.setAccountActive(account.account)
                 dismiss(animated: true) {
-                    
-                    NCOperationQueue.shared.cancelAllQueue()
-                    NCNetworking.shared.cancelAllTask()
-                    
-                    self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
-                    
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+                    self.delegate?.changeAccountRequestAddAccount()
                 }
             } else {
                 dismiss(animated: true)

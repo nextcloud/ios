@@ -29,7 +29,7 @@ import LocalAuthentication
 import Firebase
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, TOPasscodeViewControllerDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, TOPasscodeViewControllerDelegate, NCAccountRequestDelegate {
 
     var backgroundSessionCompletionHandler: (() -> Void)?
     var window: UIWindow?
@@ -604,6 +604,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     // MARK: - Account Request
     
+    func changeAccountRequestAddAccount() {
+        if let activeAccount = NCManageDatabase.shared.getAccountActive() {
+            
+            NCOperationQueue.shared.cancelAllQueue()
+            NCNetworking.shared.cancelAllTask()
+            
+            settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
+            
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+        }
+    }
+    
     func requestAccount(startTimer: Bool) {
               
         let accounts = NCManageDatabase.shared.getAllAccount()
@@ -616,6 +628,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 vcAccountRequest.enableTimerProgress = true
                 vcAccountRequest.enableAddAccount = false
                 vcAccountRequest.dismissDidEnterBackground = false
+                vcAccountRequest.delegate = self
                 
                 let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
                 let numberCell = accounts.count

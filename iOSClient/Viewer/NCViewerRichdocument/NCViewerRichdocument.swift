@@ -197,7 +197,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                         let components = disposition.components(separatedBy: "filename=")
                                         if let filename = components.last?.replacingOccurrences(of: "\"", with: "") {
                                             item = CCUtility.getDirectoryUserData() + "/" + filename
-                                            NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: item)
+                                            _ = NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: item)
                                         }
                                     }
                                 }
