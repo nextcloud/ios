@@ -30,6 +30,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var cancelButton: UIBarButtonItem!
     @IBOutlet weak var separatorView: UIView!
+    @IBOutlet weak var commandView: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var commandViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var createFolderButton: UIButton!
@@ -86,6 +87,26 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         }
     }
    
+    var backgroundCellColor: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemBackground
+            } else {
+                return .white
+            }
+        }
+    }
+    
+    var commandViewColor: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .secondarySystemBackground
+            } else {
+                return UIColor(hex: "#F2F2F7FF")!
+            }
+        }
+    }
+    
     // MARK: - Life Cycle
 
     override func viewDidLoad() {
@@ -104,8 +125,9 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         refreshControl.addTarget(self, action: #selector(reloadDatasource), for: .valueChanged)
         
         // Empty
-        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -50, delegate: self)
+        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -100, delegate: self)
         
+        commandView.backgroundColor = commandViewColor
         separatorHeightConstraint.constant = 0.3
         separatorView.backgroundColor = separatorColor
         tableView.separatorColor = separatorColor
@@ -572,7 +594,8 @@ extension NCShareExtension: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
                
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-       
+        cell.backgroundColor = backgroundCellColor
+        
         let imageCell = cell.viewWithTag(10) as? UIImageView
         let fileNameCell = cell.viewWithTag(20) as? UILabel
         let renameButton = cell.viewWithTag(30) as? NCShareExtensionButtonWithIndexPath
