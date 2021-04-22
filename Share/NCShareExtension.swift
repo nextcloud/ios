@@ -336,6 +336,38 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     
     @IBAction func actionUpload(_ sender: UIButton) {
         
+        if let fileName = filesName.first {
+            
+            filesName.removeFirst()
+            let ocId = NSUUID().uuidString
+            let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+                
+            if NCUtilityFileSystem.shared.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: filePath) {
+                
+                NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+                                
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: activeAccount.account, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "", contentType: "", livePhoto: false, chunk: false)
+                
+                metadataForUpload.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+                metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
+                metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+            
+                NCNetworking.shared.upload(metadata: metadataForUpload) { (errorCode, errorDescription) in
+                    
+                    NCUtility.shared.stopActivityIndicator()
+                    
+                    if errorCode == 0 {
+                        self.actionUpload(UIButton())
+                    } else {
+                        self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+                    }
+                }
+            }
+        } else {
+            extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
+            return
+        }
     }
     
     @objc func backButtonTapped(sender: Any) {
@@ -527,30 +559,6 @@ extension NCShareExtension: UICollectionViewDataSource {
                 cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
             }
             
-        } else {
-            
-            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-            } else {
-                if metadata.hasPreview {
-                    cell.imageItem.backgroundColor = .lightGray
-                } else {
-                    if metadata.iconName.count > 0 {
-                        cell.imageItem.image = UIImage.init(named: metadata.iconName)
-                    } else {
-                        cell.imageItem.image = NCBrandColor.cacheImages.file
-                    }
-                }
-            }
-            
-            cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
-            
-            // image local
-            if dataSource.metadataOffLine.contains(metadata.ocId) {
-                cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
-            } else if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                cell.imageLocal.image = NCBrandColor.cacheImages.local
-            }
         }
         
         // image Favorite
