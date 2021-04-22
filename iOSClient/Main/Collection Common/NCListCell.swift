@@ -47,7 +47,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
     @IBOutlet weak var progressView: UIProgressView!
     
     @IBOutlet weak var separator: UIView!
-    
+    @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
+
     var filePreviewImageView : UIImageView {
         get{
          return imageItem
@@ -146,6 +147,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
             backgroundView = nil
             separator.isHidden = false
         }
+    }
+    
+    func separatorHeight(size: CGFloat) {
+        separatorHeightConstraint.constant = size
     }
 }
 

@@ -161,6 +161,7 @@
                 <outlet property="labelTitle" destination="UtT-L6-mgW" id="Xv6-zM-2v1"/>
                 <outlet property="progressView" destination="m2p-oJ-j15" id="yFv-KS-nEy"/>
                 <outlet property="separator" destination="Egg-cb-EhZ" id="uhq-Nc-z8K"/>
+                <outlet property="separatorHeightConstraint" destination="G5S-67-boG" id="B6g-qe-MTb"/>
             </connections>
             <point key="canvasLocation" x="97.599999999999994" y="129.53523238380811"/>
         </collectionViewCell>

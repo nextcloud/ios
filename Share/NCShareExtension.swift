@@ -64,6 +64,30 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     private let refreshControl = UIRefreshControl()
     private var activeAccount: tableAccount!
         
+    // COLOR
+    
+    var labelColor: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .label
+            } else {
+                return .black
+            }
+        }
+    }
+    
+    var separatorColor: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .separator
+            } else {
+                return UIColor(hex: "#3C3C434A")!
+            }
+        }
+    }
+   
+    // MARK: - Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -81,10 +105,10 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         
         // Empty
         emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -50, delegate: self)
-        separatorView.backgroundColor = NCBrandColor.shared.separator
-        tableView.separatorColor = .red //NCBrandColor.shared.separator
-        tableView.layer.borderColor = NCBrandColor.shared.separator.cgColor
-        tableView.layer.borderWidth = 1.0
+        separatorView.backgroundColor = separatorColor
+        tableView.separatorColor = separatorColor
+        //tableView.layer.borderColor = separatorColor.cgColor
+        tableView.layer.borderWidth = 0
         tableView.layer.cornerRadius = 10.0
         tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: 1)))
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
@@ -167,11 +191,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
-        if traitCollection.userInterfaceStyle == .dark {
-            
-        } else {
-            
-        }
+        collectionView.reloadData()
+        tableView.reloadData()
     }
     
     // MARK: -
@@ -297,8 +318,15 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         setNavigationBar()
     }
     
-    @objc func profileButtonTapped(sender: Any) {
+    @objc func renameButtonPressed(sender: NCShareExtensionButtonWithIndexPath) {
         
+    }
+    
+    @objc func deleteButtonPressed(sender: NCShareExtensionButtonWithIndexPath) {
+        
+    }
+    
+    @objc func profileButtonTapped(sender: Any) {
     }
     
     func tapShareListItem(with objectId: String, sender: Any) {
@@ -370,8 +398,9 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.objectId = metadata.ocId
         cell.indexPath = indexPath
         cell.labelTitle.text = metadata.fileNameView
-        cell.labelTitle.textColor = NCBrandColor.shared.textView
-        cell.separator.backgroundColor = NCBrandColor.shared.separator
+        cell.labelTitle.textColor = labelColor
+        cell.separator.backgroundColor = separatorColor
+        cell.separatorHeight(size: 0.5)
         
         cell.imageSelect.image = nil
         cell.imageStatus.image = nil
@@ -513,7 +542,9 @@ extension NCShareExtension: UITableViewDataSource {
        
         let imageCell = cell.viewWithTag(10) as? UIImageView
         let fileNameCell = cell.viewWithTag(20) as? UILabel
-        
+        let renameButton = cell.viewWithTag(30) as? NCShareExtensionButtonWithIndexPath
+        let deleteButton = cell.viewWithTag(40) as? NCShareExtensionButtonWithIndexPath
+
         imageCell?.layer.cornerRadius = 6
         imageCell?.layer.masksToBounds = true
 
@@ -524,6 +555,14 @@ extension NCShareExtension: UITableViewDataSource {
         }
         
         fileNameCell?.text = fileName
+        
+        renameButton?.setImage(NCUtility.shared.loadImage(named: "pencil").image(color: labelColor, size: 15), for: .normal)
+        renameButton?.indexPath = indexPath
+        renameButton?.addTarget(self, action:#selector(renameButtonPressed(sender:)), for: .touchUpInside)
+
+        deleteButton?.setImage(NCUtility.shared.loadImage(named: "trash").image(color: .red, size: 15), for: .normal)
+        deleteButton?.indexPath = indexPath
+        deleteButton?.addTarget(self, action:#selector(deleteButtonPressed(sender:)), for: .touchUpInside)
         
         return cell
     }
@@ -743,4 +782,8 @@ extension NCShareExtension {
             completion(filesName, outError)
         }
     }
+}
+
+class NCShareExtensionButtonWithIndexPath: UIButton {
+    var indexPath:IndexPath?
 }
