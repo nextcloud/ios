@@ -161,6 +161,14 @@ protocol NCListCellDelegate {
     func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer)
 }
 
+// optional func
+extension NCListCellDelegate {
+    func tapShareListItem(with objectId: String, sender: Any) {}
+    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {}
+    func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {}
+    func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {}
+}
+
 // MARK: - List Layout
 
 class NCListLayout: UICollectionViewFlowLayout {

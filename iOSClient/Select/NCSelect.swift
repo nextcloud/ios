@@ -316,33 +316,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         let sortMenu = NCSortMenu()
         sortMenu.toggleMenu(viewController: self, key: keyLayout, sortButton: sender as? UIButton, serverUrl: serverUrl)
     }
-    
-    func tapMoreHeader(sender: Any) {
-    }
-    
-    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
-    }
-    
-    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
-    }
-    
-    func tapShareListItem(with objectId: String, sender: Any) {
-    }
-    
-    func tapRichWorkspace(sender: Any) {
-    }
-    
-    func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
-    }
-    
-    func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
-    }
-    
-    func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
-    }
-    
-    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
-    }
 }
 
 // MARK: - Collection View

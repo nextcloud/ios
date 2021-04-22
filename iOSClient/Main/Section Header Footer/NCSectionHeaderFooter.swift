@@ -145,6 +145,14 @@ protocol NCSectionHeaderMenuDelegate {
     func tapRichWorkspace(sender: Any)
 }
 
+// optional func
+extension NCSectionHeaderMenuDelegate {
+    func tapSwitchHeader(sender: Any) {}
+    func tapMoreHeader(sender: Any) {}
+    func tapOrderHeader(sender: Any) {}
+    func tapRichWorkspace(sender: Any) {}
+}
+
 class NCSectionFooter: UICollectionReusableView {
     
     @IBOutlet weak var labelSection: UILabel!

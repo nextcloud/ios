@@ -61,7 +61,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
     
-    private var shares: [tableShare]?
     private let refreshControl = UIRefreshControl()
     private var activeAccount: tableAccount!
         
@@ -206,7 +205,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
             
-        shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
         reloadDatasource(withLoadFolder: true)
         setNavigationBar()
     }
@@ -377,7 +375,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         }
         serverUrl.removeLast()
         
-        shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
         reloadDatasource(withLoadFolder: true)
         setNavigationBar()
     }
@@ -443,18 +440,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             }
         }
     }
-    
-    func tapShareListItem(with objectId: String, sender: Any) {
-    }
-    
-    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
-    }
-    
-    func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
-    }
-    
-    func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
-    }
 }
 
 // MARK: - Collection View
@@ -463,13 +448,13 @@ extension NCShareExtension: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
-        guard let serverUrlTemp = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else { return }
-        
-        serverUrl = serverUrlTemp
-        shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
-        reloadDatasource(withLoadFolder: true)
-        setNavigationBar()
+        if let metadata = dataSource.cellForItemAt(indexPath: indexPath) {
+            if let serverUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)  {
+                self.serverUrl = serverUrl
+                reloadDatasource(withLoadFolder: true)
+                setNavigationBar()
+            }
+        }
     }
 }
 

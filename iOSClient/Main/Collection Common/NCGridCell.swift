@@ -129,6 +129,13 @@ protocol NCGridCellDelegate {
     func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer)
 }
 
+// optional func
+extension NCGridCellDelegate {
+    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {}
+    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {}
+    func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {}
+}
+
 // MARK: - Grid Layout
 
 class NCGridLayout: UICollectionViewFlowLayout {
