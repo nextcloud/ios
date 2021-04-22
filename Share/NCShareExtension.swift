@@ -157,20 +157,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             getFilesExtensionContext { (filesName, error) in
                 DispatchQueue.main.async {
                     self.filesName = filesName
-                    if filesName.count == 0 {
-                        self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
-                        return
-                    } else {
-                        if filesName.count < 3 {
-                            self.commandViewHeightConstraint.constant = 140 + (self.heightRowTableView * CGFloat(filesName.count))
-                        } else  {
-                            self.commandViewHeightConstraint.constant = 140 + (self.heightRowTableView * 3)
-                        }
-                        if filesName.count <= 3 {
-                            self.tableView.isScrollEnabled = false
-                        }
-                        self.tableView.reloadData()
-                    }
+                    self.setCommandView()
                 }
             }
                 
@@ -196,7 +183,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     }
     
     // MARK: -
-    
+
     func setNavigationBar() {
         
         cancelButton.title = NSLocalizedString("_cancel_", comment: "")
@@ -254,6 +241,24 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             
             navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: backButton), space, UIBarButtonItem(customView: profileButton)], animated: true)
             navigationItem.title = ""
+        }
+    }
+    
+    func setCommandView() {
+        
+        if filesName.count == 0 {
+            self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+            return
+        } else {
+            if filesName.count < 3 {
+                self.commandViewHeightConstraint.constant = 140 + (self.heightRowTableView * CGFloat(filesName.count))
+            } else  {
+                self.commandViewHeightConstraint.constant = 140 + (self.heightRowTableView * 3)
+            }
+            if filesName.count <= 3 {
+                self.tableView.isScrollEnabled = false
+            }
+            self.tableView.reloadData()
         }
     }
     
@@ -323,7 +328,10 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     }
     
     @objc func deleteButtonPressed(sender: NCShareExtensionButtonWithIndexPath) {
-        
+        if let index = sender.indexPath?.row {
+            filesName.remove(at: index)
+            setCommandView()
+        }
     }
     
     @objc func profileButtonTapped(sender: Any) {
