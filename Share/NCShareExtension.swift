@@ -86,7 +86,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         tableView.layer.borderColor = NCBrandColor.shared.separator.cgColor
         tableView.layer.borderWidth = 1.0
         tableView.layer.cornerRadius = 10.0
-        tableView.tableFooterView = UIView()
+        tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: 1)))
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
         uploadButton.setTitle(NSLocalizedString("_save_files_", comment: ""), for: .normal)
         
@@ -137,18 +137,15 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                         self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
                         return
                     } else {
-                        UIView.animate(withDuration: 1) {
-                            if filesName.count < 3 {
-                                self.commandViewHeightConstraint.constant = 140 + (self.heightRowTableView * CGFloat(filesName.count))
-                            } else  {
-                                self.commandViewHeightConstraint.constant = 140 + (self.heightRowTableView * 3)
-                            }
-                        } completion: { (_) in
-                            if filesName.count <= 3 {
-                                self.tableView.isScrollEnabled = false
-                            }
-                            self.tableView.reloadData()
+                        if filesName.count < 3 {
+                            self.commandViewHeightConstraint.constant = 140 + (self.heightRowTableView * CGFloat(filesName.count))
+                        } else  {
+                            self.commandViewHeightConstraint.constant = 140 + (self.heightRowTableView * 3)
                         }
+                        if filesName.count <= 3 {
+                            self.tableView.isScrollEnabled = false
+                        }
+                        self.tableView.reloadData()
                     }
                 }
             }
@@ -516,6 +513,9 @@ extension NCShareExtension: UITableViewDataSource {
        
         let imageCell = cell.viewWithTag(10) as? UIImageView
         let fileNameCell = cell.viewWithTag(20) as? UILabel
+        
+        imageCell?.layer.cornerRadius = 6
+        imageCell?.layer.masksToBounds = true
 
         let fileName = filesName[indexPath.row]
         imageCell?.image = NCUtility.shared.loadImage(named: "file")

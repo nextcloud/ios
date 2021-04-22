@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="0HI-k1-SD0">
-                                <rect key="frame" x="0.0" y="88" width="414" height="508"/>
+                                <rect key="frame" x="0.0" y="88" width="414" height="618"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="D7P-75-aB1">
                                     <size key="itemSize" width="0.0" height="0.0"/>
@@ -33,7 +33,7 @@
                                 </connections>
                             </collectionView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FaV-kz-PEs">
-                                <rect key="frame" x="0.0" y="596" width="414" height="300"/>
+                                <rect key="frame" x="0.0" y="706" width="414" height="190"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LAs-iQ-u1X">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="1"/>
@@ -43,7 +43,7 @@
                                         </constraints>
                                     </view>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="eU0-LW-AnG">
-                                        <rect key="frame" x="10" y="71" width="394" height="159"/>
+                                        <rect key="frame" x="10" y="71" width="394" height="49"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <prototypes>
                                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="6Kt-n0-i8J">
@@ -53,7 +53,7 @@
                                                     <rect key="frame" x="0.0" y="0.0" width="394" height="50"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
-                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" tag="10" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="uvl-De-S9p">
+                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" tag="10" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="uvl-De-S9p">
                                                             <rect key="frame" x="15" y="5" width="40" height="40"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="40" id="Vpb-6e-ta9"/>
@@ -90,7 +90,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1xT-vl-sQp">
-                                        <rect key="frame" x="175" y="240" width="64" height="30"/>
+                                        <rect key="frame" x="175" y="130" width="64" height="30"/>
                                         <state key="normal" title="save files"/>
                                         <connections>
                                             <action selector="actionUpload:" destination="VYq-xA-D35" eventType="touchUpInside" id="ENy-P1-SDo"/>
@@ -111,7 +111,7 @@
                                 <color key="backgroundColor" systemColor="systemGray6Color"/>
                                 <constraints>
                                     <constraint firstItem="eU0-LW-AnG" firstAttribute="top" secondItem="LAs-iQ-u1X" secondAttribute="bottom" constant="70" id="14j-96-VwG"/>
-                                    <constraint firstAttribute="height" constant="300" id="50u-lA-AUo"/>
+                                    <constraint firstAttribute="height" constant="190" id="50u-lA-AUo"/>
                                     <constraint firstAttribute="bottom" secondItem="1xT-vl-sQp" secondAttribute="bottom" constant="30" id="7vg-42-5oO"/>
                                     <constraint firstItem="eU0-LW-AnG" firstAttribute="leading" secondItem="FaV-kz-PEs" secondAttribute="leading" constant="10" id="E40-Ul-MEV"/>
                                     <constraint firstItem="WHW-J5-8gq" firstAttribute="leading" secondItem="FaV-kz-PEs" secondAttribute="leading" constant="10" id="FQu-Xp-l7a"/>
