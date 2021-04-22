@@ -33,10 +33,15 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     @IBOutlet weak var commandView: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var commandViewHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var createFolderButton: UIButton!
+    
+    @IBOutlet weak var createFolderView: UIView!
+    @IBOutlet weak var createFolderImage: UIImageView!
     @IBOutlet weak var createFolderLabel: UILabel!
-    @IBOutlet weak var uploadButton: UIButton!
 
+    @IBOutlet weak var uploadView: UIView!
+    @IBOutlet weak var uploadImage: UIImageView!
+    @IBOutlet weak var uploadLabel: UILabel!
+    
     // -------------------------------------------------------------
     var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
@@ -126,17 +131,30 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         // Empty
         emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -100, delegate: self)
         
+        // Command view
         commandView.backgroundColor = commandViewColor
-        separatorHeightConstraint.constant = 0.3
         separatorView.backgroundColor = separatorColor
-        tableView.separatorColor = separatorColor
-        //tableView.layer.borderColor = separatorColor.cgColor
-        //tableView.layer.borderWidth = 0
-        tableView.layer.cornerRadius = 10.0
-        tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: 1)))
-        createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
-        uploadButton.setTitle(NSLocalizedString("_save_files_", comment: ""), for: .normal)
+        separatorHeightConstraint.constant = 0.3
         
+        // Table view
+        tableView.separatorColor = separatorColor
+        tableView.layer.cornerRadius = 10
+        tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: 1)))
+
+        // Create folder
+        createFolderView.layer.cornerRadius = 10
+        createFolderImage.image = UIImage(named: "folder")?.image(color: labelColor, size: 15)
+        createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
+        let createFolderGesture = UITapGestureRecognizer(target: self, action:  #selector(actionCreateFolder))
+        createFolderView.addGestureRecognizer(createFolderGesture)
+        
+        // Upload
+        uploadView.layer.cornerRadius = 10
+        uploadImage.image = UIImage(named: "folder")?.image(color: labelColor, size: 15)
+        uploadLabel.text = NSLocalizedString("_save_files_", comment: "")
+        let uploadGesture = UITapGestureRecognizer(target: self, action:  #selector(actionUpload))
+        uploadView.addGestureRecognizer(uploadGesture)
+                
         // LOG
         let levelLog = CCUtility.getLogLevel()
         let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
@@ -308,7 +326,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
     }
     
-    @IBAction func actionCreateFolder(_ sender: UIButton) {
+    @objc func actionCreateFolder() {
         
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message:"", preferredStyle: .alert)
         
@@ -332,7 +350,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         self.present(alertController, animated: true, completion:nil)
     }
     
-    @IBAction func actionUpload(_ sender: UIButton) {
+    @objc func actionUpload() {
         
         if let fileName = filesName.first {
             
@@ -356,7 +374,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                     NCUtility.shared.stopActivityIndicator()
                     
                     if errorCode == 0 {
-                        self.actionUpload(UIButton())
+                        self.actionUpload()
                     } else {
                         self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
                     }

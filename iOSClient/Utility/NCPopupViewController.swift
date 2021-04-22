@@ -1,7 +1,7 @@
 //
 //  NCPopupViewController.swift
 //
-//  Based on  EzPopup by Huy Nguyen
+//  Based on EzPopup by Huy Nguyen
 //  Modified by Marino Faggiana for Nextcloud progect.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
@@ -23,7 +23,6 @@ import UIKit
 
 public protocol NCPopupViewControllerDelegate: class {
     
-    // It is called when pop up is dismissed by tap outside
     func popupViewControllerDidDismissByTapGesture(_ sender: NCPopupViewController)
 }
 
