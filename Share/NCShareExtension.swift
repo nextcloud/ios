@@ -60,7 +60,9 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     private var groupBy = ""
     private var titleButton = ""
     private var itemForLine = 0
+    
     private var heightRowTableView: CGFloat = 50
+    private var heightCommandView: CGFloat = 170
     
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
@@ -143,14 +145,14 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
 
         // Create folder
         createFolderView.layer.cornerRadius = 10
-        createFolderImage.image = UIImage(named: "folder")?.image(color: labelColor, size: 15)
+        createFolderImage.image = NCUtility.shared.loadImage(named: "folder.badge.plus", color: labelColor)
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
         let createFolderGesture = UITapGestureRecognizer(target: self, action:  #selector(actionCreateFolder))
         createFolderView.addGestureRecognizer(createFolderGesture)
         
         // Upload
         uploadView.layer.cornerRadius = 10
-        uploadImage.image = UIImage(named: "folder")?.image(color: labelColor, size: 15)
+        uploadImage.image = NCUtility.shared.loadImage(named: "square.and.arrow.up", color: labelColor)
         uploadLabel.text = NSLocalizedString("_save_files_", comment: "")
         let uploadGesture = UITapGestureRecognizer(target: self, action:  #selector(actionUpload))
         uploadView.addGestureRecognizer(uploadGesture)
@@ -287,15 +289,15 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     }
     
     func setCommandView() {
-        
+                
         if filesName.count == 0 {
             self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
             return
         } else {
             if filesName.count < 3 {
-                self.commandViewHeightConstraint.constant = 140 + (self.heightRowTableView * CGFloat(filesName.count))
+                self.commandViewHeightConstraint.constant = heightCommandView + (self.heightRowTableView * CGFloat(filesName.count))
             } else  {
-                self.commandViewHeightConstraint.constant = 140 + (self.heightRowTableView * 3)
+                self.commandViewHeightConstraint.constant = heightCommandView + (self.heightRowTableView * 3)
             }
             if filesName.count <= 3 {
                 self.tableView.isScrollEnabled = false
@@ -660,7 +662,7 @@ extension NCShareExtension: UITableViewDataSource {
         imageCell?.layer.masksToBounds = true
 
         let fileName = filesName[indexPath.row]
-        imageCell?.image = NCUtility.shared.loadImage(named: "file")
+        imageCell?.image = NCUtility.shared.loadImage(named: "doc", color: NCBrandColor.shared.customer)
         if let image = UIImage(contentsOfFile: (NSTemporaryDirectory() + fileName)) {
             imageCell?.image = image
         }
