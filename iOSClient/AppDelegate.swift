@@ -612,7 +612,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     // MARK: - Account Request
     
-    func changeAccountRequestAddAccount() {
+    func changeAccountRequestAddAccount(account: String) {
+        NCManageDatabase.shared.setAccountActive(account)
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
             
             NCOperationQueue.shared.cancelAllQueue()

@@ -663,7 +663,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.collectionView.reloadData()
     }
     
-    func changeAccountRequestAddAccount() {
+    func changeAccountRequestAddAccount(account: String) {
+        NCManageDatabase.shared.setAccountActive(account)
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
             
             NCOperationQueue.shared.cancelAllQueue()

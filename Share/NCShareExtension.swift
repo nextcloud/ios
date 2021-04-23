@@ -178,7 +178,11 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         
         if serverUrl == "" {
         
-            setAccount()
+            guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else {
+                extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
+                return
+            }
+            setAccount(account: activeAccount.account)
             
             getFilesExtensionContext { (filesName, error) in
                 DispatchQueue.main.async {
@@ -206,9 +210,9 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     
     // MARK: -
 
-    func setAccount() {
+    func setAccount(account: String) {
         
-        guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else {
+        guard let activeAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
             extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
             return
         }
@@ -259,7 +263,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account) {
              
-            let activeAccount = NCManageDatabase.shared.getActiveAccount()
+
             var title = "  "
             if activeAccount?.alias == "" {
                 title = title + (activeAccount?.user ?? "")
@@ -449,8 +453,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         }
     }
     
-    func changeAccountRequestAddAccount() {
-        setAccount()
+    func changeAccountRequestAddAccount(account: String) {
+        setAccount(account: account)
     }
     
     @objc func profileButtonTapped(sender: Any) {

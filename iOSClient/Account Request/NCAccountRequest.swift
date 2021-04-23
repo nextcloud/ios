@@ -26,13 +26,13 @@ import NCCommunication
 
 public protocol NCAccountRequestDelegate {
     func accountRequestAddAccount()
-    func changeAccountRequestAddAccount()
+    func changeAccountRequestAddAccount(account: String)
 }
 
 // optional func
 public extension NCAccountRequestDelegate {
     func accountRequestAddAccount() {}
-    func changeAccountRequestAddAccount() {}
+    func changeAccountRequestAddAccount(account: String) {}
 }
 
 class NCAccountRequest: UIViewController {
@@ -166,9 +166,8 @@ extension NCAccountRequest: UITableViewDelegate {
             let account = accounts[indexPath.row]
             let activeAccount = NCManageDatabase.shared.getActiveAccount()
             if account.account != activeAccount?.account {
-                NCManageDatabase.shared.setAccountActive(account.account)
                 dismiss(animated: true) {
-                    self.delegate?.changeAccountRequestAddAccount()
+                    self.delegate?.changeAccountRequestAddAccount(account: account.account)
                 }
             } else {
                 dismiss(animated: true)
