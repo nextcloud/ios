@@ -45,6 +45,10 @@ class NCNetworkingProcessUpload: NSObject {
     func startTimer() {
         timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(process), userInfo: nil, repeats: true)
     }
+    
+    func stopTimer() {
+        timerProcess?.invalidate()
+    }
 
     @objc private func process() {
 
@@ -56,7 +60,7 @@ class NCNetworkingProcessUpload: NSObject {
         let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
         counterUpload = metadatasUpload.count
         
-        timerProcess?.invalidate()
+        stopTimer()
         
         print("[LOG] PROCESS-UPLOAD \(counterUpload)")
     

@@ -201,6 +201,13 @@ class NCUtility: NSObject {
         }
         return path.contains("CoreSimulator") || path.contains("sandboxReceipt")
     }
+    
+    @objc func isSimulator() -> Bool {
+        guard let path = Bundle.main.appStoreReceiptURL?.path else {
+            return false
+        }
+        return path.contains("CoreSimulator")
+    }
 
     @objc func isRichDocument(_ metadata: tableMetadata) -> Bool {
         

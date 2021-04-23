@@ -220,8 +220,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
         }
-
+        
         NCCommunicationCommon.shared.writeLog("Application will enter in foreground")
+        
+        // START TIMER UPLOAD PROCESS
+        if NCUtility.shared.isSimulator() {
+            networkingProcessUpload?.startTimer()
+        }
         
         // Request Passcode
         passcodeWithAutomaticallyPromptForBiometricValidation(true)
@@ -257,6 +262,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationDidEnterBackground(_ application: UIApplication) {
         
         if account == "" { return }
+        
+        // STOP TIMER UPLOAD PROCESS
+        if NCUtility.shared.isSimulator() {
+            networkingProcessUpload?.stopTimer()
+        }
         
         NCCommunicationCommon.shared.writeLog("Application did enter in background")
         
