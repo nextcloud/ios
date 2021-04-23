@@ -381,7 +381,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                 }
                 
                 // CHUNCK
-                if chunckSize != 0 && metadata.size <= chunckSize {
+                if chunckSize != 0 && metadata.size > chunckSize {
                     metadata.chunk = true
                 }
                 
