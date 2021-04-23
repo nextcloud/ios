@@ -177,6 +177,8 @@
     [super viewDidLoad];
     
     self.title = NSLocalizedString(@"_settings_", nil);
+    self.view.backgroundColor = NCBrandColor.shared.systemGroupedBackground;
+    self.tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground;
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:NCGlobal.shared.notificationCenterChangeTheming object:nil];
@@ -199,9 +201,6 @@
 
 - (void)changeTheming
 {
-    self.view.backgroundColor = NCBrandColor.shared.backgroundSettings;
-    self.tableView.backgroundColor = NCBrandColor.shared.backgroundSettings;
-    
     [self initializeForm];
     [self reloadForm];
 }

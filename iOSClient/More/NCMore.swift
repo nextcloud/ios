@@ -47,10 +47,12 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.navigationItem.title = NSLocalizedString("_more_", comment: "")
+        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+
         tableView.delegate = self
         tableView.dataSource = self
-
-        self.navigationItem.title = NSLocalizedString("_more_", comment: "")
+        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
 
         tableView.register(UINib.init(nibName: "NCMoreUserCell", bundle: nil), forCellReuseIdentifier: "userCell")
         
@@ -76,9 +78,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // MARK: - NotificationCenter
 
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundSettings
         progressQuota.progressTintColor = NCBrandColor.shared.brandElement
-        tableView.backgroundColor = NCBrandColor.shared.backgroundSettings
         tableView.separatorColor = NCBrandColor.shared.separator
         tableView.reloadData()
     }

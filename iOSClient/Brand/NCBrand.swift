@@ -145,7 +145,7 @@ class NCBrandColor: NSObject {
     @objc public var connectionNo:          UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
     @objc public var encrypted:             UIColor = .red
     
-    @objc public var systemBackground:        UIColor {
+    @objc public var systemBackground: UIColor {
         get {
             if #available(iOS 13, *) {
                 return .systemBackground
@@ -154,7 +154,15 @@ class NCBrandColor: NSObject {
             }
         }
     }
-    
+    @objc public var systemGroupedBackground: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemGroupedBackground
+            } else {
+                return UIColor(red: 95.0/255.0, green: 95.0/255.0, blue: 97.0/255.0, alpha: 1.0)
+            }
+        }
+    }
     @objc public var label: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -166,7 +174,6 @@ class NCBrandColor: NSObject {
     }
     
     @objc public var backgroundViewForm:    UIColor = .white
-    @objc public var backgroundSettings:    UIColor = UIColor(red: 242.0/255.0, green: 242.0/255.0, blue: 247.0/255.0, alpha: 1.0)  // Gray (6) Light
     @objc public var cellSettings:          UIColor = .white
     @objc public var separator:             UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
     @objc public var tabBar:                UIColor = .white
@@ -178,7 +185,6 @@ class NCBrandColor: NSObject {
     @objc public let yellowFavorite:        UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
     @objc public let textInfo:              UIColor = UIColor(red: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 1.0)
     @objc public var select:                UIColor = .lightGray
-    @objc public var avatarBorder:          UIColor = .white
 
     override init() {
         self.brand = self.customer
@@ -225,11 +231,9 @@ class NCBrandColor: NSObject {
             backgroundViewForm = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)              // Gray (6) Dark
 
             cellSettings = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)                    // Gray (6) Dark
-            backgroundSettings = .black
             
             separator = UIColor(red: 60.0/255.0, green: 60.0/255.0, blue: 60.0/255.0, alpha: 1.0)
             select = UIColor.white.withAlphaComponent(0.2)
-            avatarBorder = .black
             
         } else {
             
@@ -237,12 +241,10 @@ class NCBrandColor: NSObject {
             
             backgroundViewForm = .white
 
-            backgroundSettings = UIColor(red: 242.0/255.0, green: 242.0/255.0, blue: 247.0/255.0, alpha: 1.0)           // Gray (6) Light
             cellSettings = .white
             
             separator = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
             select = self.brandElement.withAlphaComponent(0.1)
-            avatarBorder = .white
         }
     }
     

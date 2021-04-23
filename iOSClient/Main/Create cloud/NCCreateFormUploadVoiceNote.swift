@@ -71,11 +71,14 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        
+        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+
         // title
         self.title = NSLocalizedString("_voice_memo_title_", comment: "")
         
@@ -102,10 +105,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundSettings
-        tableView.backgroundColor = NCBrandColor.shared.backgroundSettings
         tableView.reloadData()
-                
         initializeForm()
     }
     

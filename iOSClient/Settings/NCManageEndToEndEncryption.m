@@ -175,6 +175,9 @@
     
     self.title = NSLocalizedString(@"_e2e_settings_", nil);
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    self.view.backgroundColor = NCBrandColor.shared.systemGroupedBackground;
+    
+    self.tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground;
         
     // E2EE
     self.endToEndInitialize = [NCEndToEndInitialize new];
@@ -200,9 +203,6 @@
 
 - (void)changeTheming
 {
-    self.view.backgroundColor = NCBrandColor.shared.backgroundSettings;
-    self.tableView.backgroundColor = NCBrandColor.shared.backgroundSettings;
-    
     [self.tableView reloadData];
     [self initializeForm];
 }

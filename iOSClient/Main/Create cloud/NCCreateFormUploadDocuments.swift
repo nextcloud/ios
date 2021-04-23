@@ -56,6 +56,8 @@ import NCCommunication
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
             fileNameFolder = "/"
         } else {
@@ -63,7 +65,10 @@ import NCCommunication
         }
         
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-                
+        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+
+        collectionView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+
         let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
         let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         
@@ -83,9 +88,6 @@ import NCCommunication
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundSettings
-        collectionView.backgroundColor = NCBrandColor.shared.backgroundSettings
-        tableView.backgroundColor = NCBrandColor.shared.backgroundSettings
         collectionView.reloadData()
         tableView.reloadData()
         initializeForm()

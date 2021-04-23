@@ -204,6 +204,9 @@
     
     self.title = NSLocalizedString(@"_settings_autoupload_", nil);
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    self.view.backgroundColor = NCBrandColor.shared.systemGroupedBackground;
+    
+    self.tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:NCGlobal.shared.notificationCenterChangeTheming object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain) name:NCGlobal.shared.notificationCenterInitializeMain object:nil];
@@ -243,8 +246,6 @@
 
 - (void)changeTheming
 {
-    self.view.backgroundColor = NCBrandColor.shared.backgroundSettings;
-    self.tableView.backgroundColor = NCBrandColor.shared.backgroundSettings;
     [self.tableView reloadData];
     [self initializeForm];
     [self reloadForm];

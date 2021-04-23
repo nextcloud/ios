@@ -74,6 +74,9 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         
         self.title = NSLocalizedString("_upload_photos_videos_", comment: "")
         
+        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         
@@ -98,8 +101,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundSettings
-        tableView.backgroundColor = NCBrandColor.shared.backgroundSettings
         tableView.reloadData()
         initializeForm()
         self.reloadForm()

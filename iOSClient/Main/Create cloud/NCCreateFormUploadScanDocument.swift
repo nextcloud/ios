@@ -66,16 +66,16 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         super.viewDidLoad()
         
         self.title = NSLocalizedString("_save_settings_", comment: "")
+        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         
         let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         self.navigationItem.rightBarButtonItem = saveButton
         
-        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
 
         //        self.tableView.sectionHeaderHeight = 10
-        //        self.tableView.sectionFooterHeight = 10
-        //        self.tableView.backgroundColor = NCBrandColor.shared.backgroundSettings
-        
+        //        self.tableView.sectionFooterHeight = 10        
         
         //        let row : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
         //        let rowCell = row.cell(forForm: self)
@@ -90,8 +90,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundSettings
-        tableView.backgroundColor = NCBrandColor.shared.backgroundSettings
         tableView.reloadData()
         initializeForm()
     }
