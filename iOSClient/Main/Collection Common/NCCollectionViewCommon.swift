@@ -1283,7 +1283,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.objectId = metadata.ocId
             cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
-            cell.labelTitle.textColor = NCBrandColor.shared.textView
+            cell.labelTitle.textColor = NCBrandColor.shared.label
             cell.separator.backgroundColor = NCBrandColor.shared.separator
             
             cell.imageSelect.image = nil
@@ -1484,7 +1484,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.objectId = metadata.ocId
             cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
-            cell.labelTitle.textColor = NCBrandColor.shared.textView
+            cell.labelTitle.textColor = NCBrandColor.shared.label
             
             cell.imageSelect.image = nil
             cell.imageStatus.image = nil

@@ -86,11 +86,11 @@ import MarkdownKit
     }
     
     @objc func changeTheming() {
-        if textViewColor != NCBrandColor.shared.textView {
-            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.textView)
+        if textViewColor != NCBrandColor.shared.label {
+            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.label)
             markdownParser.header.font = UIFont.systemFont(ofSize: 25)
             textView.attributedText = markdownParser.parse(richWorkspaceText)
-            textViewColor = NCBrandColor.shared.textView
+            textViewColor = NCBrandColor.shared.label
         }
     }
     

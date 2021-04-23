@@ -85,19 +85,19 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         switchSetExpirationDate.onTintColor = NCBrandColor.shared.brandElement
         
         labelCanReshare?.text = NSLocalizedString("_share_can_reshare_", comment: "")
-        labelCanReshare?.textColor = NCBrandColor.shared.textView
+        labelCanReshare?.textColor = NCBrandColor.shared.label
         labelCanCreate?.text = NSLocalizedString("_share_can_create_", comment: "")
-        labelCanCreate?.textColor = NCBrandColor.shared.textView
+        labelCanCreate?.textColor = NCBrandColor.shared.label
         labelCanChange?.text = NSLocalizedString("_share_can_change_", comment: "")
-        labelCanChange?.textColor = NCBrandColor.shared.textView
+        labelCanChange?.textColor = NCBrandColor.shared.label
         labelCanDelete?.text = NSLocalizedString("_share_can_delete_", comment: "")
-        labelCanDelete?.textColor = NCBrandColor.shared.textView
+        labelCanDelete?.textColor = NCBrandColor.shared.label
         labelSetExpirationDate?.text = NSLocalizedString("_share_expiration_date_", comment: "")
-        labelSetExpirationDate?.textColor = NCBrandColor.shared.textView
+        labelSetExpirationDate?.textColor = NCBrandColor.shared.label
         labelNoteToRecipient?.text = NSLocalizedString("_share_note_recipient_", comment: "")
-        labelNoteToRecipient?.textColor = NCBrandColor.shared.textView
+        labelNoteToRecipient?.textColor = NCBrandColor.shared.label
         labelUnshare?.text = NSLocalizedString("_share_unshare_", comment: "")
-        labelUnshare?.textColor = NCBrandColor.shared.textView
+        labelUnshare?.textColor = NCBrandColor.shared.label
         
         fieldSetExpirationDate.inputView = UIView()
         

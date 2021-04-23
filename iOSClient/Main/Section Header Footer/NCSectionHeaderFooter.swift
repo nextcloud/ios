@@ -76,13 +76,13 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         
         separator.backgroundColor = NCBrandColor.shared.separator
         
-        if textViewColor != NCBrandColor.shared.textView {
-            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.textView)
+        if textViewColor != NCBrandColor.shared.label {
+            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.label)
             markdownParser.header.font = UIFont.systemFont(ofSize: 25)
             if let richWorkspaceText = richWorkspaceText {
                 textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
             }
-            textViewColor = NCBrandColor.shared.textView
+            textViewColor = NCBrandColor.shared.label
             gradient.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
             if traitCollection.userInterfaceStyle == .dark {
                 gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]

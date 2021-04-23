@@ -180,7 +180,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         cell.imageItem.backgroundColor = nil
         
         cell.labelTitle.text = metadata.fileNameView
-        cell.labelTitle.textColor = NCBrandColor.shared.textView
+        cell.labelTitle.textColor = NCBrandColor.shared.label
         
         let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: metadata.urlBase, account: metadata.account)
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")

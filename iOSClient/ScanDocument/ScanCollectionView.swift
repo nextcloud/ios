@@ -77,6 +77,7 @@ class DragDropViewController: UIViewController {
         save.title = NSLocalizedString("_save_", comment: "")
         labelTitlePDFzone.text = NSLocalizedString("_scan_label_document_zone_", comment: "")
         labelTitlePDFzone.backgroundColor = NCBrandColor.shared.systemBackground
+        labelTitlePDFzone.textColor = NCBrandColor.shared.label
 
         segmentControlFilter.setTitle(NSLocalizedString("_filter_original_", comment: ""), forSegmentAt: 0)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 1)
@@ -101,8 +102,6 @@ class DragDropViewController: UIViewController {
     @objc func changeTheming() {
         collectionViewSource.reloadData()
         collectionViewDestination.reloadData()
-
-        labelTitlePDFzone.textColor = NCBrandColor.shared.textView
     }
     
     //MARK: Button Action

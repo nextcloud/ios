@@ -142,7 +142,7 @@ extension NCActivity: UITableViewDelegate {
         
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 13)
-        label.textColor = NCBrandColor.shared.textView
+        label.textColor = NCBrandColor.shared.label
         label.text = CCUtility.getTitleSectionDate(sectionDate[section])
         label.textAlignment = .center
         label.layer.cornerRadius = 11
@@ -183,7 +183,7 @@ extension NCActivity: UITableViewDataSource {
             cell.avatar.isHidden = true
             cell.subjectTrailingConstraint.constant = 10
             cell.didSelectItemEnable = self.didSelectItemEnable
-            cell.subject.textColor = NCBrandColor.shared.textView
+            cell.subject.textColor = NCBrandColor.shared.label
             cell.viewController = self
             
             // icon

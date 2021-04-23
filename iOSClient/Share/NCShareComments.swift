@@ -67,6 +67,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         else{
             labelUser.text = activeAccount.displayName
         }
+        labelUser.textColor = NCBrandColor.shared.label
         
         imageItem.image = UIImage(named: "avatar")
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
@@ -99,7 +100,6 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
     
     @objc func changeTheming() {
         tableView.reloadData()
-        labelUser.textColor = NCBrandColor.shared.textView
     }
     
     @objc func reloadData() {
@@ -210,13 +210,13 @@ extension NCShareComments: UITableViewDataSource {
             }
             // Username
             cell.labelUser.text = tableComments.actorDisplayName
-            cell.labelUser.textColor = NCBrandColor.shared.textView
+            cell.labelUser.textColor = NCBrandColor.shared.label
             // Date
             cell.labelDate.text = CCUtility.dateDiff(tableComments.creationDateTime as Date)
             cell.labelDate.textColor = NCBrandColor.shared.graySoft
             // Message
             cell.labelMessage.text = tableComments.message
-            cell.labelMessage.textColor = NCBrandColor.shared.textView
+            cell.labelMessage.textColor = NCBrandColor.shared.label
             // Button Menu
             if tableComments.actorId == appDelegate.userId {
                 cell.buttonMenu.isHidden = false

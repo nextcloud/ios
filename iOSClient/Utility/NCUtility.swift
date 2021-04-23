@@ -490,7 +490,7 @@ class NCUtility: NSObject {
             
             if self.viewBackgroundActivityIndicator != nil { return }
             
-            activityIndicator.color = NCBrandColor.shared.textView
+            activityIndicator.color = NCBrandColor.shared.label
             activityIndicator.hidesWhenStopped = true
             activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 

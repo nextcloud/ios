@@ -207,27 +207,27 @@ class NCShareCommon: NSObject {
         
         switch shareType {
         case SHARE_TYPE_USER:
-            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_GROUP:
-            return UIImage(named: "shareTypeGroup")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeGroup")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_LINK:
-            return UIImage(named: "shareTypeLink")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeLink")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_EMAIL:
-            return UIImage(named: "shareTypeEmail")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeEmail")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_CONTACT:
-            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_REMOTE:
-            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_CIRCLE:
-            return UIImage(named: "shareTypeCircles")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeCircles")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_GUEST:
-            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_REMOTE_GROUP:
-            return UIImage(named: "shareTypeGroup")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeGroup")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_ROOM:
-            return UIImage(named: "shareTypeRoom")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeRoom")?.imageColor(NCBrandColor.shared.label)
         default:
-            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.label)
         }
     }
 }

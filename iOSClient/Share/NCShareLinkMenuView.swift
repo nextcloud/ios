@@ -100,25 +100,25 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         switchSetExpirationDate.onTintColor = NCBrandColor.shared.brandElement
         
         labelAllowEditing?.text = NSLocalizedString("_share_allow_editing_", comment: "")
-        labelAllowEditing?.textColor = NCBrandColor.shared.textView
+        labelAllowEditing?.textColor = NCBrandColor.shared.label
         labelReadOnly?.text = NSLocalizedString("_share_read_only_", comment: "")
-        labelReadOnly?.textColor = NCBrandColor.shared.textView
+        labelReadOnly?.textColor = NCBrandColor.shared.label
         labelAllowUploadAndEditing?.text = NSLocalizedString("_share_allow_upload_", comment: "")
-        labelAllowUploadAndEditing?.textColor = NCBrandColor.shared.textView
+        labelAllowUploadAndEditing?.textColor = NCBrandColor.shared.label
         labelFileDrop?.text = NSLocalizedString("_share_file_drop_", comment: "")
-        labelFileDrop?.textColor = NCBrandColor.shared.textView
+        labelFileDrop?.textColor = NCBrandColor.shared.label
         labelHideDownload?.text = NSLocalizedString("_share_hide_download_", comment: "")
-        labelHideDownload?.textColor = NCBrandColor.shared.textView
+        labelHideDownload?.textColor = NCBrandColor.shared.label
         labelPasswordProtect?.text = NSLocalizedString("_share_password_protect_", comment: "")
-        labelPasswordProtect?.textColor = NCBrandColor.shared.textView
+        labelPasswordProtect?.textColor = NCBrandColor.shared.label
         labelSetExpirationDate?.text = NSLocalizedString("_share_expiration_date_", comment: "")
-        labelSetExpirationDate?.textColor = NCBrandColor.shared.textView
+        labelSetExpirationDate?.textColor = NCBrandColor.shared.label
         labelNoteToRecipient?.text = NSLocalizedString("_share_note_recipient_", comment: "")
-        labelNoteToRecipient?.textColor = NCBrandColor.shared.textView
+        labelNoteToRecipient?.textColor = NCBrandColor.shared.label
         labelDeleteShareLink?.text = NSLocalizedString("_share_delete_sharelink_", comment: "")
-        labelDeleteShareLink?.textColor = NCBrandColor.shared.textView
+        labelDeleteShareLink?.textColor = NCBrandColor.shared.label
         labelAddAnotherLink?.text = NSLocalizedString("_share_add_sharelink_", comment: "")
-        labelAddAnotherLink?.textColor = NCBrandColor.shared.textView
+        labelAddAnotherLink?.textColor = NCBrandColor.shared.label
         
         fieldSetExpirationDate.inputView = UIView()
         

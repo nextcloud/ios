@@ -341,7 +341,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 } else {
                     cell.displayName?.text = account.displayName + " (" + account.alias + ")"
                 }
-                cell.displayName.textColor = NCBrandColor.shared.textView
+                cell.displayName.textColor = NCBrandColor.shared.label
             }
             cell.selectedBackgroundView = selectionColor
             cell.backgroundColor = NCBrandColor.shared.cellSettings
@@ -352,7 +352,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                     let status = NCUtility.shared.getUserStatus(userIcon: account.userStatusIcon, userStatus: account.userStatusStatus, userMessage: account.userStatusMessage)
                     cell.icon.image = status.onlineStatus
                     cell.status.text = status.statusMessage
-                    cell.status.textColor = NCBrandColor.shared.textView
+                    cell.status.textColor = NCBrandColor.shared.label
                 }
             }
             
@@ -378,7 +378,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
             cell.imageIcon?.image = NCUtility.shared.loadImage(named: item.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = NCBrandColor.shared.textView
+            cell.labelText.textColor = NCBrandColor.shared.label
             
             cell.selectedBackgroundView = selectionColor
             cell.backgroundColor = NCBrandColor.shared.cellSettings

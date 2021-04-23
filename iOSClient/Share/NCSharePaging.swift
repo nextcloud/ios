@@ -77,7 +77,8 @@ class NCSharePaging: UIViewController {
         pagingViewController.backgroundColor = NCBrandColor.shared.systemBackground
         pagingViewController.menuBackgroundColor = NCBrandColor.shared.systemBackground
         pagingViewController.selectedBackgroundColor = NCBrandColor.shared.systemBackground
-       
+        pagingViewController.textColor = NCBrandColor.shared.label
+        pagingViewController.selectedTextColor = NCBrandColor.shared.label
         pagingViewController.metadata = metadata
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
@@ -138,8 +139,6 @@ class NCSharePaging: UIViewController {
     //MARK: - NotificationCenter
     
     @objc func changeTheming() {
-        pagingViewController.textColor = NCBrandColor.shared.textView
-        pagingViewController.selectedTextColor = NCBrandColor.shared.textView
         pagingViewController.indicatorColor = NCBrandColor.shared.brandElement
         (pagingViewController.view as! NCSharePagingView).setupConstraints()
         pagingViewController.reloadMenu()
@@ -288,7 +287,7 @@ class NCSharePagingView: PagingView {
             }
         }
         headerView.fileName.text = metadata?.fileNameView
-        headerView.fileName.textColor = NCBrandColor.shared.textView
+        headerView.fileName.textColor = NCBrandColor.shared.label
         if metadata!.favorite {
             headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
         } else {

@@ -60,7 +60,7 @@ class NCViewerImage: UIViewController {
     private var timeObserver: Any?
     private var rateObserver: Any?
     var pictureInPictureOcId: String = ""
-    var textColor: UIColor = NCBrandColor.shared.textView
+    var textColor: UIColor = NCBrandColor.shared.label
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -106,7 +106,7 @@ class NCViewerImage: UIViewController {
         
         setToolBar()
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.textView, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
         
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationController?.navigationBar.prefersLargeTitles = false
@@ -220,7 +220,7 @@ class NCViewerImage: UIViewController {
         
         if currentMode == .normal {
             view.backgroundColor = NCBrandColor.shared.systemBackground
-            textColor = NCBrandColor.shared.textView
+            textColor = NCBrandColor.shared.label
         }
         toolBar.tintColor = NCBrandColor.shared.brandElement
     }
@@ -672,7 +672,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             
             navigationController?.setNavigationBarHidden(false, animated: false)
             view.backgroundColor = NCBrandColor.shared.systemBackground
-            textColor = NCBrandColor.shared.textView
+            textColor = NCBrandColor.shared.label
             progressView.isHidden = false
             
             currentMode = .normal

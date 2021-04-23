@@ -155,13 +155,21 @@ class NCBrandColor: NSObject {
         }
     }
     
+    @objc public var label: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .label
+            } else {
+                return .black
+            }
+        }
+    }
+    
     @objc public var backgroundViewForm:    UIColor = .white
     @objc public var backgroundSettings:    UIColor = UIColor(red: 242.0/255.0, green: 242.0/255.0, blue: 247.0/255.0, alpha: 1.0)  // Gray (6) Light
     @objc public var cellSettings:          UIColor = .white
-    @objc public var textView:              UIColor = .black
     @objc public var separator:             UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
     @objc public var tabBar:                UIColor = .white
-    @objc public var navigationBar:         UIColor = .white
     @objc public let nextcloud:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
     @objc public let nextcloudSoft:         UIColor = UIColor(red: 90.0/255.0, green: 160.0/255.0, blue: 210.0/255.0, alpha: 1.0)
     @objc public let icon:                  UIColor = UIColor(red: 104.0/255.0, green: 104.0/255.0, blue: 104.0/255.0, alpha: 1.0)
@@ -188,7 +196,7 @@ class NCBrandColor: NSObject {
         
         cacheImages.favorite = NCUtility.shared.loadImage(named: "star.fill", color: yellowFavorite)
         cacheImages.comment = UIImage(named: "comment")!.image(color: graySoft, size: 50)
-        cacheImages.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: textView)
+        cacheImages.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: label)
         cacheImages.offlineFlag = UIImage.init(named: "offlineFlag")!
         cacheImages.local = UIImage.init(named: "local")!
             
@@ -213,10 +221,8 @@ class NCBrandColor: NSObject {
         if dark {
             
             tabBar = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)                          // Gray (6) Dark
-            navigationBar = .black
             
             backgroundViewForm = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)              // Gray (6) Dark
-            textView = .white
 
             cellSettings = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)                    // Gray (6) Dark
             backgroundSettings = .black
@@ -228,10 +234,8 @@ class NCBrandColor: NSObject {
         } else {
             
             tabBar = .white
-            navigationBar = .white
             
             backgroundViewForm = .white
-            textView = .black
 
             backgroundSettings = UIColor(red: 242.0/255.0, green: 242.0/255.0, blue: 247.0/255.0, alpha: 1.0)           // Gray (6) Light
             cellSettings = .white

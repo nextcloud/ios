@@ -88,12 +88,7 @@ public class NCEmptyView: UIView {
     public override func awakeFromNib() {
         super.awakeFromNib()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        changeTheming()
-    }
-    
-    @objc func changeTheming() {
-        emptyTitle.textColor = NCBrandColor.shared.textView
+        emptyTitle.textColor = NCBrandColor.shared.label
     }
 }
 

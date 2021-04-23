@@ -148,7 +148,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.date.text = CCUtility.dateDiff(notification.date as Date)
         cell.date.textColor = .gray
         cell.subject.text = notification.subject
-        cell.subject.textColor = NCBrandColor.shared.textView
+        cell.subject.textColor = NCBrandColor.shared.label
         cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
         cell.message.textColor = .gray
         

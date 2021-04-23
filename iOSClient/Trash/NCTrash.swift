@@ -315,7 +315,7 @@ extension NCTrash: UICollectionViewDataSource {
             cell.objectId = tableTrash.fileId
             cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
-            cell.labelTitle.textColor = NCBrandColor.shared.textView
+            cell.labelTitle.textColor = NCBrandColor.shared.label
             cell.separator.backgroundColor = NCBrandColor.shared.separator
 
             if tableTrash.directory {
@@ -348,7 +348,7 @@ extension NCTrash: UICollectionViewDataSource {
             cell.objectId = tableTrash.fileId
             cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
-            cell.labelTitle.textColor = NCBrandColor.shared.textView
+            cell.labelTitle.textColor = NCBrandColor.shared.label
             
             if tableTrash.directory {
                 cell.imageItem.image = NCBrandColor.cacheImages.folder
