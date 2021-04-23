@@ -43,7 +43,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     @IBOutlet weak var uploadLabel: UILabel!
     
     // -------------------------------------------------------------
-    var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
     var filesName: [String] = []
     // -------------------------------------------------------------
@@ -68,7 +67,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     
     private let refreshControl = UIRefreshControl()
     private var activeAccount: tableAccount!
-        
+    private let chunckSize = CCUtility.getChunkSize() * 1000000
+
     // COLOR
     
     var labelColor: UIColor {
@@ -224,11 +224,12 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
             
         reloadDatasource(withLoadFolder: true)
-        setNavigationBar()
+        setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)
     }
     
-    func setNavigationBar() {
+    func setNavigationBar(navigationTitle: String) {
         
+        navigationItem.title = navigationTitle
         cancelButton.title = NSLocalizedString("_cancel_", comment: "")
 
         // BACK BUTTON
@@ -275,7 +276,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account) {
 
             navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: profileButton)], animated: true)
-            navigationItem.title = titleCurrentFolder
             
         } else {
 
@@ -283,7 +283,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             space.width = 20
             
             navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: backButton), space, UIBarButtonItem(customView: profileButton)], animated: true)
-            navigationItem.title = ""
         }
     }
     
@@ -352,6 +351,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     
     @objc func actionUpload() {
         
+        
         if let fileName = filesName.first {
             
             filesName.removeFirst()
@@ -362,20 +362,31 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                 
                 NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
                                 
-                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: activeAccount.account, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "", contentType: "", livePhoto: false, chunk: false)
+                let metadata = NCManageDatabase.shared.createMetadata(account: activeAccount.account, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "", contentType: "", livePhoto: false, chunk: false)
                 
-                metadataForUpload.session = NCCommunicationCommon.shared.sessionIdentifierUpload
-                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-                metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
-                metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+                metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+                metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
+                metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
+                metadata.status = NCGlobal.shared.metadataStatusWaitUpload
             
-                NCNetworking.shared.upload(metadata: metadataForUpload) { (errorCode, errorDescription) in
+                // E2EE
+                if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
+                    metadata.e2eEncrypted = true
+                }
+                
+                // CHUNCK
+                if chunckSize != 0 && metadata.size <= chunckSize {
+                    metadata.chunk = true
+                }
+                
+                NCNetworking.shared.upload(metadata: metadata) { (errorCode, errorDescription) in
                     
                     NCUtility.shared.stopActivityIndicator()
                     
                     if errorCode == 0 {
                         self.actionUpload()
                     } else {
+                        NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
                         self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
                     }
                 }
@@ -387,14 +398,19 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     }
     
     @objc func backButtonTapped(sender: Any) {
-        
+                
         while serverUrl.last != "/" {
             serverUrl.removeLast()
         }
         serverUrl.removeLast()
-        
+
         reloadDatasource(withLoadFolder: true)
-        setNavigationBar()
+        
+        var navigationTitle = (serverUrl as NSString).lastPathComponent
+        if NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account) == serverUrl {
+            navigationTitle = NCBrandOptions.shared.brand
+        }
+        setNavigationBar(navigationTitle: navigationTitle)
     }
     
     func rename(fileName: String, fileNameNew: String) {
@@ -470,7 +486,7 @@ extension NCShareExtension: UICollectionViewDelegate {
             if let serverUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)  {
                 self.serverUrl = serverUrl
                 reloadDatasource(withLoadFolder: true)
-                setNavigationBar()
+                setNavigationBar(navigationTitle: metadata.fileNameView)
             }
         }
     }
