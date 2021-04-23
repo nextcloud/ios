@@ -110,8 +110,9 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         
         // Upload
         uploadView.layer.cornerRadius = 10
-        uploadImage.image = NCUtility.shared.loadImage(named: "square.and.arrow.up", color: NCBrandColor.shared.label)
-        uploadLabel.text = NSLocalizedString("_save_files_", comment: "")
+        //uploadImage.image = NCUtility.shared.loadImage(named: "square.and.arrow.up", color: NCBrandColor.shared.label)
+        uploadLabel.text = NSLocalizedString("_upload_", comment: "")
+        uploadLabel.textColor = .systemBlue
         let uploadGesture = UITapGestureRecognizer(target: self, action:  #selector(actionUpload))
         uploadView.addGestureRecognizer(uploadGesture)
                 
