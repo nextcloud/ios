@@ -59,6 +59,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = NCBrandColor.shared.systemBackground
+
         viewContainerConstraint.constant = height
         searchFieldTopConstraint.constant = 10
                 
@@ -76,6 +78,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         tableView.dataSource = self
         tableView.delegate = self
         tableView.allowsSelection = false
+        tableView.backgroundColor = NCBrandColor.shared.systemBackground
 
         tableView.register(UINib.init(nibName: "NCShareLinkCell", bundle: nil), forCellReuseIdentifier: "cellLink")
         tableView.register(UINib.init(nibName: "NCShareUserCell", bundle: nil), forCellReuseIdentifier: "cellUser")
@@ -120,8 +123,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundView
-        tableView.backgroundColor = NCBrandColor.shared.backgroundView
         tableView.reloadData()
         shareLinkLabel.textColor = NCBrandColor.shared.textView
     }
@@ -276,7 +277,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         dropDown = DropDown()
         let appearance = DropDown.appearance()
         
-        appearance.backgroundColor = NCBrandColor.shared.backgroundView
+        appearance.backgroundColor = NCBrandColor.shared.systemBackground
         appearance.cornerRadius = 10
         appearance.shadowColor = UIColor(white: 0.5, alpha: 1)
         appearance.shadowOpacity = 0.9

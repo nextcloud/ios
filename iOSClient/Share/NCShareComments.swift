@@ -40,6 +40,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = NCBrandColor.shared.systemBackground
         viewContainerConstraint.constant = height
         
         tableView.dataSource = self
@@ -48,7 +49,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = tableView.bounds.height
         tableView.allowsSelection = false
-        tableView.backgroundColor = NCBrandColor.shared.backgroundView
+        tableView.backgroundColor = NCBrandColor.shared.systemBackground
         tableView.separatorColor = NCBrandColor.shared.separator
         
         tableView.register(UINib.init(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
@@ -97,8 +98,6 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundView
-        tableView.backgroundColor = NCBrandColor.shared.backgroundView
         tableView.reloadData()
         labelUser.textColor = NCBrandColor.shared.textView
     }

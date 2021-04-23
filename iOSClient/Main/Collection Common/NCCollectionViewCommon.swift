@@ -87,7 +87,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         super.viewDidLoad()
         
         self.navigationController?.presentationController?.delegate = self
+        view.backgroundColor = NCBrandColor.shared.systemBackground
         
+        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
+        collectionView.alwaysBounceVertical = true
+
         if enableSearchBar {
             searchController = UISearchController(searchResultsController: nil)
             searchController?.searchResultsUpdater = self
@@ -109,7 +113,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Footer
         collectionView.register(UINib.init(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         
-        collectionView.alwaysBounceVertical = true
 
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
@@ -307,8 +310,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundView
-        collectionView.backgroundColor = NCBrandColor.shared.backgroundView
         collectionView.reloadData()
     }
     

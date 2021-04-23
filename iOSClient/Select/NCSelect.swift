@@ -100,6 +100,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationController?.presentationController?.delegate = self
         
+        view.backgroundColor = NCBrandColor.shared.systemBackground
+
         activeAccount = NCManageDatabase.shared.getActiveAccount()
         
         // Cell
@@ -112,6 +114,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         // Footer
         collectionView.register(UINib.init(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         collectionView.alwaysBounceVertical = true
+        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
         
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
@@ -119,7 +122,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         // Add Refresh Control
         collectionView.addSubview(refreshControl)
         refreshControl.tintColor = NCBrandColor.shared.brandText
-        refreshControl.backgroundColor = NCBrandColor.shared.brandElement
+        refreshControl.backgroundColor = NCBrandColor.shared.systemBackground
         refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
         // Empty
@@ -207,10 +210,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundView
-        collectionView.backgroundColor = NCBrandColor.shared.backgroundView
+        
         collectionView.reloadData()
-        refreshControl.backgroundColor = NCBrandColor.shared.backgroundView
         selectCommandViewSelect?.separatorView.backgroundColor = NCBrandColor.shared.separator
     }
     

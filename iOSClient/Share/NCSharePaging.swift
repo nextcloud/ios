@@ -41,6 +41,8 @@ class NCSharePaging: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = NCBrandColor.shared.systemBackground
+
         // Verify Comments & Sharing enabled
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         let comments = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
@@ -72,6 +74,9 @@ class NCSharePaging: UIViewController {
         pagingViewController.activityEnabled = activityEnabled
         pagingViewController.commentsEnabled = commentsEnabled
         pagingViewController.sharingEnabled = sharingEnabled
+        pagingViewController.backgroundColor = NCBrandColor.shared.systemBackground
+        pagingViewController.menuBackgroundColor = NCBrandColor.shared.systemBackground
+        pagingViewController.selectedBackgroundColor = NCBrandColor.shared.systemBackground
        
         pagingViewController.metadata = metadata
         
@@ -133,11 +138,6 @@ class NCSharePaging: UIViewController {
     //MARK: - NotificationCenter
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundView
-        
-        pagingViewController.backgroundColor = NCBrandColor.shared.backgroundView
-        pagingViewController.menuBackgroundColor = NCBrandColor.shared.backgroundView
-        pagingViewController.selectedBackgroundColor = NCBrandColor.shared.backgroundView
         pagingViewController.textColor = NCBrandColor.shared.textView
         pagingViewController.selectedTextColor = NCBrandColor.shared.textView
         pagingViewController.indicatorColor = NCBrandColor.shared.brandElement
@@ -272,7 +272,7 @@ class NCSharePagingView: PagingView {
     override func setupConstraints() {
         
         let headerView = Bundle.main.loadNibNamed("NCShareHeaderView", owner: self, options: nil)?.first as! NCShareHeaderView
-        headerView.backgroundColor = NCBrandColor.shared.backgroundView
+        headerView.backgroundColor = NCBrandColor.shared.systemBackground
         headerView.ocId = metadata!.ocId
         
         if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata!.ocId, etag: metadata!.etag)) {

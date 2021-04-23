@@ -49,7 +49,7 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
         super.viewDidLoad()
     
         self.navigationController?.navigationBar.prefersLargeTitles = true
-        
+        view.backgroundColor = NCBrandColor.shared.systemBackground
         self.title = NSLocalizedString("_activity_", comment: "")
 
         // Empty
@@ -59,6 +59,7 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
         tableView.separatorColor = UIColor.clear
         tableView.tableFooterView = UIView()
         tableView.contentInset = insets
+        tableView.backgroundColor = NCBrandColor.shared.systemBackground
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         
@@ -79,9 +80,6 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
     }
     
     @objc func changeTheming() {
-        
-        view.backgroundColor = NCBrandColor.shared.backgroundView
-        tableView.backgroundColor = NCBrandColor.shared.backgroundView
         tableView.reloadData()
     }
     

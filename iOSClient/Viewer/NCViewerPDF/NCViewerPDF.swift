@@ -61,7 +61,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
         
         pdfView.document = pdfDocument
-        pdfView.backgroundColor = NCBrandColor.shared.backgroundView
+        pdfView.backgroundColor = NCBrandColor.shared.systemBackground
         pdfView.displayMode = .singlePageContinuous
         pdfView.autoScales = true
         pdfView.displayDirection = .horizontal
@@ -190,7 +190,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     @objc func changeTheming() {
         
         if navigationController?.isNavigationBarHidden == false {
-            pdfView.backgroundColor = NCBrandColor.shared.backgroundView
+            pdfView.backgroundColor = NCBrandColor.shared.systemBackground
         }
     }
     
@@ -222,7 +222,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             
             navigationController?.setNavigationBarHidden(false, animated: false)
             pdfThumbnailView.isHidden = false
-            pdfView.backgroundColor = NCBrandColor.shared.backgroundView
+            pdfView.backgroundColor = NCBrandColor.shared.systemBackground
 
         } else {
             

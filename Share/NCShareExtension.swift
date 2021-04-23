@@ -93,16 +93,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         }
     }
    
-    var backgroundCellColor: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .systemBackground
-            } else {
-                return .white
-            }
-        }
-    }
-    
     var commandViewColor: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -127,7 +117,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         // Add Refresh Control
         collectionView.addSubview(refreshControl)
         refreshControl.tintColor = NCBrandColor.shared.brandText
-        refreshControl.backgroundColor = NCBrandColor.shared.backgroundView
+        refreshControl.backgroundColor = NCBrandColor.shared.systemBackground
         refreshControl.addTarget(self, action: #selector(reloadDatasource), for: .valueChanged)
         
         // Empty
@@ -657,7 +647,7 @@ extension NCShareExtension: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
                
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.backgroundColor = backgroundCellColor
+        cell.backgroundColor = NCBrandColor.shared.systemBackground
         
         let imageCell = cell.viewWithTag(10) as? UIImageView
         let fileNameCell = cell.viewWithTag(20) as? UILabel

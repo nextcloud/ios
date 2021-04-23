@@ -34,12 +34,14 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = NSLocalizedString("_notification_", comment: "")
-                
-        self.tableView.tableFooterView = UIView()
-        self.tableView.rowHeight = UITableView.automaticDimension
-        self.tableView.estimatedRowHeight = 50.0
-        self.tableView.allowsSelection = false
+        title = NSLocalizedString("_notification_", comment: "")
+        view.backgroundColor = NCBrandColor.shared.systemBackground
+
+        tableView.tableFooterView = UIView()
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 50.0
+        tableView.allowsSelection = false
+        tableView.backgroundColor = NCBrandColor.shared.systemBackground
         
         // Empty
         emptyDataSet = NCEmptyDataSet.init(view: tableView, offset: 0, delegate: self)
@@ -61,8 +63,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundView
-        tableView.backgroundColor = NCBrandColor.shared.backgroundView
         tableView.reloadData()        
     }
 

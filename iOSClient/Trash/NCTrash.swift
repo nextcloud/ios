@@ -58,6 +58,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = NCBrandColor.shared.systemBackground
         self.navigationController?.navigationBar.prefersLargeTitles = true
 
         // Cell
@@ -69,6 +70,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         collectionView.register(UINib.init(nibName: "NCTrashSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
 
         collectionView.alwaysBounceVertical = true
+        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
 
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
@@ -124,9 +126,6 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     }
     
     @objc func changeTheming() {
-        
-        view.backgroundColor = NCBrandColor.shared.backgroundView
-        collectionView.backgroundColor = NCBrandColor.shared.backgroundView
         collectionView.reloadData()
     }
     
@@ -262,7 +261,7 @@ extension NCTrash: UICollectionViewDataSource {
             }
             
             trashHeader.delegate = self
-            trashHeader.backgroundColor = NCBrandColor.shared.backgroundView
+            trashHeader.backgroundColor = NCBrandColor.shared.systemBackground
             trashHeader.separator.backgroundColor = NCBrandColor.shared.separator
             trashHeader.setStatusButton(datasource: datasource)
             trashHeader.setTitleSorted(datasourceTitleButton: titleButton)

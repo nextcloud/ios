@@ -40,6 +40,7 @@ import MarkdownKit
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = NCBrandColor.shared.systemBackground
         presentationController?.delegate = self
         
         let closeItem = UIBarButtonItem(title: NSLocalizedString("_back_", comment: ""), style: .plain, target: self, action: #selector(closeItemTapped(_:)))
@@ -85,7 +86,6 @@ import MarkdownKit
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundView
         if textViewColor != NCBrandColor.shared.textView {
             markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.textView)
             markdownParser.header.font = UIFont.systemFont(ofSize: 25)

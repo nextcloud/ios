@@ -82,7 +82,7 @@ class NCShareCommon: NSObject {
             shareLinkMenuView.height = 440
         }
         
-        shareLinkMenuView.backgroundColor = NCBrandColor.shared.backgroundView
+        shareLinkMenuView.backgroundColor = NCBrandColor.shared.systemBackground
         shareLinkMenuView.metadata = metadata
         shareLinkMenuView.viewWindow = viewWindow
         shareLinkMenuView.shareViewController = shareViewController
@@ -126,7 +126,7 @@ class NCShareCommon: NSObject {
             shareUserMenuView.height = 260
         }
         
-        shareUserMenuView.backgroundColor = NCBrandColor.shared.backgroundView
+        shareUserMenuView.backgroundColor = NCBrandColor.shared.systemBackground
         shareUserMenuView.metadata = metadata
         shareUserMenuView.viewWindow = viewWindow
         shareUserMenuView.shareViewController = shareViewController
@@ -155,12 +155,11 @@ class NCShareCommon: NSObject {
         let calendar = FSCalendar(frame: CGRect(x: globalPoint!.x + 10, y: globalPoint!.y + 10, width: width - 20, height: 300))
         
         if #available(iOS 13.0, *) {
-            calendar.backgroundColor = .systemBackground
             calendar.appearance.headerTitleColor = .label
         } else {
-            calendar.backgroundColor = .white
             calendar.appearance.headerTitleColor = .black
         }
+        calendar.backgroundColor = NCBrandColor.shared.systemBackground
         calendar.placeholderType = .none
         calendar.appearance.headerMinimumDissolvedAlpha = 0.0
         

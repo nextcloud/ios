@@ -44,7 +44,7 @@ class NCTrashSectionHeaderMenu: UICollectionReusableView {
         buttonMore.setImage(UIImage.init(named: "more")!.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
         
         separator.backgroundColor = NCBrandColor.shared.separator
-        backgroundColor = NCBrandColor.shared.backgroundView
+        backgroundColor = NCBrandColor.shared.systemBackground
     }
     
     func setTitleSorted(datasourceTitleButton: String) {

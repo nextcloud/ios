@@ -59,20 +59,25 @@ class DragDropViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = NCBrandColor.shared.systemBackground
+
         collectionViewSource.dragInteractionEnabled = true
         collectionViewSource.dragDelegate = self
         collectionViewSource.dropDelegate = self
-        
+        collectionViewSource.backgroundColor = NCBrandColor.shared.systemBackground
+
         collectionViewDestination.dragInteractionEnabled = true
         collectionViewDestination.dropDelegate = self
         collectionViewDestination.dragDelegate = self
         collectionViewDestination.reorderingCadence = .fast //default value - .immediate
-        
+        collectionViewDestination.backgroundColor = NCBrandColor.shared.systemBackground
+
         self.navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
         cancel.title = NSLocalizedString("_cancel_", comment: "")
         save.title = NSLocalizedString("_save_", comment: "")
         labelTitlePDFzone.text = NSLocalizedString("_scan_label_document_zone_", comment: "")
-        
+        labelTitlePDFzone.backgroundColor = NCBrandColor.shared.systemBackground
+
         segmentControlFilter.setTitle(NSLocalizedString("_filter_original_", comment: ""), forSegmentAt: 0)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 1)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_bn_", comment: ""), forSegmentAt: 2)
@@ -94,15 +99,10 @@ class DragDropViewController: UIViewController {
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundView
-
-        collectionViewSource.backgroundColor = NCBrandColor.shared.backgroundView
-        collectionViewDestination.backgroundColor = NCBrandColor.shared.backgroundView
         collectionViewSource.reloadData()
         collectionViewDestination.reloadData()
 
         labelTitlePDFzone.textColor = NCBrandColor.shared.textView
-        labelTitlePDFzone.backgroundColor = .systemBackground
     }
     
     //MARK: Button Action

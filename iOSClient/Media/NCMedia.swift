@@ -78,11 +78,14 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = NCBrandColor.shared.systemBackground
+
         collectionView.register(UINib.init(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsets(top: 75, left: 0, bottom: 50, right: 0);
-                
+        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
+        
         gridLayout = NCGridMediaLayout()
         gridLayout.itemForLine = CGFloat(min(CCUtility.getMediaWidthImage(), 5))
         gridLayout.sectionHeadersPinToVisibleBounds = true
@@ -230,8 +233,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     //MARK: - NotificationCenter
 
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundView
-        collectionView.backgroundColor = NCBrandColor.shared.backgroundView
         collectionView.reloadData()
         
         cacheImages.cellLivePhotoImage = NCUtility.shared.loadImage(named: "livephoto", color: .white)

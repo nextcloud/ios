@@ -219,7 +219,7 @@ class NCViewerImage: UIViewController {
     @objc func changeTheming() {
         
         if currentMode == .normal {
-            view.backgroundColor = NCBrandColor.shared.backgroundView
+            view.backgroundColor = NCBrandColor.shared.systemBackground
             textColor = NCBrandColor.shared.textView
         }
         toolBar.tintColor = NCBrandColor.shared.brandElement
@@ -671,7 +671,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
         if currentMode == .full {
             
             navigationController?.setNavigationBarHidden(false, animated: false)
-            view.backgroundColor = NCBrandColor.shared.backgroundView
+            view.backgroundColor = NCBrandColor.shared.systemBackground
             textColor = NCBrandColor.shared.textView
             progressView.isHidden = false
             

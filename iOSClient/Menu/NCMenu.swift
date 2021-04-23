@@ -164,9 +164,7 @@ class NCMenuPanelController: FloatingPanelController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if #available(iOS 13.0, *) {
-            self.surfaceView.backgroundColor = .systemBackground
-        }
+        self.surfaceView.backgroundColor = NCBrandColor.shared.systemBackground
         self.isRemovalInteractionEnabled = true
         self.surfaceView.cornerRadius = 16
     }

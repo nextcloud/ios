@@ -48,6 +48,8 @@ class NCMainTabBar: UITabBar {
             appDelegate.darkMode = false
         }
         
+        barTintColor = NCBrandColor.shared.systemBackground
+
         changeTheming()
     }
     
@@ -62,7 +64,6 @@ class NCMainTabBar: UITabBar {
     }
     
     @objc func changeTheming() {
-        barTintColor = NCBrandColor.shared.backgroundView
         backgroundColor = NCBrandColor.shared.tabBar
         tintColor = NCBrandColor.shared.brandElement
         if let centerButton = self.viewWithTag(99) {

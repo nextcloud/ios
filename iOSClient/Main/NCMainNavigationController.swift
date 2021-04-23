@@ -49,7 +49,7 @@ class NCMainNavigationController: UINavigationController {
             
             appearance.configureWithOpaqueBackground()
             appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.shared.textView]
-            appearance.backgroundColor = NCBrandColor.shared.backgroundView
+            appearance.backgroundColor = NCBrandColor.shared.systemBackground
             appearance.configureWithOpaqueBackground()
             appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.shared.textView]
             appearance.backgroundColor = NCBrandColor.shared.navigationBar
@@ -60,7 +60,7 @@ class NCMainNavigationController: UINavigationController {
         } else {
             
             navigationBar.barStyle = .default
-            navigationBar.barTintColor = NCBrandColor.shared.backgroundView
+            navigationBar.barTintColor = NCBrandColor.shared.systemBackground
             navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor:NCBrandColor.shared.textView]
             navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor:NCBrandColor.shared.textView]
         }
