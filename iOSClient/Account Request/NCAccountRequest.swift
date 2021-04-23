@@ -164,7 +164,7 @@ extension NCAccountRequest: UITableViewDelegate {
         } else {
         
             let account = accounts[indexPath.row]
-            let activeAccount = NCManageDatabase.shared.getAccountActive()
+            let activeAccount = NCManageDatabase.shared.getActiveAccount()
             if account.account != activeAccount?.account {
                 NCManageDatabase.shared.setAccountActive(account.account)
                 dismiss(animated: true) {

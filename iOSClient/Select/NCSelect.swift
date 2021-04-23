@@ -100,7 +100,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationController?.presentationController?.delegate = self
         
-        activeAccount = NCManageDatabase.shared.getAccountActive()
+        activeAccount = NCManageDatabase.shared.getActiveAccount()
         
         // Cell
         collectionView.register(UINib.init(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")

@@ -152,10 +152,10 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         imageUserStatus.image = UIImage.init(named: "userStatusAway")!.image(color: .gray, size: 50)
         imageComments.image = UIImage.init(named: "comments")!.image(color: .gray, size: 50)
 
-        guard let account = NCManageDatabase.shared.getAccountActive() else { return }
-        self.account = account.account
+        guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
+        self.account = activeAccount.account
         
-        if let text = NCManageDatabase.shared.getCapabilities(account: account.account) {
+        if let text = NCManageDatabase.shared.getCapabilities(account: activeAccount.account) {
             capabilitiesText = text
             updateCapabilities()
         } else {

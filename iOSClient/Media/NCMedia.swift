@@ -478,8 +478,8 @@ extension NCMedia {
         
         livePhoto = CCUtility.getLivePhoto()
         
-        if let tableAccount = NCManageDatabase.shared.getAccountActive() {
-            self.mediaPath = tableAccount.mediaPath
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+            self.mediaPath = activeAccount.mediaPath
         }
         let startServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) + mediaPath
         

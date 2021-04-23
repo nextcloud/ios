@@ -180,17 +180,17 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         // Display Name user & Quota
 
-        if let tabAccount = NCManageDatabase.shared.getAccountActive() {
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
       
-            self.tabAccount = tabAccount
+            self.tabAccount = activeAccount
 
-            if (tabAccount.quotaRelative > 0) {
-                progressQuota.progress = Float(tabAccount.quotaRelative) / 100
+            if (activeAccount.quotaRelative > 0) {
+                progressQuota.progress = Float(activeAccount.quotaRelative) / 100
             } else {
                 progressQuota.progress = 0
             }
 
-            switch tabAccount.quotaTotal {
+            switch activeAccount.quotaTotal {
             case -1:
                 quota = "0"
             case -2:
@@ -198,10 +198,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             case -3:
                 quota = NSLocalizedString("_quota_space_unlimited_", comment: "")
             default:
-                quota = CCUtility.transformedSize(tabAccount.quotaTotal)
+                quota = CCUtility.transformedSize(activeAccount.quotaTotal)
             }
 
-            let quotaUsed: String = CCUtility.transformedSize(tabAccount.quotaUsed)
+            let quotaUsed: String = CCUtility.transformedSize(activeAccount.quotaUsed)
 
             labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
         }

@@ -143,8 +143,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         
         // Use Sub folder
         row = XLFormRowDescriptor(tag: "useSubFolder", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
-        let tableAccount = NCManageDatabase.shared.getAccountActive()
-        if tableAccount?.autoUploadCreateSubfolder == true {
+        let activeAccount = NCManageDatabase.shared.getActiveAccount()
+        if activeAccount?.autoUploadCreateSubfolder == true {
             row.value = 1
         } else {
             row.value = 0

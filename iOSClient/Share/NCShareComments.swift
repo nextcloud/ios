@@ -56,15 +56,15 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         newCommentField.placeholder = NSLocalizedString("_new_comment_", comment: "")
         
         // Display Name user & Quota
-        guard let tabAccount = NCManageDatabase.shared.getAccountActive() else {
+        guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else {
             return
         }
         
-        if tabAccount.displayName.isEmpty {
-            labelUser.text = tabAccount.user
+        if activeAccount.displayName.isEmpty {
+            labelUser.text = activeAccount.user
         }
         else{
-            labelUser.text = tabAccount.displayName
+            labelUser.text = activeAccount.displayName
         }
         
         imageItem.image = UIImage(named: "avatar")

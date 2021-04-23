@@ -208,14 +208,14 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
 
     func setAccount() {
         
-        guard let account = NCManageDatabase.shared.getAccountActive() else {
+        guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else {
             extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
             return
         }
-        self.activeAccount = account
+        self.activeAccount = activeAccount
         
         // NETWORKING
-        NCCommunicationCommon.shared.setup(account: account.account, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account), urlBase: account.urlBase, userAgent: CCUtility.getUserAgent(), webDav: NCUtilityFileSystem.shared.getWebDAV(account: account.account), dav: NCUtilityFileSystem.shared.getDAV(), nextcloudVersion: 0, delegate: NCNetworking.shared)
+        NCCommunicationCommon.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), urlBase: activeAccount.urlBase, userAgent: CCUtility.getUserAgent(), webDav: NCUtilityFileSystem.shared.getWebDAV(account: activeAccount.account), dav: NCUtilityFileSystem.shared.getDAV(), nextcloudVersion: 0, delegate: NCNetworking.shared)
                 
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
@@ -259,12 +259,12 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account) {
              
-            let account = NCManageDatabase.shared.getAccountActive()
+            let activeAccount = NCManageDatabase.shared.getActiveAccount()
             var title = "  "
-            if account?.alias == "" {
-                title = title + (account?.user ?? "")
+            if activeAccount?.alias == "" {
+                title = title + (activeAccount?.user ?? "")
             } else {
-                title = title + (account?.alias ?? "")
+                title = title + (activeAccount?.alias ?? "")
             }
                 
             profileButton.setTitle(title, for: .normal)
@@ -631,6 +631,8 @@ extension NCShareExtension: UICollectionViewDataSource {
         return cell
     }
 }
+
+// MARK: - Table View
 
 extension NCShareExtension: UITableViewDelegate {
     

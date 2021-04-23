@@ -251,12 +251,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 
                 if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
                  
-                    let account = NCManageDatabase.shared.getAccountActive()
+                    let activeAccount = NCManageDatabase.shared.getActiveAccount()
                     var title = "  "
-                    if account?.alias == "" {
-                        title = title + (account?.user ?? "")
+                    if activeAccount?.alias == "" {
+                        title = title + (activeAccount?.user ?? "")
                     } else {
-                        title = title + (account?.alias ?? "")
+                        title = title + (activeAccount?.alias ?? "")
                     }
                     
                     button.setTitle(title, for: .normal)
@@ -664,7 +664,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     func changeAccountRequestAddAccount() {
-        if let activeAccount = NCManageDatabase.shared.getAccountActive() {
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
             
             NCOperationQueue.shared.cancelAllQueue()
             NCNetworking.shared.cancelAllTask()

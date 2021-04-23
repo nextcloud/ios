@@ -63,8 +63,8 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
         
         NCCommunicationCommon.shared.writeLog("Location manager: latitude \(latitude) longitude \(longitude)")
         
-        if let account = NCManageDatabase.shared.getAccountActive() {
-            if account.autoUpload && account.autoUploadBackground && UIApplication.shared.applicationState == UIApplication.State.background {
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+            if activeAccount.autoUpload && activeAccount.autoUploadBackground && UIApplication.shared.applicationState == UIApplication.State.background {
                 NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: nil) { (hasPermission) in
                     if hasPermission {
                         self.uploadAssetsNewAndFull(viewController: nil, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Change location") { (items) in
@@ -98,8 +98,8 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
     // MARK: -
     
     @objc func initAutoUpload(viewController: UIViewController?, completion: @escaping (_ items: Int)->()) {
-        if let account = NCManageDatabase.shared.getAccountActive() {
-            if account.autoUpload {
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+            if activeAccount.autoUpload {
                 NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { (hasPermission) in
                     if hasPermission {
                         self.uploadAssetsNewAndFull(viewController:viewController, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload") { (items) in
@@ -108,7 +108,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                             }
                             completion(items)
                         }
-                        if account.autoUploadBackground {
+                        if activeAccount.autoUploadBackground {
                             NCAskAuthorization.shared.askAuthorizationLocationManager() { (hasFullPermissions) in
                                 if hasFullPermissions {
                                     self.startSignificantChangeUpdates()
@@ -312,11 +312,11 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
     // MARK: -
 
     @objc func alignPhotoLibrary(viewController: UIViewController?) {
-        if let account = NCManageDatabase.shared.getAccountActive() {
-            getCameraRollAssets(viewController: viewController, account: account, selector: NCGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true) { (assets) in
-                NCManageDatabase.shared.clearTable(tablePhotoLibrary.self, account: account.account)
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+            getCameraRollAssets(viewController: viewController, account: activeAccount, selector: NCGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true) { (assets) in
+                NCManageDatabase.shared.clearTable(tablePhotoLibrary.self, account: activeAccount.account)
                 if let assets = assets {
-                    NCManageDatabase.shared.addPhotoLibrary(assets, account: account.account)
+                    NCManageDatabase.shared.addPhotoLibrary(assets, account: activeAccount.account)
                     NCCommunicationCommon.shared.writeLog("Align Photo Library \(assets.count)")
                 }
             }

@@ -338,7 +338,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getAccountActive() -> tableAccount? {
+    @objc func getActiveAccount() -> tableAccount? {
         
         let realm = try! Realm()
         
@@ -538,13 +538,13 @@ class NCManageDatabase: NSObject {
         var returnAccount = tableAccount()
 
         do {
-            guard let account = self.getAccountActive() else {
+            guard let activeAccount = self.getActiveAccount() else {
                 return nil
             }
             
             try realm.safeWrite {
                 
-                guard let result = realm.objects(tableAccount.self).filter("account == %@", account.account).first else {
+                guard let result = realm.objects(tableAccount.self).filter("account == %@", activeAccount.account).first else {
                     return
                 }
                 
@@ -587,13 +587,13 @@ class NCManageDatabase: NSObject {
         var returnAccount = tableAccount()
 
         do {
-            guard let account = self.getAccountActive() else {
+            guard let activeAccount = self.getActiveAccount() else {
                 return nil
             }
             
             try realm.safeWrite {
                 
-                guard let result = realm.objects(tableAccount.self).filter("account == %@", account.account).first else {
+                guard let result = realm.objects(tableAccount.self).filter("account == %@", activeAccount.account).first else {
                     return
                 }
                 
@@ -1467,7 +1467,7 @@ class NCManageDatabase: NSObject {
     
     @objc func getE2eEncryptions(predicate: NSPredicate) -> [tableE2eEncryption]? {
         
-        guard self.getAccountActive() != nil else {
+        guard self.getActiveAccount() != nil else {
             return nil
         }
         
@@ -1486,7 +1486,7 @@ class NCManageDatabase: NSObject {
     
     @objc func renameFileE2eEncryption(serverUrl: String, fileNameIdentifier: String, newFileName: String, newFileNamePath: String) {
         
-        guard let tableAccount = self.getAccountActive() else {
+        guard let activeAccount = self.getActiveAccount() else {
             return
         }
         
@@ -1494,7 +1494,7 @@ class NCManageDatabase: NSObject {
 
         realm.beginWrite()
 
-        guard let result = realm.objects(tableE2eEncryption.self).filter("account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", tableAccount.account, serverUrl, fileNameIdentifier).first else {
+        guard let result = realm.objects(tableE2eEncryption.self).filter("account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", activeAccount.account, serverUrl, fileNameIdentifier).first else {
             realm.cancelWrite()
             return 
         }

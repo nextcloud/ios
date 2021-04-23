@@ -110,17 +110,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         // Activate user account
-        if let resultActiveAccount = NCManageDatabase.shared.getAccountActive() {
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
             
             // FIX 3.0.5 lost urlbase
-            if resultActiveAccount.urlBase.count == 0 {
-                let user = resultActiveAccount.user + " "
-                let urlBase = resultActiveAccount.account.replacingOccurrences(of: user, with: "")
-                resultActiveAccount.urlBase = urlBase
-                NCManageDatabase.shared.updateAccount(resultActiveAccount)
+            if activeAccount.urlBase.count == 0 {
+                let user = activeAccount.user + " "
+                let urlBase = activeAccount.account.replacingOccurrences(of: user, with: "")
+                activeAccount.urlBase = urlBase
+                NCManageDatabase.shared.updateAccount(activeAccount)
             }
             
-            settingAccount(resultActiveAccount.account, urlBase: resultActiveAccount.urlBase, user: resultActiveAccount.user, userId: resultActiveAccount.userId, password: CCUtility.getPassword(resultActiveAccount.account))
+            settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
             
         } else {
             
@@ -212,6 +212,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationWillEnterForeground(_ application: UIApplication) {
         
         if account == "" { return }
+        guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
+        
+        // Account changed ??
+        if activeAccount.account != account {
+            settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
+            
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+        }
 
         NCCommunicationCommon.shared.writeLog("Application will enter in foreground")
         
@@ -605,7 +613,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Account Request
     
     func changeAccountRequestAddAccount() {
-        if let activeAccount = NCManageDatabase.shared.getAccountActive() {
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
             
             NCOperationQueue.shared.cancelAllQueue()
             NCNetworking.shared.cancelAllTask()
@@ -754,12 +762,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 guard let pathScheme = CCUtility.value(forKey: "path", fromQueryItems: queryItems) else { return false }
                 guard let linkScheme = CCUtility.value(forKey: "link", fromQueryItems: queryItems) else { return false }
                 
-                if let account = NCManageDatabase.shared.getAccountActive() {
+                if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
                     
-                    let urlBase = URL(string: account.urlBase)
-                    let user = account.user
+                    let urlBase = URL(string: activeAccount.urlBase)
+                    let user = activeAccount.user
                     if linkScheme.contains(urlBase?.host ?? "") && userScheme == user {
-                        matchedAccount = account
+                        matchedAccount = activeAccount
                     } else {
                         let accounts = NCManageDatabase.shared.getAllAccount()
                         for account in accounts {
@@ -776,7 +784,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     
                     if matchedAccount != nil {
                         
-                        let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: account.account)
+                        let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: activeAccount.account)
                         if pathScheme.contains("/") {
                             fileName = (pathScheme as NSString).lastPathComponent
                             serverUrl = matchedAccount!.urlBase + "/" + webDAV + "/" + (pathScheme as NSString).deletingLastPathComponent
