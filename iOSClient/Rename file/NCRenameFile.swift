@@ -56,7 +56,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        view.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
 
         if let metadata = self.metadata {
                 

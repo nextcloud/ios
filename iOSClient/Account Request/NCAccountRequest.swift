@@ -58,10 +58,10 @@ class NCAccountRequest: UIViewController {
         super.viewDidLoad()
         
         titleLabel.text = NSLocalizedString("_accounts_", comment: "")
-        view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        view.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
 
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
-        tableView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        tableView.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
 
         progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.trackTintColor = .clear
@@ -181,7 +181,7 @@ extension NCAccountRequest: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
                
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        cell.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
        
         let avatarImage = cell.viewWithTag(10) as? UIImageView
         let userLabel = cell.viewWithTag(20) as? UILabel

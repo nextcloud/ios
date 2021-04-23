@@ -94,7 +94,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         // Command view
         commandView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
         separatorView.backgroundColor = NCBrandColor.shared.separator
-        separatorHeightConstraint.constant = 0.3
+        separatorHeightConstraint.constant = 0.5
         
         // Table view
         tableView.separatorColor = NCBrandColor.shared.separator
