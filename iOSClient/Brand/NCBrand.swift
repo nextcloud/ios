@@ -159,7 +159,16 @@ class NCBrandColor: NSObject {
             if #available(iOS 13, *) {
                 return .secondarySystemBackground
             } else {
-                return UIColor(red: 95.0/255.0, green: 95.0/255.0, blue: 97.0/255.0, alpha: 1.0)
+                return UIColor(red: 0.95, green: 0.95, blue: 0.97, alpha: 1.0)
+            }
+        }
+    }
+    @objc public var tertiarySystemBackground: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .tertiarySystemBackground
+            } else {
+                return .white
             }
         }
     }
@@ -168,7 +177,16 @@ class NCBrandColor: NSObject {
             if #available(iOS 13, *) {
                 return .systemGroupedBackground
             } else {
-                return UIColor(red: 95.0/255.0, green: 95.0/255.0, blue: 97.0/255.0, alpha: 1.0)
+                return UIColor(red: 0.95, green: 0.95, blue: 0.97, alpha: 1.0)
+            }
+        }
+    }
+    @objc public var secondarySystemGroupedBackground: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .secondarySystemGroupedBackground
+            } else {
+                return .white
             }
         }
     }
@@ -182,8 +200,6 @@ class NCBrandColor: NSObject {
         }
     }
     
-    @objc public var backgroundViewForm:    UIColor = .white
-    @objc public var cellSettings:          UIColor = .white
     @objc public var separator:             UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
     @objc public let nextcloud:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
     @objc public let nextcloudSoft:         UIColor = UIColor(red: 90.0/255.0, green: 160.0/255.0, blue: 210.0/255.0, alpha: 1.0)
@@ -233,20 +249,12 @@ class NCBrandColor: NSObject {
     @objc public func setDarkMode(_ dark: Bool) {
 
         if dark {
-                        
-            backgroundViewForm = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)              // Gray (6) Dark
-
-            cellSettings = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)                    // Gray (6) Dark
-            
+                                    
             separator = UIColor(red: 60.0/255.0, green: 60.0/255.0, blue: 60.0/255.0, alpha: 1.0)
             select = UIColor.white.withAlphaComponent(0.2)
             
         } else {
-                        
-            backgroundViewForm = .white
 
-            cellSettings = .white
-            
             separator = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
             select = self.brandElement.withAlphaComponent(0.1)
         }

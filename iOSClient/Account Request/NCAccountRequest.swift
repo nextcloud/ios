@@ -58,8 +58,10 @@ class NCAccountRequest: UIViewController {
         super.viewDidLoad()
         
         titleLabel.text = NSLocalizedString("_accounts_", comment: "")
-        
+        view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
+        tableView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
 
         progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.trackTintColor = .clear
@@ -71,10 +73,7 @@ class NCAccountRequest: UIViewController {
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(startTimer), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
-        
-        changeTheming()        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -93,13 +92,6 @@ class NCAccountRequest: UIViewController {
     
     // MARK: - NotificationCenter
 
-    @objc func changeTheming() {
-        
-        view.backgroundColor = NCBrandColor.shared.backgroundViewForm
-        tableView.backgroundColor = NCBrandColor.shared.backgroundViewForm
-        tableView.reloadData()
-    }
-    
     @objc func applicationDidEnterBackground() {
         
         if dismissDidEnterBackground {
@@ -189,7 +181,7 @@ extension NCAccountRequest: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
                
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.backgroundColor = NCBrandColor.shared.backgroundViewForm
+        cell.backgroundColor = NCBrandColor.shared.secondarySystemBackground
        
         let avatarImage = cell.viewWithTag(10) as? UIImageView
         let userLabel = cell.viewWithTag(20) as? UILabel

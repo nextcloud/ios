@@ -56,6 +56,8 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+
         if let metadata = self.metadata {
                 
             if metadata.directory {
@@ -133,10 +135,6 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
         renameButton.layer.cornerRadius = 15
         renameButton.layer.masksToBounds = true
         renameButton.layer.backgroundColor = NCBrandColor.shared.brand.cgColor
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        
-        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -159,12 +157,6 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
         textField.resignFirstResponder()
         rename(textField)
         return true
-    }
-    
-    // MARK: - NotificationCenter
-
-    @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundViewForm
     }
     
     // MARK: - Action

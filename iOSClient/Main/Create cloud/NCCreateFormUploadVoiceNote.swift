@@ -126,7 +126,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
 
         row.cellConfig["imageView.image"] =  UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
         
@@ -143,7 +143,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         row.value = self.fileName
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
@@ -182,7 +182,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         header.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
         header.textLabel?.textColor = .gray
-        header.tintColor = NCBrandColor.shared.cellSettings
+        header.tintColor = NCBrandColor.shared.secondarySystemGroupedBackground
     }
     
     // MARK: - Action

@@ -45,7 +45,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         
         row = XLFormRowDescriptor(tag: "maintainOriginalFileName", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_maintain_original_filename_", comment: ""))
         row.value = CCUtility.getOriginalFileName(NCGlobal.shared.keyFileNameOriginalAutoUpload)
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
         
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
@@ -57,7 +57,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         row = XLFormRowDescriptor(tag: "addFileNameType", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_add_filenametype_", comment: ""))
         row.value = CCUtility.getFileNameType(NCGlobal.shared.keyFileNameAutoUploadType)
         row.hidden = "$\("maintainOriginalFileName") == 1"
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
@@ -75,7 +75,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
             row.value = fileNameMask
         }
         row.hidden = "$\("maintainOriginalFileName") == 1"
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
         
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
@@ -91,9 +91,9 @@ class NCManageAutoUploadFileName: XLFormViewController {
         row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
         row.height = 180
         row.disabled = true
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
 
-        row.cellConfig["textView.backgroundColor"] = NCBrandColor.shared.cellSettings
+        row.cellConfig["textView.backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
         row.cellConfig["textView.font"] = UIFont.systemFont(ofSize: 14.0)
         row.cellConfig["textView.textColor"] = NCBrandColor.shared.label
 

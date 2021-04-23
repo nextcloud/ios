@@ -344,7 +344,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 cell.displayName.textColor = NCBrandColor.shared.label
             }
             cell.selectedBackgroundView = selectionColor
-            cell.backgroundColor = NCBrandColor.shared.cellSettings
+            cell.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
             
             if NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false) {
@@ -381,7 +381,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.labelText.textColor = NCBrandColor.shared.label
             
             cell.selectedBackgroundView = selectionColor
-            cell.backgroundColor = NCBrandColor.shared.cellSettings
+            cell.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
             
             return cell

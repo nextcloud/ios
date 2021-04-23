@@ -111,7 +111,7 @@ import NCCommunication
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: fileNameFolder)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         row.value = fileNameFolder
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
 
         row.cellConfig["imageView.image"] =  UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
         
@@ -128,7 +128,7 @@ import NCCommunication
         
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         row.value = fileName
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.cellSettings
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
         
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
@@ -147,7 +147,7 @@ import NCCommunication
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         header.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
         header.textLabel?.textColor = .gray
-        header.tintColor = NCBrandColor.shared.cellSettings
+        header.tintColor = NCBrandColor.shared.secondarySystemGroupedBackground
     }
 
     // MARK: - CollectionView
@@ -189,7 +189,7 @@ import NCCommunication
         // name
         let name = cell.viewWithTag(200) as! UILabel
         name.text = template.name
-        name.textColor = NCBrandColor.shared.cellSettings
+        name.textColor = NCBrandColor.shared.secondarySystemGroupedBackground
         
         // select
         let imageSelect = cell.viewWithTag(300) as! UIImageView
@@ -198,7 +198,7 @@ import NCCommunication
             imageSelect.image = UIImage(named: "plus100")
             imageSelect.isHidden = false
         } else {
-            cell.backgroundColor = NCBrandColor.shared.cellSettings
+            cell.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
             imageSelect.isHidden = true
         }
         
