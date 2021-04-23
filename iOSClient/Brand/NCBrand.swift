@@ -199,8 +199,16 @@ class NCBrandColor: NSObject {
             }
         }
     }
+    @objc public var separator: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .separator
+            } else {
+                return UIColor(red: 0.24, green: 0.24, blue: 0.26, alpha: 1.0)
+            }
+        }
+    }
     
-    @objc public var separator:             UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
     @objc public let nextcloud:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
     @objc public let nextcloudSoft:         UIColor = UIColor(red: 90.0/255.0, green: 160.0/255.0, blue: 210.0/255.0, alpha: 1.0)
     @objc public let icon:                  UIColor = UIColor(red: 104.0/255.0, green: 104.0/255.0, blue: 104.0/255.0, alpha: 1.0)
@@ -250,12 +258,10 @@ class NCBrandColor: NSObject {
 
         if dark {
                                     
-            separator = UIColor(red: 60.0/255.0, green: 60.0/255.0, blue: 60.0/255.0, alpha: 1.0)
             select = UIColor.white.withAlphaComponent(0.2)
             
         } else {
 
-            separator = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
             select = self.brandElement.withAlphaComponent(0.1)
         }
     }

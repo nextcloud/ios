@@ -80,7 +80,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
         longPressedGestureMore.minimumPressDuration = 0.5
         longPressedGestureMore.delegate = self
         longPressedGestureMore.delaysTouchesBegan = true
-        buttonMore.addGestureRecognizer(longPressedGestureMore)        
+        buttonMore.addGestureRecognizer(longPressedGestureMore)
+        
+        separatorHeightConstraint.constant = 0.55
     }
     
     override func prepareForReuse() {
@@ -147,10 +149,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
             backgroundView = nil
             separator.isHidden = false
         }
-    }
-    
-    func separatorHeight(size: CGFloat) {
-        separatorHeightConstraint.constant = size
     }
 }
 

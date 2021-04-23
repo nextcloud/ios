@@ -70,38 +70,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     private let refreshControl = UIRefreshControl()
     private var activeAccount: tableAccount!
     private let chunckSize = CCUtility.getChunkSize() * 1000000
-
-    // COLOR
-    
-    var labelColor: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .label
-            } else {
-                return .black
-            }
-        }
-    }
-    
-    var separatorColor: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .separator
-            } else {
-                return UIColor(hex: "#3C3C434A")!
-            }
-        }
-    }
-   
-    var commandViewColor: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .secondarySystemBackground
-            } else {
-                return UIColor(hex: "#F2F2F7FF")!
-            }
-        }
-    }
     
     // MARK: - Life Cycle
 
@@ -124,25 +92,25 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -100, delegate: self)
         
         // Command view
-        commandView.backgroundColor = commandViewColor
-        separatorView.backgroundColor = separatorColor
+        commandView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        separatorView.backgroundColor = NCBrandColor.shared.separator
         separatorHeightConstraint.constant = 0.3
         
         // Table view
-        tableView.separatorColor = separatorColor
+        tableView.separatorColor = NCBrandColor.shared.separator
         tableView.layer.cornerRadius = 10
         tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: 1)))
 
         // Create folder
         createFolderView.layer.cornerRadius = 10
-        createFolderImage.image = NCUtility.shared.loadImage(named: "folder.badge.plus", color: labelColor)
+        createFolderImage.image = NCUtility.shared.loadImage(named: "folder.badge.plus", color: NCBrandColor.shared.label)
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
         let createFolderGesture = UITapGestureRecognizer(target: self, action:  #selector(actionCreateFolder))
         createFolderView.addGestureRecognizer(createFolderGesture)
         
         // Upload
         uploadView.layer.cornerRadius = 10
-        uploadImage.image = NCUtility.shared.loadImage(named: "square.and.arrow.up", color: labelColor)
+        uploadImage.image = NCUtility.shared.loadImage(named: "square.and.arrow.up", color: NCBrandColor.shared.label)
         uploadLabel.text = NSLocalizedString("_save_files_", comment: "")
         let uploadGesture = UITapGestureRecognizer(target: self, action:  #selector(actionUpload))
         uploadView.addGestureRecognizer(uploadGesture)
@@ -528,9 +496,8 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.objectId = metadata.ocId
         cell.indexPath = indexPath
         cell.labelTitle.text = metadata.fileNameView
-        cell.labelTitle.textColor = labelColor
-        cell.separator.backgroundColor = separatorColor
-        cell.separatorHeight(size: 0.5)
+        cell.labelTitle.textColor = NCBrandColor.shared.label
+        cell.separator.backgroundColor = NCBrandColor.shared.separator
         
         cell.imageSelect.image = nil
         cell.imageStatus.image = nil
@@ -665,7 +632,7 @@ extension NCShareExtension: UITableViewDataSource {
         
         fileNameCell?.text = fileName
         
-        renameButton?.setImage(NCUtility.shared.loadImage(named: "pencil").image(color: labelColor, size: 15), for: .normal)
+        renameButton?.setImage(NCUtility.shared.loadImage(named: "pencil").image(color: NCBrandColor.shared.label, size: 15), for: .normal)
         renameButton?.indexPath = indexPath
         renameButton?.fileName = fileName
         renameButton?.image = imageCell?.image
