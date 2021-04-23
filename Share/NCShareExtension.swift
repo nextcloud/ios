@@ -316,7 +316,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     
     @objc func actionUpload() {
         
-        
         if let fileName = filesName.first {
             
             filesName.removeFirst()

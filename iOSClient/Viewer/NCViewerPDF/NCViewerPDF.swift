@@ -49,14 +49,11 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
        
-        changeTheming()
-
         pdfView = PDFView.init(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height))
         pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
         
@@ -108,6 +105,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pageViewLabel.topAnchor.constraint(equalTo: pageView.topAnchor).isActive = true
         pageViewLabel.bottomAnchor.constraint(equalTo: pageView.bottomAnchor).isActive = true
         
+        pdfView.backgroundColor = NCBrandColor.shared.systemBackground
         pdfView.layoutIfNeeded()
         handlePageChange()
         
@@ -187,13 +185,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         }
     }
 
-    @objc func changeTheming() {
-        
-        if navigationController?.isNavigationBarHidden == false {
-            pdfView.backgroundColor = NCBrandColor.shared.systemBackground
-        }
-    }
-    
     @objc func handlePageChange() {
         
         guard let curPage = pdfView.currentPage?.pageRef?.pageNumber else { pageView.alpha = 0; return }
