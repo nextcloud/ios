@@ -154,6 +154,15 @@ class NCBrandColor: NSObject {
             }
         }
     }
+    @objc public var secondarySystemBackground: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .secondarySystemBackground
+            } else {
+                return UIColor(red: 95.0/255.0, green: 95.0/255.0, blue: 97.0/255.0, alpha: 1.0)
+            }
+        }
+    }
     @objc public var systemGroupedBackground: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -176,7 +185,6 @@ class NCBrandColor: NSObject {
     @objc public var backgroundViewForm:    UIColor = .white
     @objc public var cellSettings:          UIColor = .white
     @objc public var separator:             UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
-    @objc public var tabBar:                UIColor = .white
     @objc public let nextcloud:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
     @objc public let nextcloudSoft:         UIColor = UIColor(red: 90.0/255.0, green: 160.0/255.0, blue: 210.0/255.0, alpha: 1.0)
     @objc public let icon:                  UIColor = UIColor(red: 104.0/255.0, green: 104.0/255.0, blue: 104.0/255.0, alpha: 1.0)
@@ -225,9 +233,7 @@ class NCBrandColor: NSObject {
     @objc public func setDarkMode(_ dark: Bool) {
 
         if dark {
-            
-            tabBar = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)                          // Gray (6) Dark
-            
+                        
             backgroundViewForm = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)              // Gray (6) Dark
 
             cellSettings = UIColor(red: 28.0/255.0, green: 28.0/255.0, blue: 30.0/255.0, alpha: 1.0)                    // Gray (6) Dark
@@ -236,9 +242,7 @@ class NCBrandColor: NSObject {
             select = UIColor.white.withAlphaComponent(0.2)
             
         } else {
-            
-            tabBar = .white
-            
+                        
             backgroundViewForm = .white
 
             cellSettings = .white
