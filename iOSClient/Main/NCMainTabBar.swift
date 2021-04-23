@@ -42,12 +42,6 @@ class NCMainTabBar: UITabBar {
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
-        if traitCollection.userInterfaceStyle == .dark {
-            appDelegate.darkMode = true
-        } else {
-            appDelegate.darkMode = false
-        }
-        
         barTintColor = NCBrandColor.shared.secondarySystemBackground
         backgroundColor = NCBrandColor.shared.secondarySystemBackground
         
@@ -56,12 +50,6 @@ class NCMainTabBar: UITabBar {
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        
-        if traitCollection.userInterfaceStyle == .dark {
-            appDelegate.darkMode = true
-        } else {
-            appDelegate.darkMode = false
-        }
     }
     
     @objc func changeTheming() {

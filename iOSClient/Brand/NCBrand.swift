@@ -163,15 +163,6 @@ class NCBrandColor: NSObject {
             }
         }
     }
-    @objc public var tertiarySystemBackground: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .tertiarySystemBackground
-            } else {
-                return .white
-            }
-        }
-    }
     @objc public var systemGroupedBackground: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -216,7 +207,6 @@ class NCBrandColor: NSObject {
     @objc public let graySoft:              UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
     @objc public let yellowFavorite:        UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
     @objc public let textInfo:              UIColor = UIColor(red: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 1.0)
-    @objc public var select:                UIColor = .lightGray
 
     override init() {
         self.brand = self.customer
@@ -252,18 +242,6 @@ class NCBrandColor: NSObject {
         
         cacheImages.buttonMore = UIImage(named: "more")!.image(color: graySoft, size: 50)
         cacheImages.buttonStop = UIImage(named: "stop")!.image(color: graySoft, size: 50)
-    }
-    
-    @objc public func setDarkMode(_ dark: Bool) {
-
-        if dark {
-                                    
-            select = UIColor.white.withAlphaComponent(0.2)
-            
-        } else {
-
-            select = self.brandElement.withAlphaComponent(0.1)
-        }
     }
     
 #if !EXTENSION

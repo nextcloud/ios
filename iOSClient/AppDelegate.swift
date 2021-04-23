@@ -63,20 +63,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var shares: [tableShare] = []
     var timerErrorNetworking: Timer?
     
-    private var dark: Bool = false
-    var darkMode: Bool {
-        get {
-            return self.dark
-        }
-        set(value) {
-            if value != self.dark {
-                self.dark = value
-                NCBrandColor.shared.setDarkMode(value)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
-            }
-        }
-    }
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         let userAgent = CCUtility.getUserAgent() as String
@@ -685,9 +671,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if passcodeViewController == nil {
             passcodeViewController = TOPasscodeViewController.init(style: .translucentLight, passcodeType: .sixDigits)
-            if darkMode {
-                passcodeViewController?.style = .translucentDark
-            }
+            //if traitCollection.userInterfaceStyle == .dark {
+            //    passcodeViewController?.style = .translucentDark
+            //}
             passcodeViewController?.delegate = self
             passcodeViewController?.keypadButtonShowLettering = false
             if CCUtility.getEnableTouchFaceID() && laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {

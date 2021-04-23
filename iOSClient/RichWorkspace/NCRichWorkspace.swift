@@ -63,7 +63,7 @@ import MarkdownKit
             }
             textViewColor = NCBrandColor.shared.label
             
-            if appDelegate.darkMode {
+            if traitCollection.userInterfaceStyle == .dark {
                 gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
             } else {
                 gradient.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]

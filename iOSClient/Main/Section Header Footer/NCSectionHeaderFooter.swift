@@ -45,6 +45,10 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     override func awakeFromNib() {
         super.awakeFromNib()
         
+        backgroundColor = NCBrandColor.shared.systemBackground
+
+        separator.backgroundColor = NCBrandColor.shared.separator
+
         buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
         
         buttonOrder.setTitle("", for: .normal)
@@ -60,11 +64,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         tap.delegate = self
         viewRichWorkspace?.addGestureRecognizer(tap)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        
-        backgroundColor = NCBrandColor.shared.systemBackground
-        
-        changeTheming()
+        changeColor()
     }
     
     override func layoutSublayers(of layer: CALayer) {
@@ -72,21 +72,23 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         gradient.frame = viewRichWorkspace.bounds
     }
     
-    @objc func changeTheming() {
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
         
-        separator.backgroundColor = NCBrandColor.shared.separator
+        changeColor()
+    }
+    
+    @objc func changeColor() {
         
-        if textViewColor != NCBrandColor.shared.label {
-            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.label)
-            markdownParser.header.font = UIFont.systemFont(ofSize: 25)
-            if let richWorkspaceText = richWorkspaceText {
-                textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
-            }
-            textViewColor = NCBrandColor.shared.label
-            gradient.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
-            if traitCollection.userInterfaceStyle == .dark {
-                gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
-            }
+        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.label)
+        markdownParser.header.font = UIFont.systemFont(ofSize: 25)
+        if let richWorkspaceText = richWorkspaceText {
+            textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
+        }
+        textViewColor = NCBrandColor.shared.label
+        gradient.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
+        if traitCollection.userInterfaceStyle == .dark {
+            gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
         }
     }
     

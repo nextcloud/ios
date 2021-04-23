@@ -73,12 +73,6 @@ import MarkdownKit
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        
-        if traitCollection.userInterfaceStyle == .dark {
-            appDelegate.darkMode = true
-        } else {
-            appDelegate.darkMode = false
-        }
     }
     
     public func presentationControllerWillDismiss(_ presentationController: UIPresentationController) {
