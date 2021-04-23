@@ -34,6 +34,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var textViewRichWorkspace: UITextView!
     @IBOutlet weak var separator: UIView!
+    @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     
     var delegate: NCSectionHeaderMenuDelegate?
     
@@ -46,8 +47,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         super.awakeFromNib()
         
         backgroundColor = NCBrandColor.shared.systemBackground
-
-        separator.backgroundColor = NCBrandColor.shared.separator
 
         buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
         
@@ -64,6 +63,9 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         tap.delegate = self
         viewRichWorkspace?.addGestureRecognizer(tap)
         
+        separator.backgroundColor = NCBrandColor.shared.separator
+        separatorHeightConstraint.constant = 0.5
+
         changeColor()
     }
     

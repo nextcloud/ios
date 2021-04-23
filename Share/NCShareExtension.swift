@@ -497,7 +497,6 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.indexPath = indexPath
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.label
-        cell.separator.backgroundColor = NCBrandColor.shared.separator
         
         cell.imageSelect.image = nil
         cell.imageStatus.image = nil

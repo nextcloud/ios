@@ -39,6 +39,7 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImage
     @IBOutlet weak var progressView: UIProgressView!
     
     @IBOutlet weak var separator: UIView!
+    @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     
     var filePreviewImageView : UIImageView {
         get{
@@ -71,7 +72,10 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImage
         longPressedGestureMore.minimumPressDuration = 0.5
         longPressedGestureMore.delegate = self
         longPressedGestureMore.delaysTouchesBegan = true
-        buttonMore.addGestureRecognizer(longPressedGestureMore)        
+        buttonMore.addGestureRecognizer(longPressedGestureMore)
+        
+        separator.backgroundColor = NCBrandColor.shared.separator
+        separatorHeightConstraint.constant = 0.5
     }
     
     override func prepareForReuse() {
