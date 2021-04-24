@@ -63,8 +63,6 @@ extension NCNetworking {
                 
         createChunkedFolder(chunkFolderPath: chunkFolderPath, account: metadata.account) { (errorCode, errorDescription) in
             
-            completion(errorCode, errorDescription)
-
             if errorCode == 0 {
                     
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId])
@@ -157,23 +155,31 @@ extension NCNetworking {
                                         
                                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
                                     }
+                                    
+                                    completion(errorCode, errorDescription)
                                 }
                                 
                             } else {
                                 
                                 self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: errorCode, errorDescription: errorDescription)
+                                
+                                completion(errorCode, errorDescription)
                             }
                         }
                                                         
                     } else {
                                                             
                         self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: uploadErrorCode, errorDescription: uploadErrorDescription)
+                        
+                        completion(errorCode, errorDescription)
                     }
                 }
                 
             } else {
                 
                 self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: errorCode, errorDescription: errorDescription)
+                
+                completion(errorCode, errorDescription)
             }
         }
     }

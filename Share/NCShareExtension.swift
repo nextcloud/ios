@@ -152,6 +152,10 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         }
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        
+    }
+    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
@@ -163,8 +167,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
-        collectionView.reloadData()
-        tableView.reloadData()
+//        collectionView.reloadData()
+//        tableView.reloadData()
     }
     
     // MARK: -
@@ -319,7 +323,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         if let fileName = filesName.first {
             
             filesName.removeFirst()
-            let ocId = NSUUID().uuidString
+            let ocId = "extension"+NSUUID().uuidString
             let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
                 
             if NCUtilityFileSystem.shared.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: filePath) {
