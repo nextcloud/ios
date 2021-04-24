@@ -42,7 +42,7 @@ class NCAccountRequest: UIViewController {
     @IBOutlet weak var progressView: UIProgressView!
     
     public var accounts: [tableAccount] = []
-    public let heightCell: CGFloat = 80
+    public let heightCell: CGFloat = 55
     public var enableTimerProgress: Bool = true
     public var enableAddAccount: Bool = false
     public var dismissDidEnterBackground: Bool = false
@@ -57,11 +57,12 @@ class NCAccountRequest: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        titleLabel.text = NSLocalizedString("_accounts_", comment: "")
+        titleLabel.text = NSLocalizedString("_account_select_", comment: "")
         view.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
 
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
         tableView.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
         progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.trackTintColor = .clear
@@ -193,11 +194,12 @@ extension NCAccountRequest: UITableViewDataSource {
         
         if indexPath.row == accounts.count {
            
-            avatarImage?.image = NCUtility.shared.loadImage(named: "plus").image(color: .systemBlue, size: 25)
+            avatarImage?.image = NCUtility.shared.loadImage(named: "plus").image(color: .systemBlue, size: 15)
             avatarImage?.contentMode = .center
             userLabel?.text = NSLocalizedString("_add_account_", comment: "")
             userLabel?.textColor = .systemBlue
-            
+            userLabel?.font = UIFont.systemFont(ofSize: 15)
+
         } else {
         
             let account = accounts[indexPath.row]
