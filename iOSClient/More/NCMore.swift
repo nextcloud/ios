@@ -53,6 +53,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        tableView.separatorColor = NCBrandColor.shared.separator
 
         tableView.register(UINib.init(nibName: "NCMoreUserCell", bundle: nil), forCellReuseIdentifier: "userCell")
         
@@ -61,11 +62,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         labelQuotaExternalSite.isUserInteractionEnabled = true
         labelQuotaExternalSite.addGestureRecognizer(tapQuota)
 
+        progressQuota.progressTintColor = .systemBlue
+
         // Notification
         NotificationCenter.default.addObserver(self, selector: #selector(initializeMain), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitializeMain), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        
-        changeTheming()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -77,12 +77,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     // MARK: - NotificationCenter
 
-    @objc func changeTheming() {
-        progressQuota.progressTintColor = NCBrandColor.shared.brandElement
-        tableView.separatorColor = NCBrandColor.shared.separator
-        tableView.reloadData()
-    }
-    
     @objc func initializeMain() {
         loadItems()
     }
