@@ -81,19 +81,13 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         //        let rowCell = row.cell(forForm: self)
         //        rowCell.becomeFirstResponder()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-
-        changeTheming()
+        tableView.reloadData()
+        initializeForm()
         
         let value = CCUtility.getTextRecognitionStatus()
         SetTextRecognition(newValue: value)
     }
     
-    @objc func changeTheming() {
-        tableView.reloadData()
-        initializeForm()
-    }
-
     //MARK: XLForm
     
     func initializeForm() {

@@ -93,20 +93,13 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         labelTimer.textColor = NCBrandColor.shared.label
         labelDuration.textColor = NCBrandColor.shared.label
         
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-
-        changeTheming()
+        initializeForm()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         updateTimerUI()
-    }
-    
-    @objc func changeTheming() {
-        tableView.reloadData()
-        initializeForm()
     }
     
     //MARK: XLForm

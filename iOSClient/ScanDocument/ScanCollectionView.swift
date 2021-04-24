@@ -91,17 +91,10 @@ class DragDropViewController: UIViewController {
         let longPressRecognizerPlus = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
         add.addGestureRecognizer(longPressRecognizerPlus)
         
-        // changeTheming
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        
-        changeTheming()
-        
-        loadImage()
-    }
-    
-    @objc func changeTheming() {
         collectionViewSource.reloadData()
         collectionViewDestination.reloadData()
+        
+        loadImage()
     }
     
     //MARK: Button Action

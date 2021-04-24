@@ -88,9 +88,9 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             })
         }
         
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-
-        changeTheming()
+        tableView.reloadData()
+        initializeForm()
+        reloadForm()
     }
     
     override func viewWillDisappear(_ animated: Bool)
@@ -98,12 +98,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         super.viewWillDisappear(animated)
         
         self.delegate?.dismissFormUploadAssets()
-    }
-    
-    @objc func changeTheming() {
-        tableView.reloadData()
-        initializeForm()
-        self.reloadForm()
     }
     
     //MARK: XLForm

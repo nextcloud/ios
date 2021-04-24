@@ -79,18 +79,12 @@ import NCCommunication
         // title 
         self.title = titleForm
       
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-
-        changeTheming()
-        
-        // load the templates available
-        getTemplate()
-    }
-    
-    @objc func changeTheming() {
         collectionView.reloadData()
         tableView.reloadData()
         initializeForm()
+        
+        // load the templates available
+        getTemplate()
     }
     
     // MARK: - Tableview (XLForm)
