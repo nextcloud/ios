@@ -38,11 +38,12 @@ public extension NCAccountRequestDelegate {
 class NCAccountRequest: UIViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var progressView: UIProgressView!
     
     public var accounts: [tableAccount] = []
-    public let heightCell: CGFloat = 55
+    public let heightCell: CGFloat = 60
     public var enableTimerProgress: Bool = true
     public var enableAddAccount: Bool = false
     public var dismissDidEnterBackground: Bool = false
@@ -60,6 +61,8 @@ class NCAccountRequest: UIViewController {
         titleLabel.text = NSLocalizedString("_account_select_", comment: "")
         view.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
 
+        closeButton.setImage(NCUtility.shared.loadImage(named: "xmark", color: .black), for: .normal)
+        
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
         tableView.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
         tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
@@ -83,12 +86,24 @@ class NCAccountRequest: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        let visibleCells = tableView.visibleCells
+        var numAccounts = accounts.count
+        if enableAddAccount { numAccounts += 1 }
+        
+        if visibleCells.count == numAccounts {
+            tableView.isScrollEnabled = false
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         timer?.invalidate()
+    }
+    
+    @IBAction func actionClose(_ sender: UIButton) {
+        dismiss(animated: true)
     }
     
     // MARK: - NotificationCenter

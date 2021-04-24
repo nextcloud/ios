@@ -26,6 +26,17 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QqL-qq-3JI">
+                                <rect key="frame" x="16" y="16.5" width="15" height="15"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="15" id="FJj-0n-59w"/>
+                                    <constraint firstAttribute="width" constant="15" id="FLg-jE-FHJ"/>
+                                </constraints>
+                                <state key="normal" image="de"/>
+                                <connections>
+                                    <action selector="actionClose:" destination="V0q-CP-xMJ" eventType="touchUpInside" id="4cX-K8-0C0"/>
+                                </connections>
+                            </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Pdo-MB-AhU">
                                 <rect key="frame" x="10" y="45" width="280" height="265"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -51,7 +62,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="30" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sWT-NJ-ihR" userLabel="Url">
-                                                    <rect key="frame" x="40" y="35" width="220" height="16"/>
+                                                    <rect key="frame" x="40" y="42" width="220" height="16"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -70,8 +81,8 @@
                                                 <constraint firstItem="x47-dQ-alI" firstAttribute="centerY" secondItem="IkA-cK-iZV" secondAttribute="centerY" id="Ghs-sZ-Bzf"/>
                                                 <constraint firstItem="sWT-NJ-ihR" firstAttribute="leading" secondItem="4cH-oC-YBd" secondAttribute="trailing" constant="10" id="MxV-Du-vUw"/>
                                                 <constraint firstItem="4cH-oC-YBd" firstAttribute="centerY" secondItem="IkA-cK-iZV" secondAttribute="centerY" id="WuT-iT-3xk"/>
+                                                <constraint firstItem="sWT-NJ-ihR" firstAttribute="top" secondItem="pWI-iZ-BTy" secondAttribute="bottom" constant="2" id="ZVm-u7-JGI"/>
                                                 <constraint firstItem="x47-dQ-alI" firstAttribute="leading" secondItem="pWI-iZ-BTy" secondAttribute="trailing" constant="5" id="e8E-uH-gvt"/>
-                                                <constraint firstAttribute="bottom" secondItem="sWT-NJ-ihR" secondAttribute="bottom" constant="9" id="gvc-Ij-KqI"/>
                                                 <constraint firstItem="pWI-iZ-BTy" firstAttribute="centerY" secondItem="IkA-cK-iZV" secondAttribute="centerY" id="jUS-89-RRO"/>
                                                 <constraint firstItem="x47-dQ-alI" firstAttribute="leading" secondItem="sWT-NJ-ihR" secondAttribute="trailing" constant="5" id="lIk-Sj-EgC"/>
                                                 <constraint firstItem="pWI-iZ-BTy" firstAttribute="leading" secondItem="4cH-oC-YBd" secondAttribute="trailing" constant="10" id="mlI-8s-1Ae"/>
@@ -98,16 +109,19 @@
                             <constraint firstItem="hTI-Bw-Fws" firstAttribute="top" secondItem="e8R-j7-ObS" secondAttribute="bottom" id="Cko-PC-TiW"/>
                             <constraint firstAttribute="trailing" secondItem="nZr-nE-ths" secondAttribute="trailing" constant="20" id="DPW-MV-oKc"/>
                             <constraint firstItem="hTI-Bw-Fws" firstAttribute="top" secondItem="Pdo-MB-AhU" secondAttribute="bottom" id="Ife-Ku-hGQ"/>
+                            <constraint firstItem="QqL-qq-3JI" firstAttribute="centerY" secondItem="nZr-nE-ths" secondAttribute="centerY" id="NpU-Hq-gMP"/>
                             <constraint firstItem="nZr-nE-ths" firstAttribute="leading" secondItem="gzh-6E-hc4" secondAttribute="leading" constant="20" id="SI9-xL-6s8"/>
                             <constraint firstItem="Pdo-MB-AhU" firstAttribute="top" secondItem="4vK-ua-S0e" secondAttribute="bottom" constant="45" id="UOe-p0-9n7"/>
                             <constraint firstItem="Pdo-MB-AhU" firstAttribute="leading" secondItem="gzh-6E-hc4" secondAttribute="leading" constant="10" id="Y5n-ju-hts"/>
                             <constraint firstAttribute="trailing" secondItem="e8R-j7-ObS" secondAttribute="trailing" id="chh-t9-vJN"/>
+                            <constraint firstItem="QqL-qq-3JI" firstAttribute="leading" secondItem="gzh-6E-hc4" secondAttribute="leading" constant="16" id="gCH-qr-Dyd"/>
                             <constraint firstItem="nZr-nE-ths" firstAttribute="top" secondItem="4vK-ua-S0e" secondAttribute="bottom" constant="15" id="oyJ-sj-j5N"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Zon-2j-rsc"/>
                     <size key="freeformSize" width="300" height="310"/>
                     <connections>
+                        <outlet property="closeButton" destination="QqL-qq-3JI" id="6xR-LA-F9H"/>
                         <outlet property="progressView" destination="e8R-j7-ObS" id="2gM-MB-IhE"/>
                         <outlet property="tableView" destination="Pdo-MB-AhU" id="AcD-SW-2ga"/>
                         <outlet property="titleLabel" destination="nZr-nE-ths" id="UbA-Dl-0Ad"/>
@@ -115,10 +129,11 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qdm-Cl-C5l" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1453.6231884057972" y="134.59821428571428"/>
+            <point key="canvasLocation" x="1453.125" y="133.75"/>
         </scene>
     </scenes>
     <resources>
+        <image name="de" width="128" height="128"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
