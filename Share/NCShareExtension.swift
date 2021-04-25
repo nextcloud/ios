@@ -397,7 +397,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                 vcRename.fileName = fileName
                 vcRename.imagePreview = sender.image
 
-                let popup = NCPopupViewController(contentController: vcRename, popupWidth: 300, popupHeight: 360)
+                let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
                                         
                 self.present(popup, animated: true)
             }

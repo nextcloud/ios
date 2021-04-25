@@ -226,7 +226,7 @@ extension NCCollectionViewCommon {
                             vcRename.metadata = metadata
                             vcRename.imagePreview = image
 
-                            let popup = NCPopupViewController(contentController: vcRename, popupWidth: 300, popupHeight: 360)
+                            let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
                                                         
                             self.present(popup, animated: true)
                         }

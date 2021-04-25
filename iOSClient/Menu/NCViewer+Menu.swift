@@ -176,7 +176,7 @@ extension NCViewer {
                             vcRename.metadata = metadata
                             vcRename.disableChangeExt = true
 
-                            let popup = NCPopupViewController(contentController: vcRename, popupWidth: 300, popupHeight: 360)
+                            let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
                             
                             viewController.present(popup, animated: true)
                         }

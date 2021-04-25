@@ -38,7 +38,7 @@
                                 </connections>
                             </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Pdo-MB-AhU">
-                                <rect key="frame" x="10" y="45" width="280" height="265"/>
+                                <rect key="frame" x="10" y="48" width="280" height="262"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="Cell" rowHeight="60" id="Q4K-la-J3W">
@@ -105,13 +105,13 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="e8R-j7-ObS" firstAttribute="leading" secondItem="gzh-6E-hc4" secondAttribute="leading" id="1gS-Ca-1Ov"/>
+                            <constraint firstItem="Pdo-MB-AhU" firstAttribute="top" secondItem="nZr-nE-ths" secondAttribute="bottom" constant="15" id="5vV-YC-uzH"/>
                             <constraint firstAttribute="trailing" secondItem="Pdo-MB-AhU" secondAttribute="trailing" constant="10" id="819-yV-vz7"/>
                             <constraint firstItem="hTI-Bw-Fws" firstAttribute="top" secondItem="e8R-j7-ObS" secondAttribute="bottom" id="Cko-PC-TiW"/>
                             <constraint firstAttribute="trailing" secondItem="nZr-nE-ths" secondAttribute="trailing" constant="20" id="DPW-MV-oKc"/>
                             <constraint firstItem="hTI-Bw-Fws" firstAttribute="top" secondItem="Pdo-MB-AhU" secondAttribute="bottom" id="Ife-Ku-hGQ"/>
                             <constraint firstItem="QqL-qq-3JI" firstAttribute="centerY" secondItem="nZr-nE-ths" secondAttribute="centerY" id="NpU-Hq-gMP"/>
                             <constraint firstItem="nZr-nE-ths" firstAttribute="leading" secondItem="gzh-6E-hc4" secondAttribute="leading" constant="20" id="SI9-xL-6s8"/>
-                            <constraint firstItem="Pdo-MB-AhU" firstAttribute="top" secondItem="4vK-ua-S0e" secondAttribute="bottom" constant="45" id="UOe-p0-9n7"/>
                             <constraint firstItem="Pdo-MB-AhU" firstAttribute="leading" secondItem="gzh-6E-hc4" secondAttribute="leading" constant="10" id="Y5n-ju-hts"/>
                             <constraint firstAttribute="trailing" secondItem="e8R-j7-ObS" secondAttribute="trailing" id="chh-t9-vJN"/>
                             <constraint firstItem="QqL-qq-3JI" firstAttribute="leading" secondItem="gzh-6E-hc4" secondAttribute="leading" constant="16" id="gCH-qr-Dyd"/>
