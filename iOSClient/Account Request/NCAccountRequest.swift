@@ -61,7 +61,7 @@ class NCAccountRequest: UIViewController {
         titleLabel.text = NSLocalizedString("_account_select_", comment: "")
         view.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
 
-        closeButton.setImage(NCUtility.shared.loadImage(named: "xmark", color: .black), for: .normal)
+        closeButton.setImage(NCUtility.shared.loadImage(named: "xmark", color: NCBrandColor.shared.label), for: .normal)
         
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
         tableView.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
