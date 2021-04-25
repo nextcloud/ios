@@ -165,6 +165,9 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        
+        collectionView.reloadData()
+        tableView.reloadData()
     }
     
     // MARK: -
