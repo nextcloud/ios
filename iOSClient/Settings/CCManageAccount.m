@@ -365,33 +365,23 @@
     
     self.tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:NCGlobal.shared.notificationCenterChangeTheming object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain) name:NCGlobal.shared.notificationCenterInitializeMain object:nil];
     
-    [self changeTheming];
+    [self initializeForm];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    appDelegate.activeViewController = self;
     
-    [self initializeForm];
-    [self.tableView reloadData];
+    appDelegate.activeViewController = self;
 }
 
 #pragma mark - NotificationCenter
 
-- (void)changeTheming
-{
-    [self.tableView reloadData];
-    [self initializeForm];
-}
-
 - (void)initializeMain
 {
     [self initializeForm];
-    [self.tableView reloadData];
 }
 
 #pragma mark -

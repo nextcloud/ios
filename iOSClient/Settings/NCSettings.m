@@ -191,10 +191,8 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    appDelegate.activeViewController = self;
     
-    [self initializeForm];
-    [self reloadForm];
+    appDelegate.activeViewController = self;
 }
 
 #pragma mark - NotificationCenter

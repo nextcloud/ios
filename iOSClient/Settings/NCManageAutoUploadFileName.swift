@@ -113,23 +113,14 @@ class NCManageAutoUploadFileName: XLFormViewController {
         
         tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         
-        // Theming view
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        
-        changeTheming()
+        initializeForm()
+        reloadForm()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         appDelegate.activeViewController = self
-    }
-    
-    // MARK: - NotificationCenter
-
-    @objc func changeTheming() {
-        tableView.reloadData()
-        initializeForm()
-        reloadForm()
     }
     
     //MARK: XLForm
