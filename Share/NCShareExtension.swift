@@ -88,9 +88,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         refreshControl.backgroundColor = NCBrandColor.shared.systemBackground
         refreshControl.addTarget(self, action: #selector(reloadDatasource), for: .valueChanged)
         
-        // Empty
-        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 0, delegate: self)
-        
         // Command view
         commandView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
         separatorView.backgroundColor = NCBrandColor.shared.separator
@@ -256,18 +253,24 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     
     func setCommandView() {
                 
+        var counter: CGFloat = 0
+        
         if filesName.count == 0 {
             self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
             return
         } else {
             if filesName.count < 3 {
-                self.commandViewHeightConstraint.constant = heightCommandView + (self.heightRowTableView * CGFloat(filesName.count))
+                counter = CGFloat(filesName.count)
+                self.commandViewHeightConstraint.constant = heightCommandView + (self.heightRowTableView * counter)
             } else  {
-                self.commandViewHeightConstraint.constant = heightCommandView + (self.heightRowTableView * 3)
+                counter = 3
+                self.commandViewHeightConstraint.constant = heightCommandView + (self.heightRowTableView * counter)
             }
             if filesName.count <= 3 {
                 self.tableView.isScrollEnabled = false
             }
+            // Empty
+            emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -50*counter, delegate: self)
             self.tableView.reloadData()
         }
     }
@@ -404,13 +407,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                                         
                 self.present(popup, animated: true)
             }
-        }
-    }
-    
-    @objc func deleteButtonPressed(sender: NCShareExtensionButtonWithIndexPath) {
-        if let index = sender.indexPath?.row {
-            filesName.remove(at: index)
-            setCommandView()
         }
     }
     
@@ -621,7 +617,6 @@ extension NCShareExtension: UITableViewDataSource {
         let imageCell = cell.viewWithTag(10) as? UIImageView
         let fileNameCell = cell.viewWithTag(20) as? UILabel
         let renameButton = cell.viewWithTag(30) as? NCShareExtensionButtonWithIndexPath
-        let deleteButton = cell.viewWithTag(40) as? NCShareExtensionButtonWithIndexPath
 
         imageCell?.layer.cornerRadius = 6
         imageCell?.layer.masksToBounds = true
@@ -640,12 +635,6 @@ extension NCShareExtension: UITableViewDataSource {
         renameButton?.image = imageCell?.image
         renameButton?.addTarget(self, action:#selector(renameButtonPressed(sender:)), for: .touchUpInside)
 
-        deleteButton?.setImage(NCUtility.shared.loadImage(named: "trash").image(color: .red, size: 15), for: .normal)
-        deleteButton?.indexPath = indexPath
-        deleteButton?.fileName = fileName
-        deleteButton?.image = imageCell?.image
-        deleteButton?.addTarget(self, action:#selector(deleteButtonPressed(sender:)), for: .touchUpInside)
-        
         return cell
     }
 }
