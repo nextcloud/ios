@@ -59,15 +59,12 @@ class NCAccountRequest: UIViewController {
         super.viewDidLoad()
         
         titleLabel.text = NSLocalizedString("_account_select_", comment: "")
-        view.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
 
         closeButton.setImage(NCUtility.shared.loadImage(named: "xmark", color: NCBrandColor.shared.label), for: .normal)
         
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
-        tableView.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
         tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
-        progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.trackTintColor = .clear
         progressView.progress = 1
         if enableTimerProgress {
@@ -197,7 +194,6 @@ extension NCAccountRequest: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
                
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
        
         let avatarImage = cell.viewWithTag(10) as? UIImageView
         let userLabel = cell.viewWithTag(20) as? UILabel

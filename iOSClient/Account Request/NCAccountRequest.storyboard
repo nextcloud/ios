@@ -32,7 +32,7 @@
                                     <constraint firstAttribute="height" constant="15" id="FJj-0n-59w"/>
                                     <constraint firstAttribute="width" constant="15" id="FLg-jE-FHJ"/>
                                 </constraints>
-                                <state key="normal" image="de"/>
+                                <state key="normal" image="xmark"/>
                                 <connections>
                                     <action selector="actionClose:" destination="V0q-CP-xMJ" eventType="touchUpInside" id="4cX-K8-0C0"/>
                                 </connections>
@@ -88,6 +88,7 @@
                                                 <constraint firstItem="pWI-iZ-BTy" firstAttribute="leading" secondItem="4cH-oC-YBd" secondAttribute="trailing" constant="10" id="mlI-8s-1Ae"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" systemColor="secondarySystemGroupedBackgroundColor"/>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
@@ -100,9 +101,10 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="2" id="G3U-2x-imL"/>
                                 </constraints>
+                                <color key="progressTintColor" systemColor="systemBlueColor"/>
                             </progressView>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" systemColor="secondarySystemGroupedBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="e8R-j7-ObS" firstAttribute="leading" secondItem="gzh-6E-hc4" secondAttribute="leading" id="1gS-Ca-1Ov"/>
                             <constraint firstItem="Pdo-MB-AhU" firstAttribute="top" secondItem="nZr-nE-ths" secondAttribute="bottom" constant="15" id="5vV-YC-uzH"/>
@@ -133,9 +135,15 @@
         </scene>
     </scenes>
     <resources>
-        <image name="de" width="128" height="128"/>
+        <image name="xmark" width="24" height="24"/>
+        <systemColor name="secondarySystemGroupedBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemBlueColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

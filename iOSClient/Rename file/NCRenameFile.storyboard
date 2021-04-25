@@ -71,7 +71,7 @@
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W5y-aT-UlI">
                                 <rect key="frame" x="0.0" y="253.5" width="150" height="56.5"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <state key="normal" title="Cancel">
                                     <color key="titleColor" systemColor="systemBlueColor"/>
                                 </state>
@@ -81,7 +81,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hcV-V0-eZB">
                                 <rect key="frame" x="150" y="253.5" width="150" height="56.5"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <state key="normal" title="Rename">
                                     <color key="titleColor" systemColor="systemBlueColor"/>
                                 </state>
