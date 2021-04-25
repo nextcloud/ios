@@ -44,7 +44,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         tableView.backgroundColor = NCBrandColor.shared.systemBackground
         
         // Empty
-        emptyDataSet = NCEmptyDataSet.init(view: tableView, offset: 0, delegate: self)
+        let offset = (self.navigationController?.navigationBar.bounds.height ?? 0) - 20
+        emptyDataSet = NCEmptyDataSet.init(view: tableView, offset: -offset, delegate: self)
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         

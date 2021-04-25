@@ -89,7 +89,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         refreshControl.addTarget(self, action: #selector(reloadDatasource), for: .valueChanged)
         
         // Empty
-        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -100, delegate: self)
+        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 0, delegate: self)
         
         // Command view
         commandView.backgroundColor = NCBrandColor.shared.secondarySystemBackground

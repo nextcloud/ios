@@ -30,20 +30,24 @@ class NCEmptyDataSet: NSObject {
             emptyView.isHidden = true
             emptyView.translatesAutoresizingMaskIntoConstraints = false
             
-            //emptyView.backgroundColor = .red
-            //emptyView.isHidden = false
+//            emptyView.backgroundColor = .red
+//            emptyView.isHidden = false
             
             emptyView.emptyTitle.sizeToFit()
             emptyView.emptyDescription.sizeToFit()
-            
+                          
             view.addSubview(emptyView)
-            
-            let constantTop: CGFloat = (view.frame.height - emptyView.frame.height) / 2 - offset
-            
-            emptyView.widthAnchor.constraint(equalToConstant: view.frame.width).isActive = true
-            emptyView.heightAnchor.constraint(equalToConstant: 350).isActive = true
-            emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-            emptyView.topAnchor.constraint(equalTo: view.topAnchor, constant: constantTop).isActive = true
+
+            emptyView.widthAnchor.constraint(equalToConstant: 350).isActive = true
+            emptyView.heightAnchor.constraint(equalToConstant: 250).isActive = true
+            if let view = view.superview {
+                emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+                emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset).isActive = true
+
+            } else {
+                emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+                emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset).isActive = true
+            }
         }
     }
     
