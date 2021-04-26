@@ -85,7 +85,7 @@
         
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"serviceActivated" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_e2e_settings_activated_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
-        [row.cellConfig setObject:[[UIImage imageNamed:@"checkmark.circle.fill"] imageWithColor:[UIColor redColor] size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"checkmark.circle.fill"] imageWithColor:[UIColor greenColor] size:25] forKey:@"imageView.image"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
