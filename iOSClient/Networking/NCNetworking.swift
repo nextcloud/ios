@@ -75,7 +75,7 @@ import Queuer
         return session
     }()
     
-    #if EXTENSION
+#if EXTENSION
     @objc public lazy var sessionManagerBackgroundExtension: URLSession = {
         let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifierBackgroundExtension)
         configuration.allowsCellularAccess = true
@@ -87,26 +87,26 @@ import Queuer
         let session = URLSession(configuration: configuration, delegate: NCCommunicationBackground.shared, delegateQueue: OperationQueue.main)
         return session
     }()
-    #endif
+#endif
     
     //MARK: - init
     
     override init() {
         super.init()
         
-        #if EXTENSION
+#if EXTENSION
         _ = sessionIdentifierBackgroundExtension
         #else
         _ = sessionManagerBackground
         _ = sessionManagerBackgroundWWan
-        #endif
+#endif
     }
     
     //MARK: - Communication Delegate
        
     func networkReachabilityObserver(_ typeReachability: NCCommunicationCommon.typeReachability) {
         
-        #if !EXTENSION
+#if !EXTENSION
         if typeReachability == NCCommunicationCommon.typeReachability.reachableCellular || typeReachability == NCCommunicationCommon.typeReachability.reachableEthernetOrWiFi {
             
             if !lastReachability {
@@ -124,7 +124,7 @@ import Queuer
         
         networkReachability = typeReachability
         
-        #endif
+#endif
     }
     
     func authenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
@@ -146,14 +146,14 @@ import Queuer
     
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
         
-        #if !EXTENSION
+#if !EXTENSION
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let completionHandler = appDelegate.backgroundSessionCompletionHandler {
             NCCommunicationCommon.shared.writeLog("Called urlSessionDidFinishEvents for Background URLSession")
             appDelegate.backgroundSessionCompletionHandler = nil
             completionHandler()
         }
 
-       #endif
+#endif
     }
     
     //MARK: - Pinning check
@@ -304,25 +304,25 @@ import Queuer
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal, etag: etag)
                 NCManageDatabase.shared.addLocalFile(metadata: metadata)
                 
-                #if !EXTENSION
+#if !EXTENSION
                 if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
                     
                     NCEndToEndEncryption.sharedManager()?.decryptFileName(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                 }
                 CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensMode) in };
-                #endif
+#endif
                                 
             } else {
                                 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: errorDescription, sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusDownloadError)
                 
-                #if !EXTENSION
+#if !EXTENSION
                 if errorCode == 401 || errorCode == 403 {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account)
                 } else if errorCode == Int(CFNetworkErrors.cfurlErrorServerCertificateUntrusted.rawValue) {
                     CCUtility.setCertificateError(metadata.account, error: true)
                 }
-                #endif
+#endif
             }
             
             self.downloadRequest[fileNameLocalPath] = nil
@@ -368,9 +368,9 @@ import Queuer
             NCManageDatabase.shared.addMetadata(metadata)
            
             if metadata.e2eEncrypted {
-                #if !EXTENSION
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
                 NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: metadata), account: account, start: { start() }, completion: completion)
-                #endif
+#endif
             } else if metadata.chunk {
                 uploadChunkedFile(metadata: tableMetadata.init(value: metadata), userId: account.userId, start: { start() }, completion: completion)
             } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
@@ -395,9 +395,9 @@ import Queuer
                 NCManageDatabase.shared.addMetadata(extractMetadata)
                
                 if metadata.e2eEncrypted {
-                    #if !EXTENSION
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
                     NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: extractMetadata), account: account, start: { start() }, completion: completion)
-                    #endif
+#endif
                 } else if metadata.chunk {
                     self.uploadChunkedFile(metadata: tableMetadata.init(value: metadata), userId: account.userId, start: { start() }, completion: completion)
                 } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
@@ -522,7 +522,7 @@ import Queuer
                 NCManageDatabase.shared.addMetadata(metadata)
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
                 
-                #if !EXTENSION
+#if !EXTENSION
                 self.getOcIdInBackgroundSession { (listOcId) in
                     if listOcId.count == 0 && self.uploadRequest.count == 0 {
                         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -530,7 +530,7 @@ import Queuer
                     }
                 }
                 CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensMode) in };
-                #endif                
+#endif
                 
                 NCCommunicationCommon.shared.writeLog("Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
@@ -554,9 +554,9 @@ import Queuer
                 
                 } else if errorCode == 401 || errorCode == 403 {
                     
-                    #if !EXTENSION
+#if !EXTENSION
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account)
-                    #endif
+#endif
                     
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
 
@@ -716,9 +716,9 @@ import Queuer
             }
         }
         
-        #if !EXTENSION
+#if !EXTENSION
         NCOperationQueue.shared.downloadCancelAll()
-        #endif
+#endif
     }
         
     //MARK: - WebDav Read file, folder
@@ -812,9 +812,9 @@ import Queuer
         let isDirectoryEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: account, urlBase: urlBase)
                
         if isDirectoryEncrypted {
-            #if !EXTENSION
+#if !EXTENSION
             NCNetworkingE2EE.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, completion: completion)
-            #endif
+#endif
         } else {
             createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: overwrite, completion: completion)
         }
@@ -933,7 +933,7 @@ import Queuer
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         
         if isDirectoryEncrypted {
-            #if !EXTENSION
+#if !EXTENSION
             if metadataLive == nil {
                 NCNetworkingE2EE.shared.deleteMetadata(metadata, urlBase: urlBase, completion: completion)
             } else {
@@ -945,7 +945,7 @@ import Queuer
                     }
                 }
             }
-            #endif
+#endif
         } else {
             if metadataLive == nil {
                 self.deleteMetadataPlain(metadata, addCustomHeaders: nil, completion: completion)
@@ -1023,11 +1023,11 @@ import Queuer
                 
                 NCManageDatabase.shared.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
                
-                #if !EXTENSION
+#if !EXTENSION
                 if favorite {
                     NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCGlobal.shared.selectorReadFile)
                 }
-                #endif
+#endif
                 
                 if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId])
@@ -1044,11 +1044,11 @@ import Queuer
                 NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (_, _, metadatas) in
                     NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
                     if selector != NCGlobal.shared.selectorListingFavorite {
-                        #if !EXTENSION
+#if !EXTENSION
                         for metadata in metadatas {
                             NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selector)
                         }
-                        #endif
+#endif
                     }
                     completion(account, metadatas, errorCode, errorDescription)
                 }
@@ -1067,7 +1067,7 @@ import Queuer
         let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"
 
         if isDirectoryEncrypted {
-            #if !EXTENSION
+#if !EXTENSION
             if metadataLive == nil {
                 NCNetworkingE2EE.shared.renameMetadata(metadata, fileNameNew: fileNameNew, urlBase: urlBase, completion: completion)
             } else {
@@ -1079,7 +1079,7 @@ import Queuer
                     }
                 }
             }
-            #endif
+#endif
         } else {
             if metadataLive == nil {
                 renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)

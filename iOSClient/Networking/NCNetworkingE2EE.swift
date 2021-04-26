@@ -300,7 +300,7 @@ import Alamofire
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
                             completion(0, "")
 
-                        } else if errorCode == 0 && ocId != nil {                            
+                        } else if errorCode == 0 && ocId != nil {
                             
                             NCUtilityFileSystem.shared.moveFileInBackground(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath: CCUtility.getDirectoryProviderStorageOcId(ocId))
                             
@@ -325,7 +325,9 @@ import Alamofire
                             
                             if errorCode == 401 || errorCode == 403 {
                             
+#if !EXTENSION
                                 NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account)
+#endif
                                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
                             
                             } else if errorCode == Int(CFNetworkErrors.cfurlErrorServerCertificateUntrusted.rawValue) {

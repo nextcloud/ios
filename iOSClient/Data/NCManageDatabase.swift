@@ -47,7 +47,7 @@ class NCManageDatabase: NSObject {
             let config = Realm.Configuration(
                 fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + NCGlobal.shared.databaseDefault),
                 schemaVersion: NCGlobal.shared.databaseSchemaVersion,
-                objectTypes: [tableMetadata.self, tableLocalFile.self, tableDirectory.self, tableTag.self, tableAccount.self, tableCapabilities.self, tableE2eEncryption.self, tableShare.self]
+                objectTypes: [tableMetadata.self, tableLocalFile.self, tableDirectory.self, tableTag.self, tableAccount.self, tableCapabilities.self, tableE2eEncryption.self, tableE2eEncryptionLock.self, tableShare.self]
             )
             
             Realm.Configuration.defaultConfiguration = config
@@ -147,9 +147,9 @@ class NCManageDatabase: NSObject {
             } catch {
                 if let databaseFilePath = databaseFilePath {
                     do {
-                        #if !EXTENSION
+#if !EXTENSION
                         NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, forced: true)
-                        #endif
+#endif
                         try FileManager.default.removeItem(at: databaseFilePath)
                     } catch {}
                 }
@@ -169,9 +169,9 @@ class NCManageDatabase: NSObject {
         } catch {
             if let databaseFilePath = databaseFilePath {
                 do {
-                    #if !EXTENSION
+#if !EXTENSION
                     NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, forced: true)
-                    #endif
+#endif
                     try FileManager.default.removeItem(at: databaseFilePath)
                 } catch {}
             }
