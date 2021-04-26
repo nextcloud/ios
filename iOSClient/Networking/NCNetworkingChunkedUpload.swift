@@ -27,7 +27,7 @@ import Queuer
 
 extension NCNetworking {
     
-    internal func uploadChunkedFile(metadata: tableMetadata, userId: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    internal func uploadChunkedFile(metadata: tableMetadata, userId: String, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
         let chunkFolder = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
@@ -63,6 +63,8 @@ extension NCNetworking {
                 
         createChunkedFolder(chunkFolderPath: chunkFolderPath, account: metadata.account) { (errorCode, errorDescription) in
             
+            start()
+
             if errorCode == 0 {
                     
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId])

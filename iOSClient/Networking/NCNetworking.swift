@@ -338,7 +338,7 @@ import Queuer
     
     //MARK: - Upload
 
-    @objc func upload(metadata: tableMetadata, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->())  {
+    @objc func upload(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->())  {
            
         let metadata = tableMetadata.init(value: metadata)
 
@@ -369,14 +369,14 @@ import Queuer
            
             if metadata.e2eEncrypted {
                 #if !EXTENSION
-                NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: metadata), account: account, completion: completion)
+                NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: metadata), account: account, start: { start() }, completion: completion)
                 #endif
             } else if metadata.chunk {
-                uploadChunkedFile(metadata: tableMetadata.init(value: metadata), userId: account.userId, completion: completion)
+                uploadChunkedFile(metadata: tableMetadata.init(value: metadata), userId: account.userId, start: { start() }, completion: completion)
             } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
-                uploadFile(metadata: tableMetadata.init(value: metadata), account: account, completion: completion)
+                uploadFile(metadata: tableMetadata.init(value: metadata), account: account, start: { start() }, completion: completion)
             } else {
-                uploadFileInBackground(metadata: tableMetadata.init(value: metadata), account: account, completion: completion)
+                uploadFileInBackground(metadata: tableMetadata.init(value: metadata), account: account, start: { start() }, completion: completion)
             }
            
         } else {
@@ -396,20 +396,20 @@ import Queuer
                
                 if metadata.e2eEncrypted {
                     #if !EXTENSION
-                    NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: extractMetadata), account: account, completion: completion)
+                    NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: extractMetadata), account: account, start: { start() }, completion: completion)
                     #endif
                 } else if metadata.chunk {
-                    self.uploadChunkedFile(metadata: tableMetadata.init(value: extractMetadata), userId: account.userId, completion: completion)
+                    self.uploadChunkedFile(metadata: tableMetadata.init(value: metadata), userId: account.userId, start: { start() }, completion: completion)
                 } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
-                    self.uploadFile(metadata: tableMetadata.init(value: extractMetadata), account: account, completion: completion)
+                    self.uploadFile(metadata: tableMetadata.init(value: extractMetadata), account: account, start: { start() }, completion: completion)
                 } else {
-                    self.uploadFileInBackground(metadata: tableMetadata.init(value: extractMetadata), account: account, completion: completion)
+                    self.uploadFileInBackground(metadata: tableMetadata.init(value: extractMetadata), account: account, start: { start() }, completion: completion)
                 }
             }
         }
     }
     
-    private func uploadFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    private func uploadFile(metadata: tableMetadata, account: tableAccount, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -425,6 +425,7 @@ import Queuer
             uploadTask = task
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId":metadata.ocId])
+            start()
             
         }, progressHandler: { (progress) in
             
@@ -439,7 +440,7 @@ import Queuer
         }
     }
     
-    private func uploadFileInBackground(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    private func uploadFileInBackground(metadata: tableMetadata, account: tableAccount, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         var session: URLSession?
         let metadata = tableMetadata.init(value: metadata)
@@ -452,10 +453,13 @@ import Queuer
             session = sessionManagerBackgroundWWan
         }
         
+        start()
+        
         // Check file dim > 0
         if NCUtilityFileSystem.shared.getFileSize(filePath: fileNameLocalPath) == 0 {
         
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            
             completion(404, NSLocalizedString("_error_not_found_", value: "The requested resource could not be found", comment: ""))
         
         } else {
@@ -538,7 +542,7 @@ import Queuer
                     if metadata.status == NCGlobal.shared.metadataStatusUploadForcedStart {
                         
                         NCManageDatabase.shared.setMetadataSession(ocId: ocId!, session: sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusInUpload)
-                        NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
+                        NCNetworking.shared.upload(metadata: metadata) { } completion: { (_, _) in }
                                                 
                     } else {
                         

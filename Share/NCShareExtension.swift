@@ -349,7 +349,9 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                     metadata.chunk = true
                 }
                 
-                NCNetworking.shared.upload(metadata: metadata) { (errorCode, errorDescription) in
+                NCNetworking.shared.upload(metadata: metadata) {
+                    
+                } completion: { (errorCode, errorDescription) in
                     
                     NCUtility.shared.stopActivityIndicator()
                     

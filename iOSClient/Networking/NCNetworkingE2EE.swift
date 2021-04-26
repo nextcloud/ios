@@ -194,12 +194,14 @@ import Alamofire
     
     //MARK: - Upload
     
-    func upload(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    func upload(metadata: tableMetadata, account: tableAccount, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         let objectE2eEncryption = tableE2eEncryption()
         var key: NSString?, initializationVector: NSString?, authenticationTag: NSString?
         let ocIdTemp = metadata.ocId
         let serverUrl = metadata.serverUrl
+        
+        start()
         
         // Verify max size
         if metadata.size > NCGlobal.shared.e2eeMaxFileSize {
