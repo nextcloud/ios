@@ -200,14 +200,13 @@ import Alamofire
         var key: NSString?, initializationVector: NSString?, authenticationTag: NSString?
         let ocIdTemp = metadata.ocId
         let serverUrl = metadata.serverUrl
-        
-        start()
-        
+                
         // Verify max size
         if metadata.size > NCGlobal.shared.e2eeMaxFileSize {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":NCGlobal.shared.errorInternalError, "errorDescription":"E2E Error file too big"])
+            start()
             completion(NCGlobal.shared.errorInternalError, "E2E Error file too big")
             return
         }
@@ -228,6 +227,7 @@ import Alamofire
             
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":NCGlobal.shared.errorInternalError, "errorDescription":"_e2e_error_create_encrypted_"])
+            start()
             completion(NCGlobal.shared.errorInternalError, "_e2e_error_create_encrypted_")
             return
         }
@@ -257,6 +257,7 @@ import Alamofire
         if let getMetadata = NCManageDatabase.shared.getMetadataFromOcId(ocIdTemp) {
             metadata = getMetadata
         } else {
+            start()
             completion(NCGlobal.shared.errorInternalError, "_e2e_error_create_encrypted_")
             return
         }
@@ -267,7 +268,7 @@ import Alamofire
         
         NCNetworkingE2EE.shared.sendE2EMetadata(account: metadata.account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: account.urlBase, upload: true) { (e2eToken, errorCode, errorDescription) in
             
-            completion(errorCode, errorDescription)
+            start()
             
             if errorCode == 0 && e2eToken != nil {
                                                 
@@ -285,67 +286,70 @@ import Alamofire
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
                     
                 }) { (account, ocId, etag, date, size, allHeaderFields, error, errorCode, errorDescription) in
-                
+                                    
                     NCNetworking.shared.uploadRequest[fileNameLocalPath] = nil
-                    guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else {
-                        return
-                    }
-
-                    if error?.isExplicitlyCancelledError ?? false {
                     
-                        CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-                        NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
+                    if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
+                        
+                        if error?.isExplicitlyCancelledError ?? false {
+                        
+                            CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
+                            completion(0, "")
 
-                    } else if errorCode == 0 && ocId != nil {
-                        
-                        guard let metadataTemp = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else {
-                            return
-                        }
-                        
-                        let metadata = tableMetadata.init(value: metadataTemp)
-                        
-                        NCUtilityFileSystem.shared.moveFileInBackground(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath: CCUtility.getDirectoryProviderStorageOcId(ocId))
-                        
-                        metadata.date = date ?? NSDate()
-                        metadata.etag = etag ?? ""
-                        metadata.ocId = ocId!
-                        
-                        metadata.session = ""
-                        metadata.sessionError = ""
-                        metadata.sessionTaskIdentifier = 0
-                        metadata.status = NCGlobal.shared.metadataStatusNormal
-                        
-                        NCManageDatabase.shared.addMetadata(metadata)
-                        NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
-                        NCManageDatabase.shared.addLocalFile(metadata: metadata)
-                        
-                        NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
-                                                
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp ,"errorCode":errorCode, "errorDescription":""])
-                                                                                    
-                    } else {
-                        
-                        if errorCode == 401 || errorCode == 403 {
-                        
-                            NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account)
-                            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
-                        
-                        } else if errorCode == Int(CFNetworkErrors.cfurlErrorServerCertificateUntrusted.rawValue) {
-                        
-                            CCUtility.setCertificateError(metadata.account, error: true)
-                            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
-                                                
+                        } else if errorCode == 0 && ocId != nil {
+                            
+                            guard let metadataTemp = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else {
+                                completion(NCGlobal.shared.errorMetadataNotFind, "Internal error: metadata not find")
+                                return
+                            }
+                            
+                            let metadata = tableMetadata.init(value: metadataTemp)
+                            
+                            NCUtilityFileSystem.shared.moveFileInBackground(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath: CCUtility.getDirectoryProviderStorageOcId(ocId))
+                            
+                            metadata.date = date ?? NSDate()
+                            metadata.etag = etag ?? ""
+                            metadata.ocId = ocId!
+                            
+                            metadata.session = ""
+                            metadata.sessionError = ""
+                            metadata.sessionTaskIdentifier = 0
+                            metadata.status = NCGlobal.shared.metadataStatusNormal
+                            
+                            NCManageDatabase.shared.addMetadata(metadata)
+                            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+                            NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                            
+                            NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
+                                                    
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp ,"errorCode":errorCode, "errorDescription":""])
+                                                                                        
                         } else {
-                        
-                            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
+                            
+                            if errorCode == 401 || errorCode == 403 {
+                            
+                                NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account)
+                                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
+                            
+                            } else if errorCode == Int(CFNetworkErrors.cfurlErrorServerCertificateUntrusted.rawValue) {
+                            
+                                CCUtility.setCertificateError(metadata.account, error: true)
+                                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
+                                                    
+                            } else {
+                            
+                                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
+                            }
+                            
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
                         }
-                        
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
                     }
                     
-                    NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: serverUrl) { (_, _, _, _) in }
-        
+                    NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: serverUrl) { (_, _, _, _) in
+                        completion(errorCode, errorDescription)
+                    }
                 }
                 
             } else {
@@ -355,6 +359,7 @@ import Alamofire
 
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":errorDescription])
                 }
+                completion(errorCode, errorDescription)
             }
         }
     }
