@@ -281,7 +281,7 @@ public class NCPopupViewController: UIViewController {
                     let diff = popupDiff - keyboardDiff
                     
                     if centerYConstraint != nil && diff > 0 {
-                        centerYConstraint?.constant = -(diff + 10)
+                        centerYConstraint?.constant = -(diff + 15)
                     }
                 }
             }
