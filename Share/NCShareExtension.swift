@@ -359,7 +359,12 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                         self.actionUpload()
                     } else {
                         NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
-                        self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+                        let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
+                            self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+                            return
+                        }))
+                        self.present(alertController, animated: true)
                     }
                 }
             }
@@ -445,6 +450,14 @@ extension NCShareExtension: UICollectionViewDelegate {
         
         if let metadata = dataSource.cellForItemAt(indexPath: indexPath) {
             if let serverUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)  {
+                
+                if metadata.e2eEncrypted && !CCUtility.isEnd(toEndEnabled: activeAccount.account) {
+                    let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: NSLocalizedString("_e2e_goto_settings_for_enable_", comment: ""), preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                    self.present(alertController, animated: true)
+                    return
+                }
+                
                 self.serverUrl = serverUrl
                 reloadDatasource(withLoadFolder: true)
                 setNavigationBar(navigationTitle: metadata.fileNameView)
@@ -664,7 +677,9 @@ extension NCShareExtension {
             if errorCode == 0 {
                 self.reloadDatasource(withLoadFolder: true)
             }  else {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                self.present(alertController, animated: true)
             }
         }
     }
@@ -676,7 +691,9 @@ extension NCShareExtension {
         
         NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { (_, metadataFolder, _, _, _, errorCode, errorDescription) in
             if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                self.present(alertController, animated: true)
             }
             self.networkInProgress = false
             self.metadataFolder = metadataFolder
