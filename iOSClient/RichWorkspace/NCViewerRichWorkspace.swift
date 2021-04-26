@@ -48,10 +48,11 @@ import MarkdownKit
                 
         let editItem = UIBarButtonItem(image: UIImage(named: "actionSheetModify"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
         self.navigationItem.rightBarButtonItem = editItem
-
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         
-        changeTheming()
+        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.label)
+        markdownParser.header.font = UIFont.systemFont(ofSize: 25)
+        textView.attributedText = markdownParser.parse(richWorkspaceText)
+        textViewColor = NCBrandColor.shared.label
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -77,15 +78,6 @@ import MarkdownKit
     
     public func presentationControllerWillDismiss(_ presentationController: UIPresentationController) {
         self.viewWillAppear(true)
-    }
-    
-    @objc func changeTheming() {
-        if textViewColor != NCBrandColor.shared.label {
-            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.label)
-            markdownParser.header.font = UIFont.systemFont(ofSize: 25)
-            textView.attributedText = markdownParser.parse(richWorkspaceText)
-            textViewColor = NCBrandColor.shared.label
-        }
     }
     
     @objc func closeItemTapped(_ sender: UIBarButtonItem) {

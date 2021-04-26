@@ -66,6 +66,13 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         separator.backgroundColor = NCBrandColor.shared.separator
         separatorHeightConstraint.constant = 0.5
 
+        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.label)
+        markdownParser.header.font = UIFont.systemFont(ofSize: 25)
+        if let richWorkspaceText = richWorkspaceText {
+            textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
+        }
+        textViewColor = NCBrandColor.shared.label
+        
         changeColor()
     }
     
@@ -80,17 +87,11 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         changeColor()
     }
     
-    @objc func changeColor() {
-        
-        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.label)
-        markdownParser.header.font = UIFont.systemFont(ofSize: 25)
-        if let richWorkspaceText = richWorkspaceText {
-            textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
-        }
-        textViewColor = NCBrandColor.shared.label
-        gradient.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
+    func changeColor() {
         if traitCollection.userInterfaceStyle == .dark {
             gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
+        } else {
+            gradient.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
         }
     }
     
