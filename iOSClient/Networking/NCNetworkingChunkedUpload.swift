@@ -164,7 +164,6 @@ extension NCNetworking {
                             } else {
                                 
                                 self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: errorCode, errorDescription: errorDescription)
-                                
                                 completion(errorCode, errorDescription)
                             }
                         }
@@ -172,7 +171,6 @@ extension NCNetworking {
                     } else {
                                                             
                         self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: uploadErrorCode, errorDescription: uploadErrorDescription)
-                        
                         completion(errorCode, errorDescription)
                     }
                 }
@@ -180,7 +178,6 @@ extension NCNetworking {
             } else {
                 
                 self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: errorCode, errorDescription: errorDescription)
-                
                 completion(errorCode, errorDescription)
             }
         }
