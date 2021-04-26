@@ -420,6 +420,10 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         }
     }
     
+    func changeAccountRequestAddAccount(account: String) {
+        setAccount(account: account)
+    }
+    
     @objc func profileButtonTapped(sender: Any) {
         
         let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
