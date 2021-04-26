@@ -106,9 +106,9 @@ class NCNetworkingProcessUpload: NSObject {
                         if metadata.chunk && UIApplication.shared.applicationState == .active {
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata) {
-                                    self.startTimer()
+                                    // start
                                 } completion: { (_, _) in
-                                    // completion
+                                    self.startTimer()
                                 }
                             } else {
                                 self.startTimer()
