@@ -410,14 +410,10 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         }
     }
     
-    func changeAccountRequestAddAccount(account: String) {
-        setAccount(account: account)
-    }
-    
     @objc func profileButtonTapped(sender: Any) {
         
         let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
-        if accounts.count > 0 {
+        if accounts.count > 1 {
             
             if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
                
@@ -431,7 +427,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                 let numberCell = accounts.count
                 let height = min(CGFloat(numberCell * Int(vcAccountRequest.heightCell) + 45), screenHeighMax)
                 
-                let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height)
+                let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height+20)
                 
                 self.present(popup, animated: true)
             }
