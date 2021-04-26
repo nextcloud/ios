@@ -291,6 +291,8 @@ import Alamofire
                     
                     if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
                         
+                        let metadata = tableMetadata.init(value: metadata)
+                        
                         if error?.isExplicitlyCancelledError ?? false {
                         
                             CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
@@ -298,14 +300,7 @@ import Alamofire
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
                             completion(0, "")
 
-                        } else if errorCode == 0 && ocId != nil {
-                            
-                            guard let metadataTemp = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else {
-                                completion(NCGlobal.shared.errorMetadataNotFind, "Internal error: metadata not find")
-                                return
-                            }
-                            
-                            let metadata = tableMetadata.init(value: metadataTemp)
+                        } else if errorCode == 0 && ocId != nil {                            
                             
                             NCUtilityFileSystem.shared.moveFileInBackground(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath: CCUtility.getDirectoryProviderStorageOcId(ocId))
                             
@@ -325,7 +320,7 @@ import Alamofire
                             NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
                                                     
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp ,"errorCode":errorCode, "errorDescription":""])
-                                                                                        
+                            
                         } else {
                             
                             if errorCode == 401 || errorCode == 403 {

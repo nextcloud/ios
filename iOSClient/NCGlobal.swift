@@ -145,7 +145,6 @@ class NCGlobal: NSObject {
     @objc let errorCharactersForbidden: Int         = -99993
     @objc let errorCreationFile: Int                = -99992
     @objc let errorReadFile: Int                    = -99991
-    @objc let errorMetadataNotFind: Int             = -99990
     
     // Constants to identify the different permissions of a file
     @objc let permissionShared                      = "S"
