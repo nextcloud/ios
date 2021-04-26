@@ -358,7 +358,10 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                     if errorCode == 0 {
                         self.actionUpload()
                     } else {
+                        
                         NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
+                        NCManageDatabase.shared.deleteChunks(account: self.activeAccount.account, ocId: ocId)
+                        
                         let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
                             self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
