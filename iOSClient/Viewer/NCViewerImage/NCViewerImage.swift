@@ -33,7 +33,7 @@ class NCViewerImage: UIViewController {
     enum ScreenMode {
         case full, normal
     }
-    var currentMode: ScreenMode = .full
+    var currentMode: ScreenMode = .normal
         
     var pageViewController: UIPageViewController {
         return self.children[0] as! UIPageViewController
