@@ -65,6 +65,9 @@ class NCViewerImage: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = NCBrandColor.shared.systemBackground
+        textColor = NCBrandColor.shared.label
+
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
         longtapGestureRecognizer = UILongPressGestureRecognizer()
@@ -217,11 +220,6 @@ class NCViewerImage: UIViewController {
     }
     
     @objc func changeTheming() {
-        
-        if currentMode == .normal {
-            view.backgroundColor = NCBrandColor.shared.systemBackground
-            textColor = NCBrandColor.shared.label
-        }
         toolBar.tintColor = NCBrandColor.shared.brandElement
     }
     
