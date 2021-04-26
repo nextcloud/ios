@@ -487,9 +487,9 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                 UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
             }
             var fontColor = UIColor.clear
-            #if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
             fontColor = UIColor.red
-            #endif
+#endif
             
             for var image in self.arrayImages {
                 

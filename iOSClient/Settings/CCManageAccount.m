@@ -337,9 +337,9 @@
         [row.cellConfig setObject:[[UIImage imageNamed:@"editUserProfile"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
-        #if defined(HC)
+#if defined(HC)
         row.action.viewControllerClass = [HCEditProfile class];
-        #endif
+#endif
         if (accounts.count == 0) row.disabled = @YES;
         [section addFormRow:row];
     }
