@@ -169,7 +169,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.secondary.setTitleColor(.gray, for: .normal)
         cell.secondary.layer.cornerRadius = 15
         cell.secondary.layer.masksToBounds = true
-        cell.secondary.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.1).cgColor
+        cell.secondary.layer.backgroundColor = NCBrandColor.shared.systemGray5.cgColor
         cell.secondary.layer.borderWidth = 0.3
         cell.secondary.layer.borderColor = UIColor.gray.cgColor
         

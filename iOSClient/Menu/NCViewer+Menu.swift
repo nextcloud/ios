@@ -57,7 +57,7 @@ extension NCViewer {
         actions.append(
             NCMenuAction(
                 title: titleFavorite,
-                icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
+                icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.systemYellow),
                 action: { menuAction in
                     NCNetworking.shared.favoriteMetadata(metadata, urlBase: self.appDelegate.urlBase) { (errorCode, errorDescription) in
                         if errorCode != 0 {
@@ -264,7 +264,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_search_", comment: ""),
-                    icon: UIImage(named: "search")!.image(color: NCBrandColor.shared.icon, size: 50),
+                    icon: UIImage(named: "search")!.image(color: NCBrandColor.shared.gray, size: 50),
                     action: { menuAction in
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuSearchTextPDF)
                     }

@@ -437,7 +437,7 @@ class NCUtility: NSObject {
         return ""
     }
     
-    func loadImage(named: String, color: UIColor = NCBrandColor.shared.icon, size: CGFloat = 50, symbolConfiguration: Any? = nil) -> UIImage {
+    func loadImage(named: String, color: UIColor = NCBrandColor.shared.gray, size: CGFloat = 50, symbolConfiguration: Any? = nil) -> UIImage {
         
         var image: UIImage?
         

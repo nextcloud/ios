@@ -374,9 +374,9 @@ extension NCSelect: UICollectionViewDataSource {
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
             
             if collectionView.collectionViewLayout == gridLayout {
-                header.buttonSwitch.setImage(UIImage.init(named: "switchList")?.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
+                header.buttonSwitch.setImage(UIImage.init(named: "switchList")?.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
             } else {
-                header.buttonSwitch.setImage(UIImage.init(named: "switchGrid")?.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
+                header.buttonSwitch.setImage(UIImage.init(named: "switchGrid")?.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
             }
             
             header.delegate = self
@@ -775,25 +775,25 @@ class NCSelectCommandView: UIView {
         
         selectButton?.layer.cornerRadius = 15
         selectButton?.layer.masksToBounds = true
-        selectButton?.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
-        selectButton?.setTitleColor(.black, for: .normal)
+        selectButton?.layer.backgroundColor = NCBrandColor.shared.systemGray4.cgColor
+        selectButton?.setTitleColor(NCBrandColor.shared.label, for: .normal)
         selectButton?.setTitle(NSLocalizedString("_select_", comment: ""), for: .normal)
         
         createFolderButton?.layer.cornerRadius = 15
         createFolderButton?.layer.masksToBounds = true
-        createFolderButton?.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
+        createFolderButton?.layer.backgroundColor = NCBrandColor.shared.systemGray4.cgColor
         createFolderButton?.setTitleColor(.black, for: .normal)
         createFolderButton?.setTitle(NSLocalizedString("_create_folder_", comment: ""), for: .normal)
         
         copyButton?.layer.cornerRadius = 15
         copyButton?.layer.masksToBounds = true
-        copyButton?.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
+        copyButton?.layer.backgroundColor = NCBrandColor.shared.systemGray4.cgColor
         copyButton?.setTitleColor(.black, for: .normal)
         copyButton?.setTitle(NSLocalizedString("_copy_", comment: ""), for: .normal)
         
         moveButton?.layer.cornerRadius = 15
         moveButton?.layer.masksToBounds = true
-        moveButton?.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
+        moveButton?.layer.backgroundColor = NCBrandColor.shared.systemGray4.cgColor
         moveButton?.setTitleColor(.black, for: .normal)
         moveButton?.setTitle(NSLocalizedString("_move_", comment: ""), for: .normal)
     }

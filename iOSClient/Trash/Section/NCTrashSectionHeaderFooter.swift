@@ -36,12 +36,12 @@ class NCTrashSectionHeaderMenu: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
+        buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
         
         buttonOrder.setTitle("", for: .normal)
         buttonOrder.setTitleColor(NCBrandColor.shared.brandElement, for: .normal)
         
-        buttonMore.setImage(UIImage.init(named: "more")!.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
+        buttonMore.setImage(UIImage.init(named: "more")!.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
         
         separator.backgroundColor = NCBrandColor.shared.separator
         backgroundColor = NCBrandColor.shared.systemBackground
@@ -95,7 +95,7 @@ class NCTrashSectionFooter: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        labelFooter.textColor = NCBrandColor.shared.icon
+        labelFooter.textColor = NCBrandColor.shared.gray
     }
     
     func setTitleLabelFooter(datasource: [tableTrash]) {

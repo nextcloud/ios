@@ -141,9 +141,11 @@ class NCBrandColor: NSObject {
     @objc public var brand:                 UIColor                                                                                 // don't touch me
     @objc public var brandElement:          UIColor                                                                                 // don't touch me
     @objc public var brandText:             UIColor                                                                                 // don't touch me
-
-    @objc public var connectionNo:          UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
-    @objc public var encrypted:             UIColor = .red
+    @objc public let nextcloud:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
+    @objc public let nextcloudSoft:         UIColor = UIColor(red: 90.0/255.0, green: 160.0/255.0, blue: 210.0/255.0, alpha: 1.0)
+    @objc public let gray:                  UIColor = UIColor(red: 104.0/255.0, green: 104.0/255.0, blue: 104.0/255.0, alpha: 1.0)
+    @objc public let graySoft:              UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
+    @objc public let textInfo:              UIColor = UIColor(red: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 1.0)
     
     @objc public var systemBackground: UIColor {
         get {
@@ -263,14 +265,16 @@ class NCBrandColor: NSObject {
         }
     }
     
-    @objc public let nextcloud:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
-    @objc public let nextcloudSoft:         UIColor = UIColor(red: 90.0/255.0, green: 160.0/255.0, blue: 210.0/255.0, alpha: 1.0)
-    @objc public let icon:                  UIColor = UIColor(red: 104.0/255.0, green: 104.0/255.0, blue: 104.0/255.0, alpha: 1.0)
-    @objc public let optionItem:            UIColor = UIColor(red: 178.0/255.0, green: 178.0/255.0, blue: 178.0/255.0, alpha: 1.0)
-    @objc public let graySoft:              UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
-    @objc public let yellowFavorite:        UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
-    @objc public let textInfo:              UIColor = UIColor(red: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 1.0)
-
+    @objc public var systemYellow: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemYellow
+            } else {
+                return UIColor(red: 1, green: 0.8, blue: 0, alpha: 1.0)
+            }
+        }
+    }
+    
     override init() {
         self.brand = self.customer
         self.brandElement = self.customer
@@ -285,7 +289,7 @@ class NCBrandColor: NSObject {
         cacheImages.canShare = UIImage(named: "share")!.image(color: graySoft, size: 50)
         cacheImages.shareByLink = UIImage(named: "sharebylink")!.image(color: graySoft, size: 50)
         
-        cacheImages.favorite = NCUtility.shared.loadImage(named: "star.fill", color: yellowFavorite)
+        cacheImages.favorite = NCUtility.shared.loadImage(named: "star.fill", color: systemYellow)
         cacheImages.comment = UIImage(named: "comment")!.image(color: graySoft, size: 50)
         cacheImages.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: label)
         cacheImages.offlineFlag = UIImage.init(named: "offlineFlag")!

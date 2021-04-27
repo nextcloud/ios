@@ -49,8 +49,8 @@ class NCTrashListCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
        
-        imageRestore.image =  UIImage(named: "restore")!.image(color: NCBrandColor.shared.optionItem, size: 25)
-        imageMore.image = UIImage(named: "more")!.image(color: NCBrandColor.shared.optionItem, size: 25)
+        imageRestore.image =  UIImage(named: "restore")!.image(color: NCBrandColor.shared.gray, size: 25)
+        imageMore.image = UIImage(named: "more")!.image(color: NCBrandColor.shared.gray, size: 25)
         
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
