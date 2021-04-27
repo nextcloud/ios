@@ -59,18 +59,18 @@ class DragDropViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = NCBrandColor.shared.systemBackground
+        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
 
         collectionViewSource.dragInteractionEnabled = true
         collectionViewSource.dragDelegate = self
         collectionViewSource.dropDelegate = self
-        collectionViewSource.backgroundColor = NCBrandColor.shared.systemBackground
+        collectionViewSource.backgroundColor = NCBrandColor.shared.systemGroupedBackground
 
         collectionViewDestination.dragInteractionEnabled = true
         collectionViewDestination.dropDelegate = self
         collectionViewDestination.dragDelegate = self
         collectionViewDestination.reorderingCadence = .fast //default value - .immediate
-        collectionViewDestination.backgroundColor = NCBrandColor.shared.systemBackground
+        collectionViewDestination.backgroundColor = NCBrandColor.shared.systemGroupedBackground
 
         self.navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
         cancel.title = NSLocalizedString("_cancel_", comment: "")
@@ -83,8 +83,8 @@ class DragDropViewController: UIViewController {
         segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 1)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_bn_", comment: ""), forSegmentAt: 2)
 
-        add.setImage(UIImage(named: "plus")?.image(color: NCBrandColor.shared.brandElement, size: 25), for: .normal)
-        transferDown.setImage(UIImage(named: "transferDown")?.image(color: NCBrandColor.shared.brandElement, size: 25), for: .normal)
+        add.setImage(UIImage(named: "plus")?.image(color: NCBrandColor.shared.label, size: 25), for: .normal)
+        transferDown.setImage(UIImage(named: "transferDown")?.image(color: NCBrandColor.shared.label, size: 25), for: .normal)
         
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
         collectionViewSource.addGestureRecognizer(longPressRecognizer)
