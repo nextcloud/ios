@@ -43,29 +43,6 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    public func setup(serverUrl: String, fileNamePath: String, fileName: String) {
-    
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
-            titleServerUrl = "/"
-        } else {
-            titleServerUrl = (serverUrl as NSString).lastPathComponent
-        }
-    
-        self.fileName = fileName
-        self.serverUrl = serverUrl
-        self.fileNamePath = fileNamePath
-        
-        // player
-        do {
-            try audioPlayer = AVAudioPlayer(contentsOf: URL(fileURLWithPath: fileNamePath))
-            audioPlayer.prepareToPlay()
-            audioPlayer.delegate = self
-            durationPlayer = TimeInterval(audioPlayer.duration)
-        } catch {
-            buttonPlayStop.isEnabled = false
-        }
-    }
-    
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -100,6 +77,29 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         super.viewWillAppear(animated)
         
         updateTimerUI()
+    }
+    
+    public func setup(serverUrl: String, fileNamePath: String, fileName: String) {
+    
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
+            titleServerUrl = "/"
+        } else {
+            titleServerUrl = (serverUrl as NSString).lastPathComponent
+        }
+    
+        self.fileName = fileName
+        self.serverUrl = serverUrl
+        self.fileNamePath = fileNamePath
+        
+        // player
+        do {
+            try audioPlayer = AVAudioPlayer(contentsOf: URL(fileURLWithPath: fileNamePath))
+            audioPlayer.prepareToPlay()
+            audioPlayer.delegate = self
+            durationPlayer = TimeInterval(audioPlayer.duration)
+        } catch {
+            buttonPlayStop.isEnabled = false
+        }
     }
     
     //MARK: XLForm

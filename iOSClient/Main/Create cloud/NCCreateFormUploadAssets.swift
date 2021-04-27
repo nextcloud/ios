@@ -41,6 +41,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     let targetSizeImagePreview = CGSize(width:100, height: 100)
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
+    // MARK: - View Life Cycle
+
     convenience init(serverUrl: String, assets: [PHAsset], cryptated: Bool, session: String, delegate: createFormUploadAssetsDelegate?) {
         
         self.init()
@@ -66,8 +68,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         requestOptions.isSynchronous = true
     }
     
-    // MARK: - View Life Cycle
-
     override func viewDidLoad() {
         
         super.viewDidLoad()

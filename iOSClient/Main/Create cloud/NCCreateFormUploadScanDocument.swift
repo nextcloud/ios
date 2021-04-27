@@ -45,6 +45,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
+    // MARK: - View Life Cycle
+
     convenience init(serverUrl: String, arrayImages: [UIImage]) {
         
         self.init()
@@ -58,9 +60,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         self.serverUrl = serverUrl
         self.arrayImages = arrayImages
     }
-    
-    // MARK: - View Life Cycle
-    
+        
     override func viewDidLoad() {
         
         super.viewDidLoad()
