@@ -40,6 +40,8 @@ class NCBrowserWeb: UIViewController {
     
     @IBOutlet weak var buttonExit: UIButton!
     
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

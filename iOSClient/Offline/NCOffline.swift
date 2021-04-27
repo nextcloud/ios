@@ -26,6 +26,8 @@ import NCCommunication
 
 class NCOffline: NCCollectionViewCommon  {
     
+    // MARK: - View Life Cycle
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         

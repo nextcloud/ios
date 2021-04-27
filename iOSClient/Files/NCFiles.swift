@@ -28,6 +28,8 @@ class NCFiles: NCCollectionViewCommon  {
     
     internal var isRoot: Bool = true
 
+    // MARK: - View Life Cycle
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         

@@ -30,6 +30,8 @@ class NCMenu: UITableViewController {
 
     var actions = [NCMenuAction]()
 
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -160,6 +162,8 @@ public class NCMenuFloatingPanelBehavior: FloatingPanelBehavior {
 class NCMenuPanelController: FloatingPanelController {
 
     var parentPresenter: UIViewController?
+
+    // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()

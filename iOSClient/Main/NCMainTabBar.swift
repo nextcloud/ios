@@ -30,9 +30,7 @@ class NCMainTabBar: UITabBar {
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var timer: Timer?
     
-//    override var traitCollection: UITraitCollection {
-//        return UITraitCollection(horizontalSizeClass: .compact)
-//    }
+    // MARK: - Life Cycle
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)

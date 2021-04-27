@@ -55,7 +55,8 @@ class DragDropViewController: UIViewController {
     
     override var canBecomeFirstResponder: Bool { return true }
     
-    //MARK: View Lifecycle Methods
+    // MARK: - View Life Cycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         

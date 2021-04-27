@@ -33,6 +33,8 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
     @objc var metadata: tableMetadata?
     @objc var url: String = ""
 
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

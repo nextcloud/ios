@@ -73,8 +73,8 @@ public class NCPopupViewController: UIViewController {
     
     private var containerView = UIView()
     
-    // MARK: - Life Cycle
-    
+    // MARK: - View Life Cycle
+
     // NOTE: Don't use this init method
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -106,6 +106,7 @@ public class NCPopupViewController: UIViewController {
          - popupWidth: Width of popup content. If it isn't set, width will be determine by popup content view intrinsic size.
          - popupHeight: Height of popup content. If it isn't set, height will be determine by popup content view intrinsic size.
      */
+    
     public init(contentView: UIView, popupWidth: CGFloat? = nil, popupHeight: CGFloat? = nil) {
         super.init(nibName: nil, bundle: nil)
         

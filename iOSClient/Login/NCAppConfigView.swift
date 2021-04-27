@@ -35,6 +35,8 @@ class NCAppConfigView: UIViewController {
     @IBOutlet weak var logoImage: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
     
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

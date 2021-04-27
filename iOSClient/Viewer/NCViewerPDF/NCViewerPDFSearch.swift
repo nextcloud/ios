@@ -36,8 +36,8 @@ class NCViewerPDFSearch: UITableViewController, UISearchBarDelegate, PDFDocument
     
     weak var delegate: NCViewerPDFSearchDelegate?
     
-    //MARK: - LifeCycle
-    
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

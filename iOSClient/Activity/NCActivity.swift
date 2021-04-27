@@ -45,6 +45,8 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
     var canFetchActivity = true
     var dateAutomaticFetch : Date?
     
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
     

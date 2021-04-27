@@ -34,6 +34,8 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     var editor: String = ""
     var metadata: tableMetadata = tableMetadata()
    
+    // MARK: - View Life Cycle
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }

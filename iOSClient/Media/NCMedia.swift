@@ -64,9 +64,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         static var cellLivePhotoImage = UIImage()
         static var cellPlayImage = UIImage()
     }
-
     // MARK: - View Life Cycle
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 

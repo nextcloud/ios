@@ -37,6 +37,8 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
     var metadata: tableMetadata?
     public var height: CGFloat = 0
 
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

@@ -62,6 +62,8 @@ class NCViewerImage: UIViewController {
     var pictureInPictureOcId: String = ""
     var textColor: UIColor = NCBrandColor.shared.label
 
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

@@ -38,6 +38,8 @@ class NCSharePaging: UIViewController {
     @objc var metadata = tableMetadata()
     @objc var indexPage: Int = 0
         
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -258,6 +260,8 @@ class NCSharePagingView: PagingView {
     
     var headerHeightConstraint: NSLayoutConstraint?
     
+    // MARK: - View Life Cycle
+
     public init(options: Parchment.PagingOptions, collectionView: UICollectionView, pageView: UIView, metadata: tableMetadata?) {
         super.init(options: options, collectionView: collectionView, pageView: pageView)
         

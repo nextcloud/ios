@@ -41,6 +41,8 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     private var textColor: UIColor = .white
     private var textColorOpponent: UIColor = .black
     
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

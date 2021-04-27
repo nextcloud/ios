@@ -28,6 +28,8 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
     
     internal var fileName: String?
 
+    // MARK: - View Life Cycle
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         

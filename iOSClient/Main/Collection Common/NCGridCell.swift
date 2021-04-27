@@ -145,6 +145,8 @@ class NCGridLayout: UICollectionViewFlowLayout {
     var itemForLine: CGFloat = 3
     var itemWidthDefault: CGFloat = 120
 
+    // MARK: - View Life Cycle
+
     override init() {
         super.init()
         

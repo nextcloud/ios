@@ -53,8 +53,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     var textColor: UIColor = .white
     var textColorOpponent: UIColor = .black
     
-
-    // MARK: - Life Cycle
+    // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()

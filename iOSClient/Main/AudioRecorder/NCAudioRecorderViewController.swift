@@ -46,8 +46,8 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
     @IBOutlet weak var startStopLabel: UILabel!
     @IBOutlet weak var voiceRecordHUD: VoiceRecordHUD!
     
-    // MARK: View Life Cycle
-    
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -276,6 +276,8 @@ class VoiceRecordHUD: UIView {
         }
     }
     
+    // MARK: - View Life Cycle
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         image = UIImage(named: "microphone")

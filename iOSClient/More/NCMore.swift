@@ -42,7 +42,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     var tabAccount: tableAccount?
 
-    // MARK: - Life Cycle
+    // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()

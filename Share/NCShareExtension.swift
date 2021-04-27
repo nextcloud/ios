@@ -71,7 +71,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     private var activeAccount: tableAccount!
     private let chunckSize = CCUtility.getChunkSize() * 1000000
     
-    // MARK: - Life Cycle
+    // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()

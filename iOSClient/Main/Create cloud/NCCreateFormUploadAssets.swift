@@ -67,7 +67,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     }
     
     // MARK: - View Life Cycle
-    
+
     override func viewDidLoad() {
         
         super.viewDidLoad()

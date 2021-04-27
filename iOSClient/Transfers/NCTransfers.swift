@@ -28,6 +28,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
     
     var metadataTemp: tableMetadata?
     
+    // MARK: - View Life Cycle
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         

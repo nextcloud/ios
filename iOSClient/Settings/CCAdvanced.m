@@ -266,6 +266,8 @@
     self.form = form;
 }
 
+// MARK: - View Life Cycle
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];

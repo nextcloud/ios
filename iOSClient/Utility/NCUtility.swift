@@ -575,6 +575,8 @@ class NCUtility: NSObject {
 
 class NCViewActivityIndicator: UIView {
  
+    // MARK: - View Life Cycle
+
     override init(frame: CGRect) {
         super.init(frame: frame)
     }

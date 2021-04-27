@@ -53,8 +53,8 @@ class NCAccountRequest: UIViewController {
     private var time: Float = 0
     private let secondsAutoDismiss: Float = 3
     
-    // MARK: - Life Cycle
-    
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

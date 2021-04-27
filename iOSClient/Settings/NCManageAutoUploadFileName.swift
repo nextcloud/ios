@@ -104,7 +104,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
     }
     
     // MARK: - View Life Cycle
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

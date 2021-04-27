@@ -59,6 +59,8 @@ class NCViewerImageZoom: UIViewController {
     private var startPoint = CGPoint.zero
     private var topPoint = CGPoint.zero
 
+    // MARK: - View Life Cycle
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         

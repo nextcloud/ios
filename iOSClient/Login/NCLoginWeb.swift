@@ -39,8 +39,8 @@ class NCLoginWeb: UIViewController {
     @objc var loginFlowV2Endpoint = ""
     @objc var loginFlowV2Login = ""
     
-    // MARK: - Life Cycle
-    
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

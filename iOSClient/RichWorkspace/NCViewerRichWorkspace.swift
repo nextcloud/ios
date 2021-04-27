@@ -37,6 +37,8 @@ import MarkdownKit
     @objc public var richWorkspaceText: String = ""
     @objc public var serverUrl: String = ""
    
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

@@ -37,6 +37,8 @@ class NCViewerVideo: AVPlayerViewController {
     var delegateViewerVideo: NCViewerVideoDelegate?
     private var rateObserverToken: Any?
 
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

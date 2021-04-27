@@ -56,6 +56,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     private var dropDown = DropDown()
     private var networking: NCShareNetworking?
     
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

@@ -31,6 +31,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     var notifications: [NCCommunicationNotifications] = []
     var emptyDataSet: NCEmptyDataSet?
 
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

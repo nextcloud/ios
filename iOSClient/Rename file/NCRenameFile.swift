@@ -53,8 +53,8 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     var disableChangeExt: Bool = false
     var delegate: NCRenameFileDelegate?
     
-    // MARK: - Life Cycle
-    
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

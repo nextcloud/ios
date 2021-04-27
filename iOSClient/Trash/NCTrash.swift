@@ -55,6 +55,8 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     
     private let refreshControl = UIRefreshControl()
 
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

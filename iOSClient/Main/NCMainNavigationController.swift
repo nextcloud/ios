@@ -27,6 +27,8 @@ class NCMainNavigationController: UINavigationController {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
+    // MARK: - View Life Cycle
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         

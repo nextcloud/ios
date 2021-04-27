@@ -73,6 +73,8 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     private var capabilitiesText = ""
     //private var timer: Timer?
     
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

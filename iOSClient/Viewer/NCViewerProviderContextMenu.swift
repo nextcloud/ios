@@ -33,6 +33,8 @@ class NCViewerProviderContextMenu: UIViewController  {
     private var metadata: tableMetadata?
     private var metadataLivePhoto: tableMetadata?
         
+    // MARK: - View Life Cycle
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

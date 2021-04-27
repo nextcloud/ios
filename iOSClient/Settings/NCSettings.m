@@ -170,7 +170,7 @@
     self.form = form;
 }
 
-#pragma mark - Life Cycle
+// MARK: - View Life Cycle
 
 - (void)viewDidLoad
 {
