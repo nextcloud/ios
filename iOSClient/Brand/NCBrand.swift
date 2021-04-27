@@ -208,6 +208,33 @@ class NCBrandColor: NSObject {
             }
         }
     }
+    @objc public var systemGray: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemGray
+            } else {
+                return UIColor(red: 0.56, green: 0.56, blue: 0.58, alpha: 1.0)
+            }
+        }
+    }
+    @objc public var systemGray2: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemGray2
+            } else {
+                return UIColor(red: 0.68, green: 0.68, blue: 0.7, alpha: 1.0)
+            }
+        }
+    }
+    @objc public var systemGray3: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemGray3
+            } else {
+                return UIColor(red: 0.78, green: 0.78, blue: 0.8, alpha: 1.0)
+            }
+        }
+    }
     @objc public var systemGray4: UIColor {
         get {
             if #available(iOS 13, *) {
