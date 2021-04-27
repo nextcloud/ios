@@ -50,6 +50,8 @@ class NCMainTabBar: UITabBar {
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        
+        changeTheming()
     }
     
     @objc func changeTheming() {
@@ -57,6 +59,8 @@ class NCMainTabBar: UITabBar {
         if let centerButton = self.viewWithTag(99) {
             centerButton.backgroundColor = NCBrandColor.shared.brandElement
         }
+        
+        NCBrandColor.shared.createImagesThemingColor()
     }
     
     override var backgroundColor: UIColor? {

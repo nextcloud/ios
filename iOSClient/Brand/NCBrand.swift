@@ -279,16 +279,16 @@ class NCBrandColor: NSObject {
         self.brandText = self.customerText        
     }
     
-    private func createImagesThemingColor() {
+    public func createImagesThemingColor() {
         
         cacheImages.file = UIImage.init(named: "file")!
         
-        cacheImages.shared = UIImage(named: "share")!.image(color: systemGray5, size: 50)
-        cacheImages.canShare = UIImage(named: "share")!.image(color: systemGray5, size: 50)
-        cacheImages.shareByLink = UIImage(named: "sharebylink")!.image(color: systemGray5, size: 50)
+        cacheImages.shared = UIImage(named: "share")!.image(color: systemGray4, size: 50)
+        cacheImages.canShare = UIImage(named: "share")!.image(color: systemGray4, size: 50)
+        cacheImages.shareByLink = UIImage(named: "sharebylink")!.image(color: systemGray4, size: 50)
         
         cacheImages.favorite = NCUtility.shared.loadImage(named: "star.fill", color: systemYellow)
-        cacheImages.comment = UIImage(named: "comment")!.image(color: systemGray5, size: 50)
+        cacheImages.comment = UIImage(named: "comment")!.image(color: systemGray4, size: 50)
         cacheImages.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: label)
         cacheImages.offlineFlag = UIImage.init(named: "offlineFlag")!
         cacheImages.local = UIImage.init(named: "local")!
@@ -303,10 +303,10 @@ class NCBrandColor: NSObject {
         cacheImages.folder =  UIImage(named: "folder")!.image(color: brandElement, size: folderWidth)
         
         cacheImages.checkedYes = NCUtility.shared.loadImage(named: "checkmark.circle.fill", color: .darkGray)
-        cacheImages.checkedNo = NCUtility.shared.loadImage(named: "circle", color: systemGray5)
+        cacheImages.checkedNo = NCUtility.shared.loadImage(named: "circle", color: systemGray4)
         
-        cacheImages.buttonMore = UIImage(named: "more")!.image(color: systemGray5, size: 50)
-        cacheImages.buttonStop = UIImage(named: "stop")!.image(color: systemGray5, size: 50)
+        cacheImages.buttonMore = UIImage(named: "more")!.image(color: systemGray4, size: 50)
+        cacheImages.buttonStop = UIImage(named: "stop")!.image(color: systemGray4, size: 50)
     }
     
 #if !EXTENSION
