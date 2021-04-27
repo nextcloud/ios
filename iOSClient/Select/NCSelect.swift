@@ -773,28 +773,20 @@ class NCSelectCommandView: UIView {
         
         overwriteLabel?.text = NSLocalizedString("_overwrite_", comment: "")
         
-        selectButton?.backgroundColor = NCBrandColor.shared.systemGray4
         selectButton?.layer.cornerRadius = 15
         selectButton?.layer.masksToBounds = true
-        selectButton?.setTitleColor(NCBrandColor.shared.label, for: .normal)
         selectButton?.setTitle(NSLocalizedString("_select_", comment: ""), for: .normal)
         
-        createFolderButton?.backgroundColor = NCBrandColor.shared.systemGray4
         createFolderButton?.layer.cornerRadius = 15
         createFolderButton?.layer.masksToBounds = true
-        createFolderButton?.setTitleColor(NCBrandColor.shared.label, for: .normal)
         createFolderButton?.setTitle(NSLocalizedString("_create_folder_", comment: ""), for: .normal)
         
-        copyButton?.backgroundColor = NCBrandColor.shared.systemGray4
         copyButton?.layer.cornerRadius = 15
         copyButton?.layer.masksToBounds = true
-        copyButton?.setTitleColor(NCBrandColor.shared.label, for: .normal)
         copyButton?.setTitle(NSLocalizedString("_copy_", comment: ""), for: .normal)
         
-        moveButton?.backgroundColor = NCBrandColor.shared.systemGray4
         moveButton?.layer.cornerRadius = 15
         moveButton?.layer.masksToBounds = true
-        moveButton?.setTitleColor(NCBrandColor.shared.label, for: .normal)
         moveButton?.setTitle(NSLocalizedString("_move_", comment: ""), for: .normal)
     }
     

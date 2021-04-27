@@ -17,12 +17,15 @@
             <subviews>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hnf-K7-plh">
                     <rect key="frame" x="180" y="225" width="120" height="30"/>
+                    <color key="backgroundColor" systemColor="systemGray4Color"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="120" id="hNM-l8-5EZ"/>
                         <constraint firstAttribute="height" constant="30" id="u76-eq-MhY"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                    <state key="normal" title="Select"/>
+                    <state key="normal" title="Select">
+                        <color key="titleColor" systemColor="labelColor"/>
+                    </state>
                     <connections>
                         <action selector="selectButtonPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="Sv5-p0-quT"/>
                     </connections>
@@ -36,12 +39,15 @@
                 </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iw1-z7-Ulz">
                     <rect key="frame" x="20" y="225" width="120" height="30"/>
+                    <color key="backgroundColor" systemColor="systemGray4Color"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="Bat-f2-vWJ"/>
                         <constraint firstAttribute="width" constant="120" id="uLS-hh-RtK"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                    <state key="normal" title="Create  folder"/>
+                    <state key="normal" title="Create  folder">
+                        <color key="titleColor" systemColor="labelColor"/>
+                    </state>
                     <connections>
                         <action selector="createFolderButtonPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="Lfp-5d-sgv"/>
                     </connections>
@@ -68,11 +74,17 @@
         </view>
     </objects>
     <resources>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="opaqueSeparatorColor">
             <color red="0.77647058823529413" green="0.77647058823529413" blue="0.78431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGray4Color">
+            <color red="0.81960784313725488" green="0.81960784313725488" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

@@ -42,36 +42,45 @@
                         </label>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WCL-bl-0j0">
                             <rect key="frame" x="20" y="70" width="120" height="30"/>
+                            <color key="backgroundColor" systemColor="systemGray4Color"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="30" id="AHg-gX-UT0"/>
                                 <constraint firstAttribute="width" constant="120" id="e9E-Zi-Svf"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <state key="normal" title="Create  folder"/>
+                            <state key="normal" title="Create  folder">
+                                <color key="titleColor" systemColor="labelColor"/>
+                            </state>
                             <connections>
                                 <action selector="createFolderButtonPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="ffk-c7-NT1"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mg4-vG-Xr7">
                             <rect key="frame" x="180" y="0.0" width="120" height="30"/>
+                            <color key="backgroundColor" systemColor="systemGray4Color"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="30" id="aRa-Cb-dIJ"/>
                                 <constraint firstAttribute="width" constant="120" id="q7x-Zg-aFX"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <state key="normal" title="Copy"/>
+                            <state key="normal" title="Copy">
+                                <color key="titleColor" systemColor="labelColor"/>
+                            </state>
                             <connections>
                                 <action selector="copyButtonPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="vrD-3Y-ANH"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Oq2-Kg-sDp">
                             <rect key="frame" x="180" y="70" width="120" height="30"/>
+                            <color key="backgroundColor" systemColor="systemGray4Color"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="120" id="JyD-uF-cFT"/>
                                 <constraint firstAttribute="height" constant="30" id="QAO-kF-IOZ"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <state key="normal" title="Move"/>
+                            <state key="normal" title="Move">
+                                <color key="titleColor" systemColor="labelColor"/>
+                            </state>
                             <connections>
                                 <action selector="moveButtonPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="YiA-iN-EwL"/>
                             </connections>
@@ -116,11 +125,17 @@
         </view>
     </objects>
     <resources>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="opaqueSeparatorColor">
             <color red="0.77647058823529413" green="0.77647058823529413" blue="0.78431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGray4Color">
+            <color red="0.81960784313725488" green="0.81960784313725488" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
