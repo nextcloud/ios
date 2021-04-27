@@ -44,6 +44,7 @@ class NCSharePaging: UIViewController {
         super.viewDidLoad()
         
         view.backgroundColor = NCBrandColor.shared.systemBackground
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done, target: self, action: #selector(exitTapped))
 
         // Verify Comments & Sharing enabled
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
@@ -73,6 +74,9 @@ class NCSharePaging: UIViewController {
             }
         }
         
+        // *** MUST BE THE FIRST ONE ***
+        pagingViewController.metadata = metadata
+        
         pagingViewController.activityEnabled = activityEnabled
         pagingViewController.commentsEnabled = commentsEnabled
         pagingViewController.sharingEnabled = sharingEnabled
@@ -81,11 +85,6 @@ class NCSharePaging: UIViewController {
         pagingViewController.selectedBackgroundColor = NCBrandColor.shared.systemBackground
         pagingViewController.textColor = NCBrandColor.shared.label
         pagingViewController.selectedTextColor = NCBrandColor.shared.label
-        pagingViewController.metadata = metadata
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done, target: self, action: #selector(exitTapped))
 
         // Pagination
         addChild(pagingViewController)
@@ -115,6 +114,7 @@ class NCSharePaging: UIViewController {
         let pagingIndexItem = self.pagingViewController(pagingViewController, pagingItemAt: indexPage) as! PagingIndexItem
         self.title = pagingIndexItem.title
         
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         changeTheming()
     }
     
@@ -224,7 +224,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
 class NCShareHeaderViewController: PagingViewController {
     
     public var image: UIImage?
-    public var metadata: tableMetadata?
+    public var metadata = tableMetadata()
     
     public var activityEnabled = true
     public var commentsEnabled = true
@@ -256,13 +256,13 @@ class NCShareHeaderViewController: PagingViewController {
 class NCSharePagingView: PagingView {
     
     static let HeaderHeight: CGFloat = 250
-    var metadata: tableMetadata?
+    var metadata = tableMetadata()
     
     var headerHeightConstraint: NSLayoutConstraint?
     
     // MARK: - View Life Cycle
 
-    public init(options: Parchment.PagingOptions, collectionView: UICollectionView, pageView: UIView, metadata: tableMetadata?) {
+    public init(options: Parchment.PagingOptions, collectionView: UICollectionView, pageView: UIView, metadata: tableMetadata) {
         super.init(options: options, collectionView: collectionView, pageView: pageView)
         
         self.metadata = metadata
@@ -276,28 +276,28 @@ class NCSharePagingView: PagingView {
         
         let headerView = Bundle.main.loadNibNamed("NCShareHeaderView", owner: self, options: nil)?.first as! NCShareHeaderView
         headerView.backgroundColor = NCBrandColor.shared.systemBackground
-        headerView.ocId = metadata!.ocId
+        headerView.ocId = metadata.ocId
         
-        if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata!.ocId, etag: metadata!.etag)) {
-            headerView.imageView.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata!.ocId, etag: metadata!.etag))
+        if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+            headerView.imageView.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
         } else {
-            if metadata!.directory {
+            if metadata.directory {
                 let image = UIImage.init(named: "folder")!
                 headerView.imageView.image = image.image(color: NCBrandColor.shared.brandElement, size: image.size.width)
-            } else if metadata!.iconName.count > 0 {
-                headerView.imageView.image = UIImage.init(named: metadata!.iconName)
+            } else if metadata.iconName.count > 0 {
+                headerView.imageView.image = UIImage.init(named: metadata.iconName)
             } else {
                 headerView.imageView.image = UIImage.init(named: "file")
             }
         }
-        headerView.fileName.text = metadata?.fileNameView
+        headerView.fileName.text = metadata.fileNameView
         headerView.fileName.textColor = NCBrandColor.shared.label
-        if metadata!.favorite {
+        if metadata.favorite {
             headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
         } else {
             headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.systemGray, size: 20), for: .normal)
         }
-        headerView.info.text = CCUtility.transformedSize(metadata!.size) + ", " + CCUtility.dateDiff(metadata!.date as Date)
+        headerView.info.text = CCUtility.transformedSize(metadata.size) + ", " + CCUtility.dateDiff(metadata.date as Date)
         addSubview(headerView)
         
         pageView.translatesAutoresizingMaskIntoConstraints = false
