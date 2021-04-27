@@ -642,12 +642,13 @@ extension NCShareExtension: UITableViewDataSource {
         let fileName = filesName[indexPath.row]
         let resultInternalType = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
                 
-        imageCell?.image = NCUtility.shared.loadImage(named: "doc", color: NCBrandColor.shared.customer)
         if let image = UIImage(contentsOfFile: (NSTemporaryDirectory() + fileName)) {
             imageCell?.image = image
         } else {
             if resultInternalType.iconName.count > 0 {
                 imageCell?.image = UIImage.init(named: resultInternalType.iconName)
+            } else {
+                imageCell?.image = NCBrandColor.cacheImages.file
             }
         }
         
