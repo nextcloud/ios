@@ -213,7 +213,7 @@ extension NCShareComments: UITableViewDataSource {
             cell.labelUser.textColor = NCBrandColor.shared.label
             // Date
             cell.labelDate.text = CCUtility.dateDiff(tableComments.creationDateTime as Date)
-            cell.labelDate.textColor = NCBrandColor.shared.graySoft
+            cell.labelDate.textColor = NCBrandColor.shared.systemGray4
             // Message
             cell.labelMessage.text = tableComments.message
             cell.labelMessage.textColor = NCBrandColor.shared.label
