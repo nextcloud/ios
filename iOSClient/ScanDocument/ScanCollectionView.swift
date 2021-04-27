@@ -97,6 +97,13 @@ class DragDropViewController: UIViewController {
         loadImage()
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        add.setImage(UIImage(named: "plus")?.image(color: NCBrandColor.shared.label, size: 25), for: .normal)
+        transferDown.setImage(UIImage(named: "transferDown")?.image(color: NCBrandColor.shared.label, size: 25), for: .normal)
+    }
+    
     //MARK: Button Action
 
     @IBAction func cancelAction(sender: UIBarButtonItem) {

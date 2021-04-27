@@ -203,9 +203,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         super.traitCollectionDidChange(previousTraitCollection)
         
         if traitCollection.userInterfaceStyle == .dark {
-            
-        } else {
-            
+        } else {            
         }
     }
     
