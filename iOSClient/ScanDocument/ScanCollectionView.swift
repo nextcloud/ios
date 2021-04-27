@@ -59,24 +59,25 @@ class DragDropViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        view.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
 
         collectionViewSource.dragInteractionEnabled = true
         collectionViewSource.dragDelegate = self
         collectionViewSource.dropDelegate = self
-        collectionViewSource.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        collectionViewSource.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
 
         collectionViewDestination.dragInteractionEnabled = true
         collectionViewDestination.dropDelegate = self
         collectionViewDestination.dragDelegate = self
         collectionViewDestination.reorderingCadence = .fast //default value - .immediate
-        collectionViewDestination.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        collectionViewDestination.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
 
-        self.navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
         cancel.title = NSLocalizedString("_cancel_", comment: "")
         save.title = NSLocalizedString("_save_", comment: "")
+        
         labelTitlePDFzone.text = NSLocalizedString("_scan_label_document_zone_", comment: "")
-        labelTitlePDFzone.backgroundColor = NCBrandColor.shared.systemBackground
+        labelTitlePDFzone.backgroundColor = NCBrandColor.shared.systemGray6
         labelTitlePDFzone.textColor = NCBrandColor.shared.label
 
         segmentControlFilter.setTitle(NSLocalizedString("_filter_original_", comment: ""), forSegmentAt: 0)

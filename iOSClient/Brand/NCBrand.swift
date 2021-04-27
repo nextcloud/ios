@@ -193,9 +193,45 @@ class NCBrandColor: NSObject {
     @objc public var separator: UIColor {
         get {
             if #available(iOS 13, *) {
-                return .opaqueSeparator
+                return .separator
             } else {
                 return UIColor(red: 0.24, green: 0.24, blue: 0.26, alpha: 1.0)
+            }
+        }
+    }
+    @objc public var opaqueSeparator: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .opaqueSeparator
+            } else {
+                return UIColor(red: 0.78, green: 0.78, blue: 0.78, alpha: 1.0)
+            }
+        }
+    }
+    @objc public var systemGray4: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemGray4
+            } else {
+                return UIColor(red: 0.82, green: 0.82, blue: 0.84, alpha: 1.0)
+            }
+        }
+    }
+    @objc public var systemGray5: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemGray5
+            } else {
+                return UIColor(red: 0.9, green: 0.9, blue: 0.92, alpha: 1.0)
+            }
+        }
+    }
+    @objc public var systemGray6: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemGray6
+            } else {
+                return UIColor(red: 0.95, green: 0.95, blue: 0.97, alpha: 1.0)
             }
         }
     }
