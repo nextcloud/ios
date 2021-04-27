@@ -1895,15 +1895,15 @@ class NCManageDatabase: NSObject {
     @objc func createMetadata(account: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, livePhoto: Bool, chunk: Bool) -> tableMetadata {
         
         let metadata = tableMetadata()
-        let results = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
+        let resultInternalType = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
         
         metadata.account = account
         metadata.chunk = chunk
-        metadata.contentType = results.mimeType
+        metadata.contentType = resultInternalType.mimeType
         metadata.creationDate = Date() as NSDate
         metadata.date = Date() as NSDate
         metadata.hasPreview = true
-        metadata.iconName = results.iconName
+        metadata.iconName = resultInternalType.iconName
         metadata.etag = ocId
         metadata.ext = (fileName as NSString).pathExtension.lowercased()
         metadata.fileName = fileName
@@ -1913,7 +1913,7 @@ class NCManageDatabase: NSObject {
         metadata.ocId = ocId
         metadata.permissions = "RGDNVW"
         metadata.serverUrl = serverUrl
-        metadata.typeFile = results.typeFile
+        metadata.typeFile = resultInternalType.typeFile
         metadata.uploadDate = Date() as NSDate
         metadata.url = url
         metadata.urlBase = urlBase

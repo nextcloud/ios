@@ -640,9 +640,15 @@ extension NCShareExtension: UITableViewDataSource {
         imageCell?.layer.masksToBounds = true
 
         let fileName = filesName[indexPath.row]
+        let resultInternalType = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
+                
         imageCell?.image = NCUtility.shared.loadImage(named: "doc", color: NCBrandColor.shared.customer)
         if let image = UIImage(contentsOfFile: (NSTemporaryDirectory() + fileName)) {
             imageCell?.image = image
+        } else {
+            if resultInternalType.iconName.count > 0 {
+                imageCell?.image = UIImage.init(named: resultInternalType.iconName)
+            }
         }
         
         fileNameCell?.text = fileName
