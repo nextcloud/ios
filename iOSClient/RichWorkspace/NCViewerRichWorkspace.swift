@@ -72,10 +72,6 @@ import MarkdownKit
         }
     }
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-    }
-    
     public func presentationControllerWillDismiss(_ presentationController: UIPresentationController) {
         self.viewWillAppear(true)
     }

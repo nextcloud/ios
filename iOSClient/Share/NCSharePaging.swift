@@ -289,7 +289,7 @@ class NCSharePagingView: PagingView {
         headerView.fileName.text = metadata?.fileNameView
         headerView.fileName.textColor = NCBrandColor.shared.label
         if metadata!.favorite {
-            headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.systemYellow, size: 20), for: .normal)
+            headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
         } else {
             headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.systemGray, size: 20), for: .normal)
         }
@@ -338,7 +338,7 @@ class NCShareHeaderView: UIView {
             NCNetworking.shared.favoriteMetadata(metadata, urlBase: appDelegate.urlBase) { (errorCode, errorDescription) in
                 if errorCode == 0 {
                     if !metadata.favorite {
-                        self.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.systemYellow, size: 20), for: .normal)
+                        self.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
                     } else {
                         self.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.systemGray, size: 20), for: .normal)
                     }

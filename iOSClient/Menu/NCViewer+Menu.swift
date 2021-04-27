@@ -57,7 +57,7 @@ extension NCViewer {
         actions.append(
             NCMenuAction(
                 title: titleFavorite,
-                icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.systemYellow),
+                icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
                 action: { menuAction in
                     NCNetworking.shared.favoriteMetadata(metadata, urlBase: self.appDelegate.urlBase) { (errorCode, errorDescription) in
                         if errorCode != 0 {

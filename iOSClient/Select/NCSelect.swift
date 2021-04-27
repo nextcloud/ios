@@ -199,14 +199,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         }
     }
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        
-        if traitCollection.userInterfaceStyle == .dark {
-        } else {            
-        }
-    }
-    
     @objc func changeTheming() {
         
         collectionView.reloadData()
