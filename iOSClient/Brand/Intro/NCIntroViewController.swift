@@ -77,7 +77,7 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
 
         
         self.pageControl.currentPageIndicatorTintColor = textColor
-        self.pageControl.pageIndicatorTintColor = NCBrandColor.shared.nextcloudSoft
+        self.pageControl.pageIndicatorTintColor = .lightGray
 
         self.buttonLogin.layer.cornerRadius = 20
         self.buttonLogin.setTitleColor(textColorOpponent, for: .normal)
