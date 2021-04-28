@@ -439,10 +439,11 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                         account.active = false
                     }
                 }
-                // reorder
                 
                 vcAccountRequest.activeAccount = self.activeAccount
-                vcAccountRequest.accounts = accounts
+                vcAccountRequest.accounts = accounts.sorted { (sorg, dest) -> Bool in
+                    return sorg.active && !dest.active
+                }
                 vcAccountRequest.enableTimerProgress = false
                 vcAccountRequest.enableAddAccount = false
                 vcAccountRequest.delegate = self
