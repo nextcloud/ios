@@ -24,7 +24,7 @@
 import Foundation
 import WebKit
 
-@objc protocol NCBrowserWebDelegate: class {
+@objc protocol NCBrowserWebDelegate: AnyObject {
     @objc optional func browserWebDismiss()
 }
 

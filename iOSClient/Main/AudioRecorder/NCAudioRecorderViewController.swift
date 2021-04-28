@@ -29,7 +29,7 @@ import UIKit
 import AVFoundation
 import QuartzCore
 
-@objc protocol NCAudioRecorderViewControllerDelegate : class {
+@objc protocol NCAudioRecorderViewControllerDelegate : AnyObject {
     func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String)
     func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String)
 }

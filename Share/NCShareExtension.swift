@@ -135,6 +135,11 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         if serverUrl == "" {
         
             guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else {
+                
+//                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
+//                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+//                self.present(alertController, animated: true)
+                
                 extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
                 return
             }
