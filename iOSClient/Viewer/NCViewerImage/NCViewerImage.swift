@@ -322,7 +322,7 @@ class NCViewerImage: UIViewController {
                 image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
             } else if ext == "SVG" {
                 if let svgImage = SVGKImage(contentsOfFile: imagePath) {
-                    let scale = svgImage.size.height / svgImage.size.width
+                    let scale = Int(svgImage.size.height / svgImage.size.width)
                     svgImage.size = CGSize(width: NCGlobal.shared.sizePreview, height: (NCGlobal.shared.sizePreview * scale))
                     if let image = svgImage.uiImage {
                         if !FileManager().fileExists(atPath: previewPath) {
