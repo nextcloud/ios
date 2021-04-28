@@ -502,6 +502,7 @@ class NCUtility: NSObject {
             self.viewActivityIndicator?.layer.masksToBounds = true
             self.viewActivityIndicator?.backgroundColor = .clear
 
+#if !EXTENSION
             if backgroundView == nil {
                 if let window = UIApplication.shared.keyWindow {
                     self.viewBackgroundActivityIndicator?.removeFromSuperview()
@@ -513,7 +514,9 @@ class NCUtility: NSObject {
             } else {
                 self.viewBackgroundActivityIndicator = backgroundView
             }
-            
+#else
+            self.viewBackgroundActivityIndicator = backgroundView
+#endif
             // VIEW ACTIVITY INDICATOR
             
             guard let viewActivityIndicator = self.viewActivityIndicator else { return }
