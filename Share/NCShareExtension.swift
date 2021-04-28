@@ -431,6 +431,17 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             
             if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
                
+                // Only here change the active account 
+                for account in accounts {
+                    if account.account == self.activeAccount.account {
+                        account.active = true
+                    } else {
+                        account.active = false
+                    }
+                }
+                // reorder
+                
+                vcAccountRequest.activeAccount = self.activeAccount
                 vcAccountRequest.accounts = accounts
                 vcAccountRequest.enableTimerProgress = false
                 vcAccountRequest.enableAddAccount = false

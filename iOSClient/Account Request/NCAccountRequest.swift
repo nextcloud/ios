@@ -43,6 +43,7 @@ class NCAccountRequest: UIViewController {
     @IBOutlet weak var progressView: UIProgressView!
     
     public var accounts: [tableAccount] = []
+    public var activeAccount: tableAccount?
     public let heightCell: CGFloat = 60
     public var enableTimerProgress: Bool = true
     public var enableAddAccount: Bool = false
@@ -169,7 +170,6 @@ extension NCAccountRequest: UITableViewDelegate {
         } else {
         
             let account = accounts[indexPath.row]
-            let activeAccount = NCManageDatabase.shared.getActiveAccount()
             if account.account != activeAccount?.account {
                 dismiss(animated: true) {
                     self.delegate?.changeAccountRequestAddAccount(account: account.account)
