@@ -21,7 +21,7 @@
 //
 import UIKit
 
-public protocol NCPopupViewControllerDelegate: class {
+public protocol NCPopupViewControllerDelegate: AnyObject {
     
     func popupViewControllerDidDismissByTapGesture(_ sender: NCPopupViewController)
 }
