@@ -74,10 +74,7 @@ class NCGlobal: NSObject {
     let e2eeMaxFileSize: UInt64                     = 500000000     // 500 MB
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
     @objc let e2eeVersion                           = "1.1"
-    
-    // Max Size Upload
-    let uploadMaxFileSize: UInt64                   = 500000000     // 500 MB
-    
+        
     // Chunck size MB
     let chunckSize: Int64                           = 10000000      // 10 MB
     

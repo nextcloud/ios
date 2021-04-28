@@ -49,16 +49,11 @@ class NCNetworkingProcessUpload: NSObject {
         if appDelegate.account == "" { return }
         
         var counterUpload: Int = 0
-        var sizeUpload = 0
         var maxConcurrentOperationUpload = 5
         let sessionSelectors = [NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
         
         let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
         counterUpload = metadatasUpload.count
-        for metadata in metadatasUpload {
-            sizeUpload = sizeUpload + Int(metadata.size)
-        }
-        if sizeUpload > NCGlobal.shared.uploadMaxFileSize { return }
         
         timerProcess?.invalidate()
         
@@ -106,11 +101,6 @@ class NCNetworkingProcessUpload: NSObject {
                             counterUpload += 1
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
-                            }
-                            sizeUpload = sizeUpload + Int(metadata.size)
-                            if sizeUpload > NCGlobal.shared.uploadMaxFileSize {
-                                self.startTimer()
-                                return
                             }
                         }
                     }

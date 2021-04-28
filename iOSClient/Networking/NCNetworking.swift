@@ -28,8 +28,8 @@ import Alamofire
 import Queuer
 
 @objc public protocol NCNetworkingDelegate {
-    @objc optional func downloadProgress(_ progress: Double, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
-    @objc optional func uploadProgress(_ progress: Double, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
+    @objc optional func downloadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
+    @objc optional func uploadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
     @objc optional func downloadComplete(fileName: String, serverUrl: String, etag: String?, date: NSDate?, dateLastModified: NSDate?, length: Int64, description: String?, task: URLSessionTask, errorCode: Int, errorDescription: String)
     @objc optional func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, task: URLSessionTask, errorCode: Int, errorDescription: String)
 }
@@ -136,7 +136,7 @@ import Queuer
         }
     }
     
-    func downloadProgress(_ progress: Double, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask) {
+    func downloadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask) {
         delegate?.downloadProgress?(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
     }
     
@@ -493,7 +493,7 @@ import Queuer
         }
     }
     
-    func uploadProgress(_ progress: Double, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask) {
+    func uploadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask) {
         delegate?.uploadProgress?(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
         
         var metadata: tableMetadata?
@@ -612,35 +612,6 @@ import Queuer
             // Delete
             self.uploadMetadataInBackground[fileName+serverUrl] = nil
         }
-    }
-    
-    func createChunk(metadata: tableMetadata, account: tableAccount) -> tableMetadata? {
-        
-        if metadata.chunk {
-            
-            // https://server/remote.php/dav/uploads/roeland/myapp-e1663913-4423-4efe-a9cd-26e7beeca3c0
-
-            let folder = NSUUID().uuidString
-            let serverUrlFileName = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/upload/" + account.userId + "/" + folder
-                        
-            NCCommunication.shared.createFolder(serverUrlFileName) { (account, ocId, date, errorCode, errorDescription) in
-                
-                if errorCode == 0 {
-                    
-                    let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
-                    let filesNameOut = self.fileChunks(path: path, fileName: metadata.fileName, pathChunks: path, size: 10)
-                    
-                } else {
-                    
-                }
-            }
-            
-        } else {
-            
-            return metadata
-        }
-        
-        return nil
     }
     
     @objc func verifyUploadZombie() {
