@@ -38,6 +38,15 @@
         }
       },
       {
+        "package": "MarkdownKit",
+        "repositoryURL": "https://github.com/bmoliveira/MarkdownKit",
+        "state": {
+          "branch": null,
+          "revision": "5056f3305d3499f44d8815530d560b87082e0cf5",
+          "version": "1.7.1"
+        }
+      },
+      {
         "package": "Parchment",
         "repositoryURL": "https://github.com/rechsteiner/Parchment",
         "state": {
