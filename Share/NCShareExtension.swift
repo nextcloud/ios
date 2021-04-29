@@ -134,22 +134,23 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         
         if serverUrl == "" {
         
-            guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else {
+            if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
                 
-//                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
-//                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-//                self.present(alertController, animated: true)
-                
-                extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
-                return
-            }
-            setAccount(account: activeAccount.account)
-            
-            getFilesExtensionContext { (filesName, error) in
-                DispatchQueue.main.async {
-                    self.filesName = filesName
-                    self.setCommandView()
+                setAccount(account: activeAccount.account)
+                getFilesExtensionContext { (filesName, error) in
+                    DispatchQueue.main.async {
+                        self.filesName = filesName
+                        self.setCommandView()
+                    }
                 }
+                
+            } else {
+                
+                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_no_active_account_", comment: ""), preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
+                    self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+                }))
+                self.present(alertController, animated: true)
             }
         }
     }
