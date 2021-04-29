@@ -16,7 +16,6 @@
 		3704EB2A23D5A58400455C5B /* NCMenu.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3704EB2923D5A58400455C5B /* NCMenu.storyboard */; };
 		370D26AF248A3D7A00121797 /* NCImageCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCImageCellProtocol.swift */; };
 		371B5A2E23D0B04500FAFAE9 /* NCMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371B5A2D23D0B04500FAFAE9 /* NCMenu.swift */; };
-		371B5A3323D0BD5500FAFAE9 /* FloatingPanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 371B5A3223D0BD5500FAFAE9 /* FloatingPanel.framework */; };
 		3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700222D1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
@@ -186,6 +185,7 @@
 		F7707689263A896A00A1BA94 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */; };
 		F770768A263A8A2500A1BA94 /* NCUtilityFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */; };
 		F770768B263A8A6A00A1BA94 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
+		F770768E263A8C3400A1BA94 /* FloatingPanel in Frameworks */ = {isa = PBXBuildFile; productRef = F770768D263A8C3400A1BA94 /* FloatingPanel */; };
 		F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */; };
 		F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D420E2392D00AFB62D /* FileProviderItem.swift */; };
 		F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D620E2392D00AFB62D /* FileProviderEnumerator.swift */; };
@@ -766,6 +766,7 @@
 				F7176DDB256672F10017E83C /* libsqlite3.tbd in Frameworks */,
 				F7176DBE256672640017E83C /* GoogleDataTransport.framework in Frameworks */,
 				F7176DCC256672660017E83C /* FirebaseAnalytics.framework in Frameworks */,
+				F770768E263A8C3400A1BA94 /* FloatingPanel in Frameworks */,
 				F765608B23BF80A400765969 /* SwiftEntryKit.framework in Frameworks */,
 				F7176DCE256672660017E83C /* GoogleAppMeasurement.framework in Frameworks */,
 				F786D58D253454BF00E3DD7B /* NCCommunication in Frameworks */,
@@ -780,7 +781,6 @@
 				F7D2C773246470CA008513AE /* XLForm.framework in Frameworks */,
 				F782A57D25123694007BBABD /* RealmSwift in Frameworks */,
 				F7176DBC256672640017E83C /* FirebaseCoreDiagnostics.framework in Frameworks */,
-				371B5A3323D0BD5500FAFAE9 /* FloatingPanel.framework in Frameworks */,
 				F7176DD0256672660017E83C /* FIRAnalyticsConnector.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1660,6 +1660,7 @@
 				F75E57BC25BF0EC1002B72C2 /* SVGKit */,
 				F7ED547B25EEA65400956C55 /* QRCodeReader */,
 				F72DA9B325F53E4E00B87DB1 /* SwiftRichString */,
+				F770768D263A8C3400A1BA94 /* FloatingPanel */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -1771,6 +1772,7 @@
 				F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */,
 				F7ED547A25EEA65400956C55 /* XCRemoteSwiftPackageReference "QRCodeReader" */,
 				F72DA9B225F53E4E00B87DB1 /* XCRemoteSwiftPackageReference "SwiftRichString" */,
+				F770768C263A8C3400A1BA94 /* XCRemoteSwiftPackageReference "FloatingPanel" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -1911,7 +1913,6 @@
 				"$(SRCROOT)/Carthage/Build/iOS/OpenSSL.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/QuickLayout.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftEntryKit.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/FloatingPanel.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/MarkdownKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/XLForm.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/TOPasscodeViewController.framework",
@@ -2810,6 +2811,14 @@
 				kind = branch;
 			};
 		};
+		F770768C263A8C3400A1BA94 /* XCRemoteSwiftPackageReference "FloatingPanel" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scenee/FloatingPanel";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.3.0;
+			};
+		};
 		F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/realm-cocoa";
@@ -2869,6 +2878,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
 			productName = SVGKit;
+		};
+		F770768D263A8C3400A1BA94 /* FloatingPanel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F770768C263A8C3400A1BA94 /* XCRemoteSwiftPackageReference "FloatingPanel" */;
+			productName = FloatingPanel;
 		};
 		F782A57A25123694007BBABD /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
