@@ -62,8 +62,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         labelQuotaExternalSite.isUserInteractionEnabled = true
         labelQuotaExternalSite.addGestureRecognizer(tapQuota)
 
-        progressQuota.progressTintColor = .systemBlue
-
         // Notification
         NotificationCenter.default.addObserver(self, selector: #selector(initializeMain), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitializeMain), object: nil)
     }
@@ -94,6 +92,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         settingsMenu.removeAll()
         quotaMenu.removeAll()
         labelQuotaExternalSite.text = ""
+        progressQuota.progressTintColor = NCBrandColor.shared.brandElement
         
         // ITEM : Transfer
         item = NCCommunicationExternalSite()
