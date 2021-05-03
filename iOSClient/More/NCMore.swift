@@ -203,19 +203,15 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         if NCBrandOptions.shared.disable_more_external_site == false {
             if let externalSites = NCManageDatabase.shared.getAllExternalSites(account: appDelegate.account) {
                 for externalSite in externalSites {
-                    if (externalSite.type == "link" && externalSite.name != "" && externalSite.url != ""), let urlEncoded = externalSite.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+                    if (externalSite.name != "" && externalSite.url != ""), let urlEncoded = externalSite.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
                         item = NCCommunicationExternalSite()
                         item.name = externalSite.name
                         item.url = urlEncoded
                         item.icon = "network"
+                        if (externalSite.type == "settings") {
+                            item.icon = "gear"
+                        }
                         externalSiteMenu.append(item)
-                    }
-                    if (externalSite.type == "settings") {
-                        item.icon = "gear"
-                        settingsMenu.append(item)
-                    }
-                    if (externalSite.type == "quota") {
-                        quotaMenu.append(item)
                     }
                 }
                 tableView.reloadData()
