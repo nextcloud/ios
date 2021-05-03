@@ -169,7 +169,7 @@
 "_upload_chunk_"            = "The file you are uploading is large, keep the app in the foreground until complete";
 "_upload_e2ee_"             = "The file you are uploading is encrypted, keep the app in the foreground until complete";
 "_chunk_size_mb_"           = "Chunk size in MB";
-"_chunk_footer_title_"      = "Chunked file upload (0 is disabled)";
+"_chunk_footer_title_"      = "Chunked file upload (0 is disabled)\nImportant: the chunked upload works only when the app is 'active'.";
 "_privacy_"                 = "Privacy";
 "_source_code_"             = "Get source code";
 "_account_select_"          = "Select the account";
