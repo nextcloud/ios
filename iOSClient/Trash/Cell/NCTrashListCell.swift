@@ -40,6 +40,7 @@ class NCTrashListCell: UICollectionViewCell {
     @IBOutlet weak var buttonRestore: UIButton!
     
     @IBOutlet weak var separator: UIView!
+    @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
     var delegate: NCTrashListCellDelegate?
     
@@ -56,6 +57,7 @@ class NCTrashListCell: UICollectionViewCell {
         imageItem.layer.masksToBounds = true
         
         separator.backgroundColor = NCBrandColor.shared.separator
+        separatorHeightConstraint.constant = 0.5
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
