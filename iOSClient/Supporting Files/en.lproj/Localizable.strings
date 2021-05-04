@@ -868,7 +868,7 @@
 // QRCode
 
 "_qrcode_not_authorized_"   = "This app is not authorized to use Back Camera";
-"_qrcode_not_supported_"    = "QR Code not supported by the current device";
+"_qrcode_not_supported_"    = "QR code not supported by the current device";
 
 // Voice Memo
 
