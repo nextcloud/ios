@@ -93,6 +93,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     
     private let refreshControl = UIRefreshControl()
     
+    private var backgroundImageView = UIImageView()
+    
     private var activeAccount: tableAccount!
         
     // MARK: - View Life Cycle
@@ -179,7 +181,13 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         }
                 
         // TEST
-        emptyDataSet?.backgroud = "lana"
+        if let image = UIImage(named: "lana") {
+            backgroundImageView.image = image
+            collectionView.backgroundView = backgroundImageView
+        } else {
+            backgroundImageView.image = nil
+            collectionView.backgroundView = nil
+        }
         
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
