@@ -45,8 +45,9 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     private var directoryOnTop: Bool = true
     private var layout = ""
     private var groupBy = "none"
-    private var titleButton = ""
+    private var titleButtonHeader = ""
     private var itemForLine = 0
+    private var fillBackgroud = ""
 
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
@@ -97,7 +98,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         self.navigationItem.title = titleCurrentFolder
 
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", sort: "date", ascending: false, titleButton: "_sorted_by_date_more_recent_")
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud) = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", sort: "date", ascending: false, titleButtonHeader: "_sorted_by_date_more_recent_")
         gridLayout.itemForLine = CGFloat(itemForLine)
         
         if layout == NCGlobal.shared.layoutList {
@@ -266,7 +267,7 @@ extension NCTrash: UICollectionViewDataSource {
             trashHeader.backgroundColor = NCBrandColor.shared.systemBackground
             trashHeader.separator.backgroundColor = NCBrandColor.shared.separator
             trashHeader.setStatusButton(datasource: datasource)
-            trashHeader.setTitleSorted(datasourceTitleButton: titleButton)
+            trashHeader.setTitleSorted(datasourceTitleButton: titleButtonHeader)
             
             return trashHeader
             
@@ -390,7 +391,7 @@ extension NCTrash {
 
     @objc func reloadDataSource() {
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud) = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
         
         datasource.removeAll()
         

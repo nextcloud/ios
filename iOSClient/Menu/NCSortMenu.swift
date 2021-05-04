@@ -36,8 +36,9 @@ class NCSortMenu: NSObject {
     private var ascending = true
     private var groupBy = ""
     private var directoryOnTop = false
-    private var titleButton = ""
+    private var titleButtonHeader = ""
     private var itemForLine: Int = 0
+    private var fillBackgroud = ""
 
     func toggleMenu(viewController: UIViewController, key: String, sortButton: UIButton?, serverUrl: String, hideDirectoryOnTop: Bool = false) {
         
@@ -46,7 +47,7 @@ class NCSortMenu: NSObject {
         self.serverUrl = serverUrl
         self.hideDirectoryOnTop = hideDirectoryOnTop
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
 
         let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
@@ -138,18 +139,18 @@ class NCSortMenu: NSObject {
                 
         switch sort {
         case "fileName":
-            titleButton = ascending ? "_sorted_by_name_a_z_" : "_sorted_by_name_z_a_"
+            titleButtonHeader = ascending ? "_sorted_by_name_a_z_" : "_sorted_by_name_z_a_"
         case "date":
-            titleButton = ascending ? "_sorted_by_date_less_recent_" : "_sorted_by_date_more_recent_"
+            titleButtonHeader = ascending ? "_sorted_by_date_less_recent_" : "_sorted_by_date_more_recent_"
         case "size":
-            titleButton = ascending ? "_sorted_by_size_smallest_" : "_sorted_by_size_largest_"
+            titleButtonHeader = ascending ? "_sorted_by_size_smallest_" : "_sorted_by_size_largest_"
         default:
             break
         }
         
-        self.sortButton?.setTitle(NSLocalizedString(titleButton, comment: ""), for: .normal)
+        self.sortButton?.setTitle(NSLocalizedString(titleButtonHeader, comment: ""), for: .normal)
         
-        NCUtility.shared.setLayoutForView(key: key, serverUrl: serverUrl, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButton: titleButton, itemForLine: itemForLine)
+        NCUtility.shared.setLayoutForView(key: key, serverUrl: serverUrl, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButtonHeader: titleButtonHeader, itemForLine: itemForLine, fillBackgroud: fillBackgroud)
         
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":self.serverUrl])
     }
