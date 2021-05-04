@@ -34,7 +34,6 @@ public extension NCEmptyDataSetDelegate {
 
 class NCEmptyDataSet: NSObject {
     
-    private var superView: UIView?
     private var emptyView: NCEmptyView?
     private var timer: Timer?
     private var numberItemsForSections: Int = 0
@@ -43,31 +42,9 @@ class NCEmptyDataSet: NSObject {
     private var fillBackgroundName: String = ""
     private var fillBackgroundView = UIImageView()
 
-    public var backgroud: String {
-        get {
-            return fillBackgroundName
-        }
-        set {
-            self.fillBackgroundName = newValue
-            if let image = UIImage(named: newValue) {
-                fillBackgroundView.image = image
-                if superView is UICollectionView {
-                    (superView as! UICollectionView).backgroundView = fillBackgroundView
-                }
-            } else {
-                fillBackgroundView.image = nil
-                if superView is UICollectionView {
-                    (superView as! UICollectionView).backgroundView = nil
-                }
-            }
-        }
-    }
-    
     init(view: UIView, offset: CGFloat = 0, delegate: NCEmptyDataSetDelegate?) {
         super.init()
-        
-        self.superView = view
-        
+                
         if let emptyView = UINib(nibName: "NCEmptyView", bundle: nil).instantiate(withOwner: self, options: nil).first as? NCEmptyView {
         
             self.delegate = delegate
@@ -86,9 +63,13 @@ class NCEmptyDataSet: NSObject {
 
             emptyView.widthAnchor.constraint(equalToConstant: 350).isActive = true
             emptyView.heightAnchor.constraint(equalToConstant: 250).isActive = true
-            
-            emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-            emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset).isActive = true
+            if let view = view.superview {
+                emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+                emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset).isActive = true
+            } else {
+                emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+                emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset).isActive = true
+            }
         }
     }
         
