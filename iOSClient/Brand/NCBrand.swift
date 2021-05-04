@@ -132,6 +132,7 @@ class NCBrandColor: NSObject {
         
         static var buttonMore = UIImage()
         static var buttonStop = UIImage()
+        static var buttonRestore = UIImage()
     }
 
     // Color
@@ -300,6 +301,7 @@ class NCBrandColor: NSObject {
         
         cacheImages.buttonMore = UIImage(named: "more")!.image(color: gray, size: 50)
         cacheImages.buttonStop = UIImage(named: "stop")!.image(color: gray, size: 50)
+        cacheImages.buttonRestore = UIImage(named: "restore")!.image(color: gray, size: 50)
     }
     
 #if !EXTENSION

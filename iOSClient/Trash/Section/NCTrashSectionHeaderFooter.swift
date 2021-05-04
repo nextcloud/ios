@@ -30,7 +30,8 @@ class NCTrashSectionHeaderMenu: UICollectionReusableView {
     @IBOutlet weak var buttonOrder: UIButton!
     @IBOutlet weak var buttonOrderWidthConstraint: NSLayoutConstraint!
     @IBOutlet weak var separator: UIView!
-    
+    @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
+
     var delegate: NCTrashSectionHeaderMenuDelegate?
 
     override func awakeFromNib() {
@@ -44,6 +45,8 @@ class NCTrashSectionHeaderMenu: UICollectionReusableView {
         buttonMore.setImage(UIImage.init(named: "more")!.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
         
         separator.backgroundColor = NCBrandColor.shared.separator
+        separatorHeightConstraint.constant = 0.5
+
         backgroundColor = NCBrandColor.shared.systemBackground
     }
     
