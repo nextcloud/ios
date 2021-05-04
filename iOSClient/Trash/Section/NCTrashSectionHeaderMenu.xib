@@ -39,7 +39,7 @@
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D0O-wK-14O" userLabel="buttonMore">
-                    <rect key="frame" x="343" y="15" width="20" height="20"/>
+                    <rect key="frame" x="345" y="15" width="20" height="20"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="20" id="aEr-j8-JDO"/>
                         <constraint firstAttribute="height" constant="20" id="bvx-Uh-NWD"/>
@@ -62,7 +62,7 @@
             <constraints>
                 <constraint firstItem="D0O-wK-14O" firstAttribute="centerY" secondItem="tys-A2-nDX" secondAttribute="centerY" id="6w7-ws-gX3"/>
                 <constraint firstAttribute="trailing" secondItem="LZu-Te-clJ" secondAttribute="trailing" id="7ww-Zl-sES"/>
-                <constraint firstAttribute="trailing" secondItem="D0O-wK-14O" secondAttribute="trailing" constant="12" id="AsZ-tP-fP1"/>
+                <constraint firstAttribute="trailing" secondItem="D0O-wK-14O" secondAttribute="trailing" constant="10" id="AsZ-tP-fP1"/>
                 <constraint firstItem="LZu-Te-clJ" firstAttribute="leading" secondItem="tys-A2-nDX" secondAttribute="leading" id="ZEl-Ij-nt8"/>
                 <constraint firstItem="1LD-cd-zhc" firstAttribute="leading" secondItem="tys-A2-nDX" secondAttribute="leading" constant="12" id="dHo-I3-Z1V"/>
                 <constraint firstItem="1LD-cd-zhc" firstAttribute="centerY" secondItem="tys-A2-nDX" secondAttribute="centerY" id="hbd-cO-eBq"/>
