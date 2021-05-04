@@ -37,6 +37,19 @@ class NCGlobal: NSObject {
         var totalBytesExpected: Int64
     }
     
+    // Struct for LayoutForView
+    //
+    struct layoutForViewType {
+        var sort: String
+        var ascending: Bool
+        var groupBy: String
+        var directoryOnTop: Bool
+        var titleButtonHeader: String
+        var itemForLine: Int
+        var fillBackgroud: String
+        var fillBackgroudContentMode: String
+    }
+    
     // Directory on Group
     //
     @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"

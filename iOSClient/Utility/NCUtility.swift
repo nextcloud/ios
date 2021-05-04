@@ -38,6 +38,18 @@ class NCUtility: NSObject {
     private var viewActivityIndicator: UIView?
     private var viewBackgroundActivityIndicator: UIView?
 
+    func setLayoutForView(key: String, serverUrl: String, layout: String, object: NCGlobal.layoutForViewType) {
+        
+        let string =  layout + "|" + object.sort + "|" + "\(object.ascending)" + "|" + object.groupBy + "|" + "\(object.directoryOnTop)" + "|" + object.titleButtonHeader + "|" + "\(object.itemForLine)" + "|" + object.fillBackgroud + "|" + object.fillBackgroudContentMode
+        var keyStore = key
+        
+        if serverUrl != "" {
+            keyStore = serverUrl
+        }
+        
+        UICKeyChainStore.setString(string, forKey: keyStore, service: NCGlobal.shared.serviceShareKeyChain)
+    }
+    
     func setLayoutForView(key: String, serverUrl: String, layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButtonHeader: String, itemForLine: Int, fillBackgroud: String, fillBackgroudContentMode: String) {
         
         let string =  layout + "|" + sort + "|" + "\(ascending)" + "|" + groupBy + "|" + "\(directoryOnTop)" + "|" + titleButtonHeader + "|" + "\(itemForLine)" + "|" + fillBackgroud + "|" + fillBackgroudContentMode

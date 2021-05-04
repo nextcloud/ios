@@ -61,6 +61,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     private var titleButtonHeader = ""
     private var itemForLine = 0
     private var fillBackgroud = ""
+    private var fillBackgroudContentMode = ""
     
     private var heightRowTableView: CGFloat = 50
     private var heightCommandView: CGFloat = 170
@@ -193,7 +194,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         
         serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account)
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud) = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
             
         reloadDatasource(withLoadFolder: true)
         setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)
@@ -689,7 +690,7 @@ extension NCShareExtension {
 
     @objc func reloadDatasource(withLoadFolder: Bool) {
                 
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud) = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
                 
         let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", activeAccount.account, serverUrl))
         self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
