@@ -127,6 +127,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         refreshControl.backgroundColor = NCBrandColor.shared.systemBackground
         refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
+        buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
+        
         // Empty
         emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: headerHeight, delegate: self)
 
