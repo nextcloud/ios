@@ -181,6 +181,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         }
                 
         // TEST
+        /*
         if let image = UIImage(named: "lana") {
             backgroundImageView.image = image
             collectionView.backgroundView = backgroundImageView
@@ -188,6 +189,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             backgroundImageView.image = nil
             collectionView.backgroundView = nil
         }
+        */
         
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
