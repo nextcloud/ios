@@ -291,7 +291,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             view.emptyDescription.text = ""
         } else {
             view.emptyImage.image = UIImage.init(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
-            view.emptyTitle.text = NSLocalizedString("_files_no_files_", comment: "")
+            view.emptyTitle.text = NSLocalizedString("_files_no_folders_", comment: "")
             view.emptyDescription.text = ""
         }
     }
@@ -336,7 +336,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                 
             if NCUtilityFileSystem.shared.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: filePath) {
                 
-                NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+                NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: true)
                                 
                 let metadata = NCManageDatabase.shared.createMetadata(account: activeAccount.account, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "", contentType: "", livePhoto: false, chunk: false)
                 
