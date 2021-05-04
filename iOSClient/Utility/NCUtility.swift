@@ -64,21 +64,7 @@ class NCUtility: NSObject {
         setLayoutForView(key: key, serverUrl: serverUrl, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButton: titleButton, itemForLine: itemForLine)
     }
     
-    @objc func getLayoutForView(key: String, serverUrl: String) -> (String) {
-        
-        var layout: String
-        (layout, _, _, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
-        return layout
-    }
-    
-    @objc func getSortedForView(key: String, serverUrl: String) -> (String) {
-        
-        var sort: String
-        (_, sort, _, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
-        return sort
-    }
-    
-    func getLayoutForView(key: String, serverUrl: String, sort: String = "fileName", ascending: Bool = true) -> (layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
+    func getLayoutForView(key: String, serverUrl: String, sort: String = "fileName", ascending: Bool = true, titleButton: String = "_sorted_by_name_a_z_") -> (layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
         
         var keyStore = key
         
@@ -87,8 +73,8 @@ class NCUtility: NSObject {
         }
         
         guard let string = UICKeyChainStore.string(forKey: keyStore, service: NCGlobal.shared.serviceShareKeyChain) else {
-            setLayoutForView(key: key, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList, sort: sort, ascending: ascending, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
-            return (NCGlobal.shared.layoutList, sort, ascending, "none", true, "_sorted_by_name_a_z_", 3)
+            setLayoutForView(key: key, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList, sort: sort, ascending: ascending, groupBy: "none", directoryOnTop: true, titleButton: titleButton, itemForLine: 3)
+            return (NCGlobal.shared.layoutList, sort, ascending, "none", true, titleButton, 3)
         }
 
         let array = string.components(separatedBy: "|")
@@ -100,9 +86,9 @@ class NCUtility: NSObject {
             return (array[0], array[1], sort.boolValue, array[3], directoryOnTop.boolValue, array[5], Int(itemForLine.intValue))
         }
         
-        setLayoutForView(key: key, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList, sort: sort, ascending: ascending, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
+        setLayoutForView(key: key, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList, sort: sort, ascending: ascending, groupBy: "none", directoryOnTop: true, titleButton: titleButton, itemForLine: 3)
         
-        return (NCGlobal.shared.layoutList, sort, ascending, "none", true, "_sorted_by_name_a_z_", 3)
+        return (NCGlobal.shared.layoutList, sort, ascending, "none", true, titleButton, 3)
     }
         
     func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool, account: String, closure: @escaping (String?) -> ()) {
