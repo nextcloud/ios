@@ -296,6 +296,9 @@
 		F7CB689A2541676B0050EC94 /* NCMore.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CB68992541676B0050EC94 /* NCMore.storyboard */; };
 		F7CB68A0254169530050EC94 /* NCSettings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CB689F254169530050EC94 /* NCSettings.storyboard */; };
 		F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */; };
+		F7D0F33826413A0F0097D4A3 /* lana.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F7D0F33726413A0F0097D4A3 /* lana.jpg */; };
+		F7D0F33A26413C170097D4A3 /* NCFillBackgroundView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D0F33926413C170097D4A3 /* NCFillBackgroundView.xib */; };
+		F7D0F33B26413C170097D4A3 /* NCFillBackgroundView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D0F33926413C170097D4A3 /* NCFillBackgroundView.xib */; };
 		F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */; };
 		F7D2C773246470CA008513AE /* XLForm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D2C772246470CA008513AE /* XLForm.framework */; };
 		F7D57C8626317BDA00DE301D /* NCAccountRequest.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CA212C25F1333200826ABB /* NCAccountRequest.storyboard */; };
@@ -675,6 +678,8 @@
 		F7CC04E61F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nextcloud.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Share.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F7D0F33726413A0F0097D4A3 /* lana.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = lana.jpg; sourceTree = "<group>"; };
+		F7D0F33926413C170097D4A3 /* NCFillBackgroundView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCFillBackgroundView.xib; sourceTree = "<group>"; };
 		F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerRichWorkspace.storyboard; sourceTree = "<group>"; };
 		F7D2C772246470CA008513AE /* XLForm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XLForm.framework; path = Carthage/Build/iOS/XLForm.framework; sourceTree = "<group>"; };
@@ -929,6 +934,7 @@
 			isa = PBXGroup;
 			children = (
 				F7239870253D86B600257F49 /* NCEmptyDataSet.swift */,
+				F7D0F33926413C170097D4A3 /* NCFillBackgroundView.xib */,
 				F7239876253D86D300257F49 /* NCEmptyView.xib */,
 			);
 			path = EmptyView;
@@ -1356,6 +1362,14 @@
 			path = More;
 			sourceTree = "<group>";
 		};
+		F7D0F33626413A0F0097D4A3 /* fillBackground */ = {
+			isa = PBXGroup;
+			children = (
+				F7D0F33726413A0F0097D4A3 /* lana.jpg */,
+			);
+			path = fillBackground;
+			sourceTree = "<group>";
+		};
 		F7DFB7E9219C5A0500680748 /* Create cloud */ = {
 			isa = PBXGroup;
 			children = (
@@ -1423,6 +1437,7 @@
 			children = (
 				F702F2CC25EE5B4F008F8E80 /* AppDelegate.swift */,
 				F702F2CE25EE5B5C008F8E80 /* NCGlobal.swift */,
+				F7D0F33626413A0F0097D4A3 /* fillBackground */,
 				F70211F31BAC56E9003FC03E /* Main */,
 				F7C1CDD91E6DFC6F005D92BE /* Brand */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
@@ -1807,6 +1822,7 @@
 				F714803B262EBE3900693E51 /* MainInterface.storyboard in Resources */,
 				F7148054262ED51000693E51 /* NCListCell.xib in Resources */,
 				F7D57C8626317BDA00DE301D /* NCAccountRequest.storyboard in Resources */,
+				F7D0F33B26413C170097D4A3 /* NCFillBackgroundView.xib in Resources */,
 				F7145A1A1D12E3B700CAFEEC /* Images.xcassets in Resources */,
 				F7148063262ED66200693E51 /* NCEmptyView.xib in Resources */,
 				F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */,
@@ -1839,6 +1855,7 @@
 				F700222C1EC479840080073F /* Custom.xcassets in Resources */,
 				F702F2F125EE5CDB008F8E80 /* NCLogin.storyboard in Resources */,
 				F723985C253C95CE00257F49 /* NCViewerRichdocument.storyboard in Resources */,
+				F7D0F33826413A0F0097D4A3 /* lana.jpg in Resources */,
 				F758B45A212C564000515F55 /* Scan.storyboard in Resources */,
 				F70D87CF25EE6E58008CBBBD /* NCRenameFile.storyboard in Resources */,
 				F765F73225237E3F00391DBE /* NCRecent.storyboard in Resources */,
@@ -1862,6 +1879,7 @@
 				F749C10E23C4A5340027D966 /* NCIntroCollectionViewCell.xib in Resources */,
 				F717402D24F699A5000C87D5 /* NCFavorite.storyboard in Resources */,
 				F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */,
+				F7D0F33A26413C170097D4A3 /* NCFillBackgroundView.xib in Resources */,
 				F78ACD4B21903F850088454D /* NCTrashListCell.xib in Resources */,
 				F7725A61251F33BB00D125E0 /* NCFiles.storyboard in Resources */,
 				F700510122DF63AC003A3356 /* NCShare.storyboard in Resources */,

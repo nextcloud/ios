@@ -15,12 +15,28 @@ import UIKit
 class NCEmptyDataSet: NSObject {
     
     var emptyView: NCEmptyView?
+    var fillBackgroundView: NCFillBackgroundView?
     var delegate: NCEmptyDataSetDelegate?
     var timer: Timer?
     var numberItemsForSections: Int = 0
     
     init(view: UIView, offset: CGFloat = 0, delegate: NCEmptyDataSetDelegate?) {
         super.init()
+        
+        if let fillBackgroundView = UINib(nibName: "NCFillBackgroundView", bundle: nil).instantiate(withOwner: self, options: nil).first as? NCFillBackgroundView {
+            
+            self.fillBackgroundView = fillBackgroundView
+            
+            fillBackgroundView.isHidden = true
+            fillBackgroundView.translatesAutoresizingMaskIntoConstraints = false
+            
+            view.addSubview(fillBackgroundView)
+            
+            fillBackgroundView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+            fillBackgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+            fillBackgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+            fillBackgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        }
 
         if let emptyView = UINib(nibName: "NCEmptyView", bundle: nil).instantiate(withOwner: self, options: nil).first as? NCEmptyView {
         
@@ -40,14 +56,9 @@ class NCEmptyDataSet: NSObject {
 
             emptyView.widthAnchor.constraint(equalToConstant: 350).isActive = true
             emptyView.heightAnchor.constraint(equalToConstant: 250).isActive = true
-            if let view = view.superview {
-                emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-                emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset).isActive = true
-
-            } else {
-                emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-                emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset).isActive = true
-            }
+            
+            emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset).isActive = true
         }
     }
     
@@ -93,6 +104,15 @@ public class NCEmptyView: UIView {
         super.awakeFromNib()
         
         emptyTitle.textColor = NCBrandColor.shared.label
+    }
+}
+
+public class NCFillBackgroundView: UIView {
+    
+    @IBOutlet weak var fillBackground: UIImageView!
+    
+    public override func awakeFromNib() {
+        super.awakeFromNib()
     }
 }
 
