@@ -5,39 +5,69 @@
 //  Created by Marino Faggiana on 19/10/2020.
 //  Copyright © 2020 Marino Faggiana. All rights reserved.
 //
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 import UIKit
 
-@objc public protocol NCEmptyDataSetDelegate {
-    @objc optional func emptyDataSetView(_ view: NCEmptyView)
+public protocol NCEmptyDataSetDelegate {
+    func emptyDataSetView(_ view: NCEmptyView)
+}
+
+// optional func
+public extension NCEmptyDataSetDelegate {
+    func emptyDataSetView(_ view: NCEmptyView) {}
 }
 
 class NCEmptyDataSet: NSObject {
     
-    var emptyView: NCEmptyView?
-    var fillBackgroundView: NCFillBackgroundView?
-    var delegate: NCEmptyDataSetDelegate?
-    var timer: Timer?
-    var numberItemsForSections: Int = 0
+    private var superView: UIView?
+    private var emptyView: NCEmptyView?
+    private var timer: Timer?
+    private var numberItemsForSections: Int = 0
+    private var delegate: NCEmptyDataSetDelegate?
+
+    private var fillBackgroundName: String = ""
+    private var fillBackgroundView = UIImageView()
+
+    public var backgroud: String {
+        get {
+            return fillBackgroundName
+        }
+        set {
+            self.fillBackgroundName = newValue
+            if let image = UIImage(named: newValue) {
+                fillBackgroundView.image = image
+                if superView is UICollectionView {
+                    (superView as! UICollectionView).backgroundView = fillBackgroundView
+                }
+            } else {
+                fillBackgroundView.image = nil
+                if superView is UICollectionView {
+                    (superView as! UICollectionView).backgroundView = nil
+                }
+            }
+        }
+    }
     
     init(view: UIView, offset: CGFloat = 0, delegate: NCEmptyDataSetDelegate?) {
         super.init()
         
-        if let fillBackgroundView = UINib(nibName: "NCFillBackgroundView", bundle: nil).instantiate(withOwner: self, options: nil).first as? NCFillBackgroundView {
-            
-            self.fillBackgroundView = fillBackgroundView
-            
-            fillBackgroundView.isHidden = true
-            fillBackgroundView.translatesAutoresizingMaskIntoConstraints = false
-            
-            view.addSubview(fillBackgroundView)
-            
-            fillBackgroundView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-            fillBackgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-            fillBackgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-            fillBackgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        }
-
+        self.superView = view
+        
         if let emptyView = UINib(nibName: "NCEmptyView", bundle: nil).instantiate(withOwner: self, options: nil).first as? NCEmptyView {
         
             self.delegate = delegate
@@ -61,7 +91,7 @@ class NCEmptyDataSet: NSObject {
             emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset).isActive = true
         }
     }
-    
+        
     func numberOfItemsInSection(_ num: Int, section: Int) {
         
         if section == 0 {
@@ -72,7 +102,7 @@ class NCEmptyDataSet: NSObject {
         
         if let emptyView = emptyView {
             
-            self.delegate?.emptyDataSetView?(emptyView)
+            self.delegate?.emptyDataSetView(emptyView)
             
             if !(timer?.isValid ?? false) && emptyView.isHidden == true {
                 timer = Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(timerHandler(_:)), userInfo: nil, repeats: false)
@@ -106,13 +136,3 @@ public class NCEmptyView: UIView {
         emptyTitle.textColor = NCBrandColor.shared.label
     }
 }
-
-public class NCFillBackgroundView: UIView {
-    
-    @IBOutlet weak var fillBackground: UIImageView!
-    
-    public override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-}
-
