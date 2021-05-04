@@ -78,6 +78,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var titleButtonHeader = ""
     private var itemForLine = 0
     private var fillBackgroud = ""
+    private var fillBackgroudContentMode = ""
 
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
@@ -181,22 +182,22 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         }
                 
         // TEST
-        /*
+    
+        // get auto upload folder
+        autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
+        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: activeAccount.urlBase, account: activeAccount.account)
+        
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
+        gridLayout.itemForLine = CGFloat(itemForLine)
+        
         if let image = UIImage(named: "lana") {
             backgroundImageView.image = image
+            backgroundImageView.contentMode = .scaleToFill
             collectionView.backgroundView = backgroundImageView
         } else {
             backgroundImageView.image = nil
             collectionView.backgroundView = nil
         }
-        */
-        
-        // get auto upload folder
-        autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: activeAccount.urlBase, account: activeAccount.account)
-        
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud) = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
-        gridLayout.itemForLine = CGFloat(itemForLine)
         
         if layout == NCGlobal.shared.layoutList {
             collectionView.collectionViewLayout = listLayout
@@ -700,7 +701,7 @@ extension NCSelect {
         
         var predicate: NSPredicate?
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud) = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
         
         if includeDirectoryE2EEncryption {
             

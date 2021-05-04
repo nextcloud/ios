@@ -52,6 +52,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var titleButtonHeader = ""
     internal var itemForLine = 0
     internal var fillBackgroud = ""
+    internal var fillBackgroudContentMode = ""
 
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
@@ -175,7 +176,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             appDelegate.activeServerUrl = serverUrl
         }
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(itemForLine)
         
         if layout == NCGlobal.shared.layoutList {
@@ -887,7 +888,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
         
         // get layout for view
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
     }
     @objc func reloadDataSourceNetwork(forced: Bool = false) { }
     @objc func reloadDataSourceNetworkRefreshControl() {

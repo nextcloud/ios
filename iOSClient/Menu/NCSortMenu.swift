@@ -39,6 +39,7 @@ class NCSortMenu: NSObject {
     private var titleButtonHeader = ""
     private var itemForLine: Int = 0
     private var fillBackgroud = ""
+    private var fillBackgroudContentMode = ""
 
     func toggleMenu(viewController: UIViewController, key: String, sortButton: UIButton?, serverUrl: String, hideDirectoryOnTop: Bool = false) {
         
@@ -47,7 +48,7 @@ class NCSortMenu: NSObject {
         self.serverUrl = serverUrl
         self.hideDirectoryOnTop = hideDirectoryOnTop
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
 
         let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
@@ -150,7 +151,7 @@ class NCSortMenu: NSObject {
         
         self.sortButton?.setTitle(NSLocalizedString(titleButtonHeader, comment: ""), for: .normal)
         
-        NCUtility.shared.setLayoutForView(key: key, serverUrl: serverUrl, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButtonHeader: titleButtonHeader, itemForLine: itemForLine, fillBackgroud: fillBackgroud)
+        NCUtility.shared.setLayoutForView(key: key, serverUrl: serverUrl, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButtonHeader: titleButtonHeader, itemForLine: itemForLine, fillBackgroud: fillBackgroud, fillBackgroudContentMode: fillBackgroudContentMode)
         
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":self.serverUrl])
     }
