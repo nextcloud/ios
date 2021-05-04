@@ -2859,8 +2859,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/rechsteiner/Parchment";
 			requirement = {
-				kind = exactVersion;
-				version = 2.4.0;
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.1;
 			};
 		};
 		F7ED547A25EEA65400956C55 /* XCRemoteSwiftPackageReference "QRCodeReader" */ = {

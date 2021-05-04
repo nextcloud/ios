@@ -78,14 +78,7 @@ class NCUtility: NSObject {
         return sort
     }
     
-    @objc func getAscendingForView(key: String, serverUrl: String) -> (Bool) {
-        
-        var ascending: Bool
-        (_, _, ascending, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
-        return ascending
-    }
-    
-    func getLayoutForView(key: String, serverUrl: String) -> (layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
+    func getLayoutForView(key: String, serverUrl: String, sort: String = "fileName", ascending: Bool = true) -> (layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
         
         var keyStore = key
         
@@ -94,8 +87,8 @@ class NCUtility: NSObject {
         }
         
         guard let string = UICKeyChainStore.string(forKey: keyStore, service: NCGlobal.shared.serviceShareKeyChain) else {
-            setLayoutForView(key: key, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList, sort: "fileName", ascending: true, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
-            return (NCGlobal.shared.layoutList, "fileName", true, "none", true, "_sorted_by_name_a_z_", 3)
+            setLayoutForView(key: key, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList, sort: sort, ascending: ascending, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
+            return (NCGlobal.shared.layoutList, sort, ascending, "none", true, "_sorted_by_name_a_z_", 3)
         }
 
         let array = string.components(separatedBy: "|")
@@ -107,9 +100,9 @@ class NCUtility: NSObject {
             return (array[0], array[1], sort.boolValue, array[3], directoryOnTop.boolValue, array[5], Int(itemForLine.intValue))
         }
         
-        setLayoutForView(key: key, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList, sort: "fileName", ascending: true, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
+        setLayoutForView(key: key, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList, sort: sort, ascending: ascending, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
         
-        return (NCGlobal.shared.layoutList, "fileName", true, "none", true, "_sorted_by_name_a_z_", 3)
+        return (NCGlobal.shared.layoutList, sort, ascending, "none", true, "_sorted_by_name_a_z_", 3)
     }
         
     func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool, account: String, closure: @escaping (String?) -> ()) {
