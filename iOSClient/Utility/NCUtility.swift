@@ -60,7 +60,7 @@ class NCUtility: NSObject {
         var itemForLine: Int
         var fillBackgroud: String
 
-        (_, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud) = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewFavorite, serverUrl: serverUrl)
+        (_, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
 
         setLayoutForView(key: key, serverUrl: serverUrl, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButtonHeader: titleButtonHeader, itemForLine: itemForLine, fillBackgroud: fillBackgroud)
     }
