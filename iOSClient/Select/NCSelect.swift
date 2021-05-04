@@ -180,9 +180,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         if serverUrl == "" {
             serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account)
         }
-                
-        // TEST
-    
+                    
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: activeAccount.urlBase, account: activeAccount.account)
@@ -190,14 +188,12 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(itemForLine)
         
-        if let image = UIImage(named: "lana") {
-            backgroundImageView.image = image
-            backgroundImageView.contentMode = .scaleToFill
-            collectionView.backgroundView = backgroundImageView
-        } else {
-            backgroundImageView.image = nil
-            collectionView.backgroundView = nil
-        }
+        /*
+        let image = UIColor.red.image(CGSize(width: collectionView.frame.width, height: collectionView.frame.width))
+        backgroundImageView.image = image
+        backgroundImageView.contentMode = .scaleToFill
+        collectionView.backgroundView = backgroundImageView
+        */
         
         if layout == NCGlobal.shared.layoutList {
             collectionView.collectionViewLayout = listLayout
