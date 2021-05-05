@@ -18,22 +18,11 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Background" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nZr-nE-ths">
-                                <rect key="frame" x="40" y="15" width="220" height="18"/>
+                                <rect key="frame" x="0.0" y="15" width="300" height="18"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="usk-m0-m1V">
-                                <rect key="frame" x="20" y="16.5" width="15" height="15"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="15" id="Tbp-Hf-0C8"/>
-                                    <constraint firstAttribute="height" constant="15" id="dHb-te-C1U"/>
-                                </constraints>
-                                <state key="normal" image="xmark"/>
-                                <connections>
-                                    <action selector="actionClose:" destination="V0q-CP-xMJ" eventType="touchUpInside" id="dWH-n9-hhC"/>
-                                </connections>
-                            </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ejg-dZ-Omg">
                                 <rect key="frame" x="0.0" y="53" width="300" height="250"/>
                                 <color key="backgroundColor" systemColor="systemPinkColor"/>
@@ -47,11 +36,9 @@
                         <constraints>
                             <constraint firstItem="ejg-dZ-Omg" firstAttribute="leading" secondItem="1c1-7Q-WMG" secondAttribute="leading" id="4FU-Pz-d6P"/>
                             <constraint firstItem="1c1-7Q-WMG" firstAttribute="trailing" secondItem="ejg-dZ-Omg" secondAttribute="trailing" id="CBH-1m-EvS"/>
-                            <constraint firstItem="1c1-7Q-WMG" firstAttribute="trailing" secondItem="nZr-nE-ths" secondAttribute="trailing" constant="40" id="DPW-MV-oKc"/>
-                            <constraint firstItem="usk-m0-m1V" firstAttribute="leading" secondItem="1c1-7Q-WMG" secondAttribute="leading" constant="20" id="Rt2-3Z-moO"/>
-                            <constraint firstItem="nZr-nE-ths" firstAttribute="leading" secondItem="1c1-7Q-WMG" secondAttribute="leading" constant="40" id="SI9-xL-6s8"/>
+                            <constraint firstItem="1c1-7Q-WMG" firstAttribute="trailing" secondItem="nZr-nE-ths" secondAttribute="trailing" id="DPW-MV-oKc"/>
+                            <constraint firstItem="nZr-nE-ths" firstAttribute="leading" secondItem="1c1-7Q-WMG" secondAttribute="leading" id="SI9-xL-6s8"/>
                             <constraint firstItem="ejg-dZ-Omg" firstAttribute="top" secondItem="nZr-nE-ths" secondAttribute="bottom" constant="20" id="Xe8-Cq-oh7"/>
-                            <constraint firstItem="usk-m0-m1V" firstAttribute="centerY" secondItem="nZr-nE-ths" secondAttribute="centerY" id="m4H-fq-bl6"/>
                             <constraint firstItem="nZr-nE-ths" firstAttribute="top" secondItem="1c1-7Q-WMG" secondAttribute="top" constant="15" id="oyJ-sj-j5N"/>
                         </constraints>
                     </view>
@@ -59,7 +46,6 @@
                     <size key="freeformSize" width="300" height="500"/>
                     <connections>
                         <outlet property="chromaColorPickerView" destination="ejg-dZ-Omg" id="tay-tJ-kme"/>
-                        <outlet property="closeButton" destination="usk-m0-m1V" id="IuD-PY-d4g"/>
                         <outlet property="titleLabel" destination="nZr-nE-ths" id="UbA-Dl-0Ad"/>
                     </connections>
                 </viewController>
@@ -69,7 +55,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="xmark" width="24" height="24"/>
         <systemColor name="systemGray6Color">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
