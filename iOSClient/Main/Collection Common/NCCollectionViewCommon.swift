@@ -865,6 +865,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         becomeFirstResponder()
                 
         listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu)))
+        listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_background_", comment: ""), action: #selector(backgroundFilesMenu)))
         
         if listMenuItems.count > 0 {
             UIMenuController.shared.menuItems = listMenuItems
@@ -883,11 +884,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
         
+        if (#selector(backgroundFilesMenu) == action) {
+            return true
+        }
+        
         return false
     }
     
     @objc func pasteFilesMenu() {
         NCFunctionCenter.shared.pastePasteboard(serverUrl: serverUrl)
+    }
+    
+    @objc func backgroundFilesMenu() {
+       
     }
     
     // MARK: - DataSource + NC Endpoint
