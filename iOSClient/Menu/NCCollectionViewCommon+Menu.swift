@@ -282,6 +282,25 @@ extension NCCollectionViewCommon {
         }
         
         //
+        // USE AS BACKGROUND
+        //
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_use_as_background_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "text.below.photo"),
+                    action: { menuAction in
+                        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                            NCFunctionCenter.shared.saveBackground(metadata: metadata)
+                        } else {
+                            NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveBackground)
+                        }
+                    }
+                )
+            )
+        }
+        
+        //
         // DELETE
         //
         actions.append(

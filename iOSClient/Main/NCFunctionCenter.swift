@@ -319,10 +319,10 @@ import NCCommunication
             
             if appDelegate.activeViewController is NCCollectionViewCommon {
                 let viewController: NCCollectionViewCommon = appDelegate.activeViewController as! NCCollectionViewCommon
-                let layout = viewController.layout
+                let layoutKey = viewController.layoutKey
                 let serverUrl = viewController.serverUrl
                 if serverUrl == metadata.serverUrl {
-                    NCUtility.shared.setBackgroundForView(key: layout, serverUrl: serverUrl, fillBackgroud: metadata.fileNameView, fillBackgroudContentMode: "")
+                    NCUtility.shared.setBackgroundForView(key: layoutKey, serverUrl: serverUrl, fillBackgroud: metadata.fileNameView, fillBackgroudContentMode: "")
                     viewController.setLayout()
                 }
             }
@@ -546,7 +546,7 @@ import NCCommunication
             }
         }
         
-        let saveBackground = UIAction(title: NSLocalizedString("_use_as_background", comment: ""), image: UIImage(systemName: "text.below.photo")) { action in
+        let saveBackground = UIAction(title: NSLocalizedString("_use_as_background_", comment: ""), image: UIImage(systemName: "text.below.photo")) { action in
             if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 self.saveBackground(metadata: metadata)
             } else {
@@ -620,7 +620,11 @@ import NCCommunication
         }
         
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && viewController is NCCollectionViewCommon {
-            children.insert(saveBackground, at: children.count-1)
+            let viewController: NCCollectionViewCommon = viewController as! NCCollectionViewCommon
+            let layoutKey = viewController.layoutKey
+            if layoutKey == NCGlobal.shared.layoutViewFiles {
+                children.insert(saveBackground, at: children.count-1)
+            }
         }
         
         return UIMenu(title: "", image: nil, identifier: nil, children: children)
