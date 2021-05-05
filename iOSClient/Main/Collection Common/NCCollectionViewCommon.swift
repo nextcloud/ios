@@ -610,7 +610,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             collectionView?.collectionViewLayout = gridLayout
         }
         
-        if fillBackgroud != "" {
+        if fillBackgroud == "" {
+            backgroundImageView.image = nil
+            collectionView.backgroundView = nil
+        } else {
             let imagePath = CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appBackground).path + "/" + fillBackgroud
             do {
                 let data = try Data.init(contentsOf: URL(fileURLWithPath: imagePath))
