@@ -173,6 +173,7 @@
 "_privacy_"                 = "Privacy";
 "_source_code_"             = "Get source code";
 "_account_select_"          = "Select the account";
+"_use_as_background"        = "Use it as a background";
 
 /* User status */
 "_online_"                  = "Online";

@@ -244,7 +244,7 @@ class NCGlobal: NSObject {
     let selectorUploadAutoUploadAll                 = "uploadAutoUploadAll"
     let selectorUploadFile                          = "uploadFile"
     let selectorSaveAlbum                           = "saveAlbum"
-    let selectorSaveDesktop                         = "saveDesktop"
+    let selectorSaveBackground                      = "saveBackground"
     let selectorSaveAlbumLivePhotoIMG               = "saveAlbumLivePhotoIMG"
     let selectorSaveAlbumLivePhotoMOV               = "saveAlbumLivePhotoMOV"
 

@@ -116,6 +116,10 @@ import NCCommunication
                     case NCGlobal.shared.selectorSaveAlbum:
                         
                         saveAlbum(metadata: metadata)
+                       
+                    case NCGlobal.shared.selectorSaveBackground:
+                        
+                        saveBackground(metadata: metadata)
                         
                     case NCGlobal.shared.selectorSaveAlbumLivePhotoIMG, NCGlobal.shared.selectorSaveAlbumLivePhotoMOV:
                         
@@ -304,6 +308,13 @@ import NCCommunication
                 NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             }
         })
+    }
+    
+    func saveBackground(metadata: tableMetadata) {
+        
+        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+
+        
     }
     
     // MARK: - Copy & Paste
@@ -523,6 +534,14 @@ import NCCommunication
             }
         }
         
+        let saveBackground = UIAction(title: NSLocalizedString("_use_as_background", comment: ""), image: UIImage(systemName: "text.below.photo")) { action in
+            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                self.saveBackground(metadata: metadata)
+            } else {
+                NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveBackground)
+            }
+        }
+        
         let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""), image: UIImage(systemName: "arrow.forward.square")) { action in
             self.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
         }
@@ -586,6 +605,10 @@ import NCCommunication
         
         if enableViewInFolder {
             children.insert(viewInFolder, at: 5)
+        }
+        
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
+            children.insert(saveBackground, at: children.count-1)
         }
         
         return UIMenu(title: "", image: nil, identifier: nil, children: children)
