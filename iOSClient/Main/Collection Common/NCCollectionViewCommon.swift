@@ -619,9 +619,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     backgroundImageView.contentMode = .scaleToFill
                     collectionView.backgroundView = backgroundImageView
                 }
-            } catch {
-                print("error")
-            }
+            } catch { }
         }
     }
 

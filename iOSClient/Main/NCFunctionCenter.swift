@@ -619,7 +619,7 @@ import NCCommunication
             children.insert(viewInFolder, at: 5)
         }
         
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && viewController is NCCollectionViewCommon {
             children.insert(saveBackground, at: children.count-1)
         }
         
