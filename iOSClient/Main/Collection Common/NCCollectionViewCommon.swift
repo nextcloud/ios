@@ -899,6 +899,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func backgroundFilesMenu() {
        
+        if let vcBackgroundImage = UIStoryboard(name: "NCBackgroundImage", bundle: nil).instantiateInitialViewController() as? NCBackgroundImage {
+            
+            vcBackgroundImage.layoutKey = layoutKey
+            vcBackgroundImage.serverUrl = serverUrl
+            
+            let popup = NCPopupViewController(contentController: vcBackgroundImage, popupWidth: vcBackgroundImage.width, popupHeight: vcBackgroundImage.height)
+                                        
+            self.present(popup, animated: true)
+        }
     }
     
     // MARK: - DataSource + NC Endpoint
