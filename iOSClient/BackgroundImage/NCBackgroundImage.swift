@@ -28,6 +28,7 @@ class NCBackgroundImage: UIViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var closeButton: UIButton!
+    @IBOutlet weak var chromaColorPickerView: UIView!
     
     private let colorPicker = ChromaColorPicker()
     private let brightnessSlider = ChromaBrightnessSlider()
@@ -37,7 +38,7 @@ class NCBackgroundImage: UIViewController {
     public var collectionViewCommon: NCCollectionViewCommon?
     
     let width: CGFloat = 300
-    let height: CGFloat = 400
+    let height: CGFloat = 500
     
     // MARK: - View Life Cycle
 
@@ -60,7 +61,7 @@ class NCBackgroundImage: UIViewController {
     
     // MARK: - Action
     
-    @IBAction func close(_ sender: Any) {
+    @IBAction func actionClose(_ sender: UIButton) {
         dismiss(animated: true)
     }
     
@@ -72,8 +73,8 @@ class NCBackgroundImage: UIViewController {
         view.addSubview(colorPicker)
 
         NSLayoutConstraint.activate([
-            colorPicker.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            colorPicker.topAnchor.constraint(equalTo: view.topAnchor, constant: 50),
+            colorPicker.centerXAnchor.constraint(equalTo: chromaColorPickerView.centerXAnchor),
+            colorPicker.topAnchor.constraint(equalTo: chromaColorPickerView.topAnchor),
             colorPicker.widthAnchor.constraint(equalToConstant: defaultColorPickerSize.width),
             colorPicker.heightAnchor.constraint(equalToConstant: defaultColorPickerSize.height)
         ])
@@ -99,26 +100,16 @@ class NCBackgroundImage: UIViewController {
     }
     
     private func setupColorPickerHandles() {
-        // (Optional) Assign a custom handle size - all handles appear as the same size
-        // colorPicker.handleSize = CGSize(width: 48, height: 60)
-        
-        // 1. Add handle and then customize
-//        addHomeHandle()
-        
-        // 2. Add a handle via a color
-        let peachColor = UIColor(red: 1, green: 203 / 255, blue: 164 / 255, alpha: 1)
+      
+        let peachColor = collectionViewCommon?.collectionView.backgroundColor //UIColor(red: 1, green: 203 / 255, blue: 164 / 255, alpha: 1)
         colorPicker.addHandle(at: peachColor)
-        
-        // 3. Create a custom handle and add to picker
-//        let customHandle = ChromaColorHandle()
-//        customHandle.color = UIColor.purple
-//        colorPicker.addHandle(customHandle)
     }
 }
 
 extension NCBackgroundImage: ChromaColorPickerDelegate {
     func colorPickerHandleDidChange(_ colorPicker: ChromaColorPicker, handle: ChromaColorHandle, to color: UIColor) {
         print("x")
+        
         /*
         colorDisplayView.backgroundColor = color
         
