@@ -78,6 +78,21 @@ class NCUtility: NSObject {
         setLayoutForView(key: key, serverUrl: serverUrl, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButtonHeader: titleButtonHeader, itemForLine: itemForLine, fillBackgroud: fillBackgroud, fillBackgroudContentMode: fillBackgroudContentMode)
     }
     
+    func setBackgroundForView(key: String, serverUrl: String, fillBackgroud: String, fillBackgroudContentMode: String) {
+
+        var layout: String
+        var sort: String
+        var ascending: Bool
+        var groupBy: String
+        var directoryOnTop: Bool
+        var titleButtonHeader: String
+        var itemForLine: Int
+        
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, _, _) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
+        
+        setLayoutForView(key: key, serverUrl: serverUrl, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButtonHeader: titleButtonHeader, itemForLine: itemForLine, fillBackgroud: fillBackgroud, fillBackgroudContentMode: fillBackgroudContentMode)
+    }
+    
     func getLayoutForView(key: String, serverUrl: String, sort: String = "fileName", ascending: Bool = true, titleButtonHeader: String = "_sorted_by_name_a_z_") -> (layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButtonHeader: String, itemForLine: Int, fillBackgroud: String, fillBackgroudContentMode: String) {
         
         var keyStore = key

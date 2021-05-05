@@ -317,6 +317,15 @@ import NCCommunication
         
         if NCUtilityFileSystem.shared.copyFile(atPath: fileNamePath, toPath: destination) {
             
+            if appDelegate.activeViewController is NCCollectionViewCommon {
+                let viewController: NCCollectionViewCommon = appDelegate.activeViewController as! NCCollectionViewCommon
+                let layout = viewController.layout
+                let serverUrl = viewController.serverUrl
+                if serverUrl == metadata.serverUrl {
+                    NCUtility.shared.setBackgroundForView(key: layout, serverUrl: serverUrl, fillBackgroud: metadata.fileNameView, fillBackgroudContentMode: "")
+                    viewController.setLayout()
+                }
+            }
         }
     }
     

@@ -33,7 +33,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal let refreshControl = UIRefreshControl()
     internal var searchController: UISearchController?
     internal var emptyDataSet: NCEmptyDataSet?
-    
+    internal var backgroundImageView = UIImageView()
+
     internal var serverUrl: String = ""
     internal var isEncryptedFolder = false
     internal var isEditMode = false
@@ -176,14 +177,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             appDelegate.activeServerUrl = serverUrl
         }
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
-        gridLayout.itemForLine = CGFloat(itemForLine)
-        
-        if layout == NCGlobal.shared.layoutList {
-            collectionView?.collectionViewLayout = listLayout
-        } else {
-            collectionView?.collectionViewLayout = gridLayout
-        }
+        setLayout()
         
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.setNavigationBarHidden(false, animated: true)
@@ -602,7 +596,35 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
     }
+
+    // MARK: - Layout
+    
+    func setLayout() {
         
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        gridLayout.itemForLine = CGFloat(itemForLine)
+        
+        if layout == NCGlobal.shared.layoutList {
+            collectionView?.collectionViewLayout = listLayout
+        } else {
+            collectionView?.collectionViewLayout = gridLayout
+        }
+        
+        if fillBackgroud != "" {
+            let imagePath = CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appBackground).path + "/" + fillBackgroud
+            do {
+                let data = try Data.init(contentsOf: URL(fileURLWithPath: imagePath))
+                if let image = UIImage.init(data: data) {
+                    backgroundImageView.image = image
+                    backgroundImageView.contentMode = .scaleToFill
+                    collectionView.backgroundView = backgroundImageView
+                }
+            } catch {
+                print("error")
+            }
+        }
+    }
+
     // MARK: - Empty
     
     func emptyDataSetView(_ view: NCEmptyView) {

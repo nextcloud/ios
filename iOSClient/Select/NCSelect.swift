@@ -188,13 +188,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(itemForLine)
         
-        /*
-        let image = UIColor.red.image(CGSize(width: collectionView.frame.width, height: collectionView.frame.width))
-        backgroundImageView.image = image
-        backgroundImageView.contentMode = .scaleToFill
-        collectionView.backgroundView = backgroundImageView
-        */
-        
         if layout == NCGlobal.shared.layoutList {
             collectionView.collectionViewLayout = listLayout
         } else {
