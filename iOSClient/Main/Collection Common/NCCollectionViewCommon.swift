@@ -904,8 +904,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
        
         if let vcBackgroundImage = UIStoryboard(name: "NCBackgroundImage", bundle: nil).instantiateInitialViewController() as? NCBackgroundImage {
             
-            vcBackgroundImage.layoutKey = layoutKey
-            vcBackgroundImage.serverUrl = serverUrl
+            vcBackgroundImage.collectionViewCommon = self
             
             let popup = NCPopupViewController(contentController: vcBackgroundImage, popupWidth: vcBackgroundImage.width, popupHeight: vcBackgroundImage.height)
                                         

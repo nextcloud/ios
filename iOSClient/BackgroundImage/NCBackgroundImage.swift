@@ -22,23 +22,31 @@
 //
 
 import UIKit
+import ChromaColorPicker
 
 class NCBackgroundImage: UIViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var closeButton: UIButton!
+    
+    private let colorPicker = ChromaColorPicker()
+    private let brightnessSlider = ChromaBrightnessSlider()
+    private let defaultColorPickerSize = CGSize(width: 200, height: 200)
+    private let brightnessSliderWidthHeightRatio: CGFloat = 0.1
 
-    public var serverUrl: String = ""
-    public var layoutKey: String = ""
+    public var collectionViewCommon: NCCollectionViewCommon?
     
     let width: CGFloat = 300
-    let height: CGFloat = 310
+    let height: CGFloat = 400
     
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setupColorPicker()
+        setupBrightnessSlider()
+        setupColorPickerHandles()
         titleLabel.text = NSLocalizedString("_background_", comment: "")
     }
     
@@ -54,5 +62,77 @@ class NCBackgroundImage: UIViewController {
     
     @IBAction func close(_ sender: Any) {
         dismiss(animated: true)
+    }
+    
+    // MARK: - ChromaColorPicker
+    
+    private func setupColorPicker() {
+        colorPicker.delegate = self
+        colorPicker.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(colorPicker)
+
+        NSLayoutConstraint.activate([
+            colorPicker.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            colorPicker.topAnchor.constraint(equalTo: view.topAnchor, constant: 50),
+            colorPicker.widthAnchor.constraint(equalToConstant: defaultColorPickerSize.width),
+            colorPicker.heightAnchor.constraint(equalToConstant: defaultColorPickerSize.height)
+        ])
+    }
+    
+    private func setupBrightnessSlider() {
+        brightnessSlider.connect(to: colorPicker)
+        
+        // Style
+        brightnessSlider.trackColor = UIColor.blue
+        brightnessSlider.handle.borderWidth = 3.0 // Example of customizing the handle's properties.
+        
+        // Layout
+        brightnessSlider.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(brightnessSlider)
+        
+        NSLayoutConstraint.activate([
+            brightnessSlider.centerXAnchor.constraint(equalTo: colorPicker.centerXAnchor),
+            brightnessSlider.topAnchor.constraint(equalTo: colorPicker.bottomAnchor, constant: 20),
+            brightnessSlider.widthAnchor.constraint(equalTo: colorPicker.widthAnchor, multiplier: 1),
+            brightnessSlider.heightAnchor.constraint(equalTo: brightnessSlider.widthAnchor, multiplier: brightnessSliderWidthHeightRatio)
+        ])
+    }
+    
+    private func setupColorPickerHandles() {
+        // (Optional) Assign a custom handle size - all handles appear as the same size
+        // colorPicker.handleSize = CGSize(width: 48, height: 60)
+        
+        // 1. Add handle and then customize
+//        addHomeHandle()
+        
+        // 2. Add a handle via a color
+        let peachColor = UIColor(red: 1, green: 203 / 255, blue: 164 / 255, alpha: 1)
+        colorPicker.addHandle(at: peachColor)
+        
+        // 3. Create a custom handle and add to picker
+//        let customHandle = ChromaColorHandle()
+//        customHandle.color = UIColor.purple
+//        colorPicker.addHandle(customHandle)
+    }
+}
+
+extension NCBackgroundImage: ChromaColorPickerDelegate {
+    func colorPickerHandleDidChange(_ colorPicker: ChromaColorPicker, handle: ChromaColorHandle, to color: UIColor) {
+        print("x")
+        /*
+        colorDisplayView.backgroundColor = color
+        
+        // Here I can detect when the color is too bright to show a white icon
+        // on the handle and change its tintColor.
+        if handle === homeHandle, let imageView = homeHandle.accessoryView as? UIImageView {
+            let colorIsBright = color.isLight
+            
+            UIView.animate(withDuration: 0.2, animations: {
+                imageView.tintColor = colorIsBright ? .black : .white
+            }, completion: nil)
+        }
+        */
+        
+        collectionViewCommon?.collectionView.backgroundColor = color
     }
 }
