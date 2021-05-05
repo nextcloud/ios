@@ -130,6 +130,27 @@ class NCUtilityFileSystem: NSObject {
         }
     }
     
+    @objc func copyFile(atPath: String, toPath: String) -> Bool {
+
+        if atPath == toPath { return true }
+    
+        do {
+            try FileManager.default.removeItem(atPath: toPath)
+        }
+        catch {
+            print(error)
+        }
+                
+        do {
+            try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
+            return true
+        }
+        catch {
+            print(error)
+            return false
+        }
+    }
+    
     @objc func moveFileInBackground(atPath: String, toPath: String) {
         
         if atPath == toPath { return }

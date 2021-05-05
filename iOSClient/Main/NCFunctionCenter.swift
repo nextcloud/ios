@@ -313,8 +313,11 @@ import NCCommunication
     func saveBackground(metadata: tableMetadata) {
         
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-
+        let destination = CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appBackground).path + "/" + metadata.fileNameView
         
+        if NCUtilityFileSystem.shared.copyFile(atPath: fileNamePath, toPath: destination) {
+            
+        }
     }
     
     // MARK: - Copy & Paste
