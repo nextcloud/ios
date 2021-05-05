@@ -28,7 +28,7 @@ import NCCommunication
 
 extension NCCollectionViewCommon {
 
-    func toggleMenu(viewController: UIViewController, metadata: tableMetadata, image: UIImage?) {
+    func toggleMenu(viewController: NCCollectionViewCommon, metadata: tableMetadata, image: UIImage?) {
         
         let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
@@ -284,7 +284,7 @@ extension NCCollectionViewCommon {
         //
         // USE AS BACKGROUND
         //
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && viewController.layoutKey == NCGlobal.shared.layoutViewFiles {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_use_as_background_", comment: ""),
