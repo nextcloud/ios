@@ -27,8 +27,9 @@ import ChromaColorPicker
 class NCBackgroundImageColor: UIViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var chromaColorPickerView: UIView!
+    @IBOutlet weak var cancelButton: UIButton!
+    @IBOutlet weak var okButton: UIButton!
     
     private let colorPicker = ChromaColorPicker()
     private let brightnessSlider = ChromaBrightnessSlider()
@@ -49,7 +50,10 @@ class NCBackgroundImageColor: UIViewController {
         setupColorPicker()
         setupBrightnessSlider()
         setupColorPickerHandles()
+        
         titleLabel.text = NSLocalizedString("_background_", comment: "")
+        cancelButton.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
+        okButton.setTitle(NSLocalizedString("_ok_", comment: ""), for: .normal)        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -62,8 +66,13 @@ class NCBackgroundImageColor: UIViewController {
     
     // MARK: - Action
     
-    @IBAction func actionClose(_ sender: UIButton) {
+    @IBAction func cancelAction(_ sender: Any) {
+        collectionViewCommon?.setLayout()
         dismiss(animated: true)
+    }
+    
+    @IBAction func okAction(_ sender: Any) {
+        
     }
     
     // MARK: - ChromaColorPicker
