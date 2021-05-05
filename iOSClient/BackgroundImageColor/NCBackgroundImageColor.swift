@@ -111,7 +111,7 @@ class NCBackgroundImageColor: UIViewController {
     
     private func setupColorPickerHandles() {
       
-        let peachColor = collectionViewCommon?.collectionView.backgroundColor //UIColor(red: 1, green: 203 / 255, blue: 164 / 255, alpha: 1)
+        let peachColor = collectionViewCommon?.collectionView.backgroundColor
         colorPicker.addHandle(at: peachColor)
     }
 }
