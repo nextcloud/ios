@@ -57,6 +57,7 @@ class NCGlobal: NSObject {
     @objc let appUserData                           = "Library/Application Support/UserData"
     @objc let appCertificates                       = "Library/Application Support/Certificates"
     @objc let appScan                               = "Library/Application Support/Scan"
+    @objc let appBackground                         = "Library/Application Support/Background"
     @objc let directoryProviderStorage              = "File Provider Storage"
 
     // Service
@@ -243,6 +244,7 @@ class NCGlobal: NSObject {
     let selectorUploadAutoUploadAll                 = "uploadAutoUploadAll"
     let selectorUploadFile                          = "uploadFile"
     let selectorSaveAlbum                           = "saveAlbum"
+    let selectorSaveDesktop                         = "saveDesktop"
     let selectorSaveAlbumLivePhotoIMG               = "saveAlbumLivePhotoIMG"
     let selectorSaveAlbumLivePhotoMOV               = "saveAlbumLivePhotoMOV"
 
