@@ -48,8 +48,8 @@
 		F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */; };
 		F70A58BE24D0349500DED00D /* NCCapabilitiesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70A58BD24D0349500DED00D /* NCCapabilitiesViewController.swift */; };
 		F70A58C024D0545100DED00D /* NCCapabilitiesViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70A58BF24D0545100DED00D /* NCCapabilitiesViewController.storyboard */; };
-		F70B866D2642A21300ED5349 /* NCBackgroundImage.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70B866B2642A21300ED5349 /* NCBackgroundImage.storyboard */; };
-		F70B866E2642A21300ED5349 /* NCBackgroundImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70B866C2642A21300ED5349 /* NCBackgroundImage.swift */; };
+		F70B866D2642A21300ED5349 /* NCBackgroundImageColor.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70B866B2642A21300ED5349 /* NCBackgroundImageColor.storyboard */; };
+		F70B866E2642A21300ED5349 /* NCBackgroundImageColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70B866C2642A21300ED5349 /* NCBackgroundImageColor.swift */; };
 		F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */; };
 		F70B86762642CF5300ED5349 /* ChromaColorPicker.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B866F2642CA9500ED5349 /* ChromaColorPicker.xcframework */; };
 		F70B86772642CF5300ED5349 /* ChromaColorPicker.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B866F2642CA9500ED5349 /* ChromaColorPicker.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -441,8 +441,8 @@
 		F70A07C8205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F70A58BD24D0349500DED00D /* NCCapabilitiesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCapabilitiesViewController.swift; sourceTree = "<group>"; };
 		F70A58BF24D0545100DED00D /* NCCapabilitiesViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCCapabilitiesViewController.storyboard; sourceTree = "<group>"; };
-		F70B866B2642A21300ED5349 /* NCBackgroundImage.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCBackgroundImage.storyboard; sourceTree = "<group>"; };
-		F70B866C2642A21300ED5349 /* NCBackgroundImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCBackgroundImage.swift; sourceTree = "<group>"; };
+		F70B866B2642A21300ED5349 /* NCBackgroundImageColor.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCBackgroundImageColor.storyboard; sourceTree = "<group>"; };
+		F70B866C2642A21300ED5349 /* NCBackgroundImageColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCBackgroundImageColor.swift; sourceTree = "<group>"; };
 		F70B866F2642CA9500ED5349 /* ChromaColorPicker.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = ChromaColorPicker.xcframework; path = Carthage/Build/ChromaColorPicker.xcframework; sourceTree = "<group>"; };
 		F70B86792642CF5300ED5349 /* KTVHTTPCache.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = KTVHTTPCache.xcframework; path = Carthage/Build/KTVHTTPCache.xcframework; sourceTree = "<group>"; };
 		F70B867A2642CF5300ED5349 /* TLPhotoPicker.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = TLPhotoPicker.xcframework; path = Carthage/Build/TLPhotoPicker.xcframework; sourceTree = "<group>"; };
@@ -889,13 +889,13 @@
 			path = languages;
 			sourceTree = "<group>";
 		};
-		F70B866A2642A21300ED5349 /* BackgroundImage */ = {
+		F70B866A2642A21300ED5349 /* BackgroundImageColor */ = {
 			isa = PBXGroup;
 			children = (
-				F70B866B2642A21300ED5349 /* NCBackgroundImage.storyboard */,
-				F70B866C2642A21300ED5349 /* NCBackgroundImage.swift */,
+				F70B866B2642A21300ED5349 /* NCBackgroundImageColor.storyboard */,
+				F70B866C2642A21300ED5349 /* NCBackgroundImageColor.swift */,
 			);
-			path = BackgroundImage;
+			path = BackgroundImageColor;
 			sourceTree = "<group>";
 		};
 		F70D87CC25EE6E58008CBBBD /* Rename file */ = {
@@ -1467,7 +1467,7 @@
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F7CA213725F1372B00826ABB /* Account Request */,
 				F7A321621E9E37960069AD1B /* Activity */,
-				F70B866A2642A21300ED5349 /* BackgroundImage */,
+				F70B866A2642A21300ED5349 /* BackgroundImageColor */,
 				F7AE00F6230E8191007ACF8A /* BrowserWeb */,
 				F7BAAD951ED5A63D00B7EAD4 /* Data */,
 				F73FAEE224D2CA830090692E /* Diagnostics */,
@@ -1944,7 +1944,7 @@
 				F7632FC1218353AA00721B71 /* NCTrashSectionFooter.xib in Resources */,
 				F774264A22EB4D0000B23912 /* NCShareUserDropDownCell.xib in Resources */,
 				F7CB689A2541676B0050EC94 /* NCMore.storyboard in Resources */,
-				F70B866D2642A21300ED5349 /* NCBackgroundImage.storyboard in Resources */,
+				F70B866D2642A21300ED5349 /* NCBackgroundImageColor.storyboard in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
 				F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */,
 				F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */,
@@ -2059,7 +2059,7 @@
 				F77B0DF51D118A16002130FE /* CCUtility.m in Sources */,
 				F70D87D025EE6E58008CBBBD /* NCRenameFile.swift in Sources */,
 				F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */,
-				F70B866E2642A21300ED5349 /* NCBackgroundImage.swift in Sources */,
+				F70B866E2642A21300ED5349 /* NCBackgroundImageColor.swift in Sources */,
 				F78ACD4021903CC20088454D /* NCGridCell.swift in Sources */,
 				F75B0ABD244C4DBB00E58DCA /* NCFunctionCenter.swift in Sources */,
 				F702F2CD25EE5B4F008F8E80 /* AppDelegate.swift in Sources */,

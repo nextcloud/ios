@@ -110,7 +110,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Footer
         collectionView.register(UINib.init(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         
-
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
         
@@ -616,6 +615,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             backgroundImageView.image = nil
             collectionView.backgroundView = nil
         }
+        
+        if layoutForView?.colorBackground != "" {
+            collectionView.backgroundColor = UIColor.init(hex: layoutForView?.colorBackground ?? "")
+        } else {
+            collectionView.backgroundColor = NCBrandColor.shared.systemBackground
+        }
     }
 
     // MARK: - Empty
@@ -894,11 +899,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func backgroundFilesMenu() {
        
-        if let vcBackgroundImage = UIStoryboard(name: "NCBackgroundImage", bundle: nil).instantiateInitialViewController() as? NCBackgroundImage {
+        if let vcBackgroundImageColor = UIStoryboard(name: "NCBackgroundImageColor", bundle: nil).instantiateInitialViewController() as? NCBackgroundImageColor {
             
-            vcBackgroundImage.collectionViewCommon = self
+            vcBackgroundImageColor.collectionViewCommon = self
             
-            let popup = NCPopupViewController(contentController: vcBackgroundImage, popupWidth: vcBackgroundImage.width, popupHeight: vcBackgroundImage.height)
+            let popup = NCPopupViewController(contentController: vcBackgroundImageColor, popupWidth: vcBackgroundImageColor.width, popupHeight: vcBackgroundImageColor.height)
                                         
             self.present(popup, animated: true)
         }

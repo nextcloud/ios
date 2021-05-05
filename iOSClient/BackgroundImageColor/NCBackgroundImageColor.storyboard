@@ -9,10 +9,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Background Image-->
+        <!--Background Image Color-->
         <scene sceneID="L90-uG-f4z">
             <objects>
-                <viewController id="V0q-CP-xMJ" customClass="NCBackgroundImage" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="V0q-CP-xMJ" customClass="NCBackgroundImageColor" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="gzh-6E-hc4">
                         <rect key="frame" x="0.0" y="0.0" width="300" height="500"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

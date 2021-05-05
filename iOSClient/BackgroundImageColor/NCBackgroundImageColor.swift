@@ -1,5 +1,5 @@
 //
-//  NCBackgroundImage.swift
+//  NCBackgroundImageColor.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 05/05/21.
@@ -24,7 +24,7 @@
 import UIKit
 import ChromaColorPicker
 
-class NCBackgroundImage: UIViewController {
+class NCBackgroundImageColor: UIViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var closeButton: UIButton!
@@ -34,7 +34,8 @@ class NCBackgroundImage: UIViewController {
     private let brightnessSlider = ChromaBrightnessSlider()
     private let defaultColorPickerSize = CGSize(width: 200, height: 200)
     private let brightnessSliderWidthHeightRatio: CGFloat = 0.1
-
+    private var colorHexString = ""
+    
     public var collectionViewCommon: NCCollectionViewCommon?
     
     let width: CGFloat = 300
@@ -106,24 +107,10 @@ class NCBackgroundImage: UIViewController {
     }
 }
 
-extension NCBackgroundImage: ChromaColorPickerDelegate {
+extension NCBackgroundImageColor: ChromaColorPickerDelegate {
     func colorPickerHandleDidChange(_ colorPicker: ChromaColorPicker, handle: ChromaColorHandle, to color: UIColor) {
-        print("x")
         
-        /*
-        colorDisplayView.backgroundColor = color
-        
-        // Here I can detect when the color is too bright to show a white icon
-        // on the handle and change its tintColor.
-        if handle === homeHandle, let imageView = homeHandle.accessoryView as? UIImageView {
-            let colorIsBright = color.isLight
-            
-            UIView.animate(withDuration: 0.2, animations: {
-                imageView.tintColor = colorIsBright ? .black : .white
-            }, completion: nil)
-        }
-        */
-        
+        colorHexString = color.hexString
         collectionViewCommon?.collectionView.backgroundColor = color
     }
 }
