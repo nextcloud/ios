@@ -865,7 +865,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         becomeFirstResponder()
                 
         listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu)))
-        listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_background_", comment: ""), action: #selector(backgroundFilesMenu)))
+        if #available(iOS 13.0, *) {
+            listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_background_", comment: ""), action: #selector(backgroundFilesMenu)))
+        }
         
         if listMenuItems.count > 0 {
             UIMenuController.shared.menuItems = listMenuItems
