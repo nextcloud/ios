@@ -39,22 +39,10 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     internal var selectOcId: [String] = []
     
     private var datasource: [tableTrash] = []
-    
-    private var sort: String = ""
-    private var ascending: Bool = true
-    private var directoryOnTop: Bool = true
-    private var layout = ""
-    private var groupBy = "none"
-    private var titleButtonHeader = ""
-    private var itemForLine = 0
-    private var fillBackgroud = ""
-    private var fillBackgroudContentMode = ""
-
+    private var layoutForView: NCGlobal.layoutForViewType?
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
-    
     private let highHeader: CGFloat = 50
-    
     private let refreshControl = UIRefreshControl()
 
     // MARK: - View Life Cycle
@@ -99,10 +87,10 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         self.navigationItem.title = titleCurrentFolder
 
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", sort: "date", ascending: false, titleButtonHeader: "_sorted_by_date_more_recent_")
-        gridLayout.itemForLine = CGFloat(itemForLine)
+        layoutForView = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", sort: "date", ascending: false, titleButtonHeader: "_sorted_by_date_more_recent_")
+        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
         
-        if layout == NCGlobal.shared.layoutList {
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView.collectionViewLayout = listLayout
         } else {
             collectionView.collectionViewLayout = gridLayout
@@ -154,8 +142,8 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                     self.collectionView.reloadData()
                 })
             })
-            layout = NCGlobal.shared.layoutList
-            NCUtility.shared.setLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layout)
+            layoutForView?.layout = NCGlobal.shared.layoutList
+            NCUtility.shared.setLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layoutForView?.layout)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -164,8 +152,8 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                     self.collectionView.reloadData()
                 })
             })
-            layout = NCGlobal.shared.layoutGrid
-            NCUtility.shared.setLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layout)
+            layoutForView?.layout = NCGlobal.shared.layoutGrid
+            NCUtility.shared.setLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layoutForView?.layout)
         }
     }
     
@@ -268,7 +256,7 @@ extension NCTrash: UICollectionViewDataSource {
             trashHeader.backgroundColor = NCBrandColor.shared.systemBackground
             trashHeader.separator.backgroundColor = NCBrandColor.shared.separator
             trashHeader.setStatusButton(datasource: datasource)
-            trashHeader.setTitleSorted(datasourceTitleButton: titleButtonHeader)
+            trashHeader.setTitleSorted(datasourceTitleButton: layoutForView?.titleButtonHeader ?? "")
             
             return trashHeader
             
@@ -392,11 +380,11 @@ extension NCTrash {
 
     @objc func reloadDataSource() {
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
+        layoutForView = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
         
         datasource.removeAll()
         
-        guard let tashItems = NCManageDatabase.shared.getTrash(filePath: trashPath, sort: sort, ascending: ascending, account: appDelegate.account) else {
+        guard let tashItems = NCManageDatabase.shared.getTrash(filePath: trashPath, sort: layoutForView?.sort, ascending: layoutForView?.ascending, account: appDelegate.account) else {
             return
         }
         

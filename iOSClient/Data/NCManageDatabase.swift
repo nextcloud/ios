@@ -2899,9 +2899,11 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getTrash(filePath: String, sort: String, ascending: Bool, account: String) -> [tableTrash]? {
+    func getTrash(filePath: String, sort: String?, ascending: Bool?, account: String) -> [tableTrash]? {
         
         let realm = try! Realm()
+        let sort = sort ?? "date"
+        let ascending = ascending ?? false
         
         let results = realm.objects(tableTrash.self).filter("account == %@ AND filePath == %@", account, filePath).sorted(byKeyPath: sort, ascending: ascending)
 

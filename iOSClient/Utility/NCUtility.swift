@@ -34,13 +34,13 @@ class NCUtility: NSObject {
         return instance
     }()
     
-    private var activityIndicator: UIActivityIndicatorView? // = UIActivityIndicatorView(style: .whiteLarge)
+    private var activityIndicator: UIActivityIndicatorView?
     private var viewActivityIndicator: UIView?
     private var viewBackgroundActivityIndicator: UIView?
 
-    func setLayoutForView(key: String, serverUrl: String, layout: String, object: NCGlobal.layoutForViewType) {
+    func setLayoutForView(key: String, serverUrl: String, layoutForView: NCGlobal.layoutForViewType) {
         
-        let string =  layout + "|" + object.sort + "|" + "\(object.ascending)" + "|" + object.groupBy + "|" + "\(object.directoryOnTop)" + "|" + object.titleButtonHeader + "|" + "\(object.itemForLine)" + "|" + object.fillBackgroud + "|" + object.fillBackgroudContentMode
+        let string =  layoutForView.layout + "|" + layoutForView.sort + "|" + "\(layoutForView.ascending)" + "|" + layoutForView.groupBy + "|" + "\(layoutForView.directoryOnTop)" + "|" + layoutForView.titleButtonHeader + "|" + "\(layoutForView.itemForLine)" + "|" + layoutForView.imageBackgroud + "|" + layoutForView.imageBackgroudContentMode + "|" + layoutForView.colorBackground
         var keyStore = key
         
         if serverUrl != "" {
@@ -50,81 +50,59 @@ class NCUtility: NSObject {
         UICKeyChainStore.setString(string, forKey: keyStore, service: NCGlobal.shared.serviceShareKeyChain)
     }
     
-    func setLayoutForView(key: String, serverUrl: String, layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButtonHeader: String, itemForLine: Int, fillBackgroud: String, fillBackgroudContentMode: String) {
+    func setLayoutForView(key: String, serverUrl: String, layout: String?) {
         
-        let string =  layout + "|" + sort + "|" + "\(ascending)" + "|" + groupBy + "|" + "\(directoryOnTop)" + "|" + titleButtonHeader + "|" + "\(itemForLine)" + "|" + fillBackgroud + "|" + fillBackgroudContentMode
-        var keyStore = key
+        var layoutForView: NCGlobal.layoutForViewType = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
         
-        if serverUrl != "" {
-            keyStore = serverUrl
+        if let layout = layout {
+            layoutForView.layout = layout
+            setLayoutForView(key: key, serverUrl: serverUrl, layoutForView: layoutForView)
         }
-        
-        UICKeyChainStore.setString(string, forKey: keyStore, service: NCGlobal.shared.serviceShareKeyChain)
     }
     
-    func setLayoutForView(key: String, serverUrl: String, layout: String) {
+    func setBackgroundForView(key: String, serverUrl: String, imageBackgroud: String, imageBackgroudContentMode: String, colorBackground: String) {
         
-        var sort: String
-        var ascending: Bool
-        var groupBy: String
-        var directoryOnTop: Bool
-        var titleButtonHeader: String
-        var itemForLine: Int
-        var fillBackgroud: String
-        var fillBackgroudContentMode: String
-
-        (_, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
-
-        setLayoutForView(key: key, serverUrl: serverUrl, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButtonHeader: titleButtonHeader, itemForLine: itemForLine, fillBackgroud: fillBackgroud, fillBackgroudContentMode: fillBackgroudContentMode)
+        var layoutForView: NCGlobal.layoutForViewType = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
+        
+        layoutForView.imageBackgroud = imageBackgroud
+        layoutForView.imageBackgroudContentMode = imageBackgroudContentMode
+        layoutForView.colorBackground = colorBackground
+        
+        setLayoutForView(key: key, serverUrl: serverUrl, layoutForView: layoutForView)
     }
     
-    func setBackgroundForView(key: String, serverUrl: String, fillBackgroud: String, fillBackgroudContentMode: String) {
-
-        var layout: String
-        var sort: String
-        var ascending: Bool
-        var groupBy: String
-        var directoryOnTop: Bool
-        var titleButtonHeader: String
-        var itemForLine: Int
-        
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, _, _) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
-        
-        setLayoutForView(key: key, serverUrl: serverUrl, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButtonHeader: titleButtonHeader, itemForLine: itemForLine, fillBackgroud: fillBackgroud, fillBackgroudContentMode: fillBackgroudContentMode)
-    }
-    
-    func getLayoutForView(key: String, serverUrl: String, sort: String = "fileName", ascending: Bool = true, titleButtonHeader: String = "_sorted_by_name_a_z_") -> (layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButtonHeader: String, itemForLine: Int, fillBackgroud: String, fillBackgroudContentMode: String) {
+    func getLayoutForView(key: String, serverUrl: String, sort: String = "fileName", ascending: Bool = true, titleButtonHeader: String = "_sorted_by_name_a_z_") -> (NCGlobal.layoutForViewType) {
         
         var keyStore = key
+        var layoutForView: NCGlobal.layoutForViewType = NCGlobal.layoutForViewType(layout: NCGlobal.shared.layoutList, sort: sort, ascending: ascending, groupBy: "none", directoryOnTop: true, titleButtonHeader: titleButtonHeader, itemForLine: 3, imageBackgroud: "", imageBackgroudContentMode: "", colorBackground: "")
         
         if serverUrl != "" {
             keyStore = serverUrl
         }
         
         guard let string = UICKeyChainStore.string(forKey: keyStore, service: NCGlobal.shared.serviceShareKeyChain) else {
-            setLayoutForView(key: key, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList, sort: sort, ascending: ascending, groupBy: "none", directoryOnTop: true, titleButtonHeader: titleButtonHeader, itemForLine: 3, fillBackgroud: "", fillBackgroudContentMode: "")
-            return (NCGlobal.shared.layoutList, sort, ascending, "none", true, titleButtonHeader, 3, "", "")
+            setLayoutForView(key: key, serverUrl: serverUrl, layoutForView: layoutForView)
+            return layoutForView
         }
 
         let array = string.components(separatedBy: "|")
         if array.count >= 7 {
-            let sort = NSString(string: array[2])
-            let directoryOnTop = NSString(string: array[4])
-            let itemForLine = NSString(string: array[6])
-            var fillBackgroud: String = ""
-            var fillBackgroudContentMode: String = ""
-            
+            layoutForView.layout = array[0]
+            layoutForView.sort = array[1]
+            layoutForView.ascending = NSString(string: array[2]).boolValue
+            layoutForView.groupBy = array[3]
+            layoutForView.directoryOnTop = NSString(string: array[4]).boolValue
+            layoutForView.titleButtonHeader = array[5]
+            layoutForView.itemForLine = Int(NSString(string: array[6]).intValue)
+                       
             if array.count > 8 {
-                fillBackgroud = array[7]
-                fillBackgroudContentMode = array[8]
+                layoutForView.imageBackgroud = array[7]
+                layoutForView.imageBackgroudContentMode = array[8]
+                layoutForView.colorBackground = array[9]
             }
-
-            return (array[0], array[1], sort.boolValue, array[3], directoryOnTop.boolValue, array[5], Int(itemForLine.intValue), fillBackgroud, fillBackgroudContentMode)
         }
         
-        setLayoutForView(key: key, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList, sort: sort, ascending: ascending, groupBy: "none", directoryOnTop: true, titleButtonHeader: titleButtonHeader, itemForLine: 3, fillBackgroud: "", fillBackgroudContentMode: "")
-        
-        return (NCGlobal.shared.layoutList, sort, ascending, "none", true, titleButtonHeader, 3, "", "")
+        return layoutForView
     }
         
     func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool, account: String, closure: @escaping (String?) -> ()) {

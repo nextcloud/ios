@@ -45,15 +45,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
         
-    internal var layout = ""
-    internal var sort: String = ""
-    internal var ascending: Bool = true
-    internal var directoryOnTop: Bool = true
-    internal var groupBy = ""
-    internal var titleButtonHeader = ""
-    internal var itemForLine = 0
-    internal var fillBackgroud = ""
-    internal var fillBackgroudContentMode = ""
+    internal var layoutForView: NCGlobal.layoutForViewType?
 
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
@@ -601,20 +593,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     func setLayout() {
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
-        gridLayout.itemForLine = CGFloat(itemForLine)
+        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
         
-        if layout == NCGlobal.shared.layoutList {
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView?.collectionViewLayout = listLayout
         } else {
             collectionView?.collectionViewLayout = gridLayout
         }
         
-        if fillBackgroud == "" {
-            backgroundImageView.image = nil
-            collectionView.backgroundView = nil
-        } else {
-            let imagePath = CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appBackground).path + "/" + fillBackgroud
+        if layoutForView?.imageBackgroud != "" {
+            let imagePath = CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appBackground).path + "/" + layoutForView!.imageBackgroud
             do {
                 let data = try Data.init(contentsOf: URL(fileURLWithPath: imagePath))
                 if let image = UIImage.init(data: data) {
@@ -623,6 +612,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     collectionView.backgroundView = backgroundImageView
                 }
             } catch { }
+        } else {
+            backgroundImageView.image = nil
+            collectionView.backgroundView = nil
         }
     }
 
@@ -743,8 +735,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.collectionView.reloadData()
                 })
             })
-            layout = NCGlobal.shared.layoutList
-            NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layout)
+            layoutForView?.layout = NCGlobal.shared.layoutList
+            NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -753,8 +745,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.collectionView.reloadData()
                 })
             })
-            layout = NCGlobal.shared.layoutGrid
-            NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layout)
+            layoutForView?.layout = NCGlobal.shared.layoutGrid
+            NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
         }
     }
     
@@ -930,7 +922,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
         
         // get layout for view
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
     }
     @objc func reloadDataSourceNetwork(forced: Bool = false) { }
     @objc func reloadDataSourceNetworkRefreshControl() {
@@ -1270,7 +1262,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             
             header.delegate = self
             header.setStatusButton(count: dataSource.metadatas.count)
-            header.setTitleSorted(datasourceTitleButton: titleButtonHeader)
+            header.setTitleSorted(datasourceTitleButton: layoutForView?.titleButtonHeader ?? "")
             header.viewRichWorkspaceHeightConstraint.constant = headerRichWorkspaceHeight
             header.setRichWorkspaceText(richWorkspaceText: richWorkspaceText)
 
@@ -1300,7 +1292,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
                 
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
-            if layout == NCGlobal.shared.layoutList {
+            if layoutForView?.layout == NCGlobal.shared.layoutList {
                 return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
             } else {
                 return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
@@ -1323,7 +1315,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         //
         // LAYOUT LIST
         //
-        if layout == NCGlobal.shared.layoutList {
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
             cell.delegate = self
@@ -1523,7 +1515,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         //
         // LAYOUT GRID
         //
-        if layout == NCGlobal.shared.layoutGrid {
+        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
             cell.delegate = self

@@ -40,14 +40,16 @@ class NCGlobal: NSObject {
     // Struct for LayoutForView
     //
     struct layoutForViewType {
+        var layout: String
         var sort: String
         var ascending: Bool
         var groupBy: String
         var directoryOnTop: Bool
         var titleButtonHeader: String
         var itemForLine: Int
-        var fillBackgroud: String
-        var fillBackgroudContentMode: String
+        var imageBackgroud: String
+        var imageBackgroudContentMode: String
+        var colorBackground: String
     }
     
     // Directory on Group

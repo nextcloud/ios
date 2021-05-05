@@ -70,15 +70,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
 
-    private var sort: String = ""
-    private var ascending: Bool = true
-    private var directoryOnTop: Bool = true
-    private var layout = ""
-    private var groupBy = ""
-    private var titleButtonHeader = ""
-    private var itemForLine = 0
-    private var fillBackgroud = ""
-    private var fillBackgroudContentMode = ""
+    private var layoutForView: NCGlobal.layoutForViewType?
 
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
@@ -185,10 +177,10 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: activeAccount.urlBase, account: activeAccount.account)
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
-        gridLayout.itemForLine = CGFloat(itemForLine)
+        layoutForView = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
+        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
         
-        if layout == NCGlobal.shared.layoutList {
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView.collectionViewLayout = listLayout
         } else {
             collectionView.collectionViewLayout = gridLayout
@@ -297,7 +289,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
                     self.collectionView.reloadData()
                 })
             })
-            layout = NCGlobal.shared.layoutList
+            layoutForView?.layout = NCGlobal.shared.layoutList
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -306,7 +298,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
                     self.collectionView.reloadData()
                 })
             })
-            layout = NCGlobal.shared.layoutGrid
+            layoutForView?.layout = NCGlobal.shared.layoutGrid
         }
     }
     
@@ -381,7 +373,7 @@ extension NCSelect: UICollectionViewDataSource {
             
             header.delegate = self
             header.setStatusButton(count: dataSource.metadatas.count)
-            header.setTitleSorted(datasourceTitleButton: titleButtonHeader)
+            header.setTitleSorted(datasourceTitleButton: layoutForView?.titleButtonHeader ?? "")
             header.viewRichWorkspaceHeightConstraint.constant = headerRichWorkspaceHeight
             header.setRichWorkspaceText(richWorkspaceText: richWorkspaceText)
             
@@ -412,7 +404,7 @@ extension NCSelect: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
-            if layout == NCGlobal.shared.layoutList {
+            if layoutForView?.layout == NCGlobal.shared.layoutList {
                 return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
             } else {
                 return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
@@ -435,7 +427,7 @@ extension NCSelect: UICollectionViewDataSource {
         
         // LAYOUT LIST
         
-        if layout == NCGlobal.shared.layoutList {
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
             cell.delegate = self
@@ -564,7 +556,7 @@ extension NCSelect: UICollectionViewDataSource {
         
         // LAYOUT GRID
         
-        if layout == NCGlobal.shared.layoutGrid {
+        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
             cell.delegate = self
@@ -690,7 +682,7 @@ extension NCSelect {
         
         var predicate: NSPredicate?
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButtonHeader, itemForLine, fillBackgroud, fillBackgroudContentMode) = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
+        layoutForView = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
         
         if includeDirectoryE2EEncryption {
             
@@ -710,7 +702,7 @@ extension NCSelect {
         }
         
         let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: predicate!)
-        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: layoutForView?.sort, ascending: layoutForView?.ascending, directoryOnTop: layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
         
         if withLoadFolder {
             loadFolder()
