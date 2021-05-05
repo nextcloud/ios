@@ -2,12 +2,30 @@
   "object": {
     "pins": [
       {
+        "package": "abseil",
+        "repositoryURL": "https://github.com/firebase/abseil-cpp-SwiftPM.git",
+        "state": {
+          "branch": null,
+          "revision": "ff5f5f0a3d3266836b9d722bb73cabdf7057482e",
+          "version": "0.20200225.3"
+        }
+      },
+      {
         "package": "Alamofire",
         "repositoryURL": "https://github.com/Alamofire/Alamofire",
         "state": {
           "branch": null,
           "revision": "f96b619bcb2383b43d898402283924b80e2c4bae",
           "version": "5.4.3"
+        }
+      },
+      {
+        "package": "BoringSSL-GRPC",
+        "repositoryURL": "https://github.com/firebase/boringssl-SwiftPM.git",
+        "state": {
+          "branch": null,
+          "revision": "15889fadef7078dfa1392b0e2b08f3d0e9797104",
+          "version": "0.7.1"
         }
       },
       {
@@ -20,12 +38,66 @@
         }
       },
       {
+        "package": "Firebase",
+        "repositoryURL": "https://github.com/firebase/firebase-ios-sdk",
+        "state": {
+          "branch": null,
+          "revision": "b97bfcd2e5eecc7aa7e1aeb27d097d610876cf93",
+          "version": "7.11.1"
+        }
+      },
+      {
         "package": "FloatingPanel",
         "repositoryURL": "https://github.com/scenee/FloatingPanel",
         "state": {
           "branch": null,
           "revision": "ca7596e1cae161415f54059a8c44b82c95724160",
           "version": "1.7.6"
+        }
+      },
+      {
+        "package": "GoogleAppMeasurement",
+        "repositoryURL": "https://github.com/google/GoogleAppMeasurement.git",
+        "state": {
+          "branch": null,
+          "revision": "22cb3ab5588200b210ae01e42665f52ac4e8ad28",
+          "version": "7.11.1"
+        }
+      },
+      {
+        "package": "GoogleDataTransport",
+        "repositoryURL": "https://github.com/google/GoogleDataTransport.git",
+        "state": {
+          "branch": null,
+          "revision": "369716b8d7518a530ce3c3a251436d72546debd8",
+          "version": "8.4.0"
+        }
+      },
+      {
+        "package": "GoogleUtilities",
+        "repositoryURL": "https://github.com/google/GoogleUtilities.git",
+        "state": {
+          "branch": null,
+          "revision": "66f5945ac3a4c4ac268bf94c31f226116b14e327",
+          "version": "7.4.0"
+        }
+      },
+      {
+        "package": "gRPC",
+        "repositoryURL": "https://github.com/firebase/grpc-SwiftPM.git",
+        "state": {
+          "branch": null,
+          "revision": "fb405dd2c7901485f7e158b24e3a0a47e4efd8b5",
+          "version": "1.28.4"
+        }
+      },
+      {
+        "package": "GTMSessionFetcher",
+        "repositoryURL": "https://github.com/google/gtm-session-fetcher.git",
+        "state": {
+          "branch": null,
+          "revision": "91ed3d188eb95705fef3c249453b81f32dc557d1",
+          "version": "1.5.0"
         }
       },
       {
@@ -38,6 +110,15 @@
         }
       },
       {
+        "package": "leveldb",
+        "repositoryURL": "https://github.com/firebase/leveldb.git",
+        "state": {
+          "branch": null,
+          "revision": "0706abcc6b0bd9cedfbb015ba840e4a780b5159b",
+          "version": "1.22.2"
+        }
+      },
+      {
         "package": "MarkdownKit",
         "repositoryURL": "https://github.com/bmoliveira/MarkdownKit",
         "state": {
@@ -47,12 +128,30 @@
         }
       },
       {
+        "package": "nanopb",
+        "repositoryURL": "https://github.com/firebase/nanopb.git",
+        "state": {
+          "branch": null,
+          "revision": "7ee9ef9f627d85cbe1b8c4f49a3ed26eed216c77",
+          "version": "2.30908.0"
+        }
+      },
+      {
         "package": "Parchment",
         "repositoryURL": "https://github.com/rechsteiner/Parchment",
         "state": {
           "branch": null,
           "revision": "689ecaa80b7b0f712887ec87746f8598f2e12907",
           "version": "3.0.1"
+        }
+      },
+      {
+        "package": "Promises",
+        "repositoryURL": "https://github.com/google/promises.git",
+        "state": {
+          "branch": null,
+          "revision": "afa9a1ace74e116848d4f743599ab83e584ff8cb",
+          "version": "1.2.12"
         }
       },
       {
@@ -98,6 +197,15 @@
           "branch": null,
           "revision": "173f567a2dfec11d74588eea82cecea555bdc0bc",
           "version": "1.4.0"
+        }
+      },
+      {
+        "package": "SwiftProtobuf",
+        "repositoryURL": "https://github.com/apple/swift-protobuf.git",
+        "state": {
+          "branch": null,
+          "revision": "bfe4255ff60f22a41cafa113059668571ed5d461",
+          "version": "1.16.0"
         }
       },
       {

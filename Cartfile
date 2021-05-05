@@ -5,10 +5,7 @@ github "huri000/SwiftEntryKit" "1.2.3"
 github "FabrizioBrancati/Queuer"
 github "xmartlabs/XLForm" ~> 4.1
 github "AssistoLab/DropDown" "v2.3.13"
-
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseProtobufBinary.json"
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseCrashlyticsBinary.json"
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"
+github "joncardasis/ChromaColorPicker"
 
 github "https://github.com/marinofaggiana/KTVHTTPCache" "2.0.2"
 github "https://github.com/marinofaggiana/TOPasscodeViewController" "0.0.8"

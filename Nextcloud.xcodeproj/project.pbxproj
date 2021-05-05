@@ -50,6 +50,34 @@
 		F70A58C024D0545100DED00D /* NCCapabilitiesViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70A58BF24D0545100DED00D /* NCCapabilitiesViewController.storyboard */; };
 		F70B866D2642A21300ED5349 /* NCBackgroundImage.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70B866B2642A21300ED5349 /* NCBackgroundImage.storyboard */; };
 		F70B866E2642A21300ED5349 /* NCBackgroundImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70B866C2642A21300ED5349 /* NCBackgroundImage.swift */; };
+		F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */; };
+		F70B86762642CF5300ED5349 /* ChromaColorPicker.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B866F2642CA9500ED5349 /* ChromaColorPicker.xcframework */; };
+		F70B86772642CF5300ED5349 /* ChromaColorPicker.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B866F2642CA9500ED5349 /* ChromaColorPicker.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F70B86852642CF5600ED5349 /* KTVHTTPCache.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86792642CF5300ED5349 /* KTVHTTPCache.xcframework */; };
+		F70B86862642CF5600ED5349 /* KTVHTTPCache.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86792642CF5300ED5349 /* KTVHTTPCache.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F70B86872642CF5600ED5349 /* TLPhotoPicker.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867A2642CF5300ED5349 /* TLPhotoPicker.xcframework */; };
+		F70B86882642CF5600ED5349 /* TLPhotoPicker.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867A2642CF5300ED5349 /* TLPhotoPicker.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F70B86892642CF5600ED5349 /* XLForm.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867B2642CF5300ED5349 /* XLForm.xcframework */; };
+		F70B868A2642CF5600ED5349 /* XLForm.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867B2642CF5300ED5349 /* XLForm.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F70B868B2642CF5600ED5349 /* Queuer.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867C2642CF5300ED5349 /* Queuer.xcframework */; };
+		F70B868C2642CF5600ED5349 /* Queuer.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867C2642CF5300ED5349 /* Queuer.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F70B868D2642CF5600ED5349 /* UICKeyChainStore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867D2642CF5400ED5349 /* UICKeyChainStore.xcframework */; };
+		F70B868E2642CF5600ED5349 /* UICKeyChainStore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867D2642CF5400ED5349 /* UICKeyChainStore.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F70B868F2642CF5600ED5349 /* KTVCocoaHTTPServer.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867E2642CF5400ED5349 /* KTVCocoaHTTPServer.xcframework */; };
+		F70B86902642CF5600ED5349 /* KTVCocoaHTTPServer.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867E2642CF5400ED5349 /* KTVCocoaHTTPServer.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F70B86912642CF5700ED5349 /* QuickLayout.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867F2642CF5400ED5349 /* QuickLayout.xcframework */; };
+		F70B86922642CF5700ED5349 /* QuickLayout.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867F2642CF5400ED5349 /* QuickLayout.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F70B86932642CF5700ED5349 /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86802642CF5400ED5349 /* OpenSSL.xcframework */; };
+		F70B86942642CF5700ED5349 /* OpenSSL.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86802642CF5400ED5349 /* OpenSSL.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F70B86952642CF5700ED5349 /* SwiftEntryKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86812642CF5500ED5349 /* SwiftEntryKit.xcframework */; };
+		F70B86962642CF5700ED5349 /* SwiftEntryKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86812642CF5500ED5349 /* SwiftEntryKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F70B86972642CF5700ED5349 /* TOPasscodeViewController.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86822642CF5500ED5349 /* TOPasscodeViewController.xcframework */; };
+		F70B86982642CF5700ED5349 /* TOPasscodeViewController.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86822642CF5500ED5349 /* TOPasscodeViewController.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F70B86992642CF5800ED5349 /* FSCalendar.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86832642CF5500ED5349 /* FSCalendar.xcframework */; };
+		F70B869A2642CF5800ED5349 /* FSCalendar.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86832642CF5500ED5349 /* FSCalendar.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F70B869B2642CF5800ED5349 /* DropDown.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86842642CF5500ED5349 /* DropDown.xcframework */; };
+		F70B869C2642CF5800ED5349 /* DropDown.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86842642CF5500ED5349 /* DropDown.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F70B869D2642CF6900ED5349 /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86802642CF5400ED5349 /* OpenSSL.xcframework */; };
 		F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
@@ -75,19 +103,6 @@
 		F7148063262ED66200693E51 /* NCEmptyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7239876253D86D300257F49 /* NCEmptyView.xib */; };
 		F717402D24F699A5000C87D5 /* NCFavorite.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F717402B24F699A5000C87D5 /* NCFavorite.storyboard */; };
 		F717402E24F699A5000C87D5 /* NCFavorite.swift in Sources */ = {isa = PBXBuildFile; fileRef = F717402C24F699A5000C87D5 /* NCFavorite.swift */; };
-		F7176DBA256672640017E83C /* FirebaseCrashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DAE256672630017E83C /* FirebaseCrashlytics.framework */; };
-		F7176DBC256672640017E83C /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DAF256672630017E83C /* FirebaseCoreDiagnostics.framework */; };
-		F7176DBE256672640017E83C /* GoogleDataTransport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB0256672630017E83C /* GoogleDataTransport.framework */; };
-		F7176DC0256672650017E83C /* FirebaseInstallations.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB1256672630017E83C /* FirebaseInstallations.framework */; };
-		F7176DC2256672650017E83C /* PromisesObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB2256672630017E83C /* PromisesObjC.framework */; };
-		F7176DC4256672650017E83C /* GoogleUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB3256672630017E83C /* GoogleUtilities.framework */; };
-		F7176DC6256672650017E83C /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB4256672630017E83C /* nanopb.framework */; };
-		F7176DC8256672650017E83C /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB5256672640017E83C /* Protobuf.framework */; };
-		F7176DCA256672650017E83C /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB6256672640017E83C /* FirebaseCore.framework */; };
-		F7176DCC256672660017E83C /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB7256672640017E83C /* FirebaseAnalytics.framework */; };
-		F7176DCE256672660017E83C /* GoogleAppMeasurement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB8256672640017E83C /* GoogleAppMeasurement.framework */; };
-		F7176DD0256672660017E83C /* FIRAnalyticsConnector.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DB9256672640017E83C /* FIRAnalyticsConnector.framework */; };
-		F7176DDB256672F10017E83C /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F7176DDA256672D90017E83C /* libsqlite3.tbd */; };
 		F718C24E254D507B00C5C256 /* NCViewerImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718C24D254D507B00C5C256 /* NCViewerImageDetailView.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F723985C253C95CE00257F49 /* NCViewerRichdocument.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F723985B253C95CE00257F49 /* NCViewerRichdocument.storyboard */; };
@@ -103,7 +118,6 @@
 		F72D7EB7263B1207000B3DFC /* MarkdownKit in Frameworks */ = {isa = PBXBuildFile; productRef = F72D7EB6263B1207000B3DFC /* MarkdownKit */; };
 		F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */ = {isa = PBXBuildFile; productRef = F72DA9B325F53E4E00B87DB1 /* SwiftRichString */; };
 		F733598125C1C188002ABA72 /* NCAskAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = F733598025C1C188002ABA72 /* NCAskAuthorization.swift */; };
-		F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */; };
 		F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */; };
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
@@ -118,7 +132,6 @@
 		F73D5E4A246DE09200DF6467 /* NCElementsJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73D5E46246DE09200DF6467 /* NCElementsJSON.swift */; };
 		F73F537F1E929C8500F8678D /* NCMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73F537E1E929C8500F8678D /* NCMore.swift */; };
 		F7417DB3216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7417DB2216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift */; };
-		F7421EAF2294044B00C4B7C1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7421EAE2294044B00C4B7C1 /* Accelerate.framework */; };
 		F7434B3420E23FD700417916 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7434B3820E2400600417916 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
@@ -134,7 +147,6 @@
 		F74AF3A6247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */; };
 		F74C0436253F1CDC009762AB /* NCShares.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74C0434253F1CDC009762AB /* NCShares.swift */; };
 		F74C0437253F1CDC009762AB /* NCShares.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74C0435253F1CDC009762AB /* NCShares.storyboard */; };
-		F74C4FBB2328C3C200A23E25 /* OpenSSL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74C4FBA2328C3C100A23E25 /* OpenSSL.framework */; };
 		F74DE14325135B6800917068 /* NCTransfers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74DE14125135B6800917068 /* NCTransfers.swift */; };
 		F74DE14425135B6800917068 /* NCTransfers.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74DE14225135B6800917068 /* NCTransfers.storyboard */; };
 		F7501C322212E57500FB1415 /* NCMedia.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7501C302212E57400FB1415 /* NCMedia.storyboard */; };
@@ -163,8 +175,6 @@
 		F7632FC1218353AA00721B71 /* NCTrashSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FC0218353AA00721B71 /* NCTrashSectionFooter.xib */; };
 		F7651A8A23A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7651A8823A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard */; };
 		F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7651A8923A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift */; };
-		F765608723BF806D00765969 /* QuickLayout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F765608623BF806C00765969 /* QuickLayout.framework */; };
-		F765608B23BF80A400765969 /* SwiftEntryKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F765608A23BF80A400765969 /* SwiftEntryKit.framework */; };
 		F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
 		F765F73125237E3F00391DBE /* NCRecent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765F72F25237E3F00391DBE /* NCRecent.swift */; };
 		F765F73225237E3F00391DBE /* NCRecent.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F765F73025237E3F00391DBE /* NCRecent.storyboard */; };
@@ -183,7 +193,6 @@
 		F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D3CF02428B40E005DFA87 /* NCViewerPDFSearch.swift */; };
 		F76D3CF32428B94E005DFA87 /* NCViewerPDFSearchCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F76D3CF22428B94E005DFA87 /* NCViewerPDFSearchCell.xib */; };
 		F76D3CF52428D0C1005DFA87 /* NCViewerPDF.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F76D3CF42428D0C0005DFA87 /* NCViewerPDF.storyboard */; };
-		F76FDEAB24859C3D0095B6C2 /* Queuer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F76FDEAA24859C3D0095B6C2 /* Queuer.framework */; };
 		F7707687263A853700A1BA94 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
 		F7707689263A896A00A1BA94 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */; };
 		F770768A263A8A2500A1BA94 /* NCUtilityFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */; };
@@ -198,7 +207,6 @@
 		F771E3F820E239B500AFB62D /* FileProviderExtension+Thumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3F520E239B400AFB62D /* FileProviderExtension+Thumbnail.swift */; };
 		F7725A60251F33BB00D125E0 /* NCFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7725A5E251F33BB00D125E0 /* NCFiles.swift */; };
 		F7725A61251F33BB00D125E0 /* NCFiles.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7725A5F251F33BB00D125E0 /* NCFiles.storyboard */; };
-		F774264122EB3F7300B23912 /* DropDown.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F774264022EB3F7300B23912 /* DropDown.framework */; };
 		F774264A22EB4D0000B23912 /* NCShareUserDropDownCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F774264822EB4D0000B23912 /* NCShareUserDropDownCell.xib */; };
 		F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77444F322281649000D5EB0 /* NCGridMediaCell.swift */; };
 		F77444F622281649000D5EB0 /* NCGridMediaCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F77444F422281649000D5EB0 /* NCGridMediaCell.xib */; };
@@ -256,7 +264,6 @@
 		F798F0E225880608000DAFFD /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extensions.swift */; };
 		F798F0E725880609000DAFFD /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extensions.swift */; };
 		F798F0EC2588060A000DAFFD /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extensions.swift */; };
-		F79918A221997FA300C2E308 /* UICKeyChainStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F79918A021997F9000C2E308 /* UICKeyChainStore.framework */; };
 		F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */; };
 		F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79A65C52191D95E00FF6DCC /* NCSelect.swift */; };
 		F79EC77F26316193004E59D6 /* NCRenameFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70D87CE25EE6E58008CBBBD /* NCRenameFile.swift */; };
@@ -273,8 +280,6 @@
 		F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */; };
 		F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */; };
 		F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */; };
-		F7AF7633246BEDFE00B86E3C /* TOPasscodeViewController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7AF7632246BEDFE00B86E3C /* TOPasscodeViewController.framework */; };
-		F7B1076D25D3CF2800E72DE2 /* BackgroundTasks.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B1076C25D3CF2800E72DE2 /* BackgroundTasks.framework */; };
 		F7B7504B2397D38F004E13EC /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */; };
 		F7B8B83025681C3400967775 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7B8B82F25681C3400967775 /* GoogleService-Info.plist */; };
 		F7B8CD91261AF3F7007C1359 /* NCNetworkingChunkedUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B8CD90261AF3F7007C1359 /* NCNetworkingChunkedUpload.swift */; };
@@ -285,10 +290,7 @@
 		F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7BD71E62636EAFC00643C34 /* NCNetworkingE2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */; };
-		F7BD71EF2636EC2300643C34 /* OpenSSL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74C4FBA2328C3C100A23E25 /* OpenSSL.framework */; };
 		F7C1EEA525053A9C00866ACC /* NCDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C1EEA425053A9C00866ACC /* NCDataSource.swift */; };
-		F7C40BEF219994ED0004137E /* KTVCocoaHTTPServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BEE219994ED0004137E /* KTVCocoaHTTPServer.framework */; };
-		F7C40BF1219994F20004137E /* KTVHTTPCache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BF0219994F20004137E /* KTVHTTPCache.framework */; };
 		F7C4D88D2534887E00C142DA /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = F7C4D88C2534887E00C142DA /* Parchment */; };
 		F7C7B489245EBA4100D93E60 /* NCViewerQuickLook.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */; };
 		F7C9555321F0C4CA0024296E /* NCActivity.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C9555221F0C4CA0024296E /* NCActivity.storyboard */; };
@@ -300,7 +302,6 @@
 		F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */; };
 		F7D0F33E264144FC0097D4A3 /* Background.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7D0F33D264144FC0097D4A3 /* Background.xcassets */; };
 		F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */; };
-		F7D2C773246470CA008513AE /* XLForm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D2C772246470CA008513AE /* XLForm.framework */; };
 		F7D57C8626317BDA00DE301D /* NCAccountRequest.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CA212C25F1333200826ABB /* NCAccountRequest.storyboard */; };
 		F7D57C8B26317BDE00DE301D /* NCAccountRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CA212B25F1333200826ABB /* NCAccountRequest.swift */; };
 		F7D96FCC246ED7E200536D73 /* NCNetworkingCheckRemoteUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D96FCB246ED7E100536D73 /* NCNetworkingCheckRemoteUser.swift */; };
@@ -309,7 +310,6 @@
 		F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7EF219C5B8000680748 /* NCCreateFormUploadAssets.swift */; };
 		F7DFB7F4219C5CA800680748 /* NCCreateFormUploadScanDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7F3219C5CA800680748 /* NCCreateFormUploadScanDocument.swift */; };
 		F7E4D9C422ED929B003675FD /* NCShareComments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E4D9C322ED929B003675FD /* NCShareComments.swift */; };
-		F7ED546425EE852500956C55 /* FSCalendar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74AFCE822E8B024003DE61F /* FSCalendar.framework */; };
 		F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */ = {isa = PBXBuildFile; productRef = F7ED547B25EEA65400956C55 /* QRCodeReader */; };
 		F7EDE4CC262D7B6F00414FE6 /* NCEmptyDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7239870253D86B600257F49 /* NCEmptyDataSet.swift */; };
 		F7EDE4D1262D7B8400414FE6 /* NCDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C1EEA425053A9C00866ACC /* NCDataSource.swift */; };
@@ -356,6 +356,29 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		F70B86782642CF5300ED5349 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F70B869A2642CF5800ED5349 /* FSCalendar.xcframework in Embed Frameworks */,
+				F70B86862642CF5600ED5349 /* KTVHTTPCache.xcframework in Embed Frameworks */,
+				F70B86922642CF5700ED5349 /* QuickLayout.xcframework in Embed Frameworks */,
+				F70B868E2642CF5600ED5349 /* UICKeyChainStore.xcframework in Embed Frameworks */,
+				F70B86962642CF5700ED5349 /* SwiftEntryKit.xcframework in Embed Frameworks */,
+				F70B86982642CF5700ED5349 /* TOPasscodeViewController.xcframework in Embed Frameworks */,
+				F70B86942642CF5700ED5349 /* OpenSSL.xcframework in Embed Frameworks */,
+				F70B868C2642CF5600ED5349 /* Queuer.xcframework in Embed Frameworks */,
+				F70B868A2642CF5600ED5349 /* XLForm.xcframework in Embed Frameworks */,
+				F70B869C2642CF5800ED5349 /* DropDown.xcframework in Embed Frameworks */,
+				F70B86902642CF5600ED5349 /* KTVCocoaHTTPServer.xcframework in Embed Frameworks */,
+				F70B86882642CF5600ED5349 /* TLPhotoPicker.xcframework in Embed Frameworks */,
+				F70B86772642CF5300ED5349 /* ChromaColorPicker.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F77B0F981D118A16002130FE /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -420,6 +443,19 @@
 		F70A58BF24D0545100DED00D /* NCCapabilitiesViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCCapabilitiesViewController.storyboard; sourceTree = "<group>"; };
 		F70B866B2642A21300ED5349 /* NCBackgroundImage.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCBackgroundImage.storyboard; sourceTree = "<group>"; };
 		F70B866C2642A21300ED5349 /* NCBackgroundImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCBackgroundImage.swift; sourceTree = "<group>"; };
+		F70B866F2642CA9500ED5349 /* ChromaColorPicker.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = ChromaColorPicker.xcframework; path = Carthage/Build/ChromaColorPicker.xcframework; sourceTree = "<group>"; };
+		F70B86792642CF5300ED5349 /* KTVHTTPCache.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = KTVHTTPCache.xcframework; path = Carthage/Build/KTVHTTPCache.xcframework; sourceTree = "<group>"; };
+		F70B867A2642CF5300ED5349 /* TLPhotoPicker.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = TLPhotoPicker.xcframework; path = Carthage/Build/TLPhotoPicker.xcframework; sourceTree = "<group>"; };
+		F70B867B2642CF5300ED5349 /* XLForm.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = XLForm.xcframework; path = Carthage/Build/XLForm.xcframework; sourceTree = "<group>"; };
+		F70B867C2642CF5300ED5349 /* Queuer.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Queuer.xcframework; path = Carthage/Build/Queuer.xcframework; sourceTree = "<group>"; };
+		F70B867D2642CF5400ED5349 /* UICKeyChainStore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = UICKeyChainStore.xcframework; path = Carthage/Build/UICKeyChainStore.xcframework; sourceTree = "<group>"; };
+		F70B867E2642CF5400ED5349 /* KTVCocoaHTTPServer.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = KTVCocoaHTTPServer.xcframework; path = Carthage/Build/KTVCocoaHTTPServer.xcframework; sourceTree = "<group>"; };
+		F70B867F2642CF5400ED5349 /* QuickLayout.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = QuickLayout.xcframework; path = Carthage/Build/QuickLayout.xcframework; sourceTree = "<group>"; };
+		F70B86802642CF5400ED5349 /* OpenSSL.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OpenSSL.xcframework; path = Carthage/Build/OpenSSL.xcframework; sourceTree = "<group>"; };
+		F70B86812642CF5500ED5349 /* SwiftEntryKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SwiftEntryKit.xcframework; path = Carthage/Build/SwiftEntryKit.xcframework; sourceTree = "<group>"; };
+		F70B86822642CF5500ED5349 /* TOPasscodeViewController.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = TOPasscodeViewController.xcframework; path = Carthage/Build/TOPasscodeViewController.xcframework; sourceTree = "<group>"; };
+		F70B86832642CF5500ED5349 /* FSCalendar.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = FSCalendar.xcframework; path = Carthage/Build/FSCalendar.xcframework; sourceTree = "<group>"; };
+		F70B86842642CF5500ED5349 /* DropDown.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = DropDown.xcframework; path = Carthage/Build/DropDown.xcframework; sourceTree = "<group>"; };
 		F70BFC7320E0FA7C00C67599 /* NCUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUtility.swift; sourceTree = "<group>"; };
 		F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCEndToEndEncryption.h; sourceTree = "<group>"; };
 		F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCEndToEndEncryption.m; sourceTree = "<group>"; };
@@ -730,12 +766,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F70B869D2642CF6900ED5349 /* OpenSSL.xcframework in Frameworks */,
 				F75E57BF25BF0EC8002B72C2 /* SVGKit in Frameworks */,
 				F782A585251236B7007BBABD /* RealmSwift in Frameworks */,
 				F786D593253454CE00E3DD7B /* NCCommunication in Frameworks */,
 				F782A583251236B7007BBABD /* Realm in Frameworks */,
 				F72D7EB7263B1207000B3DFC /* MarkdownKit in Frameworks */,
-				F7BD71EF2636EC2300643C34 /* OpenSSL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -754,42 +790,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7176DBA256672640017E83C /* FirebaseCrashlytics.framework in Frameworks */,
-				F74C4FBB2328C3C200A23E25 /* OpenSSL.framework in Frameworks */,
-				F7421EAF2294044B00C4B7C1 /* Accelerate.framework in Frameworks */,
 				F7C4D88D2534887E00C142DA /* Parchment in Frameworks */,
-				F76FDEAB24859C3D0095B6C2 /* Queuer.framework in Frameworks */,
-				F79918A221997FA300C2E308 /* UICKeyChainStore.framework in Frameworks */,
-				F7176DC8256672650017E83C /* Protobuf.framework in Frameworks */,
-				F7ED546425EE852500956C55 /* FSCalendar.framework in Frameworks */,
-				F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */,
-				F7176DC2256672650017E83C /* PromisesObjC.framework in Frameworks */,
 				F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */,
-				F7AF7633246BEDFE00B86E3C /* TOPasscodeViewController.framework in Frameworks */,
-				F7176DCA256672650017E83C /* FirebaseCore.framework in Frameworks */,
-				F765608723BF806D00765969 /* QuickLayout.framework in Frameworks */,
-				F7176DC0256672650017E83C /* FirebaseInstallations.framework in Frameworks */,
-				F7176DC6256672650017E83C /* nanopb.framework in Frameworks */,
-				F7176DC4256672650017E83C /* GoogleUtilities.framework in Frameworks */,
-				F7176DDB256672F10017E83C /* libsqlite3.tbd in Frameworks */,
+				F70B86972642CF5700ED5349 /* TOPasscodeViewController.xcframework in Frameworks */,
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
-				F7176DBE256672640017E83C /* GoogleDataTransport.framework in Frameworks */,
-				F7176DCC256672660017E83C /* FirebaseAnalytics.framework in Frameworks */,
+				F70B86952642CF5700ED5349 /* SwiftEntryKit.xcframework in Frameworks */,
+				F70B86912642CF5700ED5349 /* QuickLayout.xcframework in Frameworks */,
+				F70B868F2642CF5600ED5349 /* KTVCocoaHTTPServer.xcframework in Frameworks */,
+				F70B869B2642CF5800ED5349 /* DropDown.xcframework in Frameworks */,
+				F70B86892642CF5600ED5349 /* XLForm.xcframework in Frameworks */,
 				F770768E263A8C3400A1BA94 /* FloatingPanel in Frameworks */,
-				F765608B23BF80A400765969 /* SwiftEntryKit.framework in Frameworks */,
-				F7176DCE256672660017E83C /* GoogleAppMeasurement.framework in Frameworks */,
 				F786D58D253454BF00E3DD7B /* NCCommunication in Frameworks */,
-				F7C40BEF219994ED0004137E /* KTVCocoaHTTPServer.framework in Frameworks */,
+				F70B868B2642CF5600ED5349 /* Queuer.xcframework in Frameworks */,
 				F782A57B25123694007BBABD /* Realm in Frameworks */,
-				F7C40BF1219994F20004137E /* KTVHTTPCache.framework in Frameworks */,
-				F774264122EB3F7300B23912 /* DropDown.framework in Frameworks */,
 				F75E57BD25BF0EC1002B72C2 /* SVGKit in Frameworks */,
+				F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */,
+				F70B86992642CF5800ED5349 /* FSCalendar.xcframework in Frameworks */,
+				F70B86852642CF5600ED5349 /* KTVHTTPCache.xcframework in Frameworks */,
+				F70B86762642CF5300ED5349 /* ChromaColorPicker.xcframework in Frameworks */,
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
-				F7B1076D25D3CF2800E72DE2 /* BackgroundTasks.framework in Frameworks */,
-				F7D2C773246470CA008513AE /* XLForm.framework in Frameworks */,
+				F70B86932642CF5700ED5349 /* OpenSSL.xcframework in Frameworks */,
+				F70B868D2642CF5600ED5349 /* UICKeyChainStore.xcframework in Frameworks */,
 				F782A57D25123694007BBABD /* RealmSwift in Frameworks */,
-				F7176DBC256672640017E83C /* FirebaseCoreDiagnostics.framework in Frameworks */,
-				F7176DD0256672660017E83C /* FIRAnalyticsConnector.framework in Frameworks */,
+				F70B86872642CF5600ED5349 /* TLPhotoPicker.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1492,6 +1515,19 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F70B86842642CF5500ED5349 /* DropDown.xcframework */,
+				F70B86832642CF5500ED5349 /* FSCalendar.xcframework */,
+				F70B867E2642CF5400ED5349 /* KTVCocoaHTTPServer.xcframework */,
+				F70B86792642CF5300ED5349 /* KTVHTTPCache.xcframework */,
+				F70B86802642CF5400ED5349 /* OpenSSL.xcframework */,
+				F70B867C2642CF5300ED5349 /* Queuer.xcframework */,
+				F70B867F2642CF5400ED5349 /* QuickLayout.xcframework */,
+				F70B86812642CF5500ED5349 /* SwiftEntryKit.xcframework */,
+				F70B867A2642CF5300ED5349 /* TLPhotoPicker.xcframework */,
+				F70B86822642CF5500ED5349 /* TOPasscodeViewController.xcframework */,
+				F70B867D2642CF5400ED5349 /* UICKeyChainStore.xcframework */,
+				F70B867B2642CF5300ED5349 /* XLForm.xcframework */,
+				F70B866F2642CA9500ED5349 /* ChromaColorPicker.xcframework */,
 				F7B1076C25D3CF2800E72DE2 /* BackgroundTasks.framework */,
 				F7F35B592578FB63003F5589 /* CollaboraOnlineWebViewKeyboardManager.framework */,
 				F7176DDA256672D90017E83C /* libsqlite3.tbd */,
@@ -1662,7 +1698,7 @@
 				F77B0EDC1D118A16002130FE /* Frameworks */,
 				F77B0EE91D118A16002130FE /* Resources */,
 				F77B0F981D118A16002130FE /* Embed App Extensions */,
-				F75A40001EBCB82B00B213E8 /* ShellScript */,
+				F70B86782642CF5300ED5349 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1682,6 +1718,7 @@
 				F72DA9B325F53E4E00B87DB1 /* SwiftRichString */,
 				F770768D263A8C3400A1BA94 /* FloatingPanel */,
 				F788ECC6263AAAFA00ADC67F /* MarkdownKit */,
+				F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -1795,6 +1832,7 @@
 				F72DA9B225F53E4E00B87DB1 /* XCRemoteSwiftPackageReference "SwiftRichString" */,
 				F770768C263A8C3400A1BA94 /* XCRemoteSwiftPackageReference "FloatingPanel" */,
 				F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */,
+				F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -1920,34 +1958,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		F75A40001EBCB82B00B213E8 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 12;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/TLPhotoPicker.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/UICKeyChainStore.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/KTVHTTPCache.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/KTVCocoaHTTPServer.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/FSCalendar.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/DropDown.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/OpenSSL.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/QuickLayout.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/SwiftEntryKit.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/XLForm.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/TOPasscodeViewController.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/Queuer.framework",
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "rm -rf ${TMPDIR}/TemporaryItems/*carthage*\n/usr/local/bin/carthage copy-frameworks\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		2C33C47B23E2C475005F963B /* Sources */ = {
@@ -2261,10 +2271,7 @@
 				CURRENT_PROJECT_VERSION = 16;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2317,10 +2324,7 @@
 				CURRENT_PROJECT_VERSION = 16;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2364,10 +2368,7 @@
 				CURRENT_PROJECT_VERSION = 16;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2412,10 +2413,7 @@
 				CURRENT_PROJECT_VERSION = 16;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2467,10 +2465,7 @@
 				CURRENT_PROJECT_VERSION = 16;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2522,10 +2517,7 @@
 				CURRENT_PROJECT_VERSION = 16;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2569,10 +2561,7 @@
 				CURRENT_PROJECT_VERSION = 16;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
@@ -2619,10 +2608,7 @@
 				CURRENT_PROJECT_VERSION = 16;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
@@ -2827,6 +2813,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.11.1;
+			};
+		};
 		F72DA9B225F53E4E00B87DB1 /* XCRemoteSwiftPackageReference "SwiftRichString" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/malcommac/SwiftRichString";
@@ -2894,6 +2888,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
 		F72D7EB6263B1207000B3DFC /* MarkdownKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */;
