@@ -876,7 +876,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func openMenuItems(with objectId: String?, gestureRecognizer: UILongPressGestureRecognizer) {
         
         if gestureRecognizer.state != .began { return }
-        if serverUrl == "" { return }
         
         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) {
             metadataTouch = metadata
@@ -889,7 +888,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         becomeFirstResponder()
                 
-        listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu)))
+        if serverUrl != "" {
+            listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu)))
+        }
         if #available(iOS 13.0, *) {
             if !NCBrandOptions.shared.disable_background_color {
                 listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_background_", comment: ""), action: #selector(backgroundFilesMenu)))
