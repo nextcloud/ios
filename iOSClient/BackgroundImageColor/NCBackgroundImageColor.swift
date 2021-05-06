@@ -31,6 +31,9 @@ class NCBackgroundImageColor: UIViewController {
     
     @IBOutlet weak var darkmodeLabel: UILabel!
     @IBOutlet weak var darkmodeSwitch: UISwitch!
+    
+    @IBOutlet weak var useForAllLabel: UILabel!
+    @IBOutlet weak var useForAllSwitch: UISwitch!
 
     @IBOutlet weak var defaultButton: UIButton!
     @IBOutlet weak var cancelButton: UIButton!
@@ -39,16 +42,13 @@ class NCBackgroundImageColor: UIViewController {
     private let colorPicker = ChromaColorPicker()
     private let brightnessSlider = ChromaBrightnessSlider()
     private var colorHandle: ChromaColorHandle?
-    
     private let defaultColorPickerSize = CGSize(width: 200, height: 200)
     private let brightnessSliderWidthHeightRatio: CGFloat = 0.1
     
-    private var darkColorHexString = "#000000"
-    private var lightColorHexString = "#FFFFFF"
+    private var darkColor = ""      // "#000000"
+    private var lightColor = ""     // #FFFFFF
     
     public var collectionViewCommon: NCCollectionViewCommon?
-    public var defaultDarkColor: UIColor = .black
-    public var defaultLightColor: UIColor = .white
 
     let width: CGFloat = 300
     let height: CGFloat = 500
@@ -64,8 +64,17 @@ class NCBackgroundImageColor: UIViewController {
         
         titleLabel.text = NSLocalizedString("_background_", comment: "")
         darkmodeLabel.text = NSLocalizedString("_dark_mode_", comment: "")
+        useForAllLabel.text = NSLocalizedString("_default_color_all_folders_", comment: "")
+
+        defaultButton.setTitle(NSLocalizedString("_default_color_", comment: ""), for: .normal)
+
         cancelButton.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
-        okButton.setTitle(NSLocalizedString("_ok_", comment: ""), for: .normal)        
+        okButton.setTitle(NSLocalizedString("_ok_", comment: ""), for: .normal)
+        
+        defaultButton.layer.cornerRadius = 10
+        defaultButton.layer.borderWidth = 0.5
+        defaultButton.layer.borderColor = UIColor.gray.cgColor
+        defaultButton.layer.masksToBounds = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -76,6 +85,37 @@ class NCBackgroundImageColor: UIViewController {
         } else {
             darkmodeSwitch.isOn = false
         }
+        
+        // Color for this view
+        if let collectionViewCommon = collectionViewCommon {
+            let layoutForView = NCUtility.shared.getLayoutForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl)
+            darkColor = layoutForView.darkColorBackground
+            lightColor = layoutForView.lightColorBackground
+        }
+        
+        // Color all
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+            if darkColor == "" {
+                darkColor = activeAccount.darkColorFiles
+            }
+            if lightColor == "" {
+                lightColor = activeAccount.lightColorFiles
+            }
+        }
+        
+        if darkmodeSwitch.isOn {
+            if let color = UIColor.init(hex: darkColor) {
+                changeColor(color)
+            } else {
+                changeColor(.black)
+            }
+        } else {
+            if let color = UIColor.init(hex: lightColor) {
+                changeColor(color)
+            } else {
+                changeColor(.white)
+            }
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -85,26 +125,36 @@ class NCBackgroundImageColor: UIViewController {
     // MARK: - Action
     
     @IBAction func darkmodeAction(_ sender: UISwitch) {
-        
-        var colorHexString = ""
-        
+                
         if sender.isOn {
-            colorHexString = darkColorHexString
+            if darkColor == "" {
+                changeColor(.black)
+            } else {
+                if let color = UIColor.init(hex: darkColor) {
+                    changeColor(color)
+                }
+            }
         } else {
-            colorHexString = lightColorHexString
-        }
-        
-        if let color = UIColor.init(hex: colorHexString) {
-            changeColor(color)
-        } else {
+            if lightColor == "" {
+                changeColor(.white)
+            } else {
+                if let color = UIColor.init(hex: lightColor) {
+                    changeColor(color)
+                }
+            }
         }
     }
     
     @IBAction func defaultAction(_ sender: Any) {
         
-        //changeColor(defaultColor)
-        darkColorHexString = ""
-        lightColorHexString = ""
+        darkColor = ""
+        lightColor = ""
+        
+        if darkmodeSwitch.isOn {
+            changeColor(.black)
+        } else {
+            changeColor(.white)
+        }
     }
     
     @IBAction func cancelAction(_ sender: Any) {
@@ -114,9 +164,14 @@ class NCBackgroundImageColor: UIViewController {
     
     @IBAction func okAction(_ sender: Any) {
         
-        if let collectionViewCommon = collectionViewCommon {
-            //NCUtility.shared.setBackgroundColorForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl, colorBackground: "", colorDarkBackground: darkColorHexString)
+        if useForAllSwitch.isOn {
+            NCManageDatabase.shared.setAccountColorFiles(lightColorFiles: lightColor, darkColorFiles: darkColor)
+        } else {
+            if let collectionViewCommon = collectionViewCommon {
+                NCUtility.shared.setBackgroundColorForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl, lightColorBackground: lightColor, darkColorBackground: darkColor)
+            }
         }
+        
         collectionViewCommon?.setLayout()
         dismiss(animated: true)
     }
@@ -172,9 +227,9 @@ extension NCBackgroundImageColor: ChromaColorPickerDelegate {
     func colorPickerHandleDidChange(_ colorPicker: ChromaColorPicker, handle: ChromaColorHandle, to color: UIColor) {
         
         if darkmodeSwitch.isOn {
-            darkColorHexString = color.hexString
+            darkColor = color.hexString
         } else {
-            lightColorHexString = color.hexString
+            lightColor = color.hexString
         }
         
         collectionViewCommon?.collectionView.backgroundColor = color

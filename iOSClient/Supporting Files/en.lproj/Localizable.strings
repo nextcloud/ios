@@ -176,6 +176,8 @@
 "_use_as_background_"       = "Use it as a background";
 "_background_"              = "Background";
 "_dark_mode_"               = "Dark mode";
+"_default_color_"           = "Use the default color";
+"_default_color_all_folders_" = "Use for all folders";
 
 /* User status */
 "_online_"                  = "Online";
