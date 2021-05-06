@@ -85,6 +85,7 @@ class NCBackgroundImageColor: UIViewController {
         } else {
             darkmodeSwitch.isOn = false
         }
+        useForAllSwitch.isOn = false
         
         // Color for this view
         if let collectionViewCommon = collectionViewCommon {
@@ -92,8 +93,8 @@ class NCBackgroundImageColor: UIViewController {
             darkColor = layoutForView.darkColorBackground
             lightColor = layoutForView.lightColorBackground
         }
-        
-        // Color all
+                
+        // Color for all folders
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
             if darkColor == "" {
                 darkColor = activeAccount.darkColorFiles
@@ -102,7 +103,11 @@ class NCBackgroundImageColor: UIViewController {
                 lightColor = activeAccount.lightColorFiles
             }
         }
+        if lightColor != "" || darkColor != "" {
+            useForAllSwitch.isOn = true
+        }
         
+        // set color
         if darkmodeSwitch.isOn {
             if let color = UIColor.init(hex: darkColor) {
                 changeColor(color)
