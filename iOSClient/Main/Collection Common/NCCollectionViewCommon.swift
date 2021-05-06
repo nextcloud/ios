@@ -891,7 +891,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 
         listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu)))
         if #available(iOS 13.0, *) {
-            listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_background_", comment: ""), action: #selector(backgroundFilesMenu)))
+            if !NCBrandOptions.shared.disable_background_color {
+                listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_background_", comment: ""), action: #selector(backgroundFilesMenu)))
+            }
         }
         
         if listMenuItems.count > 0 {

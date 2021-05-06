@@ -619,7 +619,7 @@ import NCCommunication
             children.insert(viewInFolder, at: 5)
         }
         
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && viewController is NCCollectionViewCommon {
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && viewController is NCCollectionViewCommon && !NCBrandOptions.shared.disable_background_image {
             let viewController: NCCollectionViewCommon = viewController as! NCCollectionViewCommon
             let layoutKey = viewController.layoutKey
             if layoutKey == NCGlobal.shared.layoutViewFiles {

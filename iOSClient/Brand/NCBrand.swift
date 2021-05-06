@@ -88,6 +88,9 @@ import UIKit
     @objc public var disable_openin_file:               Bool = false                                                // Don't touch me !!
     @objc public var disable_crash_service:             Bool = false
     @objc public var disable_request_account:           Bool = false
+    
+    @objc public var disable_background_color:          Bool = false
+    @objc public var disable_background_image:          Bool = true
 
     override init() {
         

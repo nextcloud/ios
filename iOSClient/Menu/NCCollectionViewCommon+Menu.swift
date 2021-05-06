@@ -285,7 +285,7 @@ extension NCCollectionViewCommon {
         // USE AS BACKGROUND
         //
         if #available(iOS 13.0, *) {
-            if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && viewController.layoutKey == NCGlobal.shared.layoutViewFiles {
+            if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && viewController.layoutKey == NCGlobal.shared.layoutViewFiles && !NCBrandOptions.shared.disable_background_image {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_use_as_background_", comment: ""),
