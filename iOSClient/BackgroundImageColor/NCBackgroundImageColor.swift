@@ -29,17 +29,22 @@ class NCBackgroundImageColor: UIViewController {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var chromaColorPickerView: UIView!
     
-    @IBOutlet weak var defaultButton: UIButton!    
+    @IBOutlet weak var darkmodeLabel: UILabel!
+    @IBOutlet weak var darkmodeSwitch: UISwitch!
+
+    @IBOutlet weak var defaultButton: UIButton!
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var okButton: UIButton!
     
     private let colorPicker = ChromaColorPicker()
     private let brightnessSlider = ChromaBrightnessSlider()
     private var colorHandle: ChromaColorHandle?
+    private var isDarkMode: Bool = false
     
     private let defaultColorPickerSize = CGSize(width: 200, height: 200)
     private let brightnessSliderWidthHeightRatio: CGFloat = 0.1
-    private var colorHexString = ""
+    private var darkColorHexString = ""
+    private var lightColorHexString = ""
     
     public var collectionViewCommon: NCCollectionViewCommon?
     public var defaultColor: UIColor = NCBrandColor.shared.systemBackground
@@ -57,19 +62,34 @@ class NCBackgroundImageColor: UIViewController {
         setupColorPickerHandles()
         
         titleLabel.text = NSLocalizedString("_background_", comment: "")
+        darkmodeLabel.text = NSLocalizedString("_dark_mode_", comment: "")
         cancelButton.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
         okButton.setTitle(NSLocalizedString("_ok_", comment: ""), for: .normal)        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        if traitCollection.userInterfaceStyle == .dark {
+            darkmodeSwitch.isOn = true
+        } else {
+            darkmodeSwitch.isOn = false
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+    }
+    
     // MARK: - Action
+    
+    @IBAction func darkmodeAction(_ sender: UISwitch) {
+        isDarkMode = sender.isOn
+    }
     
     @IBAction func defaultAction(_ sender: Any) {
         
@@ -85,10 +105,6 @@ class NCBackgroundImageColor: UIViewController {
     }
     
     @IBAction func okAction(_ sender: Any) {
-        
-        if traitCollection.userInterfaceStyle == .dark {
-            
-        }
         
         if let collectionViewCommon = collectionViewCommon {
             if colorHandle?.color == defaultColor {
@@ -144,7 +160,12 @@ class NCBackgroundImageColor: UIViewController {
 extension NCBackgroundImageColor: ChromaColorPickerDelegate {
     func colorPickerHandleDidChange(_ colorPicker: ChromaColorPicker, handle: ChromaColorHandle, to color: UIColor) {
         
-        colorHexString = color.hexString
+        if darkmodeSwitch.isOn {
+            darkColorHexString = color.hexString
+        } else {
+            lightColorHexString = color.hexString
+        }
+        
         collectionViewCommon?.collectionView.backgroundColor = color
     }
 }

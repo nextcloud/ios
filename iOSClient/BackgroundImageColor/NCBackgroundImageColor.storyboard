@@ -71,15 +71,18 @@
                                 <subviews>
                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qCH-0e-MgJ">
                                         <rect key="frame" x="246" y="5" width="51" height="31"/>
+                                        <connections>
+                                            <action selector="darkmodeAction:" destination="V0q-CP-xMJ" eventType="valueChanged" id="jpD-6b-nRS"/>
+                                        </connections>
                                     </switch>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AH4-ei-W3C">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dark mode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AH4-ei-W3C">
                                         <rect key="frame" x="5" y="10" width="231" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Dy-77-TIC">
-                                        <rect key="frame" x="5" y="41" width="290" height="34"/>
+                                        <rect key="frame" x="5" y="51" width="290" height="34"/>
                                         <color key="backgroundColor" systemColor="systemGray2Color"/>
                                         <state key="normal" title="Button"/>
                                         <connections>
@@ -94,7 +97,7 @@
                                     <constraint firstItem="AH4-ei-W3C" firstAttribute="leading" secondItem="Dsj-Of-TI5" secondAttribute="leading" constant="5" id="Afp-ca-hx0"/>
                                     <constraint firstItem="6Dy-77-TIC" firstAttribute="leading" secondItem="Dsj-Of-TI5" secondAttribute="leading" constant="5" id="Bn8-Bi-qOg"/>
                                     <constraint firstAttribute="trailing" secondItem="qCH-0e-MgJ" secondAttribute="trailing" constant="5" id="QVc-0U-Mg8"/>
-                                    <constraint firstItem="6Dy-77-TIC" firstAttribute="top" secondItem="AH4-ei-W3C" secondAttribute="bottom" constant="10" id="YpO-lB-kfU"/>
+                                    <constraint firstItem="6Dy-77-TIC" firstAttribute="top" secondItem="AH4-ei-W3C" secondAttribute="bottom" constant="20" id="YpO-lB-kfU"/>
                                     <constraint firstAttribute="trailing" secondItem="6Dy-77-TIC" secondAttribute="trailing" constant="5" id="jId-wH-r5I"/>
                                     <constraint firstAttribute="height" constant="125" id="uSG-oG-ooi"/>
                                 </constraints>
@@ -132,6 +135,8 @@
                     <connections>
                         <outlet property="cancelButton" destination="W5y-aT-UlI" id="P9l-o1-miU"/>
                         <outlet property="chromaColorPickerView" destination="iU2-DL-ICv" id="iX8-Pq-EFB"/>
+                        <outlet property="darkmodeLabel" destination="AH4-ei-W3C" id="JvO-LN-BUu"/>
+                        <outlet property="darkmodeSwitch" destination="qCH-0e-MgJ" id="rjG-X5-eqA"/>
                         <outlet property="defaultButton" destination="6Dy-77-TIC" id="PxM-tG-Ve7"/>
                         <outlet property="okButton" destination="hcV-V0-eZB" id="1VQ-qp-4Fs"/>
                         <outlet property="titleLabel" destination="nZr-nE-ths" id="UbA-Dl-0Ad"/>
