@@ -926,10 +926,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let vcBackgroundImageColor = UIStoryboard(name: "NCBackgroundImageColor", bundle: nil).instantiateInitialViewController() as? NCBackgroundImageColor {
             
             vcBackgroundImageColor.collectionViewCommon = self
-            //vcBackgroundImageColor.defaultColor = defaultBackgroundColor
             
             let popup = NCPopupViewController(contentController: vcBackgroundImageColor, popupWidth: vcBackgroundImageColor.width, popupHeight: vcBackgroundImageColor.height)
-                                        
+            popup.backgroundAlpha = 0
+            
             self.present(popup, animated: true)
         }
     }

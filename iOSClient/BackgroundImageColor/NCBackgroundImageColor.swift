@@ -103,10 +103,7 @@ class NCBackgroundImageColor: UIViewController {
                 lightColor = activeAccount.lightColorFiles
             }
         }
-        if lightColor != "" || darkColor != "" {
-            useForAllSwitch.isOn = true
-        }
-        
+       
         // set color
         if darkmodeSwitch.isOn {
             if let color = UIColor.init(hex: darkColor) {
