@@ -601,6 +601,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             collectionView?.collectionViewLayout = gridLayout
         }
         
+        // IMAGE BACKGROUND
         if layoutForView?.imageBackgroud != "" {
             let imagePath = CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appBackground).path + "/" + layoutForView!.imageBackgroud
             do {
@@ -616,10 +617,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             collectionView.backgroundView = nil
         }
         
-        if layoutForView?.colorBackground != "" {
-            collectionView.backgroundColor = UIColor.init(hex: layoutForView?.colorBackground ?? "")
+        // COLOR BACKGROUND
+        if traitCollection.userInterfaceStyle == .dark {
+            if layoutForView?.colorDarkBackground != "" {
+                collectionView.backgroundColor = UIColor.init(hex: layoutForView?.colorDarkBackground ?? "")
+            } else {
+                collectionView.backgroundColor = defaultBackgroundColor
+            }
         } else {
-            collectionView.backgroundColor = defaultBackgroundColor
+            if layoutForView?.colorBackground != "" {
+                collectionView.backgroundColor = UIColor.init(hex: layoutForView?.colorBackground ?? "")
+            } else {
+                collectionView.backgroundColor = defaultBackgroundColor
+            }
         }
     }
 

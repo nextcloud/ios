@@ -50,6 +50,7 @@ class NCGlobal: NSObject {
         var imageBackgroud: String
         var imageBackgroudContentMode: String
         var colorBackground: String
+        var colorDarkBackground: String
     }
     
     // Directory on Group

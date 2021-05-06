@@ -40,7 +40,7 @@ class NCUtility: NSObject {
 
     func setLayoutForView(key: String, serverUrl: String, layoutForView: NCGlobal.layoutForViewType) {
         
-        let string =  layoutForView.layout + "|" + layoutForView.sort + "|" + "\(layoutForView.ascending)" + "|" + layoutForView.groupBy + "|" + "\(layoutForView.directoryOnTop)" + "|" + layoutForView.titleButtonHeader + "|" + "\(layoutForView.itemForLine)" + "|" + layoutForView.imageBackgroud + "|" + layoutForView.imageBackgroudContentMode + "|" + layoutForView.colorBackground
+        let string =  layoutForView.layout + "|" + layoutForView.sort + "|" + "\(layoutForView.ascending)" + "|" + layoutForView.groupBy + "|" + "\(layoutForView.directoryOnTop)" + "|" + layoutForView.titleButtonHeader + "|" + "\(layoutForView.itemForLine)" + "|" + layoutForView.imageBackgroud + "|" + layoutForView.imageBackgroudContentMode + "|" + layoutForView.colorBackground + "|" + layoutForView.colorDarkBackground
         var keyStore = key
         
         if serverUrl != "" {
@@ -60,11 +60,12 @@ class NCUtility: NSObject {
         }
     }
     
-    func setBackgroundColorForView(key: String, serverUrl: String, colorBackground: String) {
+    func setBackgroundColorForView(key: String, serverUrl: String, colorBackground: String, colorDarkBackground: String) {
         
         var layoutForView: NCGlobal.layoutForViewType = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
         
         layoutForView.colorBackground = colorBackground
+        layoutForView.colorDarkBackground = colorDarkBackground
         
         setLayoutForView(key: key, serverUrl: serverUrl, layoutForView: layoutForView)
     }
@@ -82,7 +83,7 @@ class NCUtility: NSObject {
     func getLayoutForView(key: String, serverUrl: String, sort: String = "fileName", ascending: Bool = true, titleButtonHeader: String = "_sorted_by_name_a_z_") -> (NCGlobal.layoutForViewType) {
         
         var keyStore = key
-        var layoutForView: NCGlobal.layoutForViewType = NCGlobal.layoutForViewType(layout: NCGlobal.shared.layoutList, sort: sort, ascending: ascending, groupBy: "none", directoryOnTop: true, titleButtonHeader: titleButtonHeader, itemForLine: 3, imageBackgroud: "", imageBackgroudContentMode: "", colorBackground: "")
+        var layoutForView: NCGlobal.layoutForViewType = NCGlobal.layoutForViewType(layout: NCGlobal.shared.layoutList, sort: sort, ascending: ascending, groupBy: "none", directoryOnTop: true, titleButtonHeader: titleButtonHeader, itemForLine: 3, imageBackgroud: "", imageBackgroudContentMode: "", colorBackground: "", colorDarkBackground: "")
         
         if serverUrl != "" {
             keyStore = serverUrl
@@ -95,6 +96,7 @@ class NCUtility: NSObject {
 
         let array = string.components(separatedBy: "|")
         if array.count >= 7 {
+            // version 1
             layoutForView.layout = array[0]
             layoutForView.sort = array[1]
             layoutForView.ascending = NSString(string: array[2]).boolValue
@@ -102,11 +104,12 @@ class NCUtility: NSObject {
             layoutForView.directoryOnTop = NSString(string: array[4]).boolValue
             layoutForView.titleButtonHeader = array[5]
             layoutForView.itemForLine = Int(NSString(string: array[6]).intValue)
-                       
+            // version 2
             if array.count > 8 {
                 layoutForView.imageBackgroud = array[7]
                 layoutForView.imageBackgroudContentMode = array[8]
                 layoutForView.colorBackground = array[9]
+                layoutForView.colorDarkBackground = array[10]
             }
         }
         

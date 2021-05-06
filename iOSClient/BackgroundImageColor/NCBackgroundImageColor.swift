@@ -29,9 +29,7 @@ class NCBackgroundImageColor: UIViewController {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var chromaColorPickerView: UIView!
     
-    @IBOutlet weak var defaultButton: UIButton!
-
-    
+    @IBOutlet weak var defaultButton: UIButton!    
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var okButton: UIButton!
     
@@ -88,11 +86,15 @@ class NCBackgroundImageColor: UIViewController {
     
     @IBAction func okAction(_ sender: Any) {
         
+        if traitCollection.userInterfaceStyle == .dark {
+            
+        }
+        
         if let collectionViewCommon = collectionViewCommon {
             if colorHandle?.color == defaultColor {
-                NCUtility.shared.setBackgroundColorForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl, colorBackground: "")
+                NCUtility.shared.setBackgroundColorForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl, colorBackground: "", colorDarkBackground: "")
             } else {
-                NCUtility.shared.setBackgroundColorForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl, colorBackground: colorHexString)
+                //NCUtility.shared.setBackgroundColorForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl, colorBackground: colorHexString)
             }
         }
         collectionViewCommon?.setLayout()
