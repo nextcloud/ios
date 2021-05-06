@@ -29,6 +29,8 @@ class NCBackgroundImageColor: UIViewController {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var chromaColorPickerView: UIView!
     
+    @IBOutlet weak var whiteButton: UIButton!
+    
     @IBOutlet weak var darkmodeLabel: UILabel!
     @IBOutlet weak var darkmodeSwitch: UISwitch!
     
@@ -71,7 +73,12 @@ class NCBackgroundImageColor: UIViewController {
         cancelButton.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
         okButton.setTitle(NSLocalizedString("_ok_", comment: ""), for: .normal)
         
-        defaultButton.layer.cornerRadius = 10
+        whiteButton.layer.cornerRadius = 5
+        whiteButton.layer.borderWidth = 0.5
+        whiteButton.layer.borderColor = NCBrandColor.shared.label.cgColor
+        whiteButton.layer.masksToBounds = true
+
+        defaultButton.layer.cornerRadius = 15
         defaultButton.layer.borderWidth = 0.5
         defaultButton.layer.borderColor = UIColor.gray.cgColor
         defaultButton.layer.masksToBounds = true
@@ -125,6 +132,10 @@ class NCBackgroundImageColor: UIViewController {
     }
     
     // MARK: - Action
+    
+    @IBAction func whiteButtonAction(_ sender: UIButton) {
+        
+    }
     
     @IBAction func darkmodeAction(_ sender: UISwitch) {
                 
@@ -186,7 +197,8 @@ class NCBackgroundImageColor: UIViewController {
         view.addSubview(colorPicker)
 
         NSLayoutConstraint.activate([
-            colorPicker.centerXAnchor.constraint(equalTo: chromaColorPickerView.centerXAnchor),
+            colorPicker.leadingAnchor.constraint(equalTo: chromaColorPickerView.leadingAnchor, constant: 20),
+            //colorPicker.centerXAnchor.constraint(equalTo: chromaColorPickerView.centerXAnchor),
             colorPicker.topAnchor.constraint(equalTo: chromaColorPickerView.topAnchor),
             colorPicker.widthAnchor.constraint(equalToConstant: defaultColorPickerSize.width),
             colorPicker.heightAnchor.constraint(equalToConstant: defaultColorPickerSize.height)

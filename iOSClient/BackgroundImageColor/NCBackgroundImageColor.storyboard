@@ -25,7 +25,22 @@
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iU2-DL-ICv">
                                 <rect key="frame" x="0.0" y="53" width="300" height="250"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3E4-fA-LuC">
+                                        <rect key="frame" x="260" y="10" width="30" height="30"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="30" id="7gh-HI-7F4"/>
+                                            <constraint firstAttribute="height" constant="30" id="tN7-80-0OA"/>
+                                        </constraints>
+                                        <connections>
+                                            <action selector="whiteButtonAction:" destination="V0q-CP-xMJ" eventType="touchUpInside" id="qan-1S-lXZ"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
                                 <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="3E4-fA-LuC" secondAttribute="trailing" constant="10" id="UoS-lh-xRi"/>
+                                    <constraint firstItem="3E4-fA-LuC" firstAttribute="top" secondItem="iU2-DL-ICv" secondAttribute="top" constant="10" id="XPi-Om-9AW"/>
                                     <constraint firstAttribute="height" constant="250" id="v0B-oB-eD3"/>
                                 </constraints>
                             </view>
@@ -84,6 +99,9 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Dy-77-TIC">
                                         <rect key="frame" x="10" y="95" width="280" height="30"/>
                                         <color key="backgroundColor" systemColor="systemGray4Color"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="30" id="ZKT-Su-3nU"/>
+                                        </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <state key="normal" title="default color">
                                             <color key="titleColor" systemColor="labelColor"/>
@@ -159,6 +177,7 @@
                         <outlet property="titleLabel" destination="nZr-nE-ths" id="UbA-Dl-0Ad"/>
                         <outlet property="useForAllLabel" destination="byB-wK-0AW" id="HKs-m2-SBz"/>
                         <outlet property="useForAllSwitch" destination="ber-cK-0ag" id="D2m-GW-l2t"/>
+                        <outlet property="whiteButton" destination="3E4-fA-LuC" id="mNg-2f-rvs"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qdm-Cl-C5l" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
