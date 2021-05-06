@@ -105,7 +105,7 @@ class NCMainTabBar: UITabBar {
     private func createPath() -> CGPath {
         
         let height: CGFloat = 28
-        let margin: CGFloat = 8
+        let margin: CGFloat = 6
         let path = UIBezierPath()
         let centerWidth = self.frame.width / 2
 
