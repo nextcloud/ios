@@ -205,14 +205,34 @@ class NCBackgroundImageColor: UIViewController {
     
     @IBAction func defaultAction(_ sender: Any) {
         
-        darkColor = ""
-        lightColor = ""
-        useForAllSwitch.isOn = true
-        
-        if darkmodeSwitch.isOn {
-            changeColor(.black)
-        } else {
-            changeColor(.white)
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+            if darkmodeSwitch.isOn {
+                if useForAllSwitch.isOn {
+                    darkColor = ""
+                    changeColor(.black)
+                } else {
+                    if let color = UIColor.init(hex: activeAccount.darkColorFiles) {
+                        darkColor = activeAccount.darkColorFiles
+                        changeColor(color)
+                    } else {
+                        darkColor = ""
+                        changeColor(.black)
+                    }
+                }
+            } else {
+                if useForAllSwitch.isOn {
+                    lightColor = "#FFFFFF"
+                    changeColor(.white)
+                } else {
+                    if let color = UIColor.init(hex:  activeAccount.lightColorFiles) {
+                        lightColor = activeAccount.lightColorFiles
+                        changeColor(color)
+                    } else {
+                        lightColor = "#FFFFFF"
+                        changeColor(.white)
+                    }
+                }
+            }
         }
     }
     
