@@ -1295,7 +1295,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             header.setTitleSorted(datasourceTitleButton: layoutForView?.titleButtonHeader ?? "")
             header.viewRichWorkspaceHeightConstraint.constant = headerRichWorkspaceHeight
             header.setRichWorkspaceText(richWorkspaceText: richWorkspaceText)
-
+            header.colorBackground = collectionView.backgroundColor
+            
             return header
             
         } else {

@@ -37,6 +37,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     
     var delegate: NCSectionHeaderMenuDelegate?
+    var colorBackground: UIColor?
     
     private var markdownParser = MarkdownParser()
     private var richWorkspaceText: String?
@@ -46,7 +47,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        backgroundColor = .clear
+        backgroundColor = colorBackground
 
         buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
         
@@ -87,11 +88,18 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     
     func setGradientColor() {
         
+        var colorStart: UIColor = .black
+        var colorEnd: UIColor = .white
+        
         if traitCollection.userInterfaceStyle == .dark {
-            gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
+            colorStart = UIColor.init(white: 0, alpha: 0)
+            colorEnd = UIColor.black
         } else {
-            gradient.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
+            colorStart = UIColor.init(white: 1, alpha: 0)
+            colorEnd = UIColor.white
         }
+        
+        gradient.colors = [colorStart.cgColor, colorEnd.cgColor]
     }
     
     func setTitleSorted(datasourceTitleButton: String) {
