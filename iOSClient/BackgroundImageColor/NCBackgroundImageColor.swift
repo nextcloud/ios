@@ -44,7 +44,8 @@ class NCBackgroundImageColor: UIViewController {
     private var colorHexString = ""
     
     public var collectionViewCommon: NCCollectionViewCommon?
-    
+    public var defaultColor: UIColor = NCBrandColor.shared.systemBackground
+
     let width: CGFloat = 300
     let height: CGFloat = 500
     
@@ -74,9 +75,10 @@ class NCBackgroundImageColor: UIViewController {
     
     @IBAction func defaultAction(_ sender: Any) {
         
-        colorHandle?.color = NCBrandColor.shared.systemBackground
+        colorHandle?.color = defaultColor
         colorPicker.setNeedsLayout()
-        brightnessSlider.trackColor = NCBrandColor.shared.systemBackground
+        brightnessSlider.trackColor = defaultColor
+        collectionViewCommon?.collectionView.backgroundColor = defaultColor
     }
     
     @IBAction func cancelAction(_ sender: Any) {
@@ -86,6 +88,15 @@ class NCBackgroundImageColor: UIViewController {
     
     @IBAction func okAction(_ sender: Any) {
         
+        if let collectionViewCommon = collectionViewCommon {
+            if colorHandle?.color == defaultColor {
+                NCUtility.shared.setBackgroundColorForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl, colorBackground: "")
+            } else {
+                NCUtility.shared.setBackgroundColorForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl, colorBackground: colorHexString)
+            }
+        }
+        collectionViewCommon?.setLayout()
+        dismiss(animated: true)
     }
     
     // MARK: - ChromaColorPicker

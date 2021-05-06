@@ -60,13 +60,21 @@ class NCUtility: NSObject {
         }
     }
     
-    func setBackgroundForView(key: String, serverUrl: String, imageBackgroud: String, imageBackgroudContentMode: String, colorBackground: String) {
+    func setBackgroundColorForView(key: String, serverUrl: String, colorBackground: String) {
+        
+        var layoutForView: NCGlobal.layoutForViewType = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
+        
+        layoutForView.colorBackground = colorBackground
+        
+        setLayoutForView(key: key, serverUrl: serverUrl, layoutForView: layoutForView)
+    }
+    
+    func setBackgroundImageForView(key: String, serverUrl: String, imageBackgroud: String, imageBackgroudContentMode: String) {
         
         var layoutForView: NCGlobal.layoutForViewType = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
         
         layoutForView.imageBackgroud = imageBackgroud
         layoutForView.imageBackgroudContentMode = imageBackgroudContentMode
-        layoutForView.colorBackground = colorBackground
         
         setLayoutForView(key: key, serverUrl: serverUrl, layoutForView: layoutForView)
     }

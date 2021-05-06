@@ -34,7 +34,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var searchController: UISearchController?
     internal var emptyDataSet: NCEmptyDataSet?
     internal var backgroundImageView = UIImageView()
-
+    internal let defaultBackgroundColor = NCBrandColor.shared.systemBackground
     internal var serverUrl: String = ""
     internal var isEncryptedFolder = false
     internal var isEditMode = false
@@ -84,9 +84,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         super.viewDidLoad()
         
         self.navigationController?.presentationController?.delegate = self
-        view.backgroundColor = NCBrandColor.shared.systemBackground
+        view.backgroundColor = defaultBackgroundColor
         
-        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
+        collectionView.backgroundColor = defaultBackgroundColor
         collectionView.alwaysBounceVertical = true
 
         if enableSearchBar {
@@ -619,7 +619,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if layoutForView?.colorBackground != "" {
             collectionView.backgroundColor = UIColor.init(hex: layoutForView?.colorBackground ?? "")
         } else {
-            collectionView.backgroundColor = NCBrandColor.shared.systemBackground
+            collectionView.backgroundColor = defaultBackgroundColor
         }
     }
 
@@ -902,6 +902,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let vcBackgroundImageColor = UIStoryboard(name: "NCBackgroundImageColor", bundle: nil).instantiateInitialViewController() as? NCBackgroundImageColor {
             
             vcBackgroundImageColor.collectionViewCommon = self
+            vcBackgroundImageColor.defaultColor = defaultBackgroundColor
             
             let popup = NCPopupViewController(contentController: vcBackgroundImageColor, popupWidth: vcBackgroundImageColor.width, popupHeight: vcBackgroundImageColor.height)
                                         
