@@ -723,15 +723,15 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setAccountColorFiles(lightColorFiles: String, darkColorFiles: String) {
+    @objc func setAccountColorFiles(lightColorBackground: String, darkColorBackground: String) {
         
         let realm = try! Realm()
 
         do {
             try realm.safeWrite {
                 if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                    result.lightColorFiles = lightColorFiles
-                    result.darkColorFiles = darkColorFiles
+                    result.lightColorBackground = lightColorBackground
+                    result.darkColorBackground = darkColorBackground
                 }
             }
         } catch let error {

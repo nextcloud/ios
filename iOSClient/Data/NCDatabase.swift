@@ -81,8 +81,8 @@ class tableAccount: Object {
     @objc dynamic var zip = ""
     
     // COLOR Files
-    @objc dynamic var darkColorFiles = ""
-    @objc dynamic var lightColorFiles = ""
+    @objc dynamic var darkColorBackground = ""
+    @objc dynamic var lightColorBackground = ""
 
     // HC
     @objc dynamic var hcIsTrial: Bool = false

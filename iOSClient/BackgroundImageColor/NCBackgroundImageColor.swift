@@ -133,10 +133,10 @@ class NCBackgroundImageColor: UIViewController {
         // Color for all folders
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
             if darkColor == "" {
-                darkColor = activeAccount.darkColorFiles
+                darkColor = activeAccount.darkColorBackground
             }
             if lightColor == "" {
-                lightColor = activeAccount.lightColorFiles
+                lightColor = activeAccount.lightColorBackground
             }
         }
        
@@ -211,8 +211,8 @@ class NCBackgroundImageColor: UIViewController {
                     darkColor = ""
                     changeColor(.black)
                 } else {
-                    if let color = UIColor.init(hex: activeAccount.darkColorFiles) {
-                        darkColor = activeAccount.darkColorFiles
+                    if let color = UIColor.init(hex: activeAccount.darkColorBackground) {
+                        darkColor = activeAccount.darkColorBackground
                         changeColor(color)
                     } else {
                         darkColor = ""
@@ -224,8 +224,8 @@ class NCBackgroundImageColor: UIViewController {
                     lightColor = "#FFFFFF"
                     changeColor(.white)
                 } else {
-                    if let color = UIColor.init(hex:  activeAccount.lightColorFiles) {
-                        lightColor = activeAccount.lightColorFiles
+                    if let color = UIColor.init(hex:  activeAccount.lightColorBackground) {
+                        lightColor = activeAccount.lightColorBackground
                         changeColor(color)
                     } else {
                         lightColor = "#FFFFFF"
@@ -251,7 +251,7 @@ class NCBackgroundImageColor: UIViewController {
 
         if let collectionViewCommon = collectionViewCommon {
             if useForAllSwitch.isOn {
-                NCManageDatabase.shared.setAccountColorFiles(lightColorFiles: lightColor, darkColorFiles: darkColor)
+                NCManageDatabase.shared.setAccountColorFiles(lightColorBackground: lightColor, darkColorBackground: darkColor)
                 NCUtility.shared.setBackgroundColorForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl, lightColorBackground: "", darkColorBackground: "")
             } else {
                 NCUtility.shared.setBackgroundColorForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl, lightColorBackground: lightColor, darkColorBackground: darkColor)

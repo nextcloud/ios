@@ -630,16 +630,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if traitCollection.userInterfaceStyle == .dark {
             if layoutForView?.darkColorBackground != "" {
                 collectionView.backgroundColor = UIColor.init(hex: layoutForView?.darkColorBackground ?? "")
-            } else if activeAccount?.darkColorFiles != "" {
-                collectionView.backgroundColor = UIColor.init(hex: activeAccount?.darkColorFiles ?? "")
+            } else if activeAccount?.darkColorBackground != "" {
+                collectionView.backgroundColor = UIColor.init(hex: activeAccount?.darkColorBackground ?? "")
             } else {
                 collectionView.backgroundColor = defaultBackgroundColor
             }
         } else {
             if layoutForView?.lightColorBackground != "" {
                 collectionView.backgroundColor = UIColor.init(hex: layoutForView?.lightColorBackground ?? "")
-            } else if activeAccount?.lightColorFiles != "" {
-                collectionView.backgroundColor = UIColor.init(hex: activeAccount?.lightColorFiles ?? "")
+            } else if activeAccount?.lightColorBackground != "" {
+                collectionView.backgroundColor = UIColor.init(hex: activeAccount?.lightColorBackground ?? "")
             } else {
                 collectionView.backgroundColor = defaultBackgroundColor
             }
