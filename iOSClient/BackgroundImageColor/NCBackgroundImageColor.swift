@@ -28,11 +28,17 @@ class NCBackgroundImageColor: UIViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var chromaColorPickerView: UIView!
+    
+    @IBOutlet weak var defaultButton: UIButton!
+
+    
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var okButton: UIButton!
     
     private let colorPicker = ChromaColorPicker()
     private let brightnessSlider = ChromaBrightnessSlider()
+    private var colorHandle: ChromaColorHandle?
+    
     private let defaultColorPickerSize = CGSize(width: 200, height: 200)
     private let brightnessSliderWidthHeightRatio: CGFloat = 0.1
     private var colorHexString = ""
@@ -65,6 +71,13 @@ class NCBackgroundImageColor: UIViewController {
     }
     
     // MARK: - Action
+    
+    @IBAction func defaultAction(_ sender: Any) {
+        
+        colorHandle?.color = NCBrandColor.shared.systemBackground
+        colorPicker.setNeedsLayout()
+        brightnessSlider.trackColor = NCBrandColor.shared.systemBackground
+    }
     
     @IBAction func cancelAction(_ sender: Any) {
         collectionViewCommon?.setLayout()
@@ -111,8 +124,7 @@ class NCBackgroundImageColor: UIViewController {
     
     private func setupColorPickerHandles() {
       
-        let peachColor = collectionViewCommon?.collectionView.backgroundColor
-        colorPicker.addHandle(at: peachColor)
+        colorHandle = colorPicker.addHandle(at: collectionViewCommon?.collectionView.backgroundColor)
     }
 }
 
