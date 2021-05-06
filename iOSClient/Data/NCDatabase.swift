@@ -79,6 +79,11 @@ class tableAccount: Object {
     @objc dynamic var userStatusStatusIsUserDefined: Bool = false
     @objc dynamic var webpage = ""
     @objc dynamic var zip = ""
+    
+    // COLOR Files
+    @objc dynamic var darkColorFiles = ""
+    @objc dynamic var lightColorFiles = ""
+
     // HC
     @objc dynamic var hcIsTrial: Bool = false
     @objc dynamic var hcTrialExpired: Bool = false

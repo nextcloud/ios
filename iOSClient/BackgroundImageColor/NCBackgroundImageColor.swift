@@ -43,8 +43,8 @@ class NCBackgroundImageColor: UIViewController {
     private let defaultColorPickerSize = CGSize(width: 200, height: 200)
     private let brightnessSliderWidthHeightRatio: CGFloat = 0.1
     
-    private var darkColorHexString = ""
-    private var lightColorHexString = ""
+    private var darkColorHexString = "#000000"
+    private var lightColorHexString = "#FFFFFF"
     
     public var collectionViewCommon: NCCollectionViewCommon?
     public var defaultDarkColor: UIColor = .black

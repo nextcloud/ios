@@ -723,6 +723,22 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func setAccountColorFiles(lightColorFiles: String, darkColorFiles: String) {
+        
+        let realm = try! Realm()
+
+        do {
+            try realm.safeWrite {
+                if let result = realm.objects(tableAccount.self).filter("active == true").first {
+                    result.lightColorFiles = lightColorFiles
+                    result.darkColorFiles = darkColorFiles
+                }
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
     //MARK: -
     //MARK: Table Activity
 

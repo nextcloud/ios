@@ -247,12 +247,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         selectOcId.removeAll()
         
         setNavigationItem()
-    
+        setLayout()
+        
         reloadDataSource()
     }
     
     @objc func changeTheming() {
-        collectionView.reloadData()
+        setLayout()
     }
     
     @objc func reloadDataSource(_ notification: NSNotification) {
@@ -624,19 +625,26 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
         
         // COLOR BACKGROUND
+        let activeAccount = NCManageDatabase.shared.getActiveAccount()
         if traitCollection.userInterfaceStyle == .dark {
             if layoutForView?.darkColorBackground != "" {
                 collectionView.backgroundColor = UIColor.init(hex: layoutForView?.darkColorBackground ?? "")
+            } else if activeAccount?.darkColorFiles != "" {
+                collectionView.backgroundColor = UIColor.init(hex: activeAccount?.darkColorFiles ?? "")
             } else {
                 collectionView.backgroundColor = defaultBackgroundColor
             }
         } else {
             if layoutForView?.lightColorBackground != "" {
                 collectionView.backgroundColor = UIColor.init(hex: layoutForView?.lightColorBackground ?? "")
+            } else if activeAccount?.lightColorFiles != "" {
+                collectionView.backgroundColor = UIColor.init(hex: activeAccount?.lightColorFiles ?? "")
             } else {
                 collectionView.backgroundColor = defaultBackgroundColor
             }
         }
+        
+        collectionView.reloadData()
     }
 
     // MARK: - Empty
