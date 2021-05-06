@@ -70,7 +70,7 @@ class NCBackgroundImageColor: UIViewController {
         
         titleLabel.text = NSLocalizedString("_background_", comment: "")
         darkmodeLabel.text = NSLocalizedString("_dark_mode_", comment: "")
-        useForAllLabel.text = NSLocalizedString("_default_color_all_folders_", comment: "")
+        useForAllLabel.text = NSLocalizedString("_as_default_color_", comment: "")
 
         defaultButton.setTitle(NSLocalizedString("_default_color_", comment: ""), for: .normal)
 
