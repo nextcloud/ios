@@ -46,7 +46,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        backgroundColor = NCBrandColor.shared.systemBackground
+        backgroundColor = .clear
 
         buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
         
@@ -58,11 +58,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         gradient.startPoint = CGPoint(x: 0, y: 0.60)
         gradient.endPoint = CGPoint(x: 0, y: 1)
         viewRichWorkspace.layer.addSublayer(gradient)
-        if traitCollection.userInterfaceStyle == .dark {
-            gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
-        } else {
-            gradient.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
-        }
+        setGradientColor()
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(touchUpInsideViewRichWorkspace(_:)))
         tap.delegate = self
@@ -86,6 +82,10 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        setGradientColor()
+    }
+    
+    func setGradientColor() {
         
         if traitCollection.userInterfaceStyle == .dark {
             gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
