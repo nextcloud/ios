@@ -57,7 +57,7 @@ class NCBackgroundImageColor: UIViewController {
     public var collectionViewCommon: NCCollectionViewCommon?
 
     let width: CGFloat = 300
-    let height: CGFloat = 500
+    let height: CGFloat = 485
     
     // MARK: - View Life Cycle
 
