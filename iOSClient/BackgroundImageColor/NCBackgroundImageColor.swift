@@ -30,7 +30,11 @@ class NCBackgroundImageColor: UIViewController {
     @IBOutlet weak var chromaColorPickerView: UIView!
     
     @IBOutlet weak var whiteButton: UIButton!
-    
+    @IBOutlet weak var orangeButton: UIButton!
+    @IBOutlet weak var redButton: UIButton!
+    @IBOutlet weak var greenButton: UIButton!
+    @IBOutlet weak var blackButton: UIButton!
+
     @IBOutlet weak var darkmodeLabel: UILabel!
     @IBOutlet weak var darkmodeSwitch: UISwitch!
     
@@ -73,11 +77,36 @@ class NCBackgroundImageColor: UIViewController {
         cancelButton.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
         okButton.setTitle(NSLocalizedString("_ok_", comment: ""), for: .normal)
         
+        whiteButton.backgroundColor = .white
         whiteButton.layer.cornerRadius = 5
         whiteButton.layer.borderWidth = 0.5
         whiteButton.layer.borderColor = NCBrandColor.shared.label.cgColor
         whiteButton.layer.masksToBounds = true
 
+        orangeButton.backgroundColor = .orange
+        orangeButton.layer.cornerRadius = 5
+        orangeButton.layer.borderWidth = 0.5
+        orangeButton.layer.borderColor = NCBrandColor.shared.label.cgColor
+        orangeButton.layer.masksToBounds = true
+       
+        redButton.backgroundColor = .red
+        redButton.layer.cornerRadius = 5
+        redButton.layer.borderWidth = 0.5
+        redButton.layer.borderColor = NCBrandColor.shared.label.cgColor
+        redButton.layer.masksToBounds = true
+        
+        greenButton.backgroundColor = .green
+        greenButton.layer.cornerRadius = 5
+        greenButton.layer.borderWidth = 0.5
+        greenButton.layer.borderColor = NCBrandColor.shared.label.cgColor
+        greenButton.layer.masksToBounds = true
+        
+        blackButton.backgroundColor = .black
+        blackButton.layer.cornerRadius = 5
+        blackButton.layer.borderWidth = 0.5
+        blackButton.layer.borderColor = NCBrandColor.shared.label.cgColor
+        blackButton.layer.masksToBounds = true
+        
         defaultButton.layer.cornerRadius = 15
         defaultButton.layer.borderWidth = 0.5
         defaultButton.layer.borderColor = UIColor.gray.cgColor
@@ -134,7 +163,23 @@ class NCBackgroundImageColor: UIViewController {
     // MARK: - Action
     
     @IBAction func whiteButtonAction(_ sender: UIButton) {
-        
+        changeColor(.white)
+    }
+    
+    @IBAction func orangeButtonAction(_ sender: UIButton) {
+        changeColor(.orange)
+    }
+    
+    @IBAction func redButtonAction(_ sender: UIButton) {
+        changeColor(.red)
+    }
+    
+    @IBAction func greenButtonAction(_ sender: UIButton) {
+        changeColor(.green)
+    }
+    
+    @IBAction func blackButtonAction(_ sender: UIButton) {
+        changeColor(.black)
     }
     
     @IBAction func darkmodeAction(_ sender: UISwitch) {
@@ -233,6 +278,13 @@ class NCBackgroundImageColor: UIViewController {
         colorHandle?.color = color
         colorPicker.setNeedsLayout()
         brightnessSlider.trackColor = color
+        
+        if darkmodeSwitch.isOn {
+            darkColor = color.hexString
+        } else {
+            lightColor = color.hexString
+        }
+        
         collectionViewCommon?.collectionView.backgroundColor = color
     }
 }
