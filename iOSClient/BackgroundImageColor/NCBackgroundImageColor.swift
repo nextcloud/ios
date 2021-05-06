@@ -207,6 +207,7 @@ class NCBackgroundImageColor: UIViewController {
         
         darkColor = ""
         lightColor = ""
+        useForAllSwitch.isOn = true
         
         if darkmodeSwitch.isOn {
             changeColor(.black)
@@ -250,7 +251,6 @@ class NCBackgroundImageColor: UIViewController {
 
         NSLayoutConstraint.activate([
             colorPicker.leadingAnchor.constraint(equalTo: chromaColorPickerView.leadingAnchor, constant: 20),
-            //colorPicker.centerXAnchor.constraint(equalTo: chromaColorPickerView.centerXAnchor),
             colorPicker.topAnchor.constraint(equalTo: chromaColorPickerView.topAnchor),
             colorPicker.widthAnchor.constraint(equalToConstant: defaultColorPickerSize.width),
             colorPicker.heightAnchor.constraint(equalToConstant: defaultColorPickerSize.height)
