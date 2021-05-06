@@ -51,8 +51,8 @@ class NCBackgroundImageColor: UIViewController {
     private let defaultColorPickerSize = CGSize(width: 200, height: 200)
     private let brightnessSliderWidthHeightRatio: CGFloat = 0.1
     
-    private var darkColor = ""      // "#000000"
-    private var lightColor = ""     // #FFFFFF
+    private var darkColor = ""
+    private var lightColor = ""
     
     public var collectionViewCommon: NCCollectionViewCommon?
 
@@ -222,10 +222,17 @@ class NCBackgroundImageColor: UIViewController {
     
     @IBAction func okAction(_ sender: Any) {
         
-        if useForAllSwitch.isOn {
-            NCManageDatabase.shared.setAccountColorFiles(lightColorFiles: lightColor, darkColorFiles: darkColor)
-        } else {
-            if let collectionViewCommon = collectionViewCommon {
+        var lightColor = self.lightColor
+        var darkColor = self.darkColor
+        
+        if lightColor == "#FFFFFF" { lightColor = "" }
+        if darkColor == "#000000" { darkColor = "" }
+
+        if let collectionViewCommon = collectionViewCommon {
+            if useForAllSwitch.isOn {
+                NCManageDatabase.shared.setAccountColorFiles(lightColorFiles: lightColor, darkColorFiles: darkColor)
+                NCUtility.shared.setBackgroundColorForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl, lightColorBackground: "", darkColorBackground: "")
+            } else {
                 NCUtility.shared.setBackgroundColorForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl, lightColorBackground: lightColor, darkColorBackground: darkColor)
             }
         }
