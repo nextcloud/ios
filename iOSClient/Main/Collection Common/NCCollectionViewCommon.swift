@@ -212,57 +212,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return true
     }
     
-    func setNavigationItem() {
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
         
-        if isEditMode {
-            
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "navigationMore"), style: .plain, target: self, action:#selector(tapSelectMenu(sender:)))
-            navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain, target: self, action: #selector(tapSelect(sender:)))
-            navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(dataSource.metadatas.count)"
-            
-        } else {
-            
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_select_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(tapSelect(sender:)))
-            navigationItem.leftBarButtonItem = nil
-            navigationItem.title = titleCurrentFolder
-            
-            // PROFILE BUTTON
-            
-            if layoutKey == NCGlobal.shared.layoutViewFiles {
-            
-                var image = NCUtility.shared.loadImage(named: "person.crop.circle")
-                let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
-                if let userImage = UIImage(contentsOfFile: fileNamePath) {
-                    image = userImage
-                }
-                
-                image = NCUtility.shared.createAvatar(image: image, size: 30)
-                
-                let button = UIButton(type: .custom)
-                button.setImage(image, for: .normal)
-                
-                if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
-                 
-                    let activeAccount = NCManageDatabase.shared.getActiveAccount()
-                    var title = "  "
-                    if activeAccount?.alias == "" {
-                        title = title + (activeAccount?.user ?? "")
-                    } else {
-                        title = title + (activeAccount?.alias ?? "")
-                    }
-                    
-                    button.setTitle(title, for: .normal)
-                    button.setTitleColor(.systemBlue, for: .normal)
-                }
-                
-                button.semanticContentAttribute = .forceLeftToRight
-                button.sizeToFit()
-                button.addTarget(self, action: #selector(profileButtonTapped(sender:)), for: .touchUpInside)
-                       
-                navigationItem.setLeftBarButton(UIBarButtonItem(customView: button), animated: true)
-                navigationItem.leftItemsSupplementBackButton = true
-            }
-        }
+        setLayout()
     }
     
     // MARK: - NotificationCenter
@@ -589,6 +542,59 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     // MARK: - Layout
+    
+    func setNavigationItem() {
+        
+        if isEditMode {
+            
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "navigationMore"), style: .plain, target: self, action:#selector(tapSelectMenu(sender:)))
+            navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain, target: self, action: #selector(tapSelect(sender:)))
+            navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(dataSource.metadatas.count)"
+            
+        } else {
+            
+            navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_select_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(tapSelect(sender:)))
+            navigationItem.leftBarButtonItem = nil
+            navigationItem.title = titleCurrentFolder
+            
+            // PROFILE BUTTON
+            
+            if layoutKey == NCGlobal.shared.layoutViewFiles {
+            
+                var image = NCUtility.shared.loadImage(named: "person.crop.circle")
+                let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
+                if let userImage = UIImage(contentsOfFile: fileNamePath) {
+                    image = userImage
+                }
+                
+                image = NCUtility.shared.createAvatar(image: image, size: 30)
+                
+                let button = UIButton(type: .custom)
+                button.setImage(image, for: .normal)
+                
+                if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
+                 
+                    let activeAccount = NCManageDatabase.shared.getActiveAccount()
+                    var title = "  "
+                    if activeAccount?.alias == "" {
+                        title = title + (activeAccount?.user ?? "")
+                    } else {
+                        title = title + (activeAccount?.alias ?? "")
+                    }
+                    
+                    button.setTitle(title, for: .normal)
+                    button.setTitleColor(.systemBlue, for: .normal)
+                }
+                
+                button.semanticContentAttribute = .forceLeftToRight
+                button.sizeToFit()
+                button.addTarget(self, action: #selector(profileButtonTapped(sender:)), for: .touchUpInside)
+                       
+                navigationItem.setLeftBarButton(UIBarButtonItem(customView: button), animated: true)
+                navigationItem.leftItemsSupplementBackButton = true
+            }
+        }
+    }
     
     func setLayout() {
         
