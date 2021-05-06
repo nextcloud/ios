@@ -37,8 +37,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     
     var delegate: NCSectionHeaderMenuDelegate?
-    var colorBackground: UIColor?
-    
+
     private var markdownParser = MarkdownParser()
     private var richWorkspaceText: String?
     private var textViewColor: UIColor?
@@ -47,8 +46,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        backgroundColor = colorBackground
-
+        backgroundColor = .clear
+        
         buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
         
         buttonOrder.setTitle("", for: .normal)
@@ -56,7 +55,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonMore.setImage(UIImage.init(named: "more")!.image(color:  NCBrandColor.shared.gray, size: 25), for: .normal)
                 
         // Gradient
-        gradient.startPoint = CGPoint(x: 0, y: 0.60)
+        gradient.startPoint = CGPoint(x: 0, y: 0.50)
         gradient.endPoint = CGPoint(x: 0, y: 1)
         viewRichWorkspace.layer.addSublayer(gradient)
         setGradientColor()
@@ -87,19 +86,13 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     }
     
     func setGradientColor() {
-        
-        var colorStart: UIColor = .black
-        var colorEnd: UIColor = .white
-        
+       /*
         if traitCollection.userInterfaceStyle == .dark {
-            colorStart = UIColor.init(white: 0, alpha: 0)
-            colorEnd = UIColor.black
+            gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
         } else {
-            colorStart = UIColor.init(white: 1, alpha: 0)
-            colorEnd = UIColor.white
+            gradient.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
         }
-        
-        gradient.colors = [colorStart.cgColor, colorEnd.cgColor]
+        */
     }
     
     func setTitleSorted(datasourceTitleButton: String) {

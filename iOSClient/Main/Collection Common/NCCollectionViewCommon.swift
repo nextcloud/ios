@@ -44,6 +44,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var metadataTouch: tableMetadata?
     internal var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
+    internal var header: UIView?
         
     internal var layoutForView: NCGlobal.layoutForViewType?
 
@@ -1283,6 +1284,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if kind == UICollectionView.elementKindSectionHeader {
                         
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
+            self.header = header
             
             if collectionView.collectionViewLayout == gridLayout {
                 header.buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.gray, size: 50), for: .normal)
@@ -1295,8 +1297,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             header.setTitleSorted(datasourceTitleButton: layoutForView?.titleButtonHeader ?? "")
             header.viewRichWorkspaceHeightConstraint.constant = headerRichWorkspaceHeight
             header.setRichWorkspaceText(richWorkspaceText: richWorkspaceText)
-            header.colorBackground = collectionView.backgroundColor
-            
+           
             return header
             
         } else {
