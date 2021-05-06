@@ -625,14 +625,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         // COLOR BACKGROUND
         if traitCollection.userInterfaceStyle == .dark {
-            if layoutForView?.colorDarkBackground != "" {
-                collectionView.backgroundColor = UIColor.init(hex: layoutForView?.colorDarkBackground ?? "")
+            if layoutForView?.darkColorBackground != "" {
+                collectionView.backgroundColor = UIColor.init(hex: layoutForView?.darkColorBackground ?? "")
             } else {
                 collectionView.backgroundColor = defaultBackgroundColor
             }
         } else {
-            if layoutForView?.colorBackground != "" {
-                collectionView.backgroundColor = UIColor.init(hex: layoutForView?.colorBackground ?? "")
+            if layoutForView?.lightColorBackground != "" {
+                collectionView.backgroundColor = UIColor.init(hex: layoutForView?.lightColorBackground ?? "")
             } else {
                 collectionView.backgroundColor = defaultBackgroundColor
             }
@@ -918,7 +918,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let vcBackgroundImageColor = UIStoryboard(name: "NCBackgroundImageColor", bundle: nil).instantiateInitialViewController() as? NCBackgroundImageColor {
             
             vcBackgroundImageColor.collectionViewCommon = self
-            vcBackgroundImageColor.defaultColor = defaultBackgroundColor
+            //vcBackgroundImageColor.defaultColor = defaultBackgroundColor
             
             let popup = NCPopupViewController(contentController: vcBackgroundImageColor, popupWidth: vcBackgroundImageColor.width, popupHeight: vcBackgroundImageColor.height)
                                         

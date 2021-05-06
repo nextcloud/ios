@@ -39,15 +39,16 @@ class NCBackgroundImageColor: UIViewController {
     private let colorPicker = ChromaColorPicker()
     private let brightnessSlider = ChromaBrightnessSlider()
     private var colorHandle: ChromaColorHandle?
-    private var isDarkMode: Bool = false
     
     private let defaultColorPickerSize = CGSize(width: 200, height: 200)
     private let brightnessSliderWidthHeightRatio: CGFloat = 0.1
+    
     private var darkColorHexString = ""
     private var lightColorHexString = ""
     
     public var collectionViewCommon: NCCollectionViewCommon?
-    public var defaultColor: UIColor = NCBrandColor.shared.systemBackground
+    public var defaultDarkColor: UIColor = .black
+    public var defaultLightColor: UIColor = .white
 
     let width: CGFloat = 300
     let height: CGFloat = 500
@@ -81,22 +82,29 @@ class NCBackgroundImageColor: UIViewController {
         super.viewDidAppear(animated)
     }
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-    }
-    
     // MARK: - Action
     
     @IBAction func darkmodeAction(_ sender: UISwitch) {
-        isDarkMode = sender.isOn
+        
+        var colorHexString = ""
+        
+        if sender.isOn {
+            colorHexString = darkColorHexString
+        } else {
+            colorHexString = lightColorHexString
+        }
+        
+        if let color = UIColor.init(hex: colorHexString) {
+            changeColor(color)
+        } else {
+        }
     }
     
     @IBAction func defaultAction(_ sender: Any) {
         
-        colorHandle?.color = defaultColor
-        colorPicker.setNeedsLayout()
-        brightnessSlider.trackColor = defaultColor
-        collectionViewCommon?.collectionView.backgroundColor = defaultColor
+        //changeColor(defaultColor)
+        darkColorHexString = ""
+        lightColorHexString = ""
     }
     
     @IBAction func cancelAction(_ sender: Any) {
@@ -107,11 +115,7 @@ class NCBackgroundImageColor: UIViewController {
     @IBAction func okAction(_ sender: Any) {
         
         if let collectionViewCommon = collectionViewCommon {
-            if colorHandle?.color == defaultColor {
-                NCUtility.shared.setBackgroundColorForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl, colorBackground: "", colorDarkBackground: "")
-            } else {
-                //NCUtility.shared.setBackgroundColorForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl, colorBackground: colorHexString)
-            }
+            //NCUtility.shared.setBackgroundColorForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl, colorBackground: "", colorDarkBackground: darkColorHexString)
         }
         collectionViewCommon?.setLayout()
         dismiss(animated: true)
@@ -152,8 +156,15 @@ class NCBackgroundImageColor: UIViewController {
     }
     
     private func setupColorPickerHandles() {
-      
         colorHandle = colorPicker.addHandle(at: collectionViewCommon?.collectionView.backgroundColor)
+    }
+    
+    private func changeColor(_ color: UIColor) {
+        
+        colorHandle?.color = color
+        colorPicker.setNeedsLayout()
+        brightnessSlider.trackColor = color
+        collectionViewCommon?.collectionView.backgroundColor = color
     }
 }
 
