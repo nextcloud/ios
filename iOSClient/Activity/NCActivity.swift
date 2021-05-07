@@ -68,16 +68,11 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
         changeTheming()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        appDelegate.activeViewController = self
-
-        loadDataSource()
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        appDelegate.activeViewController = self
+        loadDataSource()
         loadActivity(idActivity: 0)
     }
     
@@ -139,7 +134,7 @@ extension NCActivity: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 60))
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 60))
         view.backgroundColor = .clear
         
         let label = UILabel()
