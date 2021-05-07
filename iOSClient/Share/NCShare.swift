@@ -89,7 +89,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataNCShare), object: nil)
         
         // Shared with you by ...
-        if metadata!.ownerId != self.appDelegate.userId {
+        if metadata!.ownerId != "" && metadata!.ownerId != self.appDelegate.userId {
             
             searchFieldTopConstraint.constant = 65
             sharedWithYouByView.isHidden = false
