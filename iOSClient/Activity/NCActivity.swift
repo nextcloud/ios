@@ -301,7 +301,7 @@ extension NCActivity: UITableViewDataSourcePrefetching {
 extension NCActivity: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.height < 10 {
+        if scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.height < 100 {
             if let activities = allActivities.last {
                 loadActivity(idActivity: activities.idActivity)
             }
