@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate  {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate, NCBackgroundImageColorDelegate  {
     
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -648,6 +648,29 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.reloadData()
     }
 
+    // MARK: - BackgroundImageColor Delegate
+    
+    func colorPickerCancel() {
+        setLayout()
+    }
+    
+    func colorPickerWillChange(color: UIColor) {
+        collectionView.backgroundColor = color
+    }
+    
+    func colorPickerDidChange(lightColor: String, darkColor: String, useForAll: Bool) {
+        
+        if useForAll {
+            NCManageDatabase.shared.setAccountColorFiles(lightColorBackground: lightColor, darkColorBackground: darkColor)
+            NCUtility.shared.setBackgroundColorForView(key: layoutKey, serverUrl: serverUrl, lightColorBackground: "", darkColorBackground: "")
+        } else {
+            NCUtility.shared.setBackgroundColorForView(key: layoutKey, serverUrl: serverUrl, lightColorBackground: lightColor, darkColorBackground: darkColor)
+        }
+        
+        setLayout()
+    }
+        
+    
     // MARK: - Empty
     
     func emptyDataSetView(_ view: NCEmptyView) {
@@ -929,7 +952,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
        
         if let vcBackgroundImageColor = UIStoryboard(name: "NCBackgroundImageColor", bundle: nil).instantiateInitialViewController() as? NCBackgroundImageColor {
             
-            vcBackgroundImageColor.collectionViewCommon = self
+            vcBackgroundImageColor.delegate = self
+            vcBackgroundImageColor.setupColor = collectionView.backgroundColor
+            vcBackgroundImageColor.layoutForView = layoutForView
             
             let popup = NCPopupViewController(contentController: vcBackgroundImageColor, popupWidth: vcBackgroundImageColor.width, popupHeight: vcBackgroundImageColor.height)
             popup.backgroundAlpha = 0

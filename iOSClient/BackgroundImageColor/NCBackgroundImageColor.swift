@@ -24,6 +24,19 @@
 import UIKit
 import ChromaColorPicker
 
+public protocol NCBackgroundImageColorDelegate {
+    func colorPickerCancel()
+    func colorPickerWillChange(color: UIColor)
+    func colorPickerDidChange(lightColor: String, darkColor: String, useForAll: Bool)
+}
+
+// optional func
+public extension NCBackgroundImageColorDelegate {
+    func colorPickerCancel() {}
+    func colorPickerWillChange(color: UIColor) { }
+    func colorPickerDidChange(lightColor: String, darkColor: String, useForAll: Bool) { }
+}
+
 class NCBackgroundImageColor: UIViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
@@ -54,7 +67,9 @@ class NCBackgroundImageColor: UIViewController {
     private var darkColor = ""
     private var lightColor = ""
     
-    public var collectionViewCommon: NCCollectionViewCommon?
+    var delegate: NCBackgroundImageColorDelegate?
+    var setupColor: UIColor?
+    var layoutForView: NCGlobal.layoutForViewType?
 
     let width: CGFloat = 300
     let height: CGFloat = 485
@@ -124,12 +139,11 @@ class NCBackgroundImageColor: UIViewController {
         useForAllSwitch.isOn = false
         
         // Color for this view
-        if let collectionViewCommon = collectionViewCommon {
-            let layoutForView = NCUtility.shared.getLayoutForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl)
+        if let layoutForView = layoutForView {
             darkColor = layoutForView.darkColorBackground
             lightColor = layoutForView.lightColorBackground
         }
-                
+        
         // Color for all folders
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
             if darkColor == "" {
@@ -237,7 +251,8 @@ class NCBackgroundImageColor: UIViewController {
     }
     
     @IBAction func cancelAction(_ sender: Any) {
-        collectionViewCommon?.setLayout()
+
+        self.delegate?.colorPickerCancel()
         dismiss(animated: true)
     }
     
@@ -248,17 +263,9 @@ class NCBackgroundImageColor: UIViewController {
         
         if lightColor == "#FFFFFF" { lightColor = "" }
         if darkColor == "#000000" { darkColor = "" }
-
-        if let collectionViewCommon = collectionViewCommon {
-            if useForAllSwitch.isOn {
-                NCManageDatabase.shared.setAccountColorFiles(lightColorBackground: lightColor, darkColorBackground: darkColor)
-                NCUtility.shared.setBackgroundColorForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl, lightColorBackground: "", darkColorBackground: "")
-            } else {
-                NCUtility.shared.setBackgroundColorForView(key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl, lightColorBackground: lightColor, darkColorBackground: darkColor)
-            }
-        }
         
-        collectionViewCommon?.setLayout()
+        self.delegate?.colorPickerDidChange(lightColor: lightColor, darkColor: darkColor, useForAll: useForAllSwitch.isOn)
+        
         dismiss(animated: true)
     }
     
@@ -297,7 +304,7 @@ class NCBackgroundImageColor: UIViewController {
     }
     
     private func setupColorPickerHandles() {
-        colorHandle = colorPicker.addHandle(at: collectionViewCommon?.collectionView.backgroundColor)
+        colorHandle = colorPicker.addHandle(at: setupColor)
     }
     
     private func changeColor(_ color: UIColor) {
@@ -312,7 +319,7 @@ class NCBackgroundImageColor: UIViewController {
             lightColor = color.hexString
         }
         
-        collectionViewCommon?.collectionView.backgroundColor = color
+        self.delegate?.colorPickerWillChange(color: color)
     }
 }
 
@@ -325,6 +332,6 @@ extension NCBackgroundImageColor: ChromaColorPickerDelegate {
             lightColor = color.hexString
         }
         
-        collectionViewCommon?.collectionView.backgroundColor = color
+        self.delegate?.colorPickerWillChange(color: color)
     }
 }

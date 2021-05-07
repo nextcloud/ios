@@ -89,8 +89,8 @@ import UIKit
     @objc public var disable_crash_service:             Bool = false
     @objc public var disable_request_account:           Bool = false
     
-    @objc public var disable_background_color:          Bool = true
-    @objc public var disable_background_image:          Bool = true
+    @objc public var disable_background_color:          Bool = false
+    @objc public var disable_background_image:          Bool = false
 
     override init() {
         

@@ -57,4 +57,8 @@ class NCMainNavigationController: UINavigationController {
         navigationBar.tintColor = .systemBlue
         navigationBar.setNeedsLayout()
     }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+    }
 }
