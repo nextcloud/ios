@@ -301,8 +301,10 @@ extension NCActivity: UITableViewDataSourcePrefetching {
 extension NCActivity: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if (Int(scrollView.contentOffset.y + scrollView.frame.size.height) == Int(scrollView.contentSize.height + scrollView.contentInset.bottom)) {
-            loadActivity(idActivity: allActivities.last!.idActivity)
+        if scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.height < 10 {
+            if let activities = allActivities.last {
+                loadActivity(idActivity: activities.idActivity)
+            }
         }
     }
 }
@@ -561,7 +563,9 @@ extension NCActivity {
         canFetchActivity = false
         
         if idActivity > 0 {
-            NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: 50)
+            
+            let height = self.tabBarController?.tabBar.frame.size.height ?? 0
+            NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: height + 50, style: .gray)
         }
         
         NCCommunication.shared.getActivity(since: idActivity, limit: 200, objectId: filterFileId, objectType: objectType, previews: true) { (account, activities, errorCode, errorDescription) in
