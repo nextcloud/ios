@@ -958,10 +958,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // get layout for view
         layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
     }
+    
     @objc func reloadDataSourceNetwork(forced: Bool = false) { }
+    
     @objc func reloadDataSourceNetworkRefreshControl() {
         reloadDataSourceNetwork(forced: true)
     }
+    
     @objc func networkSearch() {
         
         if appDelegate.account == "" { return }
