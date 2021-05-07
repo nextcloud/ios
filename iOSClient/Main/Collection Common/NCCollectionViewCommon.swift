@@ -628,17 +628,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // COLOR BACKGROUND
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
         if traitCollection.userInterfaceStyle == .dark {
-            if layoutForView?.darkColorBackground != "" {
-                collectionView.backgroundColor = UIColor.init(hex: layoutForView?.darkColorBackground ?? "")
-            } else if activeAccount?.darkColorBackground != "" {
+            if activeAccount?.darkColorBackground != "" {
                 collectionView.backgroundColor = UIColor.init(hex: activeAccount?.darkColorBackground ?? "")
             } else {
                 collectionView.backgroundColor = defaultBackgroundColor
             }
         } else {
-            if layoutForView?.lightColorBackground != "" {
-                collectionView.backgroundColor = UIColor.init(hex: layoutForView?.lightColorBackground ?? "")
-            } else if activeAccount?.lightColorBackground != "" {
+           if activeAccount?.lightColorBackground != "" {
                 collectionView.backgroundColor = UIColor.init(hex: activeAccount?.lightColorBackground ?? "")
             } else {
                 collectionView.backgroundColor = defaultBackgroundColor
@@ -658,15 +654,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.backgroundColor = color
     }
     
-    func colorPickerDidChange(lightColor: String, darkColor: String, useForAll: Bool) {
-        
-        if useForAll {
-            NCManageDatabase.shared.setAccountColorFiles(lightColorBackground: lightColor, darkColorBackground: darkColor)
-            NCUtility.shared.setBackgroundColorForView(key: layoutKey, serverUrl: serverUrl, lightColorBackground: "", darkColorBackground: "")
-        } else {
-            NCUtility.shared.setBackgroundColorForView(key: layoutKey, serverUrl: serverUrl, lightColorBackground: lightColor, darkColorBackground: darkColor)
-        }
-        
+    func colorPickerDidChange(lightColor: String, darkColor: String) {
+
+        NCManageDatabase.shared.setAccountColorFiles(lightColorBackground: lightColor, darkColorBackground: darkColor)
+               
         setLayout()
     }
         
@@ -954,7 +945,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             
             vcBackgroundImageColor.delegate = self
             vcBackgroundImageColor.setupColor = collectionView.backgroundColor
-            vcBackgroundImageColor.layoutForView = layoutForView
+            if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+                vcBackgroundImageColor.lightColor = activeAccount.lightColorBackground
+                vcBackgroundImageColor.darkColor = activeAccount.darkColorBackground
+            }
             
             let popup = NCPopupViewController(contentController: vcBackgroundImageColor, popupWidth: vcBackgroundImageColor.width, popupHeight: vcBackgroundImageColor.height)
             popup.backgroundAlpha = 0

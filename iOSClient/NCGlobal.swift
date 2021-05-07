@@ -49,8 +49,6 @@ class NCGlobal: NSObject {
         var itemForLine: Int
         var imageBackgroud: String
         var imageBackgroudContentMode: String
-        var lightColorBackground: String
-        var darkColorBackground: String
     }
     
     // Directory on Group

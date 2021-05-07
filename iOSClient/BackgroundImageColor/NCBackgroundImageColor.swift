@@ -27,14 +27,14 @@ import ChromaColorPicker
 public protocol NCBackgroundImageColorDelegate {
     func colorPickerCancel()
     func colorPickerWillChange(color: UIColor)
-    func colorPickerDidChange(lightColor: String, darkColor: String, useForAll: Bool)
+    func colorPickerDidChange(lightColor: String, darkColor: String)
 }
 
 // optional func
 public extension NCBackgroundImageColorDelegate {
     func colorPickerCancel() {}
     func colorPickerWillChange(color: UIColor) { }
-    func colorPickerDidChange(lightColor: String, darkColor: String, useForAll: Bool) { }
+    func colorPickerDidChange(lightColor: String, darkColor: String) { }
 }
 
 class NCBackgroundImageColor: UIViewController {
@@ -51,9 +51,6 @@ class NCBackgroundImageColor: UIViewController {
     @IBOutlet weak var darkmodeLabel: UILabel!
     @IBOutlet weak var darkmodeSwitch: UISwitch!
     
-    @IBOutlet weak var useForAllLabel: UILabel!
-    @IBOutlet weak var useForAllSwitch: UISwitch!
-
     @IBOutlet weak var defaultButton: UIButton!
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var okButton: UIButton!
@@ -64,15 +61,13 @@ class NCBackgroundImageColor: UIViewController {
     private let defaultColorPickerSize = CGSize(width: 200, height: 200)
     private let brightnessSliderWidthHeightRatio: CGFloat = 0.1
     
-    private var darkColor = ""
-    private var lightColor = ""
-    
     var delegate: NCBackgroundImageColorDelegate?
     var setupColor: UIColor?
-    var layoutForView: NCGlobal.layoutForViewType?
-
+    var darkColor = "#000000"
+    var lightColor = "#FFFFFF"
+    
     let width: CGFloat = 300
-    let height: CGFloat = 485
+    let height: CGFloat = 450
     
     // MARK: - View Life Cycle
 
@@ -85,7 +80,6 @@ class NCBackgroundImageColor: UIViewController {
         
         titleLabel.text = NSLocalizedString("_background_", comment: "")
         darkmodeLabel.text = NSLocalizedString("_dark_mode_", comment: "")
-        useForAllLabel.text = NSLocalizedString("_as_default_color_", comment: "")
 
         defaultButton.setTitle(NSLocalizedString("_default_color_", comment: ""), for: .normal)
 
@@ -136,14 +130,7 @@ class NCBackgroundImageColor: UIViewController {
         } else {
             darkmodeSwitch.isOn = false
         }
-        useForAllSwitch.isOn = false
-        
-        // Color for this view
-        if let layoutForView = layoutForView {
-            darkColor = layoutForView.darkColorBackground
-            lightColor = layoutForView.lightColorBackground
-        }
-        
+
         // Color for all folders
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
             if darkColor == "" {
@@ -219,34 +206,12 @@ class NCBackgroundImageColor: UIViewController {
     
     @IBAction func defaultAction(_ sender: Any) {
         
-        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-            if darkmodeSwitch.isOn {
-                if useForAllSwitch.isOn {
-                    darkColor = ""
-                    changeColor(.black)
-                } else {
-                    if let color = UIColor.init(hex: activeAccount.darkColorBackground) {
-                        darkColor = activeAccount.darkColorBackground
-                        changeColor(color)
-                    } else {
-                        darkColor = ""
-                        changeColor(.black)
-                    }
-                }
-            } else {
-                if useForAllSwitch.isOn {
-                    lightColor = "#FFFFFF"
-                    changeColor(.white)
-                } else {
-                    if let color = UIColor.init(hex:  activeAccount.lightColorBackground) {
-                        lightColor = activeAccount.lightColorBackground
-                        changeColor(color)
-                    } else {
-                        lightColor = "#FFFFFF"
-                        changeColor(.white)
-                    }
-                }
-            }
+        if darkmodeSwitch.isOn {
+            darkColor = "#000000"
+            changeColor(.black)
+        } else {
+            lightColor = "#FFFFFF"
+            changeColor(.white)
         }
     }
     
@@ -264,7 +229,7 @@ class NCBackgroundImageColor: UIViewController {
         if lightColor == "#FFFFFF" { lightColor = "" }
         if darkColor == "#000000" { darkColor = "" }
         
-        self.delegate?.colorPickerDidChange(lightColor: lightColor, darkColor: darkColor, useForAll: useForAllSwitch.isOn)
+        self.delegate?.colorPickerDidChange(lightColor: lightColor, darkColor: darkColor)
         
         dismiss(animated: true)
     }
