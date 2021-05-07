@@ -173,8 +173,13 @@
 "_privacy_"                 = "Privacy";
 "_source_code_"             = "Get source code";
 "_account_select_"          = "Select the account";
+
+/* Background of the file listing view */
 "_use_as_background_"       = "Use it as a background";
+
+/* Background of the file listing view */
 "_background_"              = "Background";
+
 "_dark_mode_"               = "Dark mode";
 "_default_color_"           = "Use the default color";
 "_as_default_color_"        = "Use as default color";
