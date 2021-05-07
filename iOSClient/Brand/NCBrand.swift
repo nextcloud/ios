@@ -90,7 +90,7 @@ import UIKit
     @objc public var disable_request_account:           Bool = false
     
     @objc public var disable_background_color:          Bool = false
-    @objc public var disable_background_image:          Bool = false
+    @objc public var disable_background_image:          Bool = true
 
     override init() {
         
