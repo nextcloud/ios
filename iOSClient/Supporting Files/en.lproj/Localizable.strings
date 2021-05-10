@@ -908,4 +908,4 @@
 "_create_audio_error_"      = "Error while creating audio file";
 "_create_image_error_"      = "Error while creating image file";
 "_error_open_file_"         = "Error while opening a file";
-"_new_background_im_"       = "Select an image or take a picture and use it as background. You can also select nothing. Press 'Done' to complete.";
+"_new_background_im_"       = "Select an image or take a picture and use it as background. You can also select nothing. Press \"Done\" to complete.";
