@@ -337,6 +337,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 NCUtility.shared.removeAllSettings()
             }
             
+            CCUtility.clearCertificateError(account)
+            
             NCManageDatabase.shared.deleteAccount(account)
             NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, password: password)
             

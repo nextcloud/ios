@@ -245,9 +245,6 @@ extension NCLoginWeb: WKNavigationDelegate {
         
         var urlBase = server
         
-        // NO account found, clear all
-        if NCManageDatabase.shared.getAccounts() == nil { NCUtility.shared.removeAllSettings() }
-            
         // Normalized
         if (urlBase.last == "/") {
             urlBase = String(urlBase.dropLast())
@@ -255,6 +252,14 @@ extension NCLoginWeb: WKNavigationDelegate {
         
         // Create account
         let account: String = "\(username) \(urlBase)"
+        
+        // NO account found, clear all
+        if NCManageDatabase.shared.getAccounts() == nil {
+            NCUtility.shared.removeAllSettings()
+        }
+        
+        // Clear certificate error 
+        CCUtility.clearCertificateError(account)
 
         // Add new account
         NCManageDatabase.shared.deleteAccount(account)
