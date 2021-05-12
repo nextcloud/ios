@@ -180,6 +180,15 @@ import Queuer
             } catch { print(error) }
         }
         
+#if !EXTENSION
+        DispatchQueue.main.async {
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            if !trusted && appDelegate.account != "" {
+                //CCUtility.setCertificateError(appDelegate.account, error: true)
+            }
+        }
+#endif
+
         return trusted
     }
     
