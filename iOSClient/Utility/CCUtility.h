@@ -143,6 +143,7 @@
 
 + (BOOL)getCertificateError:(NSString *)account;
 + (void)setCertificateError:(NSString *)account error:(BOOL)error;
++ (void)clearCertificateError:(NSString *)account;
 
 + (BOOL)getDisableLocalCacheAfterUpload;
 + (void)setDisableLocalCacheAfterUpload:(BOOL)disable;

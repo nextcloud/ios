@@ -538,6 +538,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
                 NCNetworking.shared.writeCertificate(directoryCertificate: CCUtility.getDirectoryCerificates(), url: self.urlBase)
+                CCUtility.clearCertificateError(self.account)
                 self.startTimerErrorNetworking()
             }))
             

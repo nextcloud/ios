@@ -566,6 +566,13 @@
 #endif
 }
 
++ (void)clearCertificateError:(NSString *)account
+{
+    NSString *key = [@"certificateError" stringByAppendingString:account];
+    
+    [UICKeyChainStore setString:nil forKey:key service:NCGlobal.shared.serviceShareKeyChain];
+}
+
 + (BOOL)getDisableLocalCacheAfterUpload
 {
     return [[UICKeyChainStore stringForKey:@"disableLocalCacheAfterUpload" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
