@@ -24,7 +24,6 @@
 //  Based on code of Venkat Kukunuru
 //  --------------------------------
 
-import Foundation
 import UIKit
 import AVFoundation
 import QuartzCore

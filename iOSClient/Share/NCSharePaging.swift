@@ -22,7 +22,7 @@
 //
 
 
-import Foundation
+import UIKit
 import Parchment
 import NCCommunication
 
