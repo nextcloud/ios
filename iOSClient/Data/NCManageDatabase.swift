@@ -800,6 +800,7 @@ class NCManageDatabase: NSObject {
                                 addObjectActivityPreview.account = account
                                 addObjectActivityPreview.idActivity = activity.idActivity
                                 addObjectActivityPreview.fileId = preview["fileId"].intValue
+                                addObjectActivityPreview.filename = preview["filename"].stringValue
                                 addObjectActivityPreview.idPrimaryKey = account + String(activity.idActivity) + String(addObjectActivityPreview.fileId)
                                 addObjectActivityPreview.source = preview["source"].stringValue
                                 addObjectActivityPreview.link = preview["link"].stringValue

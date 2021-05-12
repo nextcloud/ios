@@ -134,6 +134,7 @@ class tableActivity: Object {
 class tableActivityPreview: Object {
     
     @objc dynamic var account = ""
+    @objc dynamic var filename = ""
     @objc dynamic var idPrimaryKey = ""
     @objc dynamic var idActivity: Int = 0
     @objc dynamic var source = ""
