@@ -179,12 +179,20 @@ import Queuer
                 }
             } catch { print(error) }
         }
-        
+                
 #if !EXTENSION
         DispatchQueue.main.async {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            if !trusted && appDelegate.account != "" {
-                //CCUtility.setCertificateError(appDelegate.account, error: true)
+            if !trusted && appDelegate.account != "" && appDelegate.urlBase != "" {
+                if let url = URL(string: appDelegate.urlBase) {
+                    let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                    if let host = urlComponents?.host {
+                        let certificatePath = directoryCertificate + "/" + host + ".der"
+                        if FileManager.default.fileExists(atPath: certificatePath) {
+                            CCUtility.setCertificateError(appDelegate.account, error: true)
+                        }
+                    }
+                }
             }
         }
 #endif
@@ -192,15 +200,18 @@ import Queuer
         return trusted
     }
     
-    @objc func writeCertificate(directoryCertificate: String) {
+    @objc func writeCertificate(directoryCertificate: String, url: String) {
         
-        let stringDate: String = String(Date().timeIntervalSince1970)
-        let certificateAtPath = directoryCertificate + "/tmp.der"
-        let certificateToPath = directoryCertificate + "/" + stringDate + ".der"
-        
-        do {
-            try FileManager.default.moveItem(atPath: certificateAtPath, toPath: certificateToPath)
-        } catch { }
+        if let url = URL(string: url) {
+            let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            if let host = urlComponents?.host {
+            
+                let certificateAtPath = directoryCertificate + "/tmp.der"
+                let certificateToPath = directoryCertificate + "/" + host + ".der"
+            
+                NCUtilityFileSystem.shared.moveFile(atPath: certificateAtPath, toPath: certificateToPath)
+            }
+        }
     }
     
     private func saveX509Certificate(_ trust: SecTrust, certName: String, directoryCertificate: String) {
