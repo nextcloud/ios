@@ -346,7 +346,7 @@ extension NCMedia: UICollectionViewDelegate {
             let cell = collectionView.cellForItem(at: indexPath) as! NCGridMediaCell
             let image = cell.imageItem.image
             
-            return NCFunctionCenter.shared.contextMenuConfiguration(metadata: metadata, viewController: self, enableDeleteLocal: false, enableViewInFolder: true, image: image)
+            return NCFunctionCenter.shared.contextMenuConfiguration(ocId: metadata.ocId, viewController: self, enableDeleteLocal: false, enableViewInFolder: true, image: image)
         })
     }
     

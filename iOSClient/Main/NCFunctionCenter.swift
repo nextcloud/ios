@@ -515,8 +515,11 @@ import NCCommunication
     // MARK: - Context Menu Configuration
     
     @available(iOS 13.0, *)
-    func contextMenuConfiguration(metadata: tableMetadata, viewController: UIViewController, enableDeleteLocal: Bool, enableViewInFolder: Bool, image: UIImage?) -> UIMenu {
+    func contextMenuConfiguration(ocId: String, viewController: UIViewController, enableDeleteLocal: Bool, enableViewInFolder: Bool, image: UIImage?) -> UIMenu {
         
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
+            return UIMenu()
+        }
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
         var titleSave: String = NSLocalizedString("_save_selected_files_", comment: "")
@@ -524,6 +527,7 @@ import NCCommunication
         if metadataMOV != nil {
             titleSave = NSLocalizedString("_livephoto_save_", comment: "")
         }
+        let titleFavorite = metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: "")
         
         let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc") ) { action in
             self.appDelegate.pasteboardOcIds = [metadata.ocId]
@@ -531,6 +535,10 @@ import NCCommunication
         }
         
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info") ) { action in
+            self.openShare(ViewController: viewController, metadata: metadata, indexPage: 0)
+        }
+        
+        let offline = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info") ) { action in
             self.openShare(ViewController: viewController, metadata: metadata, indexPage: 0)
         }
         
@@ -589,6 +597,15 @@ import NCCommunication
             }
         }
         
+        let favorite = UIAction(title: titleFavorite, image: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite)) { action in
+            
+            NCNetworking.shared.favoriteMetadata(metadata, urlBase: self.appDelegate.urlBase) { (errorCode, errorDescription) in
+                if errorCode != 0 {
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                }
+            }
+        }
+        
         let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile, image: UIImage(systemName: "trash"), attributes: .destructive) { action in
             NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
                 if errorCode != 0 {
@@ -618,13 +635,13 @@ import NCCommunication
         
         if metadata.directory {
             
-            let submenu = UIMenu(title: "", options: .displayInline, children: [rename, moveCopy, delete])
+            let submenu = UIMenu(title: "", options: .displayInline, children: [favorite, rename, moveCopy, delete])
             return UIMenu(title: "", children: [detail, submenu])
         }
         
         // FILE
         
-        var children: [UIMenuElement] = [open, rename, moveCopy, copy, delete]
+        var children: [UIMenuElement] = [favorite, open, rename, moveCopy, copy, delete]
 
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
             children.insert(save, at: 2)

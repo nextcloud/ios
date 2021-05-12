@@ -1284,7 +1284,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
         }, actionProvider: { suggestedActions in
             
-            return NCFunctionCenter.shared.contextMenuConfiguration(metadata: metadata, viewController: self, enableDeleteLocal: true, enableViewInFolder: false, image: image)
+            return NCFunctionCenter.shared.contextMenuConfiguration(ocId: metadata.ocId, viewController: self, enableDeleteLocal: true, enableViewInFolder: false, image: image)
         })
     }
     
