@@ -537,7 +537,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
                         
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
-                NCNetworking.shared.writeCertificate(directoryCertificate: CCUtility.getDirectoryCerificates())
+                NCNetworking.shared.writeCertificate(directoryCertificate: CCUtility.getDirectoryCerificates(), url: self.urlBase)
                 self.startTimerErrorNetworking()
             }))
             

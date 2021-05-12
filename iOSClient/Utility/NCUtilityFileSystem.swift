@@ -108,6 +108,7 @@ class NCUtilityFileSystem: NSObject {
         }
     }
     
+    @discardableResult
     @objc func moveFile(atPath: String, toPath: String) -> Bool {
 
         if atPath == toPath { return true }
@@ -130,6 +131,7 @@ class NCUtilityFileSystem: NSObject {
         }
     }
     
+    @discardableResult
     @objc func copyFile(atPath: String, toPath: String) -> Bool {
 
         if atPath == toPath { return true }
