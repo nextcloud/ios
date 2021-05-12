@@ -515,7 +515,7 @@ import NCCommunication
     // MARK: - Context Menu Configuration
     
     @available(iOS 13.0, *)
-    func contextMenuConfiguration(metadata: tableMetadata, viewController: UIViewController, enableDeleteLocal: Bool, enableViewInFolder: Bool) -> UIMenu {
+    func contextMenuConfiguration(metadata: tableMetadata, viewController: UIViewController, enableDeleteLocal: Bool, enableViewInFolder: Bool, image: UIImage?) -> UIMenu {
         
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
@@ -576,6 +576,19 @@ import NCCommunication
             self.openSelectView(items: [metadata], viewController: viewController)
         }
         
+        let rename = UIAction(title: NSLocalizedString("_rename_", comment: ""), image: NCUtility.shared.loadImage(named: "pencil")) { action in
+            
+            if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
+                
+                vcRename.metadata = metadata
+                vcRename.imagePreview = image
+
+                let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
+                                            
+                viewController.present(popup, animated: true)
+            }
+        }
+        
         let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile, image: UIImage(systemName: "trash"), attributes: .destructive) { action in
             NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
                 if errorCode != 0 {
@@ -602,10 +615,10 @@ import NCCommunication
         // ------ MENU -----
         
         if metadata.directory {
-             return UIMenu(title: "", children: [detail, moveCopy, delete])
+             return UIMenu(title: "", children: [detail, rename, moveCopy, delete])
         }
         
-        var children: [UIMenuElement] = [detail, open, moveCopy, copy, delete]
+        var children: [UIMenuElement] = [detail, open, rename, moveCopy, copy, delete]
 
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
             children.insert(save, at: 2)

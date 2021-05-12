@@ -1270,14 +1270,21 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
         metadataTouch = metadata
         let identifier = indexPath as NSCopying
-
+        var image: UIImage?
+        let cell = collectionView.cellForItem(at: indexPath)
+        if cell is NCListCell {
+            image = (cell as! NCListCell).imageItem.image
+        } else if cell is NCGridCell {
+            image = (cell as! NCGridCell).imageItem.image
+        }
+        
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             
             return NCViewerProviderContextMenu(metadata: metadata)
             
         }, actionProvider: { suggestedActions in
             
-            return NCFunctionCenter.shared.contextMenuConfiguration(metadata: metadata, viewController: self, enableDeleteLocal: true, enableViewInFolder: false)
+            return NCFunctionCenter.shared.contextMenuConfiguration(metadata: metadata, viewController: self, enableDeleteLocal: true, enableViewInFolder: false, image: image)
         })
     }
     
