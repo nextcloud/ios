@@ -614,11 +614,17 @@ import NCCommunication
         
         // ------ MENU -----
         
+        // DIR
+        
         if metadata.directory {
-             return UIMenu(title: "", children: [detail, rename, moveCopy, delete])
+            
+            let submenu = UIMenu(title: "", options: .displayInline, children: [rename, moveCopy, delete])
+            return UIMenu(title: "", children: [detail, submenu])
         }
         
-        var children: [UIMenuElement] = [detail, open, rename, moveCopy, copy, delete]
+        // FILE
+        
+        var children: [UIMenuElement] = [open, rename, moveCopy, copy, delete]
 
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
             children.insert(save, at: 2)
@@ -629,7 +635,7 @@ import NCCommunication
         }
         
         if enableViewInFolder {
-            children.insert(viewInFolder, at: 5)
+            children.insert(viewInFolder, at: children.count-1)
         }
         
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && viewController is NCCollectionViewCommon && !NCBrandOptions.shared.disable_background_image {
@@ -640,7 +646,8 @@ import NCCommunication
             }
         }
         
-        return UIMenu(title: "", image: nil, identifier: nil, children: children)
+        let submenu = UIMenu(title: "", options: .displayInline, children: children)
+        return UIMenu(title: "", children: [detail, submenu])
     }
 }
 
