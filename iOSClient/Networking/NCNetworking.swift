@@ -158,18 +158,21 @@ import Queuer
     
     //MARK: - Pinning check
     
-    @objc func checkTrustedChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge) -> Bool {
+    func checkTrustedChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge) -> Bool {
         
         var trusted = false
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
         let directoryCertificate = CCUtility.getDirectoryCerificates()!
         let directoryCertificateUrl = URL.init(fileURLWithPath: directoryCertificate)
+        let host = challenge.protectionSpace.host
         
-        if let trust: SecTrust = protectionSpace.serverTrust {
-            saveX509Certificate(trust, certName: "tmp.der", directoryCertificate: directoryCertificate)
+        if let serverTrust: SecTrust = protectionSpace.serverTrust {
+            
+            // OLD
+            saveX509Certificate(serverTrust, certName: NCGlobal.shared.certificateTmp, directoryCertificate: directoryCertificate)
             do {
                 let directoryContents = try FileManager.default.contentsOfDirectory(at: directoryCertificateUrl, includingPropertiesForKeys: nil)
-                let certTmpPath = directoryCertificate+"/"+"tmp.der"
+                let certTmpPath = directoryCertificate + "/" + NCGlobal.shared.certificateTmp
                 for file in directoryContents {
                     let certPath = file.path
                     if certPath == certTmpPath { continue }
@@ -179,35 +182,51 @@ import Queuer
                     }
                 }
             } catch { print(error) }
-        }
-                
+            
+            // V2
+            var secresult = SecTrustResultType.invalid
+            let status = SecTrustEvaluate(serverTrust, &secresult)
+            if (errSecSuccess == status) {
+                if let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
+                    
+                    let serverCertificateData = SecCertificateCopyData(serverCertificate)
+                    let data = CFDataGetBytePtr(serverCertificateData);
+                    let size = CFDataGetLength(serverCertificateData);
+                    let certificate = NSData(bytes: data, length: size)
+                    
+                    // write certificate tmp to disk
+                    let certificatePath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2
+                    certificate.write(toFile: certificatePath, atomically: true)
+                    
+                    let certificateSavedPath = directoryCertificate + "/" + host + ".der"
+                    if let certificateSaved = NSData(contentsOfFile: certificateSavedPath) {
+                        if certificate.isEqual(to: certificateSaved as Data) {
+                            trusted = true
+                        }
+                    }
+                    
+                    if !trusted {
 #if !EXTENSION
-        DispatchQueue.main.async {
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            if !trusted && appDelegate.account != "" && appDelegate.urlBase != "" {
-                if let url = URL(string: appDelegate.urlBase) {
-                    let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
-                    if let host = urlComponents?.host {
-                        let certificatePath = directoryCertificate + "/" + host + ".der"
-                        if FileManager.default.fileExists(atPath: certificatePath) {
+                        DispatchQueue.main.async {
+                            let appDelegate = UIApplication.shared.delegate as! AppDelegate
                             CCUtility.setCertificateError(appDelegate.account, error: true)
                         }
+#endif
                     }
                 }
             }
         }
-#endif
-
+        
         return trusted
     }
     
-    @objc func writeCertificate(directoryCertificate: String, url: String) {
+    func writeCertificate(directoryCertificate: String, url: String) {
         
         if let url = URL(string: url) {
             let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
             if let host = urlComponents?.host {
             
-                let certificateAtPath = directoryCertificate + "/tmp.der"
+                let certificateAtPath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2
                 let certificateToPath = directoryCertificate + "/" + host + ".der"
             
                 NCUtilityFileSystem.shared.moveFile(atPath: certificateAtPath, toPath: certificateToPath)

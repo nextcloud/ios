@@ -158,6 +158,11 @@ class NCGlobal: NSObject {
     //
     let fileNameRichWorkspace                       = "Readme.md"
     
+    // Certificate pinning (temp)
+    //
+    let certificateTmp                              = "tmp.der"
+    let certificateTmpV2                            = "certificatetmp.der"
+    
     // ContentPresenter
     //
     @objc let dismissAfterSecond: TimeInterval      = 4
