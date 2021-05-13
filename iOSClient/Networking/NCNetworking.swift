@@ -127,9 +127,9 @@ import Queuer
 #endif
     }
     
-    func authenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-
-        if checkTrustedChallenge(challenge: challenge, directoryCertificate: CCUtility.getDirectoryCerificates()) {
+    func authenticationChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        
+        if checkTrustedChallenge(session, didReceive: challenge) {
             completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential.init(trust: challenge.protectionSpace.serverTrust!))
         } else {
             completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
@@ -158,10 +158,11 @@ import Queuer
     
     //MARK: - Pinning check
     
-    @objc func checkTrustedChallenge(challenge: URLAuthenticationChallenge, directoryCertificate: String) -> Bool {
+    @objc func checkTrustedChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge) -> Bool {
         
         var trusted = false
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
+        let directoryCertificate = CCUtility.getDirectoryCerificates()!
         let directoryCertificateUrl = URL.init(fileURLWithPath: directoryCertificate)
         
         if let trust: SecTrust = protectionSpace.serverTrust {
