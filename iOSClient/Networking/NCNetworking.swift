@@ -223,8 +223,10 @@ import Queuer
         return trusted
     }
     
-    func writeCertificate(directoryCertificate: String, url: String) {
+    func writeCertificate(url: String) {
         
+        let directoryCertificate = CCUtility.getDirectoryCerificates()!
+
         if let url = URL(string: url) {
             let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
             if let host = urlComponents?.host {
