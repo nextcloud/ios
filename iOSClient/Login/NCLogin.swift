@@ -270,7 +270,11 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             }
             
         } else {
-            print("error")
+            
+            let message = String(format: NSLocalizedString("_certificate_not_found_", comment: ""), NCGlobal.shared.certificate)
+            let alertController = UIAlertController(title: NSLocalizedString("_file_not_found_", comment: ""), message: message, preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
+            self.present(alertController, animated: true, completion: { })
         }
     }
     
