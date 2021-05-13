@@ -194,6 +194,9 @@ import Queuer
                     let size = CFDataGetLength(serverCertificateData);
                     let certificate = NSData(bytes: data, length: size)
                     
+                    // REMOVE ME OLD
+                    var certificateSavedFound = true
+                    
                     // write certificate tmp to disk
                     let certificatePath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2
                     certificate.write(toFile: certificatePath, atomically: true)
@@ -203,9 +206,12 @@ import Queuer
                         if certificate.isEqual(to: certificateSaved as Data) {
                             trusted = true
                         }
+                    } else {
+                        // REMOVE ME OLD
+                        certificateSavedFound = false
                     }
                     
-                    if !trusted {
+                    if !trusted && certificateSavedFound {
 #if !EXTENSION
                         DispatchQueue.main.async {
                             let appDelegate = UIApplication.shared.delegate as! AppDelegate
