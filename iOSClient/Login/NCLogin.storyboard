@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -111,6 +111,16 @@
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="Kfq-Bg-a0E">
                                 <rect key="frame" x="381" y="176" width="20" height="20"/>
                             </activityIndicatorView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5lM-dt-8fM">
+                                <rect key="frame" x="182" y="548" width="50" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="0RD-Gi-CTv"/>
+                                    <constraint firstAttribute="width" constant="50" id="NuK-Yo-LoT"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="actionCertificate:" destination="yj9-jo-WIn" eventType="touchUpInside" id="Ibx-wC-iEY"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6tp-bh-Z9k" userLabel="QRCode">
                                 <rect key="frame" x="182" y="448" width="50" height="50"/>
                                 <constraints>
@@ -141,10 +151,12 @@
                             <constraint firstItem="7q8-rl-x2M" firstAttribute="leading" secondItem="8lf-3Y-f5R" secondAttribute="leading" constant="10" id="bf8-6l-dfs"/>
                             <constraint firstItem="4OF-5u-Hd1" firstAttribute="leading" secondItem="8lf-3Y-f5R" secondAttribute="leading" constant="10" id="e7p-K8-Tt3"/>
                             <constraint firstItem="s9o-RX-XeS" firstAttribute="leading" secondItem="8lf-3Y-f5R" secondAttribute="leading" constant="10" id="gYr-20-hOQ"/>
+                            <constraint firstItem="5lM-dt-8fM" firstAttribute="top" secondItem="6tp-bh-Z9k" secondAttribute="bottom" constant="50" id="i5K-Jt-epF"/>
                             <constraint firstItem="7q8-rl-x2M" firstAttribute="centerY" secondItem="jU7-Iw-XfU" secondAttribute="centerY" id="jhu-Tk-ifA"/>
                             <constraint firstItem="8lf-3Y-f5R" firstAttribute="bottom" secondItem="owR-PS-F32" secondAttribute="bottom" id="kxd-eg-KfO"/>
                             <constraint firstItem="szn-G7-5sK" firstAttribute="top" secondItem="BpI-xK-1SU" secondAttribute="bottom" id="lWz-Yy-NCO"/>
                             <constraint firstItem="8lf-3Y-f5R" firstAttribute="trailing" secondItem="HQd-pF-3cE" secondAttribute="trailing" constant="50" id="mK0-hK-nIb"/>
+                            <constraint firstItem="5lM-dt-8fM" firstAttribute="centerX" secondItem="8lf-3Y-f5R" secondAttribute="centerX" id="mKe-Nn-9dd"/>
                             <constraint firstItem="fhk-o9-J0l" firstAttribute="centerY" secondItem="jU7-Iw-XfU" secondAttribute="centerY" id="mxp-Nw-IAQ"/>
                             <constraint firstItem="HQd-pF-3cE" firstAttribute="leading" secondItem="8lf-3Y-f5R" secondAttribute="leading" constant="50" id="rwA-Qb-mto"/>
                             <constraint firstItem="s9o-RX-XeS" firstAttribute="centerY" secondItem="szn-G7-5sK" secondAttribute="centerY" id="s6D-hp-8Fw"/>
@@ -159,6 +171,7 @@
                     <connections>
                         <outlet property="activity" destination="Kfq-Bg-a0E" id="SqA-zj-Vd6"/>
                         <outlet property="baseUrl" destination="szn-G7-5sK" id="rpO-mh-09O"/>
+                        <outlet property="certificate" destination="5lM-dt-8fM" id="vw6-cH-njm"/>
                         <outlet property="imageBaseUrl" destination="s9o-RX-XeS" id="Q81-S9-1P2"/>
                         <outlet property="imageBrand" destination="BpI-xK-1SU" id="0tB-69-RNs"/>
                         <outlet property="imagePassword" destination="7q8-rl-x2M" id="Cr5-Te-Rkq"/>
@@ -199,7 +212,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="uEr-qx-rv2">
-                                <rect key="frame" x="95.5" y="374.5" width="223" height="157"/>
+                                <rect key="frame" x="79" y="389" width="256" height="128"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="898-PT-7ao">
                                 <rect key="frame" x="10" y="94" width="394" height="20.5"/>
@@ -232,7 +245,7 @@
         <image name="loginPassword" width="25" height="25"/>
         <image name="loginURL" width="25" height="25"/>
         <image name="loginUser" width="25" height="25"/>
-        <image name="logo" width="223" height="157.5"/>
+        <image name="logo" width="256" height="128"/>
         <image name="visiblePassword" width="25" height="25"/>
     </resources>
 </document>

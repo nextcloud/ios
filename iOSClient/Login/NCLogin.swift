@@ -43,6 +43,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     @IBOutlet weak var loginModeButton: UIButton!
     
     @IBOutlet weak var qrCode: UIButton!
+    @IBOutlet weak var certificate: UIButton!
 
     enum loginMode {
         case traditional, webFlow
@@ -119,6 +120,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         
         // qrcode
         qrCode.setImage(UIImage(named: "qrcode")?.image(color: textColor, size: 100), for: .normal)
+        
+        // certificate
+        certificate.setImage(UIImage(named: "certificate")?.image(color: textColor, size: 100), for: .normal)
         
         if NCManageDatabase.shared.getAccounts()?.count ?? 0 == 0 {
             imageUser.isHidden = true
@@ -240,6 +244,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         
         let qrCode = NCLoginQRCode.init(delegate: self)
         qrCode.scan()
+    }
+    
+    @IBAction func actionCertificate(_ sender: Any) {
+        
     }
     
     // MARK: - Login
@@ -434,5 +442,13 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 }
             }
         }
+    }
+    
+    // MARK: -
+    
+    func getDocumentsDirectory() -> URL {
+
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
     }
 }
