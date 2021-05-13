@@ -234,46 +234,34 @@ import Queuer
         }
     }
     
-    private func saveX509Certificate(_ trust: SecTrust, certName: String, directoryCertificate: String) {
+    private func saveX509Certificate(_ serverTrust: SecTrust, certName: String, directoryCertificate: String) {
         
-        let currentServerCert = secTrustGetLeafCertificate(trust)
-        let certNamePath = directoryCertificate + "/" + certName
-        let data: CFData = SecCertificateCopyData(currentServerCert!)
-        let mem = BIO_new_mem_buf(CFDataGetBytePtr(data), Int32(CFDataGetLength(data)))
-        let x509cert = d2i_X509_bio(mem, nil)
+        if let currentServerCert = SecTrustGetCertificateAtIndex(serverTrust, 0) {
+            
+            let certNamePath = directoryCertificate + "/" + certName
+            let data: CFData = SecCertificateCopyData(currentServerCert)
+            let mem = BIO_new_mem_buf(CFDataGetBytePtr(data), Int32(CFDataGetLength(data)))
+            let x509cert = d2i_X509_bio(mem, nil)
 
-        BIO_free(mem)
-        if x509cert == nil {
-            print("[LOG] OpenSSL couldn't parse X509 Certificate")
-        } else {
-            if FileManager.default.fileExists(atPath: certNamePath) {
-                do {
-                    try FileManager.default.removeItem(atPath: certNamePath)
-                } catch { }
+            BIO_free(mem)
+            if x509cert == nil {
+                print("[LOG] OpenSSL couldn't parse X509 Certificate")
+            } else {
+                if FileManager.default.fileExists(atPath: certNamePath) {
+                    do {
+                        try FileManager.default.removeItem(atPath: certNamePath)
+                    } catch { }
+                }
+                let file = fopen(certNamePath, "w")
+                if file != nil {
+                    PEM_write_X509(file, x509cert);
+                }
+                fclose(file);
+                X509_free(x509cert);
             }
-            let file = fopen(certNamePath, "w")
-            if file != nil {
-                PEM_write_X509(file, x509cert);
-            }
-            fclose(file);
-            X509_free(x509cert);
         }
     }
     
-    private func secTrustGetLeafCertificate(_ trust: SecTrust) -> SecCertificate? {
-        
-        let result: SecCertificate?
-        
-        if SecTrustGetCertificateCount(trust) > 0 {
-            result = SecTrustGetCertificateAtIndex(trust, 0)!
-            assert(result != nil);
-        } else {
-            result = nil
-        }
-        
-        return result
-    }
-        
     //MARK: - Utility
     
     func cancelTaskWithUrl(_ url: URL) {
