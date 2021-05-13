@@ -193,8 +193,6 @@ import Queuer
                     let data = CFDataGetBytePtr(serverCertificateData);
                     let size = CFDataGetLength(serverCertificateData);
                     let certificate = NSData(bytes: data, length: size)
-                    
-                    // REMOVE ME OLD
                     var certificateSavedFound = true
                     
                     // write certificate tmp to disk
@@ -207,7 +205,6 @@ import Queuer
                             trusted = true
                         }
                     } else {
-                        // REMOVE ME OLD
                         certificateSavedFound = false
                     }
                     
