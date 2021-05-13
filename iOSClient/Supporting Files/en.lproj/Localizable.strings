@@ -173,6 +173,7 @@
 "_privacy_"                 = "Privacy";
 "_source_code_"             = "Get source code";
 "_account_select_"          = "Select the account";
+"_host_insert_"             = "Insert the host name, for example";
 
 /* Background of the file listing view */
 "_use_as_background_"       = "Use it as a background";

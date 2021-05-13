@@ -248,6 +248,30 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     
     @IBAction func actionCertificate(_ sender: Any) {
         
+        let pathsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let fileNameCertificate = pathsDirectory.appendingPathComponent(NCGlobal.shared.certificate).path
+        let directoryCertificate = CCUtility.getDirectoryCerificates()!
+        var host = "cloud.nextcloud.com"
+        if let url = URL(string: NCBrandOptions.shared.loginBaseUrl) {
+            let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            if let hostComponets = urlComponents?.host {
+                host = hostComponets
+            }
+        }
+            
+        if FileManager.default.fileExists(atPath: fileNameCertificate) {
+            
+            let certificateToPath = directoryCertificate + "/" + host + ".der"
+        
+            if NCUtilityFileSystem.shared.moveFile(atPath: fileNameCertificate, toPath: certificateToPath) {
+                print("ok")
+            } else {
+                print("error")
+            }
+            
+        } else {
+            print("error")
+        }
     }
     
     // MARK: - Login
@@ -442,13 +466,5 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 }
             }
         }
-    }
-    
-    // MARK: -
-    
-    func getDocumentsDirectory() -> URL {
-
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        return paths[0]
     }
 }
