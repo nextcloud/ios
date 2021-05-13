@@ -175,6 +175,8 @@
 "_account_select_"          = "Select the account";
 "_host_insert_"             = "Insert the host name, for example";
 "_certificate_not_found_"   = "File %@ in documents directory not found.";
+"_copy_failed_"             = "Copy failed";
+"_certificate_installed_"   = "Certificate installed";
 
 /* Background of the file listing view */
 "_use_as_background_"       = "Use it as a background";
