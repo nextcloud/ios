@@ -551,7 +551,7 @@ import NCCommunication
             self.openShare(ViewController: viewController, metadata: metadata, indexPage: 0)
         }
         
-        let offline = UIAction(title: titleOffline, image: NCUtility.shared.loadImage(named: "tray.and.arrow.down")) { action in
+        let offline = UIAction(title: titleOffline, image: UIImage(systemName: "tray.and.arrow.down")) { action in
             if isOffline {
                 if metadata.directory {
                     NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: false, account: self.appDelegate.account)
@@ -617,7 +617,7 @@ import NCCommunication
             self.openSelectView(items: [metadata], viewController: viewController)
         }
         
-        let rename = UIAction(title: NSLocalizedString("_rename_", comment: ""), image: NCUtility.shared.loadImage(named: "pencil")) { action in
+        let rename = UIAction(title: NSLocalizedString("_rename_", comment: ""), image: UIImage(systemName: "pencil")) { action in
             
             if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
                 
