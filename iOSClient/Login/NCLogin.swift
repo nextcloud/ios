@@ -197,7 +197,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 self.loginButton.isEnabled = true
                 self.activity.stopAnimating()
                 
-                self.standardLogin(urlBase: url, user: username, password: token ?? "", errorCode: errorCode, errorDescription: errorDescription)
+                self.standardLogin(url: url, user: username, password: token ?? "", errorCode: errorCode, errorDescription: errorDescription)
             }
         }
     }
@@ -329,11 +329,13 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
     
-    func standardLogin(urlBase: String, user: String, password: String, errorCode: Int, errorDescription: String) {
+    func standardLogin(url: String, user: String, password: String, errorCode: Int, errorDescription: String) {
         
         if errorCode == 0 {
             
-            let account = user + " " + urlBase
+            NCNetworking.shared.writeCertificate(url: url)
+            
+            let account = user + " " + url
             
             if NCManageDatabase.shared.getAccounts() == nil {
                 NCUtility.shared.removeAllSettings()
@@ -342,7 +344,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             CCUtility.clearCertificateError(account)
             
             NCManageDatabase.shared.deleteAccount(account)
-            NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, password: password)
+            NCManageDatabase.shared.addAccount(account, urlBase: url, user: user, password: password)
             
             if let activeAccount = NCManageDatabase.shared.setAccountActive(account) {
                 appDelegate.settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
@@ -371,8 +373,25 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     self.dismiss(animated: true)
                 }
             }
+        
+        } else if errorCode == NSURLErrorServerCertificateUntrusted {
             
-        } else if errorCode != NSURLErrorServerCertificateUntrusted {
+            let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
+                        
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
+                NCNetworking.shared.writeCertificate(url: url)
+                self.appDelegate.startTimerErrorNetworking()
+            }))
+            
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
+                self.appDelegate.startTimerErrorNetworking()
+            }))
+            
+            self.present(alertController, animated: true, completion: {
+                self.appDelegate.timerErrorNetworking?.invalidate()
+            })
+            
+        } else {
             
             let message = NSLocalizedString("_not_possible_connect_to_server_", comment: "") + ".\n" + errorDescription
             let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
@@ -411,7 +430,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     self.activity.stopAnimating()
                     self.loginButton.isEnabled = true
                     
-                    self.standardLogin(urlBase: urlBase, user: user, password: password, errorCode: errorCode, errorDescription: errorDescription)
+                    self.standardLogin(url: urlBase, user: user, password: password, errorCode: errorCode, errorDescription: errorDescription)
                 }
             }
         }
