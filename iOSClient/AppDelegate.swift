@@ -526,7 +526,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if account == "" { return }
         
-        // check unauthorized server (401)
+        // check unauthorized server (401/403)
         if CCUtility.getPassword(account)!.count == 0 {
             openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: true)
         }

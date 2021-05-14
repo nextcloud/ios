@@ -174,7 +174,7 @@ import NCCommunication
                 
                 if metadata.account == appDelegate.account {
                     if errorCode != 0 {
-                        if errorCode != -999 && errorCode != 401 && errorDescription != "" {
+                        if errorCode != -999 && errorDescription != "" {
                             NCContentPresenter.shared.messageNotification("_upload_file_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
                     }
