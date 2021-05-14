@@ -47,7 +47,7 @@
 
     // Section : ACCOUNTS -------------------------------------------
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_accounts_", nil)];
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_accounts_", nil) sectionOptions:XLFormSectionOptionCanDelete];
     [form addFormSection:section];
     
     for (tableAccount *account in accounts) {
@@ -124,17 +124,6 @@
             row.action.formSelector = @selector(addAccount:);
             [section addFormRow:row];
         }
-        
-        // remove Account
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_delete_account_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
-        [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"trash"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
-        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-        row.action.formSelector = @selector(deleteAccount:);
-        if (accounts.count == 0) row.disabled = @YES;
-        [section addFormRow:row];
         
 #if TARGET_OS_SIMULATOR
         // Set user status
@@ -420,6 +409,46 @@
     }
 }
 
+-(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    [super tableView:tableView commitEditingStyle:editingStyle forRowAtIndexPath:indexPath];
+    
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+    
+        [self initializeForm];
+        
+        NSArray *accounts = [[NCManageDatabase shared] getAllAccount];
+        tableAccount *tableAccountForDelete = accounts[indexPath.row];
+        tableAccount *tableActiveAccount = [[NCManageDatabase shared] getActiveAccount];
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_want_delete_",nil) message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+                        
+            NSString *activeAccount = tableActiveAccount.account;
+            NSString *accountForDelete = tableAccountForDelete.account;
+            
+            if (accountForDelete) {
+                [appDelegate deleteAccount:accountForDelete wipe:false];
+            }
+            
+            NSArray *listAccount = [[NCManageDatabase shared] getAccounts];
+            if ([listAccount count] > 0) {
+                if ([accountForDelete isEqualToString:activeAccount]) {
+                    [self ChangeDefaultAccount:listAccount[0]];
+                }
+            }
+            [self initializeForm];
+        }]];
+        
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
+        
+        alertController.popoverPresentationController.sourceView = self.view;
+        alertController.popoverPresentationController.sourceRect = [self.tableView rectForRowAtIndexPath:indexPath];
+            
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+}
+
 #pragma mark -
 
 - (void)addAccount:(XLFormRowDescriptor *)sender
@@ -427,40 +456,6 @@
     [self deselectFormRow:sender];
     
     [appDelegate openLoginWithViewController:self selector:NCGlobal.shared.introLogin openLoginWeb:false];
-}
-
-#pragma mark -
-
-- (void)deleteAccount:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-    
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_want_delete_",nil) message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-    
-    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-        
-        tableAccount *activeAccount = [[NCManageDatabase shared] getActiveAccount];
-        NSString *account = activeAccount.account;
-        
-        if (account) {
-            [appDelegate deleteAccount:account wipe:false];
-        }
-        
-        NSArray *listAccount = [[NCManageDatabase shared] getAccounts];
-        if ([listAccount count] > 0) {
-            [self ChangeDefaultAccount:listAccount[0]];
-        } else {
-            [self initializeForm];
-        }
-    }]];
-    
-    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
-    
-    alertController.popoverPresentationController.sourceView = self.view;
-    NSIndexPath *indexPath = [self.form indexPathOfFormRow:sender];
-    alertController.popoverPresentationController.sourceRect = [self.tableView rectForRowAtIndexPath:indexPath];
-        
-    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 #pragma mark -

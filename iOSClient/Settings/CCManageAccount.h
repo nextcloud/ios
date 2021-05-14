@@ -25,6 +25,4 @@
 
 @interface CCManageAccount : XLFormViewController
 
-- (void)deleteAccount:(NSString *)account;
-
 @end
