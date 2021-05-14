@@ -352,9 +352,7 @@ import Queuer
 #if !EXTENSION
                 if errorCode == 401 || errorCode == 403 {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account)
-                } else if errorCode == Int(CFNetworkErrors.cfurlErrorServerCertificateUntrusted.rawValue) {
-                    CCUtility.setCertificateError(metadata.account)
-                }
+                } 
 #endif
             }
             
@@ -591,11 +589,6 @@ import Queuer
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account)
 #endif
                     
-                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
-
-                } else if errorCode == Int(CFNetworkErrors.cfurlErrorServerCertificateUntrusted.rawValue) {
-                    
-                    CCUtility.setCertificateError(metadata.account)
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
 
                 } else {

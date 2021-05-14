@@ -552,12 +552,12 @@
     // In background do not write the error
 #if !defined(EXTENSION)
     UIApplicationState state = [[UIApplication sharedApplication] applicationState];
-    if (error && (state == UIApplicationStateBackground || state == UIApplicationStateInactive)) {
+    if (state == UIApplicationStateBackground || state == UIApplicationStateInactive) {
         return;
     }
     NSString *key = [@"certificateError" stringByAppendingString:account];
     
-    [UICKeyChainStore setString:"true" forKey:key service:NCGlobal.shared.serviceShareKeyChain];
+    [UICKeyChainStore setString:@"true" forKey:key service:NCGlobal.shared.serviceShareKeyChain];
 #else
     return;
 #endif
