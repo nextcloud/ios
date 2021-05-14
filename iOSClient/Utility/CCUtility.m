@@ -541,15 +541,13 @@
     NSString *error = [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
     
     if (error == nil) {
-        
-        [self setCertificateError:account error:NO];
-        return  NO;
+        return false;
     }
     
-    return [error boolValue];
+    return true;
 }
 
-+ (void)setCertificateError:(NSString *)account error:(BOOL)error
++ (void)setCertificateError:(NSString *)account
 {
     // In background do not write the error
 #if !defined(EXTENSION)
@@ -558,9 +556,8 @@
         return;
     }
     NSString *key = [@"certificateError" stringByAppendingString:account];
-    NSString *sError = (error) ? @"true" : @"false";
     
-    [UICKeyChainStore setString:sError forKey:key service:NCGlobal.shared.serviceShareKeyChain];
+    [UICKeyChainStore setString:"true" forKey:key service:NCGlobal.shared.serviceShareKeyChain];
 #else
     return;
 #endif

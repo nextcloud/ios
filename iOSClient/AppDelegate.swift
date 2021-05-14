@@ -281,7 +281,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCCommunicationCommon.shared.writeLog("initialize Main")
         
         // Clear error certificate
-        CCUtility.setCertificateError(account, error: false)
+        CCUtility.clearCertificateError(account)
         
         // Registeration push notification
         NCPushNotification.shared().pushNotification()
@@ -589,7 +589,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         CCUtility.clearAllKeysEnd(toEnd: account)
         CCUtility.clearAllKeysPushNotification(account)
-        CCUtility.setCertificateError(account, error: false)
+        CCUtility.clearCertificateError(account)
         CCUtility.setPassword(account, password: nil)
         
         if wipe {

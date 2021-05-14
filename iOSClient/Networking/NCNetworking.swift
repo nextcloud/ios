@@ -212,7 +212,7 @@ import Queuer
 #if !EXTENSION
                         DispatchQueue.main.async {
                             let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                            CCUtility.setCertificateError(appDelegate.account, error: true)
+                            CCUtility.setCertificateError(appDelegate.account)
                         }
 #endif
                     }
@@ -353,7 +353,7 @@ import Queuer
                 if errorCode == 401 || errorCode == 403 {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account)
                 } else if errorCode == Int(CFNetworkErrors.cfurlErrorServerCertificateUntrusted.rawValue) {
-                    CCUtility.setCertificateError(metadata.account, error: true)
+                    CCUtility.setCertificateError(metadata.account)
                 }
 #endif
             }
@@ -595,7 +595,7 @@ import Queuer
 
                 } else if errorCode == Int(CFNetworkErrors.cfurlErrorServerCertificateUntrusted.rawValue) {
                     
-                    CCUtility.setCertificateError(metadata.account, error: true)
+                    CCUtility.setCertificateError(metadata.account)
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
 
                 } else {
