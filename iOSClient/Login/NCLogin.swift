@@ -123,6 +123,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         
         // certificate
         certificate.setImage(UIImage(named: "certificate")?.image(color: textColor, size: 100), for: .normal)
+        certificate.isHidden = true
+        certificate.isEnabled = false
         
         if NCManageDatabase.shared.getAccounts()?.count ?? 0 == 0 {
             imageUser.isHidden = true
