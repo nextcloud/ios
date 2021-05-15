@@ -86,6 +86,9 @@ class NCGlobal: NSObject {
     @objc let introLogin: Int                       = 0
     let introSignup: Int                            = 1
     
+    // Varie height
+    @objc let heightCellSettings: CGFloat           = 50
+    
     // Avatar & Preview size
     //
     let avatarSize: Int                             = 512

@@ -215,4 +215,10 @@ class NCManageAutoUploadFileName: XLFormViewController {
         
         return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm") + ":" + "\n\n" + returnString
     }
+    
+    // MARK: -
+
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return NCGlobal.shared.heightCellSettings
+    }
 }

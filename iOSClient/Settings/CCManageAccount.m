@@ -455,7 +455,7 @@
     if (indexPath.section == 0) {
         return 60;
     } else {
-        return 40;
+        return NCGlobal.shared.heightCellSettings;
     }
 }
 

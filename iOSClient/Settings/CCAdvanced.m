@@ -351,9 +351,7 @@
     }
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Clear Cache ===
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark - Clear Cache
 
 - (void)clearCache
 {
@@ -412,9 +410,7 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark == Exit Nextcloud ==
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark - Exit Nextcloud
 
 - (void)exitNextcloud:(XLFormRowDescriptor *)sender
 {
@@ -450,6 +446,12 @@
     alertController.popoverPresentationController.sourceRect = CGRectOffset(cellRect, -self.tableView.contentOffset.x, -self.tableView.contentOffset.y);
     
     [self presentViewController:alertController animated:YES completion:nil];
+}
+
+#pragma mark -
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return NCGlobal.shared.heightCellSettings;
 }
 
 @end

@@ -446,6 +446,10 @@
     self.form.delegate = self;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return NCGlobal.shared.heightCellSettings;
+}
+
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
 {
     tableAccount *activeAccount = [[NCManageDatabase shared] getActiveAccount];

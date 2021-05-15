@@ -210,9 +210,7 @@
     [[self navigationController] popViewControllerAnimated:YES];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Action ===
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark - Action
 
 - (void)startE2E:(XLFormRowDescriptor *)sender
 {
@@ -403,9 +401,7 @@
     }];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Delegate ===
-#pragma --------------------------------------------------------------------------------------------
+#pragma mark - Delegate
 
 - (void)endToEndInitializeSuccess
 {
@@ -413,6 +409,12 @@
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterReloadDataSource object:nil];
 
     [self initializeForm];
+}
+
+#pragma mark -
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return NCGlobal.shared.heightCellSettings;
 }
 
 @end
