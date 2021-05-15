@@ -451,7 +451,12 @@
 #pragma mark -
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return NCGlobal.shared.heightCellSettings;
+    
+    if (indexPath.section == 7 && indexPath.row == 2) {
+        return 80;
+    } else {
+        return NCGlobal.shared.heightCellSettings;
+    }
 }
 
 @end
