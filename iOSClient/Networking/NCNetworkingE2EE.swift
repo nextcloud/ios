@@ -325,9 +325,9 @@ import Alamofire
                             
                             if errorCode == 401 || errorCode == 403 {
                             
-#if !EXTENSION
+                                #if !EXTENSION
                                 NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account)
-#endif
+                                #endif
                                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
                             
                             } else if errorCode == Int(CFNetworkErrors.cfurlErrorServerCertificateUntrusted.rawValue) {

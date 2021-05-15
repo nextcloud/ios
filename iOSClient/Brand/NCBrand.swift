@@ -307,7 +307,7 @@ class NCBrandColor: NSObject {
         cacheImages.buttonRestore = UIImage(named: "restore")!.image(color: gray, size: 50)
     }
     
-#if !EXTENSION
+    #if !EXTENSION
     public func settingThemingColor(account: String) {
         
         let darker: CGFloat = 30    // %
@@ -356,7 +356,7 @@ class NCBrandColor: NSObject {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
         }
     }
-#endif
+    #endif
     
     @objc func settingBrandColor(_ themingColor: String?, themingColorElement: String?, themingColorText: String?) {
                 
