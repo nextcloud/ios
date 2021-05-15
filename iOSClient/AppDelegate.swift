@@ -607,9 +607,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
     
-    // MARK: - Account Request
-    
-    func changeAccountRequestAddAccount(account: String) {
+    @objc func changeAccount(_ account: String) {
+        
         NCManageDatabase.shared.setAccountActive(account)
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
             
@@ -620,6 +619,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
         }
+    }
+    
+    // MARK: - Account Request
+    
+    func accountRequestChangeAccount(account: String) {
+        
+        changeAccount(account)
     }
     
     func requestAccount(startTimer: Bool) {

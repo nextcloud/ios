@@ -26,13 +26,13 @@ import NCCommunication
 
 public protocol NCAccountRequestDelegate {
     func accountRequestAddAccount()
-    func changeAccountRequestAddAccount(account: String)
+    func accountRequestChangeAccount(account: String)
 }
 
 // optional func
 public extension NCAccountRequestDelegate {
     func accountRequestAddAccount() {}
-    func changeAccountRequestAddAccount(account: String) {}
+    func accountRequestChangeAccount(account: String) {}
 }
 
 class NCAccountRequest: UIViewController {
@@ -172,7 +172,7 @@ extension NCAccountRequest: UITableViewDelegate {
             let account = accounts[indexPath.row]
             if account.account != activeAccount?.account {
                 dismiss(animated: true) {
-                    self.delegate?.changeAccountRequestAddAccount(account: account.account)
+                    self.delegate?.accountRequestChangeAccount(account: account.account)
                 }
             } else {
                 dismiss(animated: true)

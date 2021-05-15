@@ -420,7 +420,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         }
     }
     
-    func changeAccountRequestAddAccount(account: String) {
+    func accountRequestChangeAccount(account: String) {
         setAccount(account: account)
     }
     

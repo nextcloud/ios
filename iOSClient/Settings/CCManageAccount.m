@@ -385,7 +385,7 @@
     for (tableAccount *account in accounts) {
         if ([rowDescriptor.tag isEqualToString:account.account]) {
             if (![account.account isEqualToString:activeAccount.account]) {
-                [self ChangeDefaultAccount:account.account];
+                [appDelegate changeAccount:account.account];
                 [self initializeForm];
             }
         }
@@ -435,9 +435,10 @@
             NSArray *listAccount = [[NCManageDatabase shared] getAccounts];
             if ([listAccount count] > 0) {
                 if ([accountForDelete isEqualToString:activeAccount]) {
-                    [self ChangeDefaultAccount:listAccount[0]];
+                    [appDelegate changeAccount:listAccount[0]];
                 }
             }
+            
             [self initializeForm];
         }]];
         
@@ -468,23 +469,6 @@
     if (@available(iOS 13.0, *)) {
         UIViewController *userStatusViewController = [[NCUserStatusViewController new] makeUserStatusUI];
         [self presentViewController:userStatusViewController animated:YES completion:nil];
-    }
-}
-
-#pragma mark -
-
-- (void)ChangeDefaultAccount:(NSString *)account
-{
-    tableAccount *tableAccount = [[NCManageDatabase shared] setAccountActive:account];
-    if (tableAccount) {
-        
-        [[NCOperationQueue shared] cancelAllQueue];
-        [[NCNetworking shared] cancelAllTask];
-        
-        [appDelegate settingAccount:tableAccount.account urlBase:tableAccount.urlBase user:tableAccount.user userId:tableAccount.userId password:[CCUtility getPassword:tableAccount.account]];
- 
-        // Init home
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
     }
 }
 
