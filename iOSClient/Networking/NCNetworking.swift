@@ -152,7 +152,6 @@ import Queuer
             appDelegate.backgroundSessionCompletionHandler = nil
             completionHandler()
         }
-
 #endif
     }
     
