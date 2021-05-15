@@ -181,7 +181,9 @@ import Queuer
                         break
                     }
                 }
-            } catch { print(error) }
+            } catch {
+                print(error)
+            }
             
             // V2
             var secresult = SecTrustResultType.invalid
