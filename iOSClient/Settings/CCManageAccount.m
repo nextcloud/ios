@@ -59,9 +59,9 @@
         NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:account.user urlBase:account.urlBase], account.user];
         UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
         if (avatar) {
-            avatar = [[NCUtility shared] createAvatarWithImage:avatar size:30];
+            avatar = [[NCUtility shared] createAvatarWithImage:avatar size:40];
         } else {
-            avatar = [[UIImage imageNamed:@"avatar"] imageWithColor:NCBrandColor.shared.gray size:30];
+            avatar = [[UIImage imageNamed:@"avatar"] imageWithColor:NCBrandColor.shared.gray size:40];
         }
         
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
@@ -448,6 +448,14 @@
         alertController.popoverPresentationController.sourceRect = [self.tableView rectForRowAtIndexPath:indexPath];
             
         [self presentViewController:alertController animated:YES completion:nil];
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 0) {
+        return 60;
+    } else {
+        return 40;
     }
 }
 
