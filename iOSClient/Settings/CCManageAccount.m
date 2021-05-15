@@ -420,13 +420,14 @@
         tableAccount *tableAccountForDelete = accounts[indexPath.row];
         tableAccount *tableActiveAccount = [[NCManageDatabase shared] getActiveAccount];
         
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_want_delete_",nil) message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        NSString *accountForDelete = tableAccountForDelete.account;
+        NSString *activeAccount = tableActiveAccount.account;
+
+        NSString *title = [NSString stringWithFormat:NSLocalizedString(@"_want_delete_account_",nil), accountForDelete];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
         
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
                         
-            NSString *activeAccount = tableActiveAccount.account;
-            NSString *accountForDelete = tableAccountForDelete.account;
-            
             if (accountForDelete) {
                 [appDelegate deleteAccount:accountForDelete wipe:false];
             }

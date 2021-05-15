@@ -177,6 +177,7 @@
 "_certificate_not_found_"   = "File %@ in documents directory not found.";
 "_copy_failed_"             = "Copy failed";
 "_certificate_installed_"   = "Certificate installed";
+"_want_delete_account_"     = "Do you want to delete the account %@";
 
 /* Background of the file listing view */
 "_use_as_background_"       = "Use it as a background";
