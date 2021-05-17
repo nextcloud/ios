@@ -88,7 +88,7 @@ import NCCommunication
         changeTheming()
     }
     
-    // MARK: - Colors
+    // MARK: - Theming
     
     func changeTheming() {
         

@@ -86,7 +86,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         changeTheming()
     }
     
-    // MARK: - Colors
+    // MARK: - Theming
     
     func changeTheming() {
         

@@ -95,7 +95,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         changeTheming()
     }
     
-    // MARK: - Colors
+    // MARK: - Theming
     
     func changeTheming() {
         

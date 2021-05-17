@@ -106,7 +106,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         changeTheming()
     }
     
-    // MARK: - Colors
+    // MARK: - Theming
     
     func changeTheming() {
         

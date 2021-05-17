@@ -32,6 +32,23 @@ class NCMainNavigationController: UINavigationController {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
+        changeTheming()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        changeTheming()
+    }
+    
+    // MARK: - Theming
+    
+    func changeTheming() {
+        
         if #available(iOS 13.0, *) {
             
             let appearance = UINavigationBarAppearance()
@@ -56,9 +73,5 @@ class NCMainNavigationController: UINavigationController {
         
         navigationBar.tintColor = .systemBlue
         navigationBar.setNeedsLayout()
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
     }
 }

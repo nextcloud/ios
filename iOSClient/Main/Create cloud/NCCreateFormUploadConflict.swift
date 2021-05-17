@@ -115,7 +115,7 @@ extension NCCreateFormUploadConflictDelegate {
         changeTheming()
     }
     
-    // MARK: - Colors
+    // MARK: - Theming
     
     func changeTheming(){
         
