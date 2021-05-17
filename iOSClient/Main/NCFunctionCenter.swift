@@ -323,7 +323,7 @@ import NCCommunication
                 let serverUrl = viewController.serverUrl
                 if serverUrl == metadata.serverUrl {
                     NCUtility.shared.setBackgroundImageForView(key: layoutKey, serverUrl: serverUrl, imageBackgroud: metadata.fileNameView, imageBackgroudContentMode: "")
-                    viewController.setLayout()
+                    viewController.changeTheming()
                 }
             }
         }
