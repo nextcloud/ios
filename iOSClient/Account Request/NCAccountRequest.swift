@@ -59,6 +59,9 @@ class NCAccountRequest: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        tableView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        
         titleLabel.text = NSLocalizedString("_account_select_", comment: "")
 
         closeButton.setImage(NCUtility.shared.loadImage(named: "xmark", color: NCBrandColor.shared.label), for: .normal)
