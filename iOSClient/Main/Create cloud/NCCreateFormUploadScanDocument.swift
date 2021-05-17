@@ -81,7 +81,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         //        let rowCell = row.cell(forForm: self)
         //        rowCell.becomeFirstResponder()
         
-        setColors(userInterfaceStyle: nil)
+        changeTheming()
         
         initializeForm()
         
@@ -92,12 +92,12 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
-        setColors(userInterfaceStyle: traitCollection.userInterfaceStyle)
+        changeTheming()
     }
     
     // MARK: - Colors
     
-    func setColors(userInterfaceStyle: UIUserInterfaceStyle?) {
+    func changeTheming() {
         
         if userInterfaceStyle == .dark {
             // personalized

@@ -106,24 +106,18 @@ extension NCCreateFormUploadConflictDelegate {
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
         
-        setColors(userInterfaceStyle: nil)
+        changeTheming()
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
-        setColors(userInterfaceStyle: traitCollection.userInterfaceStyle)
+        changeTheming()
     }
     
     // MARK: - Colors
     
-    func setColors(userInterfaceStyle: UIUserInterfaceStyle?) {
-        
-        if userInterfaceStyle == .dark {
-            // personalized
-        } else {
-            // personalized
-        }
+    func changeTheming(){
         
         view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground

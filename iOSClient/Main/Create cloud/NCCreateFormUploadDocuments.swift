@@ -74,7 +74,7 @@ import NCCommunication
         // title 
         self.title = titleForm
       
-        setColors(userInterfaceStyle: nil)
+        changeTheming()
         
         initializeForm()
         
@@ -85,18 +85,12 @@ import NCCommunication
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
-        setColors(userInterfaceStyle: traitCollection.userInterfaceStyle)
+        changeTheming()
     }
     
     // MARK: - Colors
     
-    func setColors(userInterfaceStyle: UIUserInterfaceStyle?) {
-        
-        if userInterfaceStyle == .dark {
-            // personalized
-        } else {
-            // personalized
-        }
+    func changeTheming() {
         
         view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         collectionView.backgroundColor = NCBrandColor.shared.systemGroupedBackground

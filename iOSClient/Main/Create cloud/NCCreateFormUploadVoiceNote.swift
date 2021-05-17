@@ -69,7 +69,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         labelTimer.textColor = NCBrandColor.shared.label
         labelDuration.textColor = NCBrandColor.shared.label
         
-        setColors(userInterfaceStyle: nil)
+        changeTheming()
         
         initializeForm()
     }
@@ -83,18 +83,12 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
-        setColors(userInterfaceStyle: traitCollection.userInterfaceStyle)
+        changeTheming()
     }
     
     // MARK: - Colors
     
-    func setColors(userInterfaceStyle: UIUserInterfaceStyle?) {
-        
-        if userInterfaceStyle == .dark {
-            // personalized
-        } else {
-            // personalized
-        }
+    func changeTheming() {
         
         view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground

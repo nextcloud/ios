@@ -87,7 +87,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             })
         }
         
-        setColors(userInterfaceStyle: nil)
+        changeTheming()
         
         initializeForm()
         reloadForm()
@@ -103,18 +103,12 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
-        setColors(userInterfaceStyle: traitCollection.userInterfaceStyle)
+        changeTheming()
     }
     
     // MARK: - Colors
     
-    func setColors(userInterfaceStyle: UIUserInterfaceStyle?) {
-        
-        if userInterfaceStyle == .dark {
-            // personalized
-        } else {
-            // personalized
-        }
+    func changeTheming() {
         
         view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground

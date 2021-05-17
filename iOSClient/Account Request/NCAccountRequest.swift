@@ -77,7 +77,7 @@ class NCAccountRequest: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(startTimer), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         
-        setColors(userInterfaceStyle: nil)
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -105,18 +105,12 @@ class NCAccountRequest: UIViewController {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
-        setColors(userInterfaceStyle: traitCollection.userInterfaceStyle)
+        changeTheming()
     }
     
     // MARK: - Colors
     
-    func setColors(userInterfaceStyle: UIUserInterfaceStyle?) {
-        
-        if userInterfaceStyle == .dark {
-            // personalized
-        } else {
-            // personalized
-        }
+    func changeTheming() {
         
         view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
         tableView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
