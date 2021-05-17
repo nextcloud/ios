@@ -197,7 +197,8 @@ extension NCAccountRequest: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
                
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-       
+        cell.backgroundColor = tableView.backgroundColor
+        
         let avatarImage = cell.viewWithTag(10) as? UIImageView
         let userLabel = cell.viewWithTag(20) as? UILabel
         let urlLabel = cell.viewWithTag(30) as? UILabel
