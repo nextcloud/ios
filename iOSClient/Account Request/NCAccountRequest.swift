@@ -59,9 +59,6 @@ class NCAccountRequest: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
-        tableView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
-        
         titleLabel.text = NSLocalizedString("_account_select_", comment: "")
 
         closeButton.setImage(NCUtility.shared.loadImage(named: "xmark", color: NCBrandColor.shared.label), for: .normal)
@@ -79,6 +76,8 @@ class NCAccountRequest: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(startTimer), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+        
+        setColors()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -102,6 +101,30 @@ class NCAccountRequest: UIViewController {
         
         timer?.invalidate()
     }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        setColors(userInterfaceStyle: traitCollection.userInterfaceStyle)
+    }
+    
+    // MARK: - Colors
+    
+    func setColors(userInterfaceStyle: UIUserInterfaceStyle? = nil) {
+        
+        if userInterfaceStyle == .dark {
+            // personalized
+        } else {
+            // personalized
+        }
+        
+        view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        tableView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        
+        tableView.reloadData()
+    }
+    
+    // MARK: - Action
     
     @IBAction func actionClose(_ sender: UIButton) {
         dismiss(animated: true)
