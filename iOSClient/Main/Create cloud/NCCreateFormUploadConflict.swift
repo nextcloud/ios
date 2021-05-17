@@ -36,6 +36,7 @@ extension NCCreateFormUploadConflictDelegate {
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelSubTitle: UILabel!
 
+    @IBOutlet weak var viewSwitch: UIView!
     @IBOutlet weak var switchNewFiles: UISwitch!
     @IBOutlet weak var switchAlreadyExistingFiles: UISwitch!
 
@@ -44,6 +45,7 @@ extension NCCreateFormUploadConflictDelegate {
 
     @IBOutlet weak var tableView: UITableView!
 
+    @IBOutlet weak var viewButton: UIView!
     @IBOutlet weak var buttonCancel: UIButton!
     @IBOutlet weak var buttonContinue: UIButton!
     
@@ -103,6 +105,30 @@ extension NCCreateFormUploadConflictDelegate {
         buttonContinue.layer.masksToBounds = true
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
+        
+        setColors(userInterfaceStyle: nil)
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        setColors(userInterfaceStyle: traitCollection.userInterfaceStyle)
+    }
+    
+    // MARK: - Colors
+    
+    func setColors(userInterfaceStyle: UIUserInterfaceStyle?) {
+        
+        if userInterfaceStyle == .dark {
+            // personalized
+        } else {
+            // personalized
+        }
+        
+        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        viewSwitch.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        viewButton.backgroundColor = NCBrandColor.shared.systemGroupedBackground
     }
     
     // MARK: - Action
@@ -259,6 +285,8 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCCreateFormUploadConflictCell {
+            
+            cell.backgroundColor = tableView.backgroundColor
             
             let metadataNewFile = metadatasUploadInConflict[indexPath.row]
 
