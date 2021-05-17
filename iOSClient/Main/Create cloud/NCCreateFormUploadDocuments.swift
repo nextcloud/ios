@@ -27,7 +27,13 @@ import NCCommunication
 // MARK: -
 
 @objc class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NCCreateFormUploadConflictDelegate {
+
+    @IBOutlet weak var indicator: UIActivityIndicatorView!
+    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var collectionViewHeigth: NSLayoutConstraint!
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     var editorId = ""
     var creatorId = ""
     var typeTemplate = ""
@@ -40,24 +46,16 @@ import NCCommunication
     var listOfTemplate: [NCCommunicationEditorTemplates] = []
     var selectTemplate: NCCommunicationEditorTemplates?
     
-    @IBOutlet weak var indicator: UIActivityIndicatorView!
-    @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var collectionViewHeigth: NSLayoutConstraint!
-    
     // Layout
     let numItems = 2
     let sectionInsets: CGFloat = 10
     let highLabelName: CGFloat = 20
     
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        
+                
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
             fileNameFolder = "/"
         } else {
@@ -65,9 +63,6 @@ import NCCommunication
         }
         
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-
-        collectionView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
 
         let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
         let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
@@ -79,12 +74,36 @@ import NCCommunication
         // title 
         self.title = titleForm
       
-        collectionView.reloadData()
-        tableView.reloadData()
+        setColors(userInterfaceStyle: nil)
+        
         initializeForm()
         
         // load the templates available
         getTemplate()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        setColors(userInterfaceStyle: traitCollection.userInterfaceStyle)
+    }
+    
+    // MARK: - Colors
+    
+    func setColors(userInterfaceStyle: UIUserInterfaceStyle?) {
+        
+        if userInterfaceStyle == .dark {
+            // personalized
+        } else {
+            // personalized
+        }
+        
+        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        collectionView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        tableView.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        
+        tableView.reloadData()
+        collectionView.reloadData()
     }
     
     // MARK: - Tableview (XLForm)
@@ -105,7 +124,7 @@ import NCCommunication
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: fileNameFolder)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         row.value = fileNameFolder
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
+        row.cellConfig["backgroundColor"] = tableView.backgroundColor
 
         row.cellConfig["imageView.image"] =  UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
         
@@ -122,7 +141,7 @@ import NCCommunication
         
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         row.value = fileName
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
+        row.cellConfig["backgroundColor"] = tableView.backgroundColor
         
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
@@ -141,7 +160,7 @@ import NCCommunication
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         header.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
         header.textLabel?.textColor = .gray
-        header.tintColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        header.tintColor = tableView.backgroundColor
     }
 
     // MARK: - CollectionView

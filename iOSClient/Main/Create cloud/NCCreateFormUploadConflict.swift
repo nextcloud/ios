@@ -62,7 +62,7 @@ extension NCCreateFormUploadConflictDelegate {
     var metadatasConflictNewFiles: [String] = []
     var metadatasConflictAlreadyExistingFiles: [String] = []
     var fileNamesPath: [String: String] = [:]
-
+    
     // MARK: - View Life Cycle
 
     @objc required init?(coder aDecoder: NSCoder) {

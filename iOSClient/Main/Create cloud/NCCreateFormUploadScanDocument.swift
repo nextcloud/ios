@@ -29,6 +29,8 @@ import VisionKit
 @available(iOS 13.0, *)
 class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NCCreateFormUploadConflictDelegate {
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     enum typeQuality {
         case low
         case medium
@@ -43,7 +45,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     var password: String = ""
     var fileType = "PDF"
     
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
     
     // MARK: - View Life Cycle
 
@@ -66,13 +68,11 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         super.viewDidLoad()
         
         self.title = NSLocalizedString("_save_settings_", comment: "")
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         
         let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         self.navigationItem.rightBarButtonItem = saveButton
         
         tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
 
         //        self.tableView.sectionHeaderHeight = 10
         //        self.tableView.sectionFooterHeight = 10        
@@ -81,11 +81,35 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         //        let rowCell = row.cell(forForm: self)
         //        rowCell.becomeFirstResponder()
         
-        tableView.reloadData()
+        setColors(userInterfaceStyle: nil)
+        
         initializeForm()
         
         let value = CCUtility.getTextRecognitionStatus()
         SetTextRecognition(newValue: value)
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        setColors(userInterfaceStyle: traitCollection.userInterfaceStyle)
+    }
+    
+    // MARK: - Colors
+    
+    func setColors(userInterfaceStyle: UIUserInterfaceStyle?) {
+        
+        if userInterfaceStyle == .dark {
+            // personalized
+        } else {
+            // personalized
+        }
+        
+        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        
+        tableView.reloadData()
     }
     
     //MARK: XLForm
@@ -105,7 +129,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
+        row.cellConfig["backgroundColor"] = cellBackgoundColor
 
         row.cellConfig["imageView.image"] =  UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
         
@@ -123,7 +147,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         row = XLFormRowDescriptor(tag: "compressionQuality", rowType: XLFormRowDescriptorTypeSlider)
         row.value = 0.5
         row.title = NSLocalizedString("_quality_medium_", comment: "")
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
+        row.cellConfig["backgroundColor"] = cellBackgoundColor
 
         row.cellConfig["slider.minimumTrackTintColor"] = NCBrandColor.shared.brandElement
         
@@ -143,7 +167,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         form.addFormSection(section)
         
         row = XLFormRowDescriptor(tag: "password", rowType: XLFormRowDescriptorTypePassword, title: NSLocalizedString("_password_", comment: ""))
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
+        row.cellConfig["backgroundColor"] = cellBackgoundColor
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
@@ -161,7 +185,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             
         row = XLFormRowDescriptor(tag: "textRecognition", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_text_recognition_", comment: ""))
         row.value = 0
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
+        row.cellConfig["backgroundColor"] = cellBackgoundColor
 
         row.cellConfig["imageView.image"] = UIImage(named: "textRecognition")!.image(color: NCBrandColor.shared.brandElement, size: 25) 
         
@@ -182,7 +206,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             row.selectorOptions = ["PDF"]
         }
         row.value = "PDF"
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
+        row.cellConfig["backgroundColor"] = cellBackgoundColor
 
         row.cellConfig["tintColor"] = NCBrandColor.shared.brandElement
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
@@ -193,7 +217,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         row.value = self.fileName
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
+        row.cellConfig["backgroundColor"] = cellBackgoundColor
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label

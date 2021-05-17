@@ -31,6 +31,8 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     @IBOutlet weak var labelDuration: UILabel!
     @IBOutlet weak var progressView: UIProgressView!
 
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     private var serverUrl = ""
     private var titleServerUrl = ""
     private var fileName = ""
@@ -41,20 +43,17 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     private var audioPlayer: AVAudioPlayer!
     private var timer = Timer()
 
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
+    var cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        
+                
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
 
         // title
         self.title = NSLocalizedString("_voice_memo_title_", comment: "")
@@ -70,6 +69,8 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         labelTimer.textColor = NCBrandColor.shared.label
         labelDuration.textColor = NCBrandColor.shared.label
         
+        setColors(userInterfaceStyle: nil)
+        
         initializeForm()
     }
     
@@ -77,6 +78,29 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         super.viewWillAppear(animated)
         
         updateTimerUI()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        setColors(userInterfaceStyle: traitCollection.userInterfaceStyle)
+    }
+    
+    // MARK: - Colors
+    
+    func setColors(userInterfaceStyle: UIUserInterfaceStyle?) {
+        
+        if userInterfaceStyle == .dark {
+            // personalized
+        } else {
+            // personalized
+        }
+        
+        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        
+        tableView.reloadData()
     }
     
     public func setup(serverUrl: String, fileNamePath: String, fileName: String) {
@@ -119,7 +143,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
+        row.cellConfig["backgroundColor"] = cellBackgoundColor
 
         row.cellConfig["imageView.image"] =  UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
         
@@ -136,7 +160,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         row.value = self.fileName
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
+        row.cellConfig["backgroundColor"] = cellBackgoundColor
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
@@ -175,7 +199,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         header.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
         header.textLabel?.textColor = .gray
-        header.tintColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        header.tintColor = cellBackgoundColor
     }
     
     // MARK: - Action
