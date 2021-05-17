@@ -27,7 +27,7 @@ import NCCommunication
 
 extension NCViewer {
 
-    func toggleMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool) {
+    func toggleMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool, image: UIImage?) {
         
         let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
@@ -176,7 +176,8 @@ extension NCViewer {
                             
                             vcRename.metadata = metadata
                             vcRename.disableChangeExt = true
-
+                            vcRename.imagePreview = image
+                            
                             let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
                             
                             viewController.present(popup, animated: true)

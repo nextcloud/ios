@@ -155,7 +155,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     //MARK: - Action
     
     @objc func openMenuMore() {
-        NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: true)
+        NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: true, image: UIImage.init(named: "file_txt"))
     }
    
     //MARK: -
