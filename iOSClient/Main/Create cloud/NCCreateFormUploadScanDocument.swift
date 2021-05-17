@@ -99,12 +99,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     
     func changeTheming() {
         
-        if userInterfaceStyle == .dark {
-            // personalized
-        } else {
-            // personalized
-        }
-        
         view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground

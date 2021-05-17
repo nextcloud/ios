@@ -34,7 +34,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var searchController: UISearchController?
     internal var emptyDataSet: NCEmptyDataSet?
     internal var backgroundImageView = UIImageView()
-    internal let defaultBackgroundColor = NCBrandColor.shared.systemBackground
     internal var serverUrl: String = ""
     internal var isEncryptedFolder = false
     internal var isEditMode = false
@@ -85,9 +84,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         super.viewDidLoad()
         
         self.navigationController?.presentationController?.delegate = self
-        view.backgroundColor = defaultBackgroundColor
-        
-        collectionView.backgroundColor = defaultBackgroundColor
+       
         collectionView.alwaysBounceVertical = true
 
         if enableSearchBar {
@@ -116,7 +113,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         // Refresh Control
         collectionView.addSubview(refreshControl)
-        refreshControl.tintColor = .gray
         refreshControl.addTarget(self, action: #selector(reloadDataSourceNetworkRefreshControl), for: .valueChanged)
         
         // Empty
@@ -169,12 +165,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             appDelegate.activeServerUrl = serverUrl
         }
         
-        setLayout()
-        
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.setNavigationBarHidden(false, animated: true)
         setNavigationItem()
         
+        changeTheming()
         reloadDataSource()
     }
         
@@ -216,7 +211,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
-        setLayout()
+        changeTheming()
     }
     
     // MARK: - NotificationCenter
@@ -248,13 +243,58 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         selectOcId.removeAll()
         
         setNavigationItem()
-        setLayout()
-        
+        changeTheming()
         reloadDataSource()
     }
     
     @objc func changeTheming() {
-        setLayout()
+        
+        view.backgroundColor = NCBrandColor.shared.systemBackground
+        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
+        refreshControl.tintColor = .gray
+        
+        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
+        
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
+            collectionView?.collectionViewLayout = listLayout
+        } else {
+            collectionView?.collectionViewLayout = gridLayout
+        }
+        
+        // IMAGE BACKGROUND
+        if layoutForView?.imageBackgroud != "" {
+            let imagePath = CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appBackground).path + "/" + layoutForView!.imageBackgroud
+            do {
+                let data = try Data.init(contentsOf: URL(fileURLWithPath: imagePath))
+                if let image = UIImage.init(data: data) {
+                    backgroundImageView.image = image
+                    backgroundImageView.contentMode = .scaleToFill
+                    collectionView.backgroundView = backgroundImageView
+                }
+            } catch { }
+        } else {
+            backgroundImageView.image = nil
+            collectionView.backgroundView = nil
+        }
+        
+        // COLOR BACKGROUND
+        let activeAccount = NCManageDatabase.shared.getActiveAccount()
+        if traitCollection.userInterfaceStyle == .dark {
+            if activeAccount?.darkColorBackground != "" {
+                collectionView.backgroundColor = UIColor.init(hex: activeAccount?.darkColorBackground ?? "")
+            } else {
+                collectionView.backgroundColor = NCBrandColor.shared.systemBackground
+            }
+        } else {
+           if activeAccount?.lightColorBackground != "" {
+                collectionView.backgroundColor = UIColor.init(hex: activeAccount?.lightColorBackground ?? "")
+            } else {
+                collectionView.backgroundColor = NCBrandColor.shared.systemBackground
+            }
+        }
+        
+        collectionView.reloadData()
     }
     
     @objc func reloadDataSource(_ notification: NSNotification) {
@@ -598,56 +638,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
     
-    func setLayout() {
-        
-        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
-        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
-        
-        if layoutForView?.layout == NCGlobal.shared.layoutList {
-            collectionView?.collectionViewLayout = listLayout
-        } else {
-            collectionView?.collectionViewLayout = gridLayout
-        }
-        
-        // IMAGE BACKGROUND
-        if layoutForView?.imageBackgroud != "" {
-            let imagePath = CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appBackground).path + "/" + layoutForView!.imageBackgroud
-            do {
-                let data = try Data.init(contentsOf: URL(fileURLWithPath: imagePath))
-                if let image = UIImage.init(data: data) {
-                    backgroundImageView.image = image
-                    backgroundImageView.contentMode = .scaleToFill
-                    collectionView.backgroundView = backgroundImageView
-                }
-            } catch { }
-        } else {
-            backgroundImageView.image = nil
-            collectionView.backgroundView = nil
-        }
-        
-        // COLOR BACKGROUND
-        let activeAccount = NCManageDatabase.shared.getActiveAccount()
-        if traitCollection.userInterfaceStyle == .dark {
-            if activeAccount?.darkColorBackground != "" {
-                collectionView.backgroundColor = UIColor.init(hex: activeAccount?.darkColorBackground ?? "")
-            } else {
-                collectionView.backgroundColor = defaultBackgroundColor
-            }
-        } else {
-           if activeAccount?.lightColorBackground != "" {
-                collectionView.backgroundColor = UIColor.init(hex: activeAccount?.lightColorBackground ?? "")
-            } else {
-                collectionView.backgroundColor = defaultBackgroundColor
-            }
-        }
-        
-        collectionView.reloadData()
-    }
-
     // MARK: - BackgroundImageColor Delegate
     
     func colorPickerCancel() {
-        setLayout()
+        changeTheming()
     }
     
     func colorPickerWillChange(color: UIColor) {
@@ -658,9 +652,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NCManageDatabase.shared.setAccountColorFiles(lightColorBackground: lightColor, darkColorBackground: darkColor)
                
-        setLayout()
+        changeTheming()
     }
-        
     
     // MARK: - Empty
     
@@ -1388,6 +1381,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
             cell.labelTitle.textColor = NCBrandColor.shared.label
+            cell.labelInfo.text = ""
+            cell.labelInfo.textColor = NCBrandColor.shared.systemGray
             
             cell.imageSelect.image = nil
             cell.imageStatus.image = nil
