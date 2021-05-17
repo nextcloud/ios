@@ -49,33 +49,40 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        voiceRecordHUD.update(0.0)
+        durationLabel.text = ""
+        startStopLabel.text = NSLocalizedString("_voice_memo_start_", comment: "")
+        
+        setColors(userInterfaceStyle: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        contentContainerView.backgroundColor = UIColor.lightGray
-        voiceRecordHUD.update(0.0)
-        voiceRecordHUD.fillColor = UIColor.green
-        durationLabel.text = ""
-        startStopLabel.text = NSLocalizedString("_voice_memo_start_", comment: "")
     }
     
-    func createRecorder(fileName: String) {
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
         
-        self.fileName = fileName
-        recording = NCAudioRecorder(to: fileName)
-        recording.delegate = self
-
-        DispatchQueue.global().async {
-            // Background thread
-            do {
-                try self.recording.prepare()
-            } catch {
-                print(error)
-            }
-        }
+        setColors(userInterfaceStyle: traitCollection.userInterfaceStyle)
     }
+    
+    // MARK: - Colors
+    
+    func setColors(userInterfaceStyle: UIUserInterfaceStyle?) {
+        
+        if userInterfaceStyle == .dark {
+            // personalized
+        } else {
+            // personalized
+        }
+        
+        view.backgroundColor = .clear
+        contentContainerView.backgroundColor = UIColor.lightGray
+        voiceRecordHUD.fillColor = UIColor.green
+    }
+    
+    // MARK: - Action
     
     @IBAction func touchViewController() {
         
@@ -105,6 +112,24 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
             do {
                 try recording.record()
                 startStopLabel.text = NSLocalizedString("_voice_memo_stop_", comment: "")
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    // MARK: - Code
+    
+    func createRecorder(fileName: String) {
+        
+        self.fileName = fileName
+        recording = NCAudioRecorder(to: fileName)
+        recording.delegate = self
+
+        DispatchQueue.global().async {
+            // Background thread
+            do {
+                try self.recording.prepare()
             } catch {
                 print(error)
             }

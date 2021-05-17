@@ -77,7 +77,7 @@ class NCAccountRequest: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(startTimer), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         
-        setColors()
+        setColors(userInterfaceStyle: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -110,7 +110,7 @@ class NCAccountRequest: UIViewController {
     
     // MARK: - Colors
     
-    func setColors(userInterfaceStyle: UIUserInterfaceStyle? = nil) {
+    func setColors(userInterfaceStyle: UIUserInterfaceStyle?) {
         
         if userInterfaceStyle == .dark {
             // personalized
