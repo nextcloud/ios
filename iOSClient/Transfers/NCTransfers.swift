@@ -68,32 +68,32 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
     // MARK: - NotificationCenter
     
     override func downloadStartFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
+        
         reloadDataSource()
     }
     
     override func downloadedFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
+        
         reloadDataSource()
     }
     
     override func downloadCancelFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
+        
         reloadDataSource()
     }
     
     override func uploadStartFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
+        
         reloadDataSource()
     }
     
     override func uploadedFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
+        
         reloadDataSource()
     }
     
     override func uploadCancelFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
+        
         reloadDataSource()
     }
     
