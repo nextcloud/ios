@@ -379,18 +379,6 @@
 {
     [super formRowDescriptorValueHasChanged:rowDescriptor oldValue:oldValue newValue:newValue];
     
-    NSArray *accounts = [[NCManageDatabase shared] getAllAccount];
-    tableAccount *activeAccount = [[NCManageDatabase shared] getActiveAccount];
-
-    for (tableAccount *account in accounts) {
-        if ([rowDescriptor.tag isEqualToString:account.account]) {
-            if (![account.account isEqualToString:activeAccount.account]) {
-                [appDelegate changeAccount:account.account];
-                [self initializeForm];
-            }
-        }
-    }
-    
     if ([rowDescriptor.tag isEqualToString:@"accountRequest"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
@@ -400,12 +388,29 @@
         }
     }
     
-    if ([rowDescriptor.tag isEqualToString:@"alias"]) {
+    else if ([rowDescriptor.tag isEqualToString:@"alias"]) {
+        
         if ([newValue isEqual:[NSNull null]]) {
             [[NCManageDatabase shared] setAccountAlias:@""];
         } else {
             [[NCManageDatabase shared] setAccountAlias:newValue];
         }
+    }
+    
+    else {
+        
+        NSArray *accounts = [[NCManageDatabase shared] getAllAccount];
+        tableAccount *activeAccount = [[NCManageDatabase shared] getActiveAccount];
+
+        for (tableAccount *account in accounts) {
+            if ([rowDescriptor.tag isEqualToString:account.account]) {
+                if (![account.account isEqualToString:activeAccount.account]) {
+                    [appDelegate changeAccount:account.account];
+                }
+            }
+        }
+        
+        [self initializeForm];
     }
 }
 
