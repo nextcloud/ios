@@ -64,18 +64,13 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         static var cellLivePhotoImage = UIImage()
         static var cellPlayImage = UIImage()
     }
+    
     // MARK: - View Life Cycle
 
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-
-        appDelegate.activeMedia = self
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        appDelegate.activeMedia = self
         
         view.backgroundColor = NCBrandColor.shared.systemBackground
 
@@ -118,6 +113,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         appDelegate.activeViewController = self
         
         // hide nagigation controller
@@ -158,8 +154,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         return .lightContent
     }
     
-    //MARK: - Notification
-    
+    //MARK: - NotificationCenter
+
     @objc func initialize() {
         
         self.reloadDataSourceWithCompletion { (_) in
@@ -171,9 +167,60 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         }
     }
     
-    @objc func applicationWillEnterForeground() {
-        if self.view.window != nil {
-            self.viewDidAppear(false)
+    @objc func deleteFile(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let ocId = userInfo["ocId"] as? String {
+          
+                let indexes = self.metadatas.indices.filter { self.metadatas[$0].ocId == ocId }
+                let metadatas = self.metadatas.filter { $0.ocId != ocId }
+                self.metadatas = metadatas
+                
+                if self.metadatas.count == 0 {
+                    collectionView?.reloadData()
+                } else if let row = indexes.first {
+                    let indexPath = IndexPath(row: row, section: 0)
+                    collectionView?.deleteItems(at: [indexPath])
+                }
+                
+                self.updateMediaControlVisibility()
+            }
+        }
+    }
+    
+    @objc func moveFile(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                
+                if metadata.account == appDelegate.account {
+                    
+                    let indexes = self.metadatas.indices.filter { self.metadatas[$0].ocId == metadata.ocId }
+                    let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
+                    self.metadatas = metadatas
+                    
+                    if self.metadatas.count == 0 {
+                        collectionView?.reloadData()
+                    } else if let row = indexes.first {
+                        let indexPath = IndexPath(row: row, section: 0)
+                        collectionView?.deleteItems(at: [indexPath])
+                    }
+                    
+                    self.updateMediaControlVisibility()
+                }
+            }
+        }
+    }
+    
+    @objc func renameFile(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                
+                if metadata.account == appDelegate.account {
+                    self.reloadDataSource()
+                }
+            }
         }
     }
     
@@ -238,65 +285,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         }
     }
     
-    //MARK: - NotificationCenter
-
-    @objc func deleteFile(_ notification: NSNotification) {
-        
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String {
-          
-                let indexes = self.metadatas.indices.filter { self.metadatas[$0].ocId == ocId }
-                let metadatas = self.metadatas.filter { $0.ocId != ocId }
-                self.metadatas = metadatas
-                
-                if self.metadatas.count == 0 {
-                    collectionView?.reloadData()
-                } else if let row = indexes.first {
-                    let indexPath = IndexPath(row: row, section: 0)
-                    collectionView?.deleteItems(at: [indexPath])
-                }
-                
-                self.updateMediaControlVisibility()
-            }
-        }
-    }
-    
-    @objc func moveFile(_ notification: NSNotification) {
-        
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                
-                if metadata.account == appDelegate.account {
-                    
-                    let indexes = self.metadatas.indices.filter { self.metadatas[$0].ocId == metadata.ocId }
-                    let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
-                    self.metadatas = metadatas
-                    
-                    if self.metadatas.count == 0 {
-                        collectionView?.reloadData()
-                    } else if let row = indexes.first {
-                        let indexPath = IndexPath(row: row, section: 0)
-                        collectionView?.deleteItems(at: [indexPath])
-                    }
-                    
-                    self.updateMediaControlVisibility()
-                }
-            }
-        }
-    }
-    
-    @objc func renameFile(_ notification: NSNotification) {
-        
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                
-                if metadata.account == appDelegate.account {
-                    self.reloadDataSource()
-                }
-            }
-        }
-    }
-        
     // MARK: - Empty
     
     func emptyDataSetView(_ view: NCEmptyView) {
