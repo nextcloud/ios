@@ -249,6 +249,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             searchController?.isActive = false
         }
         
+        selectOcId.removeAll()
+        
         // set active serverUrl
         if self.view?.window != nil {
             if serverUrl == "" {
@@ -256,20 +258,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             } else {
                 appDelegate.activeServerUrl = serverUrl
             }
+            
+            appDelegate.listFilesVC.removeAll()
+            appDelegate.listFavoriteVC.removeAll()
+            appDelegate.listOfflineVC.removeAll()
         }
         
         if self is NCFiles || self is NCFavorite || self is NCOffline {
             self.navigationController?.popToRootViewController(animated: false)
         }
-        
-        appDelegate.listFilesVC.removeAll()
-        appDelegate.listFavoriteVC.removeAll()
-        appDelegate.listOfflineVC.removeAll()
-        selectOcId.removeAll()
-        
+       
         setNavigationItem()
-        changeTheming()
         reloadDataSource()
+        changeTheming()
     }
     
     @objc func changeTheming() {
