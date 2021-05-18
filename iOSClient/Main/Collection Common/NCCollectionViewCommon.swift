@@ -1482,7 +1482,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             } else {
                 cell.imageShared.image = NCBrandColor.cacheImages.canShare
             }
-            if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId {
+            if appDelegate.account != metadata.account {
+                cell.imageShared.image = NCBrandColor.cacheImages.shared
+            }
+            if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId && appDelegate.account == metadata.account {
                 cell.imageShared.image = UIImage(named: "avatar")
                 let fileNameUser = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + metadata.ownerId + ".png"
                 if FileManager.default.fileExists(atPath: fileNameUser) {
