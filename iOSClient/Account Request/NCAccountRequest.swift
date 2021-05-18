@@ -110,7 +110,7 @@ class NCAccountRequest: UIViewController {
     
     // MARK: - Colors
     
-    func changeTheming() {
+    @objc func changeTheming() {
         
         view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
         tableView.backgroundColor = NCBrandColor.shared.secondarySystemBackground

@@ -32,6 +32,8 @@ class NCMainNavigationController: UINavigationController {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+        
         changeTheming()
     }
     
@@ -47,7 +49,7 @@ class NCMainNavigationController: UINavigationController {
     
     // MARK: - Theming
     
-    func changeTheming() {
+    @objc func changeTheming() {
         
         if #available(iOS 13.0, *) {
             
