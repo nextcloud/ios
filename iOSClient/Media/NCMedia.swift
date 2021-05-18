@@ -333,7 +333,8 @@ extension NCMedia: UICollectionViewDelegate {
         } else {
             
             appDelegate.activeServerUrl = metadataTouch!.serverUrl
-            NCViewer.shared.view(viewController: self, metadata: metadataTouch!, metadatas: metadatas)
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell
+            NCViewer.shared.view(viewController: self, metadata: metadataTouch!, metadatas: metadatas, imageIcon: cell?.imageItem.image)
         }
     }
     

@@ -28,6 +28,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadata = tableMetadata()
+    var imageIcon: UIImage?
     
     private var pdfView = PDFView()
     private var thumbnailViewHeight: CGFloat = 40
@@ -220,7 +221,8 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     //MARK: - Action
     
     @objc func openMenuMore() {
-        NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: false, image: UIImage.init(named: "file_pdf"))
+        if imageIcon == nil { imageIcon = UIImage.init(named: "file_pdf") }
+        NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: false, imageIcon: imageIcon)
     }
     
     //MARK: - Gesture Recognizer

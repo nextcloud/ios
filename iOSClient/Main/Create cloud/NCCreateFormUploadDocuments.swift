@@ -337,7 +337,7 @@ import NCCommunication
                             let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, fileName: fileName, fileNameView: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url ?? "", contentType: results.mimeType, livePhoto: false, chunk: false)
                             
                             if let viewController = self.appDelegate.activeViewController {
-                                NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata])
+                                NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                             }
                         })
                     }
@@ -362,7 +362,7 @@ import NCCommunication
                         let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, fileName: createFileName, fileNameView: createFileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url!, contentType: "", livePhoto: false, chunk: false)
                     
                         if let viewController = self.appDelegate.activeViewController {
-                            NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata])
+                            NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                         }
                    })
                    

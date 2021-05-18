@@ -836,7 +836,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
 
         if namedButtonMore == NCGlobal.shared.buttonMoreMore {
-            toggleMenu(viewController: self, metadata: metadata, image: image)
+            toggleMenu(viewController: self, metadata: metadata, imageIcon: image)
         } else if namedButtonMore == NCGlobal.shared.buttonMoreStop {
             NCNetworking.shared.cancelTransferMetadata(metadata) { }
         }
@@ -1234,6 +1234,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         } else {
             
             guard let metadataTouch = metadataTouch else { return }
+            let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
             
             if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio {
                 var metadatas: [tableMetadata] = []
@@ -1242,12 +1243,12 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         metadatas.append(metadata)
                     }
                 }
-                NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: metadatas)
+                NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: metadatas, imageIcon: imageIcon)
                 return
             }
             
             if CCUtility.fileProviderStorageExists(metadataTouch.ocId, fileNameView: metadataTouch.fileNameView) {
-                NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
+                NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch], imageIcon: imageIcon)
             } else if NCCommunication.shared.isNetworkReachable() {
                 NCNetworking.shared.download(metadata: metadataTouch, selector: NCGlobal.shared.selectorLoadFileView) { (_) in }
             } else {

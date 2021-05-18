@@ -34,6 +34,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     
     var link: String = ""
     var metadata: tableMetadata = tableMetadata()
+    var imageIcon: UIImage?
     
     // MARK: - View Life Cycle
 
@@ -155,7 +156,8 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     //MARK: - Action
     
     @objc func openMenuMore() {
-        NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: true, image: UIImage.init(named: "file_txt"))
+        if imageIcon == nil { imageIcon = UIImage.init(named: "file_txt") }
+        NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: true, imageIcon: imageIcon)
     }
    
     //MARK: -

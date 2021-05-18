@@ -29,7 +29,7 @@ import NCCommunication
 
 extension NCCollectionViewCommon {
 
-    func toggleMenu(viewController: NCCollectionViewCommon, metadata: tableMetadata, image: UIImage?) {
+    func toggleMenu(viewController: NCCollectionViewCommon, metadata: tableMetadata, imageIcon: UIImage?) {
         
         let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
@@ -69,8 +69,8 @@ extension NCCollectionViewCommon {
             
         var iconHeader: UIImage!
         
-        if image != nil {
-            iconHeader = image!
+        if imageIcon != nil {
+            iconHeader = imageIcon!
         } else {
             if metadata.directory {
                 iconHeader = NCBrandColor.cacheImages.folder
@@ -225,7 +225,7 @@ extension NCCollectionViewCommon {
                         if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
                             
                             vcRename.metadata = metadata
-                            vcRename.imagePreview = image
+                            vcRename.imagePreview = imageIcon
 
                             let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
                                                         

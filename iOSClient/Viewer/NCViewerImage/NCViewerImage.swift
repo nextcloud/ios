@@ -149,9 +149,8 @@ class NCViewerImage: UIViewController {
     }
     
     @objc func openMenuMore() {
-        
-        let image = getImage(metadata: self.currentMetadata)
-        NCViewer.shared.toggleMenu(viewController: self, metadata: currentMetadata, webView: false, image: image)
+        let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(currentMetadata.ocId, etag: currentMetadata.etag))
+        NCViewer.shared.toggleMenu(viewController: self, metadata: currentMetadata, webView: false, imageIcon: imageIcon)
     }
     
     //MARK: - NotificationCenter

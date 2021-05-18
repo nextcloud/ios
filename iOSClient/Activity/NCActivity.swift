@@ -333,6 +333,8 @@ extension activityTableViewCell: UICollectionViewDelegate {
             return
         }
         
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? activityCollectionViewCell
+        
         let activityPreview = activityPreviews[indexPath.row]
         
         if activityPreview.view == "trashbin" {
@@ -372,7 +374,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                         let fileSize = attr[FileAttributeKey.size] as! UInt64
                         if fileSize > 0 {
                             if let viewController = self.viewController {
-                                NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata])
+                                NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: cell?.imageView.image)
                             }
                             return
                         }
@@ -419,7 +421,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                                                        
                             NCManageDatabase.shared.addMetadata(metadata!)
                             if let viewController = self.viewController {
-                                NCViewer.shared.view(viewController: viewController, metadata: metadata!, metadatas: [metadata!])
+                                NCViewer.shared.view(viewController: viewController, metadata: metadata!, metadatas: [metadata!], imageIcon: cell?.imageView.image)
                             }
                         }
                     }

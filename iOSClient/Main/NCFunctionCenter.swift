@@ -87,7 +87,8 @@ import NCCommunication
                             } else {
                                 
                                 if let viewController = self.appDelegate.activeViewController {
-                                    NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata])
+                                    let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+                                    NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
                                 }
                             }
                         }

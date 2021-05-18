@@ -33,6 +33,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     var link: String = ""
     var editor: String = ""
     var metadata: tableMetadata = tableMetadata()
+    var imageIcon: UIImage?
    
     // MARK: - View Life Cycle
 
@@ -149,7 +150,8 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     //MARK: - Action
     
     @objc func openMenuMore() {
-        NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: true, image: UIImage.init(named: "file_txt"))
+        if imageIcon == nil { imageIcon = UIImage.init(named: "file_txt") }
+        NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: true, imageIcon: imageIcon)
     }
     
     //MARK: -
