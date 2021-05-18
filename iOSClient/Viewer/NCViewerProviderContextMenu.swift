@@ -32,6 +32,7 @@ class NCViewerProviderContextMenu: UIViewController  {
     private var audioPlayer: AVAudioPlayer?
     private var metadata: tableMetadata?
     private var metadataLivePhoto: tableMetadata?
+    private var image: UIImage?
         
     // MARK: - View Life Cycle
 
@@ -39,17 +40,23 @@ class NCViewerProviderContextMenu: UIViewController  {
         fatalError("init(coder:) has not been implemented")
     }
     
-    init(metadata: tableMetadata) {
+    init(metadata: tableMetadata, image: UIImage?) {
         super.init(nibName: nil, bundle: nil)
         
         self.metadata = metadata
         self.metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
+        self.image = image
         
         if metadata.directory {
-
-            let image = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width / 2)
-            imageView.image = image
-            imageView.frame = resize(image.size)
+            
+            var imageFolder = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width / 2)
+            
+            if let image = self.image {
+                imageFolder =  image.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width / 2)
+            }
+            
+            imageView.image = imageFolder
+            imageView.frame = resize(imageFolder.size)
 
         } else {
                          

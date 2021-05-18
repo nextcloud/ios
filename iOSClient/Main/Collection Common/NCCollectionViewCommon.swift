@@ -1289,7 +1289,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             
-            return NCViewerProviderContextMenu(metadata: metadata)
+            return NCViewerProviderContextMenu(metadata: metadata, image: image)
             
         }, actionProvider: { suggestedActions in
             
