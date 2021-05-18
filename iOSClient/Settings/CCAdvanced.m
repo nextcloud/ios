@@ -376,7 +376,7 @@
     [[NCAutoUpload shared] alignPhotoLibraryWithViewController:self];
 
     // Inizialized home
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterInitializeMain object:nil userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterInitialize object:nil userInfo:nil];
     
     // Clear Media
     [appDelegate.activeMedia reloadDataSource];

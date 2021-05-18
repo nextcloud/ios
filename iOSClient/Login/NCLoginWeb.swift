@@ -274,7 +274,7 @@ extension NCLoginWeb: WKNavigationDelegate {
             
         if (CCUtility.getIntro()) {
             
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
             self.dismiss(animated: true)
                 
         } else {
@@ -283,7 +283,7 @@ extension NCLoginWeb: WKNavigationDelegate {
             if (self.presentingViewController == nil) {
                 if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
                     viewController.modalPresentationStyle = .fullScreen
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
                     viewController.view.alpha = 0
                     appDelegate.window?.rootViewController = viewController
                     appDelegate.window?.makeKeyAndVisible()
@@ -292,7 +292,7 @@ extension NCLoginWeb: WKNavigationDelegate {
                     }
                 }
             } else {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
                 self.dismiss(animated: true)
             }
         }

@@ -95,7 +95,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 0, delegate: self)
       
         // Notification
-        NotificationCenter.default.addObserver(self, selector: #selector(initializeMain), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitializeMain), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
             
         mediaCommandView = Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as? NCMediaCommandView
         self.view.addSubview(mediaCommandView!)
@@ -160,7 +160,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     
     //MARK: - Notification
     
-    @objc func initializeMain() {
+    @objc func initialize() {
         
         self.reloadDataSourceWithCompletion { (_) in
             self.timerSearchNewMedia?.invalidate()

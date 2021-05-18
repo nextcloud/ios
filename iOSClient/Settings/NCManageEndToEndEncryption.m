@@ -184,7 +184,7 @@
     self.endToEndInitialize.delegate = self;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground) name:NCGlobal.shared.notificationCenterApplicationDidEnterBackground object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain) name:NCGlobal.shared.notificationCenterInitializeMain object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initialize) name:NCGlobal.shared.notificationCenterInitialize object:nil];
 
     [self initializeForm];
 }
@@ -205,7 +205,7 @@
     }
 }
 
-- (void)initializeMain
+- (void)initialize
 {
     [[self navigationController] popViewControllerAnimated:YES];
 }

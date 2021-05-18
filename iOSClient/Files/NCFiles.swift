@@ -53,14 +53,14 @@ class NCFiles: NCCollectionViewCommon  {
     
     // MARK: - NotificationCenter
     
-    override func initializeMain() {
+    override func initialize() {
         
         if isRoot {
             serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
             reloadDataSourceNetwork(forced: true)
         }
         
-        super.initializeMain()
+        super.initialize()
     }
     
     // MARK: - DataSource + NC Endpoint

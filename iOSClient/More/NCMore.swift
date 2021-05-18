@@ -63,7 +63,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         labelQuotaExternalSite.addGestureRecognizer(tapQuota)
 
         // Notification
-        NotificationCenter.default.addObserver(self, selector: #selector(initializeMain), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitializeMain), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -75,7 +75,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     // MARK: - NotificationCenter
 
-    @objc func initializeMain() {
+    @objc func initialize() {
         loadItems()
     }
     

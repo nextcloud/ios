@@ -62,7 +62,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(initializeMain), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitializeMain), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
         
         getNetwokingNotification()
     }
@@ -70,7 +70,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitializeMain), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
     }
     
     @objc func viewClose() {
@@ -79,7 +79,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     
     // MARK: - NotificationCenter
 
-    @objc func initializeMain() {
+    @objc func initialize() {
         getNetwokingNotification()
     }
     
