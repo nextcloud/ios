@@ -254,7 +254,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if isEditMode {
             isEditMode = !isEditMode
             selectOcId.removeAll()
-            setNavigationItem()
         }
         
         // set active serverUrl
@@ -270,10 +269,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             appDelegate.listOfflineVC.removeAll()
         }
         
-        if self is NCFiles || self is NCFavorite || self is NCOffline {
+        if serverUrl != "" {
             self.navigationController?.popToRootViewController(animated: false)
         }
-       
+        
         setNavigationItem()
         reloadDataSource()
         changeTheming()
