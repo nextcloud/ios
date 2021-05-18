@@ -64,13 +64,27 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         
+        appDelegate.activeViewController = self
         changeTheming()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        appDelegate.activeViewController = self
+        NotificationCenter.default.addObserver(self, selector: #selector(initializeMain), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitializeMain), object: nil)
+        
+        initializeMain()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitializeMain), object: nil)
+    }
+    
+    // MARK: - NotificationCenter
+
+    @objc func initializeMain() {
         loadDataSource()
         loadActivity(idActivity: 0)
     }

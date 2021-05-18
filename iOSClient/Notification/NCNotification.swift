@@ -73,10 +73,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitializeMain), object: nil)
     }
     
-    @objc func changeTheming() {
-        tableView.reloadData()        
-    }
-
     @objc func viewClose() {
         self.dismiss(animated: true, completion: nil)
     }
@@ -85,6 +81,10 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     @objc func initializeMain() {
         getNetwokingNotification()
+    }
+    
+    @objc func changeTheming() {
+        tableView.reloadData()
     }
     
     // MARK: - Empty
