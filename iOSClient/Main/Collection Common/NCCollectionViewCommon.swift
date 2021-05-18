@@ -245,11 +245,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         if appDelegate.account == "" { return }
         
+        // Search
         if searchController?.isActive ?? false {
             searchController?.isActive = false
         }
         
-        selectOcId.removeAll()
+        // Select
+        if isEditMode {
+            isEditMode = !isEditMode
+            selectOcId.removeAll()
+            setNavigationItem()
+        }
         
         // set active serverUrl
         if self.view?.window != nil {
