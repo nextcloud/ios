@@ -552,6 +552,7 @@
 + (void)setCertificateError:(NSString *)account error:(BOOL)error
 {
     // In background do not write the error
+#if !defined(EXTENSION)
     UIApplicationState state = [[UIApplication sharedApplication] applicationState];
     if (error && (state == UIApplicationStateBackground || state == UIApplicationStateInactive)) {
         return;
@@ -561,6 +562,9 @@
     NSString *sError = (error) ? @"true" : @"false";
     
     [UICKeyChainStore setString:sError forKey:key service:NCGlobal.shared.serviceShareKeyChain];
+#else
+    return;
+#endif
 }
 
 + (BOOL)getDisableLocalCacheAfterUpload

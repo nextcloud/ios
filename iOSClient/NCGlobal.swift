@@ -66,9 +66,9 @@ class NCGlobal: NSObject {
     let introSignup: Int                            = 1
     
     // Avatar & Preview
-    let avatarSize: CGFloat                         = 512
-    let sizePreview: CGFloat                        = 1024
-    let sizeIcon: CGFloat                           = 512
+    let avatarSize: Int                             = 512
+    let sizePreview: Int                            = 1024
+    let sizeIcon: Int                               = 512
     
     // E2EE
     let e2eeMaxFileSize: UInt64                     = 500000000     // 500 MB

@@ -121,6 +121,7 @@
 		F73ADD16265542950069EA0D /* MarkdownKit in Frameworks */ = {isa = PBXBuildFile; productRef = F73ADD15265542950069EA0D /* MarkdownKit */; };
 		F73ADD17265542A80069EA0D /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F73ADCFB265542480069EA0D /* OpenSSL.xcframework */; };
 		F73ADD18265542A80069EA0D /* OpenSSL.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F73ADCFB265542480069EA0D /* OpenSSL.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F73ADD1D26554C250069EA0D /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
 		F73B422B2476764F00A30FD3 /* NCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F73B42292476764F00A30FD3 /* NCNotification.storyboard */; };
 		F73B422C2476764F00A30FD3 /* NCNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73B422A2476764F00A30FD3 /* NCNotification.swift */; };
 		F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F73CB3B122E072A000AD728E /* NCShareHeaderView.xib */; };
@@ -2018,6 +2019,7 @@
 				F785EE9E2461A09900B3F945 /* NCNetworking.swift in Sources */,
 				F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */,
 				F73D5E49246DE09200DF6467 /* NCElementsJSON.swift in Sources */,
+				F73ADD1D26554C250069EA0D /* NCContentPresenter.swift in Sources */,
 				F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */,
 				F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */,
 				F798F0E725880609000DAFFD /* UIColor+Extensions.swift in Sources */,
