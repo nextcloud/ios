@@ -24,7 +24,7 @@
 import Foundation
 import PDFKit
 
-@objc protocol NCViewerPDFSearchDelegate : class {
+@objc protocol NCViewerPDFSearchDelegate : AnyObject {
     func searchPdfSelection(_ pdfSelection: PDFSelection)
 }
 

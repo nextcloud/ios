@@ -37,25 +37,17 @@ branch. Maybe start working on [starter issues](https://github.com/nextcloud/ios
 
 Easy starting points are also reviewing [pull requests](https://github.com/nextcloud/ios/pulls)
 
-### Xcode Project Setup
+### Xcode V 12.5 Project Setup
 
 #### Dependencies
 
-After forking a repository you have to build the dependencies. Dependencies are managed with Carthage. 
+After forking a repository you have to build the dependencies. Dependencies are managed with Carthage version 0.37.0 or later. 
 Run
 
 ```
-carthage build --platform ios
+carthage update --use-xcframeworks --platform iOS --cache-builds
 ```
 to fetch and compile the dependencies.
-
-#### Carthage XCode 12 issues
-
-Due to issues with carthage and XCode 12, use the following command when building dependencies for XCode 12
-
-```
-./wcarthage update --no-use-binaries --platform iOS --cache-builds
-```
 
 ### Creating Pull requests
 
