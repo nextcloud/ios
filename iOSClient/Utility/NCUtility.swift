@@ -486,17 +486,21 @@ class NCUtility: NSObject {
         viewActivityIndicator?.layer.masksToBounds = true
         viewActivityIndicator?.backgroundColor = .clear
 
+        #if !EXTENSION
         if backgroundView == nil {
             if let window = UIApplication.shared.keyWindow {
-                viewBackgroundActivityIndicator?.removeFromSuperview()
-                viewBackgroundActivityIndicator = NCViewActivityIndicator(frame: window.bounds)
-                window.addSubview(viewBackgroundActivityIndicator!)
-                viewBackgroundActivityIndicator?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                viewBackgroundActivityIndicator?.backgroundColor = .clear
+                self.viewBackgroundActivityIndicator?.removeFromSuperview()
+                self.viewBackgroundActivityIndicator = NCViewActivityIndicator(frame: window.bounds)
+                window.addSubview(self.viewBackgroundActivityIndicator!)
+                self.viewBackgroundActivityIndicator?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                self.viewBackgroundActivityIndicator?.backgroundColor = .clear
             }
         } else {
-            viewBackgroundActivityIndicator = backgroundView
+            self.viewBackgroundActivityIndicator = backgroundView
         }
+        #else
+        self.viewBackgroundActivityIndicator = backgroundView
+        #endif
         
         // VIEW ACTIVITY INDICATOR
         
