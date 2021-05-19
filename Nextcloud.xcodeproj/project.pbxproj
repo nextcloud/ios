@@ -90,6 +90,10 @@
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
 		F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */; };
+		F73A9C702655640C00E03044 /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F73A9C6F2655640C00E03044 /* NCCommunication */; };
+		F73A9C722655643F00E03044 /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F73A9C712655643F00E03044 /* NCCommunication */; };
+		F73A9C742655645100E03044 /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F73A9C732655645100E03044 /* NCCommunication */; };
+		F73A9C762655645B00E03044 /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F73A9C752655645B00E03044 /* NCCommunication */; };
 		F73ADCE626553ADA0069EA0D /* FloatingPanel in Frameworks */ = {isa = PBXBuildFile; productRef = F73ADCE526553ADA0069EA0D /* FloatingPanel */; };
 		F73ADCE926553B1F0069EA0D /* MarkdownKit in Frameworks */ = {isa = PBXBuildFile; productRef = F73ADCE826553B1F0069EA0D /* MarkdownKit */; };
 		F73ADCEC26553B970069EA0D /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = F73ADCEB26553B970069EA0D /* FirebaseCrashlytics */; };
@@ -236,10 +240,6 @@
 		F785EEA42461A4A600B3F945 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F785EEA52461A4CF00B3F945 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F785EEA62461A4FB00B3F945 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
-		F786D58D253454BF00E3DD7B /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F786D58C253454BF00E3DD7B /* NCCommunication */; };
-		F786D593253454CE00E3DD7B /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F786D592253454CE00E3DD7B /* NCCommunication */; };
-		F786D595253454D300E3DD7B /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F786D594253454D300E3DD7B /* NCCommunication */; };
-		F786D597253454D800E3DD7B /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F786D596253454D800E3DD7B /* NCCommunication */; };
 		F787704F22E7019900F287A9 /* NCShareLinkCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F787704E22E7019900F287A9 /* NCShareLinkCell.xib */; };
 		F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78A18B523CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift */; };
 		F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78A18B723CDE2B300F681F3 /* NCViewerRichWorkspace.swift */; };
@@ -756,7 +756,7 @@
 			files = (
 				F75E57C325BF0ED2002B72C2 /* SVGKit in Frameworks */,
 				F782A58D251236D1007BBABD /* RealmSwift in Frameworks */,
-				F786D597253454D800E3DD7B /* NCCommunication in Frameworks */,
+				F73A9C762655645B00E03044 /* NCCommunication in Frameworks */,
 				F782A58B251236D1007BBABD /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -770,8 +770,8 @@
 				F75E57BF25BF0EC8002B72C2 /* SVGKit in Frameworks */,
 				F73ADD16265542950069EA0D /* MarkdownKit in Frameworks */,
 				F782A585251236B7007BBABD /* RealmSwift in Frameworks */,
-				F786D593253454CE00E3DD7B /* NCCommunication in Frameworks */,
 				F782A583251236B7007BBABD /* Realm in Frameworks */,
+				F73A9C722655643F00E03044 /* NCCommunication in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -781,7 +781,7 @@
 			files = (
 				F75E57C125BF0ECD002B72C2 /* SVGKit in Frameworks */,
 				F782A589251236CA007BBABD /* RealmSwift in Frameworks */,
-				F786D595253454D300E3DD7B /* NCCommunication in Frameworks */,
+				F73A9C742655645100E03044 /* NCCommunication in Frameworks */,
 				F782A587251236CA007BBABD /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -796,13 +796,13 @@
 				F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */,
 				F73ADCE926553B1F0069EA0D /* MarkdownKit in Frameworks */,
 				F73ADD00265542490069EA0D /* FSCalendar.xcframework in Frameworks */,
+				F73A9C702655640C00E03044 /* NCCommunication in Frameworks */,
 				F73ADCFC265542480069EA0D /* TLPhotoPicker.xcframework in Frameworks */,
 				F73ADD04265542490069EA0D /* KTVCocoaHTTPServer.xcframework in Frameworks */,
 				F73ADD02265542490069EA0D /* Queuer.xcframework in Frameworks */,
 				F73ADD0A265542490069EA0D /* DropDown.xcframework in Frameworks */,
 				F73ADCE626553ADA0069EA0D /* FloatingPanel in Frameworks */,
 				F73ADD0E2655424A0069EA0D /* ChromaColorPicker.xcframework in Frameworks */,
-				F786D58D253454BF00E3DD7B /* NCCommunication in Frameworks */,
 				F782A57B25123694007BBABD /* Realm in Frameworks */,
 				F75E57BD25BF0EC1002B72C2 /* SVGKit in Frameworks */,
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
@@ -1641,8 +1641,8 @@
 			packageProductDependencies = (
 				F782A58A251236D1007BBABD /* Realm */,
 				F782A58C251236D1007BBABD /* RealmSwift */,
-				F786D596253454D800E3DD7B /* NCCommunication */,
 				F75E57C225BF0ED2002B72C2 /* SVGKit */,
+				F73A9C752655645B00E03044 /* NCCommunication */,
 			);
 			productName = "Notification Service Extension";
 			productReference = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */;
@@ -1665,10 +1665,10 @@
 			packageProductDependencies = (
 				F782A582251236B7007BBABD /* Realm */,
 				F782A584251236B7007BBABD /* RealmSwift */,
-				F786D592253454CE00E3DD7B /* NCCommunication */,
 				F75E57BE25BF0EC8002B72C2 /* SVGKit */,
 				F73ADD15265542950069EA0D /* MarkdownKit */,
 				F73ADD1E26554EF90069EA0D /* SwiftEntryKit */,
+				F73A9C712655643F00E03044 /* NCCommunication */,
 			);
 			productName = "Share Ext";
 			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */;
@@ -1690,8 +1690,8 @@
 			packageProductDependencies = (
 				F782A586251236CA007BBABD /* Realm */,
 				F782A588251236CA007BBABD /* RealmSwift */,
-				F786D594253454D300E3DD7B /* NCCommunication */,
 				F75E57C025BF0ECD002B72C2 /* SVGKit */,
+				F73A9C732655645100E03044 /* NCCommunication */,
 			);
 			productName = "File Provider Extension";
 			productReference = F771E3D020E2392D00AFB62D /* File Provider Extension.appex */;
@@ -1718,7 +1718,6 @@
 			packageProductDependencies = (
 				F782A57A25123694007BBABD /* Realm */,
 				F782A57C25123694007BBABD /* RealmSwift */,
-				F786D58C253454BF00E3DD7B /* NCCommunication */,
 				F7C4D88C2534887E00C142DA /* Parchment */,
 				F75E57BC25BF0EC1002B72C2 /* SVGKit */,
 				F7ED547B25EEA65400956C55 /* QRCodeReader */,
@@ -1727,6 +1726,7 @@
 				F73ADCE826553B1F0069EA0D /* MarkdownKit */,
 				F73ADCEB26553B970069EA0D /* FirebaseCrashlytics */,
 				F73ADCEE265540CF0069EA0D /* SwiftEntryKit */,
+				F73A9C6F2655640C00E03044 /* NCCommunication */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -1833,7 +1833,6 @@
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			packageReferences = (
 				F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */,
-				F786D58B253454BF00E3DD7B /* XCRemoteSwiftPackageReference "ios-communication-library" */,
 				F7C4D88B2534887E00C142DA /* XCRemoteSwiftPackageReference "Parchment" */,
 				F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */,
 				F7ED547A25EEA65400956C55 /* XCRemoteSwiftPackageReference "QRCodeReader" */,
@@ -1842,6 +1841,7 @@
 				F73ADCE726553B1F0069EA0D /* XCRemoteSwiftPackageReference "MarkdownKit" */,
 				F73ADCEA26553B970069EA0D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				F73ADCED265540CE0069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */,
+				F73A9C6E2655640C00E03044 /* XCRemoteSwiftPackageReference "ios-communication-library" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -2805,6 +2805,14 @@
 				minimumVersion = 3.7.2;
 			};
 		};
+		F73A9C6E2655640C00E03044 /* XCRemoteSwiftPackageReference "ios-communication-library" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nextcloud/ios-communication-library";
+			requirement = {
+				kind = exactVersion;
+				version = 0.97.0;
+			};
+		};
 		F73ADCE426553ADA0069EA0D /* XCRemoteSwiftPackageReference "FloatingPanel" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/scenee/FloatingPanel";
@@ -2853,14 +2861,6 @@
 				version = 10.7.2;
 			};
 		};
-		F786D58B253454BF00E3DD7B /* XCRemoteSwiftPackageReference "ios-communication-library" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/nextcloud/ios-communication-library/";
-			requirement = {
-				kind = exactVersion;
-				version = 0.97.0;
-			};
-		};
 		F7C4D88B2534887E00C142DA /* XCRemoteSwiftPackageReference "Parchment" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/rechsteiner/Parchment";
@@ -2884,6 +2884,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F72DA9B225F53E4E00B87DB1 /* XCRemoteSwiftPackageReference "SwiftRichString" */;
 			productName = SwiftRichString;
+		};
+		F73A9C6F2655640C00E03044 /* NCCommunication */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F73A9C6E2655640C00E03044 /* XCRemoteSwiftPackageReference "ios-communication-library" */;
+			productName = NCCommunication;
+		};
+		F73A9C712655643F00E03044 /* NCCommunication */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F73A9C6E2655640C00E03044 /* XCRemoteSwiftPackageReference "ios-communication-library" */;
+			productName = NCCommunication;
+		};
+		F73A9C732655645100E03044 /* NCCommunication */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F73A9C6E2655640C00E03044 /* XCRemoteSwiftPackageReference "ios-communication-library" */;
+			productName = NCCommunication;
+		};
+		F73A9C752655645B00E03044 /* NCCommunication */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F73A9C6E2655640C00E03044 /* XCRemoteSwiftPackageReference "ios-communication-library" */;
+			productName = NCCommunication;
 		};
 		F73ADCE526553ADA0069EA0D /* FloatingPanel */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -2974,26 +2994,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */;
 			productName = RealmSwift;
-		};
-		F786D58C253454BF00E3DD7B /* NCCommunication */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F786D58B253454BF00E3DD7B /* XCRemoteSwiftPackageReference "ios-communication-library" */;
-			productName = NCCommunication;
-		};
-		F786D592253454CE00E3DD7B /* NCCommunication */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F786D58B253454BF00E3DD7B /* XCRemoteSwiftPackageReference "ios-communication-library" */;
-			productName = NCCommunication;
-		};
-		F786D594253454D300E3DD7B /* NCCommunication */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F786D58B253454BF00E3DD7B /* XCRemoteSwiftPackageReference "ios-communication-library" */;
-			productName = NCCommunication;
-		};
-		F786D596253454D800E3DD7B /* NCCommunication */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F786D58B253454BF00E3DD7B /* XCRemoteSwiftPackageReference "ios-communication-library" */;
-			productName = NCCommunication;
 		};
 		F7C4D88C2534887E00C142DA /* Parchment */ = {
 			isa = XCSwiftPackageProductDependency;
