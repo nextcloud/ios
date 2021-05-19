@@ -394,7 +394,7 @@
 "_days_ago_"                    = "%d days ago";
 "_over_30_days_"                = "over 30 days";
 "_connection_internet_offline_" = "The Internet connection appears to be offline or Wi-Fi is required";
-"_insert_password_"             = "enter password";
+"_insert_password_"             = "Enter password";
 "_update_in_progress_"          = "Version upgrade, please wait…";
 "_forbidden_characters_"        = "The file or folder name contains invalid characters";
 "_mail_not_can_send_mail_"      = "No account set up, or wrong email address entered";
