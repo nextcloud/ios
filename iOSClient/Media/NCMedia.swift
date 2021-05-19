@@ -320,6 +320,7 @@ extension NCMedia: UICollectionViewDelegate {
             
         } else {
             
+            // ACTIVE SERVERURL
             appDelegate.activeServerUrl = metadataTouch!.serverUrl
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell
             NCViewer.shared.view(viewController: self, metadata: metadataTouch!, metadatas: metadatas, imageIcon: cell?.imageItem.image)

@@ -136,6 +136,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        // ACTIVE
         appDelegate.activeViewController = self
 
         if serverUrl == "" {
@@ -256,7 +257,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             selectOcId.removeAll()
         }
         
-        // set active serverUrl
         if self.view?.window != nil {
             if serverUrl == "" {
                 appDelegate.activeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
