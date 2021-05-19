@@ -121,7 +121,7 @@
 		F73ADD16265542950069EA0D /* MarkdownKit in Frameworks */ = {isa = PBXBuildFile; productRef = F73ADD15265542950069EA0D /* MarkdownKit */; };
 		F73ADD17265542A80069EA0D /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F73ADCFB265542480069EA0D /* OpenSSL.xcframework */; };
 		F73ADD18265542A80069EA0D /* OpenSSL.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F73ADCFB265542480069EA0D /* OpenSSL.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F73ADD1D26554C250069EA0D /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
+		F73ADD1F26554EF90069EA0D /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F73ADD1E26554EF90069EA0D /* SwiftEntryKit */; };
 		F73B422B2476764F00A30FD3 /* NCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F73B42292476764F00A30FD3 /* NCNotification.storyboard */; };
 		F73B422C2476764F00A30FD3 /* NCNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73B422A2476764F00A30FD3 /* NCNotification.swift */; };
 		F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F73CB3B122E072A000AD728E /* NCShareHeaderView.xib */; };
@@ -766,6 +766,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F73ADD17265542A80069EA0D /* OpenSSL.xcframework in Frameworks */,
+				F73ADD1F26554EF90069EA0D /* SwiftEntryKit in Frameworks */,
 				F75E57BF25BF0EC8002B72C2 /* SVGKit in Frameworks */,
 				F73ADD16265542950069EA0D /* MarkdownKit in Frameworks */,
 				F782A585251236B7007BBABD /* RealmSwift in Frameworks */,
@@ -1667,6 +1668,7 @@
 				F786D592253454CE00E3DD7B /* NCCommunication */,
 				F75E57BE25BF0EC8002B72C2 /* SVGKit */,
 				F73ADD15265542950069EA0D /* MarkdownKit */,
+				F73ADD1E26554EF90069EA0D /* SwiftEntryKit */,
 			);
 			productName = "Share Ext";
 			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */;
@@ -2019,7 +2021,6 @@
 				F785EE9E2461A09900B3F945 /* NCNetworking.swift in Sources */,
 				F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */,
 				F73D5E49246DE09200DF6467 /* NCElementsJSON.swift in Sources */,
-				F73ADD1D26554C250069EA0D /* NCContentPresenter.swift in Sources */,
 				F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */,
 				F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */,
 				F798F0E725880609000DAFFD /* UIColor+Extensions.swift in Sources */,
@@ -2261,10 +2262,7 @@
 				CURRENT_PROJECT_VERSION = 0;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2316,10 +2314,7 @@
 				CURRENT_PROJECT_VERSION = 0;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2363,10 +2358,7 @@
 				CURRENT_PROJECT_VERSION = 0;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2411,10 +2403,7 @@
 				CURRENT_PROJECT_VERSION = 0;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2465,10 +2454,7 @@
 				CURRENT_PROJECT_VERSION = 0;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2519,10 +2505,7 @@
 				CURRENT_PROJECT_VERSION = 0;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2565,10 +2548,7 @@
 				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
@@ -2614,10 +2594,7 @@
 				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
@@ -2932,6 +2909,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F73ADCE726553B1F0069EA0D /* XCRemoteSwiftPackageReference "MarkdownKit" */;
 			productName = MarkdownKit;
+		};
+		F73ADD1E26554EF90069EA0D /* SwiftEntryKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F73ADCED265540CE0069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */;
+			productName = SwiftEntryKit;
 		};
 		F75E57BC25BF0EC1002B72C2 /* SVGKit */ = {
 			isa = XCSwiftPackageProductDependency;
