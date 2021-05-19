@@ -69,8 +69,6 @@
 		F70B86922642CF5700ED5349 /* QuickLayout.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867F2642CF5400ED5349 /* QuickLayout.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F70B86932642CF5700ED5349 /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86802642CF5400ED5349 /* OpenSSL.xcframework */; };
 		F70B86942642CF5700ED5349 /* OpenSSL.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86802642CF5400ED5349 /* OpenSSL.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F70B86952642CF5700ED5349 /* SwiftEntryKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86812642CF5500ED5349 /* SwiftEntryKit.xcframework */; };
-		F70B86962642CF5700ED5349 /* SwiftEntryKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86812642CF5500ED5349 /* SwiftEntryKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F70B86972642CF5700ED5349 /* TOPasscodeViewController.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86822642CF5500ED5349 /* TOPasscodeViewController.xcframework */; };
 		F70B86982642CF5700ED5349 /* TOPasscodeViewController.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86822642CF5500ED5349 /* TOPasscodeViewController.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F70B86992642CF5800ED5349 /* FSCalendar.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86832642CF5500ED5349 /* FSCalendar.xcframework */; };
@@ -122,6 +120,7 @@
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
 		F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */; };
+		F73ADD1C265546890069EA0D /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F73ADD1B265546890069EA0D /* SwiftEntryKit */; };
 		F73B422B2476764F00A30FD3 /* NCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F73B42292476764F00A30FD3 /* NCNotification.storyboard */; };
 		F73B422C2476764F00A30FD3 /* NCNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73B422A2476764F00A30FD3 /* NCNotification.swift */; };
 		F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F73CB3B122E072A000AD728E /* NCShareHeaderView.xib */; };
@@ -366,7 +365,6 @@
 				F70B86862642CF5600ED5349 /* KTVHTTPCache.xcframework in Embed Frameworks */,
 				F70B86922642CF5700ED5349 /* QuickLayout.xcframework in Embed Frameworks */,
 				F70B868E2642CF5600ED5349 /* UICKeyChainStore.xcframework in Embed Frameworks */,
-				F70B86962642CF5700ED5349 /* SwiftEntryKit.xcframework in Embed Frameworks */,
 				F70B86982642CF5700ED5349 /* TOPasscodeViewController.xcframework in Embed Frameworks */,
 				F70B86942642CF5700ED5349 /* OpenSSL.xcframework in Embed Frameworks */,
 				F70B868C2642CF5600ED5349 /* Queuer.xcframework in Embed Frameworks */,
@@ -794,7 +792,6 @@
 				F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */,
 				F70B86972642CF5700ED5349 /* TOPasscodeViewController.xcframework in Frameworks */,
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
-				F70B86952642CF5700ED5349 /* SwiftEntryKit.xcframework in Frameworks */,
 				F70B86912642CF5700ED5349 /* QuickLayout.xcframework in Frameworks */,
 				F70B868F2642CF5600ED5349 /* KTVCocoaHTTPServer.xcframework in Frameworks */,
 				F70B869B2642CF5800ED5349 /* DropDown.xcframework in Frameworks */,
@@ -810,6 +807,7 @@
 				F70B86762642CF5300ED5349 /* ChromaColorPicker.xcframework in Frameworks */,
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
 				F70B86932642CF5700ED5349 /* OpenSSL.xcframework in Frameworks */,
+				F73ADD1C265546890069EA0D /* SwiftEntryKit in Frameworks */,
 				F70B868D2642CF5600ED5349 /* UICKeyChainStore.xcframework in Frameworks */,
 				F782A57D25123694007BBABD /* RealmSwift in Frameworks */,
 				F70B86872642CF5600ED5349 /* TLPhotoPicker.xcframework in Frameworks */,
@@ -1719,6 +1717,7 @@
 				F770768D263A8C3400A1BA94 /* FloatingPanel */,
 				F788ECC6263AAAFA00ADC67F /* MarkdownKit */,
 				F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */,
+				F73ADD1B265546890069EA0D /* SwiftEntryKit */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -1833,6 +1832,7 @@
 				F770768C263A8C3400A1BA94 /* XCRemoteSwiftPackageReference "FloatingPanel" */,
 				F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */,
 				F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -2829,6 +2829,14 @@
 				minimumVersion = 3.7.2;
 			};
 		};
+		F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/huri000/SwiftEntryKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.7;
+			};
+		};
 		F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SVGKit/SVGKit.git";
@@ -2857,8 +2865,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/ios-communication-library/";
 			requirement = {
-				kind = revision;
-				revision = 17ca90e57568927d6f576c21a496f4a2973fc385;
+				kind = exactVersion;
+				version = 0.97.0;
 			};
 		};
 		F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */ = {
@@ -2902,6 +2910,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F72DA9B225F53E4E00B87DB1 /* XCRemoteSwiftPackageReference "SwiftRichString" */;
 			productName = SwiftRichString;
+		};
+		F73ADD1B265546890069EA0D /* SwiftEntryKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */;
+			productName = SwiftEntryKit;
 		};
 		F75E57BC25BF0EC1002B72C2 /* SVGKit */ = {
 			isa = XCSwiftPackageProductDependency;

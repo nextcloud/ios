@@ -511,6 +511,7 @@ class NCUtility: NSObject {
             #else
             self.viewBackgroundActivityIndicator = backgroundView
             #endif
+            
             // VIEW ACTIVITY INDICATOR
             
             guard let viewActivityIndicator = self.viewActivityIndicator else { return }
