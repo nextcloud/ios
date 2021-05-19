@@ -56,6 +56,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         appDelegate.activeViewController = self
     }
     

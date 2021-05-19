@@ -116,12 +116,12 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        appDelegate.activeViewController = self
+
         navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
         
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.title = metadata.fileNameView
-
-        appDelegate.activeViewController = self
     }
     
     override func viewDidAppear(_ animated: Bool) {

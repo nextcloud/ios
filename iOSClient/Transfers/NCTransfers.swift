@@ -56,7 +56,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         self.navigationItem.title = titleCurrentFolder
         
         setNavigationItem()
-        
         reloadDataSource()
     }
     

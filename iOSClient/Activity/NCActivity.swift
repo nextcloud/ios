@@ -64,8 +64,13 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         
-        appDelegate.activeViewController = self
         changeTheming()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        appDelegate.activeViewController = self
     }
     
     override func viewDidAppear(_ animated: Bool) {
