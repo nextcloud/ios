@@ -149,6 +149,9 @@ class NCEndToEndInitialize : NSObject  {
                         
                         if (errorCode == 0 && account == self.appDelegate.account) {
                             
+                            //TODO: verifi if publicKey == NCCommunication.shared.getE2EEPublicKey
+                            // + (NSString *)getEndToEndPublicKey:(NSString *)account;
+                            
                             CCUtility.setEndToEndPublicKeyServer(account, publicKey: publicKey)
                             
                             // Clear Table
@@ -228,6 +231,9 @@ class NCEndToEndInitialize : NSObject  {
                                 NCCommunication.shared.getE2EEServerPublicKey { (account, publicKey, errorCode, errorDescription) in
                                     
                                     if (errorCode == 0 && account == self.appDelegate.account) {
+                                        
+                                        //TODO: verifi if publicKey == NCCommunication.shared.getE2EEPublicKey
+                                        // + (NSString *)getEndToEndPublicKey:(NSString *)account;
                                         
                                         CCUtility.setEndToEndPublicKeyServer(account, publicKey: publicKey)
                                         
