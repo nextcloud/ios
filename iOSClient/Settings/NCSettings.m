@@ -346,12 +346,6 @@
     if ([[CCUtility getPasscode] length] == 0) {
         
         passcodeSettingsViewController = [[TOPasscodeSettingsViewController alloc] init];
-        if (@available(iOS 13.0, *)) {
-            if ([[UITraitCollection currentTraitCollection] userInterfaceStyle] == UIUserInterfaceStyleDark) {
-                passcodeSettingsViewController.style = TOPasscodeSettingsViewStyleDark;
-            }
-        }
-        
         passcodeSettingsViewController.hideOptionsButton = YES;
         passcodeSettingsViewController.requireCurrentPasscode = NO;
         passcodeSettingsViewController.passcodeType = TOPasscodeTypeSixDigits;
@@ -361,13 +355,7 @@
         
     } else {
      
-        passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
-        if (@available(iOS 13.0, *)) {
-            if ([[UITraitCollection currentTraitCollection] userInterfaceStyle] == UIUserInterfaceStyleDark) {
-                passcodeViewController.style = TOPasscodeViewStyleTranslucentDark;
-            }
-        }
-        
+        passcodeViewController = [[TOPasscodeViewController alloc] initPasscodeType:TOPasscodeTypeSixDigits];
         passcodeViewController.allowCancel = true;
         passcodeViewController.delegate = self;
         passcodeViewController.keypadButtonShowLettering = false;

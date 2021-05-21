@@ -275,13 +275,7 @@
     
     if ([[CCUtility getPasscode] length] > 0) {
         
-        passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
-        if (@available(iOS 13.0, *)) {
-            if ([[UITraitCollection currentTraitCollection] userInterfaceStyle] == UIUserInterfaceStyleDark) {
-                passcodeViewController.style = TOPasscodeViewStyleTranslucentDark;
-            }
-        }
-    
+        passcodeViewController = [[TOPasscodeViewController alloc] initPasscodeType:TOPasscodeTypeSixDigits];
         passcodeViewController.delegate = self;
         passcodeViewController.allowCancel = true;
         passcodeViewController.keypadButtonShowLettering = false;
