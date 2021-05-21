@@ -275,9 +275,8 @@
     
     if ([[CCUtility getPasscode] length] > 0) {
         
-        passcodeViewController = [[TOPasscodeViewController alloc] initPasscodeType:TOPasscodeTypeSixDigits];
+        passcodeViewController = [[TOPasscodeViewController alloc] initPasscodeType:TOPasscodeTypeSixDigits allowCancel:true];
         passcodeViewController.delegate = self;
-        passcodeViewController.allowCancel = true;
         passcodeViewController.keypadButtonShowLettering = false;
         
         if (CCUtility.getEnableTouchFaceID && [laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
