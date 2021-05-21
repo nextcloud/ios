@@ -34,6 +34,7 @@ class NCEndToEndInitialize : NSObject  {
     @objc weak var delegate: NCEndToEndInitializeDelegate?
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var extractedPublicKey: String?
     
     override init() {
     }
@@ -58,6 +59,8 @@ class NCEndToEndInitialize : NSObject  {
                 
                 CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
                 
+                self.extractedPublicKey = NCEndToEndEncryption.sharedManager().extractPublicKey(fromCertificate: publicKey)
+                
                 // Request PrivateKey chiper to Server
                 self.getPrivateKeyCipher()
                 
@@ -80,10 +83,19 @@ class NCEndToEndInitialize : NSObject  {
                         
                         if (errorCode == 0 && account == self.appDelegate.account) {
                             
-                            CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
+                            // TEST publicKey
+                            let extractedPublicKey = NCEndToEndEncryption.sharedManager().extractPublicKey(fromCertificate: publicKey)
+                            if extractedPublicKey != NCEndToEndEncryption.sharedManager().generatedPublicKey {
+                                
+                                NCContentPresenter.shared.messageNotification("E2E sign publicKey", description: "error: the public key is incorrect", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                
+                            } else {
                             
-                            // Request PrivateKey chiper to Server
-                            self.getPrivateKeyCipher()
+                                CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
+                            
+                                // Request PrivateKey chiper to Server
+                                self.getPrivateKeyCipher()
+                            }
                             
                         } else if errorCode != 0 {
                             

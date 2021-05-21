@@ -182,7 +182,8 @@
     
     BIO_read(publicKeyBIO, keyBytes, len);
     _publicKeyData = [NSData dataWithBytes:keyBytes length:len];
-    NSLog(@"[LOG] \n%@", [[NSString alloc] initWithData:_publicKeyData encoding:NSUTF8StringEncoding]);
+    self.generatedPublicKey = [[NSString alloc] initWithData:_publicKeyData encoding:NSUTF8StringEncoding];
+    NSLog(@"[LOG] \n%@", self.generatedPublicKey);
     
     // PrivateKey
     BIO *privateKeyBIO = BIO_new(BIO_s_mem());
@@ -193,7 +194,8 @@
     
     BIO_read(privateKeyBIO, keyBytes, len);
     _privateKeyData = [NSData dataWithBytes:keyBytes length:len];
-    NSLog(@"[LOG] \n%@", [[NSString alloc] initWithData:_privateKeyData encoding:NSUTF8StringEncoding]);
+    self.generatedPrivateKey = [[NSString alloc] initWithData:_privateKeyData encoding:NSUTF8StringEncoding];
+    NSLog(@"[LOG] \n%@", self.generatedPrivateKey);
     
     if(keyBytes)
         free(keyBytes);
@@ -204,6 +206,31 @@
     #endif
     
     return YES;
+}
+
+- (NSString *)extractPublicKeyFromCertificate:(NSString *)pemCertificate
+{
+    const char *ptrCert = [pemCertificate cStringUsingEncoding:NSUTF8StringEncoding];
+    
+    BIO *certBio = BIO_new(BIO_s_mem());
+    BIO_write(certBio, ptrCert,(unsigned int)strlen(ptrCert));
+    
+    X509 *certX509 = PEM_read_bio_X509(certBio, NULL, NULL, NULL);
+    if (!certX509) {
+        fprintf(stderr, "unable to parse certificate in memory\n");
+        return nil;
+    }
+    
+    EVP_PKEY *pkey;
+    pkey = X509_get_pubkey(certX509);
+    NSString *publicKey = [self pubKeyToString:pkey];
+    
+    EVP_PKEY_free(pkey);
+    BIO_free(certBio);
+    X509_free(certX509);
+    
+    NSLog(@"[LOG] \n%@", publicKey);
+    return publicKey;
 }
 
 - (BOOL)saveToDiskPEMWithCert:(X509 *)x509 key:(EVP_PKEY *)pkey directory:(NSString *)directory
@@ -1023,6 +1050,22 @@
     [result appendString:@"\n-----END PRIVATE KEY-----\n"];
 
     return result;
+}
+
+- (NSString *)pubKeyToString:(EVP_PKEY *)pubkey
+{
+    char *buf[256];
+    FILE *pFile;
+    NSString *pkey_string;
+    
+    pFile = fmemopen(buf, sizeof(buf), "w");
+    PEM_write_PUBKEY(pFile,pubkey);
+    fputc('\0', pFile);
+    fclose(pFile);
+    
+    pkey_string = [NSString stringWithUTF8String:(char *)buf];
+    
+    return pkey_string;
 }
 
 @end

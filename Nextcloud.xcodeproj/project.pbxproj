@@ -65,8 +65,6 @@
 		F70B868E2642CF5600ED5349 /* UICKeyChainStore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867D2642CF5400ED5349 /* UICKeyChainStore.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F70B868F2642CF5600ED5349 /* KTVCocoaHTTPServer.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867E2642CF5400ED5349 /* KTVCocoaHTTPServer.xcframework */; };
 		F70B86902642CF5600ED5349 /* KTVCocoaHTTPServer.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867E2642CF5400ED5349 /* KTVCocoaHTTPServer.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F70B86912642CF5700ED5349 /* QuickLayout.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867F2642CF5400ED5349 /* QuickLayout.xcframework */; };
-		F70B86922642CF5700ED5349 /* QuickLayout.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867F2642CF5400ED5349 /* QuickLayout.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F70B86932642CF5700ED5349 /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86802642CF5400ED5349 /* OpenSSL.xcframework */; };
 		F70B86942642CF5700ED5349 /* OpenSSL.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86802642CF5400ED5349 /* OpenSSL.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F70B86972642CF5700ED5349 /* TOPasscodeViewController.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86822642CF5500ED5349 /* TOPasscodeViewController.xcframework */; };
@@ -365,7 +363,6 @@
 			files = (
 				F70B869A2642CF5800ED5349 /* FSCalendar.xcframework in Embed Frameworks */,
 				F70B86862642CF5600ED5349 /* KTVHTTPCache.xcframework in Embed Frameworks */,
-				F70B86922642CF5700ED5349 /* QuickLayout.xcframework in Embed Frameworks */,
 				F70B868E2642CF5600ED5349 /* UICKeyChainStore.xcframework in Embed Frameworks */,
 				F70B86982642CF5700ED5349 /* TOPasscodeViewController.xcframework in Embed Frameworks */,
 				F70B86942642CF5700ED5349 /* OpenSSL.xcframework in Embed Frameworks */,
@@ -796,7 +793,6 @@
 				F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */,
 				F70B86972642CF5700ED5349 /* TOPasscodeViewController.xcframework in Frameworks */,
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
-				F70B86912642CF5700ED5349 /* QuickLayout.xcframework in Frameworks */,
 				F70B868F2642CF5600ED5349 /* KTVCocoaHTTPServer.xcframework in Frameworks */,
 				F70B869B2642CF5800ED5349 /* DropDown.xcframework in Frameworks */,
 				F70B86892642CF5600ED5349 /* XLForm.xcframework in Frameworks */,
