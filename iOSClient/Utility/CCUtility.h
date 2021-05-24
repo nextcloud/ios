@@ -94,19 +94,23 @@
 + (BOOL)getFormatCompatibility;
 + (void)setFormatCompatibility:(BOOL)set;
 
+// E2EE
+
 + (NSString *)getEndToEndCertificate:(NSString *)account;
 + (void)setEndToEndCertificate:(NSString *)account certificate:(NSString *)certificate;
 
 + (NSString *)getEndToEndPrivateKey:(NSString *)account;
 + (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey;
 
++ (NSString *)getEndToEndPublicKey:(NSString *)account;
++ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
+
 + (NSString *)getEndToEndPassphrase:(NSString *)account;
 + (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase;
 
-+ (NSString *)getEndToEndPublicKeyServer:(NSString *)account;
-+ (void)setEndToEndPublicKeyServer:(NSString *)account publicKey:(NSString *)publicKey;
-
 + (BOOL)isEndToEndEnabled:(NSString *)account;
+
+// E2EE
 
 + (void)clearAllKeysEndToEnd:(NSString *)account;
 

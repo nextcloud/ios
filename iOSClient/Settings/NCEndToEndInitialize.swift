@@ -156,15 +156,15 @@ class NCEndToEndInitialize : NSObject  {
                     CCUtility.setEndToEndPrivateKey(self.appDelegate.account, privateKey: privateKey)
                     CCUtility.setEndToEndPassphrase(self.appDelegate.account, passphrase:passphrase)
                     
-                    // request publicKey Server()
-                    NCCommunication.shared.getE2EEServerPublicKey { (account, publicKey, errorCode, errorDescription) in
+                    // request server publicKey
+                    NCCommunication.shared.getE2EEPublicKey { (account, publicKey, errorCode, errorDescription) in
                         
                         if (errorCode == 0 && account == self.appDelegate.account) {
                             
                             //TODO: verifi if publicKey == NCCommunication.shared.getE2EEPublicKey
                             // + (NSString *)getEndToEndCertificate:(NSString *)account;
                             
-                            CCUtility.setEndToEndPublicKeyServer(account, publicKey: publicKey)
+                            CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
                             
                             // Clear Table
                             NCManageDatabase.shared.clearTable(tableDirectory.self, account: account)
@@ -239,15 +239,15 @@ class NCEndToEndInitialize : NSObject  {
                                 CCUtility.setEndToEndPrivateKey(account, privateKey: privateKeyString! as String)
                                 CCUtility.setEndToEndPassphrase(account, passphrase: e2ePassphrase)
                                 
-                                // request publicKey Server()
-                                NCCommunication.shared.getE2EEServerPublicKey { (account, publicKey, errorCode, errorDescription) in
+                                // request server publicKey
+                                NCCommunication.shared.getE2EEPublicKey { (account, publicKey, errorCode, errorDescription) in
                                     
                                     if (errorCode == 0 && account == self.appDelegate.account) {
                                         
                                         //TODO: verifi if publicKey == NCCommunication.shared.getE2EEPublicKey
                                         // + (NSString *)getEndToEndCertificate:(NSString *)account;
                                         
-                                        CCUtility.setEndToEndPublicKeyServer(account, publicKey: publicKey)
+                                        CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
                                         
                                         // Clear Table
                                         NCManageDatabase.shared.clearTable(tableDirectory.self, account: account)
