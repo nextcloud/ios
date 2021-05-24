@@ -377,11 +377,12 @@
 + (void)clearAllKeysEndToEnd:(NSString *)account
 {
     [self setEndToEndCertificate:account certificate:nil];
-    // OLD
-    [UICKeyChainStore setString:nil forKey:[@"EndToEndPublicKey_" stringByAppendingString:account] service:NCGlobal.shared.serviceShareKeyChain];
     [self setEndToEndPrivateKey:account privateKey:nil];
     [self setEndToEndPublicKey:account publicKey:nil];
     [self setEndToEndPassphrase:account passphrase:nil];
+    
+    // OLD
+    [UICKeyChainStore setString:nil forKey:[@"EndToEndPublicKey_" stringByAppendingString:account] service:NCGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getDisableFilesApp
