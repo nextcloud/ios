@@ -29,10 +29,10 @@
 
 #define INTRO_MessageType       @"MessageType_"
 
-#define E2E_PublicKey           @"EndToEndPublicKey_"
+#define E2E_certificate         @"EndToEndCertificate_"
 #define E2E_PrivateKey          @"EndToEndPrivateKey_"
 #define E2E_Passphrase          @"EndToEndPassphrase_"
-#define E2E_PublicKeyServer     @"EndToEndPublicKeyServer_"
+#define E2E_PublicKey           @"EndToEndPublicKeyServer_"
 
 @implementation CCUtility
 
@@ -298,13 +298,23 @@
 
 + (NSString *)getEndToEndCertificate:(NSString *)account
 {
-    NSString *key = [E2E_PublicKey stringByAppendingString:account];
-    return [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
+    NSString *key, *certificate;
+    
+    key = [E2E_certificate stringByAppendingString:account];
+    certificate = [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
+
+    // OLD VERSION
+    if (certificate == nil) {
+        key = [@"EndToEndPublicKey_" stringByAppendingString:account];
+        certificate = [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
+    }
+    
+    return certificate;
 }
 
 + (void)setEndToEndCertificate:(NSString *)account certificate:(NSString *)certificate
 {
-    NSString *key = [E2E_PublicKey stringByAppendingString:account];
+    NSString *key = [E2E_certificate stringByAppendingString:account];
     [UICKeyChainStore setString:certificate forKey:key service:NCGlobal.shared.serviceShareKeyChain];
 }
 
@@ -322,13 +332,13 @@
 
 + (NSString *)getEndToEndPublicKey:(NSString *)account
 {
-    NSString *key = [E2E_PublicKeyServer stringByAppendingString:account];
+    NSString *key = [E2E_PublicKey stringByAppendingString:account];
     return [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
 }
 
 + (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey
 {
-    NSString *key = [E2E_PublicKeyServer stringByAppendingString:account];
+    NSString *key = [E2E_PublicKey stringByAppendingString:account];
     [UICKeyChainStore setString:publicKey forKey:key service:NCGlobal.shared.serviceShareKeyChain];
 }
 
@@ -367,6 +377,8 @@
 + (void)clearAllKeysEndToEnd:(NSString *)account
 {
     [self setEndToEndCertificate:account certificate:nil];
+    // OLD
+    [UICKeyChainStore setString:nil forKey:[@"EndToEndPublicKey_" stringByAppendingString:account] service:NCGlobal.shared.serviceShareKeyChain];
     [self setEndToEndPrivateKey:account privateKey:nil];
     [self setEndToEndPublicKey:account publicKey:nil];
     [self setEndToEndPassphrase:account passphrase:nil];
