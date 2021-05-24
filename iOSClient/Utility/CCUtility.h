@@ -94,7 +94,7 @@
 + (BOOL)getFormatCompatibility;
 + (void)setFormatCompatibility:(BOOL)set;
 
-// E2EE
+// E2EE -------------------------------------------
 
 + (NSString *)getEndToEndCertificate:(NSString *)account;
 + (void)setEndToEndCertificate:(NSString *)account certificate:(NSString *)certificate;
@@ -110,7 +110,7 @@
 
 + (BOOL)isEndToEndEnabled:(NSString *)account;
 
-// E2EE
+// E2EE -------------------------------------------
 
 + (void)clearAllKeysEndToEnd:(NSString *)account;
 
