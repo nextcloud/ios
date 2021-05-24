@@ -33,6 +33,8 @@ class NCViewerProviderContextMenu: UIViewController  {
     private var metadata: tableMetadata?
     private var metadataLivePhoto: tableMetadata?
     private var image: UIImage?
+    
+    private let sizeIcon: CGFloat = 150
         
     // MARK: - View Life Cycle
 
@@ -49,10 +51,10 @@ class NCViewerProviderContextMenu: UIViewController  {
         
         if metadata.directory {
             
-            var imageFolder = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width / 2)
+            var imageFolder = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: sizeIcon)
             
             if let image = self.image {
-                imageFolder =  image.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width / 2)
+                imageFolder =  image.image(color: NCBrandColor.shared.brandElement, size: sizeIcon)
             }
             
             imageView.image = imageFolder
@@ -61,7 +63,7 @@ class NCViewerProviderContextMenu: UIViewController  {
         } else {
                          
             // ICON
-            if let image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: UIScreen.main.bounds.width / 2, height: UIScreen.main.bounds.height / 2), isAspectRation: true) {
+            if let image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: sizeIcon, height: sizeIcon), isAspectRation: true) {
                 
                 imageView.image = image
                 imageView.frame = resize(image.size)
@@ -278,8 +280,6 @@ class NCViewerProviderContextMenu: UIViewController  {
     
     private func resize(_ size: CGSize?) -> CGRect {
         
-        var height = UIScreen.main.bounds.height/2
-        var width = UIScreen.main.bounds.width/2
         var frame = CGRect.zero
         
         guard let size = size else {
@@ -287,15 +287,10 @@ class NCViewerProviderContextMenu: UIViewController  {
             return frame
         }
         
-        if size.width < width {
+        if size.width <= UIScreen.main.bounds.width {
             frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
             preferredContentSize = frame.size
             return frame
-        }
-        
-        if size.width >= size.height {
-            height = UIScreen.main.bounds.height
-            width = UIScreen.main.bounds.width
         }
         
         let originRatio = size.width / size.height
@@ -303,11 +298,11 @@ class NCViewerProviderContextMenu: UIViewController  {
         var newSize = CGSize.zero
         
         if originRatio < newRatio {
-            newSize.height = height
-            newSize.width = height * originRatio
+            newSize.height = UIScreen.main.bounds.height
+            newSize.width = UIScreen.main.bounds.height * originRatio
         } else {
-            newSize.width = width
-            newSize.height = width / originRatio
+            newSize.width = UIScreen.main.bounds.width
+            newSize.height = UIScreen.main.bounds.width / originRatio
         }
         
         frame = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
