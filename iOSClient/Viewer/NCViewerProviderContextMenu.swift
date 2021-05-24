@@ -51,22 +51,22 @@ class NCViewerProviderContextMenu: UIViewController  {
         
         if metadata.directory {
             
-            var imageFolder = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: sizeIcon)
+            var imageFolder = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: sizeIcon*2)
             
             if let image = self.image {
-                imageFolder =  image.image(color: NCBrandColor.shared.brandElement, size: sizeIcon)
+                imageFolder =  image.image(color: NCBrandColor.shared.brandElement, size: sizeIcon*2)
             }
             
             imageView.image = imageFolder
-            imageView.frame = resize(imageFolder.size)
+            imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
 
         } else {
                          
             // ICON
-            if let image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: sizeIcon, height: sizeIcon), isAspectRation: true) {
+            if let image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: sizeIcon*2, height: sizeIcon*2), isAspectRation: true) {
                 
                 imageView.image = image
-                imageView.frame = resize(image.size)
+                imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
             }
             
             // PREVIEW
