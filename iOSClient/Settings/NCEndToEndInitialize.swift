@@ -53,13 +53,13 @@ class NCEndToEndInitialize : NSObject  {
     
     func getPublicKey() {
     
-        NCCommunication.shared.getE2EEPublicKey { (account, publicKey, errorCode, errorDescription) in
+        NCCommunication.shared.getE2EECertificate { (account, certificate, errorCode, errorDescription) in
             
             if (errorCode == 0 && account == self.appDelegate.account) {
                 
-                CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
+                CCUtility.setEndToEndCertificate(account, certificate: certificate)
                 
-                self.extractedPublicKey = NCEndToEndEncryption.sharedManager().extractPublicKey(fromCertificate: publicKey)
+                self.extractedPublicKey = NCEndToEndEncryption.sharedManager().extractPublicKey(fromCertificate: certificate)
                 
                 // Request PrivateKey chiper to Server
                 self.getPrivateKeyCipher()
@@ -79,19 +79,19 @@ class NCEndToEndInitialize : NSObject  {
                         return
                     }
                     
-                    NCCommunication.shared.signE2EEPublicKey(publicKey: csr) { (account, publicKey, errorCode, errorDescription) in
+                    NCCommunication.shared.signE2EECertificate(certificate: csr) { (account, certificate, errorCode, errorDescription) in
                         
                         if (errorCode == 0 && account == self.appDelegate.account) {
                             
                             // TEST publicKey
-                            let extractedPublicKey = NCEndToEndEncryption.sharedManager().extractPublicKey(fromCertificate: publicKey)
+                            let extractedPublicKey = NCEndToEndEncryption.sharedManager().extractPublicKey(fromCertificate: certificate)
                             if extractedPublicKey != NCEndToEndEncryption.sharedManager().generatedPublicKey {
                                 
                                 NCContentPresenter.shared.messageNotification("E2E sign publicKey", description: "error: the public key is incorrect", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                                 
                             } else {
                             
-                                CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
+                                CCUtility.setEndToEndCertificate(account, certificate: certificate)
                             
                                 // Request PrivateKey chiper to Server
                                 self.getPrivateKeyCipher()
@@ -140,7 +140,7 @@ class NCEndToEndInitialize : NSObject  {
                     
                     let passphrase = passphraseTextField?.text
                     
-                    let publicKey = CCUtility.getEndToEndPublicKey(self.appDelegate.account)
+                    let publicKey = CCUtility.getEndToEndCertificate(self.appDelegate.account)
                     
                     guard let privateKey = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey)) else {
                         
@@ -162,7 +162,7 @@ class NCEndToEndInitialize : NSObject  {
                         if (errorCode == 0 && account == self.appDelegate.account) {
                             
                             //TODO: verifi if publicKey == NCCommunication.shared.getE2EEPublicKey
-                            // + (NSString *)getEndToEndPublicKey:(NSString *)account;
+                            // + (NSString *)getEndToEndCertificate:(NSString *)account;
                             
                             CCUtility.setEndToEndPublicKeyServer(account, publicKey: publicKey)
                             
@@ -245,7 +245,7 @@ class NCEndToEndInitialize : NSObject  {
                                     if (errorCode == 0 && account == self.appDelegate.account) {
                                         
                                         //TODO: verifi if publicKey == NCCommunication.shared.getE2EEPublicKey
-                                        // + (NSString *)getEndToEndPublicKey:(NSString *)account;
+                                        // + (NSString *)getEndToEndCertificate:(NSString *)account;
                                         
                                         CCUtility.setEndToEndPublicKeyServer(account, publicKey: publicKey)
                                         

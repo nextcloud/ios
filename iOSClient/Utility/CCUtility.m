@@ -296,16 +296,16 @@
     [UICKeyChainStore setString:sSet forKey:@"formatCompatibility" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (NSString *)getEndToEndPublicKey:(NSString *)account
++ (NSString *)getEndToEndCertificate:(NSString *)account
 {
     NSString *key = [E2E_PublicKey stringByAppendingString:account];
     return [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey
++ (void)setEndToEndCertificate:(NSString *)account certificate:(NSString *)certificate
 {
     NSString *key = [E2E_PublicKey stringByAppendingString:account];
-    [UICKeyChainStore setString:publicKey forKey:key service:NCGlobal.shared.serviceShareKeyChain];
+    [UICKeyChainStore setString:certificate forKey:key service:NCGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSString *)getEndToEndPrivateKey:(NSString *)account
@@ -349,7 +349,7 @@
     BOOL isE2EEEnabled = [[NCManageDatabase shared] getCapabilitiesServerBoolWithAccount:account elements:NCElementsJSON.shared.capabilitiesE2EEEnabled exists:false];
     NSString* versionE2EE = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:account elements:NCElementsJSON.shared.capabilitiesE2EEApiVersion];
     
-    NSString *publicKey = [self getEndToEndPublicKey:account];
+    NSString *publicKey = [self getEndToEndCertificate:account];
     NSString *privateKey = [self getEndToEndPrivateKey:account];
     NSString *passphrase = [self getEndToEndPassphrase:account];
     NSString *publicKeyServer = [self getEndToEndPublicKeyServer:account];    
@@ -366,7 +366,7 @@
 
 + (void)clearAllKeysEndToEnd:(NSString *)account
 {
-    [self setEndToEndPublicKey:account publicKey:nil];
+    [self setEndToEndCertificate:account certificate:nil];
     [self setEndToEndPrivateKey:account privateKey:nil];
     [self setEndToEndPassphrase:account passphrase:nil];
     [self setEndToEndPublicKeyServer:account publicKey:nil];

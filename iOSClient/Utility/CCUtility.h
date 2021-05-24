@@ -94,8 +94,8 @@
 + (BOOL)getFormatCompatibility;
 + (void)setFormatCompatibility:(BOOL)set;
 
-+ (NSString *)getEndToEndPublicKey:(NSString *)account;
-+ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
++ (NSString *)getEndToEndCertificate:(NSString *)account;
++ (void)setEndToEndCertificate:(NSString *)account certificate:(NSString *)certificate;
 
 + (NSString *)getEndToEndPrivateKey:(NSString *)account;
 + (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey;
