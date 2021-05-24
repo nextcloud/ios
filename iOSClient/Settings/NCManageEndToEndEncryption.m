@@ -145,12 +145,12 @@
     [form addFormSection:section];
     
     // Delete publicKey
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deletePublicKey" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"Delete PublicKey", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deleteCertificate" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"Delete certificate", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    row.action.formSelector = @selector(deletePublicKey:);
+    row.action.formSelector = @selector(deleteCertificate:);
     [section addFormRow:row];
     
     // Delete privateKey
@@ -368,15 +368,15 @@
 }
 
 
-- (void)deletePublicKey:(XLFormRowDescriptor *)sender
+- (void)deleteCertificate:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
     
-    [[NCCommunication shared] deleteE2EEPublicKeyWithCustomUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
+    [[NCCommunication shared] deleteE2EECertificateWithCustomUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
        if (errorCode == 0 && [account isEqualToString:appDelegate.account]) {
-            [[NCContentPresenter shared] messageNotification:@"E2E delete publicKey" description:@"Success" delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeSuccess errorCode:NCGlobal.shared.errorInternalError forced:true];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete certificate" description:@"Success" delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeSuccess errorCode:NCGlobal.shared.errorInternalError forced:true];
         } else {
-            [[NCContentPresenter shared] messageNotification:@"E2E delete publicKey" description:errorDescription  delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:errorCode forced:true];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete certificate" description:errorDescription  delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:errorCode forced:true];
         }
     }];
 }
