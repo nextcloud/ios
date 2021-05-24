@@ -302,7 +302,6 @@
     }
 }
 
-
 - (void)didTapCancelInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
 {
     [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
