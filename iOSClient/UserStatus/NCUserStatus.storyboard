@@ -197,19 +197,42 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="😀" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="A55-9l-wXo" customClass="emojiTextField" customModule="Nextcloud" customModuleProvider="target">
+                                <rect key="frame" x="10" y="319" width="32" height="34"/>
+                                <color key="backgroundColor" systemColor="systemGray6Color"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="34" id="aOa-cO-Bhd"/>
+                                    <constraint firstAttribute="width" constant="32" id="lgT-iI-Zr7"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="what's your status?" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="qXf-nl-3Li">
+                                <rect key="frame" x="43" y="319" width="366" height="34"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="34" id="0in-EY-eBM"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="qXf-nl-3Li" firstAttribute="leading" secondItem="A55-9l-wXo" secondAttribute="trailing" constant="1" id="0Qd-uE-iPa"/>
                             <constraint firstItem="IUw-Rz-hg5" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="20" id="1KK-dw-MTN"/>
                             <constraint firstItem="IUw-Rz-hg5" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="42H-eC-eCC"/>
                             <constraint firstItem="DgJ-Se-BTI" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="8KJ-5Z-Y8J"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="Hed-Bz-0g1" secondAttribute="trailing" constant="10" id="9LY-Ad-ugS"/>
                             <constraint firstItem="ldK-hD-vsJ" firstAttribute="top" secondItem="Hed-Bz-0g1" secondAttribute="bottom" constant="40" id="K8i-hZ-ic0"/>
                             <constraint firstItem="Hed-Bz-0g1" firstAttribute="top" secondItem="ukn-PZ-9sx" secondAttribute="bottom" constant="30" id="LJ2-Qn-qbJ"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="qXf-nl-3Li" secondAttribute="trailing" constant="5" id="MLs-tH-cbf"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="ukn-PZ-9sx" secondAttribute="trailing" constant="10" id="Sxc-Bi-ERz"/>
+                            <constraint firstItem="A55-9l-wXo" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="TDf-oG-GcP"/>
                             <constraint firstItem="DgJ-Se-BTI" firstAttribute="top" secondItem="7YL-BS-nbc" secondAttribute="bottom" constant="30" id="Vqd-ZX-eQb"/>
                             <constraint firstItem="ldK-hD-vsJ" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="5" id="XMX-Uc-FkN"/>
+                            <constraint firstItem="A55-9l-wXo" firstAttribute="top" secondItem="ldK-hD-vsJ" secondAttribute="bottom" constant="20" id="cSY-18-btJ"/>
+                            <constraint firstItem="qXf-nl-3Li" firstAttribute="top" secondItem="ldK-hD-vsJ" secondAttribute="bottom" constant="20" id="jPk-b5-RCo"/>
                             <constraint firstItem="ukn-PZ-9sx" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="20" id="vBm-Uq-cEs"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="ldK-hD-vsJ" secondAttribute="trailing" constant="5" id="yZf-48-jHR"/>
                         </constraints>
@@ -230,7 +253,9 @@
                         <outlet property="onlineButton" destination="7YL-BS-nbc" id="X4i-nV-iqB"/>
                         <outlet property="onlineImage" destination="wwP-hA-oHT" id="tv9-3Y-ccU"/>
                         <outlet property="onlineLabel" destination="4dG-pv-efQ" id="9Y2-mc-yZ1"/>
+                        <outlet property="statusMessageEmojiTextField" destination="A55-9l-wXo" id="yTG-lx-gBW"/>
                         <outlet property="statusMessageLabel" destination="ldK-hD-vsJ" id="edn-hK-cYI"/>
+                        <outlet property="statusMessageTextField" destination="qXf-nl-3Li" id="7QS-4i-afV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

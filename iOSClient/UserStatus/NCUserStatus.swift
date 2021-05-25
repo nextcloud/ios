@@ -26,6 +26,7 @@ import UIKit
 import Foundation
 import NCCommunication
 
+@available(iOS 13.0, *)
 class NCUserStatus: UIViewController {
     
     @IBOutlet weak var onlineButton: UIButton!
@@ -48,14 +49,20 @@ class NCUserStatus: UIViewController {
     
     @IBOutlet weak var statusMessageLabel: UILabel!
 
+    @IBOutlet weak var statusMessageEmojiTextField: emojiTextField!
+    @IBOutlet weak var statusMessageTextField: UITextField!
+
     
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.navigationItem.title = NSLocalizedString("_online_status_", comment: "")
+
         onlineButton.layer.cornerRadius = 10
         onlineButton.layer.masksToBounds = true
+        onlineButton.backgroundColor = NCBrandColor.shared.systemGray6
         //onlineLabel.layer.borderWidth = 0.5
         //onlineLabel.layer.borderColor = NCBrandColor.shared.brand.cgColor
         let onLine = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "online", userMessage: nil)
@@ -63,9 +70,9 @@ class NCUserStatus: UIViewController {
         onlineLabel.text = onLine.statusMessage
         onlineLabel.textColor = NCBrandColor.shared.label
        
-        
         awayButton.layer.cornerRadius = 10
         awayButton.layer.masksToBounds = true
+        awayButton.backgroundColor = NCBrandColor.shared.systemGray6
         //onlineLabel.layer.borderWidth = 0.5
         //onlineLabel.layer.borderColor = NCBrandColor.shared.brand.cgColor
         let away = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "away", userMessage: nil)
@@ -75,6 +82,7 @@ class NCUserStatus: UIViewController {
         
         dndButton.layer.cornerRadius = 10
         dndButton.layer.masksToBounds = true
+        dndButton.backgroundColor = NCBrandColor.shared.systemGray6
         //onlineLabel.layer.borderWidth = 0.5
         //onlineLabel.layer.borderColor = NCBrandColor.shared.brand.cgColor
         let dnd = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "dnd", userMessage: nil)
@@ -86,6 +94,7 @@ class NCUserStatus: UIViewController {
         
         invisibleButton.layer.cornerRadius = 10
         invisibleButton.layer.masksToBounds = true
+        invisibleButton.backgroundColor = NCBrandColor.shared.systemGray6
         //onlineLabel.layer.borderWidth = 0.5
         //onlineLabel.layer.borderColor = NCBrandColor.shared.brand.cgColor
         let offline = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "offline", userMessage: nil)
@@ -98,6 +107,80 @@ class NCUserStatus: UIViewController {
         statusMessageLabel.text = NSLocalizedString("_status_message_", comment: "")
         statusMessageLabel.textColor = NCBrandColor.shared.label
 
+        statusMessageEmojiTextField.delegate = self
+        statusMessageEmojiTextField.backgroundColor = NCBrandColor.shared.systemGray6
+        
+        statusMessageTextField.placeholder = NSLocalizedString("_status_message_placehorder_", comment: "")
+        statusMessageTextField.textColor = NCBrandColor.shared.label
+        
+        getStatus()
+    }
+    
+    func getStatus() {
+        
+        NCCommunication.shared.getUserStatus { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, errorCode, errorDescription in
+            print("")
+        }
+    }
+}
+
+@available(iOS 13.0, *)
+extension NCUserStatus: UITextFieldDelegate {
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        
+        if textField is emojiTextField {
+        
+            if string.count == 0 {
+                textField.text = "😀"
+                return false
+            }
+            textField.text = string
+        }
+        
+        return true
+    }
+}
+
+@available(iOS 13.0, *)
+class emojiTextField: UITextField {
+
+    // required for iOS 13
+    override var textInputContextIdentifier: String? { "" } // return non-nil to show the Emoji keyboard ¯\_(ツ)_/¯
+
+    override var textInputMode: UITextInputMode? {
+        for mode in UITextInputMode.activeInputModes {
+            if mode.primaryLanguage == "emoji" {
+                return mode
+            }
+        }
+        return nil
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        commonInit()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+
+        commonInit()
+    }
+
+    func commonInit() {
+        NotificationCenter.default.addObserver(self, selector: #selector(inputModeDidChange), name: UITextInputMode.currentInputModeDidChangeNotification, object: nil)
+    }
+
+    @objc func inputModeDidChange(_ notification: Notification) {
+        guard isFirstResponder else {
+            return
+        }
+
+        DispatchQueue.main.async { [weak self] in
+            self?.reloadInputViews()
+        }
     }
 }
 
