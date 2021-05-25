@@ -92,8 +92,6 @@ class NCUserStatus: UIViewController {
         awayButton.layer.cornerRadius = 10
         awayButton.layer.masksToBounds = true
         awayButton.backgroundColor = NCBrandColor.shared.systemGray5
-        //onlineLabel.layer.borderWidth = 0.5
-        //onlineLabel.layer.borderColor = NCBrandColor.shared.brand.cgColor
         let away = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "away", userMessage: nil)
         awayImage.image = away.onlineStatus
         awayLabel.text = away.statusMessage
@@ -102,8 +100,6 @@ class NCUserStatus: UIViewController {
         dndButton.layer.cornerRadius = 10
         dndButton.layer.masksToBounds = true
         dndButton.backgroundColor = NCBrandColor.shared.systemGray5
-        //onlineLabel.layer.borderWidth = 0.5
-        //onlineLabel.layer.borderColor = NCBrandColor.shared.brand.cgColor
         let dnd = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "dnd", userMessage: nil)
         dndImage.image = dnd.onlineStatus
         dndLabel.text = dnd.statusMessage
@@ -114,8 +110,8 @@ class NCUserStatus: UIViewController {
         invisibleButton.layer.cornerRadius = 10
         invisibleButton.layer.masksToBounds = true
         invisibleButton.backgroundColor = NCBrandColor.shared.systemGray5
-        invisibleButton.layer.borderWidth = 1.5
-        invisibleButton.layer.borderColor = NCBrandColor.shared.brand.cgColor
+//        invisibleButton.layer.borderWidth = 1.5
+//        invisibleButton.layer.borderColor = NCBrandColor.shared.brand.cgColor
         let offline = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "offline", userMessage: nil)
         invisibleImage.image = offline.onlineStatus
         invisibleLabel.text = offline.statusMessage
@@ -154,6 +150,14 @@ class NCUserStatus: UIViewController {
 
         changeTheming()
         getStatus()
+    }
+    
+    func dismissWithError(_ errorCode: Int, errorDescription: String) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.dismiss(animated: true) {
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
+            }
+        }
     }
     
     // MARK: - Theming
@@ -200,15 +204,15 @@ class NCUserStatus: UIViewController {
                                 self.tableView.reloadData()
                                 
                             } else {
-                                print("error")
+                                self.dismissWithError(errorCode, errorDescription: errorDescription)
                             }
                         }
                     } else {
-                        print("error")
+                        self.dismissWithError(errorCode, errorDescription: errorDescription)
                     }
                 }
             } else {
-                print("error")
+                self.dismissWithError(errorCode, errorDescription: errorDescription)
             }
         }
     }
