@@ -208,7 +208,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="what's your status?" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="qXf-nl-3Li">
-                                <rect key="frame" x="43" y="319" width="342" height="34"/>
+                                <rect key="frame" x="43" y="319" width="337" height="34"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="34" id="0in-EY-eBM"/>
                                 </constraints>
@@ -258,20 +258,20 @@
                                 </connections>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3CT-dJ-sEj">
-                                <rect key="frame" x="10" y="770" width="170" height="30"/>
+                                <rect key="frame" x="10" y="770" width="175" height="30"/>
                                 <color key="backgroundColor" systemColor="systemGray6Color"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="1F4-Cv-RzK"/>
-                                    <constraint firstAttribute="width" constant="170" id="77H-1R-knu"/>
+                                    <constraint firstAttribute="width" constant="175" id="77H-1R-knu"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
                                 <state key="normal" title="clear status message"/>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3xN-e7-N0L">
-                                <rect key="frame" x="210" y="770" width="170" height="30"/>
+                                <rect key="frame" x="205" y="770" width="175" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="66i-0j-Qrn"/>
-                                    <constraint firstAttribute="width" constant="170" id="wvf-2Z-fgc"/>
+                                    <constraint firstAttribute="width" constant="175" id="wvf-2Z-fgc"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
                                 <state key="normal" title="set status message"/>
@@ -306,7 +306,7 @@
                             <constraint firstItem="ldK-hD-vsJ" firstAttribute="top" secondItem="Hed-Bz-0g1" secondAttribute="bottom" constant="40" id="K8i-hZ-ic0"/>
                             <constraint firstItem="3CT-dJ-sEj" firstAttribute="top" secondItem="rha-b0-jMR" secondAttribute="bottom" constant="20" id="KlN-Ud-r2X"/>
                             <constraint firstItem="Hed-Bz-0g1" firstAttribute="top" secondItem="ukn-PZ-9sx" secondAttribute="bottom" constant="30" id="LJ2-Qn-qbJ"/>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="qXf-nl-3Li" secondAttribute="trailing" constant="5" id="MLs-tH-cbf"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="qXf-nl-3Li" secondAttribute="trailing" constant="10" id="MLs-tH-cbf"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="P09-kU-gUI" secondAttribute="trailing" constant="10" id="Qm6-Nb-VLH"/>
                             <constraint firstItem="3CT-dJ-sEj" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="Ra0-dj-zWy"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="ukn-PZ-9sx" secondAttribute="trailing" constant="10" id="Sxc-Bi-ERz"/>

@@ -63,11 +63,6 @@ class NCUserStatus: UIViewController {
     private var statusPredefinedStatuses: [NCCommunicationUserStatus] = []
     private var userStatusRetrieveStatuses: [NCCommunicationUserStatus] = []
     
-    private let heightCell: CGFloat = 45
-    
-    
-
-
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -77,7 +72,7 @@ class NCUserStatus: UIViewController {
 
         onlineButton.layer.cornerRadius = 10
         onlineButton.layer.masksToBounds = true
-        onlineButton.backgroundColor = NCBrandColor.shared.systemGray6
+        onlineButton.backgroundColor = NCBrandColor.shared.systemGray5
         //onlineLabel.layer.borderWidth = 0.5
         //onlineLabel.layer.borderColor = NCBrandColor.shared.brand.cgColor
         let onLine = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "online", userMessage: nil)
@@ -87,7 +82,7 @@ class NCUserStatus: UIViewController {
        
         awayButton.layer.cornerRadius = 10
         awayButton.layer.masksToBounds = true
-        awayButton.backgroundColor = NCBrandColor.shared.systemGray6
+        awayButton.backgroundColor = NCBrandColor.shared.systemGray5
         //onlineLabel.layer.borderWidth = 0.5
         //onlineLabel.layer.borderColor = NCBrandColor.shared.brand.cgColor
         let away = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "away", userMessage: nil)
@@ -97,7 +92,7 @@ class NCUserStatus: UIViewController {
         
         dndButton.layer.cornerRadius = 10
         dndButton.layer.masksToBounds = true
-        dndButton.backgroundColor = NCBrandColor.shared.systemGray6
+        dndButton.backgroundColor = NCBrandColor.shared.systemGray5
         //onlineLabel.layer.borderWidth = 0.5
         //onlineLabel.layer.borderColor = NCBrandColor.shared.brand.cgColor
         let dnd = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "dnd", userMessage: nil)
@@ -109,9 +104,9 @@ class NCUserStatus: UIViewController {
         
         invisibleButton.layer.cornerRadius = 10
         invisibleButton.layer.masksToBounds = true
-        invisibleButton.backgroundColor = NCBrandColor.shared.systemGray6
-        //onlineLabel.layer.borderWidth = 0.5
-        //onlineLabel.layer.borderColor = NCBrandColor.shared.brand.cgColor
+        invisibleButton.backgroundColor = NCBrandColor.shared.systemGray5
+        invisibleButton.layer.borderWidth = 1.5
+        invisibleButton.layer.borderColor = NCBrandColor.shared.brand.cgColor
         let offline = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "offline", userMessage: nil)
         invisibleImage.image = offline.onlineStatus
         invisibleLabel.text = offline.statusMessage
@@ -123,7 +118,7 @@ class NCUserStatus: UIViewController {
         statusMessageLabel.textColor = NCBrandColor.shared.label
 
         statusMessageEmojiTextField.delegate = self
-        statusMessageEmojiTextField.backgroundColor = NCBrandColor.shared.systemGray6
+        statusMessageEmojiTextField.backgroundColor = NCBrandColor.shared.systemGray5
         
         statusMessageTextField.placeholder = NSLocalizedString("_status_message_placehorder_", comment: "")
         statusMessageTextField.textColor = NCBrandColor.shared.label
@@ -131,11 +126,14 @@ class NCUserStatus: UIViewController {
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
         tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         
+        clearStatusMessageAfterLabel.text = NSLocalizedString("_clear_status_message_after_", comment: "")
+        clearStatusMessageAfterLabel.textColor = NCBrandColor.shared.label
+        
         clearStatusMessageButton.layer.cornerRadius = 15
         clearStatusMessageButton.layer.masksToBounds = true
         clearStatusMessageButton.layer.borderWidth = 0.5
         clearStatusMessageButton.layer.borderColor = UIColor.darkGray.cgColor
-        clearStatusMessageButton.backgroundColor = NCBrandColor.shared.systemGray6
+        clearStatusMessageButton.backgroundColor = NCBrandColor.shared.systemGray5
         clearStatusMessageButton.setTitle(NSLocalizedString("_clear_status_message_", comment: ""), for: .normal)
         clearStatusMessageButton.setTitleColor(NCBrandColor.shared.label, for: .normal)
         
@@ -145,6 +143,7 @@ class NCUserStatus: UIViewController {
         setStatusMessageButton.setTitle(NSLocalizedString("_set_status_message_", comment: ""), for: .normal)
         setStatusMessageButton.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
+        changeTheming()
         getStatus()
     }
     
@@ -152,8 +151,8 @@ class NCUserStatus: UIViewController {
     
     @objc func changeTheming() {
         
-        view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
-        tableView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        view.backgroundColor = NCBrandColor.shared.systemBackground
+        tableView.backgroundColor = NCBrandColor.shared.systemBackground
         
         tableView.reloadData()
     }
@@ -261,29 +260,13 @@ class emojiTextField: UITextField {
 extension NCUserStatus: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return heightCell
+        return 45
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        /*
-        if indexPath.row == accounts.count {
-            
-            dismiss(animated: true)
-            delegate?.accountRequestAddAccount()
-            
-        } else {
+        let status = statusPredefinedStatuses[indexPath.row]
         
-            let account = accounts[indexPath.row]
-            if account.account != activeAccount?.account {
-                dismiss(animated: true) {
-                    self.delegate?.accountRequestChangeAccount(account: account.account)
-                }
-            } else {
-                dismiss(animated: true)
-            }
-        }
-        */
     }
 }
 

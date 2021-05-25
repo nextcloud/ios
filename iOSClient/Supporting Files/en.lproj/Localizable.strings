@@ -211,6 +211,7 @@
 "_online_status_"           = "Online status";
 "_clear_status_message_"    = "Clear status message";
 "_set_status_message_"      = "Set status message";
+"_clear_status_message_after_"  = "Clear status message after";
 
 "_network_available_"       = "Network available";
 "_network_not_available_"   = "Network unavailable";
