@@ -51,8 +51,23 @@ class NCUserStatus: UIViewController {
 
     @IBOutlet weak var statusMessageEmojiTextField: emojiTextField!
     @IBOutlet weak var statusMessageTextField: UITextField!
-
     
+    @IBOutlet weak var tableView: UITableView!
+    
+    @IBOutlet weak var clearStatusMessageAfterLabel: UILabel!
+    @IBOutlet weak var clearStatusMessageAfterText: UILabel!
+
+    @IBOutlet weak var clearStatusMessageButton: UIButton!
+    @IBOutlet weak var setStatusMessageButton: UIButton!
+
+    private var statusPredefinedStatuses: [NCCommunicationUserStatus] = []
+    private var userStatusRetrieveStatuses: [NCCommunicationUserStatus] = []
+    
+    private let heightCell: CGFloat = 45
+    
+    
+
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -113,13 +128,71 @@ class NCUserStatus: UIViewController {
         statusMessageTextField.placeholder = NSLocalizedString("_status_message_placehorder_", comment: "")
         statusMessageTextField.textColor = NCBrandColor.shared.label
         
+        tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        
+        clearStatusMessageButton.layer.cornerRadius = 15
+        clearStatusMessageButton.layer.masksToBounds = true
+        clearStatusMessageButton.layer.borderWidth = 0.5
+        clearStatusMessageButton.layer.borderColor = UIColor.darkGray.cgColor
+        clearStatusMessageButton.backgroundColor = NCBrandColor.shared.systemGray6
+        clearStatusMessageButton.setTitle(NSLocalizedString("_clear_status_message_", comment: ""), for: .normal)
+        clearStatusMessageButton.setTitleColor(NCBrandColor.shared.label, for: .normal)
+        
+        setStatusMessageButton.layer.cornerRadius = 15
+        setStatusMessageButton.layer.masksToBounds = true
+        setStatusMessageButton.backgroundColor = NCBrandColor.shared.brand
+        setStatusMessageButton.setTitle(NSLocalizedString("_set_status_message_", comment: ""), for: .normal)
+        setStatusMessageButton.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
+
         getStatus()
     }
+    
+    // MARK: - Theming
+    
+    @objc func changeTheming() {
+        
+        view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        tableView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        
+        tableView.reloadData()
+    }
+    
+    // MARK: - Networking
     
     func getStatus() {
         
         NCCommunication.shared.getUserStatus { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, errorCode, errorDescription in
-            print("")
+            
+            if errorCode == 0 {
+                
+                NCCommunication.shared.getUserStatusPredefinedStatuses { account, userStatuses, errorCode, errorDescription in
+                    
+                    if errorCode == 0 {
+                        if let userStatuses = userStatuses {
+                            self.statusPredefinedStatuses = userStatuses
+                        }
+                        
+                        NCCommunication.shared.getUserStatusRetrieveStatuses(limit: 200, offset: 0) { account, userStatuses, errorCode, errorDescription in
+                            
+                            if errorCode == 0 {
+                                if let userStatuses = userStatuses {
+                                    self.userStatusRetrieveStatuses = userStatuses
+                                }
+                                
+                                self.tableView.reloadData()
+                                
+                            } else {
+                                print("error")
+                            }
+                        }
+                    } else {
+                        print("error")
+                    }
+                }
+            } else {
+                print("error")
+            }
         }
     }
 }
@@ -184,34 +257,56 @@ class emojiTextField: UITextField {
     }
 }
 
-/*
 @available(iOS 13.0, *)
-
-
-@available(iOS 13.0, *)
-@objc class NCUserStatusViewController: NSObject {
- 
-    @objc func makeUserStatusUI() -> UIViewController
+extension NCUserStatus: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return heightCell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        NCCommunication.shared.getUserStatusPredefinedStatuses { (account, userStatuses, errorCode, errorDescription) in
-            if errorCode == 0 {
-                if let userStatuses = userStatuses {
-                    NCManageDatabase.shared.addUserStatus(userStatuses, account: account, predefined: true)
+        /*
+        if indexPath.row == accounts.count {
+            
+            dismiss(animated: true)
+            delegate?.accountRequestAddAccount()
+            
+        } else {
+        
+            let account = accounts[indexPath.row]
+            if account.account != activeAccount?.account {
+                dismiss(animated: true) {
+                    self.delegate?.accountRequestChangeAccount(account: account.account)
                 }
+            } else {
+                dismiss(animated: true)
             }
         }
-        
-        NCCommunication.shared.getUserStatusRetrieveStatuses(limit: 1000, offset: 0, customUserAgent: nil, addCustomHeaders: nil) { (account, userStatuses, errorCode, errorDescription) in
-            if errorCode == 0 {
-                if let userStatuses = userStatuses {
-                    NCManageDatabase.shared.addUserStatus(userStatuses, account: account, predefined: false)
-                }
-            }
-        }
-        
-        //let userStatus = NCUserStatus()
-        //details.shipName = name
-        return
+        */
     }
 }
-*/
+
+@available(iOS 13.0, *)
+extension NCUserStatus: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return statusPredefinedStatuses.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        cell.backgroundColor = tableView.backgroundColor
+        
+        let icon = cell.viewWithTag(10) as? UILabel
+        let message = cell.viewWithTag(20) as? UILabel
+
+        let status = statusPredefinedStatuses[indexPath.row]
+        
+        icon?.text = status.icon
+        message?.text = status.message
+        
+        return cell
+    }
+}

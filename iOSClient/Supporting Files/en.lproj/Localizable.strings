@@ -209,6 +209,8 @@
 "_status_message_"          = "Status message";
 "_status_message_placehorder_"  = "Wath's your status?";
 "_online_status_"           = "Online status";
+"_clear_status_message_"    = "Clear status message";
+"_set_status_message_"      = "Set status message";
 
 "_network_available_"       = "Network available";
 "_network_not_available_"   = "Network unavailable";

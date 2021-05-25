@@ -108,7 +108,7 @@ class NCAccountRequest: UIViewController {
         changeTheming()
     }
     
-    // MARK: - Colors
+    // MARK: - Theming
     
     @objc func changeTheming() {
         
