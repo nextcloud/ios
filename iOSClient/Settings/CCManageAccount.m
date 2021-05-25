@@ -125,7 +125,7 @@
             [section addFormRow:row];
         }
         
-#if TARGET_OS_SIMULATOR
+//#if TARGET_OS_SIMULATOR
         // Set user status
         if (@available(iOS 13.0, *)) {
             BOOL userStatus = [[NCManageDatabase shared] getCapabilitiesServerBoolWithAccount:activeAccount.account elements:NCElementsJSON.shared.capabilitiesUserStatusEnabled exists:false];
@@ -141,7 +141,7 @@
                 [section addFormRow:row];
             }
         }
-#endif
+//#endif
     }
     
     // Section : USER INFORMATION -------------------------------------------
@@ -480,8 +480,10 @@
     [self deselectFormRow:sender];
     
     if (@available(iOS 13.0, *)) {
-        UIViewController *userStatusViewController = [[NCUserStatusViewController new] makeUserStatusUI];
-        [self presentViewController:userStatusViewController animated:YES completion:nil];
+        
+        NCUserStatus *navigationController = [[UIStoryboard storyboardWithName:@"NCUserStatus" bundle:nil] instantiateInitialViewController];
+        
+        [self presentViewController:navigationController animated:YES completion:nil];
     }
 }
 

@@ -331,10 +331,11 @@ class NCUtility: NSObject {
         return String(intFileId)
     }
     
-    func getUserStatus(userIcon: String?, userStatus: String?, userMessage: String?) -> (onlineStatus: UIImage?, statusMessage: String) {
+    func getUserStatus(userIcon: String?, userStatus: String?, userMessage: String?) -> (onlineStatus: UIImage?, statusMessage: String, descriptionMessage: String) {
         
         var onlineStatus: UIImage?
         var statusMessage: String = ""
+        var descriptionMessage: String = ""
         var messageUserDefined: String = ""
         
         if userStatus?.lowercased() == "online" {
@@ -348,10 +349,12 @@ class NCUtility: NSObject {
         if userStatus?.lowercased() == "dnd" {
             onlineStatus = UIImage.init(named: "userStatusDnd")?.resizeImage(size: CGSize(width: 100, height: 100), isAspectRation: false)
             messageUserDefined = NSLocalizedString("_dnd_", comment: "")
+            descriptionMessage = NSLocalizedString("_dnd_description_", comment: "")
         }
         if userStatus?.lowercased() == "offline" || userStatus?.lowercased() == "invisible"  {
             onlineStatus = UIImage.init(named: "userStatusOffline")!.image(color: .black, size: 50) 
             messageUserDefined = NSLocalizedString("_invisible_", comment: "")
+            descriptionMessage = NSLocalizedString("_invisible_description_", comment: "")
         }
         
         if let userIcon = userIcon {
@@ -365,7 +368,7 @@ class NCUtility: NSObject {
             statusMessage = messageUserDefined
         }
                 
-        return(onlineStatus, statusMessage)
+        return(onlineStatus, statusMessage, descriptionMessage)
     }
     
     func imageFromVideo(url: URL, at time: TimeInterval) -> UIImage? {

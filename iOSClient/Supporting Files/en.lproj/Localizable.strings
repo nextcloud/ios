@@ -205,6 +205,9 @@
 /* User status */
 "_invisible_description_"   = "Appear offline";
 
+/* User status */
+"_status_message_"          = "Status message";
+
 "_network_available_"       = "Network available";
 "_network_not_available_"   = "Network unavailable";
 "_file_too_big_"            = "File too large to be encrypted/decrypted";
