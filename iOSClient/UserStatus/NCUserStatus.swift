@@ -63,6 +63,15 @@ class NCUserStatus: UIViewController {
     private var statusPredefinedStatuses: [NCCommunicationUserStatus] = []
     private var userStatusRetrieveStatuses: [NCCommunicationUserStatus] = []
     
+    private var clearAt: NSDate?
+    private var icon: String?
+    private var message: String?
+    private var messageId: String?
+    private var messageIsPredefined: Bool?
+    private var status: String?
+    private var statusIsUserDefined: Bool?
+    private var userId: String?
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -164,6 +173,15 @@ class NCUserStatus: UIViewController {
         NCCommunication.shared.getUserStatus { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, errorCode, errorDescription in
             
             if errorCode == 0 {
+                
+                self.clearAt = clearAt
+                self.icon = icon
+                self.message = message
+                self.messageId = messageId
+                self.messageIsPredefined = messageIsPredefined
+                self.status = status
+                self.statusIsUserDefined = statusIsUserDefined
+                self.userId = userId
                 
                 NCCommunication.shared.getUserStatusPredefinedStatuses { account, userStatuses, errorCode, errorDescription in
                     
