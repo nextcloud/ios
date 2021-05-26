@@ -110,8 +110,6 @@ class NCUserStatus: UIViewController {
         invisibleButton.layer.cornerRadius = 10
         invisibleButton.layer.masksToBounds = true
         invisibleButton.backgroundColor = NCBrandColor.shared.systemGray5
-//        invisibleButton.layer.borderWidth = 1.5
-//        invisibleButton.layer.borderColor = NCBrandColor.shared.brand.cgColor
         let offline = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "offline", userMessage: nil)
         invisibleImage.image = offline.onlineStatus
         invisibleLabel.text = offline.statusMessage
@@ -186,6 +184,23 @@ class NCUserStatus: UIViewController {
                 self.status = status
                 self.statusIsUserDefined = statusIsUserDefined
                 self.userId = userId
+                
+                switch status {
+                case "online":
+                    self.onlineButton.layer.borderWidth = 1.5
+                    self.onlineButton.layer.borderColor = NCBrandColor.shared.brand.cgColor
+                case "away":
+                    self.awayButton.layer.borderWidth = 1.5
+                    self.awayButton.layer.borderColor = NCBrandColor.shared.brand.cgColor
+                case "dnd":
+                    self.dndButton.layer.borderWidth = 1.5
+                    self.dndButton.layer.borderColor = NCBrandColor.shared.brand.cgColor
+                case "invisible":
+                    self.invisibleButton.layer.borderWidth = 1.5
+                    self.invisibleButton.layer.borderColor = NCBrandColor.shared.brand.cgColor
+                default:
+                    print("No status")
+                }
                 
                 NCCommunication.shared.getUserStatusPredefinedStatuses { account, userStatuses, errorCode, errorDescription in
                     
