@@ -214,6 +214,7 @@
 "_clear_status_message_after_"  = "Clear status message after";
 
 /* User status */
+"_select_option_"           = "Select option";
 "_dont_clear_"              = "Don't clear";
 "_30_minutes_"              = "30 minutes";
 "_an_hour_"                 = "an hour";

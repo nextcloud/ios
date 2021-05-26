@@ -25,6 +25,7 @@
 import UIKit
 import Foundation
 import NCCommunication
+import DropDown
 
 @available(iOS 13.0, *)
 class NCUserStatus: UIViewController {
@@ -133,6 +134,9 @@ class NCUserStatus: UIViewController {
         clearStatusMessageAfterText.layer.borderColor = UIColor.lightGray.cgColor
         clearStatusMessageAfterText.text = NSLocalizedString("_dont_clear_", comment: "")
         clearStatusMessageAfterText.textColor = .lightGray
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.actionClearStatusMessageAfterText(sender:)))
+        clearStatusMessageAfterText.isUserInteractionEnabled = true
+        clearStatusMessageAfterText.addGestureRecognizer(tap)
         
         clearStatusMessageButton.layer.cornerRadius = 15
         clearStatusMessageButton.layer.masksToBounds = true
@@ -227,6 +231,46 @@ class NCUserStatus: UIViewController {
         self.dndButton.layer.borderColor = nil
         self.invisibleButton.layer.borderWidth = self.borderWidthButton
         self.invisibleButton.layer.borderColor = self.borderColorButton
+    }
+    
+    @objc func actionClearStatusMessageAfterText(sender:UITapGestureRecognizer) {
+
+        let dropDown = DropDown()
+        let appearance = DropDown.appearance()
+        let clearStatusMessageAfterTextBackup = clearStatusMessageAfterText.text
+            
+        appearance.backgroundColor = NCBrandColor.shared.systemBackground
+        appearance.cornerRadius = 5
+        appearance.shadowColor = UIColor(white: 0.5, alpha: 1)
+        appearance.shadowOpacity = 0.9
+        appearance.shadowRadius = 25
+        appearance.animationduration = 0.25
+        appearance.textColor = .darkGray
+        appearance.setupMaskedCorners([.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
+        
+        dropDown.dataSource.append(NSLocalizedString("_dont_clear_", comment: ""))
+        dropDown.dataSource.append(NSLocalizedString("_30_minutes_", comment: ""))
+        dropDown.dataSource.append(NSLocalizedString("_1_hour_", comment: ""))
+        dropDown.dataSource.append(NSLocalizedString("_4_hours_", comment: ""))
+        dropDown.dataSource.append(NSLocalizedString("day", comment: ""))
+        dropDown.dataSource.append(NSLocalizedString("_this_week_", comment: ""))
+
+        dropDown.anchorView = clearStatusMessageAfterText
+        dropDown.topOffset = CGPoint(x: 0, y: -clearStatusMessageAfterText.bounds.height)
+        dropDown.width = clearStatusMessageAfterText.bounds.width
+        dropDown.direction = .top
+        
+        dropDown.selectionAction = { [weak self] (index, item) in
+            print("")
+        }
+        
+        dropDown.cancelAction = { [unowned self] in
+            clearStatusMessageAfterText.text = clearStatusMessageAfterTextBackup
+        }
+        
+        clearStatusMessageAfterText.text = " " + NSLocalizedString("_select_option_", comment: "")
+        
+        dropDown.show()
     }
     
     @IBAction func actionClearStatusMessage(_ sender: UIButton) {
