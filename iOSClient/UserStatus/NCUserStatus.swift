@@ -344,7 +344,7 @@ extension NCUserStatus: UITableViewDataSource {
             
             switch clearAtTime {
             case "3600":
-                return NSLocalizedString("_1_hour_", comment: "")
+                return NSLocalizedString("_an_hour_", comment: "")
             case "1800":
                 return NSLocalizedString("_30_minutes_", comment: "")
             default:

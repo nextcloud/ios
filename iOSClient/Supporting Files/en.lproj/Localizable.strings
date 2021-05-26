@@ -216,9 +216,11 @@
 /* User status */
 "_dont_clear_"              = "Don't clear";
 "_30_minutes_"              = "30 minutes";
-"_1_hour_"                  = "an hour";
+"_an_hour_"                 = "an hour";
+"_1_hour_"                  = "1 hour";
 "_4_hours_"                 = "4 hours";
 "day"                       = "Today";
+"_this_week_"               = "This week";
 
 "_network_available_"       = "Network available";
 "_network_not_available_"   = "Network unavailable";
