@@ -79,8 +79,6 @@ class NCUserStatus: UIViewController {
         onlineButton.layer.cornerRadius = 10
         onlineButton.layer.masksToBounds = true
         onlineButton.backgroundColor = NCBrandColor.shared.systemGray5
-        //onlineLabel.layer.borderWidth = 0.5
-        //onlineLabel.layer.borderColor = NCBrandColor.shared.brand.cgColor
         let onLine = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "online", userMessage: nil)
         onlineImage.image = onLine.onlineStatus
         onlineLabel.text = onLine.statusMessage
@@ -150,8 +148,13 @@ class NCUserStatus: UIViewController {
         setStatusMessageButton.setTitle(NSLocalizedString("_set_status_message_", comment: ""), for: .normal)
         setStatusMessageButton.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
-        changeTheming()
         getStatus()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        changeTheming()
     }
     
     func dismissWithError(_ errorCode: Int, errorDescription: String) {
@@ -176,6 +179,62 @@ class NCUserStatus: UIViewController {
     
     @IBAction func actionCancel(_ sender: UIBarButtonItem) {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func actionOnline(_ sender: UIButton) {
+        
+        self.onlineButton.layer.borderWidth = self.borderWidthButton
+        self.onlineButton.layer.borderColor = self.borderColorButton
+        self.awayButton.layer.borderWidth = 0
+        self.awayButton.layer.borderColor = nil
+        self.dndButton.layer.borderWidth = 0
+        self.dndButton.layer.borderColor = nil
+        self.invisibleButton.layer.borderWidth = 0
+        self.invisibleButton.layer.borderColor = nil
+    }
+    
+    @IBAction func actionAway(_ sender: UIButton) {
+        
+        self.onlineButton.layer.borderWidth = 0
+        self.onlineButton.layer.borderColor = nil
+        self.awayButton.layer.borderWidth = self.borderWidthButton
+        self.awayButton.layer.borderColor = self.borderColorButton
+        self.dndButton.layer.borderWidth = 0
+        self.dndButton.layer.borderColor = nil
+        self.invisibleButton.layer.borderWidth = 0
+        self.invisibleButton.layer.borderColor = nil
+    }
+    
+    @IBAction func actionDnd(_ sender: UIButton) {
+        
+        self.onlineButton.layer.borderWidth = 0
+        self.onlineButton.layer.borderColor = nil
+        self.awayButton.layer.borderWidth = 0
+        self.awayButton.layer.borderColor = nil
+        self.dndButton.layer.borderWidth = self.borderWidthButton
+        self.dndButton.layer.borderColor = self.borderColorButton
+        self.invisibleButton.layer.borderWidth = 0
+        self.invisibleButton.layer.borderColor = nil
+    }
+    
+    @IBAction func actionInvisible(_ sender: UIButton) {
+        
+        self.onlineButton.layer.borderWidth = 0
+        self.onlineButton.layer.borderColor = nil
+        self.awayButton.layer.borderWidth = 0
+        self.awayButton.layer.borderColor = nil
+        self.dndButton.layer.borderWidth = 0
+        self.dndButton.layer.borderColor = nil
+        self.invisibleButton.layer.borderWidth = self.borderWidthButton
+        self.invisibleButton.layer.borderColor = self.borderColorButton
+    }
+    
+    @IBAction func actionClearStatusMessage(_ sender: UIButton) {
+        
+    }
+    
+    @IBAction func actionSetStatusMessage(_ sender: UIButton) {
+        
     }
     
     // MARK: - Networking
@@ -300,7 +359,6 @@ extension NCUserStatus: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let status = statusPredefinedStatuses[indexPath.row]
-        
     }
 }
 
