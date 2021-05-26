@@ -61,17 +61,7 @@ class NCUserStatus: UIViewController {
     @IBOutlet weak var setStatusMessageButton: UIButton!
 
     private var statusPredefinedStatuses: [NCCommunicationUserStatus] = []
-    private var userStatusRetrieveStatuses: [NCCommunicationUserStatus] = []
     
-    private var clearAt: NSDate?
-    private var icon: String?
-    private var message: String?
-    private var messageId: String?
-    private var messageIsPredefined: Bool?
-    private var status: String?
-    private var statusIsUserDefined: Bool?
-    private var userId: String?
-
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -176,14 +166,9 @@ class NCUserStatus: UIViewController {
             
             if errorCode == 0 {
                 
-                self.clearAt = clearAt
-                self.icon = icon
-                self.message = message
-                self.messageId = messageId
-                self.messageIsPredefined = messageIsPredefined
-                self.status = status
-                self.statusIsUserDefined = statusIsUserDefined
-                self.userId = userId
+                self.statusMessageEmojiTextField.text = icon
+                self.statusMessageTextField.text = message
+                self.clearStatusMessageAfterText.text = CCUtility.getTitleSectionDate(clearAt! as Date)
                 
                 switch status {
                 case "online":
@@ -209,19 +194,8 @@ class NCUserStatus: UIViewController {
                             self.statusPredefinedStatuses = userStatuses
                         }
                         
-                        NCCommunication.shared.getUserStatusRetrieveStatuses(limit: 200, offset: 0) { account, userStatuses, errorCode, errorDescription in
-                            
-                            if errorCode == 0 {
-                                if let userStatuses = userStatuses {
-                                    self.userStatusRetrieveStatuses = userStatuses
-                                }
-                                
-                                self.tableView.reloadData()
-                                
-                            } else {
-                                self.dismissWithError(errorCode, errorDescription: errorDescription)
-                            }
-                        }
+                        self.tableView.reloadData()
+                        
                     } else {
                         self.dismissWithError(errorCode, errorDescription: errorDescription)
                     }
