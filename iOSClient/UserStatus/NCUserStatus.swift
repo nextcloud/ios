@@ -330,6 +330,7 @@ extension NCUserStatus: UITableViewDataSource {
         // Date
         if clearAt != nil {
             
+            return CCUtility.getTitleSectionDate(clearAt! as Date)
         }
         
         // Period
@@ -347,6 +348,7 @@ extension NCUserStatus: UITableViewDataSource {
         
         // End of
         if clearAt == nil && clearAtTime != nil && clearAtType == "end-of" {
+            
             return NSLocalizedString(clearAtTime!, comment: "")
         }
         
