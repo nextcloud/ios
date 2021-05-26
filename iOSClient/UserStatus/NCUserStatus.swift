@@ -64,6 +64,9 @@ class NCUserStatus: UIViewController {
 
     private var statusPredefinedStatuses: [NCCommunicationUserStatus] = []
     
+    let borderWidthButton: CGFloat = 1.5
+    let borderColorButton: CGColor = NCBrandColor.shared.brand.cgColor
+    
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -189,17 +192,17 @@ class NCUserStatus: UIViewController {
                 
                 switch status {
                 case "online":
-                    self.onlineButton.layer.borderWidth = 1.5
-                    self.onlineButton.layer.borderColor = NCBrandColor.shared.brand.cgColor
+                    self.onlineButton.layer.borderWidth = self.borderWidthButton
+                    self.onlineButton.layer.borderColor = self.borderColorButton
                 case "away":
-                    self.awayButton.layer.borderWidth = 1.5
-                    self.awayButton.layer.borderColor = NCBrandColor.shared.brand.cgColor
+                    self.awayButton.layer.borderWidth = self.borderWidthButton
+                    self.awayButton.layer.borderColor = self.borderColorButton
                 case "dnd":
-                    self.dndButton.layer.borderWidth = 1.5
-                    self.dndButton.layer.borderColor = NCBrandColor.shared.brand.cgColor
+                    self.dndButton.layer.borderWidth = self.borderWidthButton
+                    self.dndButton.layer.borderColor = self.borderColorButton
                 case "invisible":
-                    self.invisibleButton.layer.borderWidth = 1.5
-                    self.invisibleButton.layer.borderColor = NCBrandColor.shared.brand.cgColor
+                    self.invisibleButton.layer.borderWidth = self.borderWidthButton
+                    self.invisibleButton.layer.borderColor = self.borderColorButton
                 default:
                     print("No status")
                 }
@@ -207,6 +210,7 @@ class NCUserStatus: UIViewController {
                 NCCommunication.shared.getUserStatusPredefinedStatuses { account, userStatuses, errorCode, errorDescription in
                     
                     if errorCode == 0 {
+                        
                         if let userStatuses = userStatuses {
                             self.statusPredefinedStatuses = userStatuses
                         }
@@ -214,10 +218,12 @@ class NCUserStatus: UIViewController {
                         self.tableView.reloadData()
                         
                     } else {
+                        
                         self.dismissWithError(errorCode, errorDescription: errorDescription)
                     }
                 }
             } else {
+                
                 self.dismissWithError(errorCode, errorDescription: errorDescription)
             }
         }
