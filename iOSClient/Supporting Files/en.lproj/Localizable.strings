@@ -219,6 +219,7 @@
 "_1_hour_"                  = "1 hour";
 "_4_hours_"                 = "4 hours";
 "today"                     = "Today";
+"day"                       = "Day";
 
 "_network_available_"       = "Network available";
 "_network_not_available_"   = "Network unavailable";
