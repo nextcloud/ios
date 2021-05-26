@@ -329,11 +329,18 @@
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="ldK-hD-vsJ" secondAttribute="trailing" constant="5" id="yZf-48-jHR"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="jEA-I6-e1c"/>
+                    <navigationItem key="navigationItem" id="jEA-I6-e1c">
+                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="ILZ-fb-noY">
+                            <connections>
+                                <action selector="actionCancel:" destination="Y6W-OH-hqX" id="Xb3-GT-3HC"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="awayButton" destination="iqo-IM-261" id="iYQ-Pd-j9h"/>
                         <outlet property="awayImage" destination="4EB-gX-bxj" id="GCs-RA-aok"/>
                         <outlet property="awayLabel" destination="KUE-W1-haU" id="ujx-v9-M8H"/>
+                        <outlet property="buttonCancel" destination="ILZ-fb-noY" id="ZJF-IQ-FaX"/>
                         <outlet property="clearStatusMessageAfterLabel" destination="rha-b0-jMR" id="kg6-aA-tCj"/>
                         <outlet property="clearStatusMessageAfterText" destination="isA-Km-19L" id="mBu-6h-tLN"/>
                         <outlet property="clearStatusMessageButton" destination="3CT-dJ-sEj" id="wo5-XE-QgX"/>

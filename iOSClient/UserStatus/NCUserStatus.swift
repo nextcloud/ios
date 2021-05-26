@@ -29,6 +29,8 @@ import NCCommunication
 @available(iOS 13.0, *)
 class NCUserStatus: UIViewController {
     
+    @IBOutlet weak var buttonCancel: UIBarButtonItem!
+
     @IBOutlet weak var onlineButton: UIButton!
     @IBOutlet weak var onlineImage: UIImageView!
     @IBOutlet weak var onlineLabel: UILabel!
@@ -68,6 +70,8 @@ class NCUserStatus: UIViewController {
         super.viewDidLoad()
         
         self.navigationItem.title = NSLocalizedString("_online_status_", comment: "")
+
+        buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
 
         onlineButton.layer.cornerRadius = 10
         onlineButton.layer.masksToBounds = true
@@ -163,6 +167,12 @@ class NCUserStatus: UIViewController {
         tableView.backgroundColor = NCBrandColor.shared.systemBackground
         
         tableView.reloadData()
+    }
+    
+    // MARK: ACTION
+    
+    @IBAction func actionCancel(_ sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
     }
     
     // MARK: - Networking
@@ -330,7 +340,7 @@ extension NCUserStatus: UITableViewDataSource {
         }
         
         // Period
-        if clearAt == nil && clearAtType == "period" {
+        if clearAtTime != nil && clearAtType == "period" {
             
             switch clearAtTime {
             case "3600":
@@ -343,7 +353,7 @@ extension NCUserStatus: UITableViewDataSource {
         }
         
         // End of
-        if clearAt == nil && clearAtTime != nil && clearAtType == "end-of" {
+        if clearAtTime != nil && clearAtType == "end-of" {
             
             return NSLocalizedString(clearAtTime!, comment: "")
         }
