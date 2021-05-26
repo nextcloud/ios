@@ -304,14 +304,26 @@ extension NCUserStatus: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         cell.backgroundColor = tableView.backgroundColor
         
-        let icon = cell.viewWithTag(10) as? UILabel
-        let message = cell.viewWithTag(20) as? UILabel
-
         let status = statusPredefinedStatuses[indexPath.row]
         
-        icon?.text = status.icon
-        message?.text = status.message
-        
+        let icon = cell.viewWithTag(10) as! UILabel
+        icon.text = status.icon
+
+        let message = cell.viewWithTag(20) as! UILabel
+        if let messageText = status.message {
+            
+            message.text = messageText
+            
+            if var timeString = status.clearAtTime {
+                
+                timeString = " - " + timeString
+                
+                let attributedString: NSMutableAttributedString = NSMutableAttributedString(string: messageText + timeString)
+                attributedString.setColor(color: .lightGray, font: UIFont.systemFont(ofSize: 15), forText: timeString)
+                message.attributedText = attributedString
+            }
+        }
+    
         return cell
     }
 }

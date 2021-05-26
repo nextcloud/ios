@@ -265,6 +265,7 @@
 		F798F0EC2588060A000DAFFD /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extensions.swift */; };
 		F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */; };
 		F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79A65C52191D95E00FF6DCC /* NCSelect.swift */; };
+		F79B869B265E19D40085C0E0 /* NSMutableAttributedString+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B869A265E19D40085C0E0 /* NSMutableAttributedString+Extensions.swift */; };
 		F79EC77F26316193004E59D6 /* NCRenameFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70D87CE25EE6E58008CBBBD /* NCRenameFile.swift */; };
 		F79EC784263161BA004E59D6 /* NCRenameFile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70D87CD25EE6E58008CBBBD /* NCRenameFile.storyboard */; };
 		F79EC78926316AC4004E59D6 /* NCPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F702F30725EE5D47008F8E80 /* NCPopupViewController.swift */; };
@@ -663,6 +664,7 @@
 		F79918A72199840500C2E308 /* Sheeeeeeeeet.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sheeeeeeeeet.framework; path = Carthage/Build/iOS/Sheeeeeeeeet.framework; sourceTree = "<group>"; };
 		F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCSelect.storyboard; sourceTree = "<group>"; };
 		F79A65C52191D95E00FF6DCC /* NCSelect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSelect.swift; sourceTree = "<group>"; };
+		F79B869A265E19D40085C0E0 /* NSMutableAttributedString+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSMutableAttributedString+Extensions.swift"; sourceTree = "<group>"; };
 		F7A0D1342591FBC5008F8A13 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAdvanced.h; sourceTree = "<group>"; };
 		F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAdvanced.m; sourceTree = "<group>"; };
@@ -1195,6 +1197,7 @@
 			isa = PBXGroup;
 			children = (
 				F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */,
+				F79B869A265E19D40085C0E0 /* NSMutableAttributedString+Extensions.swift */,
 				F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */,
 				F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */,
 				F7A0D1342591FBC5008F8A13 /* String+Extensions.swift */,
@@ -2163,6 +2166,7 @@
 				F702F30125EE5D2C008F8E80 /* NYMnemonic.m in Sources */,
 				F7EFA47825ADBA500083159A /* NCViewerProviderContextMenu.swift in Sources */,
 				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
+				F79B869B265E19D40085C0E0 /* NSMutableAttributedString+Extensions.swift in Sources */,
 				F7B7504B2397D38F004E13EC /* UIImage+Extensions.swift in Sources */,
 				F7EFC0CD256BF8DD00461AAD /* NCUserStatus.swift in Sources */,
 				F7DFB7F4219C5CA800680748 /* NCCreateFormUploadScanDocument.swift in Sources */,
