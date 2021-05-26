@@ -119,6 +119,7 @@ class NCUserStatus: UIViewController {
         statusMessageEmojiTextField.delegate = self
         statusMessageEmojiTextField.backgroundColor = NCBrandColor.shared.systemGray5
         
+        statusMessageTextField.delegate = self
         statusMessageTextField.placeholder = NSLocalizedString("_status_message_placehorder_", comment: "")
         statusMessageTextField.textColor = NCBrandColor.shared.label
         
@@ -137,6 +138,7 @@ class NCUserStatus: UIViewController {
         let tap = UITapGestureRecognizer(target: self, action: #selector(self.actionClearStatusMessageAfterText(sender:)))
         clearStatusMessageAfterText.isUserInteractionEnabled = true
         clearStatusMessageAfterText.addGestureRecognizer(tap)
+        clearStatusMessageAfterText.text = "  " + NSLocalizedString("_dont_clear_", comment: "")
         
         clearStatusMessageButton.layer.cornerRadius = 15
         clearStatusMessageButton.layer.masksToBounds = true
@@ -161,10 +163,12 @@ class NCUserStatus: UIViewController {
         changeTheming()
     }
     
-    func dismissWithError(_ errorCode: Int, errorDescription: String) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.dismiss(animated: true) {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
+    func dismissIfError(_ errorCode: Int, errorDescription: String) {
+        if errorCode != 0 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.dismiss(animated: true) {
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
+                }
             }
         }
     }
@@ -186,7 +190,7 @@ class NCUserStatus: UIViewController {
     }
     
     @IBAction func actionOnline(_ sender: UIButton) {
-        
+                
         self.onlineButton.layer.borderWidth = self.borderWidthButton
         self.onlineButton.layer.borderColor = self.borderColorButton
         self.awayButton.layer.borderWidth = 0
@@ -195,6 +199,10 @@ class NCUserStatus: UIViewController {
         self.dndButton.layer.borderColor = nil
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
+        
+        NCCommunication.shared.setUserStatus(status: "online") { account, errorCode, errorDescription in
+            self.dismissIfError(errorCode, errorDescription: errorDescription)
+        }
     }
     
     @IBAction func actionAway(_ sender: UIButton) {
@@ -207,6 +215,10 @@ class NCUserStatus: UIViewController {
         self.dndButton.layer.borderColor = nil
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
+        
+        NCCommunication.shared.setUserStatus(status: "away") { account, errorCode, errorDescription in
+            self.dismissIfError(errorCode, errorDescription: errorDescription)
+        }
     }
     
     @IBAction func actionDnd(_ sender: UIButton) {
@@ -219,6 +231,10 @@ class NCUserStatus: UIViewController {
         self.dndButton.layer.borderColor = self.borderColorButton
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
+        
+        NCCommunication.shared.setUserStatus(status: "dnd") { account, errorCode, errorDescription in
+            self.dismissIfError(errorCode, errorDescription: errorDescription)
+        }
     }
     
     @IBAction func actionInvisible(_ sender: UIButton) {
@@ -231,6 +247,10 @@ class NCUserStatus: UIViewController {
         self.dndButton.layer.borderColor = nil
         self.invisibleButton.layer.borderWidth = self.borderWidthButton
         self.invisibleButton.layer.borderColor = self.borderColorButton
+        
+        NCCommunication.shared.setUserStatus(status: "invisible") { account, errorCode, errorDescription in
+            self.dismissIfError(errorCode, errorDescription: errorDescription)
+        }
     }
     
     @objc func actionClearStatusMessageAfterText(sender:UITapGestureRecognizer) {
@@ -275,6 +295,14 @@ class NCUserStatus: UIViewController {
     
     @IBAction func actionClearStatusMessage(_ sender: UIButton) {
         
+        NCCommunication.shared.clearMessage { account, errorCode, errorDescription in
+            
+            if errorCode != 0 {
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
+            }
+             
+            self.dismiss(animated: true)
+        }
     }
     
     @IBAction func actionSetStatusMessage(_ sender: UIButton) {
@@ -289,9 +317,17 @@ class NCUserStatus: UIViewController {
             
             if errorCode == 0 {
                 
-                self.statusMessageEmojiTextField.text = icon
-                self.statusMessageTextField.text = message
-                self.clearStatusMessageAfterText.text = "  " +  CCUtility.getTitleSectionDate(clearAt! as Date)
+                if icon != nil {
+                    self.statusMessageEmojiTextField.text = icon
+                }
+                
+                if message != nil {
+                    self.statusMessageTextField.text = message
+                }
+                
+                if clearAt != nil {
+                    self.clearStatusMessageAfterText.text = "  " + CCUtility.getTitleSectionDate(clearAt! as Date)
+                }
                 
                 switch status {
                 case "online":
@@ -320,15 +356,14 @@ class NCUserStatus: UIViewController {
                         
                         self.tableView.reloadData()
                         
-                    } else {
-                        
-                        self.dismissWithError(errorCode, errorDescription: errorDescription)
                     }
+                    
+                    self.dismissIfError(errorCode, errorDescription: errorDescription)
                 }
-            } else {
                 
-                self.dismissWithError(errorCode, errorDescription: errorDescription)
             }
+            
+            self.dismissIfError(errorCode, errorDescription: errorDescription)
         }
     }
 }
@@ -344,10 +379,17 @@ extension NCUserStatus: UITextFieldDelegate {
                 textField.text = "😀"
                 return false
             }
+            
             textField.text = string
+            textField.endEditing(true)
         }
         
         return true
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return false
     }
 }
 
