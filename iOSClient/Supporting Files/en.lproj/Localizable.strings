@@ -213,6 +213,13 @@
 "_set_status_message_"      = "Set status message";
 "_clear_status_message_after_"  = "Clear status message after";
 
+/* User status */
+"_dont_clear_"              = "Don't clear";
+"_30_minutes_"              = "30 minutes";
+"_1_hour_"                  = "1 hour";
+"_4_hours_"                 = "4 hours";
+"today"                     = "Today";
+
 "_network_available_"       = "Network available";
 "_network_not_available_"   = "Network unavailable";
 "_file_too_big_"            = "File too large to be encrypted/decrypted";

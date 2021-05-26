@@ -307,23 +307,49 @@ extension NCUserStatus: UITableViewDataSource {
         let status = statusPredefinedStatuses[indexPath.row]
         
         let icon = cell.viewWithTag(10) as! UILabel
-        icon.text = status.icon
-
         let message = cell.viewWithTag(20) as! UILabel
+
+        icon.text = status.icon
+        var timeString = getPredefinedClearStatusText(clearAt: status.clearAt, clearAtTime: status.clearAtTime, clearAtType: status.clearAtType)
+
         if let messageText = status.message {
             
             message.text = messageText
-            
-            if var timeString = status.clearAtTime {
-                
-                timeString = " - " + timeString
-                
-                let attributedString: NSMutableAttributedString = NSMutableAttributedString(string: messageText + timeString)
-                attributedString.setColor(color: .lightGray, font: UIFont.systemFont(ofSize: 15), forText: timeString)
-                message.attributedText = attributedString
-            }
+            timeString = " - " + timeString
+
+            let attributedString: NSMutableAttributedString = NSMutableAttributedString(string: messageText + timeString)
+            attributedString.setColor(color: .lightGray, font: UIFont.systemFont(ofSize: 15), forText: timeString)
+            message.attributedText = attributedString
         }
     
         return cell
+    }
+    
+    func getPredefinedClearStatusText(clearAt: NSDate?, clearAtTime: String?, clearAtType: String?) -> String {
+             
+        // Date
+        if clearAt != nil {
+            
+        }
+        
+        // Period
+        if clearAt == nil && clearAtType == "period" {
+            
+            switch clearAtTime {
+            case "3600":
+                return NSLocalizedString("_1_hour_", comment: "")
+            case "1800":
+                return NSLocalizedString("_30_minutes_", comment: "")
+            default:
+                return NSLocalizedString("_dont_clear_", comment: "")
+            }
+        }
+        
+        // End of
+        if clearAt == nil && clearAtTime != nil && clearAtType == "end-of" {
+            return NSLocalizedString(clearAtTime!, comment: "")
+        }
+        
+        return NSLocalizedString("_dont_clear_", comment: "")
     }
 }
