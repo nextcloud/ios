@@ -122,6 +122,13 @@ class NCUserStatus: UIViewController {
         clearStatusMessageAfterLabel.text = NSLocalizedString("_clear_status_message_after_", comment: "")
         clearStatusMessageAfterLabel.textColor = NCBrandColor.shared.label
         
+        clearStatusMessageAfterText.layer.cornerRadius = 5
+        clearStatusMessageAfterText.layer.masksToBounds = true
+        clearStatusMessageAfterText.layer.borderWidth = 0.2
+        clearStatusMessageAfterText.layer.borderColor = UIColor.lightGray.cgColor
+        clearStatusMessageAfterText.text = NSLocalizedString("_dont_clear_", comment: "")
+        clearStatusMessageAfterText.textColor = .lightGray
+        
         clearStatusMessageButton.layer.cornerRadius = 15
         clearStatusMessageButton.layer.masksToBounds = true
         clearStatusMessageButton.layer.borderWidth = 0.5
@@ -168,7 +175,7 @@ class NCUserStatus: UIViewController {
                 
                 self.statusMessageEmojiTextField.text = icon
                 self.statusMessageTextField.text = message
-                self.clearStatusMessageAfterText.text = CCUtility.getTitleSectionDate(clearAt! as Date)
+                self.clearStatusMessageAfterText.text = "  " +  CCUtility.getTitleSectionDate(clearAt! as Date)
                 
                 switch status {
                 case "online":
