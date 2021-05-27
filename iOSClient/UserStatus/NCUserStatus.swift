@@ -373,7 +373,6 @@ class NCUserStatus: UIViewController {
                         }
                         
                         self.tableView.reloadData()
-                        
                     }
                     
                     self.dismissIfError(errorCode, errorDescription: errorDescription)
@@ -383,6 +382,38 @@ class NCUserStatus: UIViewController {
             
             self.dismissIfError(errorCode, errorDescription: errorDescription)
         }
+    }
+    
+    // MARK: - Algorithms
+
+    func getPredefinedClearStatusText(clearAt: NSDate?, clearAtTime: String?, clearAtType: String?) -> String {
+             
+        // Date
+        if clearAt != nil {
+            
+            return CCUtility.getTitleSectionDate(clearAt! as Date)
+        }
+        
+        // Period
+        if clearAtTime != nil && clearAtType == "period" {
+            
+            switch clearAtTime {
+            case "3600":
+                return NSLocalizedString("_an_hour_", comment: "")
+            case "1800":
+                return NSLocalizedString("_30_minutes_", comment: "")
+            default:
+                return NSLocalizedString("_dont_clear_", comment: "")
+            }
+        }
+        
+        // End of
+        if clearAtTime != nil && clearAtType == "end-of" {
+            
+            return NSLocalizedString(clearAtTime!, comment: "")
+        }
+        
+        return NSLocalizedString("_dont_clear_", comment: "")
     }
 }
 
@@ -515,35 +546,5 @@ extension NCUserStatus: UITableViewDataSource {
         }
     
         return cell
-    }
-    
-    func getPredefinedClearStatusText(clearAt: NSDate?, clearAtTime: String?, clearAtType: String?) -> String {
-             
-        // Date
-        if clearAt != nil {
-            
-            return CCUtility.getTitleSectionDate(clearAt! as Date)
-        }
-        
-        // Period
-        if clearAtTime != nil && clearAtType == "period" {
-            
-            switch clearAtTime {
-            case "3600":
-                return NSLocalizedString("_an_hour_", comment: "")
-            case "1800":
-                return NSLocalizedString("_30_minutes_", comment: "")
-            default:
-                return NSLocalizedString("_dont_clear_", comment: "")
-            }
-        }
-        
-        // End of
-        if clearAtTime != nil && clearAtType == "end-of" {
-            
-            return NSLocalizedString(clearAtTime!, comment: "")
-        }
-        
-        return NSLocalizedString("_dont_clear_", comment: "")
     }
 }
