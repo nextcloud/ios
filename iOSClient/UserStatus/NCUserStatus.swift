@@ -75,7 +75,9 @@ class NCUserStatus: UIViewController {
     private var status: String?
     private var statusIsUserDefined: Bool?
     private var userId: String?
-
+    
+    private var clearAtTimestamp: Double = 0     // Unix Timestamp representing the time to clear the status
+    
     private let borderWidthButton: CGFloat = 1.5
     private let borderColorButton: CGColor = NCBrandColor.shared.brand.cgColor
     
@@ -303,8 +305,40 @@ class NCUserStatus: UIViewController {
         dropDown.width = clearStatusMessageAfterText.bounds.width
         dropDown.direction = .top
         
-        dropDown.selectionAction = { [weak self] (index, item) in
-            print("")
+        dropDown.selectionAction = { (index, item) in
+            
+            let now = Date()
+            let calendar = Calendar.current
+            let gregorian = Calendar(identifier: .gregorian)
+            let midnight = calendar.startOfDay(for: now)
+            
+            guard let tomorrow = calendar.date(byAdding: .day, value: 1, to: midnight) else { return }
+            guard let startweek = gregorian.date(from: gregorian.dateComponents([.yearForWeekOfYear, .weekOfYear], from: now)) else { return }
+            guard let endweek = gregorian.date(byAdding: .day, value: 6, to: startweek) else { return }
+            
+            switch item {
+            case NSLocalizedString("_dont_clear_", comment: ""):
+                self.clearAtTimestamp = 0
+            case NSLocalizedString("_30_minutes_", comment: ""):
+                let date = now.addingTimeInterval(1800)
+                self.clearAtTimestamp = date.timeIntervalSince1970
+            case NSLocalizedString("_1_hour_", comment: ""):
+                let date = now.addingTimeInterval(3600)
+                self.clearAtTimestamp = date.timeIntervalSince1970
+            case NSLocalizedString("_4_hours_", comment: ""):
+                let date = now.addingTimeInterval(14400)
+                self.clearAtTimestamp = date.timeIntervalSince1970
+            case NSLocalizedString("day", comment: ""):
+                self.clearAtTimestamp = 0
+                //self.clearAtSeconds = Calendar.current.dateComponents([.second], from: Date(), to: tomorrow).second ?? 0
+            case NSLocalizedString("_this_week_", comment: ""):
+                self.clearAtTimestamp = 0
+                //self.clearAtSeconds = Calendar.current.dateComponents([.second], from: Date(), to: endweek).second ?? 0
+            default:
+                self.clearAtTimestamp = 0
+            }
+            
+            self.clearStatusMessageAfterText.text = " " + item
         }
         
         dropDown.cancelAction = { [unowned self] in
@@ -330,6 +364,16 @@ class NCUserStatus: UIViewController {
     
     @IBAction func actionSetStatusMessage(_ sender: UIButton) {
         
+        guard let message = statusMessageTextField.text else { return }
+        
+        NCCommunication.shared.setCustomMessageUserDefined(statusIcon: statusMessageEmojiTextField.text, message: message, clearAt: clearAtTimestamp) { account, errorCode, errorDescription in
+            
+            if errorCode != 0 {
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
+            }
+             
+            self.dismiss(animated: true)
+        }
     }
     
     // MARK: - Networking
@@ -400,6 +444,11 @@ class NCUserStatus: UIViewController {
     
     // MARK: - Algorithms
 
+    func getSecondxxx(clearAtString: String) -> Int {
+        
+        return 0
+    }
+    
     func getPredefinedClearStatusText(clearAt: NSDate?, clearAtTime: String?, clearAtType: String?) -> String {
              
         // Date
