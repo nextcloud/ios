@@ -63,6 +63,8 @@ class NCUserStatus: UIViewController {
     @IBOutlet weak var clearStatusMessageButton: UIButton!
     @IBOutlet weak var setStatusMessageButton: UIButton!
 
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
     private var statusPredefinedStatuses: [NCCommunicationUserStatus] = []
     
     private var clearAt: NSDate?
@@ -84,7 +86,7 @@ class NCUserStatus: UIViewController {
         
         self.navigationItem.title = NSLocalizedString("_online_status_", comment: "")
 
-        buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
+        buttonCancel.title = NSLocalizedString("_close_", comment: "")
 
         onlineButton.layer.cornerRadius = 10
         onlineButton.layer.masksToBounds = true
@@ -170,6 +172,18 @@ class NCUserStatus: UIViewController {
         super.traitCollectionDidChange(previousTraitCollection)
         
         changeTheming()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NCCommunication.shared.getUserStatus { (account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, errorCode, errorDescription) in
+            
+            if errorCode == 0 {
+                                
+                NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
+            }
+        }
     }
     
     func dismissIfError(_ errorCode: Int, errorDescription: String) {
