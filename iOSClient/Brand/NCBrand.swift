@@ -47,7 +47,7 @@ import UIKit
     
     @objc public var brand:                             String = "Nextcloud"
     //@objc public var mailMe:                            String = "ios@nextcloud.com"                              // Deprecated
-    @objc public var textCopyrightNextcloudiOS:         String = "Nextcloud Coherence for iOS %@ © 2021"
+    @objc public var textCopyrightNextcloudiOS:         String = "Nextcloud Liquid for iOS %@ © 2021"
     @objc public var textCopyrightNextcloudServer:      String = "Nextcloud Server %@"
     @objc public var loginBaseUrl:                      String = "https://cloud.nextcloud.com"
     @objc public var pushNotificationServerProxy:       String = "https://push-notifications.nextcloud.com"
