@@ -65,8 +65,17 @@ class NCUserStatus: UIViewController {
 
     private var statusPredefinedStatuses: [NCCommunicationUserStatus] = []
     
-    let borderWidthButton: CGFloat = 1.5
-    let borderColorButton: CGColor = NCBrandColor.shared.brand.cgColor
+    private var clearAt: NSDate?
+    private var icon: String?
+    private var message: String?
+    private var messageId: String?
+    private var messageIsPredefined: Bool?
+    private var status: String?
+    private var statusIsUserDefined: Bool?
+    private var userId: String?
+
+    private let borderWidthButton: CGFloat = 1.5
+    private let borderColorButton: CGColor = NCBrandColor.shared.brand.cgColor
     
     // MARK: - View Life Cycle
 
@@ -317,6 +326,15 @@ class NCUserStatus: UIViewController {
             
             if errorCode == 0 {
                 
+                self.clearAt = clearAt
+                self.icon = icon
+                self.message = message
+                self.messageId = messageId
+                self.messageIsPredefined = messageIsPredefined
+                self.status = status
+                self.statusIsUserDefined = statusIsUserDefined
+                self.userId = userId
+                
                 if icon != nil {
                     self.statusMessageEmojiTextField.text = icon
                 }
@@ -444,7 +462,23 @@ extension NCUserStatus: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        guard let cell = tableView.cellForRow(at: indexPath) else { return }
         let status = statusPredefinedStatuses[indexPath.row]
+        
+        if let messageId = status.id {
+        
+            NCCommunication.shared.setCustomMessagePredefined(messageId: messageId, clearAt: 0) { account, errorCode, errorDescription in
+                
+                cell.isSelected = false
+                
+                if errorCode == 0 {
+                    self.statusMessageEmojiTextField.text = status.icon
+                    self.statusMessageTextField.text = status.message
+                }
+                
+                self.dismissIfError(errorCode, errorDescription: errorDescription)
+            }
+        }
     }
 }
 
