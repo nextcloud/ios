@@ -344,7 +344,7 @@ class NCUserStatus: UIViewController {
                 }
                 
                 if clearAt != nil {
-                    //self.clearStatusMessageAfterText.text = "  " + CCUtility.getTitleSectionDate(clearAt! as Date)
+                    self.clearStatusMessageAfterText.text = "  " + self.getPredefinedClearStatusText(clearAt: clearAt, clearAtTime: nil, clearAtType: nil)
                 }
                 
                 switch status {
@@ -391,7 +391,28 @@ class NCUserStatus: UIViewController {
         // Date
         if clearAt != nil {
             
-            return CCUtility.getTitleSectionDate(clearAt! as Date)
+            let from = Date()
+            let to = clearAt! as Date
+            let day = Calendar.current.dateComponents([.day], from: from, to: to).day ?? 0
+            let hour = Calendar.current.dateComponents([.hour], from: from, to: to).hour ?? 0
+            let minute = Calendar.current.dateComponents([.minute], from: from, to: to).minute ?? 0
+            
+            if day > 0 {
+                if day == 1 { return NSLocalizedString("day", comment: "") }
+                return "\(day) " + NSLocalizedString("_days_", comment: "")
+            }
+            
+            if hour > 0 {
+                if hour == 1 { return NSLocalizedString("_an_hour_", comment: "") }
+                if hour == 4 { return NSLocalizedString("_4_hour_", comment: "") }
+                return "\(hour) " + NSLocalizedString("_hours_", comment: "")
+            }
+            
+            if minute > 0 {
+                if minute >= 15 && minute <= 30 { return NSLocalizedString("_30_minutes_", comment: "") }
+                if minute > 30 { return NSLocalizedString("_an_hour_", comment: "") }
+                return "\(minute) " + NSLocalizedString("_minutes_", comment: "")
+            }
         }
         
         // Period

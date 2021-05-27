@@ -222,6 +222,10 @@
 "_4_hours_"                 = "4 hours";
 "day"                       = "Today";
 "_this_week_"               = "This week";
+"_days_"                    = "Days";
+"_hours_"                   = "Hours";
+"_minutes_"                 = "Minutes";
+
 
 "_network_available_"       = "Network available";
 "_network_not_available_"   = "Network unavailable";
