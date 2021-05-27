@@ -393,6 +393,7 @@ class NCUserStatus: UIViewController {
             
             let from = Date()
             let to = clearAt! as Date
+            
             let day = Calendar.current.dateComponents([.day], from: from, to: to).day ?? 0
             let hour = Calendar.current.dateComponents([.hour], from: from, to: to).hour ?? 0
             let minute = Calendar.current.dateComponents([.minute], from: from, to: to).minute ?? 0
@@ -409,7 +410,7 @@ class NCUserStatus: UIViewController {
             }
             
             if minute > 0 {
-                if minute >= 15 && minute <= 30 { return NSLocalizedString("_30_minutes_", comment: "") }
+                if minute >= 25 && minute <= 30 { return NSLocalizedString("_30_minutes_", comment: "") }
                 if minute > 30 { return NSLocalizedString("_an_hour_", comment: "") }
                 return "\(minute) " + NSLocalizedString("_minutes_", comment: "")
             }
