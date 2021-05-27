@@ -344,7 +344,7 @@ class NCUserStatus: UIViewController {
                 }
                 
                 if clearAt != nil {
-                    self.clearStatusMessageAfterText.text = "  " + CCUtility.getTitleSectionDate(clearAt! as Date)
+                    //self.clearStatusMessageAfterText.text = "  " + CCUtility.getTitleSectionDate(clearAt! as Date)
                 }
                 
                 switch status {
@@ -472,8 +472,10 @@ extension NCUserStatus: UITableViewDelegate {
                 cell.isSelected = false
                 
                 if errorCode == 0 {
+                    
                     self.statusMessageEmojiTextField.text = status.icon
                     self.statusMessageTextField.text = status.message
+                    self.clearStatusMessageAfterText.text = " " + self.getPredefinedClearStatusText(clearAt: status.clearAt, clearAtTime: status.clearAtTime, clearAtType: status.clearAtType)
                 }
                 
                 self.dismissIfError(errorCode, errorDescription: errorDescription)
