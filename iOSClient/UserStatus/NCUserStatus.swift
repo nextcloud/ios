@@ -329,11 +329,9 @@ class NCUserStatus: UIViewController {
                 let date = now.addingTimeInterval(14400)
                 self.clearAtTimestamp = date.timeIntervalSince1970
             case NSLocalizedString("day", comment: ""):
-                self.clearAtTimestamp = 0
-                //self.clearAtSeconds = Calendar.current.dateComponents([.second], from: Date(), to: tomorrow).second ?? 0
+                self.clearAtTimestamp = tomorrow.timeIntervalSince1970
             case NSLocalizedString("_this_week_", comment: ""):
-                self.clearAtTimestamp = 0
-                //self.clearAtSeconds = Calendar.current.dateComponents([.second], from: Date(), to: endweek).second ?? 0
+                self.clearAtTimestamp = endweek.timeIntervalSince1970
             default:
                 self.clearAtTimestamp = 0
             }
