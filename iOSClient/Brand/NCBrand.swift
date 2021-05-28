@@ -160,6 +160,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
+    
     @objc public var secondarySystemBackground: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -169,6 +170,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
+    
     @objc public var tertiarySystemBackground: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -178,6 +180,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
+    
     @objc public var systemGroupedBackground: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -187,6 +190,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
+    
     @objc public var secondarySystemGroupedBackground: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -196,6 +200,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
+    
     @objc public var label: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -205,6 +210,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
+    
     @objc public var separator: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -214,6 +220,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
+    
     @objc public var opaqueSeparator: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -223,6 +230,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
+    
     @objc public var systemGray: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -232,6 +240,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
+    
     @objc public var systemGray2: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -241,6 +250,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
+    
     @objc public var systemGray3: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -250,6 +260,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
+    
     @objc public var systemGray4: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -259,6 +270,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
+    
     @objc public var systemGray5: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -268,6 +280,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
+    
     @objc public var systemGray6: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -277,6 +290,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
+    
     @objc public var systemFill: UIColor {
         get {
             if #available(iOS 13, *) {
