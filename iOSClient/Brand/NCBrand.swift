@@ -148,6 +148,7 @@ class NCBrandColor: NSObject {
     
     @objc public let nextcloud:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
     @objc public let gray:                  UIColor = UIColor(red: 104.0/255.0, green: 104.0/255.0, blue: 104.0/255.0, alpha: 1.0)
+    @objc public let lightGray:             UIColor = UIColor(red: 229.0/255.0, green: 229.0/229.0, blue: 104.0/255.0, alpha: 1.0)
     @objc public let yellowFavorite:        UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
 
     @objc public var systemBackground: UIColor {
@@ -165,6 +166,15 @@ class NCBrandColor: NSObject {
                 return .secondarySystemBackground
             } else {
                 return UIColor(red: 0.95, green: 0.95, blue: 0.97, alpha: 1.0)
+            }
+        }
+    }
+    @objc public var tertiarySystemBackground: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .tertiarySystemBackground
+            } else {
+                return UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
             }
         }
     }
@@ -264,6 +274,15 @@ class NCBrandColor: NSObject {
                 return .systemGray6
             } else {
                 return UIColor(red: 0.95, green: 0.95, blue: 0.97, alpha: 1.0)
+            }
+        }
+    }
+    @objc public var systemFill: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemFill
+            } else {
+                return UIColor(red: 120/255, green: 120/255, blue: 120/255, alpha: 1.0)
             }
         }
     }

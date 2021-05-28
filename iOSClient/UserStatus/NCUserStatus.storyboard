@@ -211,7 +211,6 @@
                             </label>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="😀" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="A55-9l-wXo" customClass="emojiTextField" customModule="Nextcloud" customModuleProvider="target">
                                 <rect key="frame" x="10" y="319" width="32" height="34"/>
-                                <color key="backgroundColor" systemColor="systemGray6Color"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="34" id="aOa-cO-Bhd"/>
                                     <constraint firstAttribute="width" constant="32" id="lgT-iI-Zr7"/>

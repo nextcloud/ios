@@ -147,7 +147,8 @@ class NCUserStatus: UIViewController {
         clearStatusMessageAfterText.layer.borderWidth = 0.2
         clearStatusMessageAfterText.layer.borderColor = UIColor.lightGray.cgColor
         clearStatusMessageAfterText.text = NSLocalizedString("_dont_clear_", comment: "")
-        clearStatusMessageAfterText.textColor = .lightGray
+        clearStatusMessageAfterText.textColor = .gray
+        clearStatusMessageAfterText.backgroundColor = NCBrandColor.shared.systemGray6
         let tap = UITapGestureRecognizer(target: self, action: #selector(self.actionClearStatusMessageAfterText(sender:)))
         clearStatusMessageAfterText.isUserInteractionEnabled = true
         clearStatusMessageAfterText.addGestureRecognizer(tap)
@@ -284,11 +285,12 @@ class NCUserStatus: UIViewController {
         let appearance = DropDown.appearance()
         let clearStatusMessageAfterTextBackup = clearStatusMessageAfterText.text
             
-        appearance.backgroundColor = NCBrandColor.shared.systemBackground
-        appearance.cornerRadius = 5
+        appearance.backgroundColor = NCBrandColor.shared.systemGray6
+        appearance.cornerRadius = 0
         appearance.shadowColor = UIColor(white: 0.5, alpha: 1)
         appearance.shadowOpacity = 0.9
-        appearance.shadowRadius = 25
+        appearance.shadowRadius = 0
+        appearance.animationEntranceOptions = .transitionCurlUp
         appearance.animationduration = 0.25
         appearance.textColor = .darkGray
         appearance.setupMaskedCorners([.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
