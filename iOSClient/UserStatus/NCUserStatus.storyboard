@@ -200,13 +200,13 @@
                                 </constraints>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="status message" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ldK-hD-vsJ">
-                                <rect key="frame" x="5" y="278" width="365" height="21"/>
+                                <rect key="frame" x="5" y="258" width="365" height="21"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="😀" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="A55-9l-wXo" customClass="emojiTextField" customModule="Nextcloud" customModuleProvider="target">
-                                <rect key="frame" x="10" y="319" width="32" height="34"/>
+                                <rect key="frame" x="10" y="299" width="32" height="34"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="34" id="aOa-cO-Bhd"/>
                                     <constraint firstAttribute="width" constant="32" id="lgT-iI-Zr7"/>
@@ -215,7 +215,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="what's your status?" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="qXf-nl-3Li">
-                                <rect key="frame" x="43" y="319" width="322" height="34"/>
+                                <rect key="frame" x="43" y="299" width="322" height="34"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="34" id="0in-EY-eBM"/>
                                 </constraints>
@@ -223,7 +223,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="P09-kU-gUI">
-                                <rect key="frame" x="10" y="373" width="355" height="288"/>
+                                <rect key="frame" x="10" y="358" width="355" height="303"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="45" id="laP-fj-qDh">
@@ -315,17 +315,15 @@
                             <constraint firstItem="IUw-Rz-hg5" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="20" id="1KK-dw-MTN"/>
                             <constraint firstItem="P09-kU-gUI" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="1ej-Ax-dJ2"/>
                             <constraint firstItem="IUw-Rz-hg5" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="42H-eC-eCC"/>
-                            <constraint firstItem="qXf-nl-3Li" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="231" id="8AA-WI-pJk"/>
                             <constraint firstItem="DgJ-Se-BTI" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="8KJ-5Z-Y8J"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="Hed-Bz-0g1" secondAttribute="trailing" constant="10" id="9LY-Ad-ugS"/>
-                            <constraint firstItem="ldK-hD-vsJ" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="190" id="9YC-3i-HO8"/>
+                            <constraint firstItem="ldK-hD-vsJ" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="170" id="9YC-3i-HO8"/>
                             <constraint firstItem="IUw-Rz-hg5" firstAttribute="width" secondItem="vDu-zF-Fre" secondAttribute="width" multiplier="0.45" id="Cqy-fe-NbM"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="isA-Km-19L" secondAttribute="trailing" constant="10" id="DT7-9H-DEt"/>
-                            <constraint firstItem="A55-9l-wXo" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="231" id="GLo-Eu-3eH"/>
-                            <constraint firstItem="P09-kU-gUI" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="285" id="Jol-DI-1rr"/>
-                            <constraint firstItem="isA-Km-19L" firstAttribute="centerY" secondItem="rha-b0-jMR" secondAttribute="centerY" id="KLC-hn-HTt"/>
+                            <constraint firstItem="P09-kU-gUI" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="270" id="Jol-DI-1rr"/>
                             <constraint firstItem="3CT-dJ-sEj" firstAttribute="top" secondItem="rha-b0-jMR" secondAttribute="bottom" constant="30" id="KlN-Ud-r2X"/>
                             <constraint firstItem="Hed-Bz-0g1" firstAttribute="top" secondItem="ukn-PZ-9sx" secondAttribute="bottom" constant="30" id="LJ2-Qn-qbJ"/>
+                            <constraint firstItem="qXf-nl-3Li" firstAttribute="top" secondItem="ldK-hD-vsJ" secondAttribute="bottom" constant="20" id="LJ8-eU-QFu"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="P09-kU-gUI" secondAttribute="bottom" constant="117" id="LcB-aF-aI9"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="qXf-nl-3Li" secondAttribute="trailing" constant="10" id="MLs-tH-cbf"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="P09-kU-gUI" secondAttribute="trailing" constant="10" id="Qm6-Nb-VLH"/>
@@ -338,8 +336,10 @@
                             <constraint firstItem="ldK-hD-vsJ" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="5" id="XMX-Uc-FkN"/>
                             <constraint firstItem="ukn-PZ-9sx" firstAttribute="width" secondItem="vDu-zF-Fre" secondAttribute="width" multiplier="0.45" id="ahW-hw-gj3"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="3CT-dJ-sEj" secondAttribute="bottom" constant="10" id="brA-lp-6XJ"/>
+                            <constraint firstItem="3xN-e7-N0L" firstAttribute="top" secondItem="isA-Km-19L" secondAttribute="bottom" constant="23.333333333333371" id="cEs-E7-IMm"/>
                             <constraint firstItem="rha-b0-jMR" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="fpU-Gp-60Q"/>
                             <constraint firstItem="Hed-Bz-0g1" firstAttribute="width" secondItem="vDu-zF-Fre" secondAttribute="width" multiplier="0.45" id="g5v-eF-J80"/>
+                            <constraint firstItem="A55-9l-wXo" firstAttribute="top" secondItem="ldK-hD-vsJ" secondAttribute="bottom" constant="20" id="iz0-0r-Y2D"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="3xN-e7-N0L" secondAttribute="trailing" constant="10" id="n76-Wo-n2b"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="3xN-e7-N0L" secondAttribute="bottom" constant="10" id="r6F-XX-ATR"/>
                             <constraint firstItem="ukn-PZ-9sx" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="20" id="vBm-Uq-cEs"/>
