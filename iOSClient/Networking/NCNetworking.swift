@@ -244,6 +244,7 @@ import Queuer
         if let currentServerCert = SecTrustGetCertificateAtIndex(serverTrust, 0) {
             
             let certNamePath = directoryCertificate + "/" + certName
+            let certInfoNamePath = directoryCertificate + "/" + certName + ".txt"
             let data: CFData = SecCertificateCopyData(currentServerCert)
             let mem = BIO_new_mem_buf(CFDataGetBytePtr(data), Int32(CFDataGetLength(data)))
             let x509cert = d2i_X509_bio(mem, nil)
@@ -252,17 +253,33 @@ import Queuer
             if x509cert == nil {
                 print("[LOG] OpenSSL couldn't parse X509 Certificate")
             } else {
+                
+                // save certificate
                 if FileManager.default.fileExists(atPath: certNamePath) {
                     do {
                         try FileManager.default.removeItem(atPath: certNamePath)
                     } catch { }
                 }
-                let file = fopen(certNamePath, "w")
-                if file != nil {
-                    PEM_write_X509(file, x509cert);
+                let fileCert = fopen(certNamePath, "w")
+                if fileCert != nil {
+                    PEM_write_X509(fileCert, x509cert)
                 }
-                fclose(file);
-                X509_free(x509cert);
+                fclose(fileCert)
+                
+                // save info
+                if FileManager.default.fileExists(atPath: certInfoNamePath) {
+                    do {
+                        try FileManager.default.removeItem(atPath: certInfoNamePath)
+                    } catch { }
+                }
+                let fileCertInfo = fopen(certInfoNamePath, "w")
+                if fileCertInfo != nil {
+                    let output = BIO_new_fp(fileCertInfo, BIO_NOCLOSE)
+                    X509_print_ex(output, x509cert, UInt(XN_FLAG_COMPAT), UInt(X509_FLAG_COMPAT))
+                }
+                fclose(fileCert)
+
+                X509_free(x509cert)
             }
         }
     }
