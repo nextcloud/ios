@@ -491,7 +491,7 @@ import Queuer
         
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             
-            completion(404, NSLocalizedString("_error_not_found_", value: "The requested resource could not be found", comment: ""))
+            completion(NCGlobal.shared.errorResourceNotFound, NSLocalizedString("_error_not_found_", value: "The requested resource could not be found", comment: ""))
         
         } else {
         

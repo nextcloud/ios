@@ -181,7 +181,7 @@ class NCUserStatus: UIViewController {
     }
     
     func dismissIfError(_ errorCode: Int, errorDescription: String) {
-        if errorCode != 0 && errorCode != 404 {
+        if errorCode != 0 && errorCode != NCGlobal.shared.errorResourceNotFound {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.dismiss(animated: true) {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
@@ -345,7 +345,7 @@ class NCUserStatus: UIViewController {
         
         NCCommunication.shared.getUserStatus { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, errorCode, errorDescription in
             
-            if errorCode == 0 || errorCode == 404 {
+            if errorCode == 0 || errorCode == NCGlobal.shared.errorResourceNotFound {
                 
                 if icon != nil {
                     self.statusMessageEmojiTextField.text = icon
