@@ -1,78 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="L3z-AU-Xvu">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="N7y-68-uFW">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
-        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--View Certificate Details-->
-        <scene sceneID="s0d-6b-0kx">
+        <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="Y6W-OH-hqX" customClass="NCViewCertificateDetails" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
+                <viewController id="BYZ-38-t0r" customClass="NCViewCertificateDetails" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" contentInsetAdjustmentBehavior="scrollableAxes" editable="NO" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jEf-af-ZVo">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" delaysContentTouches="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IrK-3z-fms">
                                 <rect key="frame" x="0.0" y="88" width="414" height="774"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="414" id="xS3-sG-KnB"/>
-                                </constraints>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
+                                <connections>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="KgR-kV-oXD"/>
+                                </connections>
+                            </scrollView>
                         </subviews>
-                        <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="jEf-af-ZVo" firstAttribute="trailing" secondItem="vDu-zF-Fre" secondAttribute="trailing" id="5mL-CL-tTj"/>
-                            <constraint firstItem="jEf-af-ZVo" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="5pm-Pn-Li7"/>
-                            <constraint firstItem="jEf-af-ZVo" firstAttribute="bottom" secondItem="vDu-zF-Fre" secondAttribute="bottom" id="P6Y-Um-lnc"/>
-                            <constraint firstItem="jEf-af-ZVo" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="ViP-hZ-vg0"/>
+                            <constraint firstItem="IrK-3z-fms" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="07j-i7-RvO"/>
+                            <constraint firstItem="IrK-3z-fms" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" constant="88" id="3RT-MM-rlS"/>
+                            <constraint firstAttribute="trailing" secondItem="IrK-3z-fms" secondAttribute="trailing" id="Mio-kT-YXx"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="IrK-3z-fms" secondAttribute="bottom" id="nw6-U4-RU6"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="nvl-dP-SdZ">
-                        <barButtonItem key="leftBarButtonItem" title="close" id="6nS-TU-cxF">
+                    <navigationItem key="navigationItem" id="Fwc-r9-U6E">
+                        <barButtonItem key="leftBarButtonItem" title="Item" id="hMa-Vi-h4E">
                             <connections>
-                                <action selector="actionCancel:" destination="Y6W-OH-hqX" id="Req-4d-hlS"/>
+                                <action selector="actionCancel:" destination="BYZ-38-t0r" id="weO-9n-QVj"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="buttonCancel" destination="6nS-TU-cxF" id="1GQ-8Q-PRL"/>
-                        <outlet property="textView" destination="jEf-af-ZVo" id="IHH-0r-ijp"/>
+                        <outlet property="buttonCancel" destination="hMa-Vi-h4E" id="TKS-UQ-fdG"/>
+                        <outlet property="scrollView" destination="IrK-3z-fms" id="Bxc-Ka-jnB"/>
                     </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1015.9420289855074" y="57.589285714285708"/>
+            <point key="canvasLocation" x="928.98550724637687" y="-20.089285714285712"/>
         </scene>
         <!--Navigation Controller-->
-        <scene sceneID="DDt-8V-5Ax">
+        <scene sceneID="Zex-MG-Knq">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="L3z-AU-Xvu" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="N7y-68-uFW" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="49h-Nz-WfT">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="eDJ-Nw-ckC">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="Y6W-OH-hqX" kind="relationship" relationship="rootViewController" id="2AZ-rF-liB"/>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="eG1-FH-4uV"/>
                     </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="pOb-Ev-YO5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cjF-92-dkT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="105.79710144927537" y="57.589285714285708"/>
+            <point key="canvasLocation" x="18.840579710144929" y="-20.089285714285712"/>
         </scene>
     </scenes>
-    <resources>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-    </resources>
 </document>

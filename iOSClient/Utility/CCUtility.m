@@ -1821,4 +1821,51 @@
     return queryItem.value;
 }
 
++ (void)viewText:(UIView *)view scrollView:(UIScrollView *)scrollView contentText:(NSString *)contentText
+{
+    UIFont *font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    NSDictionary *attributes = @{ NSFontAttributeName: font };
+
+    // Load text and detect size
+    CGRect contentRect = [contentText boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, 0) options:(NSStringDrawingUsesLineFragmentOrigin) attributes:attributes context:nil];
+    // Fix up values
+    contentRect = CGRectMake(contentRect.origin.x, contentRect.origin.y, ceil(contentRect.size.width), ceil(contentRect.size.height));
+
+    CGSize contentSize = contentRect.size;
+    CGFloat contentWidth = contentRect.size.width;
+    if (contentWidth < view.frame.size.width) {
+        // text view minimum frame width is the width of the root view frame
+        contentWidth = view.frame.size.width;
+    }
+    CGFloat contentHeight = contentRect.size.height;
+    if (contentHeight < view.frame.size.height) {
+        // text view minimum frame width is the width of the root view frame
+        contentHeight = view.frame.size.width;
+    }
+
+    // TextView frame
+    CGRect textViewFrame = CGRectMake(0, 0, contentWidth, contentHeight);
+    NSLog(@"textViewFrame: %@", NSStringFromCGRect(textViewFrame));
+
+    UITextView *textView = [[UITextView alloc] initWithFrame:textViewFrame];
+    textView.translatesAutoresizingMaskIntoConstraints = NO;
+    textView.editable = NO;
+    textView.scrollEnabled = YES; // When this is NO nothing shows up
+
+    // TextView border for debugging
+    //textView.layer.borderWidth = 1;
+    //textView.layer.borderColor = [UIColor redColor].CGColor;
+
+    // Text Style
+    textView.font = font;
+
+    // Load text into textView
+    textView.text = contentText;
+    [textView sizeToFit];
+
+    [scrollView addSubview:textView];
+
+    scrollView.contentSize = contentSize; // scrollSize;
+    scrollView.contentInset = UIEdgeInsetsMake(0, 0, 40, -40);
+}
 @end

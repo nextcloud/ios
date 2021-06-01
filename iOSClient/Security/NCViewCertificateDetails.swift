@@ -26,7 +26,7 @@ import UIKit
 class NCViewCertificateDetails: UIViewController {
 
     @IBOutlet weak var buttonCancel: UIBarButtonItem!
-    @IBOutlet weak var textView: UITextView!
+    @IBOutlet weak var scrollView: UIScrollView!
 
     // MARK: - View Life Cycle
 
@@ -42,7 +42,7 @@ class NCViewCertificateDetails: UIViewController {
         if FileManager.default.fileExists(atPath: certificatePath) {
             do {
                 let text = try String(contentsOfFile: certificatePath, encoding: .utf8)
-                textView.text = text
+                CCUtility.viewText(self.view, scrollView: scrollView, contentText: text)
             } catch {
                 print("error")
             }

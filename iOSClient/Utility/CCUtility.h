@@ -264,5 +264,6 @@
 + (NSString *)getExtension:(NSString*)fileName;
 + (NSDate *)datetimeWithOutTime:(NSDate *)datDate;
 + (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems;
++ (void)viewText:(UIView *)view scrollView:(UIScrollView *)scrollView contentText:(NSString *)contentText;
 
 @end
