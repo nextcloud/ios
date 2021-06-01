@@ -1,5 +1,5 @@
 //
-//  NCViewCertificateInfo.swift
+//  NCViewCertificateDetail.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 01/06/21.
@@ -23,18 +23,34 @@
 
 import UIKit
 
-class NCViewCertificateInfo: UIViewController {
+class NCViewCertificateDetail: UIViewController {
 
     @IBOutlet weak var buttonCancel: UIBarButtonItem!
+    @IBOutlet weak var textView: UITextView!
 
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationItem.title = NSLocalizedString("_certificate_", comment: "")
+        self.navigationItem.title = NSLocalizedString("_certificate_details_", comment: "")
         
         buttonCancel.title = NSLocalizedString("_close_", comment: "")
+        
+        let directoryCertificate = CCUtility.getDirectoryCerificates()!
+        let certificatePath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2 + ".txt"
+        if FileManager.default.fileExists(atPath: certificatePath) {
+            do {
+                let text = try String(contentsOfFile: certificatePath, encoding: .utf8)
+                textView.text = text
+            } catch {
+                print("error")
+            }
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.dismiss(animated: true, completion: nil)
+            }
+        }
     }
     
     // MARK: ACTION
@@ -42,5 +58,4 @@ class NCViewCertificateInfo: UIViewController {
     @IBAction func actionCancel(_ sender: UIBarButtonItem) {
         self.dismiss(animated: true, completion: nil)
     }
-    
 }
