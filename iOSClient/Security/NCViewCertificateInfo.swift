@@ -25,4 +25,22 @@ import UIKit
 
 class NCViewCertificateInfo: UIViewController {
 
+    @IBOutlet weak var buttonCancel: UIBarButtonItem!
+
+    // MARK: - View Life Cycle
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.navigationItem.title = NSLocalizedString("_certificate_", comment: "")
+        
+        buttonCancel.title = NSLocalizedString("_close_", comment: "")
+    }
+    
+    // MARK: ACTION
+    
+    @IBAction func actionCancel(_ sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
 }

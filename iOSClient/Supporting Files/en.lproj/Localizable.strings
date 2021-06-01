@@ -796,8 +796,7 @@
 "Passcodes didn't match. Try again." = "Passcodes didn't match. Try again.";
 "Delete"                    = "Delete";
 "Cancel"                    = "Cancel";
-
-
+"_certificate_"             = "Certificate";
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 // IM
