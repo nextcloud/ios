@@ -138,8 +138,13 @@ class NCUserStatus: UIViewController {
         clearStatusMessageAfterText.layer.borderWidth = 0.2
         clearStatusMessageAfterText.layer.borderColor = UIColor.lightGray.cgColor
         clearStatusMessageAfterText.text = NSLocalizedString("_dont_clear_", comment: "")
-        clearStatusMessageAfterText.textColor = .gray
-        clearStatusMessageAfterText.backgroundColor = NCBrandColor.shared.systemGray6
+        if traitCollection.userInterfaceStyle == .dark {
+            clearStatusMessageAfterText.backgroundColor = .black
+            clearStatusMessageAfterText.textColor = .white
+        } else {
+            clearStatusMessageAfterText.backgroundColor = .white
+            clearStatusMessageAfterText.textColor = .black
+        }
         let tap = UITapGestureRecognizer(target: self, action: #selector(self.actionClearStatusMessageAfterText(sender:)))
         clearStatusMessageAfterText.isUserInteractionEnabled = true
         clearStatusMessageAfterText.addGestureRecognizer(tap)
@@ -276,14 +281,19 @@ class NCUserStatus: UIViewController {
         let appearance = DropDown.appearance()
         let clearStatusMessageAfterTextBackup = clearStatusMessageAfterText.text
             
-        appearance.backgroundColor = NCBrandColor.shared.systemGray6
+        if traitCollection.userInterfaceStyle == .dark {
+            appearance.backgroundColor = .black
+            appearance.textColor = .white
+        } else {
+            appearance.backgroundColor = .white
+            appearance.textColor = .black
+        }
         appearance.cornerRadius = 0
         appearance.shadowColor = UIColor(white: 0.5, alpha: 1)
         appearance.shadowOpacity = 0.9
         appearance.shadowRadius = 0
         appearance.animationEntranceOptions = .transitionCurlUp
         appearance.animationduration = 0.25
-        appearance.textColor = .darkGray
         appearance.setupMaskedCorners([.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
         
         dropDown.dataSource.append(NSLocalizedString("_dont_clear_", comment: ""))

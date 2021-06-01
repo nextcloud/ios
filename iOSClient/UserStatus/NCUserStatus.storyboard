@@ -318,7 +318,7 @@
                                 <rect key="frame" x="0.0" y="782" width="428" height="110"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="clear status message after" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rha-b0-jMR">
-                                        <rect key="frame" x="10" y="20" width="175" height="17"/>
+                                        <rect key="frame" x="10" y="10" width="175" height="17"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="175" id="YE8-7b-aAT"/>
                                         </constraints>
@@ -327,7 +327,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="today" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="isA-Km-19L">
-                                        <rect key="frame" x="195" y="13" width="223" height="30"/>
+                                        <rect key="frame" x="195" y="3" width="223" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="c5F-cg-TMn"/>
                                         </constraints>
@@ -365,13 +365,13 @@
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="isA-Km-19L" secondAttribute="trailing" constant="10" id="6Tt-c6-ue6"/>
                                     <constraint firstItem="isA-Km-19L" firstAttribute="leading" secondItem="rha-b0-jMR" secondAttribute="trailing" constant="10" id="GfS-dA-0gf"/>
-                                    <constraint firstItem="3xN-e7-N0L" firstAttribute="top" secondItem="rha-b0-jMR" secondAttribute="bottom" constant="30" id="KVL-2d-xDr"/>
+                                    <constraint firstItem="3xN-e7-N0L" firstAttribute="top" secondItem="rha-b0-jMR" secondAttribute="bottom" constant="40" id="KVL-2d-xDr"/>
                                     <constraint firstItem="rha-b0-jMR" firstAttribute="leading" secondItem="LVo-6E-efl" secondAttribute="leading" constant="10" id="L1H-XE-sur"/>
-                                    <constraint firstItem="3CT-dJ-sEj" firstAttribute="top" secondItem="rha-b0-jMR" secondAttribute="bottom" constant="30" id="P6x-uB-lne"/>
+                                    <constraint firstItem="3CT-dJ-sEj" firstAttribute="top" secondItem="rha-b0-jMR" secondAttribute="bottom" constant="40" id="P6x-uB-lne"/>
                                     <constraint firstItem="3CT-dJ-sEj" firstAttribute="leading" secondItem="LVo-6E-efl" secondAttribute="leading" constant="10" id="ceW-Ca-9iB"/>
                                     <constraint firstAttribute="trailing" secondItem="3xN-e7-N0L" secondAttribute="trailing" constant="10" id="egg-HN-e1j"/>
-                                    <constraint firstItem="rha-b0-jMR" firstAttribute="top" secondItem="LVo-6E-efl" secondAttribute="top" constant="20" id="mZV-JR-YrU"/>
-                                    <constraint firstItem="isA-Km-19L" firstAttribute="top" secondItem="LVo-6E-efl" secondAttribute="top" constant="13" id="rm1-O7-9jT"/>
+                                    <constraint firstItem="rha-b0-jMR" firstAttribute="top" secondItem="LVo-6E-efl" secondAttribute="top" constant="10" id="mZV-JR-YrU"/>
+                                    <constraint firstItem="isA-Km-19L" firstAttribute="top" secondItem="LVo-6E-efl" secondAttribute="top" constant="3" id="rm1-O7-9jT"/>
                                 </constraints>
                             </view>
                         </subviews>
