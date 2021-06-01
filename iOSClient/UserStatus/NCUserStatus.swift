@@ -288,9 +288,7 @@ class NCUserStatus: UIViewController {
             appearance.backgroundColor = .white
             appearance.textColor = .black
         }
-        appearance.cornerRadius = 0
-        appearance.shadowColor = UIColor(white: 0.5, alpha: 1)
-        appearance.shadowOpacity = 0.9
+        appearance.cornerRadius = 5
         appearance.shadowRadius = 0
         appearance.animationEntranceOptions = .transitionCurlUp
         appearance.animationduration = 0.25
