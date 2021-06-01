@@ -110,11 +110,11 @@ class NCUserStatus: UIViewController {
         invisibleButton.layer.cornerRadius = 10
         invisibleButton.layer.masksToBounds = true
         invisibleButton.backgroundColor = NCBrandColor.shared.systemGray5
-        let offline = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "offline", userMessage: nil)
-        invisibleImage.image = offline.onlineStatus
-        invisibleLabel.text = offline.statusMessage
+        let invisible = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "invisible", userMessage: nil)
+        invisibleImage.image = invisible.onlineStatus
+        invisibleLabel.text = invisible.statusMessage
         invisibleLabel.textColor = NCBrandColor.shared.label
-        invisibleDescrLabel.text = offline.descriptionMessage
+        invisibleDescrLabel.text = invisible.descriptionMessage
         invisibleDescrLabel.textColor = .darkGray
         
         statusMessageLabel.text = NSLocalizedString("_status_message_", comment: "")
@@ -377,7 +377,7 @@ class NCUserStatus: UIViewController {
                 case "dnd":
                     self.dndButton.layer.borderWidth = self.borderWidthButton
                     self.dndButton.layer.borderColor = self.borderColorButton
-                case "invisible":
+                case "invisible", "offline":
                     self.invisibleButton.layer.borderWidth = self.borderWidthButton
                     self.invisibleButton.layer.borderColor = self.borderColorButton
                 default:
