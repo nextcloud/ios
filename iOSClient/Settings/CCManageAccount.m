@@ -141,10 +141,10 @@
             }
         }
         
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"certificateDetail" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_certificate_details_", nil)];
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"certificateDetails" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_certificate_details_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"lock-question"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
         row.action.formSelector = @selector(certificateDetails:);
@@ -500,8 +500,7 @@
 {
     [self deselectFormRow:sender];
     
-        
-    UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCViewCertificateDetail" bundle:nil] instantiateInitialViewController];
+    UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCViewCertificateDetails" bundle:nil] instantiateInitialViewController];
         
     [self presentViewController:navigationController animated:YES completion:nil];
 }

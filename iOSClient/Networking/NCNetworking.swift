@@ -166,8 +166,9 @@ import Queuer
         
         if let serverTrust: SecTrust = protectionSpace.serverTrust {
             
-            // OLD
             saveX509Certificate(serverTrust, certName: NCGlobal.shared.certificateTmp, directoryCertificate: directoryCertificate)
+            
+            // OLD
             do {
                 let directoryContents = try FileManager.default.contentsOfDirectory(at: directoryCertificateUrl, includingPropertiesForKeys: nil)
                 let certTmpPath = directoryCertificate + "/" + NCGlobal.shared.certificateTmp
@@ -244,7 +245,7 @@ import Queuer
         if let currentServerCert = SecTrustGetCertificateAtIndex(serverTrust, 0) {
             
             let certNamePath = directoryCertificate + "/" + certName
-            let certInfoNamePath = directoryCertificate + "/" + certName + ".txt"
+            let certificateDetailsNamePath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2 + ".txt"
             let data: CFData = SecCertificateCopyData(currentServerCert)
             let mem = BIO_new_mem_buf(CFDataGetBytePtr(data), Int32(CFDataGetLength(data)))
             let x509cert = d2i_X509_bio(mem, nil)
@@ -266,13 +267,13 @@ import Queuer
                 }
                 fclose(fileCert)
                 
-                // save info
-                if FileManager.default.fileExists(atPath: certInfoNamePath) {
+                // save details
+                if FileManager.default.fileExists(atPath: certificateDetailsNamePath) {
                     do {
-                        try FileManager.default.removeItem(atPath: certInfoNamePath)
+                        try FileManager.default.removeItem(atPath: certificateDetailsNamePath)
                     } catch { }
                 }
-                let fileCertInfo = fopen(certInfoNamePath, "w")
+                let fileCertInfo = fopen(certificateDetailsNamePath, "w")
                 if fileCertInfo != nil {
                     let output = BIO_new_fp(fileCertInfo, BIO_NOCLOSE)
                     X509_print_ex(output, x509cert, UInt(XN_FLAG_COMPAT), UInt(X509_FLAG_COMPAT))

@@ -1,5 +1,5 @@
 //
-//  NCViewCertificateDetail.swift
+//  NCViewCertificateDetails.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 01/06/21.
@@ -23,7 +23,7 @@
 
 import UIKit
 
-class NCViewCertificateDetail: UIViewController {
+class NCViewCertificateDetails: UIViewController {
 
     @IBOutlet weak var buttonCancel: UIBarButtonItem!
     @IBOutlet weak var textView: UITextView!
