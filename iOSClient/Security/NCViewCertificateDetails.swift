@@ -77,7 +77,7 @@ class NCViewCertificateDetails: UIViewController  {
                 
                 scrollView.addSubview(textView)
                 scrollView.contentSize = contentRect.size
-                scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 40, right: -40)
+                scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
                 
             } catch {
                 print("error")
