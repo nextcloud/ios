@@ -36,7 +36,8 @@ class NCViewCertificateDetails: UIViewController  {
 
     @IBOutlet weak var buttonCancel: UIBarButtonItem!
     @IBOutlet weak var scrollView: UIScrollView!
-    
+    @IBOutlet weak var textView: UITextView!
+
     public var delegate: NCViewCertificateDetailsDelegate?
 
     // MARK: - View Life Cycle
@@ -65,17 +66,11 @@ class NCViewCertificateDetails: UIViewController  {
                 if contentHeight < view.frame.size.height {
                     contentHeight = view.frame.size.width
                 }
-                let textViewFrame = CGRect(x: 0, y: 0, width: contentWidth, height: contentHeight)
                 
-                let textView = UITextView.init(frame: textViewFrame)
-                textView.translatesAutoresizingMaskIntoConstraints = false
-                textView.isEditable = false
-                textView.isScrollEnabled = true
+                textView.frame = CGRect(x: 0, y: 0, width: contentWidth, height: contentHeight)
                 textView.font = font
                 textView.text = text
-                textView.sizeToFit()
                 
-                scrollView.addSubview(textView)
                 scrollView.contentSize = contentRect.size
                 scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
                 
