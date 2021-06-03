@@ -361,6 +361,12 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         self.appDelegate.startTimerErrorNetworking()
                     }))
                     
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
+                        if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() {
+                            self.present(navigationController, animated: true)
+                        }
+                    }))
+                    
                     self.present(alertController, animated: true, completion: {
                         self.appDelegate.timerErrorNetworking?.invalidate()
                     })
@@ -433,6 +439,12 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
                 self.appDelegate.startTimerErrorNetworking()
+            }))
+            
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
+                if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() {
+                    self.present(navigationController, animated: true)
+                }
             }))
             
             self.present(alertController, animated: true, completion: {

@@ -23,10 +23,21 @@
 
 import UIKit
 
-class NCViewCertificateDetails: UIViewController {
+public protocol NCViewCertificateDetailsDelegate {
+    func viewCertificateDetailsDismiss()
+}
+
+// optional func
+public extension NCViewCertificateDetailsDelegate {
+    func viewCertificateDetailsDismiss() {}
+}
+
+class NCViewCertificateDetails: UIViewController  {
 
     @IBOutlet weak var buttonCancel: UIBarButtonItem!
     @IBOutlet weak var scrollView: UIScrollView!
+    
+    public var delegate: NCViewCertificateDetailsDelegate?
 
     // MARK: - View Life Cycle
 
@@ -51,6 +62,12 @@ class NCViewCertificateDetails: UIViewController {
                 self.dismiss(animated: true, completion: nil)
             }
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        self.delegate?.viewCertificateDetailsDismiss()
     }
     
     // MARK: ACTION

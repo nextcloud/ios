@@ -29,7 +29,7 @@ import LocalAuthentication
 import Firebase
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, TOPasscodeViewControllerDelegate, NCAccountRequestDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, TOPasscodeViewControllerDelegate, NCAccountRequestDelegate, NCViewCertificateDetailsDelegate {
 
     var backgroundSessionCompletionHandler: (() -> Void)?
     var window: UIWindow?
@@ -518,6 +518,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
     
+    func viewCertificateDetailsDismiss() {
+        self.startTimerErrorNetworking()
+    }
+    
     @objc func startTimerErrorNetworking() {
         timerErrorNetworking = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(checkErrorNetworking), userInfo: nil, repeats: true)
     }
@@ -544,6 +548,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
                 self.startTimerErrorNetworking()
+            }))
+            
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
+                if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController {
+                    let viewController = navigationController.topViewController as! NCViewCertificateDetails
+                    viewController.delegate = self
+                    self.window?.rootViewController?.present(navigationController, animated: true)
+                }
             }))
             
             window?.rootViewController?.present(alertController, animated: true, completion: {
