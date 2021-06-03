@@ -53,7 +53,32 @@ class NCViewCertificateDetails: UIViewController  {
         if FileManager.default.fileExists(atPath: certificatePath) {
             do {
                 let text = try String(contentsOfFile: certificatePath, encoding: .utf8)
-                CCUtility.viewText(self.view, scrollView: scrollView, contentText: text)
+                let font = UIFont.systemFont(ofSize: 13)
+                let attributes = [NSAttributedString.Key.font: font] as [NSAttributedString.Key : Any]
+                var contentRect = NSString(string: text).boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: 0), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: attributes, context: nil)
+                contentRect = CGRect(x: contentRect.origin.x, y: contentRect.origin.y, width: ceil(contentRect.size.width), height: ceil(contentRect.size.height))
+                var contentWidth = contentRect.size.width
+                if contentWidth < view.frame.size.width {
+                    contentWidth = view.frame.size.width
+                }
+                var contentHeight = contentRect.size.height
+                if contentHeight < view.frame.size.height {
+                    contentHeight = view.frame.size.width
+                }
+                let textViewFrame = CGRect(x: 0, y: 0, width: contentWidth, height: contentHeight)
+                
+                let textView = UITextView.init(frame: textViewFrame)
+                textView.translatesAutoresizingMaskIntoConstraints = false
+                textView.isEditable = false
+                textView.isScrollEnabled = true
+                textView.font = font
+                textView.text = text
+                textView.sizeToFit()
+                
+                scrollView.addSubview(textView)
+                scrollView.contentSize = contentRect.size
+                scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 40, right: -40)
+                
             } catch {
                 print("error")
             }
