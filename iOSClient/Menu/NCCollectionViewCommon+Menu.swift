@@ -26,6 +26,7 @@
 import UIKit
 import FloatingPanel
 import NCCommunication
+import Queuer
 
 extension NCCollectionViewCommon {
 
@@ -411,27 +412,35 @@ extension NCCollectionViewCommon {
                 title: NSLocalizedString("_open_in_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
                 action: { menuAction in
-                    for ocId in selectOcId {
-                        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                            
-                                
-                            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn) { errorCode in
-                                    
+                    DispatchQueue.global().async {
+                        var error: Int = 0
+                        var metadatas: [tableMetadata] = []
+                        for ocId in selectOcId {
+                            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                                let semaphore = Semaphore()
+                                if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                                    NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn) { errorCode in
+                                        error = errorCode
+                                        semaphore.continue()
+                                    }
                                 }
+                                semaphore.wait()
+                                if error != 0 {
+                                    break
+                                }
+                                metadatas.append(metadata)
                             }
-                                
-                            
+                        }
+                        if error == 0 {
+                            NCFunctionCenter.shared.openActivityViewController(metadatas: metadatas)
+
                         }
                     }
                     self.tapSelect(sender: self)
-                    
-                    //NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
                 }
             )
         )
-        
-        
+
         //
         // SAVE TO PHOTO GALLERY
         //

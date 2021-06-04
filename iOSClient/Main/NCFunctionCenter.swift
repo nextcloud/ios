@@ -211,6 +211,25 @@ import NCCommunication
             NCNetworking.shared.download(metadata: metadata, selector: selector) { (_) in }
         }
     }
+    
+    // MARK: - Open in (files)
+    
+    func openActivityViewController(metadatas: [tableMetadata]) {
+        
+        var items: [Any] = []
+        
+        for metadata in metadatas {
+            let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+            items.append(fileURL)
+        }
+        
+        let activityViewController = UIActivityViewController.init(activityItems: items, applicationActivities: nil)
+
+        if let view = appDelegate.window?.rootViewController?.view {
+            activityViewController.popoverPresentationController?.sourceView = view
+            appDelegate.window?.rootViewController?.present(activityViewController, animated: true)
+        }
+    }
         
     // MARK: - Print
     
