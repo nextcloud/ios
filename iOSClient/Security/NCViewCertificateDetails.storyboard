@@ -31,6 +31,7 @@
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                     </textView>
                                 </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstItem="WsH-pm-r11" firstAttribute="leading" secondItem="IrK-3z-fms" secondAttribute="leading" id="JjL-uK-kjZ"/>
                                     <constraint firstAttribute="bottom" secondItem="WsH-pm-r11" secondAttribute="bottom" id="liC-tc-sE8"/>
@@ -42,7 +43,7 @@
                                 </connections>
                             </scrollView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="IrK-3z-fms" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="07j-i7-RvO"/>
                             <constraint firstItem="IrK-3z-fms" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="2nE-Io-hbo"/>

@@ -404,6 +404,35 @@ extension NCCollectionViewCommon {
         )
         
         //
+        // OPEN IN
+        //
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_open_in_", comment: ""),
+                icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
+                action: { menuAction in
+                    for ocId in selectOcId {
+                        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                            
+                                
+                            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn) { errorCode in
+                                    
+                                }
+                            }
+                                
+                            
+                        }
+                    }
+                    self.tapSelect(sender: self)
+                    
+                    //NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
+                }
+            )
+        )
+        
+        
+        //
         // SAVE TO PHOTO GALLERY
         //
         actions.append(
