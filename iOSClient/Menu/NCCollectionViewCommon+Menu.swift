@@ -417,6 +417,9 @@ extension NCCollectionViewCommon {
                         var metadatas: [tableMetadata] = []
                         for ocId in selectOcId {
                             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                                if metadata.directory {
+                                    continue
+                                }
                                 if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                                     let semaphore = Semaphore()
                                     NCNetworking.shared.download(metadata: metadata, selector: "") { errorCode in
