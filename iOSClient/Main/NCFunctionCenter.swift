@@ -214,7 +214,7 @@ import NCCommunication
     
     // MARK: - Open in (files)
     
-    func openActivityViewController(metadatas: [tableMetadata]) {
+    func openActivityViewController(viewController: UIViewController, metadatas: [tableMetadata]) {
         
         var items: [Any] = []
         
@@ -224,11 +224,9 @@ import NCCommunication
         }
         
         let activityViewController = UIActivityViewController.init(activityItems: items, applicationActivities: nil)
-
-        if let view = appDelegate.window?.rootViewController?.view {
-            activityViewController.popoverPresentationController?.sourceView = view
-            appDelegate.window?.rootViewController?.present(activityViewController, animated: true)
-        }
+        activityViewController.popoverPresentationController?.sourceView = viewController.view
+        
+        viewController.present(activityViewController, animated: true)
     }
         
     // MARK: - Print

@@ -417,14 +417,14 @@ extension NCCollectionViewCommon {
                         var metadatas: [tableMetadata] = []
                         for ocId in selectOcId {
                             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                let semaphore = Semaphore()
                                 if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                                    NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn) { errorCode in
+                                    let semaphore = Semaphore()
+                                    NCNetworking.shared.download(metadata: metadata, selector: "") { errorCode in
                                         error = errorCode
                                         semaphore.continue()
                                     }
+                                    semaphore.wait()
                                 }
-                                semaphore.wait()
                                 if error != 0 {
                                     break
                                 }
@@ -432,8 +432,9 @@ extension NCCollectionViewCommon {
                             }
                         }
                         if error == 0 {
-                            NCFunctionCenter.shared.openActivityViewController(metadatas: metadatas)
-
+                            DispatchQueue.main.async {
+                                NCFunctionCenter.shared.openActivityViewController(viewController: viewController, metadatas: metadatas)
+                            }
                         }
                     }
                     self.tapSelect(sender: self)
