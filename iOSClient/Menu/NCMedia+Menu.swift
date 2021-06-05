@@ -154,7 +154,7 @@ extension NCMedia {
                     icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
                     action: { menuAction in
                         self.isEditMode = false
-                        NCFunctionCenter.shared.openActivityViewController(viewController: self, selectOcId: self.selectOcId)
+                        NCFunctionCenter.shared.openActivityViewController(selectOcId: self.selectOcId)
                         self.selectOcId.removeAll()
                         self.reloadDataThenPerform { }
                     }

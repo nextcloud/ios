@@ -49,6 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var activeServerUrl: String = ""
     @objc var activeViewController: UIViewController?
     var activeViewerVideo: NCViewerVideo?
+    var mainTabBar: NCMainTabBar?
     
     var listFilesVC: [String:NCFiles] = [:]
     var listFavoriteVC: [String:NCFavorite] = [:]

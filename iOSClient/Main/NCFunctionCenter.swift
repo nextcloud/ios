@@ -50,10 +50,6 @@ import Queuer
                 
                 if errorCode == 0 {
                     
-                    let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                    documentController = UIDocumentInteractionController(url: fileURL)
-                    documentController?.delegate = self
-
                     switch selector {
                     case NCGlobal.shared.selectorLoadFileQuickLook:
                         
@@ -69,21 +65,15 @@ import Queuer
                                                         
                             if metadata.contentType.contains("opendocument") && !NCUtility.shared.isRichDocument(metadata) {
                                 
-                                if let view = appDelegate.window?.rootViewController?.view {
-                                    documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
-                                }
+                                self.openDocumentController(metadata: metadata)
                                 
                             } else if metadata.typeFile == NCGlobal.shared.metadataTypeFileCompress || metadata.typeFile == NCGlobal.shared.metadataTypeFileUnknown {
 
-                                if let view = appDelegate.window?.rootViewController?.view {
-                                    documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
-                                }
+                                self.openDocumentController(metadata: metadata)
                                 
                             } else if metadata.typeFile == NCGlobal.shared.metadataTypeFileImagemeter {
                                 
-                                if let view = appDelegate.window?.rootViewController?.view {
-                                    documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
-                                }
+                                self.openDocumentController(metadata: metadata)
                                 
                             } else {
                                 
@@ -98,9 +88,7 @@ import Queuer
                         
                         if UIApplication.shared.applicationState == UIApplication.State.active {
                             
-                            if let view = appDelegate.window?.rootViewController?.view {
-                                documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
-                            }
+                            self.openDocumentController(metadata: metadata)
                         }
                         
                     case NCGlobal.shared.selectorLoadCopy:
@@ -213,9 +201,18 @@ import Queuer
         }
     }
     
-    // MARK: - Open in (files)
+    // MARK: - Open in ...
     
-    func openActivityViewController(viewController: UIViewController, selectOcId: [String]) {
+    func openDocumentController(metadata: tableMetadata) {
+        
+        guard let mainTabBar = self.appDelegate.mainTabBar else { return }
+        let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        
+        documentController = UIDocumentInteractionController(url: fileURL)
+        documentController?.presentOptionsMenu(from: mainTabBar.menuRect, in: mainTabBar, animated: true)
+    }
+    
+    func openActivityViewController(selectOcId: [String]) {
         
         DispatchQueue.global().async {
             
@@ -244,13 +241,16 @@ import Queuer
             }
             if error == 0 && items.count > 0 {
                 DispatchQueue.main.async {
+                    
+                    guard let mainTabBar = self.appDelegate.mainTabBar else { return }
+                            
                     let activityViewController = UIActivityViewController.init(activityItems: items, applicationActivities: nil)
 
                     activityViewController.popoverPresentationController?.permittedArrowDirections = .any
-                    activityViewController.popoverPresentationController?.sourceView = viewController.view
-                    activityViewController.popoverPresentationController?.sourceRect = CGRect.zero
+                    activityViewController.popoverPresentationController?.sourceView = mainTabBar
+                    activityViewController.popoverPresentationController?.sourceRect = mainTabBar.menuRect
                     
-                    viewController.present(activityViewController, animated: true)
+                    self.appDelegate.window?.rootViewController?.present(activityViewController, animated: true)
                 }
             }
         }

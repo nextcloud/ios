@@ -30,11 +30,21 @@ class NCMainTabBar: UITabBar {
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var timer: Timer?
     
+    public var menuRect: CGRect {
+        get {
+            let tabBarItemWidth = Int(self.frame.size.width) / (self.items?.count ?? 0)
+            let rect = CGRect(x: 0, y: -5, width: tabBarItemWidth, height: Int(self.frame.size.height))
+            
+            return rect
+        }
+    }
+    
     // MARK: - Life Cycle
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
+        appDelegate.mainTabBar = self
         timer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: (#selector(updateBadgeNumber)), userInfo: nil, repeats: true)
             
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
