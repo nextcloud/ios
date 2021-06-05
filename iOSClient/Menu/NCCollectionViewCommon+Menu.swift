@@ -30,7 +30,7 @@ import Queuer
 
 extension NCCollectionViewCommon {
 
-    func toggleMenu(viewController: NCCollectionViewCommon, metadata: tableMetadata, imageIcon: UIImage?) {
+    func toggleMenu(metadata: tableMetadata, imageIcon: UIImage?) {
         
         let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
@@ -287,7 +287,7 @@ extension NCCollectionViewCommon {
         // USE AS BACKGROUND
         //
         if #available(iOS 13.0, *) {
-            if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && viewController.layoutKey == NCGlobal.shared.layoutViewFiles && !NCBrandOptions.shared.disable_background_image {
+            if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && self.layoutKey == NCGlobal.shared.layoutViewFiles && !NCBrandOptions.shared.disable_background_image {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_use_as_background_", comment: ""),
@@ -378,15 +378,15 @@ extension NCCollectionViewCommon {
         menuViewController.actions = actions
 
         let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = viewController
+        menuPanelController.parentPresenter = self
         menuPanelController.delegate = menuViewController
         menuPanelController.set(contentViewController: menuViewController)
         menuPanelController.track(scrollView: menuViewController.tableView)
 
-        viewController.present(menuPanelController, animated: true, completion: nil)
+        present(menuPanelController, animated: true, completion: nil)
     }
     
-    func toggleMenuSelect(viewController: UIViewController, selectOcId: [String]) {
+    func toggleMenuSelect() {
         
         let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
@@ -412,34 +412,7 @@ extension NCCollectionViewCommon {
                 title: NSLocalizedString("_open_in_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
                 action: { menuAction in
-                    DispatchQueue.global().async {
-                        var error: Int = 0
-                        var metadatas: [tableMetadata] = []
-                        for ocId in selectOcId {
-                            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                if metadata.directory {
-                                    continue
-                                }
-                                if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                                    let semaphore = Semaphore()
-                                    NCNetworking.shared.download(metadata: metadata, selector: "") { errorCode in
-                                        error = errorCode
-                                        semaphore.continue()
-                                    }
-                                    semaphore.wait()
-                                }
-                                if error != 0 {
-                                    break
-                                }
-                                metadatas.append(metadata)
-                            }
-                        }
-                        if error == 0 {
-                            DispatchQueue.main.async {
-                                NCFunctionCenter.shared.openActivityViewController(viewController: viewController, metadatas: metadatas)
-                            }
-                        }
-                    }
+                    NCFunctionCenter.shared.openActivityViewController(viewController: self, selectOcId: self.selectOcId)
                     self.tapSelect(sender: self)
                 }
             )
@@ -453,7 +426,7 @@ extension NCCollectionViewCommon {
                 title: NSLocalizedString("_save_selected_files_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
                 action: { menuAction in
-                    for ocId in selectOcId {
+                    for ocId in self.selectOcId {
                         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                             if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
                                 if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
@@ -482,7 +455,7 @@ extension NCCollectionViewCommon {
                 icon: NCUtility.shared.loadImage(named: "arrow.up.right.square"),
                 action: { menuAction in
                     var meradatasSelect = [tableMetadata]()
-                    for ocId in selectOcId {
+                    for ocId in self.selectOcId {
                         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                             meradatasSelect.append(metadata)
                         }
@@ -504,7 +477,7 @@ extension NCCollectionViewCommon {
                 icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
                 action: { menuAction in
                     self.appDelegate.pasteboardOcIds.removeAll()
-                    for ocId in selectOcId {
+                    for ocId in self.selectOcId {
                         self.appDelegate.pasteboardOcIds.append(ocId)
                     }
                     NCFunctionCenter.shared.copyPasteboard()
@@ -523,7 +496,7 @@ extension NCCollectionViewCommon {
                 action: { menuAction in
                     let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
-                        for ocId in selectOcId {
+                        for ocId in self.selectOcId {
                             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                                 NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: false)
                             }
@@ -531,7 +504,7 @@ extension NCCollectionViewCommon {
                         self.tapSelect(sender: self)
                     })
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (action:UIAlertAction) in
-                        for ocId in selectOcId {
+                        for ocId in self.selectOcId {
                             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                                 NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: true)
                             }
@@ -547,12 +520,12 @@ extension NCCollectionViewCommon {
         menuViewController.actions = actions
 
         let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = viewController
+        menuPanelController.parentPresenter = self
         menuPanelController.delegate = menuViewController
         menuPanelController.set(contentViewController: menuViewController)
         menuPanelController.track(scrollView: menuViewController.tableView)
 
-        viewController.present(menuPanelController, animated: true, completion: nil)
+        present(menuPanelController, animated: true, completion: nil)
     }
 }
 

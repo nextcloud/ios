@@ -146,6 +146,19 @@ extension NCMedia {
             )
             
             //
+            // OPEN IN
+            //
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_open_in_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
+                    action: { menuAction in
+                        NCFunctionCenter.shared.openActivityViewController(viewController: self, selectOcId: self.selectOcId)
+                    }
+                )
+            )
+            
+            //
             // COPY - MOVE
             //
             actions.append(

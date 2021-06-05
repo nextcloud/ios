@@ -23,6 +23,7 @@
 
 import UIKit
 import NCCommunication
+import Queuer
 
 @objc class NCFunctionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
     @objc public static let shared: NCFunctionCenter = {
@@ -214,19 +215,45 @@ import NCCommunication
     
     // MARK: - Open in (files)
     
-    func openActivityViewController(viewController: UIViewController, metadatas: [tableMetadata]) {
+    func openActivityViewController(viewController: UIViewController, selectOcId: [String]) {
         
-        var items: [Any] = []
-        
-        for metadata in metadatas {
-            let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-            items.append(fileURL)
+        DispatchQueue.global().async {
+            
+            var error: Int = 0
+            var items: [Any] = []
+
+            for ocId in selectOcId {
+                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                    if metadata.directory {
+                        continue
+                    }
+                    if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                        let semaphore = Semaphore()
+                        NCNetworking.shared.download(metadata: metadata, selector: "") { errorCode in
+                            error = errorCode
+                            semaphore.continue()
+                        }
+                        semaphore.wait()
+                    }
+                    if error != 0 {
+                        break
+                    }
+                    let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                    items.append(fileURL)
+                }
+            }
+            if error == 0 && items.count > 0 {
+                DispatchQueue.main.async {
+                    let activityViewController = UIActivityViewController.init(activityItems: items, applicationActivities: nil)
+
+                    activityViewController.popoverPresentationController?.permittedArrowDirections = .any
+                    activityViewController.popoverPresentationController?.sourceView = viewController.view
+                    activityViewController.popoverPresentationController?.sourceRect = CGRect.zero
+                    
+                    viewController.present(activityViewController, animated: true)
+                }
+            }
         }
-        
-        let activityViewController = UIActivityViewController.init(activityItems: items, applicationActivities: nil)
-        activityViewController.popoverPresentationController?.sourceView = viewController.view
-        
-        viewController.present(activityViewController, animated: true)
     }
         
     // MARK: - Print
