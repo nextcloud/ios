@@ -153,7 +153,10 @@ extension NCMedia {
                     title: NSLocalizedString("_open_in_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
                     action: { menuAction in
+                        self.isEditMode = false
                         NCFunctionCenter.shared.openActivityViewController(viewController: self, selectOcId: self.selectOcId)
+                        self.selectOcId.removeAll()
+                        self.reloadDataThenPerform { }
                     }
                 )
             )
@@ -177,6 +180,7 @@ extension NCMedia {
                             NCFunctionCenter.shared.openSelectView(items: meradatasSelect, viewController: self)
                         }
                         self.selectOcId.removeAll()
+                        self.reloadDataThenPerform { }
                     }
                 )
             )
@@ -200,6 +204,7 @@ extension NCMedia {
                             }
                         }
                         self.selectOcId.removeAll()
+                        self.reloadDataThenPerform { }
                     }
                 )
             )
