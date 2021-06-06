@@ -145,12 +145,8 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 
         var url = fileProviderData.shared.fileProviderManager.documentStorageURL.appendingPathComponent(identifier.rawValue, isDirectory: true)
         
-        if item.typeIdentifier == (kUTTypeFolder as String) {
-            url = url.appendingPathComponent(item.filename, isDirectory:true)
-        } else {
-            url = url.appendingPathComponent(item.filename, isDirectory:false)
-        }
-        
+        url = url.appendingPathComponent(item.filename, isDirectory:false)
+    
         return url
     }
     
