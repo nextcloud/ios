@@ -128,6 +128,10 @@ import Queuer
                         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
                             saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV, progressView: nil, viewActivity: self.appDelegate.window?.rootViewController?.view)
                         }
+                    
+                    case NCGlobal.shared.selectorSaveAsScan:
+                        
+                        saveAsScan(metadata: metadata)
                         
                     default:
                         
@@ -256,6 +260,23 @@ import Queuer
         }
     }
         
+    // MARK: - Save as scan
+    
+    func saveAsScan(metadata: tableMetadata) {
+
+        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let fileNamePathDestination = CCUtility.getDirectoryScan() + "/" + metadata.fileNameView
+        
+        NCUtilityFileSystem.shared.copyFile(atPath: fileNamePath, toPath: fileNamePathDestination)
+        
+        let storyboard = UIStoryboard(name: "Scan", bundle: nil)
+        let navigationController = storyboard.instantiateInitialViewController()!
+        
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
+        
+        appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
+    }
+    
     // MARK: - Print
     
     func printDocument(metadata: tableMetadata) {
@@ -656,6 +677,10 @@ import Queuer
             self.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
         }
         
+        let saveAsScan = UIAction(title: NSLocalizedString("_save_as_scan_", comment: ""), image: UIImage(systemName: "viewfinder.circle")) { action in
+            self.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorSaveAsScan)
+        }
+        
         let open = UIMenu(title: NSLocalizedString("_open_", comment: ""), image: UIImage(systemName: "square.and.arrow.up"), children: [openIn, openQuickLook])
         
         let moveCopy = UIAction(title: NSLocalizedString("_move_or_copy_", comment: ""), image: UIImage(systemName: "arrow.up.right.square")) { action in
@@ -727,6 +752,10 @@ import Queuer
         
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf" {
             children.insert(print, at: 2)
+        }
+        
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
+            children.insert(saveAsScan, at: 2)
         }
         
         if enableViewInFolder {

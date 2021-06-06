@@ -214,6 +214,23 @@ extension NCCollectionViewCommon {
         }
         
         //
+        // SAVE AS SCAN
+        //
+        if #available(iOS 13.0, *) {
+            if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
+                actions.append(
+                    NCMenuAction(
+                        title: NSLocalizedString("_save_as_scan_", comment: ""),
+                        icon: NCUtility.shared.loadImage(named: "viewfinder.circle"),
+                        action: { menuAction in
+                            NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorSaveAsScan)
+                        }
+                    )
+                )
+            }
+        }
+        
+        //
         // RENAME
         //
         if !(isFolderEncrypted && metadata.serverUrl == serverUrlHome) {
@@ -283,6 +300,7 @@ extension NCCollectionViewCommon {
             )
         }
         
+        /*
         //
         // USE AS BACKGROUND
         //
@@ -303,6 +321,7 @@ extension NCCollectionViewCommon {
                 )
             }
         }
+        */
         
         //
         // DELETE

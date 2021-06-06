@@ -258,6 +258,7 @@ class NCGlobal: NSObject {
     let selectorSaveBackground                      = "saveBackground"
     let selectorSaveAlbumLivePhotoIMG               = "saveAlbumLivePhotoIMG"
     let selectorSaveAlbumLivePhotoMOV               = "saveAlbumLivePhotoMOV"
+    let selectorSaveAsScan                          = "saveAsScan"
 
     // Metadata : Status
     //
