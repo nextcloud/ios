@@ -750,12 +750,12 @@ import Queuer
             children.insert(save, at: 2)
         }
         
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf" {
-            children.insert(print, at: 2)
-        }
-        
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
             children.insert(saveAsScan, at: 2)
+        }
+        
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf" {
+            children.insert(print, at: 2)
         }
         
         if enableViewInFolder {
