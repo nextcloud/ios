@@ -145,6 +145,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 
         var url = fileProviderData.shared.fileProviderManager.documentStorageURL.appendingPathComponent(identifier.rawValue, isDirectory: true)
         
+        // (fix copy/paste directory -> isDirectory = false)
         url = url.appendingPathComponent(item.filename, isDirectory:false)
     
         return url
