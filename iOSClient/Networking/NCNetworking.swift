@@ -250,7 +250,6 @@ import Queuer
             let mem = BIO_new_mem_buf(CFDataGetBytePtr(data), Int32(CFDataGetLength(data)))
             let x509cert = d2i_X509_bio(mem, nil)
 
-            BIO_free(mem)
             if x509cert == nil {
                 print("[LOG] OpenSSL couldn't parse X509 Certificate")
             } else {
@@ -277,11 +276,14 @@ import Queuer
                 if fileCertInfo != nil {
                     let output = BIO_new_fp(fileCertInfo, BIO_NOCLOSE)
                     X509_print_ex(output, x509cert, UInt(XN_FLAG_COMPAT), UInt(X509_FLAG_COMPAT))
+                    BIO_free(output)
                 }
-                fclose(fileCert)
+                fclose(fileCertInfo)
 
                 X509_free(x509cert)
             }
+                
+            BIO_free(mem)
         }
     }
     

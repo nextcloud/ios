@@ -1651,12 +1651,14 @@
     NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView]];
     CGImageSourceRef originalSource =  CGImageSourceCreateWithURL((CFURLRef) url, NULL);
     if (!originalSource) {
+        CFRelease(originalSource);
         completition(latitude, longitude, location, date, lensModel);
         return;
     }
     
     CFDictionaryRef fileProperties = CGImageSourceCopyProperties(originalSource, nil);
     if (!fileProperties) {
+        CFRelease(originalSource);
         completition(latitude, longitude, location,date, lensModel);
         return;
     }
@@ -1668,6 +1670,8 @@
     
     CFDictionaryRef imageProperties = CGImageSourceCopyPropertiesAtIndex(originalSource, 0, NULL);
     if (!imageProperties) {
+        CFRelease(originalSource);
+        CFRelease(imageProperties);
         completition(latitude, longitude, location,date, lensModel);
         return;
     }
@@ -1734,6 +1738,8 @@
             // If exists already geocoder data in TableGPS exit
             location = [[NCManageDatabase shared] getLocationFromGeoLatitude:stringLatitude longitude:stringLongitude];
             if (location != nil) {
+                CFRelease(originalSource);
+                CFRelease(imageProperties);
                 completition(latitude, longitude, location, date, lensModel);
                 return;
             }
@@ -1768,18 +1774,22 @@
                         [[NCManageDatabase shared] addGeocoderLocation:location placemarkAdministrativeArea:placemark.administrativeArea placemarkCountry:placemark.country placemarkLocality:placemark.locality placemarkPostalCode:placemark.postalCode placemarkThoroughfare:placemark.thoroughfare latitude:stringLatitude longitude:stringLongitude];
                     }
                     
+                    CFRelease(originalSource);
+                    CFRelease(imageProperties);
                     completition(latitude, longitude, location, date, lensModel);
                 }
             }];
         } else {
+            
+            CFRelease(originalSource);
+            CFRelease(imageProperties);
             completition(latitude, longitude, location, date, lensModel);
         }
     } else {
+        CFRelease(originalSource);
+        CFRelease(imageProperties);
         completition(latitude, longitude, location, date, lensModel);
     }
-       
-    CFRelease(originalSource);
-    CFRelease(imageProperties);
 }
 
 #pragma --------------------------------------------------------------------------------------------
