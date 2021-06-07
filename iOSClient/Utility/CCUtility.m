@@ -1352,8 +1352,6 @@
     PHAsset *asset = result[0];
     NSDate *creationDate = asset.creationDate;
     NSDate *modificationDate = asset.modificationDate;
-    NSArray *resourceArray = [PHAssetResource assetResourcesForAsset:asset];
-    long fileSize = [[resourceArray.firstObject valueForKey:@"fileSize"] longValue];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     
@@ -1410,7 +1408,7 @@
                      
                 metadata.creationDate = creationDate;
                 metadata.date = modificationDate;
-                metadata.size = fileSize;
+                metadata.size = [[NCUtilityFileSystem shared] getFileSizeWithFilePath:fileNamePath];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     completion(metadata, fileNamePath);
@@ -1464,7 +1462,7 @@
                             
                             metadata.creationDate = creationDate;
                             metadata.date = modificationDate;
-                            metadata.size = fileSize;
+                            metadata.size = [[NCUtilityFileSystem shared] getFileSizeWithFilePath:fileNamePath];
                             
                             completion(metadata, fileNamePath);
                         }
@@ -1651,7 +1649,6 @@
     NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView]];
     CGImageSourceRef originalSource =  CGImageSourceCreateWithURL((CFURLRef) url, NULL);
     if (!originalSource) {
-        CFRelease(originalSource);
         completition(latitude, longitude, location, date, lensModel);
         return;
     }
@@ -1671,7 +1668,7 @@
     CFDictionaryRef imageProperties = CGImageSourceCopyPropertiesAtIndex(originalSource, 0, NULL);
     if (!imageProperties) {
         CFRelease(originalSource);
-        CFRelease(imageProperties);
+        CFRelease(fileProperties);
         completition(latitude, longitude, location,date, lensModel);
         return;
     }
@@ -1740,6 +1737,7 @@
             if (location != nil) {
                 CFRelease(originalSource);
                 CFRelease(imageProperties);
+                CFRelease(fileProperties);
                 completition(latitude, longitude, location, date, lensModel);
                 return;
             }
@@ -1776,18 +1774,20 @@
                     
                     CFRelease(originalSource);
                     CFRelease(imageProperties);
+                    CFRelease(fileProperties);
                     completition(latitude, longitude, location, date, lensModel);
                 }
             }];
         } else {
-            
             CFRelease(originalSource);
             CFRelease(imageProperties);
+            CFRelease(fileProperties);
             completition(latitude, longitude, location, date, lensModel);
         }
     } else {
         CFRelease(originalSource);
         CFRelease(imageProperties);
+        CFRelease(fileProperties);
         completition(latitude, longitude, location, date, lensModel);
     }
 }
