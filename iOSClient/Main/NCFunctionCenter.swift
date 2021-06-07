@@ -265,7 +265,8 @@ import Queuer
     func saveAsScan(metadata: tableMetadata) {
 
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-        let fileNamePathDestination = CCUtility.getDirectoryScan() + "/" + metadata.fileNameView
+        let fileNameDestination = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: NCGlobal.shared.keyFileNameMask, keyFileNameType: NCGlobal.shared.keyFileNameType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal, forcedNewFileName: true)!
+        let fileNamePathDestination = CCUtility.getDirectoryScan() + "/" + fileNameDestination
         
         NCUtilityFileSystem.shared.copyFile(atPath: fileNamePath, toPath: fileNamePathDestination)
         
