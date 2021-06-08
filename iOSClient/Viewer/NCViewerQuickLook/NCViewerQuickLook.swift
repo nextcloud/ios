@@ -61,6 +61,26 @@ import QuickLook
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if editingMode {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                if #available(iOS 14.0, *) {
+                    if self.navigationItem.rightBarButtonItems?.count ?? 0 > 1 {
+                        if let buttonItem = self.navigationItem.rightBarButtonItems?.last {
+                            _ = buttonItem.target?.perform(buttonItem.action, with: buttonItem)
+                        }
+                    } else {
+                        if let buttonItem = self.navigationItem.rightBarButtonItems?.first {
+                            _ = buttonItem.target?.perform(buttonItem.action, with: buttonItem)
+                        }
+                    }
+                } else {
+                    if let buttonItem = self.navigationItem.rightBarButtonItems?.filter({$0.customView != nil}).first?.customView as? UIButton {
+                        buttonItem.sendActions(for: .touchUpInside)
+                    }
+                }
+            }
+        }
     }
     
     @objc func dismissPreviewController() {
