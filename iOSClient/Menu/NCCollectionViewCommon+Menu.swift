@@ -170,7 +170,7 @@ extension NCCollectionViewCommon {
         //
         // PRINT
         //
-        if !metadata.directory && (metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf") {
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_print_", comment: ""),
@@ -324,6 +324,21 @@ extension NCCollectionViewCommon {
         */
         
         //
+        // MARKUP
+        //
+        if !isFolderEncrypted && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo) {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_markup_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
+                    action: { menuAction in
+                        NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
+                    }
+                )
+            )
+        }
+        
+        //
         // DELETE
         //
         actions.append(
@@ -343,6 +358,8 @@ extension NCCollectionViewCommon {
                 }
             )
         )
+        
+        
         
         //
         // SET FOLDER E2EE

@@ -52,7 +52,7 @@ extension NCViewer {
             titleDelete = NSLocalizedString("_delete_file_", comment: "")
         }
         
-        let isEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         
         //
         // FAVORITE
@@ -124,7 +124,7 @@ extension NCViewer {
         //
         // PRINT
         //
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf" {
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_print_", comment: ""),
@@ -264,7 +264,7 @@ extension NCViewer {
         //
         // PDF
         //
-        if (metadata.typeFile == NCGlobal.shared.metadataTypeFileDocument && metadata.contentType == "application/pdf" ) {
+        if metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_search_", comment: ""),
@@ -279,7 +279,7 @@ extension NCViewer {
         //
         // MARKUP
         //
-        if (!isEncrypted && (metadata.typeFile == NCGlobal.shared.metadataTypeFileDocument && metadata.contentType == "application/pdf") || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo) {
+        if !isFolderEncrypted && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_markup_", comment: ""),

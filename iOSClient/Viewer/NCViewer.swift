@@ -65,7 +65,7 @@ class NCViewer: NSObject {
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileDocument {
                 
             // PDF
-            if metadata.contentType == "application/pdf" {
+            if metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
                                         
                 if let navigationController = viewController.navigationController {
                     

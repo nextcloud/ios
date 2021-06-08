@@ -595,6 +595,7 @@ import Queuer
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
             return UIMenu()
         }
+        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
         var titleSave: String = NSLocalizedString("_save_selected_files_", comment: "")
@@ -682,7 +683,7 @@ import Queuer
             self.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorPrint)
         }
         
-        let openQuickLook = UIAction(title: NSLocalizedString("_open_quicklook_", comment: ""), image: UIImage(systemName: "eye")) { action in
+        let markup = UIAction(title: NSLocalizedString("_markup_", comment: ""), image: UIImage(systemName: "pencil.tip.crop.circle")) { action in
             self.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
         }
         
@@ -690,7 +691,7 @@ import Queuer
             self.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorSaveAsScan)
         }
         
-        let open = UIMenu(title: NSLocalizedString("_open_", comment: ""), image: UIImage(systemName: "square.and.arrow.up"), children: [openIn, openQuickLook])
+        //let open = UIMenu(title: NSLocalizedString("_open_", comment: ""), image: UIImage(systemName: "square.and.arrow.up"), children: [openIn, openQuickLook])
         
         let moveCopy = UIAction(title: NSLocalizedString("_move_or_copy_", comment: ""), image: UIImage(systemName: "arrow.up.right.square")) { action in
             self.openSelectView(items: [metadata], viewController: viewController)
@@ -753,7 +754,7 @@ import Queuer
         
         // FILE
         
-        var children: [UIMenuElement] = [favorite, offline, open, rename, moveCopy, copy, delete]
+        var children: [UIMenuElement] = [favorite, offline, openIn, rename, moveCopy, copy, delete]
 
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
             children.insert(save, at: 2)
@@ -763,12 +764,16 @@ import Queuer
             children.insert(saveAsScan, at: 2)
         }
         
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf" {
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
             children.insert(print, at: 2)
         }
         
         if enableViewInFolder {
             children.insert(viewInFolder, at: children.count-1)
+        }
+        
+        if !isFolderEncrypted && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo) {
+            children.insert(markup, at: children.count-1)
         }
         
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && viewController is NCCollectionViewCommon && !NCBrandOptions.shared.disable_background_image {
