@@ -95,10 +95,12 @@ import QuickLook
         if editingMode {
             let alertController = UIAlertController(title: NSLocalizedString("_save_", comment: ""), message: "", preferredStyle: .alert)
             
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_overwrite_original_", comment: ""), style: .default) { (action:UIAlertAction) in
-                self.saveMode = .overwrite
-                self.dismiss(animated: true)
-            })
+            if metadata?.livePhoto == false {
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_overwrite_original_", comment: ""), style: .default) { (action:UIAlertAction) in
+                    self.saveMode = .overwrite
+                    self.dismiss(animated: true)
+                })
+            }
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_save_as_copy_", comment: ""), style: .default) { (action:UIAlertAction) in
                 self.saveMode = .copy
                 self.dismiss(animated: true)

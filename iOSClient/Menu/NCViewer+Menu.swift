@@ -52,6 +52,8 @@ extension NCViewer {
             titleDelete = NSLocalizedString("_delete_file_", comment: "")
         }
         
+        let isEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        
         //
         // FAVORITE
         //
@@ -277,7 +279,7 @@ extension NCViewer {
         //
         // MARKUP
         //
-        if (metadata.typeFile == NCGlobal.shared.metadataTypeFileDocument && metadata.contentType == "application/pdf") || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
+        if (!isEncrypted && (metadata.typeFile == NCGlobal.shared.metadataTypeFileDocument && metadata.contentType == "application/pdf") || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_markup_", comment: ""),
