@@ -27,7 +27,7 @@ import QuickLook
 @objc class NCViewerQuickLook: QLPreviewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    let previewController = QLPreviewController()
+    var url: URL?
     var previewItems: [PreviewItem] = []
     var editingMode: Bool
     enum saveModeType{
@@ -41,43 +41,26 @@ import QuickLook
         fatalError("init(coder:) has not been implemented")
     }
     
-    init(with url: URL, editingMode: Bool) {
+    @objc init(with url: URL, editingMode: Bool) {
+        
+        self.url = url
         self.editingMode = editingMode
+        
+        let previewItem = PreviewItem()
+        previewItem.previewItemURL = url
+        self.previewItems.append(previewItem)
+
         super.init(nibName: nil, bundle: nil)
         
         self.dataSource = self
         self.delegate = self
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissPreviewController))
+        self.currentPreviewItemIndex = 0
 
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            
-            guard let _ = data, error == nil else {
-                self.presentAlertController(with: error?.localizedDescription ?? "Failed to look the file")
-                return
-            }
-            
-            var previewURL = url
-            previewURL.hasHiddenExtension = true
-            let previewItem = PreviewItem()
-            previewItem.previewItemURL = previewURL
-            self.previewItems.append(previewItem)
-            self.currentPreviewItemIndex = 0
-          
-        }.resume()
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissPreviewController))
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    }
-    
-    func presentAlertController(with message: String) {
-         // present your alert controller from the main thread
-        DispatchQueue.main.async {
-            UIApplication.shared.isNetworkActivityIndicatorVisible = false
-            let alert = UIAlertController(title: "Alert", message: message, preferredStyle: .alert)
-            alert.addAction(.init(title: "OK", style: .default))
-            self.appDelegate.window?.rootViewController?.present(alert, animated: true)
-        }
     }
     
     @objc func dismissPreviewController() {
@@ -129,6 +112,11 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
     
     func previewController(_ controller: QLPreviewController, didSaveEditedCopyOf previewItem: QLPreviewItem, at modifiedContentsURL: URL) {
         
+        if saveMode == .copy {
+            
+        } else if saveMode == .overwrite {
+            
+        }
     }
 }
 

@@ -174,8 +174,11 @@
                     
             [self deselectFormRow:sender];
             
-            //NCViewerQuickLook *viewerQuickLook = [NCViewerQuickLook new];
-            //[viewerQuickLook quickLookWithUrl:[NSURL fileURLWithPath:NCCommunicationCommon.shared.filenamePathLog]];
+            NCViewerQuickLook *viewerQuickLook = [[NCViewerQuickLook alloc] initWith:[NSURL fileURLWithPath:NCCommunicationCommon.shared.filenamePathLog] editingMode:false];
+            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewerQuickLook];
+            navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
+            
+            [self presentViewController:navigationController animated:YES completion:nil];
         };
         [section addFormRow:row];
         
