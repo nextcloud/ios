@@ -326,7 +326,7 @@ extension NCCollectionViewCommon {
         //
         // MARKUP
         //
-        if !isFolderEncrypted && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo) {
+        if !isFolderEncrypted && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_markup_", comment: ""),
