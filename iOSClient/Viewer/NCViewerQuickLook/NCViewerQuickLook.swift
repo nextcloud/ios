@@ -36,15 +36,19 @@ import QuickLook
         case discard
     }
     var saveMode: saveModeType = .discard
+    var metadata: tableMetadata?
         
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    @objc init(with url: URL, editingMode: Bool) {
+    @objc init(with url: URL, editingMode: Bool, metadata: tableMetadata?) {
         
         self.url = url
         self.editingMode = editingMode
+        if let metadata = metadata {
+            self.metadata = tableMetadata.init(value: metadata)
+        }
         
         let previewItem = PreviewItem()
         previewItem.previewItemURL = url
@@ -63,23 +67,26 @@ import QuickLook
         super.viewDidLoad()
         
         if editingMode {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                if #available(iOS 14.0, *) {
-                    if self.navigationItem.rightBarButtonItems?.count ?? 0 > 1 {
-                        if let buttonItem = self.navigationItem.rightBarButtonItems?.last {
-                            _ = buttonItem.target?.perform(buttonItem.action, with: buttonItem)
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { (t) in
+                if self.navigationItem.rightBarButtonItems?.count ?? 0 > 1 || !(self.navigationController?.isToolbarHidden ?? false) {
+                    if #available(iOS 14.0, *) {
+                        if self.navigationItem.rightBarButtonItems?.count ?? 0 > 1 {
+                            if let buttonItem = self.navigationItem.rightBarButtonItems?.last {
+                                _ = buttonItem.target?.perform(buttonItem.action, with: buttonItem)
+                            }
+                        } else {
+                            if let buttonItem = self.navigationItem.rightBarButtonItems?.first {
+                                _ = buttonItem.target?.perform(buttonItem.action, with: buttonItem)
+                            }
                         }
                     } else {
-                        if let buttonItem = self.navigationItem.rightBarButtonItems?.first {
-                            _ = buttonItem.target?.perform(buttonItem.action, with: buttonItem)
+                        if let buttonItem = self.navigationItem.rightBarButtonItems?.filter({$0.customView != nil}).first?.customView as? UIButton {
+                            buttonItem.sendActions(for: .touchUpInside)
                         }
                     }
-                } else {
-                    if let buttonItem = self.navigationItem.rightBarButtonItems?.filter({$0.customView != nil}).first?.customView as? UIButton {
-                        buttonItem.sendActions(for: .touchUpInside)
-                    }
+                    t.invalidate()
                 }
-            }
+            })
         }
     }
     
@@ -132,26 +139,35 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
     
     func previewController(_ controller: QLPreviewController, didSaveEditedCopyOf previewItem: QLPreviewItem, at modifiedContentsURL: URL) {
         
-        if saveMode == .copy {
+        if saveMode != .discard {
+                
+            guard let metadata = self.metadata else { return }
+            let ocId = NSUUID().uuidString
+            let size = NCUtilityFileSystem.shared.getFileSize(filePath: modifiedContentsURL.path)
             
-        } else if saveMode == .overwrite {
+            if saveMode == .copy {
+                let fileName = NCUtilityFileSystem.shared.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
+                metadata.fileName = fileName
+                metadata.fileNameView = fileName
+            } 
             
+            let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: metadata.fileNameView)!
+            
+            if NCUtilityFileSystem.shared.copyFile(atPath: modifiedContentsURL.path, toPath: fileNamePath) {
+            
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: metadata.account, fileName: metadata.fileName, fileNameView: metadata.fileNameView, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: modifiedContentsURL.path, contentType: "", livePhoto: false, chunk: false)
+                                                                               
+                metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
+                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+                metadataForUpload.size = size
+                metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+                
+                appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: [metadataForUpload])
+            }
         }
     }
 }
 
-extension URL {
-    var hasHiddenExtension: Bool {
-        get { (try? resourceValues(forKeys: [.hasHiddenExtensionKey]))?.hasHiddenExtension == true }
-        set {
-            var resourceValues = URLResourceValues()
-            resourceValues.hasHiddenExtension = newValue
-            try? setResourceValues(resourceValues)
-        }
-    }
-}
-
-import QuickLook
 class PreviewItem: NSObject, QLPreviewItem {
     var previewItemURL: URL?
 }

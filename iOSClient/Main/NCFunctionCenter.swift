@@ -61,7 +61,7 @@ import Queuer
                             editingMode = true
                         }
                         
-                        let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), editingMode: editingMode)
+                        let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), editingMode: editingMode, metadata: metadata)
                         let navigationController = UINavigationController(rootViewController: viewerQuickLook)
                         navigationController.modalPresentationStyle = .overFullScreen
                         

@@ -174,7 +174,7 @@
                     
             [self deselectFormRow:sender];
             
-            NCViewerQuickLook *viewerQuickLook = [[NCViewerQuickLook alloc] initWith:[NSURL fileURLWithPath:NCCommunicationCommon.shared.filenamePathLog] editingMode:false];
+            NCViewerQuickLook *viewerQuickLook = [[NCViewerQuickLook alloc] initWith:[NSURL fileURLWithPath:NCCommunicationCommon.shared.filenamePathLog] editingMode:false metadata:nil];
             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewerQuickLook];
             navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
             

@@ -194,7 +194,7 @@ class NCViewer: NSObject {
 
         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
 
-        let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), editingMode: false)
+        let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), editingMode: false, metadata: metadata)
         let navigationController = UINavigationController(rootViewController: viewerQuickLook)
         navigationController.modalPresentationStyle = .overFullScreen
         
