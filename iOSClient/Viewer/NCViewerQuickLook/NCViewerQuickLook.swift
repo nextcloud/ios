@@ -93,7 +93,7 @@ import QuickLook
                 self.saveMode = .copy
                 self.dismiss(animated: true)
             })
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("Discard changes", comment: ""), style: .default) { (action:UIAlertAction) in
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive) { (action:UIAlertAction) in
                 self.saveMode = .discard
                 self.dismiss(animated: true)
             })

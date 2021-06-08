@@ -801,6 +801,7 @@
 "_markup_"                  = "Markup";
 "_overwrite_original_"      = "Overwrite original";
 "_save_as_copy_"            = "Save as copy";
+"_discard_changes_"         = "Discard changes";
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 // IM
