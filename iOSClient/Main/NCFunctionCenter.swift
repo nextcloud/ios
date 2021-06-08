@@ -56,8 +56,16 @@ import Queuer
                         let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
                         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
 
-                        viewerQuickLook = NCViewerQuickLook.init()
-                        viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath))
+                        var editingMode = false
+                        if #available(iOS 13.0, *) {
+                            editingMode = true
+                        }
+                        
+                        let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), editingMode: editingMode)
+                        let navigationController = UINavigationController(rootViewController: viewerQuickLook)
+                        navigationController.modalPresentationStyle = .overFullScreen
+                        
+                        self.appDelegate.window?.rootViewController?.present(navigationController, animated: true)
                         
                     case NCGlobal.shared.selectorLoadFileView:
                         

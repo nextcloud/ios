@@ -275,6 +275,21 @@ extension NCViewer {
         }
         
         //
+        // MARKUP
+        //
+        if (metadata.typeFile == NCGlobal.shared.metadataTypeFileDocument && metadata.contentType == "application/pdf") || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_markup_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
+                    action: { menuAction in
+                        NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
+                    }
+                )
+            )
+        }
+        
+        //
         // DELETE
         //
         if !webView {

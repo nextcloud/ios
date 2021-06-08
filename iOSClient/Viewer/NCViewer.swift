@@ -194,8 +194,8 @@ class NCViewer: NSObject {
 
         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
 
-        viewerQuickLook = NCViewerQuickLook.init()
-        viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath))
+        //viewerQuickLook = NCViewerQuickLook.init()
+        //viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath))
     }
 }
 

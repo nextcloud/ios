@@ -174,8 +174,8 @@
                     
             [self deselectFormRow:sender];
             
-            NCViewerQuickLook *viewerQuickLook = [NCViewerQuickLook new];
-            [viewerQuickLook quickLookWithUrl:[NSURL fileURLWithPath:NCCommunicationCommon.shared.filenamePathLog]];
+            //NCViewerQuickLook *viewerQuickLook = [NCViewerQuickLook new];
+            //[viewerQuickLook quickLookWithUrl:[NSURL fileURLWithPath:NCCommunicationCommon.shared.filenamePathLog]];
         };
         [section addFormRow:row];
         
