@@ -798,7 +798,7 @@
 "Cancel"                    = "Cancel";
 "_certificate_details_"     = "Certificate details";
 "_save_as_scan_"            = "Save as scan";
-"_markup_"                  = "Markup";
+"_modify_"                  = "Modify";
 "_overwrite_original_"      = "Overwrite original";
 "_save_as_copy_"            = "Save as copy";
 "_discard_changes_"         = "Discard changes";

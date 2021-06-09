@@ -683,7 +683,7 @@ import Queuer
             self.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorPrint)
         }
         
-        let markup = UIAction(title: NSLocalizedString("_markup_", comment: ""), image: UIImage(systemName: "pencil.tip.crop.circle")) { action in
+        let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""), image: UIImage(systemName: "pencil.tip.crop.circle")) { action in
             self.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
         }
         
@@ -773,7 +773,7 @@ import Queuer
         }
         
         if !isFolderEncrypted && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage) {
-            children.insert(markup, at: children.count-1)
+            children.insert(modify, at: children.count-1)
         }
         
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && viewController is NCCollectionViewCommon && !NCBrandOptions.shared.disable_background_image {

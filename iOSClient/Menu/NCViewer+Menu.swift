@@ -277,12 +277,12 @@ extension NCViewer {
         }
         
         //
-        // MARKUP
+        // MODIFY
         //
         if !isFolderEncrypted && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage) {
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_markup_", comment: ""),
+                    title: NSLocalizedString("_modify_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
                     action: { menuAction in
                         NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
