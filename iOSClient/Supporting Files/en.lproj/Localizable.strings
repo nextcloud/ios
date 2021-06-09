@@ -802,6 +802,7 @@
 "_overwrite_original_"      = "Overwrite original";
 "_save_as_copy_"            = "Save as copy";
 "_discard_changes_"         = "Close and discard changes";
+"_message_disable_overwrite_livephoto_" = "This image it's a Live Photo, the overwrite will not possible";
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 // IM

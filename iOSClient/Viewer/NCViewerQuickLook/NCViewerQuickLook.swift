@@ -88,6 +88,10 @@ import QuickLook
                 }
             })
         }
+        
+        if editingMode && metadata?.livePhoto == true {
+            NCContentPresenter.shared.messageNotification("", description: "_message_disable_overwrite_livephoto_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCharactersForbidden, forced: true)
+        }
     }
     
     @objc func dismissPreviewController() {
