@@ -82,18 +82,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCCommunicationCommon.shared.setup(userAgent: userAgent)
         
         startTimerErrorNetworking()
-
+        
         // LOG
-        let levelLog = CCUtility.getLogLevel()
-        NCCommunicationCommon.shared.levelLog = levelLog
+        var levelLog = 0
         if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
             NCCommunicationCommon.shared.pathLog = pathDirectoryGroup
         }
-        NCCommunicationCommon.shared.copyLogToDocumentDirectory = true
-        if isSimulatorOrTestFlight {
-            NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+        
+        if NCBrandOptions.shared.disable_log {
+            
+            NCUtilityFileSystem.shared.deleteFile(filePath: NCCommunicationCommon.shared.filenamePathLog)
+            NCUtilityFileSystem.shared.deleteFile(filePath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NCCommunicationCommon.shared.filenameLog)
+            
         } else {
-            NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
+            
+            levelLog = CCUtility.getLogLevel()
+            NCCommunicationCommon.shared.levelLog = levelLog            
+            NCCommunicationCommon.shared.copyLogToDocumentDirectory = true
+            if isSimulatorOrTestFlight {
+                NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+            } else {
+                NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
+            }
         }
         
         // Activate user account

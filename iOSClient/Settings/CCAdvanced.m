@@ -162,7 +162,7 @@
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_diagnostics_", nil)];
     [form addFormSection:section];
         
-    if ([[NSFileManager defaultManager] fileExistsAtPath:NCCommunicationCommon.shared.filenamePathLog]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:NCCommunicationCommon.shared.filenamePathLog] && NCBrandOptions.shared.disable_log == false) {
         
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"log" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_view_log_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
