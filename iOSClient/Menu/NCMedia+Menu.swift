@@ -162,6 +162,36 @@ extension NCMedia {
             )
             
             //
+            // SAVE TO PHOTO GALLERY
+            //
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_save_selected_files_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
+                    action: { menuAction in
+                        self.isEditMode = false
+                        for ocId in self.selectOcId {
+                            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                                if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
+                                    if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+                                        NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
+                                    } else {
+                                        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                                            NCFunctionCenter.shared.saveAlbum(metadata: metadata)
+                                        } else {
+                                            NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        self.selectOcId.removeAll()
+                        self.reloadDataThenPerform { }
+                    }
+                )
+            )
+            
+            //
             // COPY - MOVE
             //
             actions.append(
@@ -179,6 +209,26 @@ extension NCMedia {
                         if meradatasSelect.count > 0 {
                             NCFunctionCenter.shared.openSelectView(items: meradatasSelect, viewController: self)
                         }
+                        self.selectOcId.removeAll()
+                        self.reloadDataThenPerform { }
+                    }
+                )
+            )
+            
+            //
+            // COPY
+            //
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_copy_file_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
+                    action: { menuAction in
+                        self.isEditMode = false
+                        self.appDelegate.pasteboardOcIds.removeAll()
+                        for ocId in self.selectOcId {
+                            self.appDelegate.pasteboardOcIds.append(ocId)
+                        }
+                        NCFunctionCenter.shared.copyPasteboard()
                         self.selectOcId.removeAll()
                         self.reloadDataThenPerform { }
                     }
