@@ -185,8 +185,8 @@ class NCViewerImage: UIViewController {
     @objc func triggerProgressTask(_ notification: NSNotification) {
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let progressNumber = userInfo["progress"] as? NSNumber {
-                if self.metadatas.first(where: { $0.ocId == ocId }) != nil {
+            if let serverUrl = userInfo["serverUrl"] as? String, let fileName = userInfo["fileName"] as? String, let progressNumber = userInfo["progress"] as? NSNumber {
+                if self.metadatas.first(where: { $0.serverUrl == serverUrl && $0.fileName == fileName}) != nil {
                     let progress = progressNumber.floatValue
                     if progress == 1 {
                         self.progressView.progress = 0
