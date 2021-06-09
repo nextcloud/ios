@@ -93,6 +93,7 @@ import QuickLook
     @objc func dismissPreviewController() {
         
         if editingMode {
+            
             let alertController = UIAlertController(title: NSLocalizedString("_save_", comment: ""), message: "", preferredStyle: .alert)
             
             if metadata?.livePhoto == false {
@@ -101,17 +102,23 @@ import QuickLook
                     self.dismiss(animated: true)
                 })
             }
+            
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_save_as_copy_", comment: ""), style: .default) { (action:UIAlertAction) in
                 self.saveMode = .copy
                 self.dismiss(animated: true)
             })
+            
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive) { (action:UIAlertAction) in
                 self.saveMode = .discard
                 self.dismiss(animated: true)
             })
             
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (action:UIAlertAction) in })
+            
             self.present(alertController, animated: true)
+            
         } else {
+            
             self.dismiss(animated: true)
         }
     }
