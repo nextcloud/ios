@@ -600,9 +600,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
             NCPushNotification.shared().unsubscribingNextcloudServerPushNotification(account.account, urlBase: account.urlBase, user: account.user, withSubscribing: false)
-        }
-        
-        settingAccount("", urlBase: "", user: "", userId: "", password: "")
+        }        
         
         let results = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
         for result in results {
@@ -616,6 +614,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         CCUtility.setPassword(account, password: nil)
         
         if wipe {
+            settingAccount("", urlBase: "", user: "", userId: "", password: "")
             let accounts = NCManageDatabase.shared.getAccounts()
             if accounts?.count ?? 0 > 0 {
                 if let newAccount = accounts?.first {
