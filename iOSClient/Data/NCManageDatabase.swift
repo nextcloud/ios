@@ -1910,13 +1910,13 @@ class NCManageDatabase: NSObject {
         completion(metadataFolder, metadataFolders, metadatas)
     }
     
-    @objc func createMetadata(account: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, livePhoto: Bool, chunk: Bool) -> tableMetadata {
+    @objc func createMetadata(account: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, livePhoto: Bool) -> tableMetadata {
         
         let metadata = tableMetadata()
         let resultInternalType = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
         
         metadata.account = account
-        metadata.chunk = chunk
+        metadata.chunk = false
         metadata.contentType = resultInternalType.mimeType
         metadata.creationDate = Date() as NSDate
         metadata.date = Date() as NSDate
@@ -2227,20 +2227,6 @@ class NCManageDatabase: NSObject {
             try realm.safeWrite {
                 let result = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).first
                 result?.fileNameView = newFileNameView
-            }
-        } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-    
-    func setMetadataChunked(ocId: String, chunk: Bool) {
-           
-        let realm = try! Realm()
-        
-        do {
-            try realm.safeWrite {
-                let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
-                result?.chunk = chunk
             }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")

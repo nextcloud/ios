@@ -463,7 +463,7 @@ import Queuer
             
             try data.write(to: URL(fileURLWithPath: filePath))
            
-            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileNameView, fileNameView: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: contentType, livePhoto: false, chunk: false)
+            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileNameView, fileNameView: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: contentType, livePhoto: false)
             
             metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
             metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile

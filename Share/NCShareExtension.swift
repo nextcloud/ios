@@ -332,7 +332,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                 
                 NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: true)
                                 
-                let metadata = NCManageDatabase.shared.createMetadata(account: activeAccount.account, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "", contentType: "", livePhoto: false, chunk: false)
+                let metadata = NCManageDatabase.shared.createMetadata(account: activeAccount.account, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "", contentType: "", livePhoto: false)
                 
                 metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
                 metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
