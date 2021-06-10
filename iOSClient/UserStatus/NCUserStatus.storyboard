@@ -335,12 +335,11 @@
                                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3CT-dJ-sEj">
-                                        <rect key="frame" x="10" y="67" width="175" height="30"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3CT-dJ-sEj">
+                                        <rect key="frame" x="10" y="67" width="192.66666666666666" height="30"/>
                                         <color key="backgroundColor" systemColor="systemGray6Color"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="1F4-Cv-RzK"/>
-                                            <constraint firstAttribute="width" constant="175" id="77H-1R-knu"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
                                         <state key="normal" title="clear status message"/>
@@ -348,11 +347,10 @@
                                             <action selector="actionClearStatusMessage:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="kSK-3g-AiY"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3xN-e7-N0L">
-                                        <rect key="frame" x="243" y="67" width="175" height="30"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3xN-e7-N0L">
+                                        <rect key="frame" x="225.33333333333337" y="67" width="192.66666666666663" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="66i-0j-Qrn"/>
-                                            <constraint firstAttribute="width" constant="175" id="wvf-2Z-fgc"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
                                         <state key="normal" title="set status message"/>
@@ -382,6 +380,8 @@
                             <constraint firstItem="LVo-6E-efl" firstAttribute="top" secondItem="U4w-hH-mXP" secondAttribute="bottom" id="8zx-ll-pc9"/>
                             <constraint firstItem="U4w-hH-mXP" firstAttribute="bottom" secondItem="vDu-zF-Fre" secondAttribute="bottom" constant="-110" id="B30-O6-rLv"/>
                             <constraint firstItem="U4w-hH-mXP" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="C8w-CN-4hv"/>
+                            <constraint firstItem="3CT-dJ-sEj" firstAttribute="width" secondItem="LVo-6E-efl" secondAttribute="width" multiplier="0.45" id="OLu-8K-n7N"/>
+                            <constraint firstItem="3xN-e7-N0L" firstAttribute="width" secondItem="5EZ-qb-Rvc" secondAttribute="width" multiplier="0.45" id="PpO-WB-uiQ"/>
                             <constraint firstItem="U4w-hH-mXP" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="RB6-bZ-Vdc"/>
                             <constraint firstItem="U4w-hH-mXP" firstAttribute="trailing" secondItem="vDu-zF-Fre" secondAttribute="trailing" id="qeY-ID-LO4"/>
                             <constraint firstItem="LVo-6E-efl" firstAttribute="leading" secondItem="U4w-hH-mXP" secondAttribute="leading" id="tOB-eF-OWh"/>
