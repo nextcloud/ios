@@ -212,10 +212,7 @@ open class NCAudioRecorder : NSObject {
         if recorder == nil {
             try prepare()
         }
-        
-        try session.setCategory(.playAndRecord, mode: .default)
-        try session.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
-        
+                
         recorder?.record()
         state = .record
         
@@ -229,9 +226,6 @@ open class NCAudioRecorder : NSObject {
             try prepare()
         }
         
-        try session.setCategory(.playback, mode: .default)
-        try AVAudioSession.sharedInstance().setActive(true)
-
         player = try AVAudioPlayer(contentsOf: url)
         player?.prepareToPlay()
 
