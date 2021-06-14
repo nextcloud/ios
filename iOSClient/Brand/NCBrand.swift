@@ -46,15 +46,17 @@ import UIKit
     }()
     
     @objc public var brand:                             String = "Nextcloud"
-    @objc public var mailMe:                            String = "ios@nextcloud.com"
-    @objc public var textCopyrightNextcloudiOS:         String = "Nextcloud Coherence for iOS %@ © 2021"
+    //@objc public var mailMe:                            String = "ios@nextcloud.com"                              // Deprecated
+    @objc public var textCopyrightNextcloudiOS:         String = "Nextcloud Liquid for iOS %@ © 2021"
     @objc public var textCopyrightNextcloudServer:      String = "Nextcloud Server %@"
     @objc public var loginBaseUrl:                      String = "https://cloud.nextcloud.com"
     @objc public var pushNotificationServerProxy:       String = "https://push-notifications.nextcloud.com"
     @objc public var linkLoginHost:                     String = "https://nextcloud.com/install"
     @objc public var linkloginPreferredProviders:       String = "https://nextcloud.com/signup-ios";
     @objc public var webLoginAutenticationProtocol:     String = "nc://"                                            // example "abc://"
-    
+    @objc public var privacy:                           String = "https://nextcloud.com/privacy"
+    @objc public var sourceCode:                        String = "https://github.com/nextcloud/ios"
+
     // Personalized
     @objc public var webCloseViewProtocolPersonalized:  String = ""                                                 // example "abc://change/plan"      Don't touch me !!
     @objc public var folderBrandAutoUpload:             String = ""                                                 // example "_auto_upload_folder_"   Don't touch me !!
@@ -86,6 +88,10 @@ import UIKit
     @objc public var disable_openin_file:               Bool = false                                                // Don't touch me !!
     @objc public var disable_crash_service:             Bool = false
     @objc public var disable_request_account:           Bool = false
+    @objc public var disable_log:                       Bool = false
+
+    @objc public var disable_background_color:          Bool = true
+    @objc public var disable_background_image:          Bool = true
 
     override init() {
         
@@ -100,7 +106,6 @@ import UIKit
 class NCBrandColor: NSObject {
     @objc static let shared: NCBrandColor = {
         let instance = NCBrandColor()
-        instance.setDarkMode()
         instance.createImagesThemingColor()
         return instance
     }()
@@ -131,6 +136,7 @@ class NCBrandColor: NSObject {
         
         static var buttonMore = UIImage()
         static var buttonStop = UIImage()
+        static var buttonRestore = UIImage()
     }
 
     // Color
@@ -140,41 +146,181 @@ class NCBrandColor: NSObject {
     @objc public var brand:                 UIColor                                                                                 // don't touch me
     @objc public var brandElement:          UIColor                                                                                 // don't touch me
     @objc public var brandText:             UIColor                                                                                 // don't touch me
-
-    @objc public var connectionNo:          UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
-    @objc public var encrypted:             UIColor = .red
-    @objc public var backgroundView:        UIColor = .white
-    @objc public var backgroundForm:        UIColor = UIColor(red: 244.0/255.0, green: 244.0/255.0, blue: 244.0/255.0, alpha: 1.0)
-    @objc public var textView:              UIColor = .black
-    @objc public var separator:             UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
-    @objc public var tabBar:                UIColor = .white
+    
     @objc public let nextcloud:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
-    @objc public let nextcloudSoft:         UIColor = UIColor(red: 90.0/255.0, green: 160.0/255.0, blue: 210.0/255.0, alpha: 1.0)
-    @objc public let icon:                  UIColor = UIColor(red: 104.0/255.0, green: 104.0/255.0, blue: 104.0/255.0, alpha: 1.0)
-    @objc public let optionItem:            UIColor = UIColor(red: 178.0/255.0, green: 178.0/255.0, blue: 178.0/255.0, alpha: 1.0)
-    @objc public let graySoft:              UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
+    @objc public let gray:                  UIColor = UIColor(red: 104.0/255.0, green: 104.0/255.0, blue: 104.0/255.0, alpha: 1.0)
+    @objc public let lightGray:             UIColor = UIColor(red: 229.0/255.0, green: 229.0/229.0, blue: 104.0/255.0, alpha: 1.0)
     @objc public let yellowFavorite:        UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
-    @objc public let textInfo:              UIColor = UIColor(red: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 1.0)
-    @objc public var select:                UIColor = .white
-    @objc public var avatarBorder:          UIColor = .white
 
+    @objc public var systemBackground: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemBackground
+            } else {
+                return .white
+            }
+        }
+    }
+    
+    @objc public var secondarySystemBackground: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .secondarySystemBackground
+            } else {
+                return UIColor(red: 0.95, green: 0.95, blue: 0.97, alpha: 1.0)
+            }
+        }
+    }
+    
+    @objc public var tertiarySystemBackground: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .tertiarySystemBackground
+            } else {
+                return UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            }
+        }
+    }
+    
+    @objc public var systemGroupedBackground: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemGroupedBackground
+            } else {
+                return UIColor(red: 0.95, green: 0.95, blue: 0.97, alpha: 1.0)
+            }
+        }
+    }
+    
+    @objc public var secondarySystemGroupedBackground: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .secondarySystemGroupedBackground
+            } else {
+                return .white
+            }
+        }
+    }
+    
+    @objc public var label: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .label
+            } else {
+                return .black
+            }
+        }
+    }
+    
+    @objc public var separator: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .separator
+            } else {
+                return UIColor(red: 0.24, green: 0.24, blue: 0.26, alpha: 1.0)
+            }
+        }
+    }
+    
+    @objc public var opaqueSeparator: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .opaqueSeparator
+            } else {
+                return UIColor(red: 0.78, green: 0.78, blue: 0.78, alpha: 1.0)
+            }
+        }
+    }
+    
+    @objc public var systemGray: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemGray
+            } else {
+                return UIColor(red: 0.56, green: 0.56, blue: 0.58, alpha: 1.0)
+            }
+        }
+    }
+    
+    @objc public var systemGray2: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemGray2
+            } else {
+                return UIColor(red: 0.68, green: 0.68, blue: 0.7, alpha: 1.0)
+            }
+        }
+    }
+    
+    @objc public var systemGray3: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemGray3
+            } else {
+                return UIColor(red: 0.78, green: 0.78, blue: 0.8, alpha: 1.0)
+            }
+        }
+    }
+    
+    @objc public var systemGray4: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemGray4
+            } else {
+                return UIColor(red: 0.82, green: 0.82, blue: 0.84, alpha: 1.0)
+            }
+        }
+    }
+    
+    @objc public var systemGray5: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemGray5
+            } else {
+                return UIColor(red: 0.9, green: 0.9, blue: 0.92, alpha: 1.0)
+            }
+        }
+    }
+    
+    @objc public var systemGray6: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemGray6
+            } else {
+                return UIColor(red: 0.95, green: 0.95, blue: 0.97, alpha: 1.0)
+            }
+        }
+    }
+    
+    @objc public var systemFill: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemFill
+            } else {
+                return UIColor(red: 120/255, green: 120/255, blue: 120/255, alpha: 1.0)
+            }
+        }
+    }
+    
     override init() {
         self.brand = self.customer
         self.brandElement = self.customer
         self.brandText = self.customerText        
     }
     
-    private func createImagesThemingColor() {
+    public func createImagesThemingColor() {
         
+        let gray: UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
+
         cacheImages.file = UIImage.init(named: "file")!
         
-        cacheImages.shared = UIImage(named: "share")!.image(color: graySoft, size: 50)
-        cacheImages.canShare = UIImage(named: "share")!.image(color: graySoft, size: 50)
-        cacheImages.shareByLink = UIImage(named: "sharebylink")!.image(color: graySoft, size: 50)
+        cacheImages.shared = UIImage(named: "share")!.image(color: gray, size: 50)
+        cacheImages.canShare = UIImage(named: "share")!.image(color: gray, size: 50)
+        cacheImages.shareByLink = UIImage(named: "sharebylink")!.image(color: gray, size: 50)
         
         cacheImages.favorite = NCUtility.shared.loadImage(named: "star.fill", color: yellowFavorite)
-        cacheImages.comment = UIImage(named: "comment")!.image(color: graySoft, size: 50)
-        cacheImages.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: textView)
+        cacheImages.comment = UIImage(named: "comment")!.image(color: gray, size: 50)
+        cacheImages.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: label)
         cacheImages.offlineFlag = UIImage.init(named: "offlineFlag")!
         cacheImages.local = UIImage.init(named: "local")!
             
@@ -187,35 +333,15 @@ class NCBrandColor: NSObject {
         cacheImages.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement, size: folderWidth)
         cacheImages.folder =  UIImage(named: "folder")!.image(color: brandElement, size: folderWidth)
         
-        cacheImages.checkedYes = NCUtility.shared.loadImage(named: "checkmark.circle.fill", color: .darkGray)
-        cacheImages.checkedNo = NCUtility.shared.loadImage(named: "circle", color: graySoft)
+        cacheImages.checkedYes = NCUtility.shared.loadImage(named: "checkmark.circle.fill", color: .systemBlue)
+        cacheImages.checkedNo = NCUtility.shared.loadImage(named: "circle", color: gray)
         
-        cacheImages.buttonMore = UIImage(named: "more")!.image(color: graySoft, size: 50)
-        cacheImages.buttonStop = UIImage(named: "stop")!.image(color: graySoft, size: 50)
+        cacheImages.buttonMore = UIImage(named: "more")!.image(color: gray, size: 50)
+        cacheImages.buttonStop = UIImage(named: "stop")!.image(color: gray, size: 50)
+        cacheImages.buttonRestore = UIImage(named: "restore")!.image(color: gray, size: 50)
     }
     
-    @objc public func setDarkMode() {
-        let darkMode = CCUtility.getDarkMode()
-        if darkMode {
-            tabBar = UIColor(red: 25.0/255.0, green: 25.0/255.0, blue: 25.0/255.0, alpha: 1.0)
-            backgroundView = .black
-            backgroundForm = UIColor(red: 32.0/255.0, green: 32.0/255.0, blue: 32.0/255.0, alpha: 1.0)
-            textView = .white
-            separator = UIColor(red: 60.0/255.0, green: 60.0/255.0, blue: 60.0/255.0, alpha: 1.0)
-            select = UIColor.white.withAlphaComponent(0.2)
-            avatarBorder = .black
-        } else {
-            tabBar = .white
-            backgroundView = .white
-            backgroundForm = UIColor(red: 242.0/255.0, green: 242.0/255.0, blue: 242.0/255.0, alpha: 1.0)
-            textView = .black
-            separator = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
-            select = self.brandElement.withAlphaComponent(0.1)
-            avatarBorder = .white
-        }
-    }
-    
-#if !EXTENSION
+    #if !EXTENSION
     public func settingThemingColor(account: String) {
         
         let darker: CGFloat = 30    // %
@@ -258,15 +384,13 @@ class NCBrandColor: NSObject {
             NCBrandColor.shared.brand = NCBrandColor.shared.customer
             NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
         }
-        
-        setDarkMode()
-        
+                
         DispatchQueue.main.async {
             self.createImagesThemingColor()
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
         }
     }
-#endif
+    #endif
     
     @objc func settingBrandColor(_ themingColor: String?, themingColorElement: String?, themingColorText: String?) {
                 

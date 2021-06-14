@@ -21,13 +21,15 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import NCCommunication
 
 class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
     
     var metadataTemp: tableMetadata?
     
+    // MARK: - View Life Cycle
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
@@ -54,7 +56,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         self.navigationItem.title = titleCurrentFolder
         
         setNavigationItem()
-        
         reloadDataSource()
     }
     
@@ -66,32 +67,32 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
     // MARK: - NotificationCenter
     
     override func downloadStartFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
+        
         reloadDataSource()
     }
     
     override func downloadedFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
+        
         reloadDataSource()
     }
     
     override func downloadCancelFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
+        
         reloadDataSource()
     }
     
     override func uploadStartFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
+        
         reloadDataSource()
     }
     
     override func uploadedFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
+        
         reloadDataSource()
     }
     
     override func uploadCancelFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
+        
         reloadDataSource()
     }
     
@@ -138,7 +139,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
         
         NCManageDatabase.shared.addMetadata(metadata)
-        NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
+        NCNetworking.shared.upload(metadata: metadata) { } completion: { (_, _) in }
     }
     
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
@@ -180,7 +181,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         cell.imageItem.backgroundColor = nil
         
         cell.labelTitle.text = metadata.fileNameView
-        cell.labelTitle.textColor = NCBrandColor.shared.textView
+        cell.labelTitle.textColor = NCBrandColor.shared.label
         
         let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: metadata.urlBase, account: metadata.account)
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
@@ -190,7 +191,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
 
         cell.progressView.progress = 0.0
-        cell.separator.backgroundColor = NCBrandColor.shared.separator
                 
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))

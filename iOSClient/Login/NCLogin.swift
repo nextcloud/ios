@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import NCCommunication
 
 class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
@@ -43,6 +43,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     @IBOutlet weak var loginModeButton: UIButton!
     
     @IBOutlet weak var qrCode: UIButton!
+    @IBOutlet weak var certificate: UIButton!
 
     enum loginMode {
         case traditional, webFlow
@@ -53,8 +54,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     var textColor: UIColor = .white
     var textColorOpponent: UIColor = .black
     
-
-    // MARK: - Life Cycle
+    // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -121,12 +121,20 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         // qrcode
         qrCode.setImage(UIImage(named: "qrcode")?.image(color: textColor, size: 100), for: .normal)
         
+        // certificate
+        certificate.setImage(UIImage(named: "certificate")?.image(color: textColor, size: 100), for: .normal)
+        certificate.isHidden = true
+        certificate.isEnabled = false
+        
         if NCManageDatabase.shared.getAccounts()?.count ?? 0 == 0 {
+            
             imageUser.isHidden = true
             user.isHidden = true
             imagePassword.isHidden = true
             password.isHidden = true
+            
         } else {
+            
             imageUser.isHidden = true
             user.isHidden = true
             imagePassword.isHidden = true
@@ -136,6 +144,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             let navigationItemCancel = UIBarButtonItem.init(barButtonSystemItem: .stop, target: self, action: #selector(self.actionCancel))
             navigationItemCancel.tintColor = textColor
             navigationItem.leftBarButtonItem = navigationItemCancel
+            
+            NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         }
         
         self.navigationController?.navigationBar.setValue(true, forKey: "hidesShadow")
@@ -151,6 +161,13 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         super.viewDidDisappear(animated)
 
         appDelegate.startTimerErrorNetworking()
+    }
+    
+    // MARK: - NotificationCenter
+
+    @objc func applicationDidEnterBackground() {
+        
+        dismiss(animated: false)
     }
     
     // MARK: - TextField
@@ -198,7 +215,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 self.loginButton.isEnabled = true
                 self.activity.stopAnimating()
                 
-                self.standardLogin(urlBase: url, user: username, password: token ?? "", errorCode: errorCode, errorDescription: errorDescription)
+                self.standardLogin(url: url, user: username, password: token ?? "", errorCode: errorCode, errorDescription: errorDescription)
             }
         }
     }
@@ -243,6 +260,48 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         qrCode.scan()
     }
     
+    @IBAction func actionCertificate(_ sender: Any) {
+        
+        let pathsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let fileNameCertificate = pathsDirectory.appendingPathComponent(NCGlobal.shared.certificate).path
+        let directoryCertificate = CCUtility.getDirectoryCerificates()!
+        
+        var host = "cloud.nextcloud.com"
+        if let url = URL(string: NCBrandOptions.shared.loginBaseUrl) {
+            let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            if let hostComponets = urlComponents?.host {
+                host = hostComponets
+            }
+        }
+            
+        if FileManager.default.fileExists(atPath: fileNameCertificate) {
+            
+            let certificateToPath = directoryCertificate + "/" + host + ".der"
+        
+            if NCUtilityFileSystem.shared.moveFile(atPath: fileNameCertificate, toPath: certificateToPath) {
+                
+                let message = String(format: NSLocalizedString("_certificate_installed_", comment: ""), NCGlobal.shared.certificate)
+                let alertController = UIAlertController(title: "", message: message, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
+                self.present(alertController, animated: true, completion: { })
+                
+            } else {
+                
+                let message = String(format: NSLocalizedString("_copy_failed_", comment: ""), NCGlobal.shared.certificate)
+                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
+                self.present(alertController, animated: true, completion: { })
+            }
+            
+        } else {
+            
+            let message = String(format: NSLocalizedString("_certificate_not_found_", comment: ""), NCGlobal.shared.certificate)
+            let alertController = UIAlertController(title: NSLocalizedString("_file_not_found_", comment: ""), message: message, preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
+            self.present(alertController, animated: true, completion: { })
+        }
+    }
+    
     // MARK: - Login
 
     func isUrlValid(url: String) {
@@ -253,6 +312,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         NCCommunication.shared.getServerStatus(serverUrl: url) { (serverProductName, serverVersion, versionMajor, versionMinor, versionMicro, extendedSupport, errorCode ,errorDescription) in
             
             if errorCode == 0 {
+                
+                NCNetworking.shared.writeCertificate(url: url)
                 
                 NCCommunication.shared.getLoginFlowV2(serverUrl: url) { (token, endpoint, login, errorCode, errorDescription) in
                     
@@ -304,12 +365,18 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
                                 
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
-                        NCNetworking.shared.writeCertificate(directoryCertificate: CCUtility.getDirectoryCerificates())
+                        NCNetworking.shared.writeCertificate(url: url)
                         self.appDelegate.startTimerErrorNetworking()
                     }))
                     
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
                         self.appDelegate.startTimerErrorNetworking()
+                    }))
+                    
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
+                        if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() {
+                            self.present(navigationController, animated: true)
+                        }
                     }))
                     
                     self.present(alertController, animated: true, completion: {
@@ -328,18 +395,22 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
     
-    func standardLogin(urlBase: String, user: String, password: String, errorCode: Int, errorDescription: String) {
+    func standardLogin(url: String, user: String, password: String, errorCode: Int, errorDescription: String) {
         
         if errorCode == 0 {
             
-            let account = user + " " + urlBase
+            NCNetworking.shared.writeCertificate(url: url)
+            
+            let account = user + " " + url
             
             if NCManageDatabase.shared.getAccounts() == nil {
                 NCUtility.shared.removeAllSettings()
             }
             
+            CCUtility.clearCertificateError(account)
+            
             NCManageDatabase.shared.deleteAccount(account)
-            NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, password: password)
+            NCManageDatabase.shared.addAccount(account, urlBase: url, user: user, password: password)
             
             if let activeAccount = NCManageDatabase.shared.setAccountActive(account) {
                 appDelegate.settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
@@ -347,7 +418,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             
             if CCUtility.getIntro() {
                 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
                 self.dismiss(animated: true)
                 
             } else {
@@ -358,18 +429,41 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     
                     let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
                     viewController?.modalPresentationStyle = .fullScreen
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
                     self.appDelegate.window?.rootViewController = viewController
                     self.appDelegate.window?.makeKey()
                     
                 } else {
                     
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
                     self.dismiss(animated: true)
                 }
             }
+        
+        } else if errorCode == NSURLErrorServerCertificateUntrusted {
             
-        } else if errorCode != NSURLErrorServerCertificateUntrusted {
+            let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
+                        
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
+                NCNetworking.shared.writeCertificate(url: url)
+                self.appDelegate.startTimerErrorNetworking()
+            }))
+            
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
+                self.appDelegate.startTimerErrorNetworking()
+            }))
+            
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
+                if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() {
+                    self.present(navigationController, animated: true)
+                }
+            }))
+            
+            self.present(alertController, animated: true, completion: {
+                self.appDelegate.timerErrorNetworking?.invalidate()
+            })
+            
+        } else {
             
             let message = NSLocalizedString("_not_possible_connect_to_server_", comment: "") + ".\n" + errorDescription
             let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
@@ -408,7 +502,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     self.activity.stopAnimating()
                     self.loginButton.isEnabled = true
                     
-                    self.standardLogin(urlBase: urlBase, user: user, password: password, errorCode: errorCode, errorDescription: errorDescription)
+                    self.standardLogin(url: urlBase, user: user, password: password, errorCode: errorCode, errorDescription: errorDescription)
                 }
             }
         }

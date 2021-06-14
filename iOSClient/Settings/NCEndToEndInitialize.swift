@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import NCCommunication
 
 @objc protocol NCEndToEndInitializeDelegate {
@@ -34,6 +34,7 @@ class NCEndToEndInitialize : NSObject  {
     @objc weak var delegate: NCEndToEndInitializeDelegate?
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var extractedPublicKey: String?
     
     override init() {
     }
@@ -52,11 +53,13 @@ class NCEndToEndInitialize : NSObject  {
     
     func getPublicKey() {
     
-        NCCommunication.shared.getE2EEPublicKey { (account, publicKey, errorCode, errorDescription) in
+        NCCommunication.shared.getE2EECertificate { (account, certificate, errorCode, errorDescription) in
             
             if (errorCode == 0 && account == self.appDelegate.account) {
                 
-                CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
+                CCUtility.setEndToEndCertificate(account, certificate: certificate)
+                
+                self.extractedPublicKey = NCEndToEndEncryption.sharedManager().extractPublicKey(fromCertificate: certificate)
                 
                 // Request PrivateKey chiper to Server
                 self.getPrivateKeyCipher()
@@ -65,47 +68,56 @@ class NCEndToEndInitialize : NSObject  {
                 
                 switch errorCode {
                     
-                case NCGlobal.shared.ErrorBadRequest:
-                    NCContentPresenter.shared.messageNotification("E2E get publicKey", description: "bad request: unpredictable internal error", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                case NCGlobal.shared.errorBadRequest:
+                    NCContentPresenter.shared.messageNotification("E2E get publicKey", description: "bad request: unpredictable internal error", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                     
-                case NCGlobal.shared.ErrorResourceNotFound:
+                case NCGlobal.shared.errorResourceNotFound:
                     guard let csr = NCEndToEndEncryption.sharedManager().createCSR(self.appDelegate.userId, directory: CCUtility.getDirectoryUserData()) else {
                         
-                        NCContentPresenter.shared.messageNotification("E2E Csr", description: "Error to create Csr", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        NCContentPresenter.shared.messageNotification("E2E Csr", description: "Error to create Csr", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                         
                         return
                     }
                     
-                    NCCommunication.shared.signE2EEPublicKey(publicKey: csr) { (account, publicKey, errorCode, errorDescription) in
+                    NCCommunication.shared.signE2EECertificate(certificate: csr) { (account, certificate, errorCode, errorDescription) in
                         
                         if (errorCode == 0 && account == self.appDelegate.account) {
                             
-                            CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
+                            // TEST publicKey
+                            let extractedPublicKey = NCEndToEndEncryption.sharedManager().extractPublicKey(fromCertificate: certificate)
+                            if extractedPublicKey != NCEndToEndEncryption.sharedManager().generatedPublicKey {
+                                
+                                NCContentPresenter.shared.messageNotification("E2E sign publicKey", description: "error: the public key is incorrect", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
+                                
+                            } else {
                             
-                            // Request PrivateKey chiper to Server
-                            self.getPrivateKeyCipher()
+                                CCUtility.setEndToEndCertificate(account, certificate: certificate)
+                            
+                                // Request PrivateKey chiper to Server
+                                self.getPrivateKeyCipher()
+                            }
                             
                         } else if errorCode != 0 {
                             
                             switch errorCode {
                                 
-                            case NCGlobal.shared.ErrorBadRequest:
-                                NCContentPresenter.shared.messageNotification("E2E sign publicKey", description: "bad request: unpredictable internal error", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            case NCGlobal.shared.errorBadRequest:
+                                NCContentPresenter.shared.messageNotification("E2E sign publicKey", description: "bad request: unpredictable internal error", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                                 
-                            case NCGlobal.shared.ErrorConflict:
-                                NCContentPresenter.shared.messageNotification("E2E sign publicKey", description: "conflict: a public key for the user already exists", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            case NCGlobal.shared.errorConflict:
+                                NCContentPresenter.shared.messageNotification("E2E sign publicKey", description: "conflict: a public key for the user already exists", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                                 
                             default:
-                                NCContentPresenter.shared.messageNotification("E2E sign publicKey", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification("E2E sign publicKey", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                             }
                         }
                     }
                     
-                case NCGlobal.shared.ErrorConflict:
-                    NCContentPresenter.shared.messageNotification("E2E get publicKey", description: "forbidden: the user can't access the public keys", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                case NCGlobal.shared.errorConflict:
+                    NCContentPresenter.shared.messageNotification("E2E get publicKey", description: "forbidden: the user can't access the public keys", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                     
                 default:
-                    NCContentPresenter.shared.messageNotification("E2E get publicKey", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("E2E get publicKey", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                 }
             }
         }
@@ -128,11 +140,11 @@ class NCEndToEndInitialize : NSObject  {
                     
                     let passphrase = passphraseTextField?.text
                     
-                    let publicKey = CCUtility.getEndToEndPublicKey(self.appDelegate.account)
+                    let publicKey = CCUtility.getEndToEndCertificate(self.appDelegate.account)
                     
                     guard let privateKey = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey)) else {
                         
-                        NCContentPresenter.shared.messageNotification("E2E decrypt privateKey", description: "Serious internal error to decrypt Private Key", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError)
+                        NCContentPresenter.shared.messageNotification("E2E decrypt privateKey", description: "Serious internal error to decrypt Private Key", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
                         
                         return
                     }
@@ -144,12 +156,12 @@ class NCEndToEndInitialize : NSObject  {
                     CCUtility.setEndToEndPrivateKey(self.appDelegate.account, privateKey: privateKey)
                     CCUtility.setEndToEndPassphrase(self.appDelegate.account, passphrase:passphrase)
                     
-                    // request publicKey Server()
-                    NCCommunication.shared.getE2EEServerPublicKey { (account, publicKey, errorCode, errorDescription) in
+                    // request server publicKey
+                    NCCommunication.shared.getE2EEPublicKey { (account, publicKey, errorCode, errorDescription) in
                         
                         if (errorCode == 0 && account == self.appDelegate.account) {
-                            
-                            CCUtility.setEndToEndPublicKeyServer(account, publicKey: publicKey)
+                                                        
+                            CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
                             
                             // Clear Table
                             NCManageDatabase.shared.clearTable(tableDirectory.self, account: account)
@@ -161,17 +173,17 @@ class NCEndToEndInitialize : NSObject  {
                             
                             switch (errorCode) {
                                 
-                            case NCGlobal.shared.ErrorBadRequest:
-                                NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: "bad request: unpredictable internal error", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            case NCGlobal.shared.errorBadRequest:
+                                NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: "bad request: unpredictable internal error", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                                 
-                            case NCGlobal.shared.ErrorResourceNotFound:
-                                NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: "Server publickey doesn't exists", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            case NCGlobal.shared.errorResourceNotFound:
+                                NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: "Server publickey doesn't exists", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                                 
-                            case NCGlobal.shared.ErrorConflict:
-                                NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: "forbidden: the user can't access the Server publickey", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            case NCGlobal.shared.errorConflict:
+                                NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: "forbidden: the user can't access the Server publickey", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                                 
                             default:
-                                NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                             }
                         }
                     }
@@ -193,10 +205,10 @@ class NCEndToEndInitialize : NSObject  {
                 
                 switch errorCode {
                     
-                case NCGlobal.shared.ErrorBadRequest:
-                    NCContentPresenter.shared.messageNotification("E2E get privateKey", description: "bad request: unpredictable internal error", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                case NCGlobal.shared.errorBadRequest:
+                    NCContentPresenter.shared.messageNotification("E2E get privateKey", description: "bad request: unpredictable internal error", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                     
-                case NCGlobal.shared.ErrorResourceNotFound:
+                case NCGlobal.shared.errorResourceNotFound:
                     // message
                     let e2ePassphrase = NYMnemonic.generateString(128, language: "english")
                     let message = "\n" + NSLocalizedString("_e2e_settings_view_passphrase_", comment: "") + "\n\n" + e2ePassphrase!
@@ -209,7 +221,7 @@ class NCEndToEndInitialize : NSObject  {
                         
                         guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.userId, directory: CCUtility.getDirectoryUserData(), passphrase: e2ePassphrase, privateKey: &privateKeyString) else {
                             
-                            NCContentPresenter.shared.messageNotification("E2E privateKey", description: "Serious internal error to create PrivateKey chiper", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("E2E privateKey", description: "Serious internal error to create PrivateKey chiper", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                             
                             return
                         }
@@ -224,12 +236,12 @@ class NCEndToEndInitialize : NSObject  {
                                 CCUtility.setEndToEndPrivateKey(account, privateKey: privateKeyString! as String)
                                 CCUtility.setEndToEndPassphrase(account, passphrase: e2ePassphrase)
                                 
-                                // request publicKey Server()
-                                NCCommunication.shared.getE2EEServerPublicKey { (account, publicKey, errorCode, errorDescription) in
+                                // request server publicKey
+                                NCCommunication.shared.getE2EEPublicKey { (account, publicKey, errorCode, errorDescription) in
                                     
                                     if (errorCode == 0 && account == self.appDelegate.account) {
-                                        
-                                        CCUtility.setEndToEndPublicKeyServer(account, publicKey: publicKey)
+                                                                                
+                                        CCUtility.setEndToEndPublicKey(account, publicKey: publicKey)
                                         
                                         // Clear Table
                                         NCManageDatabase.shared.clearTable(tableDirectory.self, account: account)
@@ -241,17 +253,17 @@ class NCEndToEndInitialize : NSObject  {
                                         
                                         switch (errorCode) {
                                             
-                                        case NCGlobal.shared.ErrorBadRequest:
-                                            NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: "bad request: unpredictable internal error", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                        case NCGlobal.shared.errorBadRequest:
+                                            NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: "bad request: unpredictable internal error", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                                             
-                                        case NCGlobal.shared.ErrorResourceNotFound:
-                                            NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: "Server publickey doesn't exists", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                        case NCGlobal.shared.errorResourceNotFound:
+                                            NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: "Server publickey doesn't exists", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                                             
-                                        case NCGlobal.shared.ErrorConflict:
-                                            NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: "forbidden: the user can't access the Server publickey", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                        case NCGlobal.shared.errorConflict:
+                                            NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: "forbidden: the user can't access the Server publickey", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                                             
                                         default:
-                                            NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                            NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                                         }
                                     }
                                 }
@@ -260,14 +272,14 @@ class NCEndToEndInitialize : NSObject  {
                                 
                                 switch errorCode {
                                     
-                                case NCGlobal.shared.ErrorBadRequest:
-                                    NCContentPresenter.shared.messageNotification("E2E store privateKey", description: "bad request: unpredictable internal error", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                case NCGlobal.shared.errorBadRequest:
+                                    NCContentPresenter.shared.messageNotification("E2E store privateKey", description: "bad request: unpredictable internal error", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                                     
-                                case NCGlobal.shared.ErrorConflict:
-                                    NCContentPresenter.shared.messageNotification("E2E store privateKey", description: "conflict: a private key for the user already exists", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                case NCGlobal.shared.errorConflict:
+                                    NCContentPresenter.shared.messageNotification("E2E store privateKey", description: "conflict: a private key for the user already exists", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                                     
                                 default:
-                                    NCContentPresenter.shared.messageNotification("E2E store privateKey", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                    NCContentPresenter.shared.messageNotification("E2E store privateKey", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                                 }
                             }
                         }
@@ -276,11 +288,11 @@ class NCEndToEndInitialize : NSObject  {
                     alertController.addAction(OKAction)
                     self.appDelegate.window?.rootViewController?.present(alertController, animated: true)
                     
-                case NCGlobal.shared.ErrorConflict:
-                    NCContentPresenter.shared.messageNotification("E2E get privateKey", description: "forbidden: the user can't access the private key", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                case NCGlobal.shared.errorConflict:
+                    NCContentPresenter.shared.messageNotification("E2E get privateKey", description: "forbidden: the user can't access the private key", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                     
                 default:
-                    NCContentPresenter.shared.messageNotification("E2E get privateKey", description: errorDescription,delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("E2E get privateKey", description: errorDescription,delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
                 }
             }
         }

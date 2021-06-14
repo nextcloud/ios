@@ -94,19 +94,23 @@
 + (BOOL)getFormatCompatibility;
 + (void)setFormatCompatibility:(BOOL)set;
 
-+ (NSString *)getEndToEndPublicKey:(NSString *)account;
-+ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
+// E2EE -------------------------------------------
+
++ (NSString *)getEndToEndCertificate:(NSString *)account;
++ (void)setEndToEndCertificate:(NSString *)account certificate:(NSString *)certificate;
 
 + (NSString *)getEndToEndPrivateKey:(NSString *)account;
 + (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey;
 
++ (NSString *)getEndToEndPublicKey:(NSString *)account;
++ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
+
 + (NSString *)getEndToEndPassphrase:(NSString *)account;
 + (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase;
 
-+ (NSString *)getEndToEndPublicKeyServer:(NSString *)account;
-+ (void)setEndToEndPublicKeyServer:(NSString *)account publicKey:(NSString *)publicKey;
-
 + (BOOL)isEndToEndEnabled:(NSString *)account;
+
+// E2EE -------------------------------------------
 
 + (void)clearAllKeysEndToEnd:(NSString *)account;
 
@@ -142,16 +146,11 @@
 + (NSData *)getDatabaseEncryptionKey;
 
 + (BOOL)getCertificateError:(NSString *)account;
-+ (void)setCertificateError:(NSString *)account error:(BOOL)error;
++ (void)setCertificateError:(NSString *)account;
++ (void)clearCertificateError:(NSString *)account;
 
 + (BOOL)getDisableLocalCacheAfterUpload;
 + (void)setDisableLocalCacheAfterUpload:(BOOL)disable;
-
-+ (BOOL)getDarkMode;
-+ (void)setDarkMode:(BOOL)disable;
-
-+ (BOOL)getDarkModeDetect;
-+ (void)setDarkModeDetect:(BOOL)disable;
 
 + (BOOL)getLivePhoto;
 + (void)setLivePhoto:(BOOL)set;
@@ -176,13 +175,16 @@
 + (BOOL)getAccountRequest;
 + (void)setAccountRequest:(BOOL)set;
 
++ (NSInteger)getChunkSize;
++ (void)setChunkSize:(NSInteger)size;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
 
 + (NSString *)getUserAgent;
 
-+ (NSString *)dateDiff:(NSDate *) convertedDate;
++ (NSString *)dateDiff:(NSDate *)convertedDate;
 + (NSString *)transformedSize:(int64_t)value;
 
 + (NSString *)removeForbiddenCharactersServer:(NSString *)fileName;
@@ -192,7 +194,7 @@
 
 + (NSString *)createRandomString:(int)numChars;
 + (NSString *)createFileNameDate:(NSString *)fileName extension:(NSString *)extension;
-+ (NSString *)createFileName:(NSString *)fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal;
++ (NSString *)createFileName:(NSString *)fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal forcedNewFileName:(BOOL)forcedNewFileName;
 
 + (void)createDirectoryStandard;
 

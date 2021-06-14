@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import NCCommunication
 
 class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
@@ -37,9 +37,12 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
     var metadata: tableMetadata?
     public var height: CGFloat = 0
 
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = NCBrandColor.shared.systemBackground
         viewContainerConstraint.constant = height
         
         tableView.dataSource = self
@@ -48,7 +51,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = tableView.bounds.height
         tableView.allowsSelection = false
-        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
+        tableView.backgroundColor = NCBrandColor.shared.systemBackground
         tableView.separatorColor = NCBrandColor.shared.separator
         
         tableView.register(UINib.init(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
@@ -56,16 +59,17 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         newCommentField.placeholder = NSLocalizedString("_new_comment_", comment: "")
         
         // Display Name user & Quota
-        guard let tabAccount = NCManageDatabase.shared.getAccountActive() else {
+        guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else {
             return
         }
         
-        if tabAccount.displayName.isEmpty {
-            labelUser.text = tabAccount.user
+        if activeAccount.displayName.isEmpty {
+            labelUser.text = activeAccount.user
         }
         else{
-            labelUser.text = tabAccount.displayName
+            labelUser.text = activeAccount.displayName
         }
+        labelUser.textColor = NCBrandColor.shared.label
         
         imageItem.image = UIImage(named: "avatar")
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
@@ -97,10 +101,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundForm
-        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
         tableView.reloadData()
-        labelUser.textColor = NCBrandColor.shared.textView
     }
     
     @objc func reloadData() {
@@ -112,7 +113,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                 NCManageDatabase.shared.addComments(comments!, account: metadata.account, objectId: metadata.fileId)
                 self.tableView.reloadData()
             } else {
-                if errorCode != NCGlobal.shared.ErrorResourceNotFound {
+                if errorCode != NCGlobal.shared.errorResourceNotFound {
                     NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
@@ -211,13 +212,13 @@ extension NCShareComments: UITableViewDataSource {
             }
             // Username
             cell.labelUser.text = tableComments.actorDisplayName
-            cell.labelUser.textColor = NCBrandColor.shared.textView
+            cell.labelUser.textColor = NCBrandColor.shared.label
             // Date
             cell.labelDate.text = CCUtility.dateDiff(tableComments.creationDateTime as Date)
-            cell.labelDate.textColor = NCBrandColor.shared.graySoft
+            cell.labelDate.textColor = NCBrandColor.shared.systemGray4
             // Message
             cell.labelMessage.text = tableComments.message
-            cell.labelMessage.textColor = NCBrandColor.shared.textView
+            cell.labelMessage.textColor = NCBrandColor.shared.label
             // Button Menu
             if tableComments.actorId == appDelegate.userId {
                 cell.buttonMenu.isHidden = false

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -14,14 +14,6 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LZu-Te-clJ" userLabel="Separator">
-                    <rect key="frame" x="0.0" y="48" width="375" height="1"/>
-                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="1" id="VuP-sT-hUI"/>
-                    </constraints>
-                </view>
                 <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1LD-cd-zhc" userLabel="buttonSwitch">
                     <rect key="frame" x="12" y="12.5" width="25" height="25"/>
                     <constraints>
@@ -33,35 +25,44 @@
                         <action selector="touchUpInsideSwitch:" destination="tys-A2-nDX" eventType="touchUpInside" id="iT8-1j-fib"/>
                     </connections>
                 </button>
-                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D0O-wK-14O" userLabel="buttonMore">
-                    <rect key="frame" x="338" y="12.5" width="25" height="25"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="25" id="aEr-j8-JDO"/>
-                        <constraint firstAttribute="height" constant="25" id="bvx-Uh-NWD"/>
-                    </constraints>
-                    <state key="normal" image="moreBig"/>
-                    <connections>
-                        <action selector="touchUpInsideMore:" destination="tys-A2-nDX" eventType="touchUpInside" id="Jyu-Mx-nWq"/>
-                    </connections>
-                </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0bo-yl-t5k" userLabel="buttonOrder">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0bo-yl-t5k" userLabel="buttonOrder">
                     <rect key="frame" x="55" y="11" width="230" height="28"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="230" id="jvv-Ug-l3I"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <state key="normal" title="Sort by name (from A to Z)">
-                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="titleColor" systemColor="darkTextColor"/>
                     </state>
                     <connections>
                         <action selector="touchUpInsideOrder:" destination="tys-A2-nDX" eventType="touchUpInside" id="oiL-3O-hMQ"/>
                     </connections>
                 </button>
+                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D0O-wK-14O" userLabel="buttonMore">
+                    <rect key="frame" x="345" y="15" width="20" height="20"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="20" id="aEr-j8-JDO"/>
+                        <constraint firstAttribute="height" constant="20" id="bvx-Uh-NWD"/>
+                    </constraints>
+                    <state key="normal" image="moreBig"/>
+                    <connections>
+                        <action selector="touchUpInsideMore:" destination="tys-A2-nDX" eventType="touchUpInside" id="Jyu-Mx-nWq"/>
+                    </connections>
+                </button>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LZu-Te-clJ" userLabel="Separator">
+                    <rect key="frame" x="0.0" y="48" width="375" height="1"/>
+                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="VuP-sT-hUI"/>
+                    </constraints>
+                </view>
             </subviews>
+            <viewLayoutGuide key="safeArea" id="pm7-uW-mZE"/>
             <constraints>
                 <constraint firstItem="D0O-wK-14O" firstAttribute="centerY" secondItem="tys-A2-nDX" secondAttribute="centerY" id="6w7-ws-gX3"/>
                 <constraint firstAttribute="trailing" secondItem="LZu-Te-clJ" secondAttribute="trailing" id="7ww-Zl-sES"/>
-                <constraint firstAttribute="trailing" secondItem="D0O-wK-14O" secondAttribute="trailing" constant="12" id="AsZ-tP-fP1"/>
+                <constraint firstAttribute="trailing" secondItem="D0O-wK-14O" secondAttribute="trailing" constant="10" id="AsZ-tP-fP1"/>
                 <constraint firstItem="LZu-Te-clJ" firstAttribute="leading" secondItem="tys-A2-nDX" secondAttribute="leading" id="ZEl-Ij-nt8"/>
                 <constraint firstItem="1LD-cd-zhc" firstAttribute="leading" secondItem="tys-A2-nDX" secondAttribute="leading" constant="12" id="dHo-I3-Z1V"/>
                 <constraint firstItem="1LD-cd-zhc" firstAttribute="centerY" secondItem="tys-A2-nDX" secondAttribute="centerY" id="hbd-cO-eBq"/>
@@ -69,13 +70,13 @@
                 <constraint firstAttribute="bottom" secondItem="LZu-Te-clJ" secondAttribute="bottom" constant="1" id="tJp-qc-NGO"/>
                 <constraint firstItem="0bo-yl-t5k" firstAttribute="leading" secondItem="1LD-cd-zhc" secondAttribute="trailing" constant="18" id="zlZ-IN-gGx"/>
             </constraints>
-            <viewLayoutGuide key="safeArea" id="pm7-uW-mZE"/>
             <connections>
                 <outlet property="buttonMore" destination="D0O-wK-14O" id="eEx-3R-zCS"/>
                 <outlet property="buttonOrder" destination="0bo-yl-t5k" id="Kbw-BG-73C"/>
                 <outlet property="buttonOrderWidthConstraint" destination="jvv-Ug-l3I" id="E6N-z6-2VC"/>
                 <outlet property="buttonSwitch" destination="1LD-cd-zhc" id="Ec2-cM-CoY"/>
                 <outlet property="separator" destination="LZu-Te-clJ" id="EwO-za-LxT"/>
+                <outlet property="separatorHeightConstraint" destination="VuP-sT-hUI" id="xVh-Se-bJq"/>
             </connections>
             <point key="canvasLocation" x="140" y="154"/>
         </collectionReusableView>
@@ -83,5 +84,8 @@
     <resources>
         <image name="moreBig" width="50" height="50"/>
         <image name="switchList" width="25" height="25"/>
+        <systemColor name="darkTextColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

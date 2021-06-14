@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import PhotosUI
 
 class NCUtilityFileSystem: NSObject {
@@ -108,13 +108,49 @@ class NCUtilityFileSystem: NSObject {
         }
     }
     
-    @objc func moveFile(atPath: String, toPath: String) {
+    @discardableResult
+    @objc func moveFile(atPath: String, toPath: String) -> Bool {
 
-        if atPath == toPath { return }
+        if atPath == toPath { return true }
     
-        try? FileManager.default.removeItem(atPath: toPath)
-        try? FileManager.default.copyItem(atPath: atPath, toPath: toPath)
-        try? FileManager.default.removeItem(atPath: atPath)
+        do {
+            try FileManager.default.removeItem(atPath: toPath)
+        }
+        catch {
+            print(error)
+        }
+                
+        do {
+            try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
+            try FileManager.default.removeItem(atPath: atPath)
+            return true
+        }
+        catch {
+            print(error)
+            return false
+        }
+    }
+    
+    @discardableResult
+    @objc func copyFile(atPath: String, toPath: String) -> Bool {
+
+        if atPath == toPath { return true }
+    
+        do {
+            try FileManager.default.removeItem(atPath: toPath)
+        }
+        catch {
+            print(error)
+        }
+                
+        do {
+            try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
+            return true
+        }
+        catch {
+            print(error)
+            return false
+        }
     }
     
     @objc func moveFileInBackground(atPath: String, toPath: String) {

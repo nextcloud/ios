@@ -1,7 +1,7 @@
 //
 //  NCPopupViewController.swift
 //
-//  Based on  EzPopup by Huy Nguyen
+//  Based on EzPopup by Huy Nguyen
 //  Modified by Marino Faggiana for Nextcloud progect.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
@@ -19,11 +19,11 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 import UIKit
 
-public protocol NCPopupViewControllerDelegate: class {
+public protocol NCPopupViewControllerDelegate: AnyObject {
     
-    // It is called when pop up is dismissed by tap outside
     func popupViewControllerDidDismissByTapGesture(_ sender: NCPopupViewController)
 }
 
@@ -74,8 +74,8 @@ public class NCPopupViewController: UIViewController {
     
     private var containerView = UIView()
     
-    // MARK: - Life Cycle
-    
+    // MARK: - View Life Cycle
+
     // NOTE: Don't use this init method
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -107,6 +107,7 @@ public class NCPopupViewController: UIViewController {
          - popupWidth: Width of popup content. If it isn't set, width will be determine by popup content view intrinsic size.
          - popupHeight: Height of popup content. If it isn't set, height will be determine by popup content view intrinsic size.
      */
+    
     public init(contentView: UIView, popupWidth: CGFloat? = nil, popupHeight: CGFloat? = nil) {
         super.init(nibName: nil, bundle: nil)
         
@@ -282,7 +283,7 @@ public class NCPopupViewController: UIViewController {
                     let diff = popupDiff - keyboardDiff
                     
                     if centerYConstraint != nil && diff > 0 {
-                        centerYConstraint?.constant = -(diff + 10)
+                        centerYConstraint?.constant = -(diff + 15)
                     }
                 }
             }

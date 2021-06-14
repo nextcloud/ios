@@ -24,7 +24,6 @@
 //  Based on code of Venkat Kukunuru
 //  --------------------------------
 
-import Foundation
 import UIKit
 import AVFoundation
 import QuartzCore
@@ -46,37 +45,38 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
     @IBOutlet weak var startStopLabel: UILabel!
     @IBOutlet weak var voiceRecordHUD: VoiceRecordHUD!
     
-    // MARK: View Life Cycle
-    
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        voiceRecordHUD.update(0.0)
+        durationLabel.text = ""
+        startStopLabel.text = NSLocalizedString("_voice_memo_start_", comment: "")
+        
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        contentContainerView.backgroundColor = UIColor.lightGray
-        voiceRecordHUD.update(0.0)
-        voiceRecordHUD.fillColor = UIColor.green
-        durationLabel.text = ""
-        startStopLabel.text = NSLocalizedString("_voice_memo_start_", comment: "")
     }
     
-    func createRecorder(fileName: String) {
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
         
-        self.fileName = fileName
-        recording = NCAudioRecorder(to: fileName)
-        recording.delegate = self
-
-        DispatchQueue.global().async {
-            // Background thread
-            do {
-                try self.recording.prepare()
-            } catch {
-                print(error)
-            }
-        }
+        changeTheming()
     }
+    
+    // MARK: - Colors
+    
+    func changeTheming() {
+        
+        view.backgroundColor = .clear
+        contentContainerView.backgroundColor = UIColor.lightGray
+        voiceRecordHUD.fillColor = UIColor.green
+    }
+    
+    // MARK: - Action
     
     @IBAction func touchViewController() {
         
@@ -106,6 +106,24 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
             do {
                 try recording.record()
                 startStopLabel.text = NSLocalizedString("_voice_memo_stop_", comment: "")
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    // MARK: - Code
+    
+    func createRecorder(fileName: String) {
+        
+        self.fileName = fileName
+        recording = NCAudioRecorder(to: fileName)
+        recording.delegate = self
+
+        DispatchQueue.global().async {
+            // Background thread
+            do {
+                try self.recording.prepare()
             } catch {
                 print(error)
             }
@@ -194,10 +212,7 @@ open class NCAudioRecorder : NSObject {
         if recorder == nil {
             try prepare()
         }
-        
-        try session.setCategory(.playAndRecord, mode: .default)
-        try session.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
-        
+                
         recorder?.record()
         state = .record
         
@@ -211,9 +226,6 @@ open class NCAudioRecorder : NSObject {
             try prepare()
         }
         
-        try session.setCategory(.playback, mode: .default)
-        try AVAudioSession.sharedInstance().setActive(true)
-
         player = try AVAudioPlayer(contentsOf: url)
         player?.prepareToPlay()
 
@@ -276,6 +288,8 @@ class VoiceRecordHUD: UIView {
         }
     }
     
+    // MARK: - View Life Cycle
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         image = UIImage(named: "microphone")

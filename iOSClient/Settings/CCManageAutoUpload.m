@@ -40,7 +40,7 @@
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
  
-    tableAccount *tableAccount = [[NCManageDatabase shared] getAccountActive];
+    tableAccount *activeAccount = [[NCManageDatabase shared] getActiveAccount];
     
     // Auto Upload
     
@@ -49,11 +49,11 @@
     section.footerTitle = NSLocalizedString(@"_autoupload_description_", nil);
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUpload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_autoupload_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
-    if (tableAccount.autoUpload) row.value = @1;
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
+    if (activeAccount.autoUpload) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [section addFormRow:row];
 
     // Auto Upload Directory
@@ -62,11 +62,11 @@
     [form addFormSection:section];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadDirectory" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_autoupload_select_folder_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
-    [row.cellConfig setObject:[[UIImage imageNamed:@"foldersOnTop"] imageWithColor:NCBrandColor.shared.icon size:25] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"foldersOnTop"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
     row.action.formSelector = @selector(selectAutomaticUploadFolder);
@@ -78,21 +78,21 @@
     [form addFormSection:section];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadImage" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_autoupload_photos_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
-    if (tableAccount.autoUploadImage) row.value = @1;
+    if (activeAccount.autoUploadImage) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [section addFormRow:row];
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadWWAnPhoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_wifi_only_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
-    if (tableAccount.autoUploadWWAnPhoto) row.value = @1;
+    if (activeAccount.autoUploadWWAnPhoto) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
     // Auto Upload Video
@@ -101,21 +101,21 @@
     [form addFormSection:section];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadVideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_autoupload_videos_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
-    if (tableAccount.autoUploadVideo) row.value = @1;
+    if (activeAccount.autoUploadVideo) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadWWAnVideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_wifi_only_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
-    if (tableAccount.autoUploadWWAnVideo) row.value = @1;
+    if (activeAccount.autoUploadWWAnVideo) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
     // Delete asset
@@ -124,12 +124,12 @@
     [form addFormSection:section];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"removePhotoCameraRoll" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_remove_photo_CameraRoll_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
-    if (tableAccount.autoUploadDeleteAssetLocalIdentifier) row.value = @1;
+    if (activeAccount.autoUploadDeleteAssetLocalIdentifier) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
     // Auto Upload Background
@@ -138,12 +138,12 @@
     [form addFormSection:section];
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadBackground" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_autoupload_background_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
-    if (tableAccount.autoUploadBackground) row.value = @1;
+    if (activeAccount.autoUploadBackground) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
     // Auto Upload Full
@@ -152,13 +152,13 @@
     
     NSString *title = NSLocalizedString(@"_autoupload_fullphotos_", nil);
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadFull" rowType:XLFormRowDescriptorTypeBooleanSwitch title:title];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     row.value = 0;
-    if (tableAccount.autoUploadFull) row.value = @1;
+    if (activeAccount.autoUploadFull) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
     // Auto Upload create subfolder
@@ -167,12 +167,12 @@
     [form addFormSection:section];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadCreateSubfolder" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_autoupload_create_subfolder_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
-    if (tableAccount.autoUploadCreateSubfolder) row.value = @1;
+    if (activeAccount.autoUploadCreateSubfolder) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
     // Auto Upload file name
@@ -181,9 +181,9 @@
     [form addFormSection:section];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadFileName" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_autoupload_filenamemask_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.backgroundView;
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.textView forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     row.action.viewControllerClass = [NCManageAutoUploadFileName class];
     [section addFormRow:row];
     
@@ -196,7 +196,7 @@
     self.form = form;
 }
 
-#pragma mark - Life Cycle
+// MARK: - View Life Cycle
 
 - (void)viewDidLoad
 {
@@ -204,20 +204,21 @@
     
     self.title = NSLocalizedString(@"_settings_autoupload_", nil);
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    self.view.backgroundColor = NCBrandColor.shared.systemGroupedBackground;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:NCGlobal.shared.notificationCenterChangeTheming object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain) name:NCGlobal.shared.notificationCenterInitializeMain object:nil];
+    self.tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground;
     
-    [self changeTheming];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initialize) name:NCGlobal.shared.notificationCenterInitialize object:nil];
+    
+    [self initializeForm];
+    [self reloadForm];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     appDelegate.activeViewController = self;
-
-    [self initializeForm];
-    [self reloadForm];
     
     // Request permission for camera roll access
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
@@ -234,21 +235,13 @@
     }];
 }
 
-- (void)initializeMain
+- (void)initialize
 {
     [[self navigationController] popViewControllerAnimated:YES];
 }
 
 #pragma mark - NotificationCenter
 
-- (void)changeTheming
-{
-    self.view.backgroundColor = NCBrandColor.shared.backgroundForm;
-    self.tableView.backgroundColor = NCBrandColor.shared.backgroundForm;
-    [self.tableView reloadData];
-    [self initializeForm];
-    [self reloadForm];
-}
 
 #pragma mark -
 
@@ -256,7 +249,7 @@
 {
     [super formRowDescriptorValueHasChanged:rowDescriptor oldValue:oldValue newValue:newValue];
     
-    tableAccount *account = [[NCManageDatabase shared] getAccountActive];
+    tableAccount *activeAccount = [[NCManageDatabase shared] getActiveAccount];
     
     if ([rowDescriptor.tag isEqualToString:@"autoUpload"]) {
         
@@ -269,7 +262,7 @@
             [[NCManageDatabase shared] setAccountAutoUploadDirectory:nil urlBase:appDelegate.urlBase account:appDelegate.account];
             
             // verifichiamo che almeno uno dei servizi (foto video) siano attivi, in caso contrario attiviamo le foto
-            if (account.autoUploadImage == NO && account.autoUploadVideo == NO) {
+            if (activeAccount.autoUploadImage == NO && activeAccount.autoUploadVideo == NO) {
                 [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadImage" state:YES];
                 [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadVideo" state:YES];
             }
@@ -399,33 +392,33 @@
     XLFormRowDescriptor *rowAutoUploadFileName = [self.form formRowWithTag:@"autoUploadFileName"];
         
     // - STATUS ---------------------
-    tableAccount *tableAccount = [[NCManageDatabase shared] getAccountActive];
+    tableAccount *activeAccount = [[NCManageDatabase shared] getActiveAccount];
     
-    if (tableAccount.autoUpload)
+    if (activeAccount.autoUpload)
         [rowAutoUpload setValue:@1]; else [rowAutoUpload setValue:@0];
     
-    if (tableAccount.autoUploadImage)
+    if (activeAccount.autoUploadImage)
         [rowAutoUploadImage setValue:@1]; else [rowAutoUploadImage setValue:@0];
     
-    if (tableAccount.autoUploadWWAnPhoto)
+    if (activeAccount.autoUploadWWAnPhoto)
         [rowAutoUploadWWAnPhoto setValue:@1]; else [rowAutoUploadWWAnPhoto setValue:@0];
     
-    if (tableAccount.autoUploadVideo)
+    if (activeAccount.autoUploadVideo)
         [rowAutoUploadVideo setValue:@1]; else [rowAutoUploadVideo setValue:@0];
     
-    if (tableAccount.autoUploadWWAnVideo)
+    if (activeAccount.autoUploadWWAnVideo)
         [rowAutoUploadWWAnVideo setValue:@1]; else [rowAutoUploadWWAnVideo setValue:@0];
     
-    if (tableAccount.autoUploadDeleteAssetLocalIdentifier)
+    if (activeAccount.autoUploadDeleteAssetLocalIdentifier)
            [rowRemovePhotoCameraRoll setValue:@1]; else [rowRemovePhotoCameraRoll setValue:@0];
     
-    if (tableAccount.autoUploadBackground)
+    if (activeAccount.autoUploadBackground)
         [rowAutoUploadBackground setValue:@1]; else [rowAutoUploadBackground setValue:@0];
     
-    if (tableAccount.autoUploadFull)
+    if (activeAccount.autoUploadFull)
         [rowAutoUploadFull setValue:@1]; else [rowAutoUploadFull setValue:@0];
     
-    if (tableAccount.autoUploadCreateSubfolder)
+    if (activeAccount.autoUploadCreateSubfolder)
         [rowAutoUploadCreateSubfolder setValue:@1]; else [rowAutoUploadCreateSubfolder setValue:@0];
 
     // - HIDDEN --------------------------------------------------------------------------
@@ -453,9 +446,13 @@
     self.form.delegate = self;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return NCGlobal.shared.heightCellSettings;
+}
+
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
 {
-    tableAccount *tableAccount = [[NCManageDatabase shared] getAccountActive];
+    tableAccount *activeAccount = [[NCManageDatabase shared] getActiveAccount];
     NSString *sectionName;
     NSString *autoUploadPath = [NSString stringWithFormat:@"%@/%@", [[NCManageDatabase shared] getAccountAutoUploadDirectoryWithUrlBase:appDelegate.urlBase account:appDelegate.account], [[NCManageDatabase shared] getAccountAutoUploadFileName]];
 
@@ -465,45 +462,47 @@
             sectionName = NSLocalizedString(@"_autoupload_description_", nil);
             break;
         case 1:
-            if (tableAccount.autoUpload) sectionName = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"_autoupload_current_folder_", nil), [CCUtility returnPathfromServerUrl:autoUploadPath urlBase:appDelegate.urlBase account:appDelegate.account]];
+            if (activeAccount.autoUpload) sectionName = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"_autoupload_current_folder_", nil), [CCUtility returnPathfromServerUrl:autoUploadPath urlBase:appDelegate.urlBase account:appDelegate.account]];
             else sectionName = @"";
             break;
         case 4:
-            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_remove_photo_CameraRoll_desc_", nil);
+            if (activeAccount.autoUpload) sectionName = NSLocalizedString(@"_remove_photo_CameraRoll_desc_", nil);
             else sectionName = @"";
             break;
         case 5:
-            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_autoupload_description_background_", nil);
+            if (activeAccount.autoUpload) sectionName = NSLocalizedString(@"_autoupload_description_background_", nil);
             else sectionName = @"";
             break;
         case 6:
-            if (tableAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_fullphotos_footer_", nil);
+            if (activeAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_fullphotos_footer_", nil);
             else sectionName = @"";
             break;
         case 7:
-            if (tableAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_create_subfolder_footer_", nil);
+            if (activeAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_create_subfolder_footer_", nil);
             else sectionName = @"";
             break;
         case 8:
-            if (tableAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_filenamemask_footer_", nil);
+            if (activeAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_filenamemask_footer_", nil);
             else sectionName = @"";
             break;
     }
     return sectionName;
 }
 
-- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type items:(NSArray *)items buttonType:(NSString *)buttonType overwrite:(BOOL)overwrite
+- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type items:(NSArray *)items overwrite:(BOOL)overwrite copy:(BOOL)copy move:(BOOL)move
 {
     if (serverUrl != nil) {
         
         if ([serverUrl isEqualToString:[[NCUtilityFileSystem shared] getHomeServerWithUrlBase:appDelegate.urlBase account:appDelegate.account]]) {
-            [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_autoupload_error_select_folder_" delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:NCGlobal.shared.ErrorInternalError forced:true];
+            [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_autoupload_error_select_folder_" delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:NCGlobal.shared.errorInternalError forced:true];
             return;
         }
         
         // Settings new folder Automatatic upload
         [[NCManageDatabase shared] setAccountAutoUploadFileName:serverUrl.lastPathComponent];
         [[NCManageDatabase shared] setAccountAutoUploadDirectory:[[NCUtilityFileSystem shared] deletingLastPathComponentWithServerUrl:serverUrl urlBase:appDelegate.urlBase account:appDelegate.account] urlBase:appDelegate.urlBase account:appDelegate.account];
+        // Reload
+        [self.tableView reloadData];
     }
 }
 
@@ -513,14 +512,8 @@
      NCSelect *viewController = (NCSelect *)navigationController.topViewController;
      
      viewController.delegate = self;
-     viewController.hideButtonCreateFolder = false;
-     viewController.selectFile = false;
-     viewController.includeDirectoryE2EEncryption = false;
-     viewController.includeImages = false;
-     viewController.type = @"";
-     viewController.titleButtonDone = NSLocalizedString(@"_select_", nil);
+     viewController.typeOfCommandView = 1;
      
-     [navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
      [self presentViewController:navigationController animated:YES completion:^{
          [self.tableView reloadData];
      }];

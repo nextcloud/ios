@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import FloatingPanel
 
 extension NCMedia {
@@ -80,14 +81,9 @@ extension NCMedia {
                         let viewController = navigationController.topViewController as! NCSelect
                         
                         viewController.delegate = self
-                        viewController.hideButtonCreateFolder = true
-                        viewController.includeDirectoryE2EEncryption = false
-                        viewController.includeImages = false
-                        viewController.selectFile = false
-                        viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
+                        viewController.typeOfCommandView = .select
                         viewController.type = "mediaFolder"
                         
-                        navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
                         self.present(navigationController, animated: true, completion: nil)
                     }
                 )
@@ -150,6 +146,52 @@ extension NCMedia {
             )
             
             //
+            // OPEN IN
+            //
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_open_in_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
+                    action: { menuAction in
+                        self.isEditMode = false
+                        NCFunctionCenter.shared.openActivityViewController(selectOcId: self.selectOcId)
+                        self.selectOcId.removeAll()
+                        self.reloadDataThenPerform { }
+                    }
+                )
+            )
+            
+            //
+            // SAVE TO PHOTO GALLERY
+            //
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_save_selected_files_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
+                    action: { menuAction in
+                        self.isEditMode = false
+                        for ocId in self.selectOcId {
+                            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                                if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
+                                    if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+                                        NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
+                                    } else {
+                                        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                                            NCFunctionCenter.shared.saveAlbum(metadata: metadata)
+                                        } else {
+                                            NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        self.selectOcId.removeAll()
+                        self.reloadDataThenPerform { }
+                    }
+                )
+            )
+            
+            //
             // COPY - MOVE
             //
             actions.append(
@@ -168,6 +210,27 @@ extension NCMedia {
                             NCFunctionCenter.shared.openSelectView(items: meradatasSelect, viewController: self)
                         }
                         self.selectOcId.removeAll()
+                        self.reloadDataThenPerform { }
+                    }
+                )
+            )
+            
+            //
+            // COPY
+            //
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_copy_file_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
+                    action: { menuAction in
+                        self.isEditMode = false
+                        self.appDelegate.pasteboardOcIds.removeAll()
+                        for ocId in self.selectOcId {
+                            self.appDelegate.pasteboardOcIds.append(ocId)
+                        }
+                        NCFunctionCenter.shared.copyPasteboard()
+                        self.selectOcId.removeAll()
+                        self.reloadDataThenPerform { }
                     }
                 )
             )
@@ -191,6 +254,7 @@ extension NCMedia {
                             }
                         }
                         self.selectOcId.removeAll()
+                        self.reloadDataThenPerform { }
                     }
                 )
             )

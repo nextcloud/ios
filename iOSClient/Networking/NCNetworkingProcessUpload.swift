@@ -21,13 +21,15 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import NCCommunication
 
 class NCNetworkingProcessUpload: NSObject {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var timerProcess: Timer?
+    
+    let maxConcurrentOperationUpload = 5
     
     override init() {
         super.init()
@@ -43,27 +45,31 @@ class NCNetworkingProcessUpload: NSObject {
     func startTimer() {
         timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(process), userInfo: nil, repeats: true)
     }
+    
+    func stopTimer() {
+        timerProcess?.invalidate()
+    }
 
     @objc private func process() {
 
         if appDelegate.account == "" { return }
         
         var counterUpload: Int = 0
-        var maxConcurrentOperationUpload = 5
         let sessionSelectors = [NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
         
         let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
         counterUpload = metadatasUpload.count
         
-        timerProcess?.invalidate()
+        stopTimer()
         
         print("[LOG] PROCESS-UPLOAD \(counterUpload)")
     
         NCNetworking.shared.getOcIdInBackgroundSession { (listOcId) in
             
             for sessionSelector in sessionSelectors {
-                if counterUpload < maxConcurrentOperationUpload {
-                    let limit = maxConcurrentOperationUpload - counterUpload
+                if counterUpload < self.maxConcurrentOperationUpload {
+                    
+                    let limit = self.maxConcurrentOperationUpload - counterUpload
                     var predicate = NSPredicate()
                     if UIApplication.shared.applicationState == .background {
                         predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d AND (typeFile != %@ || livePhoto == true)", sessionSelector, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataTypeFileVideo)
@@ -77,7 +83,7 @@ class NCNetworkingProcessUpload: NSObject {
                     
                     for metadata in metadatas {
                         
-                        // Is already in upload ? skipped
+                        // Is already in upload background? skipped
                         if listOcId.contains(metadata.ocId) {
                             NCCommunicationCommon.shared.writeLog("Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
                             continue
@@ -88,19 +94,48 @@ class NCNetworkingProcessUpload: NSObject {
                             continue
                         }
                         
-                        if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
-                            if UIApplication.shared.applicationState == .background { break }
-                            maxConcurrentOperationUpload = 1
-                            counterUpload += 1
-                            if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                                NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
+                        // Is already in upload E2EE / CHUNK ? exit [ ONLY ONE IN QUEUE ]
+                        for metadata in metadatasUpload {
+                            if metadata.chunk || metadata.e2eEncrypted {
+                                self.startTimer()
+                                return
                             }
-                            self.startTimer()
-                            return
-                        } else {
-                            counterUpload += 1
+                        }
+                        
+                        // Chunk 
+                        if metadata.chunk && UIApplication.shared.applicationState == .active {
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                                NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
+                                NCNetworking.shared.upload(metadata: metadata) {
+                                    // start
+                                } completion: { (_, _) in
+                                    self.startTimer()
+                                }
+                            } else {
+                                self.startTimer()
+                            }
+                            return
+                        }
+                        
+                        // E2EE
+                        if metadata.e2eEncrypted && UIApplication.shared.applicationState == .active {
+                            if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
+                                NCNetworking.shared.upload(metadata: metadata) {
+                                    // start
+                                } completion: { (_, _) in
+                                    self.startTimer()
+                                }
+                            } else {
+                                self.startTimer()
+                            }
+                            return
+                        }
+                        
+                        counterUpload += 1
+                        if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
+                            NCNetworking.shared.upload(metadata: metadata) {
+                                // start
+                            } completion: { (_, _) in
+                                // completion
                             }
                         }
                     }
@@ -172,11 +207,18 @@ class NCNetworkingProcessUpload: NSObject {
                 }
             }
             
-            if metadata.size <= NCGlobal.shared.chunckSize {
+            // E2EE
+            if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
+                metadata.e2eEncrypted = true
+            }
+            
+            // CHUNCK
+            let chunckSize = CCUtility.getChunkSize() * 1000000
+            if chunckSize == 0 || metadata.size <= chunckSize {
                 metadatasForUpload.append(metadata)
             } else {
-                // CHUNCK
                 metadata.chunk = true
+                metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
                 metadatasForUpload.append(tableMetadata.init(value: metadata))
             }
         }
@@ -184,6 +226,59 @@ class NCNetworkingProcessUpload: NSObject {
         NCManageDatabase.shared.addMetadatas(metadatasForUpload)
         
         startProcess()
+    }
+    
+    //MARK: -
+
+    @objc func verifyUploadZombie() {
+        
+        var session: URLSession?
+        
+        // verify metadataStatusInUpload (BACKGROUND)
+        let metadatasInUploadBackground = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d AND sessionTaskIdentifier == 0", NCNetworking.shared.sessionIdentifierBackground, NCNetworking.shared.sessionIdentifierBackgroundExtension, NCNetworking.shared.sessionIdentifierBackgroundWWan, NCGlobal.shared.metadataStatusInUpload))
+        for metadata in metadatasInUploadBackground {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d AND sessionTaskIdentifier == 0", metadata.ocId, NCGlobal.shared.metadataStatusInUpload)) {
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCNetworking.shared.sessionIdentifierBackground, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload)
+                }
+            }
+        }
+        
+        // metadataStatusUploading (BACKGROUND)
+        let metadatasUploadingBackground = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d", NCNetworking.shared.sessionIdentifierBackground, NCNetworking.shared.sessionIdentifierBackgroundWWan, NCNetworking.shared.sessionIdentifierBackgroundExtension, NCGlobal.shared.metadataStatusUploading))
+        for metadata in metadatasUploadingBackground {
+            
+            if metadata.session == NCNetworking.shared.sessionIdentifierBackground {
+                session = NCNetworking.shared.sessionManagerBackground
+            } else if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan {
+                session = NCNetworking.shared.sessionManagerBackgroundWWan
+            }
+            
+            var taskUpload: URLSessionTask?
+            
+            session?.getAllTasks(completionHandler: { (tasks) in
+                for task in tasks {
+                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                        taskUpload = task
+                    }
+                }
+                
+                if taskUpload == nil {
+                    if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d", metadata.ocId, NCGlobal.shared.metadataStatusUploading)) {
+                        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCNetworking.shared.sessionIdentifierBackground, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload)
+                    }
+                }
+            })
+        }
+        
+        // metadataStatusUploading OR metadataStatusInUpload (FOREGROUND)
+        let metadatasUploading = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND (status == %d OR status == %d)", NCCommunicationCommon.shared.sessionIdentifierUpload, NCGlobal.shared.metadataStatusUploading, NCGlobal.shared.metadataStatusInUpload))
+        for metadata in metadatasUploading {
+            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            if NCNetworking.shared.uploadRequest[fileNameLocalPath] == nil {
+                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload)
+            }
+        }
     }
 }
 

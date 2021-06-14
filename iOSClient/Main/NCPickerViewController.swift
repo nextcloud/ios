@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import TLPhotoPicker
 import MobileCoreServices
 
@@ -85,15 +85,15 @@ class NCPhotosPickerViewController: NSObject {
         }, didCancel: nil)
         
         viewController.didExceedMaximumNumberOfSelection = { (picker) in
-            NCContentPresenter.shared.messageNotification("_info_", description: "_limited_dimension_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError)
+            NCContentPresenter.shared.messageNotification("_info_", description: "_limited_dimension_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
         }
         
         viewController.handleNoAlbumPermissions = { (picker) in
-            NCContentPresenter.shared.messageNotification("_info_", description: "_denied_album_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError)
+            NCContentPresenter.shared.messageNotification("_info_", description: "_denied_album_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
         }
         
         viewController.handleNoCameraPermissions = { (picker) in
-            NCContentPresenter.shared.messageNotification("_info_", description: "_denied_camera_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError)
+            NCContentPresenter.shared.messageNotification("_info_", description: "_denied_camera_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
         }
         
         viewController.configure = configure
@@ -111,8 +111,8 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
     override func makeUI() {
         super.makeUI()
         
-        self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.shared.brandElement
-        self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.shared.brandElement
+        self.customNavItem.leftBarButtonItem?.tintColor = .systemBlue
+        self.customNavItem.rightBarButtonItem?.tintColor = .systemBlue
     }
 }
 
@@ -154,7 +154,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                     
                     do {
                         try data?.write(to: path)
-                        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false, chunk: false)
+                        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
                         
                         metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
                         metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
@@ -177,10 +177,10 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                         }
                         
                     } catch {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_write_file_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError)
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_write_file_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
                     }
                 } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_read_file_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError)
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_read_file_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
                 }
             }
         }

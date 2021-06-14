@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import FloatingPanel
 
 extension NCLoginWeb {
@@ -55,7 +56,7 @@ extension NCLoginWeb {
                             NCManageDatabase.shared.setAccountActive(account.account)
                             self.dismiss(animated: true) {
                                 self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
-                                self.appDelegate.initializeMain()
+                                self.appDelegate.initialize()
                             }
                         }
                     }

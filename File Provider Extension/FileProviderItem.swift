@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import FileProvider
 import NCCommunication
 
@@ -99,6 +100,9 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var isDownloaded: Bool {
+        if metadata.directory {
+            return true
+        }
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             return true
         } else {

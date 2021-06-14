@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import WebKit
 
 @objc protocol NCBrowserWebDelegate: AnyObject {
@@ -40,6 +40,8 @@ class NCBrowserWeb: UIViewController {
     
     @IBOutlet weak var buttonExit: UIButton!
     
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -57,6 +59,8 @@ class NCBrowserWeb: UIViewController {
             buttonExit.isHidden = true
         } else {
             self.view.bringSubviewToFront(buttonExit)
+            let image = NCUtility.shared.loadImage(named: "xmark", color: .systemBlue)
+            buttonExit.setImage(image, for: .normal)
         }
         
         loadWebPage(webView: webView!, url: URL(string: urlBase)!)
@@ -91,7 +95,6 @@ class NCBrowserWeb: UIViewController {
 
 extension NCBrowserWeb: WKNavigationDelegate {
     
-   
     public func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         if let serverTrust = challenge.protectionSpace.serverTrust {
             completionHandler(Foundation.URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: serverTrust))

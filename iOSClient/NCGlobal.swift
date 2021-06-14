@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 
 class NCGlobal: NSObject {
     @objc static let shared: NCGlobal = {
@@ -30,27 +30,46 @@ class NCGlobal: NSObject {
     }()
 
     // Struct for Progress
+    //
     struct progressType {
         var progress: Float
         var totalBytes: Int64
         var totalBytesExpected: Int64
     }
     
+    // Struct for LayoutForView
+    //
+    struct layoutForViewType {
+        var layout: String
+        var sort: String
+        var ascending: Bool
+        var groupBy: String
+        var directoryOnTop: Bool
+        var titleButtonHeader: String
+        var itemForLine: Int
+        var imageBackgroud: String
+        var imageBackgroudContentMode: String
+    }
+    
     // Directory on Group
+    //
     @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"
     @objc let appApplicationSupport                 = "Library/Application Support"
     @objc let appUserData                           = "Library/Application Support/UserData"
     @objc let appCertificates                       = "Library/Application Support/Certificates"
     @objc let appScan                               = "Library/Application Support/Scan"
+    @objc let appBackground                         = "Library/Application Support/Background"
     @objc let directoryProviderStorage              = "File Provider Storage"
 
     // Service
+    //
     @objc let serviceShareKeyChain                  = "Crypto Cloud"
     let metadataKeyedUnarchiver                     = "it.twsweb.nextcloud.metadata"
     let refreshTask                                 = "com.nextcloud.refreshTask"
     let processingTask                              = "com.nextcloud.processingTask"
     
     // Nextcloud version
+    //
     let nextcloudVersion12: Int                     =  12
     let nextcloudVersion15: Int                     =  15
     let nextcloudVersion17: Int                     =  17
@@ -58,42 +77,52 @@ class NCGlobal: NSObject {
     let nextcloudVersion20: Int                     =  20
 
     // Database Realm
+    //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 167
+    let databaseSchemaVersion: UInt64               = 178
     
     // Intro selector
+    //
     @objc let introLogin: Int                       = 0
     let introSignup: Int                            = 1
     
-    // Avatar & Preview
+    // Varie size GUI
+    //
+    @objc let heightCellSettings: CGFloat           = 50
+    
+    // Avatar & Preview size
+    //
     let avatarSize: Int                             = 512
     let sizePreview: Int                            = 1024
     let sizeIcon: Int                               = 512
     
     // E2EE
+    //
     let e2eeMaxFileSize: UInt64                     = 500000000     // 500 MB
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
     @objc let e2eeVersion                           = "1.1"
-        
-    // Chunck size MB
-    let chunckSize: Int64                           = 10000000      // 10 MB
     
     // Max Cache Proxy Video
+    //
     let maxHTTPCache: Int64                         = 10000000000   // 10 GB
     
     // NCSharePaging
+    //
     let indexPageActivity: Int                      = 0
     let indexPageComments: Int                      = 1
     let indexPageSharing: Int                       = 2
     
     // NCViewerProviderContextMenu
-    let maxAutoDownload: UInt64                     = 100000000     // 100MB
+    //
+    let maxAutoDownload: UInt64                     = 50000000      // 50MB
     let maxAutoDownloadCellular: UInt64             = 10000000      // 10MB
 
     // Nextcloud unsupported
+    //
     let nextcloud_unsupported_version: Int          = 13
     
     // Layout
+    //
     let layoutList                                  = "typeLayoutList"
     let layoutGrid                                  = "typeLayoutGrid"
     
@@ -102,16 +131,19 @@ class NCGlobal: NSObject {
     let layoutViewOffline                           = "LayoutOffline"
     let layoutViewFavorite                          = "LayoutFavorite"
     let layoutViewFiles                             = "LayoutFiles"
-    let layoutViewViewInFolder                      = "ViewInFolder"
+    let layoutViewViewInFolder                      = "LayoutViewInFolder"
     let layoutViewTransfers                         = "LayoutTransfers"
     let layoutViewRecent                            = "LayoutRecent"
     let layoutViewShares                            = "LayoutShares"
-    
+    let layoutViewShareExtension                    = "LayoutShareExtension"
+
     // Button Type in Cell list/grid
+    //
     let buttonMoreMore                              = "more"
     let buttonMoreStop                              = "stop"
     
     // Text -  OnlyOffice - Collabora
+    //
     let editorText                                  = "text"
     let editorOnlyoffice                            = "onlyoffice"
     let editorCollabora                             = "collabora"
@@ -121,30 +153,46 @@ class NCGlobal: NSObject {
     let onlyofficePptx                              = "onlyoffice_pptx"
 
     // Template
+    //
     let templateDocument                            = "document"
     let templateSpreadsheet                         = "spreadsheet"
     let templatePresentation                        = "presentation"
     
     // Rich Workspace
+    //
     let fileNameRichWorkspace                       = "Readme.md"
     
+    // Certificate pinning
+    //
+    let certificate                                 = "certificate.der"
+    let certificateTmp                              = "tmp.der"
+    let certificateTmpV2                            = "certificatetmp.der"
+    
+    // ContentPresenter
+    //
     @objc let dismissAfterSecond: TimeInterval      = 4
     @objc let dismissAfterSecondLong: TimeInterval  = 10
     
     // Error
-    @objc let ErrorBadRequest: Int                  = 400
-    @objc let ErrorResourceNotFound: Int            = 404
-    @objc let ErrorConflict: Int                    = 409
-    @objc let ErrorBadServerResponse: Int           = -1011
-    @objc let ErrorInternalError: Int               = -99999
-    @objc let ErrorFileNotSaved: Int                = -99998
-    @objc let ErrorDecodeMetadata: Int              = -99997
-    @objc let ErrorE2EENotEnabled: Int              = -99996
-    @objc let ErrorOffline: Int                     = -99994
-    @objc let ErrorCharactersForbidden: Int         = -99993
-    @objc let ErrorCreationFile: Int                = -99992
+    //
+    @objc let errorRequestExplicityCancelled: Int   = 15
+    @objc let errorBadRequest: Int                  = 400
+    @objc let errorResourceNotFound: Int            = 404
+    @objc let errordMethodNotSupported: Int         = 405
+    @objc let errorConflict: Int                    = 409
+    @objc let errorConnectionLost: Int              = -1005
+    @objc let errorBadServerResponse: Int           = -1011
+    @objc let errorInternalError: Int               = -99999
+    @objc let errorFileNotSaved: Int                = -99998
+    @objc let errorDecodeMetadata: Int              = -99997
+    @objc let errorE2EENotEnabled: Int              = -99996
+    @objc let errorOffline: Int                     = -99994
+    @objc let errorCharactersForbidden: Int         = -99993
+    @objc let errorCreationFile: Int                = -99992
+    @objc let errorReadFile: Int                    = -99991
     
     // Constants to identify the different permissions of a file
+    //
     @objc let permissionShared                      = "S"
     @objc let permissionCanShare                    = "R"
     @objc let permissionMounted                     = "M"
@@ -157,6 +205,7 @@ class NCGlobal: NSObject {
     
     //Share permission
     //permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
+    //
     @objc let permissionReadShare: Int              = 1
     @objc let permissionUpdateShare: Int            = 2
     @objc let permissionCreateShare: Int            = 4
@@ -171,6 +220,7 @@ class NCGlobal: NSObject {
     @objc let permissionDefaultFolderRemoteShareNoSupportShareOption: Int   = 15
     
     // Metadata : FileType
+    //
     @objc let metadataTypeFileAudio                 = "audio"
     @objc let metadataTypeFileCompress              = "compress"
     @objc let metadataTypeFileDirectory             = "directory"
@@ -181,6 +231,7 @@ class NCGlobal: NSObject {
     @objc let metadataTypeFileImagemeter            = "imagemeter"
     
     // Filename Mask and Type
+    //
     let keyFileNameMask                             = "fileNameMask"
     let keyFileNameType                             = "fileNameType"
     let keyFileNameAutoUploadMask                   = "fileNameAutoUploadMask"
@@ -189,6 +240,7 @@ class NCGlobal: NSObject {
     let keyFileNameOriginalAutoUpload               = "fileNameOriginalAutoUpload"
 
     // Selector
+    //
     let selectorDownloadFile                        = "downloadFile"
     let selectorDownloadAllFile                     = "downloadAllFile"
     let selectorReadFile                            = "readFile"
@@ -203,8 +255,10 @@ class NCGlobal: NSObject {
     let selectorUploadAutoUploadAll                 = "uploadAutoUploadAll"
     let selectorUploadFile                          = "uploadFile"
     let selectorSaveAlbum                           = "saveAlbum"
+    let selectorSaveBackground                      = "saveBackground"
     let selectorSaveAlbumLivePhotoIMG               = "saveAlbumLivePhotoIMG"
     let selectorSaveAlbumLivePhotoMOV               = "saveAlbumLivePhotoMOV"
+    let selectorSaveAsScan                          = "saveAsScan"
 
     // Metadata : Status
     //
@@ -231,12 +285,12 @@ class NCGlobal: NSObject {
     let metadataStatusUploadForcedStart: Int        = 11
     
     // Notification Center
-
+    //
     @objc let notificationCenterApplicationDidEnterBackground   = "applicationDidEnterBackground"
     let notificationCenterApplicationWillEnterForeground        = "applicationWillEnterForeground"
     let notificationCenterApplicationDidBecomeActive            = "applicationDidBecomeActive"
 
-    @objc let notificationCenterInitializeMain                  = "initializeMain"
+    @objc let notificationCenterInitialize                      = "initialize"
     @objc let notificationCenterChangeTheming                   = "changeTheming"
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
@@ -288,3 +342,9 @@ class NCGlobal: NSObject {
 
 //#if TARGET_OS_SIMULATOR
 //#endif
+
+//if let popoverController = alertController.popoverPresentationController {
+//    popoverController.sourceView = self.view
+//    popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+//    popoverController.permittedArrowDirections = []
+//}

@@ -41,6 +41,8 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     private var textColor: UIColor = .white
     private var textColorOpponent: UIColor = .black
     
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -75,7 +77,7 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
 
         
         self.pageControl.currentPageIndicatorTintColor = textColor
-        self.pageControl.pageIndicatorTintColor = NCBrandColor.shared.nextcloudSoft
+        self.pageControl.pageIndicatorTintColor = .lightGray
 
         self.buttonLogin.layer.cornerRadius = 20
         self.buttonLogin.setTitleColor(textColorOpponent, for: .normal)

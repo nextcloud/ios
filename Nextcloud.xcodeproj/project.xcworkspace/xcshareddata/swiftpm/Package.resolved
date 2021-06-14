@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/firebase/firebase-ios-sdk",
         "state": {
           "branch": null,
-          "revision": "22d785016bf9b9a5d425597bf4a0ddd4cb158e5f",
-          "version": "8.1.0"
+          "revision": "b97bfcd2e5eecc7aa7e1aeb27d097d610876cf93",
+          "version": "7.11.1"
         }
       },
       {
@@ -60,8 +60,8 @@
         "repositoryURL": "https://github.com/google/GoogleAppMeasurement.git",
         "state": {
           "branch": null,
-          "revision": "48fcea0c0a74fc89131696aa995043eaa971ccb1",
-          "version": "8.0.0"
+          "revision": "22cb3ab5588200b210ae01e42665f52ac4e8ad28",
+          "version": "7.11.1"
         }
       },
       {
@@ -102,11 +102,11 @@
       },
       {
         "package": "NCCommunication",
-        "repositoryURL": "https://github.com/nextcloud/ios-communication-library",
+        "repositoryURL": "https://github.com/nextcloud/ios-communication-library/",
         "state": {
           "branch": null,
-          "revision": "e26939278c34dbe66a5a25963906651570b51fbe",
-          "version": "0.97.0"
+          "revision": "d07477d0cf9657512c29295fa5340420d82d85d3",
+          "version": "0.98.0"
         }
       },
       {
@@ -141,8 +141,8 @@
         "repositoryURL": "https://github.com/rechsteiner/Parchment",
         "state": {
           "branch": null,
-          "revision": "af4c9773ad7833df93b3f6226ccd78acad6f5735",
-          "version": "2.4.0"
+          "revision": "689ecaa80b7b0f712887ec87746f8598f2e12907",
+          "version": "3.0.1"
         }
       },
       {
@@ -177,8 +177,8 @@
         "repositoryURL": "https://github.com/realm/realm-cocoa",
         "state": {
           "branch": null,
-          "revision": "ae8e646590396dfc13c1abbf8aa2e48c43766dce",
-          "version": "10.7.2"
+          "revision": "7e5c77fd7fbb30259e8e6e6a41f32289f72e0812",
+          "version": "10.7.6"
         }
       },
       {
@@ -186,8 +186,8 @@
         "repositoryURL": "https://github.com/realm/realm-core",
         "state": {
           "branch": null,
-          "revision": "bab46acdca91c417a0d4849b8f4992a3c17e29a5",
-          "version": "10.5.5"
+          "revision": "018adb3469c2882904febca251778129ef4a9b70",
+          "version": "10.7.2"
         }
       },
       {

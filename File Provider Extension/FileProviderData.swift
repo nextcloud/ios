@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import NCCommunication
 
 class fileProviderData: NSObject {
@@ -84,18 +85,18 @@ class fileProviderData: NSObject {
         // NO DOMAIN -> Set default account
         if domain == nil {
             
-            guard let accountActive = NCManageDatabase.shared.getAccountActive() else { return nil }
-            let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: accountActive.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-            let webDav = NCUtilityFileSystem.shared.getWebDAV(account: accountActive.account)
+            guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return nil }
+            let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: activeAccount.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+            let webDav = NCUtilityFileSystem.shared.getWebDAV(account: activeAccount.account)
             
-            account = accountActive.account
-            accountUrlBase = accountActive.urlBase
-            homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: accountActive.urlBase, account: accountActive.account)
+            account = activeAccount.account
+            accountUrlBase = activeAccount.urlBase
+            homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account)
                         
-            NCCommunicationCommon.shared.setup(account: accountActive.account, user: accountActive.user, userId: accountActive.userId, password: CCUtility.getPassword(accountActive.account), urlBase: accountActive.urlBase, userAgent: CCUtility.getUserAgent(), webDav: webDav, dav: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
+            NCCommunicationCommon.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), urlBase: activeAccount.urlBase, userAgent: CCUtility.getUserAgent(), webDav: webDav, dav: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
             NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
             
-            return tableAccount.init(value: accountActive)
+            return tableAccount.init(value: activeAccount)
         }
         
         // DOMAIN

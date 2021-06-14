@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import FileProvider
 import NCCommunication
 import Alamofire
@@ -144,12 +145,9 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 
         var url = fileProviderData.shared.fileProviderManager.documentStorageURL.appendingPathComponent(identifier.rawValue, isDirectory: true)
         
-        if item.typeIdentifier == (kUTTypeFolder as String) {
-            url = url.appendingPathComponent(item.filename, isDirectory:true)
-        } else {
-            url = url.appendingPathComponent(item.filename, isDirectory:false)
-        }
-        
+        // (fix copy/paste directory -> isDirectory = false)
+        url = url.appendingPathComponent(item.filename, isDirectory:false)
+    
         return url
     }
     
@@ -349,7 +347,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 
                 fileURL.stopAccessingSecurityScopedResource()
                                 
-                let metadata = NCManageDatabase.shared.createMetadata(account: fileProviderData.shared.account, fileName: fileName, fileNameView: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, urlBase: fileProviderData.shared.accountUrlBase, url: "", contentType: "", livePhoto: false, chunk: false)
+                let metadata = NCManageDatabase.shared.createMetadata(account: fileProviderData.shared.account, fileName: fileName, fileNameView: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, urlBase: fileProviderData.shared.accountUrlBase, url: "", contentType: "", livePhoto: false)
                 metadata.session = NCNetworking.shared.sessionIdentifierBackgroundExtension
                 metadata.size = size
                 metadata.status = NCGlobal.shared.metadataStatusUploading

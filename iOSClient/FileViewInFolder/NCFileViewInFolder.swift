@@ -21,12 +21,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import NCCommunication
 
 class NCFileViewInFolder: NCCollectionViewCommon  {
     
     internal var fileName: String?
+
+    // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -41,6 +43,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+
         appDelegate.activeViewController = self
         
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
@@ -51,10 +54,10 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         
         presentationController?.delegate = self
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
-        gridLayout.itemForLine = CGFloat(itemForLine)
+        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
         
-        if layout == NCGlobal.shared.layoutList {
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView?.collectionViewLayout = listLayout
         } else {
             collectionView?.collectionViewLayout = gridLayout
@@ -86,7 +89,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
                 }
             }
             
-            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort: self.sort, ascending: self.ascending, directoryOnTop: self.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
             
             DispatchQueue.main.async {
             

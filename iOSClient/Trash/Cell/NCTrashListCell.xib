@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -38,7 +36,7 @@
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhy-xd-w5C" userLabel="buttonMore">
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhy-xd-w5C" userLabel="buttonMore">
                         <rect key="frame" x="560" y="0.0" width="40" height="60"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="40" id="ZgH-mI-l2k"/>
@@ -49,7 +47,7 @@
                         </connections>
                     </button>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dgL-g5-Nkc" userLabel="imageMore">
-                        <rect key="frame" x="565" y="20" width="20" height="20"/>
+                        <rect key="frame" x="570" y="20" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="20" id="05P-NL-pd8"/>
                             <constraint firstAttribute="height" constant="20" id="Jet-eo-x1M" userLabel="height = 20"/>
@@ -62,7 +60,7 @@
                             <constraint firstAttribute="height" constant="20" id="xvo-pN-hfE"/>
                         </constraints>
                     </imageView>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3mk-e2-iDg" userLabel="buttonRestore">
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3mk-e2-iDg" userLabel="buttonRestore">
                         <rect key="frame" x="520" y="0.0" width="40" height="60"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="60" id="c3w-wJ-nqd"/>
@@ -89,17 +87,17 @@
                     </imageView>
                 </subviews>
             </view>
+            <viewLayoutGuide key="safeArea" id="Gu8-oz-zWa"/>
             <constraints>
                 <constraint firstItem="Gu8-oz-zWa" firstAttribute="bottom" secondItem="Egg-cb-EhZ" secondAttribute="bottom" id="81D-sw-EaX"/>
-                <constraint firstItem="yhy-xd-w5C" firstAttribute="leading" secondItem="dgL-g5-Nkc" secondAttribute="trailing" constant="-25" id="980-6s-ave"/>
                 <constraint firstItem="nwZ-pi-Igj" firstAttribute="centerY" secondItem="3mk-e2-iDg" secondAttribute="centerY" id="A31-Yy-Gyn"/>
                 <constraint firstItem="Egg-cb-EhZ" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" id="JCm-UU-Pxu"/>
-                <constraint firstItem="dgL-g5-Nkc" firstAttribute="centerY" secondItem="yhy-xd-w5C" secondAttribute="centerY" id="OMy-Cu-HAx"/>
                 <constraint firstItem="UtT-L6-mgW" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="10" id="PQ8-0b-fLa"/>
                 <constraint firstItem="yhy-xd-w5C" firstAttribute="leading" secondItem="3mk-e2-iDg" secondAttribute="trailing" id="PxA-lT-Gll"/>
                 <constraint firstItem="AXX-71-9Q6" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="10" id="Qvq-r5-AX9"/>
                 <constraint firstItem="AyA-hP-r6w" firstAttribute="leading" secondItem="Gu8-oz-zWa" secondAttribute="leading" constant="10" id="RYl-cO-cCN"/>
                 <constraint firstItem="3mk-e2-iDg" firstAttribute="leading" secondItem="AXX-71-9Q6" secondAttribute="trailing" constant="5" id="UtX-Ca-aBN"/>
+                <constraint firstItem="dgL-g5-Nkc" firstAttribute="centerY" secondItem="yhy-xd-w5C" secondAttribute="centerY" id="Yad-MJ-UU7"/>
                 <constraint firstItem="yhy-xd-w5C" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="ZO7-Ny-L3I"/>
                 <constraint firstItem="3mk-e2-iDg" firstAttribute="leading" secondItem="UtT-L6-mgW" secondAttribute="trailing" constant="5" id="cEw-b3-odo"/>
                 <constraint firstItem="Gu8-oz-zWa" firstAttribute="bottom" secondItem="AXX-71-9Q6" secondAttribute="bottom" constant="14" id="d06-sn-I3Y"/>
@@ -108,11 +106,11 @@
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="leading" secondItem="Gu8-oz-zWa" secondAttribute="leading" constant="45" id="mBb-ff-7HD"/>
                 <constraint firstItem="UtT-L6-mgW" firstAttribute="top" secondItem="Gu8-oz-zWa" secondAttribute="top" constant="13" id="nrY-2F-QZ2"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="qKl-4Y-m5t"/>
+                <constraint firstItem="dgL-g5-Nkc" firstAttribute="centerX" secondItem="yhy-xd-w5C" secondAttribute="centerX" id="rgG-ei-7VN"/>
                 <constraint firstItem="Gu8-oz-zWa" firstAttribute="trailing" secondItem="yhy-xd-w5C" secondAttribute="trailing" id="s2S-RP-cw5"/>
                 <constraint firstItem="AyA-hP-r6w" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="sJp-0x-bdC"/>
                 <constraint firstItem="nwZ-pi-Igj" firstAttribute="centerX" secondItem="3mk-e2-iDg" secondAttribute="centerX" id="vYW-cL-DlK"/>
             </constraints>
-            <viewLayoutGuide key="safeArea" id="Gu8-oz-zWa"/>
             <size key="customSize" width="650" height="58"/>
             <connections>
                 <outlet property="buttonMore" destination="yhy-xd-w5C" id="agm-M9-xtq"/>
@@ -125,6 +123,7 @@
                 <outlet property="labelInfo" destination="AXX-71-9Q6" id="krb-tZ-UQ7"/>
                 <outlet property="labelTitle" destination="UtT-L6-mgW" id="Xv6-zM-2v1"/>
                 <outlet property="separator" destination="Egg-cb-EhZ" id="uhq-Nc-z8K"/>
+                <outlet property="separatorHeightConstraint" destination="G5S-67-boG" id="azN-3h-Cvp"/>
             </connections>
             <point key="canvasLocation" x="97.599999999999994" y="129.53523238380811"/>
         </collectionViewCell>

@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import NCCommunication
 
 class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDelegate, NCGridCellDelegate, NCTrashSectionHeaderMenuDelegate, NCEmptyDataSetDelegate  {
@@ -39,25 +39,18 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     internal var selectOcId: [String] = []
     
     private var datasource: [tableTrash] = []
-    
-    private var sort: String = ""
-    private var ascending: Bool = true
-    private var directoryOnTop: Bool = true
-    private var layout = ""
-    private var groupBy = "none"
-    private var titleButton = ""
-    private var itemForLine = 0
-
+    private var layoutForView: NCGlobal.layoutForViewType?
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
-    
     private let highHeader: CGFloat = 50
-    
     private let refreshControl = UIRefreshControl()
+
+    // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = NCBrandColor.shared.systemBackground
         self.navigationController?.navigationBar.prefersLargeTitles = true
 
         // Cell
@@ -69,6 +62,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         collectionView.register(UINib.init(nibName: "NCTrashSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
 
         collectionView.alwaysBounceVertical = true
+        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
 
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
@@ -79,7 +73,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
         
         // Empty
-        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -50, delegate: self)
+        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: highHeader, delegate: self)
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
@@ -89,14 +83,15 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         appDelegate.activeViewController = self
         
         self.navigationItem.title = titleCurrentFolder
 
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
-        gridLayout.itemForLine = CGFloat(itemForLine)
+        layoutForView = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", sort: "date", ascending: false, titleButtonHeader: "_sorted_by_date_more_recent_")
+        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
         
-        if layout == NCGlobal.shared.layoutList {
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView.collectionViewLayout = listLayout
         } else {
             collectionView.collectionViewLayout = gridLayout
@@ -124,9 +119,6 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     }
     
     @objc func changeTheming() {
-        
-        view.backgroundColor = NCBrandColor.shared.backgroundView
-        collectionView.backgroundColor = NCBrandColor.shared.backgroundView
         collectionView.reloadData()
     }
     
@@ -151,8 +143,8 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                     self.collectionView.reloadData()
                 })
             })
-            layout = NCGlobal.shared.layoutList
-            NCUtility.shared.setLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layout)
+            layoutForView?.layout = NCGlobal.shared.layoutList
+            NCUtility.shared.setLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layoutForView?.layout)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -161,8 +153,8 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                     self.collectionView.reloadData()
                 })
             })
-            layout = NCGlobal.shared.layoutGrid
-            NCUtility.shared.setLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layout)
+            layoutForView?.layout = NCGlobal.shared.layoutGrid
+            NCUtility.shared.setLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layoutForView?.layout)
         }
     }
     
@@ -256,16 +248,16 @@ extension NCTrash: UICollectionViewDataSource {
             let trashHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCTrashSectionHeaderMenu
             
             if collectionView.collectionViewLayout == gridLayout {
-                trashHeader.buttonSwitch.setImage(UIImage.init(named: "switchList")?.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
+                trashHeader.buttonSwitch.setImage(UIImage.init(named: "switchList")?.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
             } else {
-                trashHeader.buttonSwitch.setImage(UIImage.init(named: "switchGrid")?.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
+                trashHeader.buttonSwitch.setImage(UIImage.init(named: "switchGrid")?.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
             }
             
             trashHeader.delegate = self
-            trashHeader.backgroundColor = NCBrandColor.shared.backgroundView
+            trashHeader.backgroundColor = NCBrandColor.shared.systemBackground
             trashHeader.separator.backgroundColor = NCBrandColor.shared.separator
             trashHeader.setStatusButton(datasource: datasource)
-            trashHeader.setTitleSorted(datasourceTitleButton: titleButton)
+            trashHeader.setTitleSorted(datasourceTitleButton: layoutForView?.titleButtonHeader ?? "")
             
             return trashHeader
             
@@ -316,8 +308,7 @@ extension NCTrash: UICollectionViewDataSource {
             cell.objectId = tableTrash.fileId
             cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
-            cell.labelTitle.textColor = NCBrandColor.shared.textView
-            cell.separator.backgroundColor = NCBrandColor.shared.separator
+            cell.labelTitle.textColor = NCBrandColor.shared.label
 
             if tableTrash.directory {
                 cell.imageItem.image = NCBrandColor.cacheImages.folder
@@ -349,7 +340,7 @@ extension NCTrash: UICollectionViewDataSource {
             cell.objectId = tableTrash.fileId
             cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
-            cell.labelTitle.textColor = NCBrandColor.shared.textView
+            cell.labelTitle.textColor = NCBrandColor.shared.label
             
             if tableTrash.directory {
                 cell.imageItem.image = NCBrandColor.cacheImages.folder
@@ -390,11 +381,11 @@ extension NCTrash {
 
     @objc func reloadDataSource() {
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
+        layoutForView = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
         
         datasource.removeAll()
         
-        guard let tashItems = NCManageDatabase.shared.getTrash(filePath: trashPath, sort: sort, ascending: ascending, account: appDelegate.account) else {
+        guard let tashItems = NCManageDatabase.shared.getTrash(filePath: trashPath, sort: layoutForView?.sort, ascending: layoutForView?.ascending, account: appDelegate.account) else {
             return
         }
         

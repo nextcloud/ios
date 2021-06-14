@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina3_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -15,7 +15,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="i1s-Qa-dG1">
-                    <rect key="frame" x="224" y="8" width="40" height="40"/>
+                    <rect key="frame" x="224" y="10" width="40" height="40"/>
                     <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="e3Q-e0-SQa">
                         <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -97,7 +97,7 @@
                     <blurEffect style="regular"/>
                 </visualEffectView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IxY-xH-yZQ">
-                    <rect key="frame" x="8" y="8" width="208" height="40"/>
+                    <rect key="frame" x="8" y="10" width="208" height="40"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="40" id="S6o-Pa-sxy"/>
                     </constraints>
@@ -106,7 +106,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="enp-xt-Y5y">
-                    <rect key="frame" x="272" y="8" width="40" height="40"/>
+                    <rect key="frame" x="272" y="10" width="40" height="40"/>
                     <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="KKR-Hr-av8">
                         <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -134,19 +134,26 @@
                     </constraints>
                     <blurEffect style="regular"/>
                 </visualEffectView>
+                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="XVj-jD-9KA">
+                    <rect key="frame" x="150" y="-9" width="20" height="20"/>
+                    <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                </activityIndicatorView>
             </subviews>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
+                <constraint firstItem="XVj-jD-9KA" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="-9" id="Cpb-Vg-sov"/>
                 <constraint firstItem="i1s-Qa-dG1" firstAttribute="leading" secondItem="IxY-xH-yZQ" secondAttribute="trailing" constant="8" id="Owq-aa-Sr6"/>
                 <constraint firstItem="enp-xt-Y5y" firstAttribute="leading" secondItem="i1s-Qa-dG1" secondAttribute="trailing" constant="8" id="XcU-G8-k0a"/>
                 <constraint firstItem="IxY-xH-yZQ" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="8" id="ZhO-pY-Qwi"/>
-                <constraint firstItem="i1s-Qa-dG1" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="8" id="cWc-xe-8un"/>
+                <constraint firstItem="i1s-Qa-dG1" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="10" id="cWc-xe-8un"/>
+                <constraint firstItem="XVj-jD-9KA" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="lqb-pC-WUR"/>
                 <constraint firstItem="IxY-xH-yZQ" firstAttribute="centerY" secondItem="i1s-Qa-dG1" secondAttribute="centerY" id="mJJ-pT-yA3"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="enp-xt-Y5y" secondAttribute="trailing" constant="8" id="rSU-Dz-YXW"/>
-                <constraint firstItem="enp-xt-Y5y" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="8" id="z6I-sd-mmD"/>
+                <constraint firstItem="enp-xt-Y5y" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="10" id="z6I-sd-mmD"/>
             </constraints>
-            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <connections>
+                <outlet property="activityIndicator" destination="XVj-jD-9KA" id="cSB-RJ-RCZ"/>
                 <outlet property="buttonControlWidthConstraint" destination="wkm-j1-5v4" id="SHm-F2-NjB"/>
                 <outlet property="controlButtonView" destination="i1s-Qa-dG1" id="5q4-uE-oC5"/>
                 <outlet property="gridSwitchButton" destination="jSO-Vb-jcU" id="geS-eg-obV"/>

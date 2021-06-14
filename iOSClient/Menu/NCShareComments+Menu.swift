@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import FloatingPanel
 import NCCommunication
 
@@ -34,7 +35,7 @@ extension NCShareComments {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_edit_comment_", comment: ""),
-                icon: UIImage(named: "edit")!.image(color: NCBrandColor.shared.icon, size: 50),
+                icon: UIImage(named: "edit")!.image(color: NCBrandColor.shared.gray, size: 50),
                 action: { menuAction in
                     guard let metadata = self.metadata else { return }
                     guard let tableComments = tableComments else { return }
@@ -87,7 +88,7 @@ extension NCShareComments {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_cancel_", comment: ""),
-                icon: UIImage(named: "cancel")!.image(color: NCBrandColor.shared.icon, size: 50),
+                icon: UIImage(named: "cancel")!.image(color: NCBrandColor.shared.gray, size: 50),
                 action: { menuAction in
                 }
             )

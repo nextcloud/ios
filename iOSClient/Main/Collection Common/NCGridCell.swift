@@ -21,7 +21,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
 import UIKit
 
 class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCellProtocol {
@@ -129,6 +128,13 @@ protocol NCGridCellDelegate {
     func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer)
 }
 
+// optional func
+extension NCGridCellDelegate {
+    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {}
+    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {}
+    func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {}
+}
+
 // MARK: - Grid Layout
 
 class NCGridLayout: UICollectionViewFlowLayout {
@@ -137,6 +143,8 @@ class NCGridLayout: UICollectionViewFlowLayout {
     var marginLeftRight: CGFloat = 6
     var itemForLine: CGFloat = 3
     var itemWidthDefault: CGFloat = 120
+
+    // MARK: - View Life Cycle
 
     override init() {
         super.init()

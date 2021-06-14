@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import WebKit
 
 class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
@@ -32,6 +32,8 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     @objc var metadata: tableMetadata?
     @objc var url: String = ""
+
+    // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()

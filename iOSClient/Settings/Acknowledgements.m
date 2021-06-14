@@ -26,6 +26,8 @@
 
 @implementation Acknowledgements
 
+// MARK: - View Life Cycle
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];

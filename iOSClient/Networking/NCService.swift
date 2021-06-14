@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import SVGKit
 import NCCommunication
 
@@ -57,7 +57,7 @@ class NCService: NSObject {
                 
                     // Update User (+ userProfile.id) & active account & account network
                     guard let tableAccount = NCManageDatabase.shared.setAccountUserProfile(userProfile!) else {
-                        NCContentPresenter.shared.messageNotification("Account", description: "Internal error : account not found on DB",  delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.ErrorInternalError)
+                        NCContentPresenter.shared.messageNotification("Account", description: "Internal error : account not found on DB",  delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
                         return
                     }
                 
@@ -114,9 +114,9 @@ class NCService: NSObject {
                     
                     if extendedSupport == false {
                         if serverProductName == "owncloud" {
-                            NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.ErrorInternalError)
+                            NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
                         } else if versionMajor <=  NCGlobal.shared.nextcloud_unsupported_version {
-                            NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_unsupported_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.ErrorInternalError)
+                            NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_unsupported_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
                         }
                     }
                 }

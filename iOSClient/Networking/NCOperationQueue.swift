@@ -22,7 +22,7 @@
 //
 
 
-import Foundation
+import UIKit
 import Queuer
 import NCCommunication
 
@@ -163,7 +163,7 @@ class NCOperationDownload: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCNetworking.shared.download(metadata: metadata, activityIndicator: false, selector: self.selector) { (_) in
+            NCNetworking.shared.download(metadata: metadata, selector: self.selector) { (_) in
                 self.finish()
             }
         }
@@ -307,7 +307,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                                     NCManageDatabase.shared.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, richWorkspace: metadataFolder.richWorkspace, account: metadataFolder.account)
                                 }
                             
-                            } else if errorCode == NCGlobal.shared.ErrorResourceNotFound && self.metadata.directory {
+                            } else if errorCode == NCGlobal.shared.errorResourceNotFound && self.metadata.directory {
                                 NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
                             }
                             
@@ -349,12 +349,18 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
     var urlBase: String
     var view: Any
     var indexPath: IndexPath
+    var fileNamePath: String = ""
+    var fileNamePreviewLocalPath: String = ""
+    var fileNameIconLocalPath: String = ""
     
     init(metadata: tableMetadata, urlBase: String, view: Any, indexPath: IndexPath) {
         self.metadata = tableMetadata.init(value: metadata)
         self.urlBase = urlBase
         self.view = view
         self.indexPath = indexPath
+        self.fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
+        self.fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+        self.fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
     }
     
     override func start() {
@@ -362,10 +368,6 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
-            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon) { (account, imagePreview, imageIcon,  errorCode, errorDescription) in
                 
                 var cell: NCImageCellProtocol?

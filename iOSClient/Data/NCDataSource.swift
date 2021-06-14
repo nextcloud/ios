@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 
 class NCDataSource: NSObject {
     
@@ -39,14 +39,14 @@ class NCDataSource: NSObject {
         super.init()
     }
     
-    init(metadatasSource: [tableMetadata], sort: String = "", ascending: Bool = false, directoryOnTop: Bool = false, favoriteOnTop: Bool = false, filterLivePhoto: Bool = false) {
+    init(metadatasSource: [tableMetadata], sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, filterLivePhoto: Bool? = true) {
         super.init()
         
-        self.sort = sort
-        self.ascending = ascending
-        self.directoryOnTop = directoryOnTop
-        self.favoriteOnTop = favoriteOnTop
-        self.filterLivePhoto = filterLivePhoto
+        self.sort = sort ?? "none"
+        self.ascending = ascending ?? false
+        self.directoryOnTop = directoryOnTop ?? true
+        self.favoriteOnTop = favoriteOnTop ?? true
+        self.filterLivePhoto = filterLivePhoto ?? true
         
         createMetadatas(metadatasSource: metadatasSource)
     }

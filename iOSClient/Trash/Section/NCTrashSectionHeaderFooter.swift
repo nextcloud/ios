@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 
 class NCTrashSectionHeaderMenu: UICollectionReusableView {
     
@@ -30,21 +30,24 @@ class NCTrashSectionHeaderMenu: UICollectionReusableView {
     @IBOutlet weak var buttonOrder: UIButton!
     @IBOutlet weak var buttonOrderWidthConstraint: NSLayoutConstraint!
     @IBOutlet weak var separator: UIView!
-    
+    @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
+
     var delegate: NCTrashSectionHeaderMenuDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
+        buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
         
         buttonOrder.setTitle("", for: .normal)
         buttonOrder.setTitleColor(NCBrandColor.shared.brandElement, for: .normal)
         
-        buttonMore.setImage(UIImage.init(named: "more")!.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
+        buttonMore.setImage(UIImage.init(named: "more")!.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
         
         separator.backgroundColor = NCBrandColor.shared.separator
-        backgroundColor = NCBrandColor.shared.backgroundView
+        separatorHeightConstraint.constant = 0.5
+
+        backgroundColor = NCBrandColor.shared.systemBackground
     }
     
     func setTitleSorted(datasourceTitleButton: String) {
@@ -95,7 +98,7 @@ class NCTrashSectionFooter: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        labelFooter.textColor = NCBrandColor.shared.icon
+        labelFooter.textColor = NCBrandColor.shared.gray
     }
     
     func setTitleLabelFooter(datasource: [tableTrash]) {

@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 
 @objc protocol NCCreateFormUploadConflictDelegate {
     @objc func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?)
@@ -36,6 +36,7 @@ extension NCCreateFormUploadConflictDelegate {
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelSubTitle: UILabel!
 
+    @IBOutlet weak var viewSwitch: UIView!
     @IBOutlet weak var switchNewFiles: UISwitch!
     @IBOutlet weak var switchAlreadyExistingFiles: UISwitch!
 
@@ -44,6 +45,7 @@ extension NCCreateFormUploadConflictDelegate {
 
     @IBOutlet weak var tableView: UITableView!
 
+    @IBOutlet weak var viewButton: UIView!
     @IBOutlet weak var buttonCancel: UIButton!
     @IBOutlet weak var buttonContinue: UIButton!
     
@@ -60,8 +62,8 @@ extension NCCreateFormUploadConflictDelegate {
     var metadatasConflictNewFiles: [String] = []
     var metadatasConflictAlreadyExistingFiles: [String] = []
     var fileNamesPath: [String: String] = [:]
-
-    // MARK: - Cicle
+    
+    // MARK: - View Life Cycle
 
     @objc required init?(coder aDecoder: NSCoder) {
         self.metadatasNOConflict = []
@@ -98,14 +100,29 @@ extension NCCreateFormUploadConflictDelegate {
         buttonCancel.layer.cornerRadius = 20
         buttonCancel.layer.masksToBounds = true
         buttonCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
-        buttonCancel.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
         
         buttonContinue.layer.cornerRadius = 20
         buttonContinue.layer.masksToBounds = true
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
-        buttonContinue.setTitleColor(.lightGray, for: .normal)
-        buttonContinue.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
+        
+        changeTheming()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        changeTheming()
+    }
+    
+    // MARK: - Theming
+    
+    func changeTheming(){
+        
+        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        viewSwitch.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        viewButton.backgroundColor = NCBrandColor.shared.systemGroupedBackground
     }
     
     // MARK: - Action
@@ -148,7 +165,7 @@ extension NCCreateFormUploadConflictDelegate {
             }
             
             switchAlreadyExistingFiles.isOn = true
-            NCContentPresenter.shared.messageNotification("_info_", description: "_file_not_rewite_doc_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.ErrorInternalError, forced: true)
+            NCContentPresenter.shared.messageNotification("_info_", description: "_file_not_rewite_doc_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, forced: true)
         }
         
         tableView.reloadData()
@@ -263,6 +280,8 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCCreateFormUploadConflictCell {
             
+            cell.backgroundColor = tableView.backgroundColor
+            
             let metadataNewFile = metadatasUploadInConflict[indexPath.row]
 
             cell.ocId = metadataNewFile.ocId
@@ -338,36 +357,29 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 } else {
                     
                     CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadataNewFile, notification: false) { (metadataNew, fileNamePath) in
-                        DispatchQueue.global(qos: .background).async {
-                            if metadataNew != nil {
-                                self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
+                       
+                        if metadataNew != nil {
+                            self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
+                            
+                            do {
                                 
-                                do {
-                                    
-                                    let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath!)
-                                    let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
-                                    
-                                    if mediaType == PHAssetMediaType.image {
-                                        let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath!))
-                                        if let image = UIImage(data: data) {
-                                            DispatchQueue.main.async {
-                                                cell.imageNewFile.image = image
-                                            }
-                                        }
-                                    } else if mediaType == PHAssetMediaType.video {
-                                        if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: fileNamePath!), at: 0) {
-                                            DispatchQueue.main.async {
-                                                cell.imageNewFile.image = image
-                                            }
-                                        }
+                                let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath!)
+                                let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
+                                
+                                if mediaType == PHAssetMediaType.image {
+                                    let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath!))
+                                    if let image = UIImage(data: data) {
+                                        cell.imageNewFile.image = image
                                     }
-                                    
-                                    DispatchQueue.main.async {
-                                        cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
+                                } else if mediaType == PHAssetMediaType.video {
+                                    if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: fileNamePath!), at: 0) {
+                                        cell.imageNewFile.image = image
                                     }
-                                    
-                                } catch { print("Error: \(error)") }
-                            }
+                                }
+                                
+                                cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
+                               
+                            } catch { print("Error: \(error)") }
                         }
                     }
                 }

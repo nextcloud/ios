@@ -21,37 +21,51 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import NCCommunication
+
+public protocol NCAccountRequestDelegate {
+    func accountRequestAddAccount()
+    func accountRequestChangeAccount(account: String)
+}
+
+// optional func
+public extension NCAccountRequestDelegate {
+    func accountRequestAddAccount() {}
+    func accountRequestChangeAccount(account: String) {}
+}
 
 class NCAccountRequest: UIViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var progressView: UIProgressView!
     
     public var accounts: [tableAccount] = []
-    public let heightCell: CGFloat = 80
+    public var activeAccount: tableAccount?
+    public let heightCell: CGFloat = 60
     public var enableTimerProgress: Bool = true
     public var enableAddAccount: Bool = false
-    public var viewController: UIViewController?
     public var dismissDidEnterBackground: Bool = false
+    public var delegate: NCAccountRequestDelegate?
 
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var timer: Timer?
     private var time: Float = 0
     private let secondsAutoDismiss: Float = 3
     
-    // MARK: - Life Cycle
-    
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        titleLabel.text = NSLocalizedString("_accounts_", comment: "")
+        titleLabel.text = NSLocalizedString("_account_select_", comment: "")
+
+        closeButton.setImage(NCUtility.shared.loadImage(named: "xmark", color: NCBrandColor.shared.label), for: .normal)
         
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
-        progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.trackTintColor = .clear
         progressView.progress = 1
         if enableTimerProgress {
@@ -61,10 +75,9 @@ class NCAccountRequest: UIViewController {
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(startTimer), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         
-        changeTheming()        
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -73,6 +86,14 @@ class NCAccountRequest: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        let visibleCells = tableView.visibleCells
+        var numAccounts = accounts.count
+        if enableAddAccount { numAccounts += 1 }
+        
+        if visibleCells.count == numAccounts {
+            tableView.isScrollEnabled = false
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -81,15 +102,30 @@ class NCAccountRequest: UIViewController {
         timer?.invalidate()
     }
     
-    // MARK: - NotificationCenter
-
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        changeTheming()
+    }
+    
+    // MARK: - Theming
+    
     @objc func changeTheming() {
         
-        view.backgroundColor = NCBrandColor.shared.backgroundForm
-        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
+        view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        tableView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        
         tableView.reloadData()
     }
     
+    // MARK: - Action
+    
+    @IBAction func actionClose(_ sender: UIButton) {
+        dismiss(animated: true)
+    }
+    
+    // MARK: - NotificationCenter
+
     @objc func applicationDidEnterBackground() {
         
         if dismissDidEnterBackground {
@@ -149,21 +185,14 @@ extension NCAccountRequest: UITableViewDelegate {
         if indexPath.row == accounts.count {
             
             dismiss(animated: true)
-            appDelegate.openLogin(viewController: viewController, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+            delegate?.accountRequestAddAccount()
             
         } else {
         
             let account = accounts[indexPath.row]
-            if account.account != appDelegate.account {
-                NCManageDatabase.shared.setAccountActive(account.account)
+            if account.account != activeAccount?.account {
                 dismiss(animated: true) {
-                    
-                    NCOperationQueue.shared.cancelAllQueue()
-                    NCNetworking.shared.cancelAllTask()
-                    
-                    self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
-                    
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitializeMain)
+                    self.delegate?.accountRequestChangeAccount(account: account.account)
                 }
             } else {
                 dismiss(animated: true)
@@ -185,8 +214,8 @@ extension NCAccountRequest: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
                
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.backgroundColor = NCBrandColor.shared.backgroundForm
-       
+        cell.backgroundColor = tableView.backgroundColor
+        
         let avatarImage = cell.viewWithTag(10) as? UIImageView
         let userLabel = cell.viewWithTag(20) as? UILabel
         let urlLabel = cell.viewWithTag(30) as? UILabel
@@ -197,11 +226,12 @@ extension NCAccountRequest: UITableViewDataSource {
         
         if indexPath.row == accounts.count {
            
-            avatarImage?.image = NCUtility.shared.loadImage(named: "plus").image(color: .systemBlue, size: 25)
+            avatarImage?.image = NCUtility.shared.loadImage(named: "plus").image(color: .systemBlue, size: 15)
             avatarImage?.contentMode = .center
             userLabel?.text = NSLocalizedString("_add_account_", comment: "")
             userLabel?.textColor = .systemBlue
-            
+            userLabel?.font = UIFont.systemFont(ofSize: 15)
+
         } else {
         
             let account = accounts[indexPath.row]

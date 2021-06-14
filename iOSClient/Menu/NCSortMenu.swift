@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import FloatingPanel
 import NCCommunication
 
@@ -31,13 +32,6 @@ class NCSortMenu: NSObject {
     private var hideDirectoryOnTop: Bool?
     
     private var key = ""
-    private var layout = ""
-    private var sort = ""
-    private var ascending = true
-    private var groupBy = ""
-    private var directoryOnTop = false
-    private var titleButton = ""
-    private var itemForLine: Int = 0
 
     func toggleMenu(viewController: UIViewController, key: String, sortButton: UIButton?, serverUrl: String, hideDirectoryOnTop: Bool = false) {
         
@@ -46,7 +40,7 @@ class NCSortMenu: NSObject {
         self.serverUrl = serverUrl
         self.hideDirectoryOnTop = hideDirectoryOnTop
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
+        var layoutForView = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
 
         let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
@@ -54,18 +48,18 @@ class NCSortMenu: NSObject {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_order_by_name_a_z_", comment: ""),
-                icon: UIImage(named: "sortFileNameAZ")!.image(color: NCBrandColor.shared.icon, size: 50),
+                icon: UIImage(named: "sortFileNameAZ")!.image(color: NCBrandColor.shared.gray, size: 50),
                 onTitle: NSLocalizedString("_order_by_name_z_a_", comment: ""),
-                onIcon: UIImage(named: "sortFileNameZA")!.image(color: NCBrandColor.shared.icon, size: 50),
-                selected: self.sort == "fileName",
-                on: self.sort == "fileName",
+                onIcon: UIImage(named: "sortFileNameZA")!.image(color: NCBrandColor.shared.gray, size: 50),
+                selected: layoutForView.sort == "fileName",
+                on: layoutForView.sort == "fileName",
                 action: { menuAction in
-                    if self.sort == "fileName" {
-                        self.ascending = !self.ascending
+                    if layoutForView.sort == "fileName" {
+                        layoutForView.ascending = !layoutForView.ascending
                     } else {
-                        self.sort = "fileName"
+                        layoutForView.sort = "fileName"
                     }
-                    self.actionMenu()
+                    self.actionMenu(layoutForView: layoutForView)
                 }
             )
         )
@@ -73,18 +67,18 @@ class NCSortMenu: NSObject {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_order_by_date_more_recent_", comment: ""),
-                icon: UIImage(named: "sortDateMoreRecent")!.image(color: NCBrandColor.shared.icon, size: 50),
+                icon: UIImage(named: "sortDateMoreRecent")!.image(color: NCBrandColor.shared.gray, size: 50),
                 onTitle: NSLocalizedString("_order_by_date_less_recent_", comment: ""),
-                onIcon: UIImage(named: "sortDateLessRecent")!.image(color: NCBrandColor.shared.icon, size: 50),
-                selected: self.sort == "date",
-                on: self.sort == "date",
+                onIcon: UIImage(named: "sortDateLessRecent")!.image(color: NCBrandColor.shared.gray, size: 50),
+                selected: layoutForView.sort == "date",
+                on: layoutForView.sort == "date",
                 action: { menuAction in
-                    if self.sort == "date" {
-                        self.ascending = !self.ascending
+                    if layoutForView.sort == "date" {
+                        layoutForView.ascending = !layoutForView.ascending
                     } else {
-                        self.sort = "date"
+                        layoutForView.sort = "date"
                     }
-                    self.actionMenu()
+                    self.actionMenu(layoutForView: layoutForView)
                 }
             )
         )
@@ -92,18 +86,18 @@ class NCSortMenu: NSObject {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_order_by_size_smallest_", comment: ""),
-                icon: UIImage(named: "sortSmallest")!.image(color: NCBrandColor.shared.icon, size: 50),
+                icon: UIImage(named: "sortSmallest")!.image(color: NCBrandColor.shared.gray, size: 50),
                 onTitle: NSLocalizedString("_order_by_size_largest_", comment: ""),
-                onIcon: UIImage(named: "sortLargest")!.image(color: NCBrandColor.shared.icon, size: 50),
-                selected: self.sort == "size",
-                on: self.sort == "size",
+                onIcon: UIImage(named: "sortLargest")!.image(color: NCBrandColor.shared.gray, size: 50),
+                selected: layoutForView.sort == "size",
+                on: layoutForView.sort == "size",
                 action: { menuAction in
-                    if self.sort == "size" {
-                        self.ascending = !self.ascending
+                    if layoutForView.sort == "size" {
+                        layoutForView.ascending = !layoutForView.ascending
                     } else {
-                        self.sort = "size"
+                        layoutForView.sort = "size"
                     }
-                    self.actionMenu()
+                    self.actionMenu(layoutForView: layoutForView)
                 }
             )
         )
@@ -112,12 +106,12 @@ class NCSortMenu: NSObject {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_directory_on_top_no_", comment: ""),
-                    icon: UIImage(named: "foldersOnTop")!.image(color: NCBrandColor.shared.icon, size: 50),
-                    selected: self.directoryOnTop,
-                    on: self.directoryOnTop,
+                    icon: UIImage(named: "foldersOnTop")!.image(color: NCBrandColor.shared.gray, size: 50),
+                    selected: layoutForView.directoryOnTop,
+                    on: layoutForView.directoryOnTop,
                     action: { menuAction in
-                        self.directoryOnTop = !self.directoryOnTop
-                        self.actionMenu()
+                        layoutForView.directoryOnTop = !layoutForView.directoryOnTop
+                        self.actionMenu(layoutForView: layoutForView)
                     }
                 )
             )
@@ -134,22 +128,24 @@ class NCSortMenu: NSObject {
         viewController.present(menuPanelController, animated: true, completion: nil)
     }
     
-    func actionMenu() {
+    func actionMenu(layoutForView: NCGlobal.layoutForViewType) {
                 
-        switch sort {
+        var layoutForView = layoutForView
+        
+        switch layoutForView.sort {
         case "fileName":
-            titleButton = ascending ? "_sorted_by_name_a_z_" : "_sorted_by_name_z_a_"
+            layoutForView.titleButtonHeader = layoutForView.ascending ? "_sorted_by_name_a_z_" : "_sorted_by_name_z_a_"
         case "date":
-            titleButton = ascending ? "_sorted_by_date_less_recent_" : "_sorted_by_date_more_recent_"
+            layoutForView.titleButtonHeader = layoutForView.ascending ? "_sorted_by_date_less_recent_" : "_sorted_by_date_more_recent_"
         case "size":
-            titleButton = ascending ? "_sorted_by_size_smallest_" : "_sorted_by_size_largest_"
+            layoutForView.titleButtonHeader = layoutForView.ascending ? "_sorted_by_size_smallest_" : "_sorted_by_size_largest_"
         default:
             break
         }
         
-        self.sortButton?.setTitle(NSLocalizedString(titleButton, comment: ""), for: .normal)
+        self.sortButton?.setTitle(NSLocalizedString(layoutForView.titleButtonHeader, comment: ""), for: .normal)
         
-        NCUtility.shared.setLayoutForView(key: key, serverUrl: serverUrl, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButton: titleButton, itemForLine: itemForLine)
+        NCUtility.shared.setLayoutForView(key: key, serverUrl: serverUrl, layoutForView: layoutForView)
         
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":self.serverUrl])
     }

@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import PDFKit
 
 @objc protocol NCViewerPDFSearchDelegate : AnyObject {
@@ -36,8 +36,8 @@ class NCViewerPDFSearch: UITableViewController, UISearchBarDelegate, PDFDocument
     
     weak var delegate: NCViewerPDFSearchDelegate?
     
-    //MARK: - LifeCycle
-    
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

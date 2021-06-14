@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import MarkdownKit
 
 class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate {
@@ -34,9 +34,10 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var textViewRichWorkspace: UITextView!
     @IBOutlet weak var separator: UIView!
+    @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     
     var delegate: NCSectionHeaderMenuDelegate?
-    
+
     private var markdownParser = MarkdownParser()
     private var richWorkspaceText: String?
     private var textViewColor: UIColor?
@@ -45,25 +46,33 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.icon, size: 25), for: .normal)
+        backgroundColor = .clear
+        
+        buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
         
         buttonOrder.setTitle("", for: .normal)
         buttonOrder.setTitleColor(.systemBlue, for: .normal)
-        
-        buttonMore.setImage(UIImage.init(named: "more")!.image(color:  NCBrandColor.shared.icon, size: 25), for: .normal)
+        buttonMore.setImage(UIImage.init(named: "more")!.image(color:  NCBrandColor.shared.gray, size: 25), for: .normal)
                 
         // Gradient
-        gradient.startPoint = CGPoint(x: 0, y: 0.60)
+        gradient.startPoint = CGPoint(x: 0, y: 0.50)
         gradient.endPoint = CGPoint(x: 0, y: 1)
         viewRichWorkspace.layer.addSublayer(gradient)
+        setGradientColor()
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(touchUpInsideViewRichWorkspace(_:)))
         tap.delegate = self
         viewRichWorkspace?.addGestureRecognizer(tap)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        
-        changeTheming()
+        separator.backgroundColor = NCBrandColor.shared.separator
+        separatorHeightConstraint.constant = 0.5
+
+        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.label)
+        markdownParser.header.font = UIFont.systemFont(ofSize: 25)
+        if let richWorkspaceText = richWorkspaceText {
+            textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
+        }
+        textViewColor = NCBrandColor.shared.label
     }
     
     override func layoutSublayers(of layer: CALayer) {
@@ -71,25 +80,16 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         gradient.frame = viewRichWorkspace.bounds
     }
     
-    @objc func changeTheming() {
-        
-        backgroundColor = NCBrandColor.shared.backgroundView
-        separator.backgroundColor = NCBrandColor.shared.separator
-        buttonOrder.setTitleColor(.systemBlue, for: .normal)
-        
-        if textViewColor != NCBrandColor.shared.textView {
-            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.textView)
-            markdownParser.header.font = UIFont.systemFont(ofSize: 25)
-            if let richWorkspaceText = richWorkspaceText {
-                textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
-            }
-            textViewColor = NCBrandColor.shared.textView
-            
-            if CCUtility.getDarkMode() {
-                gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
-            } else {
-                gradient.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
-            }
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        setGradientColor()
+    }
+    
+    func setGradientColor() {
+        if traitCollection.userInterfaceStyle == .dark {
+            gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
+        } else {
+            gradient.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
         }
     }
     
@@ -147,6 +147,14 @@ protocol NCSectionHeaderMenuDelegate {
     func tapRichWorkspace(sender: Any)
 }
 
+// optional func
+extension NCSectionHeaderMenuDelegate {
+    func tapSwitchHeader(sender: Any) {}
+    func tapMoreHeader(sender: Any) {}
+    func tapOrderHeader(sender: Any) {}
+    func tapRichWorkspace(sender: Any) {}
+}
+
 class NCSectionFooter: UICollectionReusableView {
     
     @IBOutlet weak var labelSection: UILabel!
@@ -155,7 +163,7 @@ class NCSectionFooter: UICollectionReusableView {
         super.awakeFromNib()
         
         self.backgroundColor = UIColor.clear
-        labelSection.textColor = NCBrandColor.shared.icon
+        labelSection.textColor = NCBrandColor.shared.gray
     }
     
     func setTitleLabel(directories: Int, files: Int, size: Int64) {

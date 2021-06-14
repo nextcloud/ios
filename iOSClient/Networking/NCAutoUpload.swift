@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import CoreLocation
 import NCCommunication
 
@@ -63,8 +63,8 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
         
         NCCommunicationCommon.shared.writeLog("Location manager: latitude \(latitude) longitude \(longitude)")
         
-        if let account = NCManageDatabase.shared.getAccountActive() {
-            if account.autoUpload && account.autoUploadBackground && UIApplication.shared.applicationState == UIApplication.State.background {
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+            if activeAccount.autoUpload && activeAccount.autoUploadBackground && UIApplication.shared.applicationState == UIApplication.State.background {
                 NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: nil) { (hasPermission) in
                     if hasPermission {
                         self.uploadAssetsNewAndFull(viewController: nil, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Change location") { (items) in
@@ -98,8 +98,8 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
     // MARK: -
     
     @objc func initAutoUpload(viewController: UIViewController?, completion: @escaping (_ items: Int)->()) {
-        if let account = NCManageDatabase.shared.getAccountActive() {
-            if account.autoUpload {
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+            if activeAccount.autoUpload {
                 NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { (hasPermission) in
                     if hasPermission {
                         self.uploadAssetsNewAndFull(viewController:viewController, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload") { (items) in
@@ -108,7 +108,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                             }
                             completion(items)
                         }
-                        if account.autoUploadBackground {
+                        if activeAccount.autoUploadBackground {
                             NCAskAuthorization.shared.askAuthorizationLocationManager() { (hasFullPermissions) in
                                 if hasFullPermissions {
                                     self.startSignificantChangeUpdates()
@@ -173,7 +173,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                 if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase) {
                     DispatchQueue.main.async {
                         if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                            NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCGlobal.shared.dismissAfterSecond, type: .error, errorCode: NCGlobal.shared.ErrorInternalError, forced: true)
+                            NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCGlobal.shared.dismissAfterSecond, type: .error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
                         }
                         completion(counterItemsUpload)
                         return
@@ -191,7 +191,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                     let formatter = DateFormatter()
                     var serverUrl: String = ""
                     
-                    let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String, fileDate: assetDate, fileType: assetMediaType, keyFileName: NCGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload)!
+                    let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String, fileDate: assetDate, fileType: assetMediaType, keyFileName: NCGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)!
                     
                     if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() {
                         livePhoto = true
@@ -234,7 +234,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                     } else {
                         
                         /* INSERT METADATA FOR UPLOAD */
-                        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: account.account, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", livePhoto: livePhoto, chunk: false)
+                        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: account.account, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", livePhoto: livePhoto)
                         metadataForUpload.assetLocalIdentifier = asset.localIdentifier
                         metadataForUpload.session = session
                         metadataForUpload.sessionSelector = selector
@@ -265,7 +265,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                             
                             CCUtility.extractLivePhotoAsset(asset, filePath: filePath) { (url) in
                                 if url != nil {
-                                    let metadataForUpload = NCManageDatabase.shared.createMetadata(account: account.account, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", livePhoto: livePhoto, chunk: false)
+                                    let metadataForUpload = NCManageDatabase.shared.createMetadata(account: account.account, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", livePhoto: livePhoto)
                                     metadataForUpload.session = session
                                     metadataForUpload.sessionSelector = selector
                                     metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
@@ -312,11 +312,11 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
     // MARK: -
 
     @objc func alignPhotoLibrary(viewController: UIViewController?) {
-        if let account = NCManageDatabase.shared.getAccountActive() {
-            getCameraRollAssets(viewController: viewController, account: account, selector: NCGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true) { (assets) in
-                NCManageDatabase.shared.clearTable(tablePhotoLibrary.self, account: account.account)
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+            getCameraRollAssets(viewController: viewController, account: activeAccount, selector: NCGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true) { (assets) in
+                NCManageDatabase.shared.clearTable(tablePhotoLibrary.self, account: activeAccount.account)
                 if let assets = assets {
-                    NCManageDatabase.shared.addPhotoLibrary(assets, account: account.account)
+                    NCManageDatabase.shared.addPhotoLibrary(assets, account: activeAccount.account)
                     NCCommunicationCommon.shared.writeLog("Align Photo Library \(assets.count)")
                 }
             }

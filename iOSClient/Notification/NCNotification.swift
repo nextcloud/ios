@@ -31,18 +31,23 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     var notifications: [NCCommunicationNotifications] = []
     var emptyDataSet: NCEmptyDataSet?
 
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = NSLocalizedString("_notification_", comment: "")
-                
-        self.tableView.tableFooterView = UIView()
-        self.tableView.rowHeight = UITableView.automaticDimension
-        self.tableView.estimatedRowHeight = 50.0
-        self.tableView.allowsSelection = false
+        title = NSLocalizedString("_notification_", comment: "")
+        view.backgroundColor = NCBrandColor.shared.systemBackground
+
+        tableView.tableFooterView = UIView()
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 50.0
+        tableView.allowsSelection = false
+        tableView.backgroundColor = NCBrandColor.shared.systemBackground
         
         // Empty
-        emptyDataSet = NCEmptyDataSet.init(view: tableView, offset: 0, delegate: self)
+        let offset = (self.navigationController?.navigationBar.bounds.height ?? 0) - 20
+        emptyDataSet = NCEmptyDataSet.init(view: tableView, offset: -offset, delegate: self)
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         
@@ -51,23 +56,36 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         appDelegate.activeViewController = self
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
+        
+        getNetwokingNotification()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
+    }
+    
+    @objc func viewClose() {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    // MARK: - NotificationCenter
+
+    @objc func initialize() {
         getNetwokingNotification()
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundView
-        tableView.backgroundColor = NCBrandColor.shared.backgroundView
-        tableView.reloadData()        
-    }
-
-    @objc func viewClose() {
-        self.dismiss(animated: true, completion: nil)
+        tableView.reloadData()
     }
     
     // MARK: - Empty
@@ -97,7 +115,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         
         let notification = notifications[indexPath.row]
         let urlIcon = URL(string: notification.icon)
-        var image : UIImage?
+        var image: UIImage?
         
         if let urlIcon = urlIcon {
             let pathFileName = String(CCUtility.getDirectoryUserData()) + "/" + urlIcon.deletingPathExtension().lastPathComponent + ".png"
@@ -105,7 +123,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         }
         
         if let image = image {
-            cell.icon.image = image.image(color:  NCBrandColor.shared.brandElement, size: 25)
+            cell.icon.image = image.imageColor(NCBrandColor.shared.brandElement)
         } else {
             cell.icon.image = NCUtility.shared.loadImage(named: "bell", color: NCBrandColor.shared.brandElement)
         }
@@ -114,30 +132,26 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.avatar.isHidden = true
         cell.avatarLeadingMargin.constant = 10
 
-//        if let subjectRichParameters = notification.subjectRichParameters {
-//            if let jsonParameter = JSON(subjectRichParameters).dictionary {
-//                print("")
-//            }
-//        }
-        /*
-        if let parameter = notification.subjectRichParameters as?  Dictionary<String, Any> {
-            if let user = parameter["user"] as? Dictionary<String, Any> {
-                if let name = user["id"] as? String {
-                    let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + name + ".png"
-                    if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                            cell.avatar.isHidden = false
-                            cell.avatarLeadingMargin.constant = 50
-                            cell.avatar.image = image
-                        }
-                    } else {
-                        DispatchQueue.global().async {
-                            NCCommunication.shared.downloadAvatar(userId: name, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size), customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.account) { (account, data, errorCode, errorMessage) in
-                                if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
-                                    if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                                        cell.avatar.isHidden = false
-                                        cell.avatarLeadingMargin.constant = 50
-                                        cell.avatar.image = image
+        if let subjectRichParameters = notification.subjectRichParameters {
+            if let parameter = JSON(subjectRichParameters).dictionary {
+                if let user = JSON(parameter).dictionary {
+                    if let userId = user["id"]?.string {
+                        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + userId + ".png"
+                        if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+                            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                                cell.avatar.isHidden = false
+                                cell.avatarLeadingMargin.constant = 50
+                                cell.avatar.image = image
+                            }
+                        } else {
+                            DispatchQueue.global().async {
+                                NCCommunication.shared.downloadAvatar(userId: userId, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
+                                    if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
+                                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                                            cell.avatar.isHidden = false
+                                            cell.avatarLeadingMargin.constant = 50
+                                            cell.avatar.image = image
+                                        }
                                     }
                                 }
                             }
@@ -146,20 +160,17 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 }
             }
         }
-        */
         
-        //
-        //cell.date.text = DateFormatter.localizedString(from: notification.date, dateStyle: .medium, timeStyle: .medium)
-        //
+        cell.date.text = DateFormatter.localizedString(from: notification.date as Date, dateStyle: .medium, timeStyle: .medium)
         cell.notification = notification
         cell.date.text = CCUtility.dateDiff(notification.date as Date)
         cell.date.textColor = .gray
         cell.subject.text = notification.subject
-        cell.subject.textColor = NCBrandColor.shared.textView
+        cell.subject.textColor = NCBrandColor.shared.label
         cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
         cell.message.textColor = .gray
         
-        cell.remove.setImage(UIImage(named: "exit")!.image(color: .gray, size: 20), for: .normal)
+        cell.remove.setImage(UIImage(named: "xmark")!.image(color: .gray, size: 20), for: .normal)
         
         cell.primary.isEnabled = false
         cell.primary.isHidden = true
@@ -175,7 +186,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.secondary.setTitleColor(.gray, for: .normal)
         cell.secondary.layer.cornerRadius = 15
         cell.secondary.layer.masksToBounds = true
-        cell.secondary.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.1).cgColor
+        cell.secondary.layer.backgroundColor = NCBrandColor.shared.systemGray5.cgColor
         cell.secondary.layer.borderWidth = 0.3
         cell.secondary.layer.borderColor = UIColor.gray.cgColor
         
