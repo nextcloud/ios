@@ -123,7 +123,7 @@ class NCShareCommon: NSObject {
         if metadata.directory {
             shareUserMenuView.height = 410
         } else {
-            shareUserMenuView.height = 260
+            shareUserMenuView.height = 370
         }
         
         shareUserMenuView.backgroundColor = NCBrandColor.shared.systemBackground

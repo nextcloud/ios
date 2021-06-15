@@ -26,18 +26,18 @@ import NCCommunication
 
 class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkingDelegate, FSCalendarDelegate, FSCalendarDelegateAppearance {
     
+    @IBOutlet weak var switchReadOnly: UISwitch!
+    @IBOutlet weak var labelReadOnly: UILabel!
+    
+    @IBOutlet weak var switchAllowUploadAndEditing: UISwitch!
+    @IBOutlet weak var labelAllowEditing: UILabel!
+        
+    @IBOutlet weak var switchFileDrop: UISwitch!
+    @IBOutlet weak var labelFileDrop: UILabel!
+    
     @IBOutlet weak var switchCanReshare: UISwitch!
     @IBOutlet weak var labelCanReshare: UILabel!
-    
-    @IBOutlet weak var switchCanCreate: UISwitch!
-    @IBOutlet weak var labelCanCreate: UILabel!
-    
-    @IBOutlet weak var switchCanChange: UISwitch!
-    @IBOutlet weak var labelCanChange: UILabel!
-    
-    @IBOutlet weak var switchCanDelete: UISwitch!
-    @IBOutlet weak var labelCanDelete: UILabel!
-    
+        
     @IBOutlet weak var switchSetExpirationDate: UISwitch!
     @IBOutlet weak var labelSetExpirationDate: UILabel!
     @IBOutlet weak var fieldSetExpirationDate: UITextField!
@@ -75,23 +75,34 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         
         switchCanReshare.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
         switchCanReshare.onTintColor = NCBrandColor.shared.brandElement
-        switchCanCreate?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchCanCreate?.onTintColor = NCBrandColor.shared.brandElement
-        switchCanChange?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchCanChange?.onTintColor = NCBrandColor.shared.brandElement
-        switchCanDelete?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchCanDelete?.onTintColor = NCBrandColor.shared.brandElement
+        switchReadOnly?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchReadOnly?.onTintColor = NCBrandColor.shared.brandElement
+        switchAllowUploadAndEditing?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchAllowUploadAndEditing?.onTintColor = NCBrandColor.shared.brandElement
+        switchFileDrop?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        switchFileDrop?.onTintColor = NCBrandColor.shared.brandElement
         switchSetExpirationDate.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
         switchSetExpirationDate.onTintColor = NCBrandColor.shared.brandElement
         
         labelCanReshare?.text = NSLocalizedString("_share_can_reshare_", comment: "")
+//<<<<<<< HEAD
+//        labelCanReshare?.textColor = NCBrandColor.shared.label
+//        labelCanCreate?.text = NSLocalizedString("_share_can_create_", comment: "")
+//        labelCanCreate?.textColor = NCBrandColor.shared.label
+//        labelCanChange?.text = NSLocalizedString("_share_can_change_", comment: "")
+//        labelCanChange?.textColor = NCBrandColor.shared.label
+//        labelCanDelete?.text = NSLocalizedString("_share_can_delete_", comment: "")
+//        labelCanDelete?.textColor = NCBrandColor.shared.label
+//=======
         labelCanReshare?.textColor = NCBrandColor.shared.label
-        labelCanCreate?.text = NSLocalizedString("_share_can_create_", comment: "")
-        labelCanCreate?.textColor = NCBrandColor.shared.label
-        labelCanChange?.text = NSLocalizedString("_share_can_change_", comment: "")
-        labelCanChange?.textColor = NCBrandColor.shared.label
-        labelCanDelete?.text = NSLocalizedString("_share_can_delete_", comment: "")
-        labelCanDelete?.textColor = NCBrandColor.shared.label
+//        labelAllowEditing?.text = NSLocalizedString("_share_allow_editing_", comment: "")
+        labelAllowEditing?.textColor = NCBrandColor.shared.label
+        labelReadOnly?.text = NSLocalizedString("_share_read_only_", comment: "")
+        labelReadOnly?.textColor = NCBrandColor.shared.label
+        labelAllowEditing?.text = NSLocalizedString("_share_allow_upload_", comment: "")
+        labelAllowEditing?.textColor = NCBrandColor.shared.label
+        labelFileDrop?.text = NSLocalizedString("_share_file_drop_", comment: "")
+        labelFileDrop?.textColor = NCBrandColor.shared.label
         labelSetExpirationDate?.text = NSLocalizedString("_share_expiration_date_", comment: "")
         labelSetExpirationDate?.textColor = NCBrandColor.shared.label
         labelNoteToRecipient?.text = NSLocalizedString("_share_note_recipient_", comment: "")
@@ -135,18 +146,44 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         let canReshare = CCUtility.isPermission(toCanShare: tableShare.permissions)
         switchCanReshare.setOn(canReshare, animated: false)
         
+//        if metadata.directory {
+//            // Can create (folder)
+//            let readOnly = CCUtility.isPermission(toCanCreate: tableShare.permissions)
+//            switchReadOnly.setOn(readOnly, animated: false)
+//
+//            // Can change (folder)
+//            let allowEditing = CCUtility.isPermission(toCanChange: tableShare.permissions)
+//            switchAllowEditing.setOn(allowEditing, animated: false)
+//
+//            // Can delete (folder)
+//            let canDelete = CCUtility.isPermission(toCanDelete: tableShare.permissions)
+//            switchCanDelete.setOn(canDelete, animated: false)
+//        }
         if metadata.directory {
-            // Can create (folder)
-            let canCreate = CCUtility.isPermission(toCanCreate: tableShare.permissions)
-            switchCanCreate.setOn(canCreate, animated: false)
-            
-            // Can change (folder)
-            let canChange = CCUtility.isPermission(toCanChange: tableShare.permissions)
-            switchCanChange.setOn(canChange, animated: false)
-            
-            // Can delete (folder)
-            let canDelete = CCUtility.isPermission(toCanDelete: tableShare.permissions)
-            switchCanDelete.setOn(canDelete, animated: false)
+            // File Drop4
+            if tableShare.permissions == NCGlobal.shared.permissionCreateShare {
+                switchReadOnly.setOn(false, animated: false)
+                switchAllowUploadAndEditing.setOn(false, animated: false)
+                switchFileDrop.setOn(true, animated: false)
+            } else {
+                // Read Only
+                if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
+                    switchReadOnly.setOn(false, animated: false)
+                    switchAllowUploadAndEditing.setOn(true, animated: false)
+                } else {
+                    switchReadOnly.setOn(true, animated: false)
+                    switchAllowUploadAndEditing.setOn(false, animated: false)
+                }
+                switchFileDrop.setOn(false, animated: false)
+            }
+        } else {
+            // Allow editing
+            labelAllowEditing?.text = NSLocalizedString("_share_editing_", comment: "")
+            if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
+                switchAllowUploadAndEditing.setOn(true, animated: false)
+            } else {
+                switchAllowUploadAndEditing.setOn(false, animated: false)
+            }
         }
         
         // Set expiration date
@@ -219,49 +256,54 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
     }
     
-    @IBAction func switchCanCreate(sender: UISwitch) {
+    @IBAction func switchReadOnly(sender: UISwitch) {
         
         guard let tableShare = self.tableShare else { return }
         guard let metadata = self.metadata else { return }
+        let permission = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: metadata.directory)
 
-        let canEdit = CCUtility.isAnyPermission(toEdit: tableShare.permissions)
-        let canChange = CCUtility.isPermission(toCanChange: tableShare.permissions)
-        let canDelete = CCUtility.isPermission(toCanDelete: tableShare.permissions)
-        let canShare = CCUtility.isPermission(toCanShare: tableShare.permissions)
-
-        let permission = CCUtility.getPermissionsValue(byCanEdit: canEdit, andCanCreate: sender.isOn, andCanChange: canChange, andCanDelete: canDelete, andCanShare: canShare, andIsFolder: metadata.directory)
-
-        networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
+        if sender.isOn && permission != tableShare.permissions {
+            switchAllowUploadAndEditing.setOn(false, animated: false)
+            if metadata.directory {
+                switchFileDrop.setOn(false, animated: false)
+            }
+            networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
+        } else {
+            sender.setOn(true, animated: false)
+        }
     }
     
-    @IBAction func switchCanChange(sender: UISwitch) {
+    // Allow Upload And Editing (directory)
+    @IBAction func switchAllowUploadAndEditing(sender: UISwitch) {
         
         guard let tableShare = self.tableShare else { return }
         guard let metadata = self.metadata else { return }
-        
-        let canEdit = CCUtility.isAnyPermission(toEdit: tableShare.permissions)
-        let canCreate = CCUtility.isPermission(toCanCreate: tableShare.permissions)
-        let canDelete = CCUtility.isPermission(toCanDelete: tableShare.permissions)
-        let canShare = CCUtility.isPermission(toCanShare: tableShare.permissions)
-        
-        let permission = CCUtility.getPermissionsValue(byCanEdit: canEdit, andCanCreate: canCreate, andCanChange: sender.isOn, andCanDelete: canDelete, andCanShare: canShare, andIsFolder: metadata.directory)
+        let permission = CCUtility.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: false, andIsFolder: metadata.directory)
 
-        networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
+        if sender.isOn && permission != tableShare.permissions {
+            switchReadOnly.setOn(false, animated: false)
+            if metadata.directory {
+                switchFileDrop.setOn(false, animated: false)
+            }
+            networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
+        } else {
+            sender.setOn(true, animated: false)
+        }
     }
-    
-    @IBAction func switchCanDelete(sender: UISwitch) {
+  
+    // File Drop (directory)
+    @IBAction func switchFileDrop(sender: UISwitch) {
         
         guard let tableShare = self.tableShare else { return }
-        guard let metadata = self.metadata else { return }
-        
-        let canEdit = CCUtility.isAnyPermission(toEdit: tableShare.permissions)
-        let canCreate = CCUtility.isPermission(toCanCreate: tableShare.permissions)
-        let canChange = CCUtility.isPermission(toCanChange: tableShare.permissions)
-        let canShare = CCUtility.isPermission(toCanShare: tableShare.permissions)
-        
-        let permission = CCUtility.getPermissionsValue(byCanEdit: canEdit, andCanCreate: canCreate, andCanChange: canChange, andCanDelete: sender.isOn, andCanShare: canShare, andIsFolder: metadata.directory)
+        let permission = NCGlobal.shared.permissionCreateShare
 
-        networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
+        if sender.isOn && permission != tableShare.permissions {
+            switchReadOnly.setOn(false, animated: false)
+            switchAllowUploadAndEditing.setOn(false, animated: false)
+            networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
+        } else {
+            sender.setOn(true, animated: false)
+        }
     }
     
     // Set expiration date

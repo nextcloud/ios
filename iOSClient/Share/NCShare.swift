@@ -398,8 +398,8 @@ extension NCShare: UITableViewDataSource {
                 cell.labelCanEdit.text = NSLocalizedString("_share_permission_edit_", comment: "")
                 cell.labelCanEdit.textColor = NCBrandColor.shared.label
                 cell.isUserInteractionEnabled = true
-                cell.switchCanEdit.isHidden = false
-                cell.labelCanEdit.isHidden = false
+                cell.switchCanEdit.isHidden = true//false
+                cell.labelCanEdit.isHidden = true//false
                 cell.buttonMenu.isHidden = false
                 cell.imageItem.image = NCShareCommon.shared.getImageShareType(shareType: tableShare.shareType)
                 

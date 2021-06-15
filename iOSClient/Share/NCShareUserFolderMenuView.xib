@@ -18,10 +18,10 @@
                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="sjf-wF-y07">
                     <rect key="frame" x="10" y="10" width="51" height="31"/>
                     <connections>
-                        <action selector="switchCanReshareChangedWithSender:" destination="iN0-l3-epB" eventType="valueChanged" id="Ezn-AP-uEh"/>
+                        <action selector="switchReadOnlyWithSender:" destination="iN0-l3-epB" eventType="valueChanged" id="9rh-lu-2Pz"/>
                     </connections>
                 </switch>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Can reshare" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IHP-P8-rm2">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Read only" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IHP-P8-rm2">
                     <rect key="frame" x="70" y="18" width="240" height="15"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="15" id="lcS-7f-bEg"/>
@@ -110,10 +110,10 @@
                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="1br-PL-gFf">
                     <rect key="frame" x="10" y="61" width="51" height="31"/>
                     <connections>
-                        <action selector="switchCanCreateWithSender:" destination="iN0-l3-epB" eventType="valueChanged" id="M2Z-bc-ZKU"/>
+                        <action selector="switchAllowUploadAndEditingWithSender:" destination="iN0-l3-epB" eventType="valueChanged" id="sqg-A4-SCG"/>
                     </connections>
                 </switch>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Can create" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G13-DS-7uC">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Allow upload and editing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G13-DS-7uC">
                     <rect key="frame" x="70" y="69" width="240" height="15"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="15" id="nK7-xW-fbq"/>
@@ -125,10 +125,10 @@
                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="0yc-df-C1f">
                     <rect key="frame" x="10" y="112" width="51" height="31"/>
                     <connections>
-                        <action selector="switchCanChangeWithSender:" destination="iN0-l3-epB" eventType="valueChanged" id="XIQ-GD-IU7"/>
+                        <action selector="switchFileDropWithSender:" destination="iN0-l3-epB" eventType="valueChanged" id="1jS-0p-llA"/>
                     </connections>
                 </switch>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Can change" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YWL-Ks-51c">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="File drop (upload only)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YWL-Ks-51c">
                     <rect key="frame" x="70" y="120" width="240" height="15"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="15" id="NYy-3u-P1R"/>
@@ -140,10 +140,10 @@
                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="vja-ge-I6S">
                     <rect key="frame" x="10" y="163" width="51" height="31"/>
                     <connections>
-                        <action selector="switchCanDeleteWithSender:" destination="iN0-l3-epB" eventType="valueChanged" id="BRV-e3-C17"/>
+                        <action selector="switchCanReshareChangedWithSender:" destination="iN0-l3-epB" eventType="valueChanged" id="lre-Ge-S8D"/>
                     </connections>
                 </switch>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Can delete" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dZP-fH-9sg">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Can reshare" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dZP-fH-9sg">
                     <rect key="frame" x="70" y="171" width="240" height="15"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="15" id="p6u-3B-cFa"/>
@@ -205,24 +205,24 @@
                 <outlet property="fieldSetExpirationDate" destination="ymk-0u-ddH" id="erm-BP-BWD"/>
                 <outlet property="imageNoteToRecipient" destination="F4T-wQ-tBU" id="hv7-Ln-aYs"/>
                 <outlet property="imageUnshare" destination="hr8-Qe-xD0" id="kfC-D4-Ak0"/>
-                <outlet property="labelCanChange" destination="YWL-Ks-51c" id="3lh-TV-rKt"/>
-                <outlet property="labelCanCreate" destination="G13-DS-7uC" id="BOR-I2-EVX"/>
-                <outlet property="labelCanDelete" destination="dZP-fH-9sg" id="iCn-VY-P3p"/>
-                <outlet property="labelCanReshare" destination="IHP-P8-rm2" id="dkZ-O3-1cB"/>
+                <outlet property="labelAllowEditing" destination="G13-DS-7uC" id="m3H-re-A3n"/>
+                <outlet property="labelCanReshare" destination="dZP-fH-9sg" id="nTT-W3-OrF"/>
+                <outlet property="labelFileDrop" destination="YWL-Ks-51c" id="05p-L0-6RB"/>
                 <outlet property="labelNoteToRecipient" destination="grT-sd-j7q" id="0Rj-H1-Bqv"/>
+                <outlet property="labelReadOnly" destination="IHP-P8-rm2" id="WkV-dw-TO4"/>
                 <outlet property="labelSetExpirationDate" destination="qll-9F-4DA" id="SsD-jd-FX1"/>
                 <outlet property="labelUnshare" destination="Ff4-JE-zGU" id="Ubq-EL-yOd"/>
-                <outlet property="switchCanChange" destination="0yc-df-C1f" id="JcH-18-ZRX"/>
-                <outlet property="switchCanCreate" destination="1br-PL-gFf" id="3En-bH-Wzm"/>
-                <outlet property="switchCanDelete" destination="vja-ge-I6S" id="NN7-2l-NSz"/>
-                <outlet property="switchCanReshare" destination="sjf-wF-y07" id="3jS-Gr-YMT"/>
+                <outlet property="switchAllowUploadAndEditing" destination="1br-PL-gFf" id="m1t-su-etB"/>
+                <outlet property="switchCanReshare" destination="vja-ge-I6S" id="PAA-zj-FFA"/>
+                <outlet property="switchFileDrop" destination="0yc-df-C1f" id="8mE-mv-3tW"/>
+                <outlet property="switchReadOnly" destination="sjf-wF-y07" id="zFA-gA-Ynw"/>
                 <outlet property="switchSetExpirationDate" destination="dB8-1M-WZr" id="0Ki-ah-3FE"/>
             </connections>
             <point key="canvasLocation" x="1.875" y="195"/>
         </view>
     </objects>
     <resources>
-        <image name="file_txt" width="300" height="300"/>
-        <image name="trash" width="300" height="300"/>
+        <image name="file_txt" width="500" height="500"/>
+        <image name="trash" width="500" height="500"/>
     </resources>
 </document>
