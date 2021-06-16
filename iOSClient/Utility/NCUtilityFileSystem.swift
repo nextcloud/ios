@@ -260,15 +260,13 @@ class NCUtilityFileSystem: NSObject {
                         if attributes[.type] as? FileAttributeType == FileAttributeType.typeDirectory { continue }
                         if fileURL.pathExtension == "ico" { continue }
                         if meetsRequirement(date: date) {
+                            let folderURL = fileURL.deletingLastPathComponent()
+                            let ocId = folderURL.lastPathComponent
                             do {
-                                let folderURL = fileURL.deletingLastPathComponent()
-                                let ocId = folderURL.lastPathComponent
-                                
-                                try manager.removeItem(atPath: folderURL.path)
-                                NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))
-                            } catch {
-                                print("catch")
-                            }
+                                try manager.removeItem(atPath: fileURL.path)
+                            } catch { }
+                            manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
+                            NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))
                         }
                     }
                 }
