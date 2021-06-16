@@ -307,6 +307,7 @@ class tableGPS: Object {
 class tableLocalFile: Object {
     
     @objc dynamic var account = ""
+    @objc dynamic var date: NSDate? = nil
     @objc dynamic var etag = ""
     @objc dynamic var exifDate: NSDate? = nil
     @objc dynamic var exifLatitude = ""

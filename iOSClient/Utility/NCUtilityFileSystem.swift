@@ -239,5 +239,36 @@ class NCUtilityFileSystem: NSObject {
         
         return resultFileName
     }
+    
+    func cleanUp(directory: String, days: TimeInterval) {
+        
+        let minimumDate = Date().addingTimeInterval(-days*24*60*60)
+        let url = URL(fileURLWithPath: directory)
+
+        
+        func meetsRequirement(date: Date) -> Bool {
+            return date < minimumDate
+        }
+
+        do {
+            let manager = FileManager.default
+            if let enumerator = manager.enumerator(at: url, includingPropertiesForKeys: [.isRegularFileKey], options: []) {
+                for case let fileURL as URL in enumerator {
+                    if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
+                        if let creationDate = attributes[.creationDate] as? Date {
+                            if attributes[.size] as? Double == 0 { continue }
+                            if attributes[.type] as? FileAttributeType == FileAttributeType.typeDirectory { continue }
+                            if meetsRequirement(date: creationDate) {
+                                try manager.removeItem(atPath: fileURL.path)
+                            }
+                        }
+                    }
+                    print(fileURL.path)
+                }
+            }
+        } catch {
+            print("Cannot cleanup the old files: \(error)")
+        }
+    }
 }
 
