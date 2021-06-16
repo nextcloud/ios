@@ -727,6 +727,23 @@
     [UICKeyChainStore setString:sizeString forKey:@"chunkSize" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
++ (NSInteger)getCleanUpDay
+{
+    NSString *size = [UICKeyChainStore stringForKey:@"cleanUpDay" service:NCGlobal.shared.serviceShareKeyChain];
+    
+    if (size == nil) {
+        return 0;
+    } else {
+        return [size integerValue];
+    }
+}
+
++ (void)setCleanUpDay:(NSInteger)days
+{
+    NSString *daysString = [@(days) stringValue];
+    [UICKeyChainStore setString:daysString forKey:@"cleanUpDay" service:NCGlobal.shared.serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------

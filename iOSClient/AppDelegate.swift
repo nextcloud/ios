@@ -182,11 +182,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
         
-        // Clear file
-        if let directory = CCUtility.getDirectoryProviderStorage() {
-            NCUtilityFileSystem.shared.getCleanUp(directory: directory, days: 1)
-        }
-        
         // Passcode
         DispatchQueue.main.async {
             self.passcodeWithAutomaticallyPromptForBiometricValidation(true)
@@ -256,6 +251,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             activeFileViewInFolder?.dismiss(animated: false, completion: {
                 self.activeFileViewInFolder = nil
             })
+        }
+        
+        // Clear older files
+        let days = CCUtility.getCleanUpDay()
+        if let directory = CCUtility.getDirectoryProviderStorage() {
+            NCUtilityFileSystem.shared.cleanUp(directory: directory, days: TimeInterval(days))
         }
     }
     

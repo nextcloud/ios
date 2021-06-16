@@ -242,6 +242,8 @@ class NCUtilityFileSystem: NSObject {
     
     func cleanUp(directory: String, days: TimeInterval) {
         
+        if days == 0 { return}
+        
         let minimumDate = Date().addingTimeInterval(-days*24*60*60)
         let url = URL(fileURLWithPath: directory)
         
@@ -254,14 +256,14 @@ class NCUtilityFileSystem: NSObject {
             for case let fileURL as URL in enumerator {
                 if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
                     if let date = CCUtility.getATime(fileURL.path) {
-                        
-                        let folderURL = fileURL.deletingLastPathComponent()
-                        let ocId = folderURL.lastPathComponent
-                        
                         if attributes[.size] as? Double == 0 { continue }
                         if attributes[.type] as? FileAttributeType == FileAttributeType.typeDirectory { continue }
+                        if fileURL.pathExtension == "ico" { continue }
                         if meetsRequirement(date: date) {
                             do {
+                                let folderURL = fileURL.deletingLastPathComponent()
+                                let ocId = folderURL.lastPathComponent
+                                
                                 try manager.removeItem(atPath: folderURL.path)
                                 NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))
                             } catch {
@@ -271,7 +273,7 @@ class NCUtilityFileSystem: NSObject {
                     }
                 }
             }
-        }        
+        }
     }
 }
 
