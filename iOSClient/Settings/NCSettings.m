@@ -110,6 +110,22 @@
     
     [section addFormRow:row];
     
+    // Section : CleanUp --------------------------------------------------------------
+
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_cleanup_", nil)];
+    [form addFormSection:section];
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"removeoldfiles" rowType:XLFormRowDescriptorTypeStepCounter title:NSLocalizedString(@"_remove_old_files_", nil)];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
+    row.value = [NSString stringWithFormat:@"%ld", CCUtility.getCleanUpDay];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    [row.cellConfigAtConfigure setObject:@YES forKey:@"stepControl.wraps"];
+    [row.cellConfigAtConfigure setObject:@1 forKey:@"stepControl.stepValue"];
+    [row.cellConfigAtConfigure setObject:@0 forKey:@"stepControl.minimumValue"];
+    [row.cellConfigAtConfigure setObject:@100 forKey:@"stepControl.maximumValue"];
+    [section addFormRow:row];
+    
     // Section Advanced -------------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
@@ -266,6 +282,12 @@
             [CCUtility setEnableTouchFaceID:false];
         }
     }
+    
+    if ([rowDescriptor.tag isEqualToString:@"removeoldfiles"]) {
+        
+        NSInteger days = [[rowDescriptor.value valueData] intValue];
+        [CCUtility setCleanUpDay:days];
+    }
 }
 
 #pragma mark -
@@ -395,7 +417,11 @@
             sectionName = NSLocalizedString(@"_lock_protection_no_screen_footer_", nil);
         }
         break;
-        case 4: {
+        case 3: {
+            sectionName = NSLocalizedString(@"_remove_old_files_desc_", nil);
+        }
+        break;
+        case 5: {
                                 
             NSString *versionServer = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesVersionString];
             NSString *themingName = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesThemingName];
