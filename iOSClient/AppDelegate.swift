@@ -182,6 +182,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
         
+        // Clear file
+        if let directory = CCUtility.getDirectoryProviderStorage() {
+            NCUtilityFileSystem.shared.getCleanUp(directory: directory, days: 1)
+        }
+        
         // Passcode
         DispatchQueue.main.async {
             self.passcodeWithAutomaticallyPromptForBiometricValidation(true)

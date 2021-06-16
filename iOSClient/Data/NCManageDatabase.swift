@@ -1696,7 +1696,6 @@ class NCManageDatabase: NSObject {
                 let addObject = tableLocalFile()
                 
                 addObject.account = metadata.account
-                addObject.date = NSDate()
                 addObject.etag = metadata.etag
                 addObject.exifDate = NSDate()
                 addObject.exifLatitude = "-1"
@@ -1791,20 +1790,6 @@ class NCManageDatabase: NSObject {
             try realm.safeWrite {
                 let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
                 result?.offline = offline
-            }
-        } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-    
-    @objc func setLocalFileDate(ocId: String) {
-        
-        let realm = try! Realm()
-        
-        do {
-            try realm.safeWrite {
-                let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
-                result?.date = NSDate()
             }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")

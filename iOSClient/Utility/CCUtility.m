@@ -26,6 +26,8 @@
 #import "NSNotificationCenter+MainThread.h"
 #import <OpenSSL/OpenSSL.h>
 #import <CoreLocation/CoreLocation.h>
+#include <sys/stat.h>
+
 
 #define INTRO_MessageType       @"MessageType_"
 
@@ -1831,4 +1833,12 @@
     return queryItem.value;
 }
 
++ (NSDate *)getATime:(const char *)path
+{
+    struct stat st;
+    stat(path, &st);
+    time_t accessed = st.st_atime;
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:accessed];
+    return date;
+}
 @end
