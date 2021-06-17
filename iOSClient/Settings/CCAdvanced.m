@@ -232,13 +232,56 @@
         [self presentViewController:capabilities animated:YES completion:nil];
     };
     [section addFormRow:row];
-
-    // Section CLEAR CACHE -------------------------------------------------
     
-    section = [XLFormSectionDescriptor formSection];
+    // Section : CleanUp / Clear cache --------------------------------------------------------------
+
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_cleanup_", nil)];
     [form addFormSection:section];
     section.footerTitle = NSLocalizedString(@"_clear_cache_footer_", nil);
 
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deleteoldfiles" rowType:XLFormRowDescriptorTypeSelectorPush title:NSLocalizedString(@"_delete_old_files_", nil)];
+    
+    switch (CCUtility.getCleanUpDay) {
+        case 0:
+            row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(0) displayText:NSLocalizedString(@"_never_", nil)];
+            break;
+        case 365:
+            row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(365) displayText:NSLocalizedString(@"_1_year_", nil)];
+            break;
+        case 180:
+            row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(180) displayText:NSLocalizedString(@"_6_months_", nil)];
+            break;
+        case 90:
+            row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(90) displayText:NSLocalizedString(@"_3_months_", nil)];
+            break;
+        case 30:
+            row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(30) displayText:NSLocalizedString(@"_1_months_", nil)];
+            break;
+        case 7:
+            row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(7) displayText:NSLocalizedString(@"_1_week_", nil)];
+            break;
+        case 1:
+            row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(1) displayText:NSLocalizedString(@"_1_day_", nil)];
+            break;
+        default:
+            row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(0) displayText:NSLocalizedString(@"_never_", nil)];
+            break;
+    }
+    
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
+    row.selectorTitle = NSLocalizedString(@"_delete_old_files_", nil);
+    row.selectorOptions = @[[XLFormOptionsObject formOptionsObjectWithValue:@(0) displayText:NSLocalizedString(@"_never_", nil)],
+                            [XLFormOptionsObject formOptionsObjectWithValue:@(365) displayText:NSLocalizedString(@"_1_year_", nil)],
+                            [XLFormOptionsObject formOptionsObjectWithValue:@(180) displayText:NSLocalizedString(@"_6_months_", nil)],
+                            [XLFormOptionsObject formOptionsObjectWithValue:@(90) displayText:NSLocalizedString(@"_3_months_", nil)],
+                            [XLFormOptionsObject formOptionsObjectWithValue:@(30) displayText:NSLocalizedString(@"_1_months_", nil)],
+                            [XLFormOptionsObject formOptionsObjectWithValue:@(7) displayText:NSLocalizedString(@"_1_week_", nil)],
+                            [XLFormOptionsObject formOptionsObjectWithValue:@(1) displayText:NSLocalizedString(@"_1_day_", nil)],
+                            ];
+    [section addFormRow:row];
+        
     // Clear cache
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"azzeracache" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_clear_cache_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
@@ -351,6 +394,12 @@
         
         NSInteger chunkSize = [[rowDescriptor.value valueData] intValue];
         [CCUtility setChunkSize:chunkSize];
+    }
+    
+    if ([rowDescriptor.tag isEqualToString:@"deleteoldfiles"]) {
+        
+        NSInteger days = [[rowDescriptor.value valueData] intValue];
+        [CCUtility setCleanUpDay:days];
     }
 }
 
