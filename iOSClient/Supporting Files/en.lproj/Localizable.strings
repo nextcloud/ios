@@ -805,7 +805,7 @@
 "_message_disable_overwrite_livephoto_" = "This image it's a Live Photo, the overwrite will not possible";
 "_cleanup_"                 = "Cleanup";
 "_remove_old_files_desc_"   = "Remove all unused files from the chosen days (0-365, 0 is disabled)";
-"_remove_old_files_"        = "Remove all files older than";
+"_remove_old_files_"        = "Remove all files older than days";
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 // IM
