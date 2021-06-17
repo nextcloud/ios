@@ -80,6 +80,14 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         updateTimerUI()
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        if audioPlayer.isPlaying {
+            stop()
+        }
+    }
+    
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
@@ -311,25 +319,35 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
         if audioPlayer.isPlaying {
             
-            audioPlayer.currentTime = 0.0
-            audioPlayer.stop()
-            
-            timer.invalidate()
-            counterSecondPlayer = 0
-            progressView.progress = 0
-            updateTimerUI()
-            
-            buttonPlayStop.setImage(UIImage(named: "audioPlay")!.image(color: NCBrandColor.shared.gray, size: 100), for: .normal)
+            stop()
             
         } else {
             
-            audioPlayer.prepareToPlay()
-            audioPlayer.play()
-            
-            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
-            
-            buttonPlayStop.setImage(UIImage(named: "stop")!.image(color: NCBrandColor.shared.gray, size: 100), for: .normal)
+            start()
         }
+    }
+    
+    func start() {
+        
+        audioPlayer.prepareToPlay()
+        audioPlayer.play()
+        
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
+        
+        buttonPlayStop.setImage(UIImage(named: "stop")!.image(color: NCBrandColor.shared.gray, size: 100), for: .normal)
+    }
+    
+    func stop() {
+        
+        audioPlayer.currentTime = 0.0
+        audioPlayer.stop()
+        
+        timer.invalidate()
+        counterSecondPlayer = 0
+        progressView.progress = 0
+        updateTimerUI()
+        
+        buttonPlayStop.setImage(UIImage(named: "audioPlay")!.image(color: NCBrandColor.shared.gray, size: 100), for: .normal)
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
