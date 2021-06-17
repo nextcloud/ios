@@ -213,6 +213,8 @@ open class NCAudioRecorder : NSObject {
             try prepare()
         }
         
+        try session.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
+
         recorder?.record()
         state = .record
         
