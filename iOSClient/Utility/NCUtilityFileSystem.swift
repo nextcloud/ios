@@ -240,6 +240,25 @@ class NCUtilityFileSystem: NSObject {
         return resultFileName
     }
     
+    @objc func getDirectorySize(directory: String) -> Int64 {
+        
+        let url = URL(fileURLWithPath: directory)
+        let manager = FileManager.default
+        var totalSize: Int64 = 0
+        
+        if let enumerator = manager.enumerator(at: url, includingPropertiesForKeys: [.isRegularFileKey], options: []) {
+            for case let fileURL as URL in enumerator {
+                if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
+                    if let size = attributes[.size] as? Int64 {
+                        totalSize = totalSize + size
+                    }
+                }
+            }
+        }
+        
+        return totalSize
+    }
+    
     func cleanUp(directory: String, days: TimeInterval) {
         
         if days == 0 { return}
