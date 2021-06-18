@@ -52,6 +52,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     
     private var shareLinkMenuView: NCShareLinkMenuView?
     private var shareUserMenuView: NCShareUserMenuView?
+    private var sharePermissionMenuView: NCPermissionMenuView?
     private var shareMenuViewWindow: UIView?
     private var dropDown = DropDown()
     private var networking: NCShareNetworking?
@@ -205,6 +206,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         shareLinkMenuView = nil
         shareUserMenuView?.unLoad()
         shareUserMenuView = nil
+        sharePermissionMenuView?.unLoad()
+        sharePermissionMenuView = nil
     }
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
@@ -250,6 +253,20 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         } else {
             let views = NCShareCommon.shared.openViewMenuUser(shareViewController: self, tableShare: tableShare, metadata: metadata!)
             shareUserMenuView = views.shareUserMenuView
+            shareMenuViewWindow = views.viewWindow
+            
+            let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
+            tap.delegate = self
+            shareMenuViewWindow?.addGestureRecognizer(tap)
+        }
+    }
+    
+    func quickStatus(with tableShare: tableShare?, sender: Any) {
+        guard let tableShare = tableShare else { return }
+
+        if tableShare.shareType != 3 {
+            let views = NCShareCommon.shared.openQuickShare(shareViewController: self, tableShare: tableShare, metadata: metadata!)
+            sharePermissionMenuView = views.sharePermissionMenuView
             shareMenuViewWindow = views.viewWindow
             
             let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
@@ -424,6 +441,7 @@ extension NCShare: UITableViewDataSource {
                 
                 if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
                     cell.switchCanEdit.setOn(true, animated: false)
+//                    cell.btnQuickStatus.setTitle(NSLocalizedString("_share_editing_", comment: ""), for: .normal)
                 } else {
                     cell.switchCanEdit.setOn(false, animated: false)
                 }
@@ -435,6 +453,31 @@ extension NCShare: UITableViewDataSource {
                     cell.labelCanEdit.isHidden = true
                     cell.buttonMenu.isHidden = true
                 }
+                cell.btnQuickStatus.setTitle("", for: .normal)
+                cell.btnQuickStatus.contentHorizontalAlignment = .left
+                
+                if tableShare.permissions == NCGlobal.shared.permissionCreateShare {
+                    cell.btnQuickStatus.setTitle(NSLocalizedString("_share_file_drop_", comment: ""), for: .normal)
+                } else {
+                    // Read Only
+                    if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
+                        cell.btnQuickStatus.setTitle(NSLocalizedString("_share_editing_", comment: ""), for: .normal)
+                    } else {
+                        cell.btnQuickStatus.setTitle(NSLocalizedString("_share_read_only_", comment: ""), for: .normal)
+                    }
+                }
+                
+//                if tableShare.permissions == NCGlobal.shared.permissionCreateShare {
+//                    cell.btnQuickStatus.setTitle(NSLocalizedString("_share_file_drop_", comment: ""), for: .normal)
+//                }
+//                else if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
+//                    cell.btnQuickStatus.setTitle(NSLocalizedString("_share_editing_", comment: ""), for: .normal)
+//                } else {
+//                    cell.btnQuickStatus.setTitle(NSLocalizedString("_share_read_only_", comment: ""), for: .normal)
+//                }
+//                if CCUtility.isPermission(toRead: tableShare.permissions) {
+//                    cell.btnQuickStatus.setTitle(NSLocalizedString("_share_read_only_", comment: ""), for: .normal)
+//                }
                 
                 return cell
             }
@@ -491,6 +534,8 @@ class NCShareUserCell: UITableViewCell {
     @IBOutlet weak var buttonMenu: UIButton!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var status: UILabel!
+    @IBOutlet weak var btnQuickStatus: UIButton!
+    
     
     var tableShare: tableShare?
     var delegate: NCShareUserCellDelegate?
@@ -510,11 +555,17 @@ class NCShareUserCell: UITableViewCell {
     @IBAction func touchUpInsideMenu(_ sender: Any) {
         delegate?.tapMenu(with: tableShare, sender: sender)
     }
+    
+    @IBAction func quickStatusClicked(_ sender: Any) {
+        delegate?.quickStatus(with: tableShare, sender: sender)
+    }
+    
 }
 
 protocol NCShareUserCellDelegate {
     func switchCanEdit(with tableShare: tableShare?, switch: Bool, sender: UISwitch)
     func tapMenu(with tableShare: tableShare?, sender: Any)
+    func quickStatus(with tableShare: tableShare?, sender: Any)
 }
 
 // MARK: - NCShareUserDropDownCell

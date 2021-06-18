@@ -181,9 +181,17 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
             labelAllowEditing?.text = NSLocalizedString("_share_editing_", comment: "")
             if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
                 switchAllowUploadAndEditing.setOn(true, animated: false)
+                switchReadOnly.setOn(false, animated: false)
             } else {
                 switchAllowUploadAndEditing.setOn(false, animated: false)
+                switchReadOnly.setOn(true, animated: false)
             }
+            
+//            if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
+//                switchAllowUploadAndEditing.setOn(true, animated: false)
+//            } else {
+//                switchAllowUploadAndEditing.setOn(false, animated: false)
+//            }
         }
         
         // Set expiration date

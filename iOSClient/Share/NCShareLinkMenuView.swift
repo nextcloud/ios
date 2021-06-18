@@ -175,8 +175,10 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
             labelAllowEditing?.text = NSLocalizedString("_share_editing_", comment: "")
             if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
                 switchAllowEditing.setOn(true, animated: false)
+                switchReadOnly.setOn(false, animated: false)
             } else {
                 switchAllowEditing.setOn(false, animated: false)
+                switchReadOnly.setOn(true, animated: false)
             }
         }
        
