@@ -806,12 +806,12 @@
 "_delete_files_desc_"       = "Delete files to free up space";
 "_delete_old_files_"        = "Delete all files older than";
 "_never_"                   = "Never";
-"_1_year_"                  = "1 Year";
-"_6_months_"                = "6 Months";
-"_3_months_"                = "3 Months";
-"_1_months_"                = "1 Months";
-"_1_week_"                  = "1 Week";
-"_1_day_"                   = "1 Day";
+"_1_year_"                  = "1 year";
+"_6_months_"                = "6 months";
+"_3_months_"                = "3 months";
+"_1_months_"                = "1 months";
+"_1_week_"                  = "1 week";
+"_1_day_"                   = "1 day";
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 // IM
