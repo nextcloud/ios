@@ -233,9 +233,9 @@
     };
     [section addFormRow:row];
     
-    // Section : CleanUp / Clear cache --------------------------------------------------------------
+    // Section : Delete files / Clear cache --------------------------------------------------------------
 
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_cleanup_", nil)];
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_delete_files_desc_", nil)];
     [form addFormSection:section];
     section.footerTitle = NSLocalizedString(@"_clear_cache_footer_", nil);
 

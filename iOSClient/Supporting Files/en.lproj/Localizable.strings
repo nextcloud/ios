@@ -803,8 +803,7 @@
 "_save_as_copy_"            = "Save as copy";
 "_discard_changes_"         = "Close and discard changes";
 "_message_disable_overwrite_livephoto_" = "This image it's a Live Photo, the overwrite will not possible";
-"_cleanup_"                 = "Cleanup";
-"_delete_old_files_desc_"   = "Delete old files to free up space";
+"_delete_files_desc_"       = "Delete files to free up space";
 "_delete_old_files_"        = "Delete all files older than";
 "_never_"                   = "Never";
 "_1_year_"                  = "1 Year";
