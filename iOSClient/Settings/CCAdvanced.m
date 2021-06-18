@@ -235,9 +235,12 @@
     
     // Section : Delete files / Clear cache --------------------------------------------------------------
 
+    /*
     NSString *directory = CCUtility.getDirectoryProviderStorage;
     int64_t totalSize = [[NCUtilityFileSystem shared] getDirectorySizeWithDirectory:directory];
     NSString *footerTitle = [NSString stringWithFormat:@"%@. (%@ %@)", NSLocalizedString(@"_clear_cache_footer_", nil), NSLocalizedString(@"_used_space_", nil), [CCUtility transformedSize:totalSize]];
+    */
+    NSString *footerTitle = NSLocalizedString(@"_clear_cache_footer_", nil);
     
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_delete_files_desc_", nil)];
     [form addFormSection:section];
