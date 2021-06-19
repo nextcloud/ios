@@ -168,6 +168,9 @@ class NCGlobal: NSObject {
     let certificateTmp                              = "tmp.der"
     let certificateTmpV2                            = "certificatetmp.der"
     
+    // Extension
+    @objc let extensionPreview                      = "ico"
+    
     // ContentPresenter
     //
     @objc let dismissAfterSecond: TimeInterval      = 4

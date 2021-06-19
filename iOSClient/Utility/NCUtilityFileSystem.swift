@@ -277,7 +277,7 @@ class NCUtilityFileSystem: NSObject {
                     if let date = CCUtility.getATime(fileURL.path) {
                         if attributes[.size] as? Double == 0 { continue }
                         if attributes[.type] as? FileAttributeType == FileAttributeType.typeDirectory { continue }
-                        if fileURL.pathExtension == "ico" { continue }
+                        if fileURL.pathExtension == NCGlobal.shared.extensionPreview { continue }
                         if meetsRequirement(date: date) {
                             let folderURL = fileURL.deletingLastPathComponent()
                             let ocId = folderURL.lastPathComponent
