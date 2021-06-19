@@ -30,6 +30,7 @@
 @interface CCAdvanced ()
 {
     AppDelegate *appDelegate;
+    XLFormSectionDescriptor *sectionSize;
 }
 @end
 
@@ -235,16 +236,9 @@
     
     // Section : Delete files / Clear cache --------------------------------------------------------------
 
-    /*
-    NSString *directory = CCUtility.getDirectoryProviderStorage;
-    int64_t totalSize = [[NCUtilityFileSystem shared] getDirectorySizeWithDirectory:directory];
-    NSString *footerTitle = [NSString stringWithFormat:@"%@. (%@ %@)", NSLocalizedString(@"_clear_cache_footer_", nil), NSLocalizedString(@"_used_space_", nil), [CCUtility transformedSize:totalSize]];
-    */
-    NSString *footerTitle = NSLocalizedString(@"_clear_cache_footer_", nil);
-    
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_delete_files_desc_", nil)];
-    [form addFormSection:section];
-    section.footerTitle = footerTitle;
+    sectionSize = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_delete_files_desc_", nil)];
+    [form addFormSection:sectionSize];
+    sectionSize.footerTitle = NSLocalizedString(@"_clear_cache_footer_", nil);
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deleteoldfiles" rowType:XLFormRowDescriptorTypeSelectorPush title:NSLocalizedString(@"_delete_old_files_", nil)];
     
@@ -287,7 +281,7 @@
                             [XLFormOptionsObject formOptionsObjectWithValue:@(7) displayText:NSLocalizedString(@"_1_week_", nil)],
                             [XLFormOptionsObject formOptionsObjectWithValue:@(1) displayText:NSLocalizedString(@"_1_day_", nil)],
                             ];
-    [section addFormRow:row];
+    [sectionSize addFormRow:row];
         
     // Clear cache
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"azzeracache" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_clear_cache_", nil)];
@@ -297,7 +291,7 @@
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[[UIImage imageNamed:@"trash"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
     row.action.formSelector = @selector(clearCacheRequest:);
-    [section addFormRow:row];
+    [sectionSize addFormRow:row];
 
     // Section EXIT --------------------------------------------------------
     
@@ -332,6 +326,7 @@
     self.tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground;
     
     [self initializeForm];
+    [self calculateSize];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -442,7 +437,7 @@
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
         [[NCUtility shared] stopActivityIndicator];
-        [self initializeForm];
+        [self calculateSize];
     });
 }
 
@@ -468,6 +463,19 @@
     alertController.popoverPresentationController.sourceRect = CGRectOffset(cellRect, -self.tableView.contentOffset.x, -self.tableView.contentOffset.y);
     
     [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)calculateSize
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSString *directory = CCUtility.getDirectoryProviderStorage;
+        int64_t totalSize = [[NCUtilityFileSystem shared] getDirectorySizeWithDirectory:directory];
+        sectionSize.footerTitle = [NSString stringWithFormat:@"%@. (%@ %@)", NSLocalizedString(@"_clear_cache_footer_", nil), NSLocalizedString(@"_used_space_", nil), [CCUtility transformedSize:totalSize]];
+            
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.tableView reloadData];
+        });
+    });
 }
 
 #pragma mark - Exit Nextcloud
