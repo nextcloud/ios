@@ -136,6 +136,8 @@ class NCViewerImage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object:nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -158,6 +160,8 @@ class NCViewerImage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }
     
     @objc func viewUnload() {
@@ -173,6 +177,13 @@ class NCViewerImage: UIViewController {
     
     //MARK: - NotificationCenter
 
+    @objc func applicationDidEnterBackground(_ notification: NSNotification) {
+        
+        if currentMetadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
+            player?.pause()
+        }
+    }
+    
     @objc func downloadedFile(_ notification: NSNotification) {
         
         if let userInfo = notification.userInfo as NSDictionary? {
