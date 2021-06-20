@@ -279,7 +279,7 @@
                             [XLFormOptionsObject formOptionsObjectWithValue:@(90) displayText:NSLocalizedString(@"_3_months_", nil)],
                             [XLFormOptionsObject formOptionsObjectWithValue:@(30) displayText:NSLocalizedString(@"_1_months_", nil)],
                             [XLFormOptionsObject formOptionsObjectWithValue:@(7) displayText:NSLocalizedString(@"_1_week_", nil)],
-                            [XLFormOptionsObject formOptionsObjectWithValue:@(1) displayText:NSLocalizedString(@"_1_day_", nil)],
+                            //[XLFormOptionsObject formOptionsObjectWithValue:@(1) displayText:NSLocalizedString(@"_1_day_", nil)],
                             ];
     [sectionSize addFormRow:row];
         
