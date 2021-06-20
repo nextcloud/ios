@@ -457,13 +457,14 @@ extension NCShare: UITableViewDataSource {
                 cell.btnQuickStatus.contentHorizontalAlignment = .left
                 
                 if tableShare.permissions == NCGlobal.shared.permissionCreateShare {
-                    cell.btnQuickStatus.setTitle(NSLocalizedString("_share_file_drop_", comment: ""), for: .normal)
+//                    cell.btnQuickStatus.setTitle(NSLocalizedString("_share_file_drop_", comment: ""), for: .normal)
+                    cell.labelQuickStatus.text = NSLocalizedString("_share_file_drop_", comment: "")
                 } else {
                     // Read Only
                     if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
-                        cell.btnQuickStatus.setTitle(NSLocalizedString("_share_editing_", comment: ""), for: .normal)
+                        cell.labelQuickStatus.text = NSLocalizedString("_share_editing_", comment: "")
                     } else {
-                        cell.btnQuickStatus.setTitle(NSLocalizedString("_share_read_only_", comment: ""), for: .normal)
+                        cell.labelQuickStatus.text = NSLocalizedString("_share_read_only_", comment: "")
                     }
                 }
                 
@@ -535,6 +536,9 @@ class NCShareUserCell: UITableViewCell {
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var status: UILabel!
     @IBOutlet weak var btnQuickStatus: UIButton!
+    
+    @IBOutlet weak var labelQuickStatus: UILabel!
+    @IBOutlet weak var imageDownArrow: UIImageView!
     
     
     var tableShare: tableShare?
