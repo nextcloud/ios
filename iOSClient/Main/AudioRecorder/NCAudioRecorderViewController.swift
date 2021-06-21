@@ -214,15 +214,17 @@ open class NCAudioRecorder : NSObject {
             try prepare()
         }
         
-        try session.setCategory(.playback, mode: .default)
+        try session.setCategory(.playAndRecord, mode: .default)
         try session.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
         try session.setActive(true)
 
-        recorder?.record()
-        state = .record
-        
-        if metering {
-            startMetering()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            
+            self.state = .record
+            if self.metering {
+                self.startMetering()
+            }
+            self.recorder?.record()
         }
     }
     
