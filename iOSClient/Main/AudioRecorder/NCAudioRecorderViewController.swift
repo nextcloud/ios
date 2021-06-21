@@ -179,7 +179,8 @@ open class NCAudioRecorder : NSObject {
     var recorder: AVAudioRecorder?
     fileprivate var player: AVAudioPlayer?
     fileprivate var link: CADisplayLink?
-    
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     var metering: Bool {
         return delegate?.responds(to: #selector(NCAudioRecorderDelegate.audioMeterDidUpdate(_:))) == true
     }
@@ -213,7 +214,9 @@ open class NCAudioRecorder : NSObject {
             try prepare()
         }
         
+        try session.setCategory(.playback, mode: .default)
         try session.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
+        try session.setActive(true)
 
         recorder?.record()
         state = .record
@@ -236,6 +239,7 @@ open class NCAudioRecorder : NSObject {
             break
         }
         
+        appDelegate.setAVAudioSession()
         state = .none
     }
     
