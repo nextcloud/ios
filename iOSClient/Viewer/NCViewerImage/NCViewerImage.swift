@@ -709,6 +709,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
                 
                 appDelegate.activeViewerVideo = NCViewerVideo()
                 appDelegate.activeViewerVideo?.metadata = currentMetadata
+                appDelegate.activeViewerVideo?.imageBackground = UIImage(named: "file_audio")
                 appDelegate.activeViewerVideo?.delegateViewerVideo = self
                 if let currentViewerVideo = appDelegate.activeViewerVideo {
                     present(currentViewerVideo, animated: false) { }
