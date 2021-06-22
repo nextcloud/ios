@@ -89,7 +89,7 @@ class NCFavorite: NCCollectionViewCommon  {
             
         } else {
             
-            networkReadFolder(forced: forced) { (metadatas, metadatasUpdate, errorCode, errorDescription) in
+            networkReadFolder(forced: forced) { (metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription) in
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory {
@@ -102,7 +102,7 @@ class NCFavorite: NCCollectionViewCommon  {
                 
                 self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
-                if metadatasUpdate?.count ?? 0 > 0 || forced {
+                if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
                     self.reloadDataSource()
                 } else {
                     self.collectionView?.reloadData()

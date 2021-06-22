@@ -715,7 +715,7 @@ extension NCShareExtension {
         networkInProgress = true
         collectionView.reloadData()
         
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { (_, metadataFolder, _, _, _, errorCode, errorDescription) in
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { (_, metadataFolder, _, _, _, _, errorCode, errorDescription) in
             if errorCode != 0 {
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
