@@ -86,6 +86,13 @@ class NCViewerVideo: AVPlayerViewController {
             }
             player?.isMuted = CCUtility.getAudioMute()
         }
+        
+        // AIRPLAY
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            player?.allowsExternalPlayback = true
+        } else {
+            player?.allowsExternalPlayback = false
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
