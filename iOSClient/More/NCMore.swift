@@ -455,18 +455,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             
         } else if item.url == "test" {
             
-            let fileId = appDelegate.activeMetadata?.fileId ?? "0"
-            
-            NCCommunication.shared.getDirectDownload(fileId: fileId) { account, url, errorCode, errorDescription in
-                print(url)
-            }
-            
-            
-            /*
-            NCNetworking.shared.getDirectDownload(urlBase: appDelegate.urlBase, username: appDelegate.user, password: appDelegate.password, fileId: appDelegate.activeMetadata?.fileId ?? "0") { a, b, c in
-                
-            }
-            */
         }
     }
 }
