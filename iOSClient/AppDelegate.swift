@@ -50,6 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc var activeViewController: UIViewController?
     var activeViewerVideo: NCViewerVideo?
     var mainTabBar: NCMainTabBar?
+    var activeMetadata: tableMetadata?
     
     var listFilesVC: [String:NCFiles] = [:]
     var listFavoriteVC: [String:NCFavorite] = [:]

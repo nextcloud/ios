@@ -1296,12 +1296,11 @@ import Queuer
     
     //MARK: - TEST API
         
-    /*
-    @objc public func getAppPassword(serverUrl: String, username: String, password: String, customUserAgent: String? = nil, completionHandler: @escaping (_ token: String?, _ errorCode: Int, _ errorDescription: String) -> Void) {
+    @objc public func getDirectDownload(urlBase: String, username: String, password: String, fileId: String, customUserAgent: String? = nil, completionHandler: @escaping (_ token: String?, _ errorCode: Int, _ errorDescription: String) -> Void) {
                 
-        let endpoint = "/ocs/v2.php/core/getapppassword"
+        let endpoint = "/ocs/v2.php/apps/dav/api/v1/direct"
         
-        let url:URLConvertible = try! (serverUrl + endpoint).asURL() as URLConvertible
+        let url:URLConvertible = try! (urlBase + endpoint).asURL() as URLConvertible
         var headers: HTTPHeaders = [.authorization(username: username, password: password)]
         if customUserAgent != nil {
             headers.update(.userAgent(customUserAgent!))
@@ -1309,15 +1308,13 @@ import Queuer
         //headers.update(.contentType("application/json"))
         headers.update(name: "OCS-APIRequest", value: "true")
                
-        var urlRequest: URLRequest
-        do {
-            try urlRequest = URLRequest(url: url, method: HTTPMethod(rawValue: "GET"), headers: headers)
-        } catch {
-            completionHandler(nil, error._code, error.localizedDescription)
-            return
-        }
+        let method = HTTPMethod(rawValue: "POST")
+
+        let parameters = [
+            "fileId": fileId,
+        ]
         
-        AF.request(urlRequest).validate(statusCode: 200..<300).response { (response) in
+        AF.request(url, method: method, parameters: parameters, headers: headers).validate(statusCode: 200..<300).response { (response) in
             debugPrint(response)
             
             switch response.result {
@@ -1332,5 +1329,5 @@ import Queuer
             }
         }
     }
-    */
+    
 }

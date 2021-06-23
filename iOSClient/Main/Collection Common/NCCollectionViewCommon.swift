@@ -1079,6 +1079,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
         metadataTouch = metadata
         selectedIndexPath = indexPath
+        appDelegate.activeMetadata = metadata
         
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
