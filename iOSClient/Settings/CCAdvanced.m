@@ -236,10 +236,16 @@
     
     // Section : Delete files / Clear cache --------------------------------------------------------------
 
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    section.footerTitle = NSLocalizedString(@"_clear_cache_footer_", nil);
+    
+    /*
     sectionSize = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_delete_files_desc_", nil)];
     [form addFormSection:sectionSize];
     sectionSize.footerTitle = NSLocalizedString(@"_clear_cache_footer_", nil);
 
+    
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deleteoldfiles" rowType:XLFormRowDescriptorTypeSelectorPush title:NSLocalizedString(@"_delete_old_files_", nil)];
     
     switch (CCUtility.getCleanUpDay) {
@@ -282,7 +288,9 @@
                             //[XLFormOptionsObject formOptionsObjectWithValue:@(1) displayText:NSLocalizedString(@"_1_day_", nil)],
                             ];
     [sectionSize addFormRow:row];
-        
+    */
+    
+    
     // Clear cache
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"azzeracache" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_clear_cache_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
@@ -291,8 +299,9 @@
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[[UIImage imageNamed:@"trash"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
     row.action.formSelector = @selector(clearCacheRequest:);
-    [sectionSize addFormRow:row];
-
+    //[sectionSize addFormRow:row];
+    [section addFormRow:row];
+    
     // Section EXIT --------------------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
