@@ -1014,7 +1014,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
     
-    @objc func networkReadFolder(forced: Bool, completion: @escaping(_ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func networkReadFolder(forced: Bool, completion: @escaping(_ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
         
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.account) { (account, metadata, errorCode, errorDescription) in
             
@@ -1024,7 +1024,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 
                 if forced || directory?.etag != metadata?.etag || directory?.e2eEncrypted ?? false {
                     
-                    NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, errorCode, errorDescription) in
+                    NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, metadatasDelete, errorCode, errorDescription) in
                         
                         if errorCode == 0 {
                             self.metadataFolder = metadataFolder
@@ -1048,23 +1048,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                             NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorDecodeMetadata, forced: true)
                                         }
                                         
-                                        completion(metadatas, metadatasUpdate, errorCode, errorDescription)
+                                        completion(metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
                                     }
                                 } else {
-                                    completion(metadatas, metadatasUpdate, errorCode, errorDescription)
+                                    completion(metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
                                 }
                             } else {
-                                completion(metadatas, metadatasUpdate, errorCode, errorDescription)
+                                completion(metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
                             }
                         } else {
-                            completion(nil, nil, errorCode, errorDescription)
+                            completion(nil, nil, nil, errorCode, errorDescription)
                         }
                     }
                 } else {
-                    completion(nil, nil, 0, "")
+                    completion(nil, nil, nil, 0, "")
                 }
             } else {
-               completion(nil, nil, errorCode, errorDescription)
+               completion(nil, nil, nil, errorCode, errorDescription)
             }
         }
     }
@@ -1079,6 +1079,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
         metadataTouch = metadata
         selectedIndexPath = indexPath
+        appDelegate.activeMetadata = metadata
         
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {

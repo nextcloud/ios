@@ -2040,13 +2040,14 @@ class NCManageDatabase: NSObject {
     }
 
     @discardableResult
-    func updateMetadatas(_ metadatas: [tableMetadata], metadatasResult: [tableMetadata], addCompareLivePhoto: Bool = true, addExistsInLocal: Bool = false, addCompareEtagLocal: Bool = false, addDirectorySynchronized: Bool = false) -> (metadatasUpdate: [tableMetadata], metadatasLocalUpdate: [tableMetadata]) {
+    func updateMetadatas(_ metadatas: [tableMetadata], metadatasResult: [tableMetadata], addCompareLivePhoto: Bool = true, addExistsInLocal: Bool = false, addCompareEtagLocal: Bool = false, addDirectorySynchronized: Bool = false) -> (metadatasUpdate: [tableMetadata], metadatasLocalUpdate: [tableMetadata], metadatasDelete: [tableMetadata]) {
         
         let realm = try! Realm()
-        var ocIdsUdate : [String] = []
-        var ocIdsLocalUdate : [String] = []
-        var metadatasUpdate : [tableMetadata] = []
-        var metadatasLocalUpdate : [tableMetadata] = []
+        var ocIdsUdate: [String] = []
+        var ocIdsLocalUdate: [String] = []
+        var metadatasDelete: [tableMetadata] = []
+        var metadatasUpdate: [tableMetadata] = []
+        var metadatasLocalUpdate: [tableMetadata] = []
         
         realm.refresh()
         
@@ -2057,6 +2058,7 @@ class NCManageDatabase: NSObject {
                 for metadataResult in metadatasResult {
                     if metadatas.firstIndex(where: { $0.ocId == metadataResult.ocId }) == nil {
                         if let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@", metadataResult.ocId)).first {
+                            metadatasDelete.append(tableMetadata.init(value: result))
                             realm.delete(result)
                         }
                     }
@@ -2115,7 +2117,7 @@ class NCManageDatabase: NSObject {
             }
         }
         
-        return (metadatasUpdate, metadatasLocalUpdate)
+        return (metadatasUpdate, metadatasLocalUpdate, metadatasDelete)
     }
     
     func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil) {

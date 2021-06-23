@@ -30,6 +30,7 @@
 @interface CCAdvanced ()
 {
     AppDelegate *appDelegate;
+    XLFormSectionDescriptor *sectionSize;
 }
 @end
 
@@ -232,13 +233,64 @@
         [self presentViewController:capabilities animated:YES completion:nil];
     };
     [section addFormRow:row];
-
-    // Section CLEAR CACHE -------------------------------------------------
     
+    // Section : Delete files / Clear cache --------------------------------------------------------------
+
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     section.footerTitle = NSLocalizedString(@"_clear_cache_footer_", nil);
+    
+    /*
+    sectionSize = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_delete_files_desc_", nil)];
+    [form addFormSection:sectionSize];
+    sectionSize.footerTitle = NSLocalizedString(@"_clear_cache_footer_", nil);
 
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deleteoldfiles" rowType:XLFormRowDescriptorTypeSelectorPush title:NSLocalizedString(@"_delete_old_files_", nil)];
+    
+    switch (CCUtility.getCleanUpDay) {
+        case 0:
+            row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(0) displayText:NSLocalizedString(@"_never_", nil)];
+            break;
+        case 365:
+            row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(365) displayText:NSLocalizedString(@"_1_year_", nil)];
+            break;
+        case 180:
+            row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(180) displayText:NSLocalizedString(@"_6_months_", nil)];
+            break;
+        case 90:
+            row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(90) displayText:NSLocalizedString(@"_3_months_", nil)];
+            break;
+        case 30:
+            row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(30) displayText:NSLocalizedString(@"_1_month_", nil)];
+            break;
+        case 7:
+            row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(7) displayText:NSLocalizedString(@"_1_week_", nil)];
+            break;
+        case 1:
+            row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(1) displayText:NSLocalizedString(@"_1_day_", nil)];
+            break;
+        default:
+            row.value = [XLFormOptionsObject formOptionsObjectWithValue:@(0) displayText:NSLocalizedString(@"_never_", nil)];
+            break;
+    }
+    
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
+    row.selectorTitle = NSLocalizedString(@"_delete_old_files_", nil);
+    row.selectorOptions = @[[XLFormOptionsObject formOptionsObjectWithValue:@(0) displayText:NSLocalizedString(@"_never_", nil)],
+                            [XLFormOptionsObject formOptionsObjectWithValue:@(365) displayText:NSLocalizedString(@"_1_year_", nil)],
+                            [XLFormOptionsObject formOptionsObjectWithValue:@(180) displayText:NSLocalizedString(@"_6_months_", nil)],
+                            [XLFormOptionsObject formOptionsObjectWithValue:@(90) displayText:NSLocalizedString(@"_3_months_", nil)],
+                            [XLFormOptionsObject formOptionsObjectWithValue:@(30) displayText:NSLocalizedString(@"_1_month_", nil)],
+                            [XLFormOptionsObject formOptionsObjectWithValue:@(7) displayText:NSLocalizedString(@"_1_week_", nil)],
+                            //[XLFormOptionsObject formOptionsObjectWithValue:@(1) displayText:NSLocalizedString(@"_1_day_", nil)],
+                            ];
+    [sectionSize addFormRow:row];
+    */
+    
+    
     // Clear cache
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"azzeracache" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_clear_cache_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
@@ -247,8 +299,9 @@
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[[UIImage imageNamed:@"trash"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
     row.action.formSelector = @selector(clearCacheRequest:);
+    //[sectionSize addFormRow:row];
     [section addFormRow:row];
-
+    
     // Section EXIT --------------------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
@@ -282,6 +335,7 @@
     self.tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground;
     
     [self initializeForm];
+    [self calculateSize];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -352,6 +406,12 @@
         NSInteger chunkSize = [[rowDescriptor.value valueData] intValue];
         [CCUtility setChunkSize:chunkSize];
     }
+    
+    if ([rowDescriptor.tag isEqualToString:@"deleteoldfiles"]) {
+        
+        NSInteger days = [[rowDescriptor.value valueData] intValue];
+        [CCUtility setCleanUpDay:days];
+    }
 }
 
 #pragma mark - Clear Cache
@@ -386,6 +446,7 @@
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
         [[NCUtility shared] stopActivityIndicator];
+        [self calculateSize];
     });
 }
 
@@ -411,6 +472,19 @@
     alertController.popoverPresentationController.sourceRect = CGRectOffset(cellRect, -self.tableView.contentOffset.x, -self.tableView.contentOffset.y);
     
     [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)calculateSize
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSString *directory = CCUtility.getDirectoryProviderStorage;
+        int64_t totalSize = [[NCUtilityFileSystem shared] getDirectorySizeWithDirectory:directory];
+        sectionSize.footerTitle = [NSString stringWithFormat:@"%@. (%@ %@)", NSLocalizedString(@"_clear_cache_footer_", nil), NSLocalizedString(@"_used_space_", nil), [CCUtility transformedSize:totalSize]];
+            
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.tableView reloadData];
+        });
+    });
 }
 
 #pragma mark - Exit Nextcloud

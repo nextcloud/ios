@@ -803,9 +803,16 @@
 "_save_as_copy_"            = "Save as copy";
 "_discard_changes_"         = "Close and discard changes";
 "_message_disable_overwrite_livephoto_" = "This image it's a Live Photo, the overwrite will not possible";
-"_cleanup_"                 = "Cleanup";
-"_remove_old_files_desc_"   = "Remove all unused files from the chosen days (0-365, 0 is disabled)";
-"_remove_old_files_"        = "Remove all files older than";
+"_delete_files_desc_"       = "Delete files to free up space";
+"_delete_old_files_"        = "Delete all files older than";
+"_never_"                   = "Never";
+"_1_year_"                  = "1 year";
+"_6_months_"                = "6 months";
+"_3_months_"                = "3 months";
+"_1_month_"                 = "1 month";
+"_1_week_"                  = "1 week";
+"_1_day_"                   = "1 day";
+"_used_space_"              = "Used space";
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 // IM

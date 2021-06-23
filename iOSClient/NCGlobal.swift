@@ -79,7 +79,7 @@ class NCGlobal: NSObject {
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 178
+    let databaseSchemaVersion: UInt64               = 180
     
     // Intro selector
     //
@@ -167,6 +167,9 @@ class NCGlobal: NSObject {
     let certificate                                 = "certificate.der"
     let certificateTmp                              = "tmp.der"
     let certificateTmpV2                            = "certificatetmp.der"
+    
+    // Extension
+    @objc let extensionPreview                      = "ico"
     
     // ContentPresenter
     //

@@ -39,7 +39,8 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
     var recording: NCAudioRecorder!
     var recordDuration: TimeInterval = 0
     var fileName: String = ""
-    
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     @IBOutlet weak var contentContainerView: UIView!
     @IBOutlet weak var durationLabel: UILabel!
     @IBOutlet weak var startStopLabel: UILabel!
@@ -84,6 +85,7 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
             startStop()
         } else {
             dismiss(animated: true) {
+                self.appDelegate.setAVAudioSession()
                 self.delegate?.didFinishWithoutRecording(self, fileName: self.fileName)
             }
         }
@@ -98,8 +100,10 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
             voiceRecordHUD.update(0.0)
         
             dismiss(animated: true) {
+                self.appDelegate.setAVAudioSession()
                 self.delegate?.didFinishRecording(self, fileName: self.fileName)
             }
+            
         } else {
             
             recordDuration = 0
@@ -179,7 +183,7 @@ open class NCAudioRecorder : NSObject {
     var recorder: AVAudioRecorder?
     fileprivate var player: AVAudioPlayer?
     fileprivate var link: CADisplayLink?
-    
+
     var metering: Bool {
         return delegate?.responds(to: #selector(NCAudioRecorderDelegate.audioMeterDidUpdate(_:))) == true
     }
@@ -189,11 +193,20 @@ open class NCAudioRecorder : NSObject {
     public init(to: String) {
         url = URL(fileURLWithPath: NCAudioRecorder.directory).appendingPathComponent(to)
         super.init()
+        
+        do {
+            try session.setCategory(.playAndRecord, mode: .default)
+            try session.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
+            try session.setActive(true)
+        } catch {
+            print(error)
+        }
     }
     
     // MARK: - Record
     
     open func prepare() throws {
+        
         let settings: [String: AnyObject] = [
             AVFormatIDKey : NSNumber(value: Int32(kAudioFormatAppleLossless) as Int32),
             AVEncoderAudioQualityKey: AVAudioQuality.max.rawValue as AnyObject,
@@ -209,21 +222,20 @@ open class NCAudioRecorder : NSObject {
     }
     
     open func record() throws {
+        
         if recorder == nil {
             try prepare()
         }
         
-        try session.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
-
-        recorder?.record()
-        state = .record
-        
-        if metering {
-            startMetering()
+        self.state = .record
+        if self.metering {
+            self.startMetering()
         }
+        self.recorder?.record()
     }
     
     open func stop() {
+        
         switch state {
         case .play:
             player?.stop()
@@ -252,11 +264,13 @@ open class NCAudioRecorder : NSObject {
     }
     
     fileprivate func startMetering() {
+        
         link = CADisplayLink(target: self, selector: #selector(NCAudioRecorder.updateMeter))
         link?.add(to: RunLoop.current, forMode: RunLoop.Mode.common)
     }
     
     fileprivate func stopMetering() {
+        
         link?.invalidate()
         link = nil
     }

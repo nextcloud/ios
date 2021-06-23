@@ -67,9 +67,8 @@ class NCViewerImage: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = NCBrandColor.shared.systemBackground
-        textColor = NCBrandColor.shared.label
-
+        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+        
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
         longtapGestureRecognizer = UILongPressGestureRecognizer()
@@ -104,20 +103,26 @@ class NCViewerImage: UIViewController {
         progressView.progress = 0
         
         setToolBar()
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
-        
-        navigationController?.setNavigationBarHidden(false, animated: true)
-        navigationController?.navigationBar.prefersLargeTitles = false
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    
+        navigationController?.navigationBar.prefersLargeTitles = false
 
-        if let navigationController = self.navigationController {
-            if !navigationController.viewControllers.contains(self) {
-                videoStop()
-            }
+        if currentMode == .full {
+            
+            navigationController?.setNavigationBarHidden(true, animated: false)
+            view.backgroundColor = .black
+            textColor = .white
+            progressView.isHidden = true
+            
+        } else {
+            
+            navigationController?.setNavigationBarHidden(false, animated: false)
+            view.backgroundColor = NCBrandColor.shared.systemBackground
+            textColor = NCBrandColor.shared.label
+            progressView.isHidden = false
         }
     }
     
@@ -131,6 +136,18 @@ class NCViewerImage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object:nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if let navigationController = self.navigationController {
+            if !navigationController.viewControllers.contains(self) {
+                videoStop()
+            }
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -143,6 +160,8 @@ class NCViewerImage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }
     
     @objc func viewUnload() {
@@ -151,12 +170,20 @@ class NCViewerImage: UIViewController {
     }
     
     @objc func openMenuMore() {
+        
         let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(currentMetadata.ocId, etag: currentMetadata.etag))
         NCViewer.shared.toggleMenu(viewController: self, metadata: currentMetadata, webView: false, imageIcon: imageIcon)
     }
     
     //MARK: - NotificationCenter
 
+    @objc func applicationDidEnterBackground(_ notification: NSNotification) {
+        
+        if currentMetadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
+            player?.pause()
+        }
+    }
+    
     @objc func downloadedFile(_ notification: NSNotification) {
         
         if let userInfo = notification.userInfo as NSDictionary? {
@@ -346,8 +373,7 @@ class NCViewerImage: UIViewController {
                 image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
             } else if ext == "SVG" {
                 if let svgImage = SVGKImage(contentsOfFile: imagePath) {
-                    let scale = Int(svgImage.size.height / svgImage.size.width)
-                    svgImage.size = CGSize(width: NCGlobal.shared.sizePreview, height: (NCGlobal.shared.sizePreview * scale))
+                    svgImage.size = CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview)
                     if let image = svgImage.uiImage {
                         if !FileManager().fileExists(atPath: previewPath) {
                             do {
@@ -385,7 +411,7 @@ class NCViewerImage: UIViewController {
             if videoLayer != nil && currentViewerImageZoom != nil {
             
                 videoLayer!.frame = currentViewerImageZoom!.imageView.bounds
-                videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
+                videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspect
                 
                 currentViewerImageZoom!.imageView.layer.addSublayer(videoLayer!)
                 
@@ -682,6 +708,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
                 
                 appDelegate.activeViewerVideo = NCViewerVideo()
                 appDelegate.activeViewerVideo?.metadata = currentMetadata
+                appDelegate.activeViewerVideo?.imageBackground = UIImage(named: "file_audio")
                 appDelegate.activeViewerVideo?.delegateViewerVideo = self
                 if let currentViewerVideo = appDelegate.activeViewerVideo {
                     present(currentViewerVideo, animated: false) { }

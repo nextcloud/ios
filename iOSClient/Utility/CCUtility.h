@@ -178,6 +178,9 @@
 + (NSInteger)getChunkSize;
 + (void)setChunkSize:(NSInteger)size;
 
++ (NSInteger)getCleanUpDay;
++ (void)setCleanUpDay:(NSInteger)days;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
@@ -264,5 +267,6 @@
 + (NSString *)getExtension:(NSString*)fileName;
 + (NSDate *)datetimeWithOutTime:(NSDate *)datDate;
 + (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems;
++ (NSDate *)getATime:(const char *)path;
 
 @end

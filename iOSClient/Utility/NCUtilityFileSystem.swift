@@ -239,5 +239,58 @@ class NCUtilityFileSystem: NSObject {
         
         return resultFileName
     }
+    
+    @objc func getDirectorySize(directory: String) -> Int64 {
+        
+        let url = URL(fileURLWithPath: directory)
+        let manager = FileManager.default
+        var totalSize: Int64 = 0
+        
+        if let enumerator = manager.enumerator(at: url, includingPropertiesForKeys: [.isRegularFileKey], options: []) {
+            for case let fileURL as URL in enumerator {
+                if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
+                    if let size = attributes[.size] as? Int64 {
+                        totalSize = totalSize + size
+                    }
+                }
+            }
+        }
+        
+        return totalSize
+    }
+    
+    func cleanUp(directory: String, days: TimeInterval) {
+        
+        if days == 0 { return}
+        
+        let minimumDate = Date().addingTimeInterval(-days*24*60*60)
+        let url = URL(fileURLWithPath: directory)
+        
+        func meetsRequirement(date: Date) -> Bool {
+            return date < minimumDate
+        }
+        
+        let manager = FileManager.default
+        if let enumerator = manager.enumerator(at: url, includingPropertiesForKeys: [.isRegularFileKey], options: []) {
+            for case let fileURL as URL in enumerator {
+                if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
+                    if let date = CCUtility.getATime(fileURL.path) {
+                        if attributes[.size] as? Double == 0 { continue }
+                        if attributes[.type] as? FileAttributeType == FileAttributeType.typeDirectory { continue }
+                        if fileURL.pathExtension == NCGlobal.shared.extensionPreview { continue }
+                        if meetsRequirement(date: date) {
+                            let folderURL = fileURL.deletingLastPathComponent()
+                            let ocId = folderURL.lastPathComponent
+                            do {
+                                try manager.removeItem(atPath: fileURL.path)
+                            } catch { }
+                            manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
+                            NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 

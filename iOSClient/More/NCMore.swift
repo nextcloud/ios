@@ -166,6 +166,15 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.icon = "gear"
         item.url = "segueSettings"
         settingsMenu.append(item)
+        
+        // ITEM: Test API
+        if NCUtility.shared.isSimulator() {
+            item = NCCommunicationExternalSite()
+            item.name = "Test API"
+            item.icon = "swift"
+            item.url = "test"
+            settingsMenu.append(item)
+        }
 
         if (quotaMenu.count > 0) {
             let item = quotaMenu[0]
@@ -301,7 +310,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        
         var item = NCCommunicationExternalSite()
 
         // change color selection and disclosure indicator
@@ -444,6 +452,9 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             alertController.addAction(actionYes)
             alertController.addAction(actionNo)
             self.present(alertController, animated: true, completion: nil)
+            
+        } else if item.url == "test" {
+            
         }
     }
 }
