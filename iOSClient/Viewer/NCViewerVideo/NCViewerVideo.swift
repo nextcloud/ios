@@ -23,6 +23,7 @@
 
 import UIKit
 import AVKit
+import NCCommunication
 
 protocol NCViewerVideoDelegate {
     func startPictureInPicture(metadata: tableMetadata)
@@ -49,9 +50,7 @@ class NCViewerVideo: AVPlayerViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
-        
-        if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
+        func play(url: URL) {
             
             player = AVPlayer(url: url)
             
@@ -85,13 +84,27 @@ class NCViewerVideo: AVPlayerViewController {
                 player?.seek(to: time)
             }
             player?.isMuted = CCUtility.getAudioMute()
+            
+            // AIRPLAY
+            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                player?.allowsExternalPlayback = true
+            } else {
+                player?.allowsExternalPlayback = false
+            }
         }
         
-        // AIRPLAY
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-            player?.allowsExternalPlayback = true
+            
+            play(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
+            
         } else {
-            player?.allowsExternalPlayback = false
+            
+            NCCommunication.shared.getDirectDownload(fileId: metadata.fileId) { account, url, errorCode, errorDescription in
+                
+                if let url = URL(string: url) {
+                    play(url: url)
+                }
+            }
         }
     }
     
@@ -110,7 +123,6 @@ class NCViewerVideo: AVPlayerViewController {
             if rateObserverToken != nil {
                 player?.removeObserver(self, forKeyPath: "rate")
                 NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
-                NCKTVHTTPCache.shared.stopProxy()
                 self.rateObserverToken = nil
             }
         }
@@ -119,7 +131,7 @@ class NCViewerVideo: AVPlayerViewController {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         
         if keyPath != nil && keyPath == "rate" {
-            NCKTVHTTPCache.shared.saveCache(metadata: metadata)
+           // NCKTVHTTPCache.shared.saveCache(metadata: metadata)
         }
     }
 }

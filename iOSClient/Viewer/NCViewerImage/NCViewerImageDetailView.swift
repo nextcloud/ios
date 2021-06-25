@@ -150,19 +150,21 @@ class NCViewerImageDetailView: UIView {
                 dimValue.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
             }
         } else if metadata?.typeFile == NCGlobal.shared.metadataTypeFileVideo || metadata?.typeFile == NCGlobal.shared.metadataTypeFileAudio  {
-            if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata!) {
-                let playerVideo = AVPlayer(url: url)
-                if let duration = playerVideo.currentItem?.asset.duration {
-                    let durationVideo = Int(CMTimeGetSeconds(duration))
-                    let timer = secondsToHoursMinutesSeconds(seconds: durationVideo)
-                    dimLabel.text = NSLocalizedString("_duration_", comment: "")
-                    var hh = "\(timer.0)"
-                    var mm = "\(timer.1)"
-                    var ss = "\(timer.2)"
-                    if hh.count == 1 { hh = "0" + hh }
-                    if mm.count == 1 { mm = "0" + mm }
-                    if ss.count == 1 { ss = "0" + ss }
-                    dimValue.text = hh + ":" + mm + ":" + ss
+            NCNetworking.shared.getVideoUrl(metadata: metadata!) { url in
+                if let url = url {
+                    let playerVideo = AVPlayer(url: url)
+                    if let duration = playerVideo.currentItem?.asset.duration {
+                        let durationVideo = Int(CMTimeGetSeconds(duration))
+                        let timer = self.secondsToHoursMinutesSeconds(seconds: durationVideo)
+                        self.dimLabel.text = NSLocalizedString("_duration_", comment: "")
+                        var hh = "\(timer.0)"
+                        var mm = "\(timer.1)"
+                        var ss = "\(timer.2)"
+                        if hh.count == 1 { hh = "0" + hh }
+                        if mm.count == 1 { mm = "0" + mm }
+                        if ss.count == 1 { ss = "0" + ss }
+                        self.dimValue.text = hh + ":" + mm + ":" + ss
+                    }
                 }
             }
         }

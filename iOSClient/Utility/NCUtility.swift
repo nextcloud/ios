@@ -23,7 +23,6 @@
 
 import UIKit
 import SVGKit
-import KTVHTTPCache
 import NCCommunication
 import PDFKit
 import Accelerate
@@ -266,7 +265,6 @@ class NCUtility: NSObject {
         
         URLCache.shared.memoryCapacity = 0
         URLCache.shared.diskCapacity = 0
-        KTVHTTPCache.cacheDeleteAllCaches()
         
         NCManageDatabase.shared.clearDatabase(account: nil, removeAccount: true)
         

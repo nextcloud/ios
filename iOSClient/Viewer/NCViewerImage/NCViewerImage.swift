@@ -399,36 +399,37 @@ class NCViewerImage: UIViewController {
     //MARK: - Video
     
     func videoPlay(metadata: tableMetadata) {
-                                
-        NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
-
-        if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
+           
+        NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
             
-            player = AVPlayer(url: url)
-            player?.isMuted = CCUtility.getAudioMute()
-            videoLayer = AVPlayerLayer(player: player)
-            
-            if videoLayer != nil && currentViewerImageZoom != nil {
-            
-                videoLayer!.frame = currentViewerImageZoom!.imageView.bounds
-                videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspect
+            if let url = url {
                 
-                currentViewerImageZoom!.imageView.layer.addSublayer(videoLayer!)
+                self.player = AVPlayer(url: url)
+                self.player?.isMuted = CCUtility.getAudioMute()
+                self.videoLayer = AVPlayerLayer(player: self.player)
                 
-                // At end go back to start
-                NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
-                    if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
-                        self.player?.seek(to: .zero)
-                        if !self.currentMetadata.livePhoto {
-                            NCManageDatabase.shared.deleteVideoTime(metadata: self.currentMetadata)
+                if self.videoLayer != nil && self.currentViewerImageZoom != nil {
+                
+                    self.videoLayer!.frame = self.currentViewerImageZoom!.imageView.bounds
+                    self.videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspect // .resizeAspectFill
+                    
+                    self.currentViewerImageZoom!.imageView.layer.addSublayer(self.videoLayer!)
+                    
+                    // At end go back to start
+                    NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
+                        if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
+                            self.player?.seek(to: .zero)
+                            if !self.currentMetadata.livePhoto {
+                                NCManageDatabase.shared.deleteVideoTime(metadata: self.currentMetadata)
+                            }
                         }
                     }
-                }
-                            
-                rateObserver = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
-                
-                if pictureInPictureOcId != metadata.ocId {
-                    self.player?.play()
+                                
+                    self.rateObserver = self.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+                    
+                    if self.pictureInPictureOcId != metadata.ocId {
+                        self.player?.play()
+                    }
                 }
             }
         }
@@ -448,7 +449,6 @@ class NCViewerImage: UIViewController {
         if rateObserver != nil {
             player?.removeObserver(self, forKeyPath: "rate")
             NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
-            NCKTVHTTPCache.shared.stopProxy()
             self.rateObserver = nil
         }
                

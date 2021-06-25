@@ -24,7 +24,6 @@
 #import "CCAdvanced.h"
 #import "CCUtility.h"
 #import "NSNotificationCenter+MainThread.h"
-#import <KTVHTTPCache/KTVHTTPCache.h>
 #import "NCBridgeSwift.h"
 
 @interface CCAdvanced ()
@@ -415,7 +414,6 @@
     
     [[NSURLCache sharedURLCache] setMemoryCapacity:0];
     [[NSURLCache sharedURLCache] setDiskCapacity:0];
-    [KTVHTTPCache cacheDeleteAllCaches];
     
     [[NCManageDatabase shared] clearDatabaseWithAccount:appDelegate.account removeAccount:false];
     
@@ -490,7 +488,6 @@
                 
         [[NSURLCache sharedURLCache] setMemoryCapacity:0];
         [[NSURLCache sharedURLCache] setDiskCapacity:0];
-        [KTVHTTPCache cacheDeleteAllCaches];
 
         [CCUtility removeGroupDirectoryProviderStorage];
         [CCUtility removeGroupApplicationSupport];

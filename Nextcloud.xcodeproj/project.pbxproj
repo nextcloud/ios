@@ -53,8 +53,6 @@
 		F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */; };
 		F70B86762642CF5300ED5349 /* ChromaColorPicker.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B866F2642CA9500ED5349 /* ChromaColorPicker.xcframework */; };
 		F70B86772642CF5300ED5349 /* ChromaColorPicker.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B866F2642CA9500ED5349 /* ChromaColorPicker.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F70B86852642CF5600ED5349 /* KTVHTTPCache.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86792642CF5300ED5349 /* KTVHTTPCache.xcframework */; };
-		F70B86862642CF5600ED5349 /* KTVHTTPCache.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86792642CF5300ED5349 /* KTVHTTPCache.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F70B86872642CF5600ED5349 /* TLPhotoPicker.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867A2642CF5300ED5349 /* TLPhotoPicker.xcframework */; };
 		F70B86882642CF5600ED5349 /* TLPhotoPicker.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867A2642CF5300ED5349 /* TLPhotoPicker.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F70B86892642CF5600ED5349 /* XLForm.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867B2642CF5300ED5349 /* XLForm.xcframework */; };
@@ -63,8 +61,6 @@
 		F70B868C2642CF5600ED5349 /* Queuer.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867C2642CF5300ED5349 /* Queuer.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F70B868D2642CF5600ED5349 /* UICKeyChainStore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867D2642CF5400ED5349 /* UICKeyChainStore.xcframework */; };
 		F70B868E2642CF5600ED5349 /* UICKeyChainStore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867D2642CF5400ED5349 /* UICKeyChainStore.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F70B868F2642CF5600ED5349 /* KTVCocoaHTTPServer.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867E2642CF5400ED5349 /* KTVCocoaHTTPServer.xcframework */; };
-		F70B86902642CF5600ED5349 /* KTVCocoaHTTPServer.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867E2642CF5400ED5349 /* KTVCocoaHTTPServer.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F70B86932642CF5700ED5349 /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86802642CF5400ED5349 /* OpenSSL.xcframework */; };
 		F70B86942642CF5700ED5349 /* OpenSSL.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86802642CF5400ED5349 /* OpenSSL.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F70B86972642CF5700ED5349 /* TOPasscodeViewController.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86822642CF5500ED5349 /* TOPasscodeViewController.xcframework */; };
@@ -331,7 +327,6 @@
 		F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
 		F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
 		F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */; };
-		F7FAC2672549E1B5008EE2C4 /* NCKTVHTTPCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FAC2662549E1B5008EE2C4 /* NCKTVHTTPCache.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -366,14 +361,12 @@
 			dstSubfolderSpec = 10;
 			files = (
 				F70B869A2642CF5800ED5349 /* FSCalendar.xcframework in Embed Frameworks */,
-				F70B86862642CF5600ED5349 /* KTVHTTPCache.xcframework in Embed Frameworks */,
 				F70B868E2642CF5600ED5349 /* UICKeyChainStore.xcframework in Embed Frameworks */,
 				F70B86982642CF5700ED5349 /* TOPasscodeViewController.xcframework in Embed Frameworks */,
 				F70B86942642CF5700ED5349 /* OpenSSL.xcframework in Embed Frameworks */,
 				F70B868C2642CF5600ED5349 /* Queuer.xcframework in Embed Frameworks */,
 				F70B868A2642CF5600ED5349 /* XLForm.xcframework in Embed Frameworks */,
 				F70B869C2642CF5800ED5349 /* DropDown.xcframework in Embed Frameworks */,
-				F70B86902642CF5600ED5349 /* KTVCocoaHTTPServer.xcframework in Embed Frameworks */,
 				F70B86882642CF5600ED5349 /* TLPhotoPicker.xcframework in Embed Frameworks */,
 				F70B86772642CF5300ED5349 /* ChromaColorPicker.xcframework in Embed Frameworks */,
 			);
@@ -751,7 +744,6 @@
 		F7F67BB81A24D27800EE80DA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndMetadata.swift; sourceTree = "<group>"; };
 		F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewer.swift; sourceTree = "<group>"; };
-		F7FAC2662549E1B5008EE2C4 /* NCKTVHTTPCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCKTVHTTPCache.swift; sourceTree = "<group>"; };
 		F7FC7D551DC1F93800BB2C6A /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -801,7 +793,6 @@
 				F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */,
 				F70B86972642CF5700ED5349 /* TOPasscodeViewController.xcframework in Frameworks */,
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
-				F70B868F2642CF5600ED5349 /* KTVCocoaHTTPServer.xcframework in Frameworks */,
 				F70B869B2642CF5800ED5349 /* DropDown.xcframework in Frameworks */,
 				F70B86892642CF5600ED5349 /* XLForm.xcframework in Frameworks */,
 				F770768E263A8C3400A1BA94 /* FloatingPanel in Frameworks */,
@@ -811,7 +802,6 @@
 				F75E57BD25BF0EC1002B72C2 /* SVGKit in Frameworks */,
 				F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */,
 				F70B86992642CF5800ED5349 /* FSCalendar.xcframework in Frameworks */,
-				F70B86852642CF5600ED5349 /* KTVHTTPCache.xcframework in Frameworks */,
 				F70B86762642CF5300ED5349 /* ChromaColorPicker.xcframework in Frameworks */,
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
 				F70B86932642CF5700ED5349 /* OpenSSL.xcframework in Frameworks */,
@@ -1235,7 +1225,6 @@
 			isa = PBXGroup;
 			children = (
 				F752011C25480387000BF3A7 /* NCViewerVideo.swift */,
-				F7FAC2662549E1B5008EE2C4 /* NCKTVHTTPCache.swift */,
 			);
 			path = NCViewerVideo;
 			sourceTree = "<group>";
@@ -2182,7 +2171,6 @@
 				F7134186259747BA00768D21 /* NCPushNotification.m in Sources */,
 				F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */,
 				F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */,
-				F7FAC2672549E1B5008EE2C4 /* NCKTVHTTPCache.swift in Sources */,
 				F75D19E325EFE09000D74598 /* NCTrash+Menu.swift in Sources */,
 				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				F70753EB2542A99800972D44 /* NCViewerImage.swift in Sources */,

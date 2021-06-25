@@ -1294,6 +1294,31 @@ import Queuer
         }
     }
     
+    //MARK: - Direct Download
+
+    func getVideoUrl(metadata: tableMetadata, completition: @escaping (_ url: URL?)->()) {
+        
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            
+            completition(URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
+                        
+        } else {
+            
+            NCCommunication.shared.getDirectDownload(fileId: metadata.fileId) { account, url, errorCode, errorDescription in
+                
+                if errorCode == 0 && url != nil {
+                    if let url = URL(string: url!) {
+                        completition(url)
+                    } else {
+                        completition(nil)
+                    }
+                } else {
+                    completition(nil)
+                }
+            }
+        }
+    }
+    
     //MARK: - TEST API
       
     /*
