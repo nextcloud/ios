@@ -43,6 +43,7 @@ class NCNetworkingProcessUpload: NSObject {
     }
     
     func startTimer() {
+        timerProcess?.invalidate()
         timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(process), userInfo: nil, repeats: true)
     }
     
