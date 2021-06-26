@@ -1295,7 +1295,8 @@ import Queuer
     }
     
     //MARK: - TEST API
-        
+     
+    /*
     @objc public func getDirectDownload(urlBase: String, username: String, password: String, fileId: String, customUserAgent: String? = nil, completionHandler: @escaping (_ token: String?, _ errorCode: Int, _ errorDescription: String) -> Void) {
                 
         let endpoint = "/ocs/v2.php/apps/dav/api/v1/direct"
@@ -1329,5 +1330,5 @@ import Queuer
             }
         }
     }
-    
+    */
 }
