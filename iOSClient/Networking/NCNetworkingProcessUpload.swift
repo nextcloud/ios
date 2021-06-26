@@ -39,7 +39,7 @@ class NCNetworkingProcessUpload: NSObject {
     @objc func startProcess() {
         DispatchQueue.main.async {
             if self.timerProcess?.isValid ?? false {
-                process()
+                self.process()
             }
         }
     }
