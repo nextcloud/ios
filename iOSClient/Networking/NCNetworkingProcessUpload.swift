@@ -108,7 +108,9 @@ class NCNetworkingProcessUpload: NSObject {
                                 NCNetworking.shared.upload(metadata: metadata) {
                                     // start
                                 } completion: { (_, _) in
-                                    self.startTimer()
+                                    DispatchQueue.main.async {
+                                        self.startTimer()
+                                    }
                                 }
                             } else {
                                 self.startTimer()
@@ -122,7 +124,9 @@ class NCNetworkingProcessUpload: NSObject {
                                 NCNetworking.shared.upload(metadata: metadata) {
                                     // start
                                 } completion: { (_, _) in
-                                    self.startTimer()
+                                    DispatchQueue.main.async {
+                                        self.startTimer()
+                                    }
                                 }
                             } else {
                                 self.startTimer()
