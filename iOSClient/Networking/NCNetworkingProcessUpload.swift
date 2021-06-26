@@ -37,23 +37,17 @@ class NCNetworkingProcessUpload: NSObject {
     }
     
     @objc func startProcess() {
-        DispatchQueue.main.async {
-            if self.timerProcess?.isValid ?? false {
-                self.process()
-            }
+        if timerProcess?.isValid ?? false {
+            process()
         }
     }
     
     func startTimer() {
-        DispatchQueue.main.async {
-            self.timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.process), userInfo: nil, repeats: true)
-        }
+        timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(process), userInfo: nil, repeats: true)
     }
     
     func stopTimer() {
-        DispatchQueue.main.async {
-            self.timerProcess?.invalidate()
-        }
+        timerProcess?.invalidate()
     }
 
     @objc private func process() {
