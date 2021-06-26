@@ -71,6 +71,7 @@ class NCPhotosPickerViewController: NSObject {
         }
         configure.selectedColor = NCBrandColor.shared.brandElement
         configure.singleSelectedMode = singleSelectedMode
+        configure.allowedAlbumCloudShared = true
         
         let viewController = customPhotoPickerViewController(withTLPHAssets: { (assets) in
             
