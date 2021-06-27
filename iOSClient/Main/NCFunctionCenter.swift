@@ -756,15 +756,15 @@ import Queuer
         
         var children: [UIMenuElement] = [favorite, offline, openIn, rename, moveCopy, copy, delete]
 
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
+        if (metadata.contentType != "image/svg+xml") && (metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo) {
             children.insert(save, at: 2)
         }
         
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
+        if (metadata.contentType != "image/svg+xml") && (metadata.typeFile == NCGlobal.shared.metadataTypeFileImage) {
             children.insert(saveAsScan, at: 2)
         }
         
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
+        if (metadata.contentType != "image/svg+xml") && (metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf") {
             children.insert(print, at: 2)
         }
         
@@ -772,7 +772,7 @@ import Queuer
             children.insert(viewInFolder, at: children.count-1)
         }
         
-        if !isFolderEncrypted && metadata.contentType != "image/gif" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage) {
+        if (!isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml") && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage) {
             children.insert(modify, at: children.count-1)
         }
         
