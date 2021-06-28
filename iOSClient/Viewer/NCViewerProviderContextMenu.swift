@@ -24,6 +24,7 @@
 import UIKit
 import AVFoundation
 import NCCommunication
+import SVGKit
 
 class NCViewerProviderContextMenu: UIViewController  {
 
@@ -119,6 +120,11 @@ class NCViewerProviderContextMenu: UIViewController  {
             
             // AUTO DOWNLOAD IMAGE GIF
             if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.contentType == "image/gif" {
+                NCOperationQueue.shared.download(metadata: metadata, selector: "")
+            }
+            
+            // AUTO DOWNLOAD IMAGE SVG
+            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.contentType == "image/svg+xml" {
                 NCOperationQueue.shared.download(metadata: metadata, selector: "")
             }
             
@@ -222,6 +228,12 @@ class NCViewerProviderContextMenu: UIViewController  {
         
         if metadata.contentType == "image/gif" {
             image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: filePath))
+        } else if metadata.contentType == "image/svg+xml" {
+            let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            if let svgImage = SVGKImage(contentsOfFile: imagePath) {
+                svgImage.size = CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview)
+                image = svgImage.uiImage
+            }
         } else {
             image = UIImage.init(contentsOfFile: filePath)
         }
