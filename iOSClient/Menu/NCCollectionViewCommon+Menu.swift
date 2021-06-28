@@ -170,7 +170,7 @@ extension NCCollectionViewCommon {
         //
         // PRINT
         //
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
+        if (metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && metadata.contentType != "image/svg+xml") || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_print_", comment: ""),
@@ -185,7 +185,7 @@ extension NCCollectionViewCommon {
         //
         // SAVE
         //
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
+        if (metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && metadata.contentType != "image/svg+xml") || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
             var title: String = NSLocalizedString("_save_selected_files_", comment: "")
             var icon = NCUtility.shared.loadImage(named: "square.and.arrow.down")
             let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
@@ -217,7 +217,7 @@ extension NCCollectionViewCommon {
         // SAVE AS SCAN
         //
         if #available(iOS 13.0, *) {
-            if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
+            if (metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && metadata.contentType != "image/svg+xml") {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_save_as_scan_", comment: ""),
@@ -327,7 +327,7 @@ extension NCCollectionViewCommon {
         // MODIFY
         //
         if #available(iOS 13.0, *) {
-            if !isFolderEncrypted && metadata.contentType != "image/gif" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage) {
+            if !isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_modify_", comment: ""),
