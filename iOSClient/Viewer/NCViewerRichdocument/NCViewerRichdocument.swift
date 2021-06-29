@@ -269,7 +269,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
             }
             
             if message.body as? String == "paste" {
-                self.paste(self)
+                // ?
             }
         }
     }
