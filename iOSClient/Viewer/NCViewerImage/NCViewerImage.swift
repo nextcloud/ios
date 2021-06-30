@@ -411,7 +411,7 @@ class NCViewerImage: UIViewController {
                 if self.videoLayer != nil && self.currentViewerImageZoom != nil {
                 
                     self.videoLayer!.frame = self.currentViewerImageZoom!.imageView.bounds
-                    self.videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspect // .resizeAspectFill
+                    self.videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
                     
                     self.currentViewerImageZoom!.imageView.layer.addSublayer(self.videoLayer!)
                     
