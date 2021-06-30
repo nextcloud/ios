@@ -28,7 +28,10 @@ import NCCommunication
 class NCViewerImage: UIViewController {
 
     @IBOutlet weak var progressView: UIProgressView!
-    @IBOutlet weak var toolBar: UIToolbar!
+    
+    @IBOutlet weak var toolBar: UIView!
+    @IBOutlet weak var playButton: UIButton!
+    @IBOutlet weak var muteButton: UIButton!
 
     enum ScreenMode {
         case full, normal
@@ -517,35 +520,29 @@ class NCViewerImage: UIViewController {
         
         let mute = CCUtility.getAudioMute()
         
-        var itemPlay = toolBar.items![0]
-        let itemFlexibleSpace = toolBar.items![1]
-        var itemMute = toolBar.items![2]
-        
         if player?.rate == 1 {
-            itemPlay = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.pause, target: self, action: #selector(playerPause))
+            playButton.setImage(NCUtility.shared.loadImage(named: "pause.fill"), for: .normal)
         } else {
-            itemPlay = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.play, target: self, action: #selector(playerPlay))
+            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill"), for: .normal)
         }
+       
         if mute {
-            itemMute = UIBarButtonItem(image: UIImage(named: "audioOff"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(SetMute))
+            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff"), for: .normal)
         } else {
-            itemMute = UIBarButtonItem(image: UIImage(named: "audioOn"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(SetMute))
+            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn"), for: .normal)
         }
-        
-        toolBar.setItems([itemPlay, itemFlexibleSpace, itemMute], animated: true)
-        toolBar.tintColor = NCBrandColor.shared.brandElement
-        toolBar.barTintColor = view.backgroundColor
     }
 
-    @objc func playerPause() {
-        player?.pause()
+    @IBAction func playerPause(_ sender: Any) {
+        
+        if player?.timeControlStatus == .playing {
+            player?.pause()
+        } else if player?.timeControlStatus == .paused {
+            player?.play()
+        }
     }
-    
-    @objc func playerPlay() {
-        player?.play()
-    }
-    
-    @objc func SetMute() {
+        
+    @IBAction func setMute(_ sender: Any) {
         let mute = CCUtility.getAudioMute()
         CCUtility.setAudioMute(!mute)
         player?.isMuted = !mute
@@ -826,7 +823,7 @@ extension NCViewerImage: NCViewerVideoDelegate {
     func stopPictureInPicture(metadata: tableMetadata, playing: Bool) {
         pictureInPictureOcId = ""
         if playing && currentMetadata.ocId == metadata.ocId {
-            playerPlay()
+            playerPause(self)
         }
     }
 }
