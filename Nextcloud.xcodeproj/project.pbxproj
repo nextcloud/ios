@@ -34,6 +34,11 @@
 		F702F30125EE5D2C008F8E80 /* NYMnemonic.m in Sources */ = {isa = PBXBuildFile; fileRef = F702F2FD25EE5D2C008F8E80 /* NYMnemonic.m */; };
 		F702F30225EE5D2C008F8E80 /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = F702F2FF25EE5D2C008F8E80 /* english.txt */; };
 		F702F30825EE5D47008F8E80 /* NCPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F702F30725EE5D47008F8E80 /* NCPopupViewController.swift */; };
+		F703FFE6268CA52900FA1459 /* KTVHTTPCache.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86792642CF5300ED5349 /* KTVHTTPCache.xcframework */; };
+		F703FFE7268CA52900FA1459 /* KTVHTTPCache.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86792642CF5300ED5349 /* KTVHTTPCache.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F703FFE8268CA52900FA1459 /* KTVCocoaHTTPServer.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867E2642CF5400ED5349 /* KTVCocoaHTTPServer.xcframework */; };
+		F703FFE9268CA52900FA1459 /* KTVCocoaHTTPServer.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867E2642CF5400ED5349 /* KTVCocoaHTTPServer.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F703FFEB268CA60D00FA1459 /* NCKTVHTTPCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F703FFEA268CA60D00FA1459 /* NCKTVHTTPCache.swift */; };
 		F70460522499061800BB98A7 /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
 		F70460532499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
 		F70460542499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
@@ -360,10 +365,12 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				F703FFE7268CA52900FA1459 /* KTVHTTPCache.xcframework in Embed Frameworks */,
 				F70B869A2642CF5800ED5349 /* FSCalendar.xcframework in Embed Frameworks */,
 				F70B868E2642CF5600ED5349 /* UICKeyChainStore.xcframework in Embed Frameworks */,
 				F70B86982642CF5700ED5349 /* TOPasscodeViewController.xcframework in Embed Frameworks */,
 				F70B86942642CF5700ED5349 /* OpenSSL.xcframework in Embed Frameworks */,
+				F703FFE9268CA52900FA1459 /* KTVCocoaHTTPServer.xcframework in Embed Frameworks */,
 				F70B868C2642CF5600ED5349 /* Queuer.xcframework in Embed Frameworks */,
 				F70B868A2642CF5600ED5349 /* XLForm.xcframework in Embed Frameworks */,
 				F70B869C2642CF5800ED5349 /* DropDown.xcframework in Embed Frameworks */,
@@ -417,6 +424,7 @@
 		F702F2FF25EE5D2C008F8E80 /* english.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = english.txt; sourceTree = "<group>"; };
 		F702F30025EE5D2C008F8E80 /* NYMnemonic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NYMnemonic.h; sourceTree = "<group>"; };
 		F702F30725EE5D47008F8E80 /* NCPopupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPopupViewController.swift; sourceTree = "<group>"; };
+		F703FFEA268CA60D00FA1459 /* NCKTVHTTPCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCKTVHTTPCache.swift; sourceTree = "<group>"; };
 		F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationCenter+MainThread.swift"; sourceTree = "<group>"; };
 		F704B5E22430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCCreateFormUploadConflict.storyboard; sourceTree = "<group>"; };
 		F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadConflict.swift; sourceTree = "<group>"; };
@@ -797,6 +805,7 @@
 				F70B86892642CF5600ED5349 /* XLForm.xcframework in Frameworks */,
 				F770768E263A8C3400A1BA94 /* FloatingPanel in Frameworks */,
 				F786D58D253454BF00E3DD7B /* NCCommunication in Frameworks */,
+				F703FFE6268CA52900FA1459 /* KTVHTTPCache.xcframework in Frameworks */,
 				F70B868B2642CF5600ED5349 /* Queuer.xcframework in Frameworks */,
 				F782A57B25123694007BBABD /* Realm in Frameworks */,
 				F75E57BD25BF0EC1002B72C2 /* SVGKit in Frameworks */,
@@ -804,6 +813,7 @@
 				F70B86992642CF5800ED5349 /* FSCalendar.xcframework in Frameworks */,
 				F70B86762642CF5300ED5349 /* ChromaColorPicker.xcframework in Frameworks */,
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
+				F703FFE8268CA52900FA1459 /* KTVCocoaHTTPServer.xcframework in Frameworks */,
 				F70B86932642CF5700ED5349 /* OpenSSL.xcframework in Frameworks */,
 				F73ADD1C265546890069EA0D /* SwiftEntryKit in Frameworks */,
 				F70B868D2642CF5600ED5349 /* UICKeyChainStore.xcframework in Frameworks */,
@@ -1224,6 +1234,7 @@
 		F7A5281B254834500039CA15 /* NCViewerVideo */ = {
 			isa = PBXGroup;
 			children = (
+				F703FFEA268CA60D00FA1459 /* NCKTVHTTPCache.swift */,
 				F752011C25480387000BF3A7 /* NCViewerVideo.swift */,
 			);
 			path = NCViewerVideo;
@@ -2097,6 +2108,7 @@
 				F72CD63A25C19EBF00F46F9A /* NCAutoUpload.swift in Sources */,
 				F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */,
 				F73B422C2476764F00A30FD3 /* NCNotification.swift in Sources */,
+				F703FFEB268CA60D00FA1459 /* NCKTVHTTPCache.swift in Sources */,
 				371B5A2E23D0B04500FAFAE9 /* NCMenu.swift in Sources */,
 				F77444F8222816D5000D5EB0 /* NCPickerViewController.swift in Sources */,
 				F72A47EC2487B06B005AD489 /* NCOperationQueue.swift in Sources */,

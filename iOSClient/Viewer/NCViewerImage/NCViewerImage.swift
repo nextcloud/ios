@@ -400,38 +400,44 @@ class NCViewerImage: UIViewController {
     
     func videoPlay(metadata: tableMetadata) {
            
-        NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
+        NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
+        
+        func play(url: URL) {
             
-            if let url = url {
+            self.player = AVPlayer(url: url)
+            self.player?.isMuted = CCUtility.getAudioMute()
+            self.videoLayer = AVPlayerLayer(player: self.player)
+            
+            if self.videoLayer != nil && self.currentViewerImageZoom != nil {
+            
+                self.videoLayer!.frame = self.currentViewerImageZoom!.imageView.bounds
+                self.videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
                 
-                self.player = AVPlayer(url: url)
-                self.player?.isMuted = CCUtility.getAudioMute()
-                self.videoLayer = AVPlayerLayer(player: self.player)
+                self.currentViewerImageZoom!.imageView.layer.addSublayer(self.videoLayer!)
                 
-                if self.videoLayer != nil && self.currentViewerImageZoom != nil {
-                
-                    self.videoLayer!.frame = self.currentViewerImageZoom!.imageView.bounds
-                    self.videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
-                    
-                    self.currentViewerImageZoom!.imageView.layer.addSublayer(self.videoLayer!)
-                    
-                    // At end go back to start
-                    NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
-                        if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
-                            self.player?.seek(to: .zero)
-                            if !self.currentMetadata.livePhoto {
-                                NCManageDatabase.shared.deleteVideoTime(metadata: self.currentMetadata)
-                            }
+                // At end go back to start
+                NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
+                    if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
+                        self.player?.seek(to: .zero)
+                        if !self.currentMetadata.livePhoto {
+                            NCManageDatabase.shared.deleteVideoTime(metadata: self.currentMetadata)
                         }
                     }
-                                
-                    self.rateObserver = self.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
-                    
-                    if self.pictureInPictureOcId != metadata.ocId {
-                        self.player?.play()
-                    }
+                }
+                            
+                self.rateObserver = self.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+                
+                if self.pictureInPictureOcId != metadata.ocId {
+                    self.player?.play()
                 }
             }
+        }
+        
+        //NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
+        //            if let url = url {
+
+        if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
+            play(url: url)
         }
     }
     
@@ -449,6 +455,7 @@ class NCViewerImage: UIViewController {
         if rateObserver != nil {
             player?.removeObserver(self, forKeyPath: "rate")
             NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+            NCKTVHTTPCache.shared.stopProxy(metadata: currentMetadata)
             self.rateObserver = nil
         }
                
