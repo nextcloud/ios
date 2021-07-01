@@ -514,7 +514,7 @@ class NCViewerImage: UIViewController {
         }
     }
     
-    //MARK: - Tool Bar
+    //MARK: - audio/video Tool Bar
 
     func setToolBar() {
         
