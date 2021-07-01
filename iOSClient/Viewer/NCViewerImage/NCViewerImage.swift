@@ -28,11 +28,8 @@ import NCCommunication
 class NCViewerImage: UIViewController {
 
     @IBOutlet weak var progressView: UIProgressView!
+    @IBOutlet weak var toolBar: NCViewerVideoToolBar!
     
-    @IBOutlet weak var toolBar: UIView!
-    @IBOutlet weak var playButton: UIButton!
-    @IBOutlet weak var muteButton: UIButton!
-
     enum ScreenMode {
         case full, normal
     }
@@ -58,11 +55,7 @@ class NCViewerImage: UIViewController {
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
     
-    private var player: AVPlayer?
-    private var videoLayer: AVPlayerLayer?
-    private var timeObserver: Any?
-    private var rateObserver: Any?
-    var pictureInPictureOcId: String = ""
+    var viewerVideo: NCViewerVideo?
     var textColor: UIColor = NCBrandColor.shared.label
 
     // MARK: - View Life Cycle
@@ -104,8 +97,6 @@ class NCViewerImage: UIViewController {
         progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.trackTintColor = .clear
         progressView.progress = 0
-        
-        setToolBar()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -139,8 +130,6 @@ class NCViewerImage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object:nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -148,7 +137,7 @@ class NCViewerImage: UIViewController {
 
         if let navigationController = self.navigationController {
             if !navigationController.viewControllers.contains(self) {
-                videoStop()
+                self.viewerVideo?.videoStop()
             }
         }
     }
@@ -163,8 +152,6 @@ class NCViewerImage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
-        
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }
     
     @objc func viewUnload() {
@@ -180,13 +167,6 @@ class NCViewerImage: UIViewController {
     
     //MARK: - NotificationCenter
 
-    @objc func applicationDidEnterBackground(_ notification: NSNotification) {
-        
-        if currentMetadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
-            player?.pause()
-        }
-    }
-    
     @objc func downloadedFile(_ notification: NSNotification) {
         
         if let userInfo = notification.userInfo as NSDictionary? {
@@ -276,7 +256,7 @@ class NCViewerImage: UIViewController {
     }
     
     @objc func changeTheming() {
-        toolBar.tintColor = NCBrandColor.shared.brandElement
+        //toolBar.tintColor = NCBrandColor.shared.brandElement
     }
     
     //
@@ -298,7 +278,7 @@ class NCViewerImage: UIViewController {
                 if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                     
                     AudioServicesPlaySystemSound(1519) // peek feedback
-                    self.videoPlay(metadata: metadata)
+                    self.viewerVideo?.videoPlay(metadata: metadata)
                     
                 } else {
                     
@@ -323,7 +303,7 @@ class NCViewerImage: UIViewController {
                             
                             if gestureRecognizer.state == .changed || gestureRecognizer.state == .began {
                                 AudioServicesPlaySystemSound(1519) // peek feedback
-                                self.videoPlay(metadata: metadata)
+                                self.viewerVideo?.videoPlay(metadata: metadata)
                             }
                         }
                     }
@@ -334,7 +314,7 @@ class NCViewerImage: UIViewController {
             
             currentViewerImageZoom?.statusViewImage.isHidden = false
             currentViewerImageZoom?.statusLabel.isHidden = false
-            videoStop()
+            self.viewerVideo?.videoStop()
         }
     }
     
@@ -397,156 +377,6 @@ class NCViewerImage: UIViewController {
         }
         
         return image
-    }
-        
-    //MARK: - Video
-    
-    func videoPlay(metadata: tableMetadata) {
-           
-        NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
-        
-        func play(url: URL) {
-            
-            self.player = AVPlayer(url: url)
-            self.player?.isMuted = CCUtility.getAudioMute()
-            self.videoLayer = AVPlayerLayer(player: self.player)
-            
-            if self.videoLayer != nil && self.currentViewerImageZoom != nil {
-            
-                self.videoLayer!.frame = self.currentViewerImageZoom!.imageView.bounds
-                self.videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
-                
-                self.currentViewerImageZoom!.imageView.layer.addSublayer(self.videoLayer!)
-                
-                // At end go back to start
-                NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
-                    if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
-                        self.player?.seek(to: .zero)
-                        if !self.currentMetadata.livePhoto {
-                            NCManageDatabase.shared.deleteVideoTime(metadata: self.currentMetadata)
-                        }
-                    }
-                }
-                            
-                self.rateObserver = self.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
-                
-                if self.pictureInPictureOcId != metadata.ocId {
-                    self.player?.play()
-                }
-            }
-        }
-        
-        //NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
-        //            if let url = url {
-
-        if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-            play(url: url)
-        }
-    }
-    
-    func videoStop() {
-        
-        player?.pause()
-        player?.seek(to: CMTime.zero)
-        progressView.progress = 0
-        
-        if let timeObserver = timeObserver {
-            player?.removeTimeObserver(timeObserver)
-            self.timeObserver = nil
-        }
-        
-        if rateObserver != nil {
-            player?.removeObserver(self, forKeyPath: "rate")
-            NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
-            NCKTVHTTPCache.shared.stopProxy(metadata: currentMetadata)
-            self.rateObserver = nil
-        }
-               
-        videoLayer?.removeFromSuperlayer()
-    }
-    
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        
-        if keyPath != nil && keyPath == "rate" {
-            
-            setToolBar()
-            
-            if ((player?.rate) == 1) {
-                
-                if let time = NCManageDatabase.shared.getVideoTime(metadata: self.currentMetadata) {
-                    player?.seek(to: time)
-                    player?.isMuted = CCUtility.getAudioMute()
-                }
-                
-                if rateObserver != nil && !currentMetadata.livePhoto {
-                    self.progressView.progress = 0
-                    if let duration = self.player?.currentItem?.asset.duration {
-                        let durationSeconds = Double(CMTimeGetSeconds(duration))
-                        if durationSeconds > 0 {
-                            let width = Double(self.progressView.bounds.width)
-                            let interval = (0.5 * durationSeconds) / width
-                            let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-                            if CMTIME_IS_VALID(time) && CMTimeCompare(time, .zero) != 0 {
-                                self.timeObserver = self.player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
-                                    let durationSeconds = Float(CMTimeGetSeconds(duration))
-                                    if durationSeconds > 0 {
-                                        let currentTimeSeconds = Float(CMTimeGetSeconds(time))
-                                        self?.progressView.progress = currentTimeSeconds / durationSeconds
-                                    } else {
-                                        self?.progressView.progress = 0
-                                    }
-                                })
-                            }
-                        }
-                    }
-                }
-                
-            } else if !self.currentMetadata.livePhoto {
-                
-                if let time = player?.currentTime(), let duration = self.player?.currentItem?.asset.duration {
-                    let timeSecond = Double(CMTimeGetSeconds(time))
-                    let durationSeconds = Double(CMTimeGetSeconds(duration))
-                    if timeSecond < durationSeconds {
-                        NCManageDatabase.shared.addVideoTime(metadata: self.currentMetadata, time: player?.currentTime())
-                    }
-                }
-            }
-        }
-    }
-    
-    //MARK: - audio/video Tool Bar
-
-    func setToolBar() {
-        
-        let mute = CCUtility.getAudioMute()
-        
-        if player?.rate == 1 {
-            playButton.setImage(NCUtility.shared.loadImage(named: "pause.fill"), for: .normal)
-        } else {
-            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill"), for: .normal)
-        }
-       
-        if mute {
-            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff"), for: .normal)
-        } else {
-            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn"), for: .normal)
-        }
-    }
-
-    @IBAction func playerPause(_ sender: Any) {
-        
-        if player?.timeControlStatus == .playing {
-            player?.pause()
-        } else if player?.timeControlStatus == .paused {
-            player?.play()
-        }
-    }
-        
-    @IBAction func setMute(_ sender: Any) {
-        let mute = CCUtility.getAudioMute()
-        CCUtility.setAudioMute(!mute)
-        player?.isMuted = !mute
-        setToolBar()
     }
 }
 
@@ -704,7 +534,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
         
         if currentMetadata.typeFile == NCGlobal.shared.metadataTypeFileVideo || currentMetadata.typeFile == NCGlobal.shared.metadataTypeFileAudio {
             
-            if pictureInPictureOcId != currentMetadata.ocId {
+            if self.viewerVideo?.pictureInPictureOcId != currentMetadata.ocId {
                                 
                 // Kill PIP
                 appDelegate.activeViewerAVPlayerViewController?.player?.replaceCurrentItem(with: nil)
@@ -716,7 +546,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
                 appDelegate.activeViewerAVPlayerViewController?.delegateViewerVideo = self
                 if let currentViewerVideo = appDelegate.activeViewerAVPlayerViewController {
                     present(currentViewerVideo, animated: false) { }
-                    self.videoStop()
+                    self.viewerVideo?.videoStop()
                 }
             }
             
@@ -753,7 +583,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
     }
     
     func willAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
-        videoStop()
+        self.viewerVideo?.videoStop()
     }
     
     func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
@@ -762,10 +592,11 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         currentMetadata = metadata
         currentViewerImageZoom = viewerImageZoom
         toolBar.isHidden = true
+        viewerVideo = NCViewerVideo.init(view: viewerImageZoom.imageView, progressView: progressView, viewerVideoToolBar: toolBar)
         
         if (currentMetadata.typeFile == NCGlobal.shared.metadataTypeFileVideo || currentMetadata.typeFile == NCGlobal.shared.metadataTypeFileAudio) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.videoPlay(metadata: metadata)
+                self.viewerVideo?.videoPlay(metadata: metadata)
             }
             toolBar.isHidden = false
         }
@@ -817,13 +648,13 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
 extension NCViewerImage: NCViewerAVPlayerViewControllerDelegate {
     
     func startPictureInPicture(metadata: tableMetadata) {
-        pictureInPictureOcId = metadata.ocId
+        self.viewerVideo?.pictureInPictureOcId = metadata.ocId
     }
     
     func stopPictureInPicture(metadata: tableMetadata, playing: Bool) {
-        pictureInPictureOcId = ""
+        self.viewerVideo?.pictureInPictureOcId = ""
         if playing && currentMetadata.ocId == metadata.ocId {
-            playerPause(self)
+            self.viewerVideo?.viewerVideoToolBar?.playerPause(self)
         }
     }
 }

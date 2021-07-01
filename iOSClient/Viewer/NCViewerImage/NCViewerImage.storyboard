@@ -33,7 +33,7 @@
                                     <constraint firstAttribute="height" constant="1" id="F4E-lI-3jZ"/>
                                 </constraints>
                             </progressView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JKq-ki-dtz">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JKq-ki-dtz" customClass="NCViewerVideoToolBar" customModule="Nextcloud" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="812" width="414" height="50"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vaQ-iz-6jn">
@@ -45,7 +45,7 @@
                                         <color key="tintColor" systemColor="labelColor"/>
                                         <state key="normal" image="play.fill" catalog="system"/>
                                         <connections>
-                                            <action selector="playerPause:" destination="ne8-hS-cp3" eventType="touchUpInside" id="DPP-bu-HdY"/>
+                                            <action selector="playerPause:" destination="JKq-ki-dtz" eventType="touchUpInside" id="g2n-Lo-Kum"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EEV-Aj-0lu">
@@ -57,7 +57,7 @@
                                         <color key="tintColor" systemColor="labelColor"/>
                                         <state key="normal" title="Button" image="audioOn"/>
                                         <connections>
-                                            <action selector="setMute:" destination="ne8-hS-cp3" eventType="touchUpInside" id="gc7-ym-5Dg"/>
+                                            <action selector="setMute:" destination="JKq-ki-dtz" eventType="touchUpInside" id="VBj-CW-RaB"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -69,6 +69,10 @@
                                     <constraint firstItem="vaQ-iz-6jn" firstAttribute="leading" secondItem="JKq-ki-dtz" secondAttribute="leading" constant="10" id="SpM-Ue-jtI"/>
                                     <constraint firstAttribute="height" constant="50" id="i5H-Nn-hox"/>
                                 </constraints>
+                                <connections>
+                                    <outlet property="muteButton" destination="EEV-Aj-0lu" id="rZK-aK-b9M"/>
+                                    <outlet property="playButton" destination="vaQ-iz-6jn" id="9i8-js-Jiy"/>
+                                </connections>
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Ozy-9S-dMl"/>
@@ -90,10 +94,8 @@
                     <navigationItem key="navigationItem" id="azh-DM-TLz"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="muteButton" destination="EEV-Aj-0lu" id="Brf-jh-7So"/>
-                        <outlet property="playButton" destination="vaQ-iz-6jn" id="coX-gh-2aN"/>
                         <outlet property="progressView" destination="sD9-1i-ZdY" id="nag-cc-Up3"/>
-                        <outlet property="toolBar" destination="JKq-ki-dtz" id="iTS-hJ-3EA"/>
+                        <outlet property="toolBar" destination="JKq-ki-dtz" id="dhN-fe-HNh"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qhs-BU-mEq" userLabel="First Responder" sceneMemberID="firstResponder"/>
