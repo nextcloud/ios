@@ -575,7 +575,7 @@
 "_share_password_protect_"      = "Password protect";
 "_share_expiration_date_"       = "Set expiration date";
 "_share_note_recipient_"        = "Note to recipient";
-"_share_delete_sharelink_"      = "Delete share link";
+"_share_delete_sharelink_"      = "Delete link";
 "_share_add_sharelink_"         = "Add another link";
 "_share_can_reshare_"           = "Can reshare";
 "_share_can_create_"            = "Can create";
@@ -606,7 +606,7 @@
 "_share_permission_owner_"          = "Owner";
 "_share_permission_date_"           = "Date";
 "_share_permission_email_"          = "Notification via email";
-"_share_link_readonly_"             = "Read only";
+"_share_link_readonly_"             = "View only";
 "_share_link_modify_"               = "Allow editing";
 "_share_link_upload_"               = "File drop (upload only)";
 "_share_link_upload_modify_"        = "Allow upload and editing";
