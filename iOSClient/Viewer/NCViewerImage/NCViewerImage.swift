@@ -256,7 +256,6 @@ class NCViewerImage: UIViewController {
     }
     
     @objc func changeTheming() {
-        //toolBar.tintColor = NCBrandColor.shared.brandElement
     }
     
     //

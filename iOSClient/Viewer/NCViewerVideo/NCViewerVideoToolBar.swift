@@ -25,6 +25,7 @@ import Foundation
 
 class NCViewerVideoToolBar: UIView {
     
+    @IBOutlet weak var viewCommand: UIView!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var muteButton: UIButton!
     

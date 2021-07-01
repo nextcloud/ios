@@ -34,22 +34,10 @@
                                 </constraints>
                             </progressView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JKq-ki-dtz" customClass="NCViewerVideoToolBar" customModule="Nextcloud" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="812" width="414" height="50"/>
+                                <rect key="frame" x="0.0" y="64" width="414" height="798"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vaQ-iz-6jn">
-                                        <rect key="frame" x="10" y="10" width="30" height="30"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="30" id="CcA-ic-g60"/>
-                                            <constraint firstAttribute="height" constant="30" id="WW1-B9-it4"/>
-                                        </constraints>
-                                        <color key="tintColor" systemColor="labelColor"/>
-                                        <state key="normal" image="play.fill" catalog="system"/>
-                                        <connections>
-                                            <action selector="playerPause:" destination="JKq-ki-dtz" eventType="touchUpInside" id="g2n-Lo-Kum"/>
-                                        </connections>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EEV-Aj-0lu">
-                                        <rect key="frame" x="374" y="10" width="30" height="30"/>
+                                        <rect key="frame" x="374" y="50" width="30" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="SgR-jP-cE2"/>
                                             <constraint firstAttribute="width" constant="30" id="i2T-5f-Vp2"/>
@@ -60,18 +48,42 @@
                                             <action selector="setMute:" destination="JKq-ki-dtz" eventType="touchUpInside" id="VBj-CW-RaB"/>
                                         </connections>
                                     </button>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DzS-sQ-UVW">
+                                        <rect key="frame" x="90" y="748" width="234" height="50"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vaQ-iz-6jn">
+                                                <rect key="frame" x="10" y="10" width="30" height="30"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="30" id="CcA-ic-g60"/>
+                                                    <constraint firstAttribute="height" constant="30" id="WW1-B9-it4"/>
+                                                </constraints>
+                                                <color key="tintColor" systemColor="labelColor"/>
+                                                <state key="normal" image="play.fill" catalog="system"/>
+                                                <connections>
+                                                    <action selector="playerPause:" destination="JKq-ki-dtz" eventType="touchUpInside" id="g2n-Lo-Kum"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="6Il-eb-fKY"/>
+                                            <constraint firstItem="vaQ-iz-6jn" firstAttribute="centerY" secondItem="DzS-sQ-UVW" secondAttribute="centerY" id="WBn-JH-rur"/>
+                                            <constraint firstItem="vaQ-iz-6jn" firstAttribute="leading" secondItem="DzS-sQ-UVW" secondAttribute="leading" constant="10" id="Zqw-Nq-Kej"/>
+                                        </constraints>
+                                    </view>
                                 </subviews>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="EEV-Aj-0lu" secondAttribute="trailing" constant="10" id="9zh-GS-bDP"/>
-                                    <constraint firstItem="vaQ-iz-6jn" firstAttribute="centerY" secondItem="JKq-ki-dtz" secondAttribute="centerY" id="Gyx-Hx-jxv"/>
-                                    <constraint firstItem="EEV-Aj-0lu" firstAttribute="centerY" secondItem="JKq-ki-dtz" secondAttribute="centerY" id="Jmg-uL-7Kx"/>
-                                    <constraint firstItem="vaQ-iz-6jn" firstAttribute="leading" secondItem="JKq-ki-dtz" secondAttribute="leading" constant="10" id="SpM-Ue-jtI"/>
-                                    <constraint firstAttribute="height" constant="50" id="i5H-Nn-hox"/>
+                                    <constraint firstAttribute="trailing" secondItem="DzS-sQ-UVW" secondAttribute="trailing" constant="90" id="CK2-au-3ow"/>
+                                    <constraint firstItem="EEV-Aj-0lu" firstAttribute="top" secondItem="JKq-ki-dtz" secondAttribute="top" constant="50" id="ZKL-K2-Psv"/>
+                                    <constraint firstAttribute="bottom" secondItem="DzS-sQ-UVW" secondAttribute="bottom" id="caq-em-rBV"/>
+                                    <constraint firstItem="DzS-sQ-UVW" firstAttribute="leading" secondItem="JKq-ki-dtz" secondAttribute="leading" constant="90" id="exh-pv-LlR"/>
                                 </constraints>
                                 <connections>
                                     <outlet property="muteButton" destination="EEV-Aj-0lu" id="rZK-aK-b9M"/>
                                     <outlet property="playButton" destination="vaQ-iz-6jn" id="9i8-js-Jiy"/>
+                                    <outlet property="viewCommand" destination="DzS-sQ-UVW" id="jrm-Qj-dg0"/>
                                 </connections>
                             </view>
                         </subviews>
@@ -88,6 +100,7 @@
                             <constraint firstItem="fpt-Rz-5fT" firstAttribute="top" secondItem="wvY-tB-6ZK" secondAttribute="top" id="NnL-9A-ht1"/>
                             <constraint firstItem="JKq-ki-dtz" firstAttribute="leading" secondItem="Ozy-9S-dMl" secondAttribute="leading" id="evZ-9h-ioB"/>
                             <constraint firstItem="Ozy-9S-dMl" firstAttribute="trailing" secondItem="JKq-ki-dtz" secondAttribute="trailing" id="jVT-Ul-L36"/>
+                            <constraint firstItem="JKq-ki-dtz" firstAttribute="top" secondItem="Ozy-9S-dMl" secondAttribute="top" constant="20" id="tkP-1B-ctu"/>
                             <constraint firstAttribute="trailing" secondItem="fpt-Rz-5fT" secondAttribute="trailing" id="xh9-IP-ti7"/>
                         </constraints>
                     </view>
