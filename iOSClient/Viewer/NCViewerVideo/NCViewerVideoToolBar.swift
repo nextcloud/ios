@@ -56,15 +56,15 @@ class NCViewerVideoToolBar: UIView {
         let mute = CCUtility.getAudioMute()
         
         if  player?.rate == 1 {
-            playButton.setImage(NCUtility.shared.loadImage(named: "pause.fill"), for: .normal)
+            playButton.setImage(NCUtility.shared.loadImage(named: "pause.fill", color: .white), for: .normal)
         } else {
-            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill"), for: .normal)
+            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white), for: .normal)
         }
        
         if mute {
-            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff"), for: .normal)
+            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
         } else {
-            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn"), for: .normal)
+            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
         }
     }
 
