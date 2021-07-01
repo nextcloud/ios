@@ -707,14 +707,14 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             if pictureInPictureOcId != currentMetadata.ocId {
                                 
                 // Kill PIP
-                appDelegate.activeViewerVideo?.player?.replaceCurrentItem(with: nil)
+                appDelegate.activeViewerAVPlayerViewController?.player?.replaceCurrentItem(with: nil)
                 // --------
                 
-                appDelegate.activeViewerVideo = NCViewerVideo()
-                appDelegate.activeViewerVideo?.metadata = currentMetadata
-                appDelegate.activeViewerVideo?.imageBackground = UIImage(named: "file_audio")
-                appDelegate.activeViewerVideo?.delegateViewerVideo = self
-                if let currentViewerVideo = appDelegate.activeViewerVideo {
+                appDelegate.activeViewerAVPlayerViewController = NCViewerAVPlayerViewController()
+                appDelegate.activeViewerAVPlayerViewController?.metadata = currentMetadata
+                appDelegate.activeViewerAVPlayerViewController?.imageBackground = UIImage(named: "file_audio")
+                appDelegate.activeViewerAVPlayerViewController?.delegateViewerVideo = self
+                if let currentViewerVideo = appDelegate.activeViewerAVPlayerViewController {
                     present(currentViewerVideo, animated: false) { }
                     self.videoStop()
                 }
@@ -814,7 +814,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
 
 //MARK: - NCViewerVideoDelegate
 
-extension NCViewerImage: NCViewerVideoDelegate {
+extension NCViewerImage: NCViewerAVPlayerViewControllerDelegate {
     
     func startPictureInPicture(metadata: tableMetadata) {
         pictureInPictureOcId = metadata.ocId

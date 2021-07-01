@@ -1,5 +1,5 @@
 //
-//  NCViewerVideo.swift
+//  NCViewerAVPlayerViewController.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 27/10/2020.
@@ -25,18 +25,18 @@ import UIKit
 import AVKit
 import NCCommunication
 
-protocol NCViewerVideoDelegate {
+protocol NCViewerAVPlayerViewControllerDelegate {
     func startPictureInPicture(metadata: tableMetadata)
     func stopPictureInPicture(metadata: tableMetadata, playing: Bool)
 }
 
-class NCViewerVideo: AVPlayerViewController {
+class NCViewerAVPlayerViewController: AVPlayerViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadata = tableMetadata()
     var pictureInPicture: Bool = false
     var imageBackground: UIImage?
-    var delegateViewerVideo: NCViewerVideoDelegate?
+    var delegateViewerVideo: NCViewerAVPlayerViewControllerDelegate?
     private var rateObserverToken: Any?
 
     // MARK: - View Life Cycle
@@ -146,7 +146,7 @@ class NCViewerVideo: AVPlayerViewController {
     }
 }
 
-extension NCViewerVideo: AVPlayerViewControllerDelegate {
+extension NCViewerAVPlayerViewController: AVPlayerViewControllerDelegate {
     
     func playerViewControllerShouldAutomaticallyDismissAtPictureInPictureStart(_ playerViewController: AVPlayerViewController) -> Bool {
         true
