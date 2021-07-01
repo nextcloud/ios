@@ -33,7 +33,7 @@
                                     <constraint firstAttribute="height" constant="1" id="F4E-lI-3jZ"/>
                                 </constraints>
                             </progressView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JKq-ki-dtz" customClass="NCViewerVideoToolBar" customModule="Nextcloud" customModuleProvider="target">
+                            <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JKq-ki-dtz" customClass="NCViewerVideoToolBar" customModule="Nextcloud" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="64" width="414" height="798"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EEV-Aj-0lu">
@@ -45,7 +45,7 @@
                                         <color key="tintColor" systemColor="labelColor"/>
                                         <state key="normal" title="Button" image="audioOn"/>
                                         <connections>
-                                            <action selector="setMute:" destination="JKq-ki-dtz" eventType="touchUpInside" id="VBj-CW-RaB"/>
+                                            <action selector="setMute:" destination="JKq-ki-dtz" eventType="touchUpInside" id="sVP-3d-utr"/>
                                         </connections>
                                     </button>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DzS-sQ-UVW">
@@ -60,7 +60,7 @@
                                                 <color key="tintColor" systemColor="labelColor"/>
                                                 <state key="normal" image="play.fill" catalog="system"/>
                                                 <connections>
-                                                    <action selector="playerPause:" destination="JKq-ki-dtz" eventType="touchUpInside" id="g2n-Lo-Kum"/>
+                                                    <action selector="playerPause:" destination="JKq-ki-dtz" eventType="touchUpInside" id="HRc-XT-ML4"/>
                                                 </connections>
                                             </button>
                                         </subviews>

@@ -30,7 +30,27 @@ class NCViewerVideoToolBar: UIView {
     @IBOutlet weak var muteButton: UIButton!
     
     var player: AVPlayer?
+    
+    override func willMove(toWindow newWindow: UIWindow?) {
+        super.willMove(toWindow: newWindow)
 
+        if newWindow != nil {
+            
+            let blurEffect = UIBlurEffect(style: .dark)
+            let blurEffectView = UIVisualEffectView(effect: blurEffect)
+            
+            viewCommand.layer.cornerRadius = 15
+//            viewCommand.layer.borderWidth = 0.5
+//            viewCommand.layer.borderColor = UIColor.gray.cgColor
+            viewCommand.layer.masksToBounds = true
+            
+           
+            blurEffectView.frame = viewCommand.bounds
+            blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            viewCommand.insertSubview(blurEffectView, at:0)
+        }
+    }
+    
     func setPlayer(player: AVPlayer?) {
         self.player = player
     }
