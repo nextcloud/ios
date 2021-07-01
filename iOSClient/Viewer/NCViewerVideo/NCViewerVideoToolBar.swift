@@ -25,7 +25,6 @@ import Foundation
 
 class NCViewerVideoToolBar: UIView {
     
-    @IBOutlet weak var viewCommand: UIView!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var muteButton: UIButton!
     
@@ -39,15 +38,12 @@ class NCViewerVideoToolBar: UIView {
             let blurEffect = UIBlurEffect(style: .dark)
             let blurEffectView = UIVisualEffectView(effect: blurEffect)
             
-            viewCommand.layer.cornerRadius = 15
-//            viewCommand.layer.borderWidth = 0.5
-//            viewCommand.layer.borderColor = UIColor.gray.cgColor
-            viewCommand.layer.masksToBounds = true
-            
-           
-            blurEffectView.frame = viewCommand.bounds
+            self.layer.cornerRadius = 15
+            self.layer.masksToBounds = true
+                       
+            blurEffectView.frame = self.bounds
             blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            viewCommand.insertSubview(blurEffectView, at:0)
+            self.insertSubview(blurEffectView, at:0)
         }
     }
     
