@@ -766,8 +766,15 @@ extension NCShareExtension {
                                 conuter += 1
                                 
                                 if let url = item as? NSURL {
-                                    fileNameOriginal = url.lastPathComponent!
+                                    if FileManager.default.fileExists(atPath: url.path ?? "") {
+                                        fileNameOriginal = url.lastPathComponent!
+                                    } else if url.scheme?.lowercased().contains("http") == true ||  url.scheme?.lowercased().contains("https") == true {
+                                        fileNameOriginal = "\(dateFormatter.string(from: Date()))\(conuter).html"
+                                    } else {
+                                        fileNameOriginal = "\(dateFormatter.string(from: Date()))\(conuter)"
+                                    }
                                 }
+                                
                                 
                                 if error == nil {
                                                                         
@@ -795,46 +802,59 @@ extension NCShareExtension {
                                          
                                             print("Error image nil")
                                         }
+                                        
+                                        if index + 1 == attachments.count {
+                                            completion(filesName, outError)
+                                        }
                                     }
                                     
                                     if let url = item as? URL {
                                         
-                                        print("item as url: \(String(describing: item))")
-                                        
-                                        if fileNameOriginal != nil {
-                                            fileName =  fileNameOriginal!
-                                        } else {
-                                            let ext = url.pathExtension
-                                            fileName = "\(dateFormatter.string(from: Date()))\(conuter)." + ext
-                                        }
-                                        
-                                        let filenamePath = NSTemporaryDirectory() + fileName
-                                      
-                                        do {
-                                            try FileManager.default.removeItem(atPath: filenamePath)
-                                        }
-                                        catch { }
-                                        
-                                        do {
-                                            try FileManager.default.copyItem(atPath: url.path, toPath:filenamePath)
+                                        let task = URLSession.shared.downloadTask(with: url) { localURL, urlResponse, error in
                                             
-                                            do {
-                                                let attr : NSDictionary? = try FileManager.default.attributesOfItem(atPath: filenamePath) as NSDictionary?
+                                            if let localURL = localURL {
                                                 
-                                                if let _attr = attr {
-                                                    if _attr.fileSize() > 0 {
-                                                        
-                                                        filesName.append(fileName)
-                                                    }
+                                                if fileNameOriginal != nil {
+                                                    fileName =  fileNameOriginal!
+                                                } else {
+                                                    let ext = url.pathExtension
+                                                    fileName = "\(dateFormatter.string(from: Date()))\(conuter)." + ext
                                                 }
                                                 
-                                            } catch let error {
-                                                outError = error
+                                                let filenamePath = NSTemporaryDirectory() + fileName
+                                              
+                                                do {
+                                                    try FileManager.default.removeItem(atPath: filenamePath)
+                                                }
+                                                catch { }
+                                                
+                                                do {
+                                                    try FileManager.default.copyItem(atPath: localURL.path, toPath:filenamePath)
+                                                    
+                                                    do {
+                                                        let attr : NSDictionary? = try FileManager.default.attributesOfItem(atPath: filenamePath) as NSDictionary?
+                                                        
+                                                        if let _attr = attr {
+                                                            if _attr.fileSize() > 0 {
+                                                                
+                                                                filesName.append(fileName)
+                                                            }
+                                                        }
+                                                        
+                                                    } catch let error {
+                                                        outError = error
+                                                    }
+                                                    
+                                                } catch let error {
+                                                    outError = error
+                                                }
                                             }
                                             
-                                        } catch let error {
-                                            outError = error
+                                            if index + 1 == attachments.count {
+                                                completion(filesName, outError)
+                                            }
                                         }
+                                        task.resume()
                                     }
                                     
                                     if let data = item as? Data {
@@ -859,6 +879,10 @@ extension NCShareExtension {
                                                                                 
                                             filesName.append(fileName)
                                         }
+                                        
+                                        if index + 1 == attachments.count {
+                                            completion(filesName, outError)
+                                        }
                                     }
                                     
                                     if let data = item as? NSString {
@@ -874,12 +898,11 @@ extension NCShareExtension {
                                         
                                             filesName.append(fileName)
                                         }
+                                        
+                                        if index + 1 == attachments.count {
+                                            completion(filesName, outError)
+                                        }
                                     }
-                                    
-                                    if index + 1 == attachments.count {
-                                        completion(filesName, outError)
-                                    }
-                                    
                                 } else {
                                     completion( filesName, error)
                                 }
