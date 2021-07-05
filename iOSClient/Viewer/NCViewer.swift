@@ -192,9 +192,13 @@ class NCViewer: NSObject {
                 
                 if let navigationController = viewController.navigationController {
                     
+                    navigationController.navigationBar.prefersLargeTitles = false
+                    
                     let viewController = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
                     viewController.urlBase = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
                     viewController.isHiddenButtonExit = true
+                    viewController.titleBrowser = metadata.fileNameView
+                    viewController.metadata = metadata
 
                     navigationController.pushViewController(viewController, animated: true)
                 }

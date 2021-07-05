@@ -1808,6 +1808,7 @@ class NCManageDatabase: NSObject {
         let metadata = tableMetadata()
         
         metadata.account = account
+        metadata.checksums = file.checksums
         metadata.commentsUnread = file.commentsUnread
         metadata.contentType = file.contentType
         if let date = file.creationDate {
