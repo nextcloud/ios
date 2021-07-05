@@ -187,6 +187,20 @@ class NCViewer: NSObject {
                 
                 return
             }
+            
+            if metadata.contentType == "text/html" {
+                
+                if let navigationController = viewController.navigationController {
+                    
+                    let viewController = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
+                    viewController.urlBase = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+                    viewController.isHiddenButtonExit = true
+
+                    navigationController.pushViewController(viewController, animated: true)
+                }
+
+                return
+            }
         }
         
         // OTHER

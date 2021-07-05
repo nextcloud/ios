@@ -63,7 +63,12 @@ class NCBrowserWeb: UIViewController {
             buttonExit.setImage(image, for: .normal)
         }
         
-        loadWebPage(webView: webView!, url: URL(string: urlBase)!)
+        if let url = URL(string: urlBase) {
+            loadWebPage(webView: webView!, url: url)
+        } else {
+            let url = URL(fileURLWithPath: urlBase)
+            loadWebPage(webView: webView!, url: url)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
