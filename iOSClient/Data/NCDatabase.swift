@@ -326,6 +326,7 @@ class tableMetadata: Object {
     
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
+    @objc dynamic var checksums = ""
     @objc dynamic var chunk: Bool = false
     @objc dynamic var commentsUnread: Bool = false
     @objc dynamic var contentType = ""
