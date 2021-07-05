@@ -1816,8 +1816,10 @@ class NCManageDatabase: NSObject {
         } else {
             metadata.creationDate = file.date
         }
+        metadata.dataFingerprint = file.dataFingerprint
         metadata.date = file.date
         metadata.directory = file.directory
+        metadata.downloadURL = file.downloadURL
         metadata.e2eEncrypted = file.e2eEncrypted
         metadata.etag = file.etag
         metadata.ext = file.ext
@@ -1830,6 +1832,7 @@ class NCManageDatabase: NSObject {
         metadata.iconName = file.iconName
         metadata.livePhoto = file.livePhoto
         metadata.mountType = file.mountType
+        metadata.note = file.note
         metadata.ocId = file.ocId
         metadata.ownerId = file.ownerId
         metadata.ownerDisplayName = file.ownerDisplayName
@@ -1839,6 +1842,7 @@ class NCManageDatabase: NSObject {
         metadata.richWorkspace = file.richWorkspace
         metadata.resourceType = file.resourceType
         metadata.serverUrl = file.serverUrl
+        metadata.sharePermissions = file.sharePermissions
         metadata.size = file.size
         metadata.typeFile = file.typeFile
         if let date = file.uploadDate {

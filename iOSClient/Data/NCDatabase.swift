@@ -331,9 +331,11 @@ class tableMetadata: Object {
     @objc dynamic var commentsUnread: Bool = false
     @objc dynamic var contentType = ""
     @objc dynamic var creationDate = NSDate()
+    @objc dynamic var dataFingerprint = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
     @objc dynamic var deleteAssetLocalIdentifier: Bool = false
+    @objc dynamic var downloadURL = ""
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var edited: Bool = false
     @objc dynamic var etag = ""
@@ -347,6 +349,7 @@ class tableMetadata: Object {
     @objc dynamic var iconName = ""
     @objc dynamic var livePhoto: Bool = false
     @objc dynamic var mountType = ""
+    @objc dynamic var note = ""
     @objc dynamic var ocId = ""
     @objc dynamic var ownerId = ""
     @objc dynamic var ownerDisplayName = ""
@@ -360,6 +363,7 @@ class tableMetadata: Object {
     @objc dynamic var sessionError = ""
     @objc dynamic var sessionSelector = ""
     @objc dynamic var sessionTaskIdentifier: Int = 0
+    @objc dynamic var sharePermissions = ""
     @objc dynamic var size: Int64 = 0
     @objc dynamic var status: Int = 0
     @objc dynamic var trashbinFileName = ""
