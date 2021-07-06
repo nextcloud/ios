@@ -33,7 +33,6 @@ class NCBrowserWeb: UIViewController {
     var webView: WKWebView?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    @objc var metadata: tableMetadata?
     @objc var urlBase = ""
     @objc var isHiddenButtonExit = false
     @objc var titleBrowser: String? = nil
@@ -71,8 +70,7 @@ class NCBrowserWeb: UIViewController {
             loadWebPage(webView: webView!, url: url)
         }
         
-        //
-        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+        //navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -82,6 +80,20 @@ class NCBrowserWeb: UIViewController {
             navigationItem.title = titleBrowser
         }
     }
+    
+    deinit {
+        
+    }
+    
+    // MARK: - Action
+
+    @IBAction func touchUpInsideButtonExit(_ sender: UIButton) {
+        self.dismiss(animated: true) {
+            self.delegate?.browserWebDismiss?()
+        }
+    }
+    
+    //
     
     func loadWebPage(webView: WKWebView, url: URL)  {
         
@@ -93,20 +105,6 @@ class NCBrowserWeb: UIViewController {
         webView.customUserAgent = CCUtility.getUserAgent()
 
         webView.load(request)
-    }
-    
-    @IBAction func touchUpInsideButtonExit(_ sender: UIButton) {
-        self.dismiss(animated: true) {
-            self.delegate?.browserWebDismiss?()
-        }
-    }
-    
-    @objc func openMenuMore() {
-        
-        if let metadata = metadata {
-            let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-            NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: false, imageIcon: imageIcon)
-        }
     }
 }
 
