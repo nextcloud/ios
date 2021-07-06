@@ -6,4 +6,4 @@ file_filter = Supporting Files/<lang>.lproj/Localizable.strings
 source_file = Supporting Files/en.lproj/Localizable.strings
 source_lang = en
 type = STRINGS
-lang_map = pt_BR:pt-BR,zh_CN:zh-Hans,fi_FI:fi-FI,es_MX:es-MX,nb_NO:nb-NO,cs_CZ:cs-CZ,en_GB:en-GB,es_AR:es-AR,sk_SK:sk-SK,hu_HU:hu,ka_GE:ka-GE,zh_TW:zh-Hant-TW,es_CL:es-CL,es_CO:es-CO,es_CR:es-CR,es_DO:es-DO,es_EC:es-EC,es_GT:es-GT,es_HN:es-HN,es_NI:es-NI,es_PA:es-PA,es_PE:es-PE,es_PR:es-PR,es_PY:es-PY,es_SV:es-SV,es_UY:es-UY,es_419:es-419,pt_PT:pt-PT,ja_JP:ja-JP
+lang_map = pt_BR:pt-BR,zh_CN:zh-Hans,fi_FI:fi-FI,es_MX:es-MX,nb_NO:nb-NO,cs_CZ:cs,en_GB:en-GB,es_AR:es-AR,sk_SK:sk-SK,hu_HU:hu,ka_GE:ka-GE,zh_TW:zh-Hant-TW,es_CL:es-CL,es_CO:es-CO,es_CR:es-CR,es_DO:es-DO,es_EC:es-EC,es_GT:es-GT,es_HN:es-HN,es_NI:es-NI,es_PA:es-PA,es_PE:es-PE,es_PR:es-PR,es_PY:es-PY,es_SV:es-SV,es_UY:es-UY,es_419:es-419,pt_PT:pt-PT,ja_JP:ja-JP
