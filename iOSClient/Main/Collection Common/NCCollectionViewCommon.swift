@@ -1014,15 +1014,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
     
-    @objc func networkReadFolder(forced: Bool, completion: @escaping(_ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func networkReadFolder(forced: Bool, completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
         
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.account) { (account, metadata, errorCode, errorDescription) in
+        var tableDirectory: tableDirectory?
+        
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.account) { (account, metadataFolder, errorCode, errorDescription) in
             
             if errorCode == 0 {
                 
-                let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+                if let metadataFolder = metadataFolder {
+                    tableDirectory = NCManageDatabase.shared.setDirectory(richWorkspace: metadataFolder.richWorkspace, serverUrl: self.serverUrl, account: account)
+                }
                 
-                if forced || directory?.etag != metadata?.etag || directory?.e2eEncrypted ?? false {
+                if forced || tableDirectory?.etag != metadataFolder?.etag || metadataFolder?.e2eEncrypted ?? false {
                     
                     NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, metadatasDelete, errorCode, errorDescription) in
                         
@@ -1048,23 +1052,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                             NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorDecodeMetadata, forced: true)
                                         }
                                         
-                                        completion(metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
+                                        completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
                                     }
                                 } else {
-                                    completion(metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
+                                    completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
                                 }
                             } else {
-                                completion(metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
+                                completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
                             }
                         } else {
-                            completion(nil, nil, nil, errorCode, errorDescription)
+                            completion(tableDirectory, nil, nil, nil, errorCode, errorDescription)
                         }
                     }
                 } else {
-                    completion(nil, nil, nil, 0, "")
+                    completion(tableDirectory, nil, nil, nil, 0, "")
                 }
             } else {
-               completion(nil, nil, nil, errorCode, errorDescription)
+               completion(nil, nil, nil, nil, errorCode, errorDescription)
             }
         }
     }
