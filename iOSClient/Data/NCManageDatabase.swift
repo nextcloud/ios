@@ -1236,7 +1236,24 @@ class NCManageDatabase: NSObject {
         return tableDirectory.init(value: directory)
     }
     
-    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, serverUrl: String, richWorkspace: String? = nil, account: String) {
+    /*
+    @objc func addDirectoryRichWorkspace(ocId: String, richWorkspace: String?) {
+        
+        let realm = try! Realm()
+
+        do {
+            try realm.safeWrite {
+                if let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first {
+                    result.richWorkspace = richWorkspace
+                }
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    */
+    
+    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, serverUrl: String, account: String) {
         
         let realm = try! Realm()
 
@@ -1261,7 +1278,6 @@ class NCManageDatabase: NSObject {
                 if let permissions = permissions {
                     addObject.permissions = permissions
                 }
-                addObject.richWorkspace = richWorkspace
                 addObject.serverUrl = serverUrl
            
                 realm.add(addObject, update: .all)
@@ -1385,62 +1401,28 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setDirectory(richWorkspace: String?, serverUrl: String, account: String) {
+    @discardableResult
+    @objc func setDirectory(richWorkspace: String?, serverUrl: String, account: String) -> tableDirectory? {
         
         let realm = try! Realm()
-                
+        var result: tableDirectory?
+
         do {
             try realm.safeWrite {
-                let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
+                result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
                 result?.richWorkspace = richWorkspace
             }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
-    }
-    
-    /*
-    @objc func setDirectory(synchronized: Bool, serverUrl: String, account: String) {
         
-        let realm = try! Realm()
-                
-        do {
-            try realm.safeWrite {
-                let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
-                result?.synchronized = synchronized
-            }
-        } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        if let result = result {
+            return tableDirectory.init(value: result)
+        } else {
+            return nil
         }
     }
-    
-    func removeDirectoriesSynchronized(serverUrl: String, account: String) {
         
-        setDirectory(synchronized: false, serverUrl: serverUrl, account: account)
-        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", account, serverUrl))
-        for metadata in metadatas {
-            let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-            setDirectory(synchronized: false, serverUrl: serverUrl, account: account)
-        }
-    }
-    
-    @objc func removeAllDirectoriesSynchronized(account: String) {
-        
-        let realm = try! Realm()
-        
-        do {
-            try realm.safeWrite {
-                let results = realm.objects(tableDirectory.self).filter("account == %@ AND synchronized == true", account)
-                for result in results {
-                    result.synchronized = false
-                }
-            }
-        } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-    */
-    
     //MARK: -
     //MARK: Table e2e Encryption
     
