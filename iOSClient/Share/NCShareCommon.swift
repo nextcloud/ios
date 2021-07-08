@@ -77,9 +77,9 @@ class NCShareCommon: NSObject {
         
         shareLinkMenuView.width = 250
         if metadata.directory {
-            shareLinkMenuView.height = 540
+            shareLinkMenuView.height = 590
         } else {
-            shareLinkMenuView.height = 440
+            shareLinkMenuView.height = 490
         }
         
         shareLinkMenuView.backgroundColor = NCBrandColor.shared.systemBackground

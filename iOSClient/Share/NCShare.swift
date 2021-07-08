@@ -137,6 +137,15 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         } else {
             buttonMenu.setImage(UIImage.init(named: "shareMenu")?.image(color: .gray, size: 50), for: .normal)
             buttonCopy.isHidden = false
+            
+            shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
+            if shares.firstShareLink?.label.count ?? 0 > 0 {
+                if let shareLinkLabel = shareLinkLabel {
+                    if let label = shares.firstShareLink?.label {
+                        shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "") + " (" + label + ")"
+                    }
+                }
+            }
         }
         tableView.reloadData()
     }
@@ -232,7 +241,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             permission = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: canShare, andIsFolder: metadata.directory)
         }
         
-        networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
+        networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, label: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
     }
     
     func tapMenu(with tableShare: tableShare?, sender: Any) {
@@ -384,6 +393,9 @@ extension NCShare: UITableViewDataSource {
                 cell.tableShare = tableShare
                 cell.delegate = self
                 cell.labelTitle.text = NSLocalizedString("_share_link_", comment: "")
+                if tableShare.label.count > 0 {
+                    cell.labelTitle.text = NSLocalizedString("_share_link_", comment: "") + " (" + tableShare.label + ")"
+                }
                 cell.labelTitle.textColor = NCBrandColor.shared.label
                 return cell
             }
