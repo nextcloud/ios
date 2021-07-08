@@ -541,6 +541,7 @@
 "_error_download_photobrowser_" = "Error: Unable to download photo";
 "_share_link_"                  = "Share link";
 "_share_link_button_"           = "Send link to…";
+"_Link_name_"                   = "Link name";
 "_password_"                    = "Password";
 "_share_password_"              = "Password protected link";
 "_share_expirationdate_"        = "Set expiration date for link";
