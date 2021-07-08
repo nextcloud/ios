@@ -86,7 +86,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         layer.shadowOffset = CGSize(width: 2, height: 2)
         layer.shadowOpacity = 0.2
         
-        fieldLabel?.placeholder = NSLocalizedString("_share_allow_editing_", comment: "")
+        fieldLabel?.placeholder = NSLocalizedString("_Link_name_", comment: "")
 
         switchAllowEditing?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
         switchAllowEditing?.onTintColor = NCBrandColor.shared.brandElement
