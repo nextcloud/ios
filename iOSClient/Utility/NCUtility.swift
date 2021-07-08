@@ -23,6 +23,7 @@
 
 import UIKit
 import SVGKit
+import KTVHTTPCache
 import NCCommunication
 import PDFKit
 import Accelerate
@@ -240,9 +241,14 @@ class NCUtility: NSObject {
                 if mimetype == contentType {
                     editor = result.editor
                 }
+                
                 // HARDCODE
                 // https://github.com/nextcloud/text/issues/913
+                
                 if mimetype == "text/markdown" && contentType == "text/x-markdown" {
+                    editor = result.editor
+                }
+                if contentType == "text/html" {
                     editor = result.editor
                 }
             }
@@ -265,6 +271,7 @@ class NCUtility: NSObject {
         
         URLCache.shared.memoryCapacity = 0
         URLCache.shared.diskCapacity = 0
+        KTVHTTPCache.cacheDeleteAllCaches()
         
         NCManageDatabase.shared.clearDatabase(account: nil, removeAccount: true)
         
