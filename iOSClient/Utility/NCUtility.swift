@@ -241,9 +241,14 @@ class NCUtility: NSObject {
                 if mimetype == contentType {
                     editor = result.editor
                 }
+                
                 // HARDCODE
                 // https://github.com/nextcloud/text/issues/913
+                
                 if mimetype == "text/markdown" && contentType == "text/x-markdown" {
+                    editor = result.editor
+                }
+                if contentType == "text/html" {
                     editor = result.editor
                 }
             }
