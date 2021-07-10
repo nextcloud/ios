@@ -815,7 +815,6 @@ extension NCShareExtension {
                                     }
                                 }
                                 
-                                
                                 if error == nil {
                                                                         
                                     if let image = item as? UIImage {
