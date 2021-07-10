@@ -49,6 +49,8 @@ carthage update --use-xcframeworks --platform iOS --cache-builds
 ```
 to fetch and compile the dependencies.
 
+In order to build the project in Xcode you will also need a file `GoogleService-Info.plist` at the root of the repository which contains the Firebase configuration. For development work you can use a mock version found [here](https://github.com/firebase/quickstart-ios/blob/master/mock-GoogleService-Info.plist).
+
 ### Creating Pull requests
 
 #### DCO Signoff
