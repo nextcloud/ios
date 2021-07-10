@@ -30,25 +30,13 @@
 		<key>NSExtensionAttributes</key>
 		<dict>
 			<key>NSExtensionActivationRule</key>
-			<dict>
-				<key>NSExtensionActivationSupportsAttachmentsWithMaxCount</key>
-				<integer>20</integer>
-				<key>NSExtensionActivationSupportsFileWithMaxCount</key>
-				<integer>20</integer>
-				<key>NSExtensionActivationSupportsImageWithMaxCount</key>
-				<integer>20</integer>
-				<key>NSExtensionActivationSupportsMovieWithMaxCount</key>
-				<integer>5</integer>
-				<key>NSExtensionActivationSupportsText</key>
-				<true/>
-				<key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
-				<integer>1</integer>
-			</dict>
+			<string>SUBQUERY (extensionItems, $extensionItem, SUBQUERY ($extensionItem.attachments,$attachment,(ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO &quot;public.data&quot;)).@count == $extensionItem.attachments.@count).@count &gt; 0
+            </string>
 		</dict>
-		<key>NSExtensionMainStoryboard</key>
-		<string>MainInterface</string>
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.share-services</string>
+		<key>NSExtensionMainStoryboard</key>
+		<string>MainInterface</string>
 	</dict>
 </dict>
 </plist>
