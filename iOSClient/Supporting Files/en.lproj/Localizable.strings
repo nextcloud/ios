@@ -806,6 +806,8 @@
 "_1_week_"                  = "1 week";
 "_1_day_"                   = "1 day";
 "_used_space_"              = "Used space";
+"_open_in_onlyoffice_"      = "Open in ONLYOFFICE";
+"_open_in_collabora_"       = "Open with Collabora Online";
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 // IM

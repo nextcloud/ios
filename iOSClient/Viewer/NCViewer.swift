@@ -35,10 +35,12 @@ class NCViewer: NSObject {
     private var metadata = tableMetadata()
     private var metadatas: [tableMetadata] = []
 
-    func view(viewController: UIViewController, metadata: tableMetadata, metadatas: [tableMetadata], imageIcon: UIImage?) {
+    func view(viewController: UIViewController, metadata: tableMetadata, metadatas: [tableMetadata], imageIcon: UIImage?, editor: String = "", isRichDocument: Bool = false) {
 
         self.metadata = metadata
         self.metadatas = metadatas
+    
+        var editor = editor
         
         // IMAGE AUDIO VIDEO
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
@@ -79,10 +81,66 @@ class NCViewer: NSObject {
                 return
             }
             
-            // DirectEditing: Nextcloud Text - OnlyOffice
-            if NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil && NCCommunication.shared.isNetworkReachable() {
+            // EDITORS
+            let editors = NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType)
+            
+            // RichDocument: Collabora
+            if isRichDocument && NCCommunication.shared.isNetworkReachable() {
+                                
+                if metadata.url == "" {
+                    
+                    NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
+                    NCCommunication.shared.createUrlRichdocuments(fileID: metadata.fileId) { (account, url, errorCode, errorDescription) in
+                        
+                        NCUtility.shared.stopActivityIndicator()
+
+                        if errorCode == 0 && account == self.appDelegate.account && url != nil {
+                                                          
+                            if let navigationController = viewController.navigationController {
+                                
+                                let viewController:NCViewerRichdocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as! NCViewerRichdocument
+                            
+                                viewController.metadata = metadata
+                                viewController.link = url!
+                                viewController.imageIcon = imageIcon
+                            
+                                navigationController.pushViewController(viewController, animated: true)
+                            }
+                            
+                        } else if errorCode != 0 {
+                            
+                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        }
+                    }
+                    
+                } else {
+                                            
+                    if let navigationController = viewController.navigationController {
+                        
+                        let viewController:NCViewerRichdocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as! NCViewerRichdocument
+                    
+                        viewController.metadata = metadata
+                        viewController.link = metadata.url
+                        viewController.imageIcon = imageIcon
+                    
+                        navigationController.pushViewController(viewController, animated: true)
+                    }
+                }
                 
-                guard let editor = NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) else { return }
+                return
+            }
+            
+            // DirectEditing: Nextcloud Text - OnlyOffice
+            if editors.count > 0 && NCCommunication.shared.isNetworkReachable() {
+            
+                if editor == "" {
+                    if editors.contains(NCGlobal.shared.editorText) {
+                        editor = NCGlobal.shared.editorText
+                    } else if editors.contains(NCGlobal.shared.editorOnlyoffice) {
+                        editor = NCGlobal.shared.editorOnlyoffice
+                    }
+                }
+                
                 if editor == NCGlobal.shared.editorText || editor == NCGlobal.shared.editorOnlyoffice {
                     
                     if metadata.url == "" {
@@ -137,52 +195,6 @@ class NCViewer: NSObject {
                 } else {
                     
                     NCContentPresenter.shared.messageNotification("_error_", description: "_editor_unknown_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
-                }
-                
-                return
-            }
-            
-            // RichDocument: Collabora
-            if NCUtility.shared.isRichDocument(metadata) && NCCommunication.shared.isNetworkReachable() {
-                                
-                if metadata.url == "" {
-                    
-                    NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
-                    NCCommunication.shared.createUrlRichdocuments(fileID: metadata.fileId) { (account, url, errorCode, errorDescription) in
-                        
-                        NCUtility.shared.stopActivityIndicator()
-
-                        if errorCode == 0 && account == self.appDelegate.account && url != nil {
-                                                          
-                            if let navigationController = viewController.navigationController {
-                                
-                                let viewController:NCViewerRichdocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as! NCViewerRichdocument
-                            
-                                viewController.metadata = metadata
-                                viewController.link = url!
-                                viewController.imageIcon = imageIcon
-                            
-                                navigationController.pushViewController(viewController, animated: true)
-                            }
-                            
-                        } else if errorCode != 0 {
-                            
-                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                        }
-                    }
-                    
-                } else {
-                                            
-                    if let navigationController = viewController.navigationController {
-                        
-                        let viewController:NCViewerRichdocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as! NCViewerRichdocument
-                    
-                        viewController.metadata = metadata
-                        viewController.link = metadata.url
-                        viewController.imageIcon = imageIcon
-                    
-                        navigationController.pushViewController(viewController, animated: true)
-                    }
                 }
                 
                 return

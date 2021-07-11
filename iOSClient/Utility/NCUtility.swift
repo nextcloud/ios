@@ -213,6 +213,14 @@ class NCUtility: NSObject {
             return false
         }
         
+        // contentype
+        for richdocumentMimetype: String in richdocumentsMimetypes {
+            if richdocumentMimetype.contains(metadata.contentType) || metadata.contentType == "text/plain" {
+                return true
+            }
+        }
+        
+        // mimetype
         if richdocumentsMimetypes.count > 0 && mimeType.components(separatedBy: ".").count > 2 {
             
             let mimeTypeArray = mimeType.components(separatedBy: ".")
@@ -228,9 +236,9 @@ class NCUtility: NSObject {
         return false
     }
     
-    @objc func isDirectEditing(account: String, contentType: String) -> String? {
+    @objc func isDirectEditing(account: String, contentType: String) -> [String] {
         
-        var editor: String?
+        var editor: [String] = []
         
         guard let results = NCManageDatabase.shared.getDirectEditingEditors(account: account) else {
             return editor
@@ -239,32 +247,32 @@ class NCUtility: NSObject {
         for result: tableDirectEditingEditors in results {
             for mimetype in result.mimetypes {
                 if mimetype == contentType {
-                    editor = result.editor
+                    editor.append(result.editor)
                 }
                 
                 // HARDCODE
                 // https://github.com/nextcloud/text/issues/913
                 
                 if mimetype == "text/markdown" && contentType == "text/x-markdown" {
-                    editor = result.editor
+                    editor.append(result.editor)
                 }
                 if contentType == "text/html" {
-                    editor = result.editor
+                    editor.append(result.editor)
                 }
             }
             for mimetype in result.optionalMimetypes {
                 if mimetype == contentType {
-                    editor = result.editor
+                    editor.append(result.editor)
                 }
             }
         }
         
         // HARDCODE
-        if editor == "" {
-            editor = NCGlobal.shared.editorText
-        }
-        
-        return editor
+        //if editor.count == 0 {
+        //    editor.append(NCGlobal.shared.editorText)
+        //}
+                
+        return Array(Set(editor))
     }
     
     @objc func removeAllSettings() {

@@ -274,7 +274,7 @@ import NCCommunication
         } else {
             
             let result = NCCommunicationCommon.shared.getInternalType(fileName: fileNameForm as! String, mimeType: "", directory: false)
-            if NCUtility.shared.isDirectEditing(account: appDelegate.account, contentType: result.mimeType) == nil {
+            if NCUtility.shared.isDirectEditing(account: appDelegate.account, contentType: result.mimeType).count == 0 {
                 fileNameForm = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
             }
             

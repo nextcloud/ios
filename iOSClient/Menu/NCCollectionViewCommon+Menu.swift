@@ -67,7 +67,10 @@ extension NCCollectionViewCommon {
                 isOffline = localFile.offline
             }
         }
-            
+        
+        let editors = NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType)
+        let isRichDocument = NCUtility.shared.isRichDocument(metadata)
+
         var iconHeader: UIImage!
         
         if imageIcon != nil {
@@ -150,6 +153,38 @@ extension NCCollectionViewCommon {
                     }
                 )
             )
+        }
+        
+        //
+        // OPEN with external editor
+        //
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileDocument && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument))  {
+            
+            var editor = ""
+            var title = ""
+            var icon: UIImage?
+            
+            if editors.contains(NCGlobal.shared.editorOnlyoffice) {
+                editor = NCGlobal.shared.editorOnlyoffice
+                title = NSLocalizedString("_open_in_onlyoffice_", comment: "")
+                icon = NCUtility.shared.loadImage(named: "onlyoffice")
+            } else if isRichDocument {
+                editor = NCGlobal.shared.editorCollabora
+                title = NSLocalizedString("_open_in_collabora_", comment: "")
+                icon = NCUtility.shared.loadImage(named: "collabora")
+            }
+            
+            if editor != "" {
+                actions.append(
+                    NCMenuAction(
+                        title: title,
+                        icon: icon!,
+                        action: { menuAction in
+                            NCViewer.shared.view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon, editor: editor, isRichDocument: isRichDocument)
+                        }
+                    )
+                )
+            }
         }
         
         //
