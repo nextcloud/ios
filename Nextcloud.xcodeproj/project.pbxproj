@@ -2353,7 +2353,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_NOTIFICATION_SERVICE";
-				SWIFT_OBJC_BRIDGING_HEADER = "/Users/sumit/Projects/NMC/NC_ios/ios/Notification Service Extension/Notification_Service_Extension-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/A107161739/Projects/NCCloud/ios/Notification Service Extension/Notification_Service_Extension-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2405,7 +2405,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_NOTIFICATION_SERVICE";
-				SWIFT_OBJC_BRIDGING_HEADER = "/Users/sumit/Projects/NMC/NC_ios/ios/Notification Service Extension/Notification_Service_Extension-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/A107161739/Projects/NCCloud/ios/Notification Service Extension/Notification_Service_Extension-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2448,7 +2448,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_SHARE";
-				SWIFT_OBJC_BRIDGING_HEADER = "/Users/sumit/Projects/NMC/NC_ios/ios/Share/Share-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/A107161739/Projects/NCCloud/ios/Share/Share-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2493,7 +2493,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_SHARE";
-				SWIFT_OBJC_BRIDGING_HEADER = "/Users/sumit/Projects/NMC/NC_ios/ios/Share/Share-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/A107161739/Projects/NCCloud/ios/Share/Share-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USE_HEADERMAP = YES;
@@ -2545,7 +2545,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_FILE_PROVIDER_EXTENSION";
-				SWIFT_OBJC_BRIDGING_HEADER = "/Users/sumit/Projects/NMC/NC_ios/ios/File Provider Extension/FileProviderExtension-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/A107161739/Projects/NCCloud/ios/File Provider Extension/FileProviderExtension-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2597,7 +2597,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_FILE_PROVIDER_EXTENSION";
-				SWIFT_OBJC_BRIDGING_HEADER = "/Users/sumit/Projects/NMC/NC_ios/ios/File Provider Extension/FileProviderExtension-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/A107161739/Projects/NCCloud/ios/File Provider Extension/FileProviderExtension-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
