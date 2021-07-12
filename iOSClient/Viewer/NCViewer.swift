@@ -83,9 +83,10 @@ class NCViewer: NSObject {
             
             // EDITORS
             let editors = NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType)
+            let availableRichDocument = NCUtility.shared.isRichDocument(metadata)
             
             // RichDocument: Collabora
-            if isRichDocument && NCCommunication.shared.isNetworkReachable() {
+            if (isRichDocument || (availableRichDocument && editors.count == 0)) && NCCommunication.shared.isNetworkReachable() {
                                 
                 if metadata.url == "" {
                     
