@@ -16,6 +16,7 @@
 		3704EB2A23D5A58400455C5B /* NCMenu.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3704EB2923D5A58400455C5B /* NCMenu.storyboard */; };
 		370D26AF248A3D7A00121797 /* NCImageCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCImageCellProtocol.swift */; };
 		371B5A2E23D0B04500FAFAE9 /* NCMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371B5A2D23D0B04500FAFAE9 /* NCMenu.swift */; };
+		7A29E177269D659000B239BA /* NCShareQuickStatusMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A29E176269D659000B239BA /* NCShareQuickStatusMenu.swift */; };
 		95353C1D267CCB5D00E5F8B0 /* AppDelegate+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */; };
 		95353C22267CCBD500E5F8B0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 95353C21267CCBD500E5F8B0 /* GoogleService-Info.plist */; };
 		95353C23267CCBD500E5F8B0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 95353C21267CCBD500E5F8B0 /* GoogleService-Info.plist */; };
@@ -415,6 +416,7 @@
 		371B5A2D23D0B04500FAFAE9 /* NCMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMenu.swift; sourceTree = "<group>"; };
 		371B5A3223D0BD5500FAFAE9 /* FloatingPanel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FloatingPanel.framework; path = Carthage/Build/iOS/FloatingPanel.framework; sourceTree = "<group>"; };
 		3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Menu.swift"; sourceTree = "<group>"; };
+		7A29E176269D659000B239BA /* NCShareQuickStatusMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareQuickStatusMenu.swift; sourceTree = "<group>"; };
 		95353C21267CCBD500E5F8B0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C07020E4267B459500E094AD /* NCPermissionMenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPermissionMenuView.swift; sourceTree = "<group>"; };
 		C07020EA267B45AE00E094AD /* NCPermissionMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCPermissionMenuView.xib; sourceTree = "<group>"; };
@@ -990,6 +992,7 @@
 		F728CE741BF6322C00E69702 /* Share */ = {
 			isa = PBXGroup;
 			children = (
+				7A29E176269D659000B239BA /* NCShareQuickStatusMenu.swift */,
 				F73CB3B122E072A000AD728E /* NCShareHeaderView.xib */,
 				F700510022DF63AC003A3356 /* NCShare.storyboard */,
 				F787704E22E7019900F287A9 /* NCShareLinkCell.xib */,
@@ -2144,6 +2147,7 @@
 				F72928A0253B0937009CA4FD /* NCMainNavigationController.swift in Sources */,
 				F704B5E92430C0B800632F5F /* NCCreateFormUploadConflictCell.swift in Sources */,
 				F72D404923D2082500A97FD0 /* NCViewerNextcloudText.swift in Sources */,
+				7A29E177269D659000B239BA /* NCShareQuickStatusMenu.swift in Sources */,
 				95353C1D267CCB5D00E5F8B0 /* AppDelegate+Menu.swift in Sources */,
 				F700510522DF6A89003A3356 /* NCShare.swift in Sources */,
 				F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */,
