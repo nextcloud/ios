@@ -55,6 +55,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     private var shareMenuViewWindow: UIView?
     private var dropDown = DropDown()
     private var networking: NCShareNetworking?
+    private var quickStatusTableShare: tableShare!
     
     // MARK: - View Life Cycle
 
@@ -121,6 +122,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         // changeTheming
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(statusReadOnlyClicked), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterStatusReadOnly), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(statusEditingClicked), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterStatusEditing), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(statusFileDropClicked), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterStatusFileDrop), object: nil)
         
         changeTheming()
     }
@@ -267,6 +272,19 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         }
     }
     
+
+    func quickStatus(with tableShare: tableShare?, sender: Any) {
+
+            guard let tableShare = tableShare else { return }
+
+            if tableShare.shareType != 3 {
+                self.quickStatusTableShare = tableShare
+                let quickStatusMenu = NCShareQuickStatusMenu()
+                quickStatusMenu.toggleMenu(viewController: self, directory: metadata!.directory, status: tableShare.permissions)
+            }
+        }
+
+    
     /// MARK: - NCShareNetworkingDelegate
     
     func readShareCompleted() {
@@ -279,7 +297,9 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     
     func unShareCompleted() { }
     
-    func updateShareWithError(idShare: Int) { }
+    func updateShareWithError(idShare: Int) {
+        self.reloadData()
+    }
     
     func getSharees(sharees: [NCCommunicationSharee]?) {
         
@@ -335,6 +355,26 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         dropDown.show()
     }
+    
+    // MARK: -StatusChangeNotification
+    @objc func statusReadOnlyClicked() {
+        let permission = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: metadata!.directory)
+        
+        networking?.updateShare(idShare: self.quickStatusTableShare.idShare, password: nil, permission: permission, note: nil, label: nil, expirationDate: nil, hideDownload: self.quickStatusTableShare.hideDownload)
+    }
+    
+    @objc func statusEditingClicked() {
+        let permission = CCUtility.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: false, andIsFolder: metadata!.directory)
+
+        networking?.updateShare(idShare: self.quickStatusTableShare.idShare, password: nil, permission: permission, note: nil, label: nil, expirationDate: nil, hideDownload: self.quickStatusTableShare.hideDownload)
+    }
+    
+    @objc func statusFileDropClicked() {
+        let permission = NCGlobal.shared.permissionCreateShare
+
+        networking?.updateShare(idShare: self.quickStatusTableShare.idShare, password: nil, permission: permission, note: nil, label: nil, expirationDate: nil, hideDownload: self.quickStatusTableShare.hideDownload)
+    }
+
 }
 
 // MARK: - UITableViewDelegate
@@ -394,8 +434,10 @@ extension NCShare: UITableViewDataSource {
                 cell.labelCanEdit.text = NSLocalizedString("_share_permission_edit_", comment: "")
                 cell.labelCanEdit.textColor = NCBrandColor.shared.label
                 cell.isUserInteractionEnabled = true
-                cell.switchCanEdit.isHidden = false
-                cell.labelCanEdit.isHidden = false
+
+                cell.switchCanEdit.isHidden = true//false
+                cell.labelCanEdit.isHidden = true//false
+
                 cell.buttonMenu.isHidden = false
                 cell.imageItem.image = NCShareCommon.shared.getImageShareType(shareType: tableShare.shareType)
                 
@@ -415,10 +457,25 @@ extension NCShare: UITableViewDataSource {
                 // If the initiator or the recipient is not the current user, show the list of sharees without any options to edit it.
                 if tableShare.uidOwner != self.appDelegate.userId && tableShare.uidFileOwner != self.appDelegate.userId {
                     cell.isUserInteractionEnabled = false
-                    cell.switchCanEdit.isHidden = true
-                    cell.labelCanEdit.isHidden = true
+//                    cell.switchCanEdit.isHidden = true
+//                    cell.labelCanEdit.isHidden = true
                     cell.buttonMenu.isHidden = true
                 }
+                
+                cell.btnQuickStatus.setTitle("", for: .normal)
+                cell.btnQuickStatus.contentHorizontalAlignment = .left
+                
+                if tableShare.permissions == NCGlobal.shared.permissionCreateShare {
+                    cell.labelQuickStatus.text = NSLocalizedString("_share_file_drop_", comment: "")
+                } else {
+                    // Read Only
+                    if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
+                        cell.labelQuickStatus.text = NSLocalizedString("_share_editing_", comment: "")
+                    } else {
+                        cell.labelQuickStatus.text = NSLocalizedString("_share_read_only_", comment: "")
+                    }
+                }
+
                 
                 return cell
             }
@@ -475,6 +532,14 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var buttonMenu: UIButton!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var status: UILabel!
+
+    @IBOutlet weak var btnQuickStatus: UIButton!
+    @IBOutlet weak var labelQuickStatus: UILabel!
+    @IBOutlet weak var imageDownArrow: UIImageView!
+
+//
+//    @IBOutlet weak var labelQuickStatus: UILabel!
+//    @IBOutlet weak var imageDownArrow: UIImageView!
     
     var filePreviewImageView : UIImageView? {
         get{
@@ -496,6 +561,8 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         switchCanEdit.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
         switchCanEdit.onTintColor = NCBrandColor.shared.brandElement
         buttonMenu.setImage(UIImage.init(named: "shareMenu")!.image(color: .gray, size: 50), for: .normal)
+        labelQuickStatus.textColor = NCBrandColor.shared.customer
+        imageDownArrow.image = UIImage(named: "downArrow")?.imageColor(NCBrandColor.shared.customer)
     }
     
     @IBAction func switchCanEditChanged(sender: UISwitch) {
