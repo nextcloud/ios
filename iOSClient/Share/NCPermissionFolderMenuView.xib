@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view opaque="NO" contentMode="scaleToFill" id="Bje-Hj-GcX" customClass="NCPermissionMenuView" customModule="Nextcloud" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="153"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Hhd-sG-WXP" userLabel="SwitchAllowEditing">
+                    <rect key="frame" x="10" y="10" width="51" height="31"/>
+                    <connections>
+                        <action selector="switchReadOnlyWithSender:" destination="Bje-Hj-GcX" eventType="valueChanged" id="Nh9-dS-AXr"/>
+                    </connections>
+                </switch>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Read only" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="04s-V3-Hfi">
+                    <rect key="frame" x="70" y="18" width="59.5" height="15"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="15" id="BY5-Gj-ljk"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Yvm-BK-uDi" userLabel="SwitchAllowEditing">
+                    <rect key="frame" x="10" y="61" width="51" height="31"/>
+                    <connections>
+                        <action selector="switchAllowEditingChangedWithSender:" destination="Bje-Hj-GcX" eventType="valueChanged" id="5Ut-TE-dii"/>
+                    </connections>
+                </switch>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Allow editing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yFE-6f-OMG">
+                    <rect key="frame" x="70" y="69" width="334" height="15"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="15" id="Zvc-ar-ZtJ"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="NE8-vd-br1" userLabel="SwitchAllowEditing">
+                    <rect key="frame" x="10" y="112" width="51" height="31"/>
+                    <connections>
+                        <action selector="switchFileDropWithSender:" destination="Bje-Hj-GcX" eventType="valueChanged" id="VXj-nP-8TL"/>
+                    </connections>
+                </switch>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="File drop" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MNB-Sz-Vpi">
+                    <rect key="frame" x="70" y="120" width="334" height="15"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="15" id="1Hx-hl-fY9"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="agd-Mj-nSf"/>
+            <constraints>
+                <constraint firstItem="04s-V3-Hfi" firstAttribute="leading" secondItem="Bje-Hj-GcX" secondAttribute="leading" constant="70" id="1ct-un-C6C"/>
+                <constraint firstItem="Hhd-sG-WXP" firstAttribute="top" secondItem="Bje-Hj-GcX" secondAttribute="top" constant="10" id="7pH-BC-nMz"/>
+                <constraint firstItem="MNB-Sz-Vpi" firstAttribute="centerY" secondItem="NE8-vd-br1" secondAttribute="centerY" id="Fzn-gX-4wT"/>
+                <constraint firstItem="NE8-vd-br1" firstAttribute="top" secondItem="Yvm-BK-uDi" secondAttribute="bottom" constant="20" id="JF7-OI-RtP"/>
+                <constraint firstItem="MNB-Sz-Vpi" firstAttribute="trailing" secondItem="yFE-6f-OMG" secondAttribute="trailing" id="MVj-gQ-4Yu"/>
+                <constraint firstItem="MNB-Sz-Vpi" firstAttribute="leading" secondItem="yFE-6f-OMG" secondAttribute="leading" id="Npg-Rm-naB"/>
+                <constraint firstItem="04s-V3-Hfi" firstAttribute="centerY" secondItem="Hhd-sG-WXP" secondAttribute="centerY" id="OBu-x4-cdV"/>
+                <constraint firstAttribute="trailing" secondItem="yFE-6f-OMG" secondAttribute="trailing" constant="10" id="bIS-Xf-0Yz"/>
+                <constraint firstItem="Hhd-sG-WXP" firstAttribute="leading" secondItem="Bje-Hj-GcX" secondAttribute="leading" constant="10" id="dHX-s4-FxC"/>
+                <constraint firstItem="Yvm-BK-uDi" firstAttribute="top" secondItem="Hhd-sG-WXP" secondAttribute="bottom" constant="20" id="f9l-hj-ivW"/>
+                <constraint firstItem="Yvm-BK-uDi" firstAttribute="leading" secondItem="Hhd-sG-WXP" secondAttribute="leading" id="n8t-Hv-IK6"/>
+                <constraint firstItem="yFE-6f-OMG" firstAttribute="centerY" secondItem="Yvm-BK-uDi" secondAttribute="centerY" id="rrw-2U-ee8"/>
+                <constraint firstItem="NE8-vd-br1" firstAttribute="leading" secondItem="Yvm-BK-uDi" secondAttribute="leading" id="wLx-2T-SP1"/>
+                <constraint firstItem="yFE-6f-OMG" firstAttribute="leading" secondItem="04s-V3-Hfi" secondAttribute="leading" id="z5J-G5-lvm"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="labelEditing" destination="yFE-6f-OMG" id="kYr-gE-PXU"/>
+                <outlet property="labelFileDrop" destination="MNB-Sz-Vpi" id="BUB-KA-LDS"/>
+                <outlet property="labelReadOnly" destination="04s-V3-Hfi" id="EMk-iK-a6b"/>
+                <outlet property="switchEditing" destination="Yvm-BK-uDi" id="IGS-tw-QzO"/>
+                <outlet property="switchFileDrop" destination="NE8-vd-br1" id="BCx-VK-udu"/>
+                <outlet property="switchReadOnly" destination="Hhd-sG-WXP" id="mx2-s7-GBQ"/>
+            </connections>
+            <point key="canvasLocation" x="185.50724637681162" y="292.29910714285711"/>
+        </view>
+    </objects>
+</document>

@@ -172,10 +172,13 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
             }
         } else {
             // Allow editing
+            labelAllowEditing?.text = NSLocalizedString("_share_editing_", comment: "")
             if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
                 switchAllowEditing.setOn(true, animated: false)
+                switchReadOnly.setOn(false, animated: false)
             } else {
                 switchAllowEditing.setOn(false, animated: false)
+                switchReadOnly.setOn(true, animated: false)
             }
         }
        
@@ -258,8 +261,10 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         let permission = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: metadata.directory)
 
         if sender.isOn && permission != tableShare.permissions {
-            switchAllowUploadAndEditing.setOn(false, animated: false)
-            switchFileDrop.setOn(false, animated: false)
+            if metadata.directory {
+                switchAllowUploadAndEditing.setOn(false, animated: false)
+                switchFileDrop.setOn(false, animated: false)
+            }
             networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
         } else {
             sender.setOn(true, animated: false)
@@ -275,7 +280,9 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
 
         if sender.isOn && permission != tableShare.permissions {
             switchReadOnly.setOn(false, animated: false)
-            switchFileDrop.setOn(false, animated: false)
+            if metadata.directory {
+                switchFileDrop.setOn(false, animated: false)
+            }
             networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
         } else {
             sender.setOn(true, animated: false)
