@@ -20,7 +20,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import Foundation
+import UIKit
 import FSCalendar
 import NCCommunication
 
@@ -100,31 +100,31 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         switchSetExpirationDate.onTintColor = NCBrandColor.shared.brandElement
         
         labelAllowEditing?.text = NSLocalizedString("_share_allow_editing_", comment: "")
-        labelAllowEditing?.textColor = NCBrandColor.shared.textView
+        labelAllowEditing?.textColor = NCBrandColor.shared.label
         labelReadOnly?.text = NSLocalizedString("_share_read_only_", comment: "")
-        labelReadOnly?.textColor = NCBrandColor.shared.textView
+        labelReadOnly?.textColor = NCBrandColor.shared.label
         labelAllowUploadAndEditing?.text = NSLocalizedString("_share_allow_upload_", comment: "")
-        labelAllowUploadAndEditing?.textColor = NCBrandColor.shared.textView
+        labelAllowUploadAndEditing?.textColor = NCBrandColor.shared.label
         labelFileDrop?.text = NSLocalizedString("_share_file_drop_", comment: "")
-        labelFileDrop?.textColor = NCBrandColor.shared.textView
+        labelFileDrop?.textColor = NCBrandColor.shared.label
         labelHideDownload?.text = NSLocalizedString("_share_hide_download_", comment: "")
-        labelHideDownload?.textColor = NCBrandColor.shared.textView
+        labelHideDownload?.textColor = NCBrandColor.shared.label
         labelPasswordProtect?.text = NSLocalizedString("_share_password_protect_", comment: "")
-        labelPasswordProtect?.textColor = NCBrandColor.shared.textView
+        labelPasswordProtect?.textColor = NCBrandColor.shared.label
         labelSetExpirationDate?.text = NSLocalizedString("_share_expiration_date_", comment: "")
-        labelSetExpirationDate?.textColor = NCBrandColor.shared.textView
+        labelSetExpirationDate?.textColor = NCBrandColor.shared.label
         labelNoteToRecipient?.text = NSLocalizedString("_share_note_recipient_", comment: "")
-        labelNoteToRecipient?.textColor = NCBrandColor.shared.textView
+        labelNoteToRecipient?.textColor = NCBrandColor.shared.label
         labelDeleteShareLink?.text = NSLocalizedString("_share_delete_sharelink_", comment: "")
-        labelDeleteShareLink?.textColor = NCBrandColor.shared.textView
+        labelDeleteShareLink?.textColor = NCBrandColor.shared.label
         labelAddAnotherLink?.text = NSLocalizedString("_share_add_sharelink_", comment: "")
-        labelAddAnotherLink?.textColor = NCBrandColor.shared.textView
+        labelAddAnotherLink?.textColor = NCBrandColor.shared.label
         
         fieldSetExpirationDate.inputView = UIView()
         
         imageNoteToRecipient.image = UIImage.init(named: "file_txt")!.image(color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
-        imageDeleteShareLink.image = UIImage.init(named: "trash")!.image(color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
-        imageAddAnotherLink.image = UIImage.init(named: "add")!.image(color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50) 
+        imageDeleteShareLink.image = NCUtility.shared.loadImage(named: "trash", color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
+        imageAddAnotherLink.image =  NCUtility.shared.loadImage(named: "plus", color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
     }
     
     override func willMove(toWindow newWindow: UIWindow?) {
@@ -155,7 +155,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
 
         if metadata.directory {
             // File Drop
-            if tableShare.permissions == NCBrandGlobal.shared.permissionCreateShare {
+            if tableShare.permissions == NCGlobal.shared.permissionCreateShare {
                 switchReadOnly.setOn(false, animated: false)
                 switchAllowUploadAndEditing.setOn(false, animated: false)
                 switchFileDrop.setOn(true, animated: false)
@@ -286,7 +286,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     @IBAction func switchFileDrop(sender: UISwitch) {
         
         guard let tableShare = self.tableShare else { return }
-        let permission = NCBrandGlobal.shared.permissionCreateShare
+        let permission = NCGlobal.shared.permissionCreateShare
 
         if sender.isOn && permission != tableShare.permissions {
             switchReadOnly.setOn(false, animated: false)
@@ -382,12 +382,12 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     func shareCompleted() {
         unLoad()
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataNCShare)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
     }
     
     func unShareCompleted() {
         unLoad()
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataNCShare)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
     }
     
     func updateShareWithError(idShare: Int) {

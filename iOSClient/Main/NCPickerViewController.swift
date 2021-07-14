@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import TLPhotoPicker
 import MobileCoreServices
 
@@ -71,6 +71,7 @@ class NCPhotosPickerViewController: NSObject {
         }
         configure.selectedColor = NCBrandColor.shared.brandElement
         configure.singleSelectedMode = singleSelectedMode
+        configure.allowedAlbumCloudShared = true
         
         let viewController = customPhotoPickerViewController(withTLPHAssets: { (assets) in
             
@@ -85,15 +86,15 @@ class NCPhotosPickerViewController: NSObject {
         }, didCancel: nil)
         
         viewController.didExceedMaximumNumberOfSelection = { (picker) in
-            NCContentPresenter.shared.messageNotification("_info_", description: "_limited_dimension_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError)
+            NCContentPresenter.shared.messageNotification("_info_", description: "_limited_dimension_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
         }
         
         viewController.handleNoAlbumPermissions = { (picker) in
-            NCContentPresenter.shared.messageNotification("_info_", description: "_denied_album_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError)
+            NCContentPresenter.shared.messageNotification("_info_", description: "_denied_album_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
         }
         
         viewController.handleNoCameraPermissions = { (picker) in
-            NCContentPresenter.shared.messageNotification("_info_", description: "_denied_camera_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError)
+            NCContentPresenter.shared.messageNotification("_info_", description: "_denied_camera_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
         }
         
         viewController.configure = configure
@@ -111,8 +112,8 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
     override func makeUI() {
         super.makeUI()
         
-        self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.shared.brandElement
-        self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.shared.brandElement
+        self.customNavItem.leftBarButtonItem?.tintColor = .systemBlue
+        self.customNavItem.rightBarButtonItem?.tintColor = .systemBlue
     }
 }
 
@@ -133,7 +134,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
         documentProviderMenu.popoverPresentationController?.sourceRect = tabBarController.tabBar.bounds
         documentProviderMenu.delegate = self
         
-        appDelegate.window.rootViewController?.present(documentProviderMenu, animated: true, completion: nil)
+        appDelegate.window?.rootViewController?.present(documentProviderMenu, animated: true, completion: nil)
     }
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
@@ -145,7 +146,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             coordinator.coordinate(readingItemAt: url, options: NSFileCoordinator.ReadingOptions.forUploading, error: nil) { (url) in
                 
                 let fileName = url.lastPathComponent
-                let serverUrl = appDelegate.activeServerUrl!
+                let serverUrl = appDelegate.activeServerUrl
                 let ocId = NSUUID().uuidString
                 let data = try? Data.init(contentsOf: url)
                 let path = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!)
@@ -154,12 +155,12 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                     
                     do {
                         try data?.write(to: path)
-                        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
+                        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
                         
                         metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
-                        metadataForUpload.sessionSelector = NCBrandGlobal.shared.selectorUploadFile
+                        metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
                         metadataForUpload.size = Int64(data?.count ?? 0)
-                        metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
+                        metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                         
                         if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {
                             
@@ -168,20 +169,19 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                                 conflict.serverUrl = serverUrl
                                 conflict.metadatasUploadInConflict = [metadataForUpload]
                             
-                                appDelegate.window.rootViewController?.present(conflict, animated: true, completion: nil)
+                                appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
                             }
                         
                         } else {
                             
-                            NCManageDatabase.shared.addMetadata(metadataForUpload)
-                            appDelegate.networkingAutoUpload.startProcess()
+                            appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: [metadataForUpload])
                         }
                         
                     } catch {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_write_file_error_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError)
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_write_file_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
                     }
                 } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_read_file_error_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError)
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_read_file_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
                 }
             }
         }

@@ -22,7 +22,7 @@
 //
 
 
-import Foundation
+import UIKit
 import Parchment
 import NCCommunication
 
@@ -38,13 +38,19 @@ class NCSharePaging: UIViewController {
     @objc var metadata = tableMetadata()
     @objc var indexPage: Int = 0
         
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = NCBrandColor.shared.systemBackground
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done, target: self, action: #selector(exitTapped))
+
         // Verify Comments & Sharing enabled
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         let comments = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
-        if serverVersionMajor >= NCBrandGlobal.shared.nextcloudVersion20 && comments == false {
+        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 && comments == false {
             commentsEnabled = false
         }
         let sharing = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
@@ -55,29 +61,31 @@ class NCSharePaging: UIViewController {
         if activity == nil {
             activityEnabled = false
         }
-        if indexPage == NCBrandGlobal.shared.indexPageComments && !commentsEnabled {
-            indexPage = NCBrandGlobal.shared.indexPageActivity
+        if indexPage == NCGlobal.shared.indexPageComments && !commentsEnabled {
+            indexPage = NCGlobal.shared.indexPageActivity
         }
-        if indexPage == NCBrandGlobal.shared.indexPageSharing && !sharingEnabled {
-            indexPage = NCBrandGlobal.shared.indexPageActivity
+        if indexPage == NCGlobal.shared.indexPageSharing && !sharingEnabled {
+            indexPage = NCGlobal.shared.indexPageActivity
         }
-        if indexPage == NCBrandGlobal.shared.indexPageActivity && !activityEnabled {
+        if indexPage == NCGlobal.shared.indexPageActivity && !activityEnabled {
             if sharingEnabled {
-                indexPage = NCBrandGlobal.shared.indexPageSharing
+                indexPage = NCGlobal.shared.indexPageSharing
             } else if commentsEnabled {
-                indexPage = NCBrandGlobal.shared.indexPageComments
+                indexPage = NCGlobal.shared.indexPageComments
             }
         }
+        
+        // *** MUST BE THE FIRST ONE ***
+        pagingViewController.metadata = metadata
         
         pagingViewController.activityEnabled = activityEnabled
         pagingViewController.commentsEnabled = commentsEnabled
         pagingViewController.sharingEnabled = sharingEnabled
-       
-        pagingViewController.metadata = metadata
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
-        
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done, target: self, action: #selector(exitTapped))
+        pagingViewController.backgroundColor = NCBrandColor.shared.systemBackground
+        pagingViewController.menuBackgroundColor = NCBrandColor.shared.systemBackground
+        pagingViewController.selectedBackgroundColor = NCBrandColor.shared.systemBackground
+        pagingViewController.textColor = NCBrandColor.shared.label
+        pagingViewController.selectedTextColor = NCBrandColor.shared.label
 
         // Pagination
         addChild(pagingViewController)
@@ -107,6 +115,7 @@ class NCSharePaging: UIViewController {
         let pagingIndexItem = self.pagingViewController(pagingViewController, pagingItemAt: indexPage) as! PagingIndexItem
         self.title = pagingIndexItem.title
         
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         changeTheming()
     }
     
@@ -123,7 +132,7 @@ class NCSharePaging: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
     }
     
     @objc func exitTapped() {
@@ -133,13 +142,6 @@ class NCSharePaging: UIViewController {
     //MARK: - NotificationCenter
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundForm
-        
-        pagingViewController.backgroundColor = NCBrandColor.shared.backgroundForm
-        pagingViewController.menuBackgroundColor = NCBrandColor.shared.backgroundForm
-        pagingViewController.selectedBackgroundColor = NCBrandColor.shared.backgroundForm
-        pagingViewController.textColor = NCBrandColor.shared.textView
-        pagingViewController.selectedTextColor = NCBrandColor.shared.textView
         pagingViewController.indicatorColor = NCBrandColor.shared.brandElement
         (pagingViewController.view as! NCSharePagingView).setupConstraints()
         pagingViewController.reloadMenu()
@@ -154,11 +156,11 @@ extension NCSharePaging: PagingViewControllerDelegate {
         
         guard let item = pagingItem as? PagingIndexItem else { return }
          
-        if item.index == NCBrandGlobal.shared.indexPageActivity && !activityEnabled {
+        if item.index == NCGlobal.shared.indexPageActivity && !activityEnabled {
             pagingViewController.contentInteraction = .none
-        } else if item.index == NCBrandGlobal.shared.indexPageComments && !commentsEnabled {
+        } else if item.index == NCGlobal.shared.indexPageComments && !commentsEnabled {
             pagingViewController.contentInteraction = .none
-        } else if item.index == NCBrandGlobal.shared.indexPageSharing && !sharingEnabled {
+        } else if item.index == NCGlobal.shared.indexPageSharing && !sharingEnabled {
             pagingViewController.contentInteraction = .none
         } else {
             self.title = item.title
@@ -176,19 +178,19 @@ extension NCSharePaging: PagingViewControllerDataSource {
         let topSafeArea = UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0
         
         switch index {
-        case NCBrandGlobal.shared.indexPageActivity:
+        case NCGlobal.shared.indexPageActivity:
             let viewController = UIStoryboard(name: "NCActivity", bundle: nil).instantiateInitialViewController() as! NCActivity
             viewController.insets = UIEdgeInsets(top: height - topSafeArea, left: 0, bottom: 0, right: 0)
             viewController.didSelectItemEnable = false
             viewController.filterFileId = metadata.fileId
             viewController.objectType = "files"
             return viewController
-        case NCBrandGlobal.shared.indexPageComments:
+        case NCGlobal.shared.indexPageComments:
             let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "comments") as! NCShareComments
             viewController.metadata = metadata
             viewController.height = height
             return viewController
-        case NCBrandGlobal.shared.indexPageSharing:
+        case NCGlobal.shared.indexPageSharing:
             let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing") as! NCShare
             viewController.sharingEnabled = sharingEnabled
             viewController.metadata = metadata
@@ -202,11 +204,11 @@ extension NCSharePaging: PagingViewControllerDataSource {
     func pagingViewController(_: PagingViewController, pagingItemAt index: Int) -> PagingItem {
         
         switch index {
-        case NCBrandGlobal.shared.indexPageActivity:
+        case NCGlobal.shared.indexPageActivity:
             return PagingIndexItem(index: index, title: NSLocalizedString("_activity_", comment: ""))
-        case NCBrandGlobal.shared.indexPageComments:
+        case NCGlobal.shared.indexPageComments:
             return PagingIndexItem(index: index, title: NSLocalizedString("_comments_", comment: ""))
-        case NCBrandGlobal.shared.indexPageSharing:
+        case NCGlobal.shared.indexPageSharing:
             return PagingIndexItem(index: index, title: NSLocalizedString("_sharing_", comment: ""))
         default:
             return PagingIndexItem(index: index, title: "")
@@ -223,7 +225,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
 class NCShareHeaderViewController: PagingViewController {
     
     public var image: UIImage?
-    public var metadata: tableMetadata?
+    public var metadata = tableMetadata()
     
     public var activityEnabled = true
     public var commentsEnabled = true
@@ -239,13 +241,13 @@ class NCShareHeaderViewController: PagingViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if indexPath.item == NCBrandGlobal.shared.indexPageActivity && !activityEnabled {
+        if indexPath.item == NCGlobal.shared.indexPageActivity && !activityEnabled {
             return
         }
-        if indexPath.item == NCBrandGlobal.shared.indexPageComments && !commentsEnabled {
+        if indexPath.item == NCGlobal.shared.indexPageComments && !commentsEnabled {
             return
         }
-        if indexPath.item == NCBrandGlobal.shared.indexPageSharing && !sharingEnabled {
+        if indexPath.item == NCGlobal.shared.indexPageSharing && !sharingEnabled {
             return
         }
         super.collectionView(collectionView, didSelectItemAt: indexPath)
@@ -255,11 +257,13 @@ class NCShareHeaderViewController: PagingViewController {
 class NCSharePagingView: PagingView {
     
     static let HeaderHeight: CGFloat = 250
-    var metadata: tableMetadata?
+    var metadata = tableMetadata()
     
     var headerHeightConstraint: NSLayoutConstraint?
     
-    public init(options: Parchment.PagingOptions, collectionView: UICollectionView, pageView: UIView, metadata: tableMetadata?) {
+    // MARK: - View Life Cycle
+
+    public init(options: Parchment.PagingOptions, collectionView: UICollectionView, pageView: UIView, metadata: tableMetadata) {
         super.init(options: options, collectionView: collectionView, pageView: pageView)
         
         self.metadata = metadata
@@ -272,29 +276,29 @@ class NCSharePagingView: PagingView {
     override func setupConstraints() {
         
         let headerView = Bundle.main.loadNibNamed("NCShareHeaderView", owner: self, options: nil)?.first as! NCShareHeaderView
-        headerView.backgroundColor = NCBrandColor.shared.backgroundForm
-        headerView.ocId = metadata!.ocId
+        headerView.backgroundColor = NCBrandColor.shared.systemBackground
+        headerView.ocId = metadata.ocId
         
-        if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata!.ocId, etag: metadata!.etag)) {
-            headerView.imageView.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata!.ocId, etag: metadata!.etag))
+        if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+            headerView.imageView.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
         } else {
-            if metadata!.directory {
+            if metadata.directory {
                 let image = UIImage.init(named: "folder")!
                 headerView.imageView.image = image.image(color: NCBrandColor.shared.brandElement, size: image.size.width)
-            } else if metadata!.iconName.count > 0 {
-                headerView.imageView.image = UIImage.init(named: metadata!.iconName)
+            } else if metadata.iconName.count > 0 {
+                headerView.imageView.image = UIImage.init(named: metadata.iconName)
             } else {
                 headerView.imageView.image = UIImage.init(named: "file")
             }
         }
-        headerView.fileName.text = metadata?.fileNameView
-        headerView.fileName.textColor = NCBrandColor.shared.textView
-        if metadata!.favorite {
-            headerView.favorite.setImage(UIImage.init(named: "favorite")!.image(color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
+        headerView.fileName.text = metadata.fileNameView
+        headerView.fileName.textColor = NCBrandColor.shared.label
+        if metadata.favorite {
+            headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
         } else {
-            headerView.favorite.setImage(UIImage.init(named: "favorite")!.image(color: NCBrandColor.shared.textInfo, size: 20), for: .normal)
+            headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.systemGray, size: 20), for: .normal)
         }
-        headerView.info.text = CCUtility.transformedSize(metadata!.size) + ", " + CCUtility.dateDiff(metadata!.date as Date)
+        headerView.info.text = CCUtility.transformedSize(metadata.size) + ", " + CCUtility.dateDiff(metadata.date as Date)
         addSubview(headerView)
         
         pageView.translatesAutoresizingMaskIntoConstraints = false
@@ -339,12 +343,12 @@ class NCShareHeaderView: UIView {
             NCNetworking.shared.favoriteMetadata(metadata, urlBase: appDelegate.urlBase) { (errorCode, errorDescription) in
                 if errorCode == 0 {
                     if !metadata.favorite {
-                        self.favorite.setImage(UIImage.init(named: "favorite")!.image(color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
+                        self.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
                     } else {
-                        self.favorite.setImage(UIImage.init(named: "favorite")!.image(color: NCBrandColor.shared.textInfo, size: 20), for: .normal)
+                        self.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.systemGray, size: 20), for: .normal)
                     }
                 } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
         }

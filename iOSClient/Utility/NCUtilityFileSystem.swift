@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import PhotosUI
 
 class NCUtilityFileSystem: NSObject {
@@ -51,7 +51,9 @@ class NCUtilityFileSystem: NSObject {
         do {
             let attributes = try fileManager.attributesOfItem(atPath: filePath)
             return attributes[FileAttributeKey.size] as? Int64 ?? 0
-        } catch { }
+        } catch {
+            print(error)
+        }
         return 0
     }
     
@@ -60,7 +62,9 @@ class NCUtilityFileSystem: NSObject {
         do {
             let attributes = try fileManager.attributesOfItem(atPath: filePath)
             return attributes[FileAttributeKey.modificationDate] as? NSDate
-        } catch { }
+        } catch {
+            print(error)
+        }
         return nil
     }
     
@@ -69,7 +73,9 @@ class NCUtilityFileSystem: NSObject {
         do {
             let attributes = try fileManager.attributesOfItem(atPath: filePath)
             return attributes[FileAttributeKey.creationDate] as? NSDate
-        } catch { }
+        } catch {
+            print(error)
+        }
         return nil
     }
     
@@ -78,13 +84,16 @@ class NCUtilityFileSystem: NSObject {
         do {
             try FileManager.default.removeItem(at: fileURL)
         }
-        catch {}
+        catch {
+            print(error)
+        }
         
         do {
             try text.write(to: fileURL, atomically: true, encoding: .utf8)
             return true
         }
         catch {
+            print(error)
             return false
         }
     }
@@ -94,16 +103,54 @@ class NCUtilityFileSystem: NSObject {
         do {
             try FileManager.default.removeItem(atPath: filePath)
         }
-        catch {}
+        catch {
+            print(error)
+        }
     }
     
-    @objc func moveFile(atPath: String, toPath: String) {
+    @discardableResult
+    @objc func moveFile(atPath: String, toPath: String) -> Bool {
 
-        if atPath == toPath { return }
+        if atPath == toPath { return true }
     
-        try? FileManager.default.removeItem(atPath: toPath)
-        try? FileManager.default.copyItem(atPath: atPath, toPath: toPath)
-        try? FileManager.default.removeItem(atPath: atPath)
+        do {
+            try FileManager.default.removeItem(atPath: toPath)
+        }
+        catch {
+            print(error)
+        }
+                
+        do {
+            try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
+            try FileManager.default.removeItem(atPath: atPath)
+            return true
+        }
+        catch {
+            print(error)
+            return false
+        }
+    }
+    
+    @discardableResult
+    @objc func copyFile(atPath: String, toPath: String) -> Bool {
+
+        if atPath == toPath { return true }
+    
+        do {
+            try FileManager.default.removeItem(atPath: toPath)
+        }
+        catch {
+            print(error)
+        }
+                
+        do {
+            try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
+            return true
+        }
+        catch {
+            print(error)
+            return false
+        }
     }
     
     @objc func moveFileInBackground(atPath: String, toPath: String) {
@@ -191,6 +238,59 @@ class NCUtilityFileSystem: NSObject {
         }
         
         return resultFileName
+    }
+    
+    @objc func getDirectorySize(directory: String) -> Int64 {
+        
+        let url = URL(fileURLWithPath: directory)
+        let manager = FileManager.default
+        var totalSize: Int64 = 0
+        
+        if let enumerator = manager.enumerator(at: url, includingPropertiesForKeys: [.isRegularFileKey], options: []) {
+            for case let fileURL as URL in enumerator {
+                if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
+                    if let size = attributes[.size] as? Int64 {
+                        totalSize = totalSize + size
+                    }
+                }
+            }
+        }
+        
+        return totalSize
+    }
+    
+    func cleanUp(directory: String, days: TimeInterval) {
+        
+        if days == 0 { return}
+        
+        let minimumDate = Date().addingTimeInterval(-days*24*60*60)
+        let url = URL(fileURLWithPath: directory)
+        
+        func meetsRequirement(date: Date) -> Bool {
+            return date < minimumDate
+        }
+        
+        let manager = FileManager.default
+        if let enumerator = manager.enumerator(at: url, includingPropertiesForKeys: [.isRegularFileKey], options: []) {
+            for case let fileURL as URL in enumerator {
+                if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
+                    if let date = CCUtility.getATime(fileURL.path) {
+                        if attributes[.size] as? Double == 0 { continue }
+                        if attributes[.type] as? FileAttributeType == FileAttributeType.typeDirectory { continue }
+                        if fileURL.pathExtension == NCGlobal.shared.extensionPreview { continue }
+                        if meetsRequirement(date: date) {
+                            let folderURL = fileURL.deletingLastPathComponent()
+                            let ocId = folderURL.lastPathComponent
+                            do {
+                                try manager.removeItem(atPath: fileURL.path)
+                            } catch { }
+                            manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
+                            NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

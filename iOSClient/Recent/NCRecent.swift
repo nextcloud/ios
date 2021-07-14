@@ -21,17 +21,18 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import NCCommunication
 
 class NCRecent: NCCollectionViewCommon  {
     
+    // MARK: - View Life Cycle
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        appDelegate.activeRecent = self
         titleCurrentFolder = NSLocalizedString("_recent_", comment: "")
-        layoutKey = NCBrandGlobal.shared.layoutViewRecent
+        layoutKey = NCGlobal.shared.layoutViewRecent
         enableSearchBar = false
         emptyImage = UIImage.init(named: "recent")?.image(color: .gray, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
@@ -52,7 +53,7 @@ class NCRecent: NCCollectionViewCommon  {
         DispatchQueue.global().async {
             
             self.metadatasSource = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), page: 1, limit: 100, sorted: "date", ascending: false)
-            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource)
+            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, directoryOnTop: false, favoriteOnTop: false)
             
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
@@ -135,7 +136,7 @@ class NCRecent: NCCollectionViewCommon  {
         dateFormatter.locale = Locale.init(identifier: "en_US_POSIX")
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
         let lessDateString = dateFormatter.string(from: Date())
-        let requestBody = String(format: requestBodyRecent, "/files/"+appDelegate.userID, lessDateString)
+        let requestBody = String(format: requestBodyRecent, "/files/"+appDelegate.userId, lessDateString)
         
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()

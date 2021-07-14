@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097.3" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -28,14 +29,14 @@
                                 <action selector="touchUpInsideSwitch:" destination="tys-A2-nDX" eventType="touchUpInside" id="iT8-1j-fib"/>
                             </connections>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0bo-yl-t5k" userLabel="buttonOrder">
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0bo-yl-t5k" userLabel="buttonOrder">
                             <rect key="frame" x="55" y="42.5" width="230" height="28"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="230" id="jvv-Ug-l3I"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                             <state key="normal" title="Sort by name (from A to Z)">
-                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="titleColor" systemColor="darkTextColor"/>
                             </state>
                             <connections>
                                 <action selector="touchUpInsideOrder:" destination="tys-A2-nDX" eventType="touchUpInside" id="oiL-3O-hMQ"/>
@@ -79,7 +80,7 @@
                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="pYo-pF-MGv">
                             <rect key="frame" x="5" y="0.0" width="365" height="50"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <color key="textColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <color key="textColor" systemColor="labelColor"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                         </textView>
@@ -93,6 +94,7 @@
                     </constraints>
                 </view>
             </subviews>
+            <viewLayoutGuide key="safeArea" id="pm7-uW-mZE"/>
             <constraints>
                 <constraint firstItem="QBu-GJ-Y52" firstAttribute="leading" secondItem="pm7-uW-mZE" secondAttribute="leading" id="2Jt-JT-Jbi"/>
                 <constraint firstItem="pm7-uW-mZE" firstAttribute="bottom" secondItem="NC1-5C-E5z" secondAttribute="bottom" id="35N-28-6Fp"/>
@@ -102,13 +104,13 @@
                 <constraint firstItem="pm7-uW-mZE" firstAttribute="trailing" secondItem="NC1-5C-E5z" secondAttribute="trailing" id="UH6-8N-JUD"/>
                 <constraint firstItem="QBu-GJ-Y52" firstAttribute="top" secondItem="pm7-uW-mZE" secondAttribute="top" id="auA-nX-bqB"/>
             </constraints>
-            <viewLayoutGuide key="safeArea" id="pm7-uW-mZE"/>
             <connections>
                 <outlet property="buttonMore" destination="D0O-wK-14O" id="eEx-3R-zCS"/>
                 <outlet property="buttonOrder" destination="0bo-yl-t5k" id="Kbw-BG-73C"/>
                 <outlet property="buttonOrderWidthConstraint" destination="jvv-Ug-l3I" id="E6N-z6-2VC"/>
                 <outlet property="buttonSwitch" destination="1LD-cd-zhc" id="Ec2-cM-CoY"/>
                 <outlet property="separator" destination="LZu-Te-clJ" id="EwO-za-LxT"/>
+                <outlet property="separatorHeightConstraint" destination="VuP-sT-hUI" id="5wS-ww-yKo"/>
                 <outlet property="textViewRichWorkspace" destination="pYo-pF-MGv" id="2h4-LP-T1z"/>
                 <outlet property="viewRichWorkspace" destination="NC1-5C-E5z" id="NyN-tr-sJl"/>
                 <outlet property="viewRichWorkspaceHeightConstraint" destination="eT3-4m-mJ6" id="agb-tE-jhw"/>
@@ -119,5 +121,11 @@
     <resources>
         <image name="moreBig" width="50" height="50"/>
         <image name="switchList" width="25" height="25"/>
+        <systemColor name="darkTextColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

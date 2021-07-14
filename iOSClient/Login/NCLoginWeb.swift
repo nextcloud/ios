@@ -21,9 +21,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import WebKit
 import NCCommunication
+import FloatingPanel
 
 class NCLoginWeb: UIViewController {
     
@@ -38,15 +39,19 @@ class NCLoginWeb: UIViewController {
     @objc var loginFlowV2Endpoint = ""
     @objc var loginFlowV2Login = ""
     
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if (NCBrandOptions.shared.use_login_web_personalized) {
-            if let accountCount = NCManageDatabase.shared.getAccounts()?.count {
-                if(accountCount > 0) {
-                    self.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
-                }
-            }
+        let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
+        
+        if NCBrandOptions.shared.use_login_web_personalized  && accountCount > 0 {
+            navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
+        }
+        
+        if accountCount > 0 {
+            navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "users")!.image(color: NCBrandColor.shared.label, size: 35), style: .plain, target: self, action:  #selector(self.changeUser(sender:)))
         }
         
         let config = WKWebViewConfiguration()
@@ -79,7 +84,7 @@ class NCLoginWeb: UIViewController {
         if let url = URL(string: urlBase) {
             loadWebPage(webView: webView!, url: url)
         } else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "_login_url_error_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
+            NCContentPresenter.shared.messageNotification("_error_", description: "_login_url_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
         }
     }
     
@@ -87,7 +92,7 @@ class NCLoginWeb: UIViewController {
         super.viewDidAppear(animated)
         
         // Stop timer error network
-        appDelegate.timerErrorNetworking.invalidate()
+        appDelegate.timerErrorNetworking?.invalidate()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -113,11 +118,14 @@ class NCLoginWeb: UIViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
+    @objc func changeUser(sender: UIBarButtonItem) {
+        toggleMenu()
+    }
 }
 
 extension NCLoginWeb: WKNavigationDelegate {
     
-    public func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
+    func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
         
         guard let url = webView.url else { return }
         
@@ -147,7 +155,27 @@ extension NCLoginWeb: WKNavigationDelegate {
         }
     }
     
-    public func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+    func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+        
+    }
+    
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        
+        var errorMessage = error.localizedDescription
+        
+        for (key, value) in (error as NSError).userInfo {
+            let message = "\(key) \(value)\n"
+            errorMessage = errorMessage + message
+        }
+        
+        let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorMessage, preferredStyle: .alert)
+                    
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
+        
+        self.present(alertController, animated: true)
+    }
+    
+    func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         if let serverTrust = challenge.protectionSpace.serverTrust {
             completionHandler(Foundation.URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: serverTrust))
         } else {
@@ -155,12 +183,18 @@ extension NCLoginWeb: WKNavigationDelegate {
         }
     }
     
-    public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         
         decisionHandler(.allow)
 
         /* TEST NOT GOOD DON'T WORKS
-        guard let url = navigationAction.request.url else {
+        
+         if let data = navigationAction.request.httpBody {
+             let str = String(decoding: data, as: UTF8.self)
+             print(str)
+         }
+         
+         guard let url = navigationAction.request.url else {
             decisionHandler(.allow)
             return
         }
@@ -186,14 +220,14 @@ extension NCLoginWeb: WKNavigationDelegate {
         */
     }
     
-    public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         print("didStartProvisionalNavigation");
     }
     
-    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         activityIndicator.stopAnimating()
         print("didFinishProvisionalNavigation");
-        
+                
         if loginFlowV2Available {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 NCCommunication.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { (server, loginName, appPassword, errorCode, errorDescription) in
@@ -211,9 +245,6 @@ extension NCLoginWeb: WKNavigationDelegate {
         
         var urlBase = server
         
-        // NO account found, clear all
-        if NCManageDatabase.shared.getAccounts() == nil { NCUtility.shared.removeAllSettings() }
-            
         // Normalized
         if (urlBase.last == "/") {
             urlBase = String(urlBase.dropLast())
@@ -221,6 +252,14 @@ extension NCLoginWeb: WKNavigationDelegate {
         
         // Create account
         let account: String = "\(username) \(urlBase)"
+        
+        // NO account found, clear all
+        if NCManageDatabase.shared.getAccounts() == nil {
+            NCUtility.shared.removeAllSettings()
+        }
+        
+        // Clear certificate error 
+        CCUtility.clearCertificateError(account)
 
         // Add new account
         NCManageDatabase.shared.deleteAccount(account)
@@ -231,11 +270,11 @@ extension NCLoginWeb: WKNavigationDelegate {
             return
         }
             
-        appDelegate.settingAccount(account, urlBase: urlBase, user: username, userID: tableAccount.userID, password: password)
+        appDelegate.settingAccount(account, urlBase: urlBase, user: username, userId: tableAccount.userId, password: password)
             
         if (CCUtility.getIntro()) {
             
-            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
             self.dismiss(animated: true)
                 
         } else {
@@ -244,16 +283,16 @@ extension NCLoginWeb: WKNavigationDelegate {
             if (self.presentingViewController == nil) {
                 if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
                     viewController.modalPresentationStyle = .fullScreen
-                    NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
                     viewController.view.alpha = 0
-                    appDelegate.window.rootViewController = viewController
-                    appDelegate.window.makeKeyAndVisible()
+                    appDelegate.window?.rootViewController = viewController
+                    appDelegate.window?.makeKeyAndVisible()
                     UIView.animate(withDuration: 0.5) {
                         viewController.view.alpha = 1
                     }
                 }
             } else {
-                NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
                 self.dismiss(animated: true)
             }
         }

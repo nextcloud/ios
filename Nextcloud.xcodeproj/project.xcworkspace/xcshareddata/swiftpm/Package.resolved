@@ -2,12 +2,30 @@
   "object": {
     "pins": [
       {
+        "package": "abseil",
+        "repositoryURL": "https://github.com/firebase/abseil-cpp-SwiftPM.git",
+        "state": {
+          "branch": null,
+          "revision": "ff5f5f0a3d3266836b9d722bb73cabdf7057482e",
+          "version": "0.20200225.3"
+        }
+      },
+      {
         "package": "Alamofire",
         "repositoryURL": "https://github.com/Alamofire/Alamofire",
         "state": {
           "branch": null,
-          "revision": "eaf6e622dd41b07b251d8f01752eab31bc811493",
-          "version": "5.4.1"
+          "revision": "f96b619bcb2383b43d898402283924b80e2c4bae",
+          "version": "5.4.3"
+        }
+      },
+      {
+        "package": "BoringSSL-GRPC",
+        "repositoryURL": "https://github.com/firebase/boringssl-SwiftPM.git",
+        "state": {
+          "branch": null,
+          "revision": "15889fadef7078dfa1392b0e2b08f3d0e9797104",
+          "version": "0.7.1"
         }
       },
       {
@@ -20,12 +38,102 @@
         }
       },
       {
+        "package": "Firebase",
+        "repositoryURL": "https://github.com/firebase/firebase-ios-sdk",
+        "state": {
+          "branch": null,
+          "revision": "b97bfcd2e5eecc7aa7e1aeb27d097d610876cf93",
+          "version": "7.11.1"
+        }
+      },
+      {
+        "package": "FloatingPanel",
+        "repositoryURL": "https://github.com/scenee/FloatingPanel",
+        "state": {
+          "branch": null,
+          "revision": "ca7596e1cae161415f54059a8c44b82c95724160",
+          "version": "1.7.6"
+        }
+      },
+      {
+        "package": "GoogleAppMeasurement",
+        "repositoryURL": "https://github.com/google/GoogleAppMeasurement.git",
+        "state": {
+          "branch": null,
+          "revision": "22cb3ab5588200b210ae01e42665f52ac4e8ad28",
+          "version": "7.11.1"
+        }
+      },
+      {
+        "package": "GoogleDataTransport",
+        "repositoryURL": "https://github.com/google/GoogleDataTransport.git",
+        "state": {
+          "branch": null,
+          "revision": "369716b8d7518a530ce3c3a251436d72546debd8",
+          "version": "8.4.0"
+        }
+      },
+      {
+        "package": "GoogleUtilities",
+        "repositoryURL": "https://github.com/google/GoogleUtilities.git",
+        "state": {
+          "branch": null,
+          "revision": "66f5945ac3a4c4ac268bf94c31f226116b14e327",
+          "version": "7.4.0"
+        }
+      },
+      {
+        "package": "gRPC",
+        "repositoryURL": "https://github.com/firebase/grpc-SwiftPM.git",
+        "state": {
+          "branch": null,
+          "revision": "fb405dd2c7901485f7e158b24e3a0a47e4efd8b5",
+          "version": "1.28.4"
+        }
+      },
+      {
+        "package": "GTMSessionFetcher",
+        "repositoryURL": "https://github.com/google/gtm-session-fetcher.git",
+        "state": {
+          "branch": null,
+          "revision": "91ed3d188eb95705fef3c249453b81f32dc557d1",
+          "version": "1.5.0"
+        }
+      },
+      {
         "package": "NCCommunication",
         "repositoryURL": "https://github.com/nextcloud/ios-communication-library/",
         "state": {
           "branch": null,
-          "revision": "2711ac3bb0a047f470a2b038176765725a30e1c5",
-          "version": "0.93.0"
+          "revision": "d07477d0cf9657512c29295fa5340420d82d85d3",
+          "version": "0.98.0"
+        }
+      },
+      {
+        "package": "leveldb",
+        "repositoryURL": "https://github.com/firebase/leveldb.git",
+        "state": {
+          "branch": null,
+          "revision": "0706abcc6b0bd9cedfbb015ba840e4a780b5159b",
+          "version": "1.22.2"
+        }
+      },
+      {
+        "package": "MarkdownKit",
+        "repositoryURL": "https://github.com/bmoliveira/MarkdownKit",
+        "state": {
+          "branch": null,
+          "revision": "5056f3305d3499f44d8815530d560b87082e0cf5",
+          "version": "1.7.1"
+        }
+      },
+      {
+        "package": "nanopb",
+        "repositoryURL": "https://github.com/firebase/nanopb.git",
+        "state": {
+          "branch": null,
+          "revision": "7ee9ef9f627d85cbe1b8c4f49a3ed26eed216c77",
+          "version": "2.30908.0"
         }
       },
       {
@@ -33,8 +141,35 @@
         "repositoryURL": "https://github.com/rechsteiner/Parchment",
         "state": {
           "branch": null,
-          "revision": "af4c9773ad7833df93b3f6226ccd78acad6f5735",
-          "version": "2.4.0"
+          "revision": "689ecaa80b7b0f712887ec87746f8598f2e12907",
+          "version": "3.0.1"
+        }
+      },
+      {
+        "package": "Promises",
+        "repositoryURL": "https://github.com/google/promises.git",
+        "state": {
+          "branch": null,
+          "revision": "afa9a1ace74e116848d4f743599ab83e584ff8cb",
+          "version": "1.2.12"
+        }
+      },
+      {
+        "package": "QRCodeReader",
+        "repositoryURL": "https://github.com/yannickl/QRCodeReader.swift",
+        "state": {
+          "branch": null,
+          "revision": "5020b5a47199d8ba80c83a4b4fafd70e9dc9dc7f",
+          "version": "10.1.1"
+        }
+      },
+      {
+        "package": "QuickLayout",
+        "repositoryURL": "https://github.com/huri000/QuickLayout",
+        "state": {
+          "branch": null,
+          "revision": "6be62decbe508d8fc8f9dbafc349d05bab03c38b",
+          "version": "3.0.1"
         }
       },
       {
@@ -42,8 +177,8 @@
         "repositoryURL": "https://github.com/realm/realm-cocoa",
         "state": {
           "branch": null,
-          "revision": "44b9632b22240f0baa4b50964c5722e27094aea0",
-          "version": "10.6.0"
+          "revision": "827f9bf97f44e40fda8a750698f3e096734629ee",
+          "version": "10.8.1"
         }
       },
       {
@@ -51,8 +186,8 @@
         "repositoryURL": "https://github.com/realm/realm-core",
         "state": {
           "branch": null,
-          "revision": "6431a4bc6530ec16731ef1c66b379cbef6da01f0",
-          "version": "10.5.0"
+          "revision": "d85d071cc25b6f64fabbbebbaaae20f367ef64ae",
+          "version": "11.0.3"
         }
       },
       {
@@ -74,12 +209,39 @@
         }
       },
       {
+        "package": "SwiftProtobuf",
+        "repositoryURL": "https://github.com/apple/swift-protobuf.git",
+        "state": {
+          "branch": null,
+          "revision": "bfe4255ff60f22a41cafa113059668571ed5d461",
+          "version": "1.16.0"
+        }
+      },
+      {
+        "package": "SwiftEntryKit",
+        "repositoryURL": "https://github.com/huri000/SwiftEntryKit",
+        "state": {
+          "branch": null,
+          "revision": "c2d42574e4fe4e1f9719843f35add7922942a16b",
+          "version": "1.2.7"
+        }
+      },
+      {
+        "package": "SwiftRichString",
+        "repositoryURL": "https://github.com/malcommac/SwiftRichString",
+        "state": {
+          "branch": null,
+          "revision": "9bf4b5af6bb4386865636fc504d6c588c2b65040",
+          "version": "3.7.2"
+        }
+      },
+      {
         "package": "SwiftyJSON",
         "repositoryURL": "https://github.com/SwiftyJSON/SwiftyJSON",
         "state": {
           "branch": null,
-          "revision": "2b6054efa051565954e1d2b9da831680026cd768",
-          "version": "5.0.0"
+          "revision": "b3dcd7dbd0d488e1a7077cb33b00f2083e382f07",
+          "version": "5.0.1"
         }
       },
       {

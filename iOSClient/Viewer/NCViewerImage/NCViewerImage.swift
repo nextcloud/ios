@@ -33,7 +33,7 @@ class NCViewerImage: UIViewController {
     enum ScreenMode {
         case full, normal
     }
-    var currentMode: ScreenMode = .full
+    var currentMode: ScreenMode = .normal
         
     var pageViewController: UIPageViewController {
         return self.children[0] as! UIPageViewController
@@ -57,13 +57,17 @@ class NCViewerImage: UIViewController {
     
     private var player: AVPlayer?
     private var videoLayer: AVPlayerLayer?
-    private var timeObserverToken: Any?
-    private var rateObserverToken: Any?
+    private var timeObserver: Any?
+    private var rateObserver: Any?
     var pictureInPictureOcId: String = ""
-    var textColor: UIColor = NCBrandColor.shared.textView
+    var textColor: UIColor = NCBrandColor.shared.label
+
+    // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
         
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
@@ -91,25 +95,49 @@ class NCViewerImage: UIViewController {
         
         pageViewController.setViewControllers([viewerImageZoom], direction: .forward, animated: true, completion: nil)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterProgressTask), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterRenameFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterMoveFile), object: nil)
-       
-        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterMenuDetailClose), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
         
         progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.trackTintColor = .clear
         progressView.progress = 0
         
         setToolBar()
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.textView, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
-        
-        navigationController?.setNavigationBarHidden(false, animated: true)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    
         navigationController?.navigationBar.prefersLargeTitles = false
+
+        if currentMode == .full {
+            
+            navigationController?.setNavigationBarHidden(true, animated: false)
+            view.backgroundColor = .black
+            textColor = .white
+            progressView.isHidden = true
+            
+        } else {
+            
+            navigationController?.setNavigationBarHidden(false, animated: false)
+            view.backgroundColor = NCBrandColor.shared.systemBackground
+            textColor = NCBrandColor.shared.label
+            progressView.isHidden = false
+        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object:nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -122,6 +150,20 @@ class NCViewerImage: UIViewController {
         }
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+    }
+    
     @objc func viewUnload() {
         
         navigationController?.popViewController(animated: true)
@@ -129,13 +171,20 @@ class NCViewerImage: UIViewController {
     
     @objc func openMenuMore() {
         
-        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: currentMetadata, webView: false)
+        let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(currentMetadata.ocId, etag: currentMetadata.etag))
+        NCViewer.shared.toggleMenu(viewController: self, metadata: currentMetadata, webView: false, imageIcon: imageIcon)
     }
     
     //MARK: - NotificationCenter
 
+    @objc func applicationDidEnterBackground(_ notification: NSNotification) {
+        
+        if currentMetadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
+            player?.pause()
+        }
+    }
+    
     @objc func downloadedFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
@@ -149,13 +198,22 @@ class NCViewerImage: UIViewController {
         }
     }
     
-    @objc func triggerProgressTask(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
+    @objc func uploadedFile(_ notification: NSNotification) {
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String {
-                if self.metadatas.first(where: { $0.ocId == ocId }) != nil {
-                    let progressNumber = userInfo["progress"] as? NSNumber ?? 0
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
+                if errorCode == 0  && metadata.ocId == currentMetadata.ocId {
+                    self.reloadCurrentPage()
+                }
+            }
+        }
+    }
+    
+    @objc func triggerProgressTask(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let serverUrl = userInfo["serverUrl"] as? String, let fileName = userInfo["fileName"] as? String, let progressNumber = userInfo["progress"] as? NSNumber {
+                if self.metadatas.first(where: { $0.serverUrl == serverUrl && $0.fileName == fileName}) != nil {
                     let progress = progressNumber.floatValue
                     if progress == 1 {
                         self.progressView.progress = 0
@@ -168,7 +226,6 @@ class NCViewerImage: UIViewController {
     }
     
     @objc func deleteFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String {
@@ -187,7 +244,6 @@ class NCViewerImage: UIViewController {
     }
     
     @objc func renameFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
@@ -205,7 +261,6 @@ class NCViewerImage: UIViewController {
     }
     
     @objc func moveFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
@@ -218,11 +273,6 @@ class NCViewerImage: UIViewController {
     }
     
     @objc func changeTheming() {
-        
-        if currentMode == .normal {
-            view.backgroundColor = NCBrandColor.shared.backgroundView
-            textColor = NCBrandColor.shared.textView
-        }
         toolBar.tintColor = NCBrandColor.shared.brandElement
     }
     
@@ -293,7 +343,7 @@ class NCViewerImage: UIViewController {
             return image
         }
         
-        if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo && !metadata.hasPreview {
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo && !metadata.hasPreview {
             NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
         }
         
@@ -311,7 +361,7 @@ class NCViewerImage: UIViewController {
         let ext = CCUtility.getExtension(metadata.fileNameView)
         var image: UIImage?
         
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage {
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
            
             let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -323,8 +373,7 @@ class NCViewerImage: UIViewController {
                 image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
             } else if ext == "SVG" {
                 if let svgImage = SVGKImage(contentsOfFile: imagePath) {
-                    let scale = svgImage.size.height / svgImage.size.width
-                    svgImage.size = CGSize(width: NCBrandGlobal.shared.sizePreview, height: (NCBrandGlobal.shared.sizePreview * scale))
+                    svgImage.size = CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview)
                     if let image = svgImage.uiImage {
                         if !FileManager().fileExists(atPath: previewPath) {
                             do {
@@ -366,36 +415,20 @@ class NCViewerImage: UIViewController {
                 
                 currentViewerImageZoom!.imageView.layer.addSublayer(videoLayer!)
                 
-                /*
-                if let duration = playerVideo?.currentItem?.asset.duration {
-                    durationVideo = Float(CMTimeGetSeconds(duration))
-                }
-               
-                let timeScale = CMTimeScale(NSEC_PER_SEC)
-                let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
-                timeObserverToken = playerVideo?.addPeriodicTimeObserver(forInterval: time, queue: .main) { [weak self] time in
-                    print(time)
-                }
-               
-                let timeScale = CMTimeScale(NSEC_PER_SEC)
-                let time = CMTime(seconds: 1, preferredTimescale: timeScale)
-                timeObserverToken = player?.addPeriodicTimeObserver(forInterval: time, queue: .main) { time in
-                    NCManageDatabase.shared.addVideo(account:metadata.account, ocId: metadata.ocId, time: time)
-                }
-                */
-                
                 // At end go back to start
                 NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
                     if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
-                        self.player?.seek(to: CMTime.zero)
-                        NCManageDatabase.shared.addVideoTime(metadata: self.currentMetadata, time: CMTime.zero)
+                        self.player?.seek(to: .zero)
+                        if !self.currentMetadata.livePhoto {
+                            NCManageDatabase.shared.deleteVideoTime(metadata: self.currentMetadata)
+                        }
                     }
                 }
                             
-                rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+                rateObserver = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
                 
                 if pictureInPictureOcId != metadata.ocId {
-                    player?.play()
+                    self.player?.play()
                 }
             }
         }
@@ -405,19 +438,20 @@ class NCViewerImage: UIViewController {
         
         player?.pause()
         player?.seek(to: CMTime.zero)
+        progressView.progress = 0
         
-        if rateObserverToken != nil {
+        if let timeObserver = timeObserver {
+            player?.removeTimeObserver(timeObserver)
+            self.timeObserver = nil
+        }
+        
+        if rateObserver != nil {
             player?.removeObserver(self, forKeyPath: "rate")
             NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
             NCKTVHTTPCache.shared.stopProxy()
-            self.rateObserverToken = nil
+            self.rateObserver = nil
         }
-        
-        if let timeObserverToken = timeObserverToken {
-            player?.removeTimeObserver(timeObserverToken)
-            self.timeObserverToken = nil
-        }
-        
+               
         videoLayer?.removeFromSuperlayer()
     }
     
@@ -428,13 +462,44 @@ class NCViewerImage: UIViewController {
             setToolBar()
             
             if ((player?.rate) == 1) {
+                
                 if let time = NCManageDatabase.shared.getVideoTime(metadata: self.currentMetadata) {
                     player?.seek(to: time)
                     player?.isMuted = CCUtility.getAudioMute()
                 }
-            } else {
-                NCManageDatabase.shared.addVideoTime(metadata: self.currentMetadata, time: player?.currentTime())
-                print("Pause")
+                
+                if rateObserver != nil && !currentMetadata.livePhoto {
+                    self.progressView.progress = 0
+                    if let duration = self.player?.currentItem?.asset.duration {
+                        let durationSeconds = Double(CMTimeGetSeconds(duration))
+                        if durationSeconds > 0 {
+                            let width = Double(self.progressView.bounds.width)
+                            let interval = (0.5 * durationSeconds) / width
+                            let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+                            if CMTIME_IS_VALID(time) && CMTimeCompare(time, .zero) != 0 {
+                                self.timeObserver = self.player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
+                                    let durationSeconds = Float(CMTimeGetSeconds(duration))
+                                    if durationSeconds > 0 {
+                                        let currentTimeSeconds = Float(CMTimeGetSeconds(time))
+                                        self?.progressView.progress = currentTimeSeconds / durationSeconds
+                                    } else {
+                                        self?.progressView.progress = 0
+                                    }
+                                })
+                            }
+                        }
+                    }
+                }
+                
+            } else if !self.currentMetadata.livePhoto {
+                
+                if let time = player?.currentTime(), let duration = self.player?.currentItem?.asset.duration {
+                    let timeSecond = Double(CMTimeGetSeconds(time))
+                    let durationSeconds = Double(CMTimeGetSeconds(duration))
+                    if timeSecond < durationSeconds {
+                        NCManageDatabase.shared.addVideoTime(metadata: self.currentMetadata, time: player?.currentTime())
+                    }
+                }
             }
         }
     }
@@ -468,9 +533,11 @@ class NCViewerImage: UIViewController {
     @objc func playerPause() {
         player?.pause()
     }
+    
     @objc func playerPlay() {
         player?.play()
     }
+    
     @objc func SetMute() {
         let mute = CCUtility.getAudioMute()
         CCUtility.setAudioMute(!mute)
@@ -631,7 +698,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             return
         }
         
-        if currentMetadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || currentMetadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio {
+        if currentMetadata.typeFile == NCGlobal.shared.metadataTypeFileVideo || currentMetadata.typeFile == NCGlobal.shared.metadataTypeFileAudio {
             
             if pictureInPictureOcId != currentMetadata.ocId {
                                 
@@ -641,6 +708,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
                 
                 appDelegate.activeViewerVideo = NCViewerVideo()
                 appDelegate.activeViewerVideo?.metadata = currentMetadata
+                appDelegate.activeViewerVideo?.imageBackground = UIImage(named: "file_audio")
                 appDelegate.activeViewerVideo?.delegateViewerVideo = self
                 if let currentViewerVideo = appDelegate.activeViewerVideo {
                     present(currentViewerVideo, animated: false) { }
@@ -654,8 +722,8 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
         if currentMode == .full {
             
             navigationController?.setNavigationBarHidden(false, animated: false)
-            view.backgroundColor = NCBrandColor.shared.backgroundView
-            textColor = NCBrandColor.shared.textView
+            view.backgroundColor = NCBrandColor.shared.systemBackground
+            textColor = NCBrandColor.shared.label
             progressView.isHidden = false
             
             currentMode = .normal
@@ -691,8 +759,10 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         currentViewerImageZoom = viewerImageZoom
         toolBar.isHidden = true
         
-        if (currentMetadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo || currentMetadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio) {
-            videoPlay(metadata: metadata)
+        if (currentMetadata.typeFile == NCGlobal.shared.metadataTypeFileVideo || currentMetadata.typeFile == NCGlobal.shared.metadataTypeFileAudio) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.videoPlay(metadata: metadata)
+            }
             toolBar.isHidden = false
         }
             
@@ -711,7 +781,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         }
         
         // DOWNLOAD FILE
-        if ((metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileImage && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+        if ((metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             NCOperationQueue.shared.download(metadata: metadata, selector: "")
         }
         
@@ -729,7 +799,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
             let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
             
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCBrandGlobal.shared.sizePreview, heightPreview: NCBrandGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCBrandGlobal.shared.sizeIcon) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
                 if errorCode == 0 && metadata.ocId == self.currentMetadata.ocId {
                     self.reloadCurrentPage()
                 }

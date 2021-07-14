@@ -21,13 +21,19 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import NCCommunication
 
 // MARK: -
 
 @objc class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NCCreateFormUploadConflictDelegate {
+
+    @IBOutlet weak var indicator: UIActivityIndicatorView!
+    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var collectionViewHeigth: NSLayoutConstraint!
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     var editorId = ""
     var creatorId = ""
     var typeTemplate = ""
@@ -40,22 +46,16 @@ import NCCommunication
     var listOfTemplate: [NCCommunicationEditorTemplates] = []
     var selectTemplate: NCCommunicationEditorTemplates?
     
-    @IBOutlet weak var indicator: UIActivityIndicatorView!
-    @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var collectionViewHeigth: NSLayoutConstraint!
-    
     // Layout
     let numItems = 2
     let sectionInsets: CGFloat = 10
     let highLabelName: CGFloat = 20
     
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+                
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
             fileNameFolder = "/"
         } else {
@@ -63,7 +63,7 @@ import NCCommunication
         }
         
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-                
+
         let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
         let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         
@@ -74,21 +74,30 @@ import NCCommunication
         // title 
         self.title = titleForm
       
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
-
         changeTheming()
+        
+        initializeForm()
         
         // load the templates available
         getTemplate()
     }
     
-    @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundForm
-        collectionView.backgroundColor = NCBrandColor.shared.backgroundForm
-        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
-        collectionView.reloadData()
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        changeTheming()
+    }
+    
+    // MARK: - Theming
+    
+    func changeTheming() {
+        
+        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        collectionView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        tableView.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        
         tableView.reloadData()
-        initializeForm()
+        collectionView.reloadData()
     }
     
     // MARK: - Tableview (XLForm)
@@ -109,13 +118,13 @@ import NCCommunication
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: fileNameFolder)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         row.value = fileNameFolder
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
+        row.cellConfig["backgroundColor"] = tableView.backgroundColor
 
         row.cellConfig["imageView.image"] =  UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
         
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
 
         section.addFormRow(row)
         
@@ -124,17 +133,17 @@ import NCCommunication
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_filename_", comment: "").uppercased())
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
+        row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeText, title: NSLocalizedString("_filename_", comment: ""))
         row.value = fileName
-        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
+        row.cellConfig["backgroundColor"] = tableView.backgroundColor
         
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = NCBrandColor.shared.textView
+        row.cellConfig["textField.textColor"] = NCBrandColor.shared.label
         
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
         
         section.addFormRow(row)
         
@@ -145,7 +154,7 @@ import NCCommunication
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         header.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
         header.textLabel?.textColor = .gray
-        header.tintColor = NCBrandColor.shared.backgroundForm
+        header.tintColor = tableView.backgroundColor
     }
 
     // MARK: - CollectionView
@@ -173,7 +182,7 @@ import NCCommunication
         // image
         let imagePreview = cell.viewWithTag(100) as! UIImageView
         if template.preview != "" {
-            let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + template.name + ".png"
+            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + template.name + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 let imageURL = URL(fileURLWithPath: fileNameLocalPath)
                 if let image = UIImage(contentsOfFile: imageURL.path) {
@@ -187,16 +196,16 @@ import NCCommunication
         // name
         let name = cell.viewWithTag(200) as! UILabel
         name.text = template.name
-        name.textColor = NCBrandColor.shared.backgroundView
+        name.textColor = NCBrandColor.shared.secondarySystemGroupedBackground
         
         // select
         let imageSelect = cell.viewWithTag(300) as! UIImageView
         if selectTemplate != nil && selectTemplate?.name == template.name {
-            cell.backgroundColor = NCBrandColor.shared.textView
+            cell.backgroundColor = NCBrandColor.shared.label
             imageSelect.image = UIImage(named: "plus100")
             imageSelect.isHidden = false
         } else {
-            cell.backgroundColor = NCBrandColor.shared.backgroundView
+            cell.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
             imageSelect.isHidden = true
         }
         
@@ -215,7 +224,7 @@ import NCCommunication
     
     // MARK: - Action
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
         
         guard let serverUrl = serverUrl else {
             return
@@ -243,14 +252,8 @@ import NCCommunication
         let viewController = navigationController.topViewController as! NCSelect
         
         viewController.delegate = self
-        viewController.hideButtonCreateFolder = false
-        viewController.includeDirectoryE2EEncryption = false
-        viewController.includeImages = false
-        viewController.selectFile = false
-        viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
-        viewController.type = ""
+        viewController.typeOfCommandView = .selectCreateFolder
 
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
         self.present(navigationController, animated: true, completion: nil)
     }
     
@@ -277,7 +280,7 @@ import NCCommunication
             
             if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: String(describing: fileNameForm)) != nil {
                 
-                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: String(describing: fileNameForm), ocId: "", serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: String(describing: fileNameForm), fileNameView: String(describing: fileNameForm), ocId: "", serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
                 
                 guard let conflictViewController = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
                 conflictViewController.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
@@ -315,11 +318,11 @@ import NCCommunication
     
     func createDocument(fileNamePath: String, fileName: String) {
         
-        if self.editorId == NCBrandGlobal.shared.editorText || self.editorId == NCBrandGlobal.shared.editorOnlyoffice {
+        if self.editorId == NCGlobal.shared.editorText || self.editorId == NCGlobal.shared.editorOnlyoffice {
              
             var customUserAgent: String?
             
-            if self.editorId == NCBrandGlobal.shared.editorOnlyoffice {
+            if self.editorId == NCGlobal.shared.editorOnlyoffice {
                 customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
             }
             
@@ -331,21 +334,23 @@ import NCCommunication
                         let results = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
                         
                         self.dismiss(animated: true, completion: {
-                            let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, fileName: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url ?? "", contentType: results.mimeType, livePhoto: false)
+                            let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, fileName: fileName, fileNameView: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url ?? "", contentType: results.mimeType, livePhoto: false)
                             
-                            NCViewer.shared.view(viewController: self.appDelegate.activeViewController, metadata: metadata, metadatas: [metadata])
+                            if let viewController = self.appDelegate.activeViewController {
+                                NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                            }
                         })
                     }
                     
                 } else if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCBrandGlobal.shared.dismissAfterSecond, type:NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCGlobal.shared.dismissAfterSecond, type:NCContentPresenter.messageType.error, errorCode: errorCode)
                 } else {
                    print("[LOG] It has been changed user during networking process, error.")
                 }
             }
         }
         
-        if self.editorId == NCBrandGlobal.shared.editorCollabora {
+        if self.editorId == NCGlobal.shared.editorCollabora {
             
             NCCommunication.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { (account, url, errorCode, errorDescription) in
                 
@@ -353,14 +358,17 @@ import NCCommunication
                    
                     self.dismiss(animated: true, completion: {
                     
-                        let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url!, contentType: "", livePhoto: false)
+                        let createFileName = (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension
+                        let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, fileName: createFileName, fileNameView: createFileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url!, contentType: "", livePhoto: false)
                     
-                        NCViewer.shared.view(viewController: self.appDelegate.activeViewController, metadata: metadata, metadatas: [metadata])
+                        if let viewController = self.appDelegate.activeViewController {
+                            NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                        }
                    })
                    
                     
                 } else if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 } else {
                     print("[LOG] It has been changed user during networking process, error.")
                 }
@@ -380,10 +388,10 @@ import NCCommunication
         indicator.color = NCBrandColor.shared.brandElement
         indicator.startAnimating()
         
-        if self.editorId == NCBrandGlobal.shared.editorText || self.editorId == NCBrandGlobal.shared.editorOnlyoffice {
+        if self.editorId == NCGlobal.shared.editorText || self.editorId == NCGlobal.shared.editorOnlyoffice {
                         
             var customUserAgent: String?
-            if self.editorId == NCBrandGlobal.shared.editorOnlyoffice {
+            if self.editorId == NCGlobal.shared.editorOnlyoffice {
                 customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
             }
             NCCommunication.shared.NCTextGetListOfTemplates(customUserAgent: customUserAgent) { (account, templates, errorCode, errorMessage) in
@@ -417,13 +425,13 @@ import NCCommunication
                     let temp = NCCommunicationEditorTemplates()
                     
                     temp.identifier = ""
-                    if self.editorId == NCBrandGlobal.shared.editorText {
+                    if self.editorId == NCGlobal.shared.editorText {
                         temp.ext = "md"
-                    } else if self.editorId == NCBrandGlobal.shared.editorOnlyoffice && self.typeTemplate == NCBrandGlobal.shared.templateDocument {
+                    } else if self.editorId == NCGlobal.shared.editorOnlyoffice && self.typeTemplate == NCGlobal.shared.templateDocument {
                         temp.ext = "docx"
-                    } else if self.editorId == NCBrandGlobal.shared.editorOnlyoffice && self.typeTemplate == NCBrandGlobal.shared.templateSpreadsheet {
+                    } else if self.editorId == NCGlobal.shared.editorOnlyoffice && self.typeTemplate == NCGlobal.shared.templateSpreadsheet {
                         temp.ext = "xlsx"
-                    } else if self.editorId == NCBrandGlobal.shared.editorOnlyoffice && self.typeTemplate == NCBrandGlobal.shared.templatePresentation {
+                    } else if self.editorId == NCGlobal.shared.editorOnlyoffice && self.typeTemplate == NCGlobal.shared.templatePresentation {
                         temp.ext = "pptx"
                     }
                     temp.name = "Empty"
@@ -441,7 +449,7 @@ import NCCommunication
             
         }
         
-        if self.editorId == NCBrandGlobal.shared.editorCollabora  {
+        if self.editorId == NCGlobal.shared.editorCollabora  {
                         
             NCCommunication.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate) { (account, templates, errorCode, errorDescription) in
                 
@@ -476,11 +484,11 @@ import NCCommunication
                     let temp = NCCommunicationEditorTemplates()
                     
                     temp.identifier = ""
-                    if self.typeTemplate == NCBrandGlobal.shared.templateDocument {
+                    if self.typeTemplate == NCGlobal.shared.templateDocument {
                         temp.ext = "docx"
-                    } else if self.typeTemplate == NCBrandGlobal.shared.templateSpreadsheet {
+                    } else if self.typeTemplate == NCGlobal.shared.templateSpreadsheet {
                         temp.ext = "xlsx"
-                    } else if self.typeTemplate == NCBrandGlobal.shared.templatePresentation {
+                    } else if self.typeTemplate == NCGlobal.shared.templatePresentation {
                         temp.ext = "pptx"
                     }
                     temp.name = "Empty"
@@ -500,7 +508,7 @@ import NCCommunication
     
     func getImageFromTemplate(name: String, preview: String, indexPath: IndexPath) {
         
-        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + name + ".png"
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + name + ".png"
 
         NCCommunication.shared.download(serverUrlFileName: preview, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
             

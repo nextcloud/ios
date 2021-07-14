@@ -21,11 +21,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 
 class FileProviderDomain: NSObject {
     
-    @objc func registerDomains() {
+    func registerDomains() {
         
         NSFileProviderManager.getDomainsWithCompletionHandler { (fileProviderDomain, error) in
             
@@ -43,7 +43,7 @@ class FileProviderDomain: NSObject {
                 for account in accounts {
                     guard let urlBase = NSURL(string: account.urlBase) else { continue }
                     guard let host = urlBase.host else { continue }
-                    let accountDomain =  account.userID + " (" + host + ")"
+                    let accountDomain =  account.userId + " (" + host + ")"
                     if domain == accountDomain {
                         domainFound = true
                         break
@@ -64,7 +64,7 @@ class FileProviderDomain: NSObject {
                 var domainFound = false
                 guard let urlBase = NSURL(string: account.urlBase) else { continue }
                 guard let host = urlBase.host else { continue }
-                let accountDomain =  account.userID + " (" + host + ")"
+                let accountDomain =  account.userId + " (" + host + ")"
                 for domain in domains {
                     if domain == accountDomain {
                         domainFound = true
@@ -83,7 +83,7 @@ class FileProviderDomain: NSObject {
         }
     }
     
-    @objc func removeAllDomains() {
+    func removeAllDomains() {
         
         NSFileProviderManager.removeAllDomains { (_) in }
     }

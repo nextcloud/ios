@@ -20,7 +20,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import Foundation
+import UIKit
 import FSCalendar
 import DropDown
 
@@ -45,7 +45,7 @@ class NCShareCommon: NSObject {
         
         let size: CGFloat = 200
         
-        let bottomImage = UIImage.init(named: "circle")!.image(color: colorCircle, size: size/2)
+        let bottomImage = UIImage.init(named: "circle.fill")!.image(color: colorCircle, size: size/2)
         let topImage = UIImage.init(named: imageName)!.image(color: .white, size: size/2)
         UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, UIScreen.main.scale)
         bottomImage.draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: size, height: size)))
@@ -82,7 +82,7 @@ class NCShareCommon: NSObject {
             shareLinkMenuView.height = 440
         }
         
-        shareLinkMenuView.backgroundColor = NCBrandColor.shared.backgroundForm
+        shareLinkMenuView.backgroundColor = NCBrandColor.shared.systemBackground
         shareLinkMenuView.metadata = metadata
         shareLinkMenuView.viewWindow = viewWindow
         shareLinkMenuView.shareViewController = shareViewController
@@ -126,7 +126,7 @@ class NCShareCommon: NSObject {
             shareUserMenuView.height = 260
         }
         
-        shareUserMenuView.backgroundColor = NCBrandColor.shared.backgroundForm
+        shareUserMenuView.backgroundColor = NCBrandColor.shared.systemBackground
         shareUserMenuView.metadata = metadata
         shareUserMenuView.viewWindow = viewWindow
         shareUserMenuView.shareViewController = shareViewController
@@ -155,12 +155,11 @@ class NCShareCommon: NSObject {
         let calendar = FSCalendar(frame: CGRect(x: globalPoint!.x + 10, y: globalPoint!.y + 10, width: width - 20, height: 300))
         
         if #available(iOS 13.0, *) {
-            calendar.backgroundColor = .systemBackground
             calendar.appearance.headerTitleColor = .label
         } else {
-            calendar.backgroundColor = .white
             calendar.appearance.headerTitleColor = .black
         }
+        calendar.backgroundColor = NCBrandColor.shared.systemBackground
         calendar.placeholderType = .none
         calendar.appearance.headerMinimumDissolvedAlpha = 0.0
         
@@ -208,27 +207,27 @@ class NCShareCommon: NSObject {
         
         switch shareType {
         case SHARE_TYPE_USER:
-            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_GROUP:
-            return UIImage(named: "shareTypeGroup")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeGroup")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_LINK:
-            return UIImage(named: "shareTypeLink")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeLink")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_EMAIL:
-            return UIImage(named: "shareTypeEmail")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeEmail")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_CONTACT:
-            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_REMOTE:
-            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_CIRCLE:
-            return UIImage(named: "shareTypeCircles")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeCircles")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_GUEST:
-            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_REMOTE_GROUP:
-            return UIImage(named: "shareTypeGroup")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeGroup")?.imageColor(NCBrandColor.shared.label)
         case self.SHARE_TYPE_ROOM:
-            return UIImage(named: "shareTypeRoom")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeRoom")?.imageColor(NCBrandColor.shared.label)
         default:
-            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.textView)
+            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.label)
         }
     }
 }

@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import NCCommunication
 
 class NCAppConfigView: UIViewController {
@@ -35,6 +35,8 @@ class NCAppConfigView: UIViewController {
     @IBOutlet weak var logoImage: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
     
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -58,18 +60,18 @@ class NCAppConfigView: UIViewController {
         super.viewDidAppear(animated)
         
         // Stop timer error network
-        appDelegate.timerErrorNetworking.invalidate()
+        appDelegate.timerErrorNetworking?.invalidate()
         
         guard let serverUrl = self.serverUrl else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, serverUrl not found", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
+            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, serverUrl not found", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
             return
         }
         guard let username = self.username else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, username not found", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
+            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, username not found", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
             return
         }
         guard let password = self.password else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, password not found", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
+            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, password not found", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
             return
         }
         
@@ -86,17 +88,17 @@ class NCAppConfigView: UIViewController {
                     NCManageDatabase.shared.addAccount(account, urlBase: serverUrl, user: username, password: token!)
                     
                     guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "setAccountActive error", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
+                        NCContentPresenter.shared.messageNotification("_error_", description: "setAccountActive error", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
                         self.dismiss(animated: true, completion: nil)
                         return
                     }
                     
-                    self.appDelegate.settingAccount(account, urlBase: serverUrl, user: username, userID: tableAccount.userID, password: token!)
-                    NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterInitializeMain)
+                    self.appDelegate.settingAccount(account, urlBase: serverUrl, user: username, userId: tableAccount.userId, password: token!)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
                     
                     self.dismiss(animated: true) {}
                 } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
         }

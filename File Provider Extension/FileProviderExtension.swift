@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import FileProvider
 import NCCommunication
 import Alamofire
@@ -118,7 +119,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             metadata.fileName = "root"
             metadata.fileNameView = "root"
             metadata.serverUrl = fileProviderData.shared.homeServerUrl
-            metadata.typeFile = NCBrandGlobal.shared.metadataTypeFileDirectory
+            metadata.typeFile = NCGlobal.shared.metadataTypeFileDirectory
             
             return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
             
@@ -144,12 +145,9 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 
         var url = fileProviderData.shared.fileProviderManager.documentStorageURL.appendingPathComponent(identifier.rawValue, isDirectory: true)
         
-        if item.typeIdentifier == (kUTTypeFolder as String) {
-            url = url.appendingPathComponent(item.filename, isDirectory:true)
-        } else {
-            url = url.appendingPathComponent(item.filename, isDirectory:false)
-        }
-        
+        // (fix copy/paste directory -> isDirectory = false)
+        url = url.appendingPathComponent(item.filename, isDirectory:false)
+    
         return url
     }
     
@@ -208,7 +206,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         
         // Update status
-        NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCBrandGlobal.shared.metadataStatusDownloading)
+        NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusDownloading)
         fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
         
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath,  requestHandler: { (request) in
@@ -231,7 +229,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             
             if errorCode == 0  {
                 
-                metadata.status = NCBrandGlobal.shared.metadataStatusNormal
+                metadata.status = NCGlobal.shared.metadataStatusNormal
                 metadata.date = date ?? NSDate()
                 metadata.etag = etag ?? ""
                 
@@ -242,13 +240,13 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 
             } else if errorCode == 200 {
                 
-                NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCBrandGlobal.shared.metadataStatusNormal)
+                NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusNormal)
                 
                 completionHandler(nil)
 
             } else {
                 
-                metadata.status = NCBrandGlobal.shared.metadataStatusDownloadError
+                metadata.status = NCGlobal.shared.metadataStatusDownloadError
                 metadata.sessionError = errorDescription
                 NCManageDatabase.shared.addMetadata(metadata)
 
@@ -349,10 +347,10 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 
                 fileURL.stopAccessingSecurityScopedResource()
                                 
-                let metadata = NCManageDatabase.shared.createMetadata(account: fileProviderData.shared.account, fileName: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, urlBase: fileProviderData.shared.accountUrlBase, url: "", contentType: "", livePhoto: false)
+                let metadata = NCManageDatabase.shared.createMetadata(account: fileProviderData.shared.account, fileName: fileName, fileNameView: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, urlBase: fileProviderData.shared.accountUrlBase, url: "", contentType: "", livePhoto: false)
                 metadata.session = NCNetworking.shared.sessionIdentifierBackgroundExtension
                 metadata.size = size
-                metadata.status = NCBrandGlobal.shared.metadataStatusUploading
+                metadata.status = NCGlobal.shared.metadataStatusUploading
                 
                 NCManageDatabase.shared.addMetadata(metadata)
                 
@@ -401,7 +399,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             metadata.permissions = "RGDNVW"
             metadata.session = ""
             metadata.size = size
-            metadata.status = NCBrandGlobal.shared.metadataStatusNormal
+            metadata.status = NCGlobal.shared.metadataStatusNormal
                   
             NCManageDatabase.shared.addMetadata(metadata)
             NCManageDatabase.shared.addLocalFile(metadata: metadata)

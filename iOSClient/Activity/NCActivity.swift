@@ -21,7 +21,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
 import UIKit
 import SwiftRichString
 import NCCommunication
@@ -45,11 +44,13 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
     var canFetchActivity = true
     var dateAutomaticFetch : Date?
     
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
     
         self.navigationController?.navigationBar.prefersLargeTitles = true
-        
+        view.backgroundColor = NCBrandColor.shared.systemBackground
         self.title = NSLocalizedString("_activity_", comment: "")
 
         // Empty
@@ -59,8 +60,9 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
         tableView.separatorColor = UIColor.clear
         tableView.tableFooterView = UIView()
         tableView.contentInset = insets
+        tableView.backgroundColor = NCBrandColor.shared.systemBackground
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         
         changeTheming()
     }
@@ -68,33 +70,39 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        loadDataSource()
+        appDelegate.activeViewController = self
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
+        
+        initialize()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
+    }
+    
+    // MARK: - NotificationCenter
+
+    @objc func initialize() {
+        loadDataSource()
         loadActivity(idActivity: 0)
     }
     
     @objc func changeTheming() {
-        
-        if filterFileId == nil {
-            view.backgroundColor = NCBrandColor.shared.backgroundView
-            tableView.backgroundColor = NCBrandColor.shared.backgroundView
-            tableView.reloadData()
-        } else {
-            view.backgroundColor = NCBrandColor.shared.backgroundForm
-            tableView.backgroundColor = NCBrandColor.shared.backgroundForm
-            tableView.reloadData()
-        }
+        tableView.reloadData()
     }
     
     // MARK: - Empty
     
     func emptyDataSetView(_ view: NCEmptyView) {
         
-        view.emptyImage.image = UIImage.init(named: "activity")?.image(color: .gray, size: UIScreen.main.bounds.width)
+        view.emptyImage.image = UIImage.init(named: "bolt")?.image(color: .gray, size: UIScreen.main.bounds.width)
         view.emptyTitle.text = NSLocalizedString("_no_activity_", comment: "")
         view.emptyDescription.text = ""
     }
@@ -144,12 +152,12 @@ extension NCActivity: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 60))
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 60))
         view.backgroundColor = .clear
         
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 13)
-        label.textColor = NCBrandColor.shared.textView
+        label.textColor = NCBrandColor.shared.label
         label.text = CCUtility.getTitleSectionDate(sectionDate[section])
         label.textAlignment = .center
         label.layer.cornerRadius = 11
@@ -190,7 +198,7 @@ extension NCActivity: UITableViewDataSource {
             cell.avatar.isHidden = true
             cell.subjectTrailingConstraint.constant = 10
             cell.didSelectItemEnable = self.didSelectItemEnable
-            cell.subject.textColor = NCBrandColor.shared.textView
+            cell.subject.textColor = NCBrandColor.shared.label
             cell.viewController = self
             
             // icon
@@ -216,22 +224,20 @@ extension NCActivity: UITableViewDataSource {
             }
             
             // avatar
-            if activity.user.count > 0 && activity.user != appDelegate.userID {
+            if activity.user.count > 0 && activity.user != appDelegate.userId {
                 
                 cell.subjectTrailingConstraint.constant = 50
                 cell.avatar.isHidden = false
                 
-                let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + activity.user + ".png"
+                let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + activity.user + ".png"
                 if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                     if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                        cell.avatar.image = image
+                        cell.avatar.image = NCUtility.shared.createAvatar(image: image, size: 30) 
                     }
                 } else {
-                    DispatchQueue.global().async {
-                        NCCommunication.shared.downloadAvatar(userID: activity.user, fileNameLocalPath: fileNameLocalPath, size: NCBrandGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
-                            if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
-                                cell.avatar.image = UIImage(data: data!)
-                            }
+                    NCCommunication.shared.downloadAvatar(userId: activity.user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
+                        if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
+                            cell.avatar.image = NCUtility.shared.createAvatar(image: UIImage(data: data!)!, size: 30)
                         }
                     }
                 }
@@ -313,8 +319,10 @@ extension NCActivity: UITableViewDataSourcePrefetching {
 extension NCActivity: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if (Int(scrollView.contentOffset.y + scrollView.frame.size.height) == Int(scrollView.contentSize.height + scrollView.contentInset.bottom)) {
-            loadActivity(idActivity: allActivities.last!.idActivity)
+        if scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.height < 100 {
+            if let activities = allActivities.last {
+                loadActivity(idActivity: activities.idActivity)
+            }
         }
     }
 }
@@ -329,6 +337,8 @@ extension activityTableViewCell: UICollectionViewDelegate {
         if !didSelectItemEnable {
             return
         }
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? activityCollectionViewCell
         
         let activityPreview = activityPreviews[indexPath.row]
         
@@ -348,7 +358,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                         viewController.trashPath = result.filePath
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
                     } else {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_trash_file_not_found_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError)
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_trash_file_not_found_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
                     }
                 }
             }
@@ -369,7 +379,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                         let fileSize = attr[FileAttributeKey.size] as! UInt64
                         if fileSize > 0 {
                             if let viewController = self.viewController {
-                                NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata])
+                                NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: cell?.imageView.image)
                             }
                             return
                         }
@@ -386,7 +396,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
             
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)!
             
-            NCUtility.shared.startActivityIndicator(view: (appDelegate.window.rootViewController?.view)!)
+            NCUtility.shared.startActivityIndicator(backgroundView: (appDelegate.window?.rootViewController?.view)!, blurEffect: true)
             
             NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
                 
@@ -416,7 +426,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                                                        
                             NCManageDatabase.shared.addMetadata(metadata!)
                             if let viewController = self.viewController {
-                                NCViewer.shared.view(viewController: viewController, metadata: metadata!, metadatas: [metadata!])
+                                NCViewer.shared.view(viewController: viewController, metadata: metadata!, metadatas: [metadata!], imageIcon: cell?.imageView.image)
                             }
                         }
                     }
@@ -573,7 +583,9 @@ extension NCActivity {
         canFetchActivity = false
         
         if idActivity > 0 {
-            NCUtility.shared.startActivityIndicator(view: self.view, bottom: 50)
+            
+            let height = self.tabBarController?.tabBar.frame.size.height ?? 0
+            NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: height + 50, style: .gray)
         }
         
         NCCommunication.shared.getActivity(since: idActivity, limit: 200, objectId: filterFileId, objectType: objectType, previews: true) { (account, activities, errorCode, errorDescription) in

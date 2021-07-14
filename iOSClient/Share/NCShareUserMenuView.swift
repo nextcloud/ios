@@ -20,7 +20,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import Foundation
+import UIKit
 import FSCalendar
 import NCCommunication
 
@@ -85,24 +85,24 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         switchSetExpirationDate.onTintColor = NCBrandColor.shared.brandElement
         
         labelCanReshare?.text = NSLocalizedString("_share_can_reshare_", comment: "")
-        labelCanReshare?.textColor = NCBrandColor.shared.textView
+        labelCanReshare?.textColor = NCBrandColor.shared.label
         labelCanCreate?.text = NSLocalizedString("_share_can_create_", comment: "")
-        labelCanCreate?.textColor = NCBrandColor.shared.textView
+        labelCanCreate?.textColor = NCBrandColor.shared.label
         labelCanChange?.text = NSLocalizedString("_share_can_change_", comment: "")
-        labelCanChange?.textColor = NCBrandColor.shared.textView
+        labelCanChange?.textColor = NCBrandColor.shared.label
         labelCanDelete?.text = NSLocalizedString("_share_can_delete_", comment: "")
-        labelCanDelete?.textColor = NCBrandColor.shared.textView
+        labelCanDelete?.textColor = NCBrandColor.shared.label
         labelSetExpirationDate?.text = NSLocalizedString("_share_expiration_date_", comment: "")
-        labelSetExpirationDate?.textColor = NCBrandColor.shared.textView
+        labelSetExpirationDate?.textColor = NCBrandColor.shared.label
         labelNoteToRecipient?.text = NSLocalizedString("_share_note_recipient_", comment: "")
-        labelNoteToRecipient?.textColor = NCBrandColor.shared.textView
+        labelNoteToRecipient?.textColor = NCBrandColor.shared.label
         labelUnshare?.text = NSLocalizedString("_share_unshare_", comment: "")
-        labelUnshare?.textColor = NCBrandColor.shared.textView
+        labelUnshare?.textColor = NCBrandColor.shared.label
         
         fieldSetExpirationDate.inputView = UIView()
         
         imageNoteToRecipient.image = UIImage.init(named: "file_txt")!.image(color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
-        imageUnshare.image = UIImage.init(named: "trash")!.image(color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
+        imageUnshare.image = NCUtility.shared.loadImage(named: "trash", color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
     }
     
     override func willMove(toWindow newWindow: UIWindow?) {
@@ -314,12 +314,12 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     func shareCompleted() {
         unLoad()
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataNCShare)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
     }
     
     func unShareCompleted() {
         unLoad()
-        NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataNCShare)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
     }
     
     func updateShareWithError(idShare: Int) {

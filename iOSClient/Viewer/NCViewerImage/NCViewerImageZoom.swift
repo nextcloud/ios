@@ -59,6 +59,8 @@ class NCViewerImageZoom: UIViewController {
     private var startPoint = CGPoint.zero
     private var topPoint = CGPoint.zero
 
+    // MARK: - View Life Cycle
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
@@ -76,8 +78,8 @@ class NCViewerImageZoom: UIViewController {
         
         if image == nil {
             var named = "noPreview"
-            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileAudio { named = "noPreviewAudio" }
-            if metadata.typeFile == NCBrandGlobal.shared.metadataTypeFileVideo { named = "noPreviewVideo" }
+            if metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio { named = "noPreviewAudio" }
+            if metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo { named = "noPreviewVideo" }
             image = UIImage.init(named: named)!.image(color: .gray, size: view.frame.width)
             self.noPreview = true
         }
@@ -88,7 +90,7 @@ class NCViewerImageZoom: UIViewController {
         }
         
         if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
-            statusViewImage.image = UIImage.init(named: "livePhoto")!.image(color: .gray, size: 50)
+            statusViewImage.image = NCUtility.shared.loadImage(named: "livephoto", color: .gray)
             statusLabel.text = "LIVE"
         }  else {
             statusViewImage.image = nil

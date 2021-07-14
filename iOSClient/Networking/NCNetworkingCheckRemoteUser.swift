@@ -20,7 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import NCCommunication
 
 @objc class NCNetworkingCheckRemoteUser: NSObject {
@@ -43,16 +43,17 @@ import NCCommunication
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
         
-        if serverVersionMajor >= NCBrandGlobal.shared.nextcloudVersion17 {
+        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
             
-            guard let token = CCUtility.getPassword(account) else { return }
+            let token = CCUtility.getPassword(account)!
+            if token == "" { return }
             
             NCCommunication.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token) { (account, wipe, errorCode, errorDescriptiuon) in
                 
                 if wipe {
                     
                     self.appDelegate.deleteAccount(account, wipe: true)
-                    NCContentPresenter.shared.messageNotification(tableAccount.user, description: "_wipe_account_", delay: NCBrandGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError)
+                    NCContentPresenter.shared.messageNotification(tableAccount.user, description: "_wipe_account_", delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
                     NCCommunication.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token) { (account, errorCode, errorDescription) in
                         print("wipe");
                     }
@@ -61,7 +62,7 @@ import NCCommunication
                     
                     if UIApplication.shared.applicationState == .active &&  NCCommunication.shared.isNetworkReachable() {
                         let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
-                        NCContentPresenter.shared.messageNotification("_error_", description: description, delay: NCBrandGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        NCContentPresenter.shared.messageNotification("_error_", description: description, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         CCUtility.setPassword(account, password: nil)
                     }
                 }
@@ -69,11 +70,11 @@ import NCCommunication
                 self.checkRemoteUserInProgress = false
             }
             
-        } else if CCUtility.getPassword(account) != nil {
+        } else if CCUtility.getPassword(account) != "" {
                
             if UIApplication.shared.applicationState == .active &&  NCCommunication.shared.isNetworkReachable() {
                 let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
-                NCContentPresenter.shared.messageNotification("_error_", description: description, delay: NCBrandGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: 403)
+                NCContentPresenter.shared.messageNotification("_error_", description: description, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: 403)
                 CCUtility.setPassword(account, password: nil)
             }
             

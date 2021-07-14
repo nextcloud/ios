@@ -21,7 +21,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
 import UIKit
 
 class NCGridMediaCell: UICollectionViewCell, NCImageCellProtocol {
@@ -76,7 +75,7 @@ class NCGridMediaCell: UICollectionViewCell, NCImageCellProtocol {
     
     func selected(_ status: Bool) {
         if status {
-            imageSelect.image = NCCollectionCommon.images.cellCheckedYes
+            imageSelect.image = NCBrandColor.cacheImages.checkedYes
             imageVisualEffect.isHidden = false
             imageVisualEffect.alpha = 0.4
         } else {

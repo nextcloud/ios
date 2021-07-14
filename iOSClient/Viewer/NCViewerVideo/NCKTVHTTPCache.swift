@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import KTVHTTPCache
 
 class NCKTVHTTPCache: NSObject {
@@ -98,13 +98,13 @@ class NCKTVHTTPCache: NSObject {
             NCManageDatabase.shared.addLocalFile(metadata: metadata)
             KTVHTTPCache.cacheDelete(with: videoURL)
             
-            NotificationCenter.default.postOnMainThread(name: NCBrandGlobal.shared.notificationCenterReloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
         }
     }
     
     private func setupHTTPCache() {
         
-        KTVHTTPCache.cacheSetMaxCacheLength(NCBrandGlobal.shared.maxHTTPCache)
+        KTVHTTPCache.cacheSetMaxCacheLength(NCGlobal.shared.maxHTTPCache)
         
         if ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil {
             KTVHTTPCache.logSetConsoleLogEnable(true)

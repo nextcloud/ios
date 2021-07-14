@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import FileProvider
 import NCCommunication
 
@@ -99,6 +100,9 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var isDownloaded: Bool {
+        if metadata.directory {
+            return true
+        }
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             return true
         } else {
@@ -107,7 +111,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var isDownloading: Bool {
-        if metadata.status == NCBrandGlobal.shared.metadataStatusDownloading {
+        if metadata.status == NCGlobal.shared.metadataStatusDownloading {
             return true
         } else {
             return false
@@ -115,7 +119,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var downloadingError: Error? {
-        if metadata.status == NCBrandGlobal.shared.metadataStatusDownloadError {
+        if metadata.status == NCGlobal.shared.metadataStatusDownloadError {
             return fileProviderData.FileProviderError.downloadError
         } else {
             return nil
@@ -131,7 +135,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var isUploading: Bool {
-        if metadata.status == NCBrandGlobal.shared.metadataStatusUploading {
+        if metadata.status == NCGlobal.shared.metadataStatusUploading {
             return true
         } else {
             return false
@@ -139,7 +143,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var uploadingError: Error? {
-        if metadata.status == NCBrandGlobal.shared.metadataStatusUploadError {
+        if metadata.status == NCGlobal.shared.metadataStatusUploadError {
             return fileProviderData.FileProviderError.uploadError
         } else {
             return nil

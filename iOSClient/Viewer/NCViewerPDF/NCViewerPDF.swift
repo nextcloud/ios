@@ -21,13 +21,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import PDFKit
 
 class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadata = tableMetadata()
+    var imageIcon: UIImage?
     
     private var pdfView = PDFView()
     private var thumbnailViewHeight: CGFloat = 40
@@ -36,6 +37,9 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     private let pageView = UIView()
     private let pageViewLabel = UILabel()
     private var pageViewWidthAnchor : NSLayoutConstraint?
+    private var filePath = ""
+
+    // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -43,25 +47,13 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     
     override func viewDidLoad() {
           
-        let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                
-        NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterFavoriteFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterRenameFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterMoveFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterMenuDetailClose), object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
-       
-        changeTheming()
+        filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
 
         pdfView = PDFView.init(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height))
         pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
         
         pdfView.document = pdfDocument
-        pdfView.backgroundColor = NCBrandColor.shared.backgroundView
+        pdfView.backgroundColor = NCBrandColor.shared.systemBackground
         pdfView.displayMode = .singlePageContinuous
         pdfView.autoScales = true
         pdfView.displayDirection = .horizontal
@@ -108,6 +100,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pageViewLabel.topAnchor.constraint(equalTo: pageView.topAnchor).isActive = true
         pageViewLabel.bottomAnchor.constraint(equalTo: pageView.bottomAnchor).isActive = true
         
+        pdfView.backgroundColor = NCBrandColor.shared.systemBackground
         pdfView.layoutIfNeeded()
         handlePageChange()
         
@@ -124,12 +117,40 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.textView, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+        appDelegate.activeViewController = self
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
         
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.title = metadata.fileNameView
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
-        appDelegate.activeViewController = self
+        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
+        NotificationCenter.default.removeObserver(self, name: Notification.Name.PDFViewPageChanged, object: nil)
     }
     
     @objc func viewUnload() {
@@ -139,8 +160,20 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     
     //MARK: - NotificationCenter
    
+    @objc func uploadedFile(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
+                if errorCode == 0  && metadata.ocId == self.metadata.ocId {
+                    pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
+                    pdfView.document = pdfDocument
+                    pdfView.layoutDocumentView()
+                }
+            }
+        }
+    }
+    
     @objc func favoriteFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
@@ -187,13 +220,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         }
     }
 
-    @objc func changeTheming() {
-        
-        if navigationController?.isNavigationBarHidden == false {
-            pdfView.backgroundColor = NCBrandColor.shared.backgroundView
-        }
-    }
-    
     @objc func handlePageChange() {
         
         guard let curPage = pdfView.currentPage?.pageRef?.pageNumber else { pageView.alpha = 0; return }
@@ -211,7 +237,8 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     //MARK: - Action
     
     @objc func openMenuMore() {
-        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: metadata, webView: false)
+        if imageIcon == nil { imageIcon = UIImage.init(named: "file_pdf") }
+        NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: false, imageIcon: imageIcon)
     }
     
     //MARK: - Gesture Recognizer
@@ -222,7 +249,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             
             navigationController?.setNavigationBarHidden(false, animated: false)
             pdfThumbnailView.isHidden = false
-            pdfView.backgroundColor = NCBrandColor.shared.backgroundView
+            pdfView.backgroundColor = NCBrandColor.shared.systemBackground
 
         } else {
             

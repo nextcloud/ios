@@ -21,20 +21,24 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
+import AVKit
 
 protocol NCViewerVideoDelegate {
     func startPictureInPicture(metadata: tableMetadata)
     func stopPictureInPicture(metadata: tableMetadata, playing: Bool)
 }
 
-@objc class NCViewerVideo: AVPlayerViewController {
+class NCViewerVideo: AVPlayerViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadata = tableMetadata()
     var pictureInPicture: Bool = false
+    var imageBackground: UIImage?
     var delegateViewerVideo: NCViewerVideoDelegate?
     private var rateObserverToken: Any?
+
+    // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,6 +54,22 @@ protocol NCViewerVideoDelegate {
         if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
             
             player = AVPlayer(url: url)
+            
+            if  metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio {
+                                
+                let imageView = UIImageView.init(image: imageBackground)
+                imageView.translatesAutoresizingMaskIntoConstraints = false
+                contentOverlayView?.addSubview(imageView)
+                
+                if let view = contentOverlayView {
+                    NSLayoutConstraint.activate([
+                        imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+                        imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                        imageView.heightAnchor.constraint(equalToConstant: view.frame.height/3),
+                        imageView.widthAnchor.constraint(equalToConstant: view.frame.height/3),
+                    ])
+                }
+            }
         
             // At end go back to start
             NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
@@ -65,6 +85,13 @@ protocol NCViewerVideoDelegate {
                 player?.seek(to: time)
             }
             player?.isMuted = CCUtility.getAudioMute()
+        }
+        
+        // AIRPLAY
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            player?.allowsExternalPlayback = true
+        } else {
+            player?.allowsExternalPlayback = false
         }
     }
     

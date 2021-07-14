@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import NCCommunication
 
 @objc class NCRichWorkspaceCommon: NSObject {
@@ -31,15 +31,15 @@ import NCCommunication
     @objc func createViewerNextcloudText(serverUrl: String,viewController: UIViewController) {
         
         if !NCCommunication.shared.isNetworkReachable() {
-            NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
+            NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, forced: true)
             return;
         }
         
         guard let directEditingCreator = NCManageDatabase.shared.getDirectEditingCreators(predicate: NSPredicate(format: "account == %@ AND editor == 'text'", appDelegate.account))?.first else { return }
         
-        NCUtility.shared.startActivityIndicator(view: viewController.view)
+        NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
         
-        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: NCBrandGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)!
+        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)!
         NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier ,templateId: "") { (account, url, errorCode, errorMessage) in
             
             NCUtility.shared.stopActivityIndicator()
@@ -55,7 +55,7 @@ import NCCommunication
                 }
                 
             } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: errorCode)
             }
         }
     }
@@ -64,15 +64,15 @@ import NCCommunication
         
         if !NCCommunication.shared.isNetworkReachable() {
             
-            NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
+            NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, forced: true)
             return;
         }
         
-        if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, serverUrl, NCBrandGlobal.shared.fileNameRichWorkspace.lowercased())) {
+        if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) {
             
             if metadata.url == "" {
                 
-                NCUtility.shared.startActivityIndicator(view: viewController.view)
+                NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
                 
                 let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)!
                 NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { (account, url, errorCode, errorMessage) in
@@ -91,7 +91,7 @@ import NCCommunication
                         }
                         
                     } else if errorCode != 0 {
-                        NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: errorCode)
+                        NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: errorCode)
                     }
                 }
                 

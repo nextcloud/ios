@@ -30,8 +30,11 @@
 
 + (instancetype)sharedManager;
 
-- (NSString *)createCSR:(NSString *)userID directory:(NSString *)directory;
-- (NSString *)encryptPrivateKey:(NSString *)userID directory: (NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey;
+@property (nonatomic, strong) NSString *generatedPublicKey;
+@property (nonatomic, strong) NSString *generatedPrivateKey;
+
+- (NSString *)createCSR:(NSString *)userId directory:(NSString *)directory;
+- (NSString *)encryptPrivateKey:(NSString *)userId directory: (NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey;
 - (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey;
 
 - (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey privateKey:(NSString *)privateKey;
@@ -46,5 +49,7 @@
 
 - (NSData *)generateKey:(int)length;
 - (NSString *)createSHA512:(NSString *)string;
+
+- (NSString *)extractPublicKeyFromCertificate:(NSString *)pemCertificate;
 
 @end

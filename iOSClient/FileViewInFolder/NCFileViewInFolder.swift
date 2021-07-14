@@ -21,19 +21,21 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import NCCommunication
 
 class NCFileViewInFolder: NCCollectionViewCommon  {
     
     internal var fileName: String?
 
+    // MARK: - View Life Cycle
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
         appDelegate.activeFileViewInFolder = self
         titleCurrentFolder = NCBrandOptions.shared.brand
-        layoutKey = NCBrandGlobal.shared.layoutViewViewInFolder
+        layoutKey = NCGlobal.shared.layoutViewViewInFolder
         enableSearchBar = false
         emptyImage = UIImage.init(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
@@ -41,7 +43,9 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-                
+
+        appDelegate.activeViewController = self
+        
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
             self.navigationItem.title = NCBrandOptions.shared.brand
         } else {
@@ -49,12 +53,11 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         }
         
         presentationController?.delegate = self
-        appDelegate.activeViewController = self
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
-        gridLayout.itemForLine = CGFloat(itemForLine)
+        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
         
-        if layout == NCBrandGlobal.shared.layoutList {
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView?.collectionViewLayout = listLayout
         } else {
             collectionView?.collectionViewLayout = gridLayout
@@ -86,7 +89,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
                 }
             }
             
-            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort: self.sort, ascending: self.ascending, directoryOnTop: self.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
             
             DispatchQueue.main.async {
             
@@ -128,12 +131,12 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
                
-        networkReadFolder(forced: forced) { (metadatas, metadatasUpdate, errorCode, errorDescription) in
+        networkReadFolder(forced: forced) { (metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription) in
             if errorCode == 0 {
                 for metadata in metadatas ?? [] {
                     if !metadata.directory {
                         if NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
-                            NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
+                            NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
                         }
                     }
                 }

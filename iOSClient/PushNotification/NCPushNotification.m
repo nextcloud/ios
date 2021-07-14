@@ -21,10 +21,12 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "AppDelegate.h"
+#import <UserNotifications/UserNotifications.h>
 #import "NCBridgeSwift.h"
 #import "NCPushNotification.h"
 #import "NCPushNotificationEncryption.h"
+#import "NCEndToEndEncryption.h"
+#import "CCUtility.h"
 
 @interface NCPushNotification ()
 {
@@ -48,7 +50,7 @@
 
 - (void)pushNotification
 {
-    if (appDelegate.account == nil || appDelegate.account.length == 0 || self.pushKitToken.length == 0) { return; }
+    if (self.pushKitToken.length == 0) { return; }
     
     for (tableAccount *result in [[NCManageDatabase shared] getAllAccount]) {
         

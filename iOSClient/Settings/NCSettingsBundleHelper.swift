@@ -24,12 +24,6 @@
 import Foundation
 
 class NCSettingsBundleHelper: NSObject {
-    struct SettingsBundleKeys {
-        static let AppVersionKey = "version_preference"
-    }
-    
-    class func checkAndExecuteSettings() {
-    }
     
     @objc class func setVersionAndBuildNumber() {
         let version = NCUtility.shared.getVersionApp() as String

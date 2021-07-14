@@ -21,19 +21,20 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import NCCommunication
 
 class NCFavorite: NCCollectionViewCommon  {
     
+    // MARK: - View Life Cycle
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        appDelegate.activeFavorite = self
         titleCurrentFolder = NSLocalizedString("_favorites_", comment: "")
-        layoutKey = NCBrandGlobal.shared.layoutViewFavorite
+        layoutKey = NCGlobal.shared.layoutViewFavorite
         enableSearchBar = true
-        emptyImage = UIImage.init(named: "favorite")?.image(color: NCBrandColor.shared.yellowFavorite, size: UIScreen.main.bounds.width)
+        emptyImage = UIImage.init(named: "star.fill")?.image(color: NCBrandColor.shared.yellowFavorite, size: UIScreen.main.bounds.width)
         emptyTitle = "_favorite_no_files_"
         emptyDescription = "_tutorial_favorite_view_"
     }
@@ -54,7 +55,7 @@ class NCFavorite: NCCollectionViewCommon  {
                 }
             }
             
-            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort:self.sort, ascending: self.ascending, directoryOnTop: self.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort:self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
             
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
@@ -76,9 +77,9 @@ class NCFavorite: NCCollectionViewCommon  {
         
         if serverUrl == "" {
             
-            NCNetworking.shared.listingFavoritescompletion(selector: NCBrandGlobal.shared.selectorListingFavorite) { (account, metadatas, errorCode, errorDescription) in
+            NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorListingFavorite) { (account, metadatas, errorCode, errorDescription) in
                 if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
                 
                 self.refreshControl.endRefreshing()
@@ -88,12 +89,12 @@ class NCFavorite: NCCollectionViewCommon  {
             
         } else {
             
-            networkReadFolder(forced: forced) { (metadatas, metadatasUpdate, errorCode, errorDescription) in
+            networkReadFolder(forced: forced) { (metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription) in
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory {
                             if NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: NCBrandGlobal.shared.selectorDownloadFile)
+                                NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
                             }
                         }
                     }
@@ -101,7 +102,7 @@ class NCFavorite: NCCollectionViewCommon  {
                 
                 self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
-                if metadatasUpdate?.count ?? 0 > 0 || forced {
+                if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
                     self.reloadDataSource()
                 } else {
                     self.collectionView?.reloadData()

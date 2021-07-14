@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 
 class NCMainTabBar: UITabBar {
 
@@ -30,42 +30,37 @@ class NCMainTabBar: UITabBar {
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var timer: Timer?
     
-//    override var traitCollection: UITraitCollection {
-//        return UITraitCollection(horizontalSizeClass: .compact)
-//    }
+    public var menuRect: CGRect {
+        get {
+            let tabBarItemWidth = Int(self.frame.size.width) / (self.items?.count ?? 0)
+            let rect = CGRect(x: 0, y: -5, width: tabBarItemWidth, height: Int(self.frame.size.height))
+            
+            return rect
+        }
+    }
+    
+    // MARK: - Life Cycle
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
+        appDelegate.mainTabBar = self
         timer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: (#selector(updateBadgeNumber)), userInfo: nil, repeats: true)
             
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
+
+        barTintColor = NCBrandColor.shared.secondarySystemBackground
+        backgroundColor = NCBrandColor.shared.secondarySystemBackground
         
         changeTheming()
     }
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        
-        if #available(iOS 13.0, *) {
-            if CCUtility.getDarkModeDetect() {
-                if traitCollection.userInterfaceStyle == .dark {
-                    CCUtility.setDarkMode(true)
-                } else {
-                    CCUtility.setDarkMode(false)
-                }
-            }
-            NCBrandColor.shared.settingThemingColor(account: appDelegate.account)
-        }
-    }
-    
     @objc func changeTheming() {
-        barTintColor = NCBrandColor.shared.backgroundView
-        backgroundColor = NCBrandColor.shared.tabBar
         tintColor = NCBrandColor.shared.brandElement
         if let centerButton = self.viewWithTag(99) {
             centerButton.backgroundColor = NCBrandColor.shared.brandElement
-        }
+        }        
     }
     
     override var backgroundColor: UIColor? {
@@ -120,7 +115,7 @@ class NCMainTabBar: UITabBar {
     private func createPath() -> CGPath {
         
         let height: CGFloat = 28
-        let margin: CGFloat = 8
+        let margin: CGFloat = 6
         let path = UIBezierPath()
         let centerWidth = self.frame.width / 2
 
@@ -149,7 +144,7 @@ class NCMainTabBar: UITabBar {
         // Favorite
         if let item = items?[1] {
             item.title = NSLocalizedString("_favorites_", comment: "")
-            item.image = UIImage(named: "favorite")?.image(color: NCBrandColor.shared.brandElement, size: 25)
+            item.image = UIImage(named: "tabBarFavorites")?.image(color: NCBrandColor.shared.brandElement, size: 25)
             item.selectedImage = item.image
         }
         
@@ -163,7 +158,7 @@ class NCMainTabBar: UITabBar {
         // Media
         if let item = items?[3] {
             item.title = NSLocalizedString("_media_", comment: "")
-            item.image = UIImage(named: "media")?.image(color: NCBrandColor.shared.brandElement, size: 25)
+            item.image = UIImage(named: "tabBarMedia")?.image(color: NCBrandColor.shared.brandElement, size: 25)
             item.selectedImage = item.image
         }
         
@@ -207,22 +202,22 @@ class NCMainTabBar: UITabBar {
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, appDelegate.activeServerUrl)) {
             
             if !directory.permissions.contains("CK") {
-                NCContentPresenter.shared.messageNotification("_warning_", description: "_no_permission_add_file_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError)
+                NCContentPresenter.shared.messageNotification("_warning_", description: "_no_permission_add_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
                 return
             }
         }
         
         if let viewController = self.window?.rootViewController {
-            appDelegate.showMenuIn(viewController: viewController)
+            appDelegate.toggleMenu(viewController: viewController)
         }
     }
     
     @objc func updateBadgeNumber() {
         
-        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
+        if appDelegate.account == "" { return }
         
         let counterDownload = NCOperationQueue.shared.downloadCount()
-        let counterUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d OR status == %d", NCBrandGlobal.shared.metadataStatusWaitUpload, NCBrandGlobal.shared.metadataStatusInUpload, NCBrandGlobal.shared.metadataStatusUploading)).count
+        let counterUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d OR status == %d", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading)).count
         let total = counterDownload + counterUpload
         
         UIApplication.shared.applicationIconBadgeNumber = total

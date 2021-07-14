@@ -33,7 +33,6 @@ class DragDropViewController: UIViewController {
     private var imagesDestination: [UIImage] = []
     private var itemsDestination: [String] = []
     
-    //AppDelegate
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     //MARK: Outlets
@@ -56,54 +55,55 @@ class DragDropViewController: UIViewController {
     
     override var canBecomeFirstResponder: Bool { return true }
     
-    //MARK: View Lifecycle Methods
+    // MARK: - View Life Cycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
+
         collectionViewSource.dragInteractionEnabled = true
         collectionViewSource.dragDelegate = self
         collectionViewSource.dropDelegate = self
-        
+        collectionViewSource.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+
         collectionViewDestination.dragInteractionEnabled = true
         collectionViewDestination.dropDelegate = self
         collectionViewDestination.dragDelegate = self
         collectionViewDestination.reorderingCadence = .fast //default value - .immediate
-        
-        self.navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
+        collectionViewDestination.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+
         cancel.title = NSLocalizedString("_cancel_", comment: "")
         save.title = NSLocalizedString("_save_", comment: "")
-        labelTitlePDFzone.text = NSLocalizedString("_scan_label_document_zone_", comment: "")
         
+        labelTitlePDFzone.text = NSLocalizedString("_scan_label_document_zone_", comment: "")
+        labelTitlePDFzone.backgroundColor = NCBrandColor.shared.systemGray6
+        labelTitlePDFzone.textColor = NCBrandColor.shared.label
+
         segmentControlFilter.setTitle(NSLocalizedString("_filter_original_", comment: ""), forSegmentAt: 0)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 1)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_bn_", comment: ""), forSegmentAt: 2)
 
-        add.setImage(UIImage(named: "add")?.image(color: NCBrandColor.shared.brandElement, size: 25), for: .normal)
-        transferDown.setImage(UIImage(named: "transferDown")?.image(color: NCBrandColor.shared.brandElement, size: 25), for: .normal)
+        add.setImage(UIImage(named: "plus")?.image(color: NCBrandColor.shared.label, size: 25), for: .normal)
+        transferDown.setImage(UIImage(named: "transferDown")?.image(color: NCBrandColor.shared.label, size: 25), for: .normal)
         
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
         collectionViewSource.addGestureRecognizer(longPressRecognizer)
         let longPressRecognizerPlus = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
         add.addGestureRecognizer(longPressRecognizerPlus)
         
-        // changeTheming
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCBrandGlobal.shared.notificationCenterChangeTheming), object: nil)
-        
-        changeTheming()
+        collectionViewSource.reloadData()
+        collectionViewDestination.reloadData()
         
         loadImage()
     }
     
-    @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.shared.backgroundForm
-
-        collectionViewSource.backgroundColor = NCBrandColor.shared.backgroundForm
-        collectionViewDestination.backgroundColor = NCBrandColor.shared.backgroundForm
-        collectionViewSource.reloadData()
-        collectionViewDestination.reloadData()
-
-        labelTitlePDFzone.textColor = NCBrandColor.shared.textView
-        labelTitlePDFzone.backgroundColor = .systemBackground
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        add.setImage(UIImage(named: "plus")?.image(color: NCBrandColor.shared.label, size: 25), for: .normal)
+        transferDown.setImage(UIImage(named: "transferDown")?.image(color: NCBrandColor.shared.label, size: 25), for: .normal)
     }
     
     //MARK: Button Action
@@ -117,15 +117,15 @@ class DragDropViewController: UIViewController {
         if imagesDestination.count > 0 {
             
             var images: [UIImage] = []
-            var serverUrl = appDelegate.activeServerUrl!
+            let serverUrl = appDelegate.activeServerUrl
 
             for image in imagesDestination {
                 images.append(filter(image: image)!)
             }
             
-            if let directory = CCUtility.getDirectoryScanDocuments() {
-                serverUrl = directory
-            }
+//            if let directory = CCUtility.getDirectoryScanDocuments() {
+//                serverUrl = directory
+//            }
             
             let formViewController = NCCreateFormUploadScanDocument.init(serverUrl: serverUrl, arrayImages: images)
             self.navigationController?.pushViewController(formViewController, animated: true)
@@ -356,7 +356,7 @@ class DragDropViewController: UIViewController {
         
         if pasteboard.hasImages {
             
-            let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: NCBrandGlobal.shared.keyFileNameMask, keyFileNameType: NCBrandGlobal.shared.keyFileNameType, keyFileNameOriginal: NCBrandGlobal.shared.keyFileNameOriginal)!
+            let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: NCGlobal.shared.keyFileNameMask, keyFileNameType: NCGlobal.shared.keyFileNameType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal, forcedNewFileName: true)!
             let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
             
             guard let image = pasteboard.image?.fixedOrientation() else {

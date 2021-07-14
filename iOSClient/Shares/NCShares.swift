@@ -21,17 +21,18 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Foundation
+import UIKit
 import NCCommunication
 
 class NCShares: NCCollectionViewCommon  {
     
+    // MARK: - View Life Cycle
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        appDelegate.activeShares = self
         titleCurrentFolder = NSLocalizedString("_list_shares_", comment: "")
-        layoutKey = NCBrandGlobal.shared.layoutViewShares 
+        layoutKey = NCGlobal.shared.layoutViewShares 
         enableSearchBar = false
         emptyImage = UIImage.init(named: "share")?.image(color: .gray, size: UIScreen.main.bounds.width)
         emptyTitle = "_list_shares_no_files_"
@@ -52,7 +53,7 @@ class NCShares: NCCollectionViewCommon  {
                 }
             }
             
-            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort:self.sort, ascending: self.ascending, directoryOnTop: self.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
             
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
@@ -91,7 +92,7 @@ class NCShares: NCCollectionViewCommon  {
             } else {
                     
                 self.collectionView?.reloadData()
-                NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
         }
     }

@@ -21,8 +21,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
+
 class fileProviderUtility: NSObject {
-    @objc static let shared: fileProviderUtility = {
+    static let shared: fileProviderUtility = {
         let instance = fileProviderUtility()
         return instance
     }()

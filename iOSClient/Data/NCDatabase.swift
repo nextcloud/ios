@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import RealmSwift
 
 class tableAccount: Object {
@@ -28,6 +29,7 @@ class tableAccount: Object {
     @objc dynamic var account = ""
     @objc dynamic var active: Bool = false
     @objc dynamic var address = ""
+    @objc dynamic var alias = ""
     @objc dynamic var autoUpload: Bool = false
     @objc dynamic var autoUploadBackground: Bool = false
     @objc dynamic var autoUploadCreateSubfolder: Bool = false
@@ -68,7 +70,7 @@ class tableAccount: Object {
     @objc dynamic var twitter = ""
     @objc dynamic var urlBase = ""
     @objc dynamic var user = ""
-    @objc dynamic var userID = ""
+    @objc dynamic var userId = ""
     @objc dynamic var userStatusClearAt: NSDate? = nil
     @objc dynamic var userStatusIcon: String?
     @objc dynamic var userStatusMessage: String?
@@ -78,6 +80,11 @@ class tableAccount: Object {
     @objc dynamic var userStatusStatusIsUserDefined: Bool = false
     @objc dynamic var webpage = ""
     @objc dynamic var zip = ""
+    
+    // COLOR Files
+    @objc dynamic var darkColorBackground = ""
+    @objc dynamic var lightColorBackground = ""
+
     // HC
     @objc dynamic var hcIsTrial: Bool = false
     @objc dynamic var hcTrialExpired: Bool = false
@@ -127,6 +134,7 @@ class tableActivity: Object {
 class tableActivityPreview: Object {
     
     @objc dynamic var account = ""
+    @objc dynamic var filename = ""
     @objc dynamic var idPrimaryKey = ""
     @objc dynamic var idActivity: Int = 0
     @objc dynamic var source = ""
@@ -165,6 +173,19 @@ class tableCapabilities: Object {
     
     override static func primaryKey() -> String {
         return "account"
+    }
+}
+
+class tableChunk: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var chunkFolder = ""
+    @objc dynamic var fileName = ""
+    @objc dynamic var index = ""
+    @objc dynamic var ocId = ""
+
+    override static func primaryKey() -> String {
+        return "index"
     }
 }
 
@@ -305,6 +326,7 @@ class tableMetadata: Object {
     
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
+    @objc dynamic var chunk: Bool = false
     @objc dynamic var commentsUnread: Bool = false
     @objc dynamic var contentType = ""
     @objc dynamic var creationDate = NSDate()

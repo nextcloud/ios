@@ -89,7 +89,7 @@ class NCContentPresenter: NSObject {
             switch errorCode {
             case Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue):
                 let image = UIImage(named: "networkInProgress")!.image(color: .white, size: 20)
-                self.noteTop(text:  NSLocalizedString(title, comment: ""), image: image, color: .lightGray, delay: delay, name: "\(errorCode)")
+                self.noteTop(text: NSLocalizedString(title, comment: ""), image: image, color: .lightGray, delay: delay, name: "\(errorCode)")
             //case Int(kOCErrorServerUnauthorized), Int(kOCErrorServerForbidden):
             //    break
             default:
@@ -166,14 +166,46 @@ class NCContentPresenter: NSObject {
     
     //MARK: - Note Message
     
-    @objc func noteTop(text: String, image: UIImage?, color: UIColor, delay: TimeInterval, name: String?) {
+    func noteTop(text: String, image: UIImage?, color: UIColor? = nil, type: messageType? = nil, delay: TimeInterval, name: String?) {
         
         var attributes = EKAttributes.topNote
         
         attributes.windowLevel = .normal
         attributes.displayDuration = delay
         attributes.name = name
-        attributes.entryBackground = .color(color: EKColor(color))
+        if let color = color {
+            attributes.entryBackground = .color(color: EKColor(color))
+        }
+        if let type = type {
+            attributes.entryBackground = .color(color: EKColor(getBackgroundColorFromType(type)))
+        }
+        
+        let style = EKProperty.LabelStyle(font: MainFont.light.with(size: 14), color: .white, alignment: .center)
+        let labelContent = EKProperty.LabelContent(text: text, style: style)
+        
+        if let image = image {
+            let imageContent = EKProperty.ImageContent(image: image, size: CGSize(width: 17, height: 17))
+            let contentView = EKImageNoteMessageView(with: labelContent, imageContent: imageContent)
+            DispatchQueue.main.async { SwiftEntryKit.display(entry: contentView, using: attributes) }
+        } else {
+            let contentView = EKNoteMessageView(with: labelContent)
+            DispatchQueue.main.async { SwiftEntryKit.display(entry: contentView, using: attributes) }
+        }
+    }
+    
+    func noteBottom(text: String, image: UIImage?, color: UIColor? = nil, type: messageType? = nil, delay: TimeInterval, name: String?) {
+        
+        var attributes = EKAttributes.bottomNote
+        
+        attributes.windowLevel = .normal
+        attributes.displayDuration = delay
+        attributes.name = name
+        if let color = color {
+            attributes.entryBackground = .color(color: EKColor(color))
+        }
+        if let type = type {
+            attributes.entryBackground = .color(color: EKColor(getBackgroundColorFromType(type)))
+        }
         
         let style = EKProperty.LabelStyle(font: MainFont.light.with(size: 14), color: .white, alignment: .center)
         let labelContent = EKProperty.LabelContent(text: text, style: style)
