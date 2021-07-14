@@ -249,6 +249,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             })
         }
         
+        // Clear operation queue 
+        NCOperationQueue.shared.cancelAllQueue()
+        
         // Clear older files
         let days = CCUtility.getCleanUpDay()
         if let directory = CCUtility.getDirectoryProviderStorage() {
