@@ -51,6 +51,10 @@ class NCViewerImageDetailView: UIView {
     var size: Int64 = 0
     var image: UIImage?
     
+    var imageViewTopConstraintConstant: CGFloat = 0
+    var imageViewBottomConstraintConstant: CGFloat = 0
+    var detailViewTopConstraintConstant: CGFloat = 0
+    
     override func awakeFromNib() {
         super.awakeFromNib()
            
@@ -81,10 +85,18 @@ class NCViewerImageDetailView: UIView {
     
     func hide() {
         isHidden = true
+        
+        imageViewTopConstraintConstant = 0
+        imageViewBottomConstraintConstant = 0
+        detailViewTopConstraintConstant = 0
     }
     
     func isShow() -> Bool {
         return !isHidden
+    }
+    
+    func isSavedContraint() -> Bool {
+        return imageViewTopConstraintConstant != 0 && imageViewBottomConstraintConstant != 0 && detailViewTopConstraintConstant != 0
     }
     
     //MARK: - EXIF
