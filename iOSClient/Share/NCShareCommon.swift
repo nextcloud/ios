@@ -123,7 +123,7 @@ class NCShareCommon: NSObject {
         if metadata.directory {
             shareUserMenuView.height = 410
         } else {
-            shareUserMenuView.height = 260
+            shareUserMenuView.height = 370
         }
         
         shareUserMenuView.backgroundColor = NCBrandColor.shared.systemBackground
@@ -142,6 +142,49 @@ class NCShareCommon: NSObject {
         ])
         
         return(shareUserMenuView: shareUserMenuView, viewWindow: viewWindow)
+    }
+    
+    func openQuickShare(shareViewController: NCShare, tableShare: tableShare?, metadata: tableMetadata) -> (sharePermissionMenuView: NCPermissionMenuView, viewWindow: UIView) {
+        var sharePermissionMenuView: NCPermissionMenuView
+        let window = UIApplication.shared.keyWindow!
+        let viewWindow = UIView(frame: window.bounds)
+//        let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
+//        let constantTrailingAnchor = window.bounds.width - shareViewController.view.bounds.width - globalPoint!.x + 40
+//        var constantBottomAnchor: CGFloat = 10
+//        constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
+        
+        window.addSubview(viewWindow)
+        viewWindow.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
+        if metadata.directory {
+            sharePermissionMenuView = Bundle.main.loadNibNamed("NCPermissionFolderMenuView", owner: self, options: nil)?.first as! NCPermissionMenuView
+        } else {
+            sharePermissionMenuView = Bundle.main.loadNibNamed("NCPermissionMenuView", owner: self, options: nil)?.first as! NCPermissionMenuView
+        }
+        
+        sharePermissionMenuView.width = 250
+        if metadata.directory {
+            sharePermissionMenuView.height = 153
+        } else {
+            sharePermissionMenuView.height = 112
+        }
+        
+        sharePermissionMenuView.backgroundColor = NCBrandColor.shared.systemBackground
+        sharePermissionMenuView.metadata = metadata
+        sharePermissionMenuView.viewWindow = viewWindow
+        sharePermissionMenuView.shareViewController = shareViewController
+        sharePermissionMenuView.reloadData(idShare: tableShare?.idShare ?? 0)
+        sharePermissionMenuView.translatesAutoresizingMaskIntoConstraints = false
+        viewWindow.addSubview(sharePermissionMenuView)
+
+        NSLayoutConstraint.activate([
+            sharePermissionMenuView.widthAnchor.constraint(equalToConstant: sharePermissionMenuView.width),
+            sharePermissionMenuView.heightAnchor.constraint(equalToConstant: sharePermissionMenuView.height),
+            sharePermissionMenuView.centerXAnchor.constraint(equalTo: viewWindow.centerXAnchor),
+            sharePermissionMenuView.centerYAnchor.constraint(equalTo: viewWindow.centerYAnchor),
+        ])
+        
+        return(sharePermissionMenuView: sharePermissionMenuView, viewWindow: viewWindow)
     }
     
     func openCalendar(view: UIView, width: CGFloat, height: CGFloat) -> (calendarView: FSCalendar, viewWindow: UIView) {

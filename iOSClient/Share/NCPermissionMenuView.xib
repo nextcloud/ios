@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view opaque="NO" contentMode="scaleToFill" id="eG1-xk-TRK" customClass="NCPermissionMenuView" customModule="Nextcloud" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="112"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Vde-Mf-UOs" userLabel="SwitchAllowEditing">
+                    <rect key="frame" x="10" y="10" width="51" height="31"/>
+                    <connections>
+                        <action selector="switchReadOnlyWithSender:" destination="eG1-xk-TRK" eventType="valueChanged" id="zMG-xc-NtN"/>
+                    </connections>
+                </switch>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Read only" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xy4-EP-PU0">
+                    <rect key="frame" x="70" y="18" width="59.5" height="15"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="15" id="MFx-TP-jRy"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="FYK-Ve-HFG" userLabel="SwitchAllowEditing">
+                    <rect key="frame" x="10" y="61" width="51" height="31"/>
+                    <connections>
+                        <action selector="switchAllowEditingChangedWithSender:" destination="eG1-xk-TRK" eventType="valueChanged" id="Sek-Du-fQX"/>
+                    </connections>
+                </switch>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Allow editing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b25-SL-0XM">
+                    <rect key="frame" x="70" y="69" width="334" height="15"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="15" id="ol9-P6-BGd"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="akQ-9h-vFo"/>
+            <constraints>
+                <constraint firstItem="b25-SL-0XM" firstAttribute="leading" secondItem="Xy4-EP-PU0" secondAttribute="leading" id="JI7-s1-QxO"/>
+                <constraint firstAttribute="trailing" secondItem="b25-SL-0XM" secondAttribute="trailing" constant="10" id="JLD-E7-NdD"/>
+                <constraint firstItem="akQ-9h-vFo" firstAttribute="bottom" secondItem="FYK-Ve-HFG" secondAttribute="bottom" constant="20" id="PtF-fV-0JT"/>
+                <constraint firstItem="FYK-Ve-HFG" firstAttribute="top" secondItem="Vde-Mf-UOs" secondAttribute="bottom" constant="20" id="aaU-uv-gNB"/>
+                <constraint firstItem="b25-SL-0XM" firstAttribute="centerY" secondItem="FYK-Ve-HFG" secondAttribute="centerY" id="fXZ-lU-wQT"/>
+                <constraint firstItem="Vde-Mf-UOs" firstAttribute="top" secondItem="eG1-xk-TRK" secondAttribute="top" constant="10" id="gkX-gE-3xC"/>
+                <constraint firstItem="Xy4-EP-PU0" firstAttribute="leading" secondItem="eG1-xk-TRK" secondAttribute="leading" constant="70" id="i6P-EV-ChR"/>
+                <constraint firstItem="Xy4-EP-PU0" firstAttribute="centerY" secondItem="Vde-Mf-UOs" secondAttribute="centerY" id="qCd-sN-PI3"/>
+                <constraint firstItem="FYK-Ve-HFG" firstAttribute="leading" secondItem="Vde-Mf-UOs" secondAttribute="leading" id="z2C-pA-njM"/>
+                <constraint firstItem="Vde-Mf-UOs" firstAttribute="leading" secondItem="eG1-xk-TRK" secondAttribute="leading" constant="10" id="znY-S6-8JN"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="labelEditing" destination="b25-SL-0XM" id="vV2-bb-eXM"/>
+                <outlet property="labelReadOnly" destination="Xy4-EP-PU0" id="K5R-JN-vm5"/>
+                <outlet property="switchEditing" destination="FYK-Ve-HFG" id="cUi-g9-Dga"/>
+                <outlet property="switchReadOnly" destination="Vde-Mf-UOs" id="JDx-Rd-1FF"/>
+            </connections>
+            <point key="canvasLocation" x="185.50724637681162" y="278.57142857142856"/>
+        </view>
+    </objects>
+</document>

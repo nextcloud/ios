@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/firebase/abseil-cpp-SwiftPM.git",
         "state": {
           "branch": null,
-          "revision": "ff5f5f0a3d3266836b9d722bb73cabdf7057482e",
-          "version": "0.20200225.3"
+          "revision": "fffc3c2729be5747390ad02d5100291a0d9ad26a",
+          "version": "0.20200225.4"
         }
       },
       {
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/firebase/boringssl-SwiftPM.git",
         "state": {
           "branch": null,
-          "revision": "15889fadef7078dfa1392b0e2b08f3d0e9797104",
-          "version": "0.7.1"
+          "revision": "734a8247442fde37df4364c21f6a0085b6a36728",
+          "version": "0.7.2"
         }
       },
       {
@@ -33,8 +33,8 @@
         "repositoryURL": "https://github.com/CocoaLumberjack/CocoaLumberjack.git",
         "state": {
           "branch": null,
-          "revision": "b06614d2373a9830c87817144d47ce654980a2d7",
-          "version": "3.7.0"
+          "revision": "e518eb6e362df327574ba5e04269cd6d29f40aec",
+          "version": "3.7.2"
         }
       },
       {
@@ -78,8 +78,8 @@
         "repositoryURL": "https://github.com/google/GoogleUtilities.git",
         "state": {
           "branch": null,
-          "revision": "66f5945ac3a4c4ac268bf94c31f226116b14e327",
-          "version": "7.4.0"
+          "revision": "5b9fc55628b94740b9666a558570f3a89a626c3d",
+          "version": "7.4.2"
         }
       },
       {
@@ -195,7 +195,7 @@
         "repositoryURL": "https://github.com/SVGKit/SVGKit.git",
         "state": {
           "branch": "3.x",
-          "revision": "11b6d774d2710a8b1c0493146be5d56e56961946",
+          "revision": "c4dbac4fd86ad8108afb85004213209b214c9739",
           "version": null
         }
       },
@@ -204,8 +204,8 @@
         "repositoryURL": "https://github.com/apple/swift-log.git",
         "state": {
           "branch": null,
-          "revision": "173f567a2dfec11d74588eea82cecea555bdc0bc",
-          "version": "1.4.0"
+          "revision": "5d66f7ba25daf4f94100e7022febf3c75e37a6c7",
+          "version": "1.4.2"
         }
       },
       {
@@ -213,8 +213,8 @@
         "repositoryURL": "https://github.com/apple/swift-protobuf.git",
         "state": {
           "branch": null,
-          "revision": "bfe4255ff60f22a41cafa113059668571ed5d461",
-          "version": "1.16.0"
+          "revision": "1f62db409f2c9b0223a3f68567b4a01333aae778",
+          "version": "1.17.0"
         }
       },
       {
