@@ -58,6 +58,7 @@ class NCViewerImageZoom: UIViewController {
     private var startImageViewBottomConstraint: CGFloat = 0
     private var startPoint = CGPoint.zero
     private var topPoint = CGPoint.zero
+    
 
     // MARK: - View Life Cycle
 
@@ -200,6 +201,14 @@ class NCViewerImageZoom: UIViewController {
                     self.updateZoomScale()
                     self.centreConstraints()
                 }
+            } else if detailView.isSavedContraint() {
+                UIView.animate(withDuration: 0.3) {
+                    self.imageViewTopConstraint.constant = self.detailView.imageViewTopConstraintConstant
+                    self.imageViewBottomConstraint.constant = self.detailView.imageViewBottomConstraintConstant
+                    self.detailViewTopConstraint.constant = self.detailView.detailViewTopConstraintConstant
+                    self.view.layoutIfNeeded()
+                } completion: { (_) in
+                }
             }
             
         case .changed:
@@ -231,11 +240,14 @@ class NCViewerImageZoom: UIViewController {
                         self.detailViewTopConstraint.constant = -self.imageViewBottomConstraint.constant
                         self.view.layoutIfNeeded()
                     } completion: { (_) in
-                        //end.
+                        // Save detail constraints
+                        self.detailView.imageViewTopConstraintConstant = self.imageViewTopConstraint.constant
+                        self.detailView.imageViewBottomConstraintConstant = self.imageViewBottomConstraint.constant
+                        self.detailView.detailViewTopConstraintConstant = self.detailViewTopConstraint.constant
                     }
                 }
                 
-                detailView.show(textColor: self.viewerImage?.textColor)
+               // detailView.show(textColor: self.viewerImage?.textColor)
             }
             
             // CLOSE DETAIL
