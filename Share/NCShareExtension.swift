@@ -687,7 +687,8 @@ extension NCShareExtension: UITableViewDataSource {
         let imageCell = cell.viewWithTag(10) as? UIImageView
         let fileNameCell = cell.viewWithTag(20) as? UILabel
         let moreButton = cell.viewWithTag(30) as? NCShareExtensionButtonWithIndexPath
-
+        let sizeCell = cell.viewWithTag(40) as? UILabel
+        
         imageCell?.layer.cornerRadius = 6
         imageCell?.layer.masksToBounds = true
 
@@ -705,6 +706,9 @@ extension NCShareExtension: UITableViewDataSource {
         }
         
         fileNameCell?.text = fileName
+        
+        let fileSize = NCUtilityFileSystem.shared.getFileSize(filePath: (NSTemporaryDirectory() + fileName))
+        sizeCell?.text = CCUtility.transformedSize(fileSize)
         
         moreButton?.setImage(NCUtility.shared.loadImage(named: "more").image(color: NCBrandColor.shared.label, size: 15), for: .normal)
         moreButton?.indexPath = indexPath

@@ -60,10 +60,16 @@
                                                                 <constraint firstAttribute="height" constant="40" id="wvf-Ey-woY"/>
                                                             </constraints>
                                                         </imageView>
-                                                        <label opaque="NO" userInteractionEnabled="NO" tag="20" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rz6-pe-DB5">
-                                                            <rect key="frame" x="60" y="16.666666666666668" width="284" height="17.000000000000004"/>
+                                                        <label opaque="NO" userInteractionEnabled="NO" tag="20" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="filename" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rz6-pe-DB5">
+                                                            <rect key="frame" x="60" y="10" width="284" height="17"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                             <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <label opaque="NO" userInteractionEnabled="NO" tag="40" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="size" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QFh-Vy-b4Z">
+                                                            <rect key="frame" x="60" y="29.999999999999996" width="284" height="14.333333333333332"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                            <color key="textColor" systemColor="systemGray2Color"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <button opaque="NO" tag="30" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OGY-95-ZYi" customClass="NCShareExtensionButtonWithIndexPath" customModule="Share" customModuleProvider="target">
@@ -76,13 +82,16 @@
                                                         </button>
                                                     </subviews>
                                                     <constraints>
-                                                        <constraint firstItem="rz6-pe-DB5" firstAttribute="centerY" secondItem="WGN-Zn-lR8" secondAttribute="centerY" id="Ag7-Ow-Ifk"/>
+                                                        <constraint firstItem="QFh-Vy-b4Z" firstAttribute="top" secondItem="rz6-pe-DB5" secondAttribute="bottom" constant="3" id="JuZ-ab-QUq"/>
                                                         <constraint firstItem="OGY-95-ZYi" firstAttribute="centerY" secondItem="WGN-Zn-lR8" secondAttribute="centerY" id="Mgu-E2-kgA"/>
+                                                        <constraint firstItem="OGY-95-ZYi" firstAttribute="leading" secondItem="QFh-Vy-b4Z" secondAttribute="trailing" constant="10" id="NNX-Me-vES"/>
                                                         <constraint firstItem="uvl-De-S9p" firstAttribute="centerY" secondItem="WGN-Zn-lR8" secondAttribute="centerY" id="bFC-cS-ePy"/>
                                                         <constraint firstItem="rz6-pe-DB5" firstAttribute="leading" secondItem="uvl-De-S9p" secondAttribute="trailing" constant="10" id="f94-aJ-igq"/>
                                                         <constraint firstItem="uvl-De-S9p" firstAttribute="leading" secondItem="WGN-Zn-lR8" secondAttribute="leading" constant="10" id="ko0-iM-oWa"/>
+                                                        <constraint firstItem="rz6-pe-DB5" firstAttribute="top" secondItem="WGN-Zn-lR8" secondAttribute="top" constant="10" id="rF0-WD-Hfk"/>
                                                         <constraint firstAttribute="trailing" secondItem="OGY-95-ZYi" secondAttribute="trailing" constant="10" id="si1-LI-Ldn"/>
                                                         <constraint firstItem="OGY-95-ZYi" firstAttribute="leading" secondItem="rz6-pe-DB5" secondAttribute="trailing" constant="10" id="vCb-2c-vWa"/>
+                                                        <constraint firstItem="QFh-Vy-b4Z" firstAttribute="leading" secondItem="uvl-De-S9p" secondAttribute="trailing" constant="10" id="xAp-ri-eOc"/>
                                                     </constraints>
                                                 </tableViewCellContentView>
                                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -230,6 +239,9 @@
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGray2Color">
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray6Color">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
