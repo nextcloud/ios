@@ -632,14 +632,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
                  
                     let activeAccount = NCManageDatabase.shared.getActiveAccount()
-                    var title = "  "
+                    var titleButton = "  "
+                    
                     if activeAccount?.alias == "" {
-                        title = title + (activeAccount?.user ?? "")
+                        titleButton = titleButton + (activeAccount?.user ?? "")
                     } else {
-                        title = title + (activeAccount?.alias ?? "")
+                        titleButton = titleButton + (activeAccount?.alias ?? "")
                     }
                     
-                    button.setTitle(title, for: .normal)
+                    if getNavigationTitle() == activeAccount?.alias {
+                        titleButton = ""
+                    }
+                    
+                    button.setTitle(titleButton, for: .normal)
                     button.setTitleColor(.systemBlue, for: .normal)
                 }
                 
@@ -650,6 +655,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 navigationItem.setLeftBarButton(UIBarButtonItem(customView: button), animated: true)
                 navigationItem.leftItemsSupplementBackButton = true
             }
+        }
+    }
+    
+    func getNavigationTitle() -> String {
+        
+        let activeAccount = NCManageDatabase.shared.getActiveAccount()
+        if activeAccount?.alias == "" {
+            return NCBrandOptions.shared.brand
+        } else {
+            return activeAccount?.alias ?? NCBrandOptions.shared.brand
         }
     }
     
