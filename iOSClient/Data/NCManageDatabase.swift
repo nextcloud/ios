@@ -708,6 +708,7 @@ class NCManageDatabase: NSObject {
     @objc func setAccountAlias(_ alias: String?) {
         
         let realm = try! Realm()
+        let alias = alias?.trimmingCharacters(in: .whitespacesAndNewlines)
 
         do {
             try realm.safeWrite {
