@@ -46,7 +46,7 @@ class NCFiles: NCCollectionViewCommon  {
         
         if isRoot {
             serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
-            titleForHome()
+            titleCurrentFolder = getNavigationTitle()
         }
         
         super.viewWillAppear(animated)
@@ -58,23 +58,11 @@ class NCFiles: NCCollectionViewCommon  {
         
         if isRoot {
             serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
-            titleForHome()
+            titleCurrentFolder = getNavigationTitle()
             reloadDataSourceNetwork(forced: true)
         }
         
         super.initialize()
-    }
-    
-    // MARK: - Title for home
-    
-    private func titleForHome() {
-        
-        let activeAccount = NCManageDatabase.shared.getActiveAccount()
-        if activeAccount?.alias == "" {
-            titleCurrentFolder = NCBrandOptions.shared.brand
-        } else {
-            titleCurrentFolder = activeAccount?.alias ?? NCBrandOptions.shared.brand
-        }
     }
     
     // MARK: - DataSource + NC Endpoint
