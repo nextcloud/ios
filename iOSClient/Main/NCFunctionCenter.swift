@@ -440,16 +440,133 @@ import Queuer
     }
 
     func pastePasteboard(serverUrl: String) {
+    
+        var pasteboardTypes: [String] = []
+        
+        func upload(pasteboardType : String?, data: Data?) -> Bool {
+            
+            guard let data = data else { return false}
+            guard let pasteboardType = pasteboardType else { return false }
+            
+            let results = NCCommunicationCommon.shared.getDescriptionFile(inUTI: pasteboardType as CFString)
+            if results.resultExtension == "" { return false }
+            if results.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue {
+                uploadPasteFile(fileName: results.resultFilename, ext: results.resultExtension, contentType: pasteboardType, serverUrl: serverUrl, data: data)
+                return true
+            }
+            return false
+        }
                 
         for (index, items) in UIPasteboard.general.items.enumerated() {
-            for item in items {
-                let pasteboardType = item.key
-                if let data = UIPasteboard.general.data(forPasteboardType: pasteboardType, inItemSet: IndexSet([index]))?.first {
-                    let results = NCCommunicationCommon.shared.getDescriptionFile(inUTI: pasteboardType as CFString)
-                    if results.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue {
-                        uploadPasteFile(fileName: results.resultFilename, ext: results.resultExtension, contentType: pasteboardType, serverUrl: serverUrl, data: data)
-                    }
-                }
+
+            for item in items { pasteboardTypes.append(item.key) }
+            
+            // image
+            var filter = pasteboardTypes.filter({ UTTypeConformsTo($0 as CFString, kUTTypeImage) })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first) { continue }
+            }
+
+            // movie
+            filter = pasteboardTypes.filter({ UTTypeConformsTo($0 as CFString, kUTTypeMovie) })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // audio
+            filter = pasteboardTypes.filter({ UTTypeConformsTo($0 as CFString, kUTTypeAudio) })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // PDF
+            filter = pasteboardTypes.filter({ UTTypeConformsTo($0 as CFString, kUTTypePDF) })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // ARCHIVE
+            filter = pasteboardTypes.filter({ UTTypeConformsTo($0 as CFString, kUTTypeZipArchive) })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // DOCX
+            filter = pasteboardTypes.filter({ $0 == "org.openxmlformats.wordprocessingml.document" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // DOC
+            filter = pasteboardTypes.filter({ $0 == "com.microsoft.word.doc" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // PAGES
+            filter = pasteboardTypes.filter({ $0 == "com.apple.iwork.pages.pages" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // XLSX
+            filter = pasteboardTypes.filter({ $0 == "org.openxmlformats.spreadsheetml.sheet" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // XLS
+            filter = pasteboardTypes.filter({ $0 == "com.microsoft.excel.xls" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // NUMBERS
+            filter = pasteboardTypes.filter({ $0 == "com.apple.iwork.numbers.numbers" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // PPTX
+            filter = pasteboardTypes.filter({ $0 == "org.openxmlformats.presentationml.presentation" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // PPT
+            filter = pasteboardTypes.filter({ $0 == "com.microsoft.powerpoint.ppt" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // KEYNOTE
+            filter = pasteboardTypes.filter({ $0 == "com.apple.iwork.keynote.key" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // MARKDOWN
+            filter = pasteboardTypes.filter({ $0 == "net.daringfireball.markdown" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // RTF
+            filter = pasteboardTypes.filter({ UTTypeConformsTo($0 as CFString, kUTTypeRTF) })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // TEXT
+            filter = pasteboardTypes.filter({ UTTypeConformsTo($0 as CFString, kUTTypeText) })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            //HTML
+            filter = pasteboardTypes.filter({ UTTypeConformsTo($0 as CFString, kUTTypeHTML) })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
             }
         }
     }
