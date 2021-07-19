@@ -265,6 +265,19 @@ class NCUtilityFileSystem: NSObject {
         
         let minimumDate = Date().addingTimeInterval(-days*24*60*60)
         let url = URL(fileURLWithPath: directory)
+        var offlineDir: [String] = []
+        var offlineFiles: [String] = []
+
+        if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true) {
+            for directory: tableDirectory in directories {
+                offlineDir.append(CCUtility.getDirectoryProviderStorageOcId(directory.ocId))
+            }
+        }
+       
+        let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "offline == true"), sorted: "fileName", ascending: true)
+        for file: tableLocalFile in files {
+            offlineFiles.append(CCUtility.getDirectoryProviderStorageOcId(file.ocId, fileNameView: file.fileName))
+        }
         
         func meetsRequirement(date: Date) -> Bool {
             return date < minimumDate
@@ -278,6 +291,11 @@ class NCUtilityFileSystem: NSObject {
                         if attributes[.size] as? Double == 0 { continue }
                         if attributes[.type] as? FileAttributeType == FileAttributeType.typeDirectory { continue }
                         if fileURL.pathExtension == NCGlobal.shared.extensionPreview { continue }
+                        // check offline
+                        if offlineFiles.contains(fileURL.path) { continue }
+                        let filter = offlineDir.filter({ fileURL.path.hasPrefix($0)})
+                        if filter.count > 0 { continue }
+                        // check date
                         if meetsRequirement(date: date) {
                             let folderURL = fileURL.deletingLastPathComponent()
                             let ocId = folderURL.lastPathComponent
