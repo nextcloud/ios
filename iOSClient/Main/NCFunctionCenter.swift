@@ -451,10 +451,28 @@ import Queuer
             let results = NCCommunicationCommon.shared.getDescriptionFile(inUTI: pasteboardType as CFString)
             if results.resultExtension == "" { return false }
             if results.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue {
-                uploadPasteFile(fileName: results.resultFilename, ext: results.resultExtension, contentType: pasteboardType, serverUrl: serverUrl, data: data)
-                return true
+                
+                do {
+                    let fileName = results.resultFilename + "_" + CCUtility.getIncrementalNumber() + "." + results.resultExtension
+                    let serverUrlFileName = serverUrl + "/" + fileName
+                    let ocId = UUID().uuidString
+                    let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+                    try data.write(to: URL(fileURLWithPath: fileNameLocalPath))
+                   
+                    NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+                    NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { _, _, _, _, _, _, errorCode, errorDescription in
+                        if errorCode == 0 {
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
+                        } else {
+                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: false)
+                        }
+                        NCUtility.shared.stopActivityIndicator()
+                    }
+                } catch {
+                    return false
+                }
             }
-            return false
+            return true
         }
                 
         for (index, items) in UIPasteboard.general.items.enumerated() {
@@ -569,27 +587,6 @@ import Queuer
                 if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
             }
         }
-    }
-
-    private func uploadPasteFile(fileName: String, ext: String, contentType: String, serverUrl: String, data: Data) {
-        
-        do {
-            let fileNameView = fileName + "_" + CCUtility.getIncrementalNumber() + "." + ext
-            let ocId = UUID().uuidString
-            let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)!
-            
-            try data.write(to: URL(fileURLWithPath: filePath))
-           
-            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileNameView, fileNameView: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: contentType, livePhoto: false)
-            
-            metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
-            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-            metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
-            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-            
-            appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: [metadataForUpload])
-            
-        } catch { }
     }
     
     // MARK: -
