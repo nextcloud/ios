@@ -455,13 +455,15 @@ import Queuer
                 do {
                     let fileName = results.resultFilename + "_" + CCUtility.getIncrementalNumber() + "." + results.resultExtension
                     let serverUrlFileName = serverUrl + "/" + fileName
-                    let ocId = UUID().uuidString
-                    let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+                    let ocIdUpload = UUID().uuidString
+                    let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
                     try data.write(to: URL(fileURLWithPath: fileNameLocalPath))
                    
                     NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
                     NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { account, ocId, etag, date, size, allHeaderFields, errorCode, errorDescription in
                         if errorCode == 0 && etag != nil && ocId != nil {
+                            let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
+                            NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
                             NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
                         } else {
