@@ -226,6 +226,8 @@ import Queuer
     
     func openActivityViewController(selectOcId: [String]) {
         
+        NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+        
         DispatchQueue.global().async {
             
             var error: Int = 0
@@ -265,6 +267,7 @@ import Queuer
                     self.appDelegate.window?.rootViewController?.present(activityViewController, animated: true)
                 }
             }
+            NCUtility.shared.stopActivityIndicator()
         }
     }
         

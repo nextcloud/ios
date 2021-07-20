@@ -289,6 +289,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             if filesName.count <= 3 {
                 self.tableView.isScrollEnabled = false
             }
+            // Label upload button
+            uploadLabel.text = NSLocalizedString("_upload_", comment: "") + " \(filesName.count) " + NSLocalizedString("_files_", comment: "")
             // Empty
             emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -50*counter, delegate: self)
             self.tableView.reloadData()
