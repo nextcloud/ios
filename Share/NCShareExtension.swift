@@ -91,7 +91,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         tableView.separatorColor = NCBrandColor.shared.separator
         tableView.layer.cornerRadius = 10
         tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: 1)))
-
+        commandViewHeightConstraint.constant = heightCommandView
+        
         // Create folder
         createFolderView.layer.cornerRadius = 10
         createFolderImage.image = NCUtility.shared.loadImage(named: "folder.badge.plus", color: NCBrandColor.shared.label)
