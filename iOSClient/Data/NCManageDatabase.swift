@@ -120,16 +120,16 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if oldSchemaVersion < 160 {
-                        migration.deleteData(forType: tableDirectory.className())
-                        migration.deleteData(forType: tableMetadata.className())
-                    }
-                    
                     if oldSchemaVersion < 162 {
                         migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
                             newObject!["userId"] = oldObject!["userID"]
                             migration.deleteData(forType: tableMetadata.className())
                         }
+                    }
+                    
+                    if oldSchemaVersion < 183 {
+                        migration.deleteData(forType: tableDirectory.className())
+                        migration.deleteData(forType: tableMetadata.className())
                     }
                     
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
