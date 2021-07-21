@@ -698,15 +698,8 @@ extension NCShareExtension: UITableViewDataSource {
         let fileName = filesName[indexPath.row]
         let resultInternalType = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
        
-        if resultInternalType.iconName.count > 0 {
-            imageCell?.image = UIImage.init(named: resultInternalType.iconName)
-        } else {
-            imageCell?.image = NCBrandColor.cacheImages.file
-        }
-        
-        /*
         if let image = UIImage(contentsOfFile: (NSTemporaryDirectory() + fileName)) {
-            imageCell?.image = image
+            imageCell?.image = image.resizeImage(size: CGSize(width: 80, height: 80), isAspectRation: true)
         } else {
             if resultInternalType.iconName.count > 0 {
                 imageCell?.image = UIImage.init(named: resultInternalType.iconName)
@@ -714,7 +707,6 @@ extension NCShareExtension: UITableViewDataSource {
                 imageCell?.image = NCBrandColor.cacheImages.file
             }
         }
-        */
         
         fileNameCell?.text = fileName
         
