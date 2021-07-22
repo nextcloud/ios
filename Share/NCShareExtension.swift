@@ -774,176 +774,6 @@ extension NCShareExtension {
         }
     }
     
-    /*
-    func getFilesExtensionContext(completion: @escaping (_ filesName: [String], _ error: Error?)->())  {
-        
-        var filesName: [String] = []
-        var conuter = 0
-        var outError: Error? = nil
-        
-        CCUtility.emptyTemporaryDirectory()
-                
-        if let inputItems : [NSExtensionItem] = extensionContext?.inputItems as? [NSExtensionItem] {
-            
-            for item : NSExtensionItem in inputItems {
-                
-                if let attachments = item.attachments {
-                    
-                    if attachments.isEmpty {
-                        
-                        extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
-                        completion(filesName, outError)
-                        return
-                    }
-                    
-                    for (index, current) in (attachments.enumerated()) {
-                        
-                        if current.hasItemConformingToTypeIdentifier(kUTTypeItem as String) || current.hasItemConformingToTypeIdentifier("public.url") {
-                            
-                            var typeIdentifier = ""
-                            if current.hasItemConformingToTypeIdentifier(kUTTypeItem as String) { typeIdentifier = kUTTypeItem as String }
-                            if current.hasItemConformingToTypeIdentifier("public.url") { typeIdentifier = "public.url" }
-                            
-                            current.loadItem(forTypeIdentifier: typeIdentifier, options: nil, completionHandler: {(item, error) -> Void in
-                                
-                                var fileNameOriginal: String?
-                                var fileName: String = ""
-                                
-                                let dateFormatter = DateFormatter()
-                                dateFormatter.dateFormat = "yyyy-MM-dd HH-mm-ss-"
-                                conuter += 1
-                                
-                                if let url = item as? NSURL {
-                                    fileNameOriginal = url.lastPathComponent!
-                                }
-                                
-                                if error == nil {
-                                                                        
-                                    if let image = item as? UIImage {
-                                        
-                                        print("item as UIImage")
-                                        
-                                        if let pngImageData = image.pngData() {
-                                        
-                                            if fileNameOriginal != nil {
-                                                fileName =  fileNameOriginal!
-                                            } else {
-                                                fileName = "\(dateFormatter.string(from: Date()))\(conuter).png"
-                                            }
-                                            
-                                            let filenamePath = NSTemporaryDirectory() + fileName
-                                            
-                                            let result = (try? pngImageData.write(to: URL(fileURLWithPath: filenamePath), options: [.atomic])) != nil
-                                        
-                                            if result {
-                                                filesName.append(fileName)
-                                            }
-                                            
-                                        } else {
-                                         
-                                            print("Error image nil")
-                                        }
-                                    }
-                                    
-                                    if let url = item as? URL {
-                                        
-                                        print("item as url: \(String(describing: item))")
-                                        
-                                        if fileNameOriginal != nil {
-                                            fileName =  fileNameOriginal!
-                                        } else {
-                                            let ext = url.pathExtension
-                                            fileName = "\(dateFormatter.string(from: Date()))\(conuter)." + ext
-                                        }
-                                        
-                                        let filenamePath = NSTemporaryDirectory() + fileName
-                                      
-                                        do {
-                                            try FileManager.default.removeItem(atPath: filenamePath)
-                                        }
-                                        catch { }
-                                        
-                                        do {
-                                            try FileManager.default.copyItem(atPath: url.path, toPath:filenamePath)
-                                            
-                                            do {
-                                                let attr : NSDictionary? = try FileManager.default.attributesOfItem(atPath: filenamePath) as NSDictionary?
-                                                
-                                                if let _attr = attr {
-                                                    if _attr.fileSize() > 0 {
-                                                        
-                                                        filesName.append(fileName)
-                                                    }
-                                                }
-                                                
-                                            } catch let error {
-                                                outError = error
-                                            }
-                                            
-                                        } catch let error {
-                                            outError = error
-                                        }
-                                    }
-                                    
-                                    if let data = item as? Data {
-                                        
-                                        if data.count > 0 {
-                                        
-                                            print("item as NSdata")
-                                        
-                                            if fileNameOriginal != nil {
-                                                fileName =  fileNameOriginal!
-                                            } else {
-                                                let description = current.description
-                                                let fullNameArr = description.components(separatedBy: "\"")
-                                                let fileExtArr = fullNameArr[1].components(separatedBy: ".")
-                                                let pathExtention = (fileExtArr[fileExtArr.count-1]).uppercased()
-                                                fileName = "\(dateFormatter.string(from: Date()))\(conuter).\(pathExtention)"
-                                            }
-                                            
-                                            let filenamePath = NSTemporaryDirectory() + fileName
-                                            
-                                            FileManager.default.createFile(atPath: filenamePath, contents:data, attributes:nil)
-                                                                                
-                                            filesName.append(fileName)
-                                        }
-                                    }
-                                    
-                                    if let data = item as? NSString {
-                                        
-                                        if data.length > 0 {
-                                        
-                                            print("item as NSString")
-                                        
-                                            let fileName = "\(dateFormatter.string(from: Date()))\(conuter).txt"
-                                            let filenamePath = NSTemporaryDirectory() + fileName
-                                        
-                                            FileManager.default.createFile(atPath: filenamePath, contents:data.data(using: String.Encoding.utf8.rawValue), attributes:nil)
-                                        
-                                            filesName.append(fileName)
-                                        }
-                                    }
-                                    
-                                    if index + 1 == attachments.count {
-                                        completion(filesName, outError)
-                                    }
-                                    
-                                } else {
-                                    completion( filesName, error)
-                                }
-                            })
-                        }
-                    } // end for
-                } else {
-                    completion(filesName, outError)
-                }
-            }
-        } else {
-            completion(filesName, outError)
-        }
-    }
-    */
-    
     func getFilesExtensionContext(completion: @escaping (_ filesName: [String],_ url: [String])->())  {
         
         var itemsProvider: [NSItemProvider] = []
@@ -973,9 +803,7 @@ extension NCShareExtension {
                 
                 let filenamePath = NSTemporaryDirectory() + fileName
                 
-                let result = (try? pngImageData.write(to: URL(fileURLWithPath: filenamePath), options: [.atomic])) != nil
-            
-                if result {
+                if (try? pngImageData.write(to: URL(fileURLWithPath: filenamePath), options: [.atomic])) != nil {
                     filesName.append(fileName)
                 }
             }
@@ -1036,9 +864,7 @@ extension NCShareExtension {
                 }
                 
                 let filenamePath = NSTemporaryDirectory() + fileName
-                
                 FileManager.default.createFile(atPath: filenamePath, contents:data, attributes:nil)
-                                                    
                 filesName.append(fileName)
             }
         }
@@ -1052,9 +878,7 @@ extension NCShareExtension {
                         
                 fileName = "\(dateFormatter.string(from: Date()))\(conuter).txt"
                 let filenamePath = NSTemporaryDirectory() + "\(dateFormatter.string(from: Date()))\(conuter).txt"
-            
                 FileManager.default.createFile(atPath: filenamePath, contents:string.data(using: String.Encoding.utf8.rawValue), attributes:nil)
-            
                 filesName.append(fileName)
             }
         }
