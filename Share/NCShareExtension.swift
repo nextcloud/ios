@@ -908,7 +908,6 @@ extension NCShareExtension {
             itemProvider.loadItem(forTypeIdentifier: typeIdentifier, options: nil, completionHandler: {(item, error) -> Void in
                 
                 var fileNameOriginal: String?
-                conuter += 1
                                                                 
                 if error == nil {
 
@@ -939,6 +938,7 @@ extension NCShareExtension {
                     }
                 }
                 
+                conuter += 1
                 if conuter == itemsProvider.count {
                     completion(filesName)
                 }
