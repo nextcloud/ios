@@ -777,14 +777,10 @@ extension NCShareExtension {
     func getFilesExtensionContext(completion: @escaping (_ filesName: [String])->())  {
         
         var itemsProvider: [NSItemProvider] = []
-        
         var filesName: [String] = []
-        
         var conuter = 0
         let dateFormatter = DateFormatter()
-        
-        dateFormatter.dateFormat = "yyyy-MM-dd HH-mm-ss-"
-        
+                
         // ----------------------------------------------------------------------------------------
 
         // Image
@@ -883,9 +879,7 @@ extension NCShareExtension {
         }
         
         // ----------------------------------------------------------------------------------------
-        
-        CCUtility.emptyTemporaryDirectory()
-        
+                
         guard let inputItems : [NSExtensionItem] = extensionContext?.inputItems as? [NSExtensionItem] else {
             completion(filesName)
             return
@@ -896,12 +890,14 @@ extension NCShareExtension {
                 if attachments.isEmpty { continue }
                 for (_, itemProvider) in (attachments.enumerated()) {
                     if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeItem as String) || itemProvider.hasItemConformingToTypeIdentifier("public.url") {
-                    
                         itemsProvider.append(itemProvider)
                     }
                 }
             }
         }
+        
+        CCUtility.emptyTemporaryDirectory()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH-mm-ss-"
         
         for itemProvider in itemsProvider {
                         
