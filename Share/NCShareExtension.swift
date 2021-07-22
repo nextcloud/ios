@@ -906,10 +906,10 @@ extension NCShareExtension {
             if itemProvider.hasItemConformingToTypeIdentifier("public.url") { typeIdentifier = "public.url" }
 
             itemProvider.loadItem(forTypeIdentifier: typeIdentifier, options: nil, completionHandler: {(item, error) -> Void in
-                
-                var fileNameOriginal: String?
-                                                                
+                                                                                
                 if error == nil {
+
+                    var fileNameOriginal: String?
 
                     if let url = item as? NSURL {
                         if FileManager.default.fileExists(atPath: url.path ?? "") {
