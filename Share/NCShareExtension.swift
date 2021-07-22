@@ -132,7 +132,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
                 
                 setAccount(account: activeAccount.account)
-                getFilesExtensionContext { (filesName, url, error) in
+                getFilesExtensionContext { (filesName, url) in
                     
                     self.filesName = filesName
                     DispatchQueue.main.async {
@@ -944,12 +944,11 @@ extension NCShareExtension {
     }
     */
     
-    func getFilesExtensionContext(completion: @escaping (_ filesName: [String],_ url: [String], _ error: Error?)->())  {
+    func getFilesExtensionContext(completion: @escaping (_ filesName: [String],_ url: [String])->())  {
         
         var filesName: [String] = []
         var url: [String] = []
         var conuter = 0
-        var outError: Error? = nil
         var itemsProvider: [NSItemProvider] = []
         let dateFormatter = DateFormatter()
         
@@ -1014,13 +1013,8 @@ extension NCShareExtension {
                         }
                     }
                     
-                } catch let error {
-                    outError = error
-                }
-                
-            } catch let error {
-                outError = error
-            }
+                } catch { }
+            } catch { }
         }
         
         // Data
@@ -1068,7 +1062,7 @@ extension NCShareExtension {
         CCUtility.emptyTemporaryDirectory()
         
         guard let inputItems : [NSExtensionItem] = extensionContext?.inputItems as? [NSExtensionItem] else {
-            completion(filesName, url, outError)
+            completion(filesName, url)
             return
         }
         
@@ -1125,7 +1119,7 @@ extension NCShareExtension {
                 }
                 
                 if conuter == itemsProvider.count {
-                    completion(filesName, url, outError)
+                    completion(filesName, url)
                 }
             })
         }
