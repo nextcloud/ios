@@ -907,20 +907,20 @@ extension NCShareExtension {
 
             itemProvider.loadItem(forTypeIdentifier: typeIdentifier, options: nil, completionHandler: {(item, error) -> Void in
                 
-                conuter += 1
                 var fileNameOriginal: String?
-                                                
-                if let url = item as? NSURL {
-                    if FileManager.default.fileExists(atPath: url.path ?? "") {
-                        fileNameOriginal = url.lastPathComponent!
-                    } else if url.scheme?.lowercased().contains("http") == true {
-                        fileNameOriginal = "\(dateFormatter.string(from: Date()))\(conuter).html"
-                    } else {
-                        fileNameOriginal = "\(dateFormatter.string(from: Date()))\(conuter)"
-                    }
-                }
-                
+                conuter += 1
+                                                                
                 if error == nil {
+
+                    if let url = item as? NSURL {
+                        if FileManager.default.fileExists(atPath: url.path ?? "") {
+                            fileNameOriginal = url.lastPathComponent!
+                        } else if url.scheme?.lowercased().contains("http") == true {
+                            fileNameOriginal = "\(dateFormatter.string(from: Date()))\(conuter).html"
+                        } else {
+                            fileNameOriginal = "\(dateFormatter.string(from: Date()))\(conuter)"
+                        }
+                    }
                                                         
                     if let image = item as? UIImage {
                        getItem(image: image, fileNameOriginal: fileNameOriginal)
