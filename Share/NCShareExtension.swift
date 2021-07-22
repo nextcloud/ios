@@ -946,10 +946,12 @@ extension NCShareExtension {
     
     func getFilesExtensionContext(completion: @escaping (_ filesName: [String],_ url: [String])->())  {
         
+        var itemsProvider: [NSItemProvider] = []
+        
         var filesName: [String] = []
         var url: [String] = []
+        
         var conuter = 0
-        var itemsProvider: [NSItemProvider] = []
         let dateFormatter = DateFormatter()
         
         dateFormatter.dateFormat = "yyyy-MM-dd HH-mm-ss-"
@@ -1083,10 +1085,10 @@ extension NCShareExtension {
             var typeIdentifier = ""
             if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeItem as String) { typeIdentifier = kUTTypeItem as String }
             if itemProvider.hasItemConformingToTypeIdentifier("public.url") { typeIdentifier = "public.url" }
-            conuter += 1
 
             itemProvider.loadItem(forTypeIdentifier: typeIdentifier, options: nil, completionHandler: {(item, error) -> Void in
                 
+                conuter += 1
                 var fileNameOriginal: String?
                                                 
                 if let url = item as? NSURL {
