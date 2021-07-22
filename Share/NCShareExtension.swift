@@ -132,7 +132,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
                 
                 setAccount(account: activeAccount.account)
-                getFilesExtensionContext { (filesName, url) in
+                getFilesExtensionContext { (filesName) in
                     
                     self.filesName = filesName
                     DispatchQueue.main.async {
@@ -774,12 +774,11 @@ extension NCShareExtension {
         }
     }
     
-    func getFilesExtensionContext(completion: @escaping (_ filesName: [String],_ url: [String])->())  {
+    func getFilesExtensionContext(completion: @escaping (_ filesName: [String])->())  {
         
         var itemsProvider: [NSItemProvider] = []
         
         var filesName: [String] = []
-        var url: [String] = []
         
         var conuter = 0
         let dateFormatter = DateFormatter()
@@ -888,7 +887,7 @@ extension NCShareExtension {
         CCUtility.emptyTemporaryDirectory()
         
         guard let inputItems : [NSExtensionItem] = extensionContext?.inputItems as? [NSExtensionItem] else {
-            completion(filesName, url)
+            completion(filesName)
             return
         }
         
@@ -945,7 +944,7 @@ extension NCShareExtension {
                 }
                 
                 if conuter == itemsProvider.count {
-                    completion(filesName, url)
+                    completion(filesName)
                 }
             })
         }
