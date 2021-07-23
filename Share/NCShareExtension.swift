@@ -881,8 +881,7 @@ extension NCShareExtension {
         // ----------------------------------------------------------------------------------------
                 
         guard let inputItems : [NSExtensionItem] = extensionContext?.inputItems as? [NSExtensionItem] else {
-            completion(filesName)
-            return
+            return completion(filesName)
         }
         
         for item : NSExtensionItem in inputItems {

@@ -140,8 +140,7 @@ class NCLivePhoto {
         }
         group.notify(queue: DispatchQueue.main) {
             guard let pairedPhotoURL = keyPhotoURL, let pairedVideoURL = videoURL else {
-                completion(nil)
-                return
+                return completion(nil)
             }
             completion((pairedPhotoURL, pairedVideoURL))
         }
@@ -196,8 +195,7 @@ class NCLivePhoto {
         let videoAsset = AVURLAsset(url: videoURL)
         let frameCount = videoAsset.countFrames(exact: false)
         guard let videoTrack = videoAsset.tracks(withMediaType: .video).first else {
-            completion(nil)
-            return
+            return completion(nil)
         }
         do {
             // Create the Asset Writer

@@ -1352,8 +1352,7 @@
 + (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadataForUpload notification:(BOOL)notification completion:(void(^)(tableMetadata *metadata, NSString* fileNamePath))completion
 {
     if (metadataForUpload == nil) {
-        completion(nil, nil);
-        return;
+        return completion(nil, nil);
     }
     
     tableMetadata *metadata = [[NCManageDatabase shared] copyObjectWithMetadata:metadataForUpload];
@@ -1364,8 +1363,7 @@
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(NCGlobal.shared.errorInternalError), @"errorDescription": @"_err_file_not_found_"}];
         }
         
-        completion(nil, nil);
-        return;
+        return completion(nil, nil);
     }
     
     PHAsset *asset = result[0];
@@ -1390,8 +1388,7 @@
                         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Image request iCloud failed [%@]", error.description]}];
                     }
                     
-                    completion(nil, nil);
-                    return;
+                    return completion(nil, nil);
                 }
             };
             
