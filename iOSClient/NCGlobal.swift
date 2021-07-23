@@ -119,7 +119,7 @@ class NCGlobal: NSObject {
 
     // Nextcloud unsupported
     //
-    let nextcloud_unsupported_version: Int          = 13
+    let nextcloud_unsupported_version: Int          = 16
     
     // Layout
     //
