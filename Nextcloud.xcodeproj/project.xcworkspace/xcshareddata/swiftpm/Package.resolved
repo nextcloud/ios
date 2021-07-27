@@ -177,8 +177,8 @@
         "repositoryURL": "https://github.com/realm/realm-cocoa",
         "state": {
           "branch": null,
-          "revision": "77658519b13388c098a7624a94491738f8bb2983",
-          "version": "10.10.0"
+          "revision": "cef59658a3e447bf6994e20af6ec408633963d52",
+          "version": "10.11.0"
         }
       },
       {
@@ -186,8 +186,8 @@
         "repositoryURL": "https://github.com/realm/realm-core",
         "state": {
           "branch": null,
-          "revision": "95da0df7815d7cbaff14ed5e8b73fe4c2a992816",
-          "version": "11.0.4"
+          "revision": "71db56caba8f8ef0398eedfffb82a908cb94ccec",
+          "version": "11.1.1"
         }
       },
       {

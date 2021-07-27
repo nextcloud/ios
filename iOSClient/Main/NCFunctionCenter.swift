@@ -226,6 +226,8 @@ import Queuer
     
     func openActivityViewController(selectOcId: [String]) {
         
+        NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+        
         DispatchQueue.global().async {
             
             var error: Int = 0
@@ -265,6 +267,7 @@ import Queuer
                     self.appDelegate.window?.rootViewController?.present(activityViewController, animated: true)
                 }
             }
+            NCUtility.shared.stopActivityIndicator()
         }
     }
         
@@ -440,39 +443,156 @@ import Queuer
     }
 
     func pastePasteboard(serverUrl: String) {
+    
+        var pasteboardTypes: [String] = []
+        
+        func upload(pasteboardType : String?, data: Data?) -> Bool {
+            
+            guard let data = data else { return false}
+            guard let pasteboardType = pasteboardType else { return false }
+            
+            let results = NCCommunicationCommon.shared.getDescriptionFile(inUTI: pasteboardType as CFString)
+            if results.resultExtension == "" { return false }
+            if results.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue {
                 
-        for (index, items) in UIPasteboard.general.items.enumerated() {
-            for item in items {
-                let pasteboardType = item.key
-                if let data = UIPasteboard.general.data(forPasteboardType: pasteboardType, inItemSet: IndexSet([index]))?.first {
-                    let results = NCCommunicationCommon.shared.getDescriptionFile(inUTI: pasteboardType as CFString)
-                    if results.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue {
-                        uploadPasteFile(fileName: results.resultFilename, ext: results.resultExtension, contentType: pasteboardType, serverUrl: serverUrl, data: data)
+                do {
+                    let fileName = results.resultFilename + "_" + CCUtility.getIncrementalNumber() + "." + results.resultExtension
+                    let serverUrlFileName = serverUrl + "/" + fileName
+                    let ocIdUpload = UUID().uuidString
+                    let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
+                    try data.write(to: URL(fileURLWithPath: fileNameLocalPath))
+                   
+                    NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+                    NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { account, ocId, etag, date, size, allHeaderFields, errorCode, errorDescription in
+                        if errorCode == 0 && etag != nil && ocId != nil {
+                            let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
+                            NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
+                            NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
+                        } else {
+                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: false)
+                        }
+                        NCUtility.shared.stopActivityIndicator()
                     }
+                } catch {
+                    return false
                 }
             }
+            return true
         }
-    }
+                
+        for (index, items) in UIPasteboard.general.items.enumerated() {
 
-    private func uploadPasteFile(fileName: String, ext: String, contentType: String, serverUrl: String, data: Data) {
-        
-        do {
-            let fileNameView = fileName + "_" + CCUtility.getIncrementalNumber() + "." + ext
-            let ocId = UUID().uuidString
-            let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)!
+            for item in items { pasteboardTypes.append(item.key) }
             
-            try data.write(to: URL(fileURLWithPath: filePath))
-           
-            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileNameView, fileNameView: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: contentType, livePhoto: false)
+            // image
+            var filter = pasteboardTypes.filter({ UTTypeConformsTo($0 as CFString, kUTTypeImage) })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first) { continue }
+            }
+
+            // movie
+            filter = pasteboardTypes.filter({ UTTypeConformsTo($0 as CFString, kUTTypeMovie) })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
             
-            metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
-            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-            metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
-            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+            // audio
+            filter = pasteboardTypes.filter({ UTTypeConformsTo($0 as CFString, kUTTypeAudio) })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
             
-            appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: [metadataForUpload])
+            // PDF
+            filter = pasteboardTypes.filter({ UTTypeConformsTo($0 as CFString, kUTTypePDF) })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
             
-        } catch { }
+            // ARCHIVE
+            filter = pasteboardTypes.filter({ UTTypeConformsTo($0 as CFString, kUTTypeZipArchive) })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // DOCX
+            filter = pasteboardTypes.filter({ $0 == "org.openxmlformats.wordprocessingml.document" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // DOC
+            filter = pasteboardTypes.filter({ $0 == "com.microsoft.word.doc" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // PAGES
+            filter = pasteboardTypes.filter({ $0 == "com.apple.iwork.pages.pages" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // XLSX
+            filter = pasteboardTypes.filter({ $0 == "org.openxmlformats.spreadsheetml.sheet" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // XLS
+            filter = pasteboardTypes.filter({ $0 == "com.microsoft.excel.xls" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // NUMBERS
+            filter = pasteboardTypes.filter({ $0 == "com.apple.iwork.numbers.numbers" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // PPTX
+            filter = pasteboardTypes.filter({ $0 == "org.openxmlformats.presentationml.presentation" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // PPT
+            filter = pasteboardTypes.filter({ $0 == "com.microsoft.powerpoint.ppt" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // KEYNOTE
+            filter = pasteboardTypes.filter({ $0 == "com.apple.iwork.keynote.key" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // MARKDOWN
+            filter = pasteboardTypes.filter({ $0 == "net.daringfireball.markdown" })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // RTF
+            filter = pasteboardTypes.filter({ UTTypeConformsTo($0 as CFString, kUTTypeRTF) })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            // TEXT
+            filter = pasteboardTypes.filter({ UTTypeConformsTo($0 as CFString, kUTTypeText) })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+            
+            //HTML
+            filter = pasteboardTypes.filter({ UTTypeConformsTo($0 as CFString, kUTTypeHTML) })
+            if filter.count > 0 {
+                if upload(pasteboardType: filter.first, data: UIPasteboard.general.data(forPasteboardType: filter.first!, inItemSet: IndexSet([index]))?.first)  { continue }
+            }
+        }
     }
     
     // MARK: -

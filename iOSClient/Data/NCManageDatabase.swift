@@ -120,16 +120,16 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if oldSchemaVersion < 160 {
-                        migration.deleteData(forType: tableDirectory.className())
-                        migration.deleteData(forType: tableMetadata.className())
-                    }
-                    
                     if oldSchemaVersion < 162 {
                         migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
                             newObject!["userId"] = oldObject!["userID"]
                             migration.deleteData(forType: tableMetadata.className())
                         }
+                    }
+                    
+                    if oldSchemaVersion < 183 {
+                        migration.deleteData(forType: tableDirectory.className())
+                        migration.deleteData(forType: tableMetadata.className())
                     }
                     
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
@@ -1669,7 +1669,7 @@ class NCManageDatabase: NSObject {
         return tableLocalFile.init(value: localFile)
     }
     
-    @objc func addLocalFile(metadata: tableMetadata) {
+    func addLocalFile(metadata: tableMetadata) {
         
         let realm = try! Realm()
         
@@ -1685,6 +1685,30 @@ class NCManageDatabase: NSObject {
                 addObject.exifLongitude = "-1"
                 addObject.ocId = metadata.ocId
                 addObject.fileName = metadata.fileName
+            
+                realm.add(addObject, update: .all)
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    func addLocalFile(account: String, etag: String, ocId: String, fileName: String) {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.safeWrite {
+            
+                let addObject = tableLocalFile()
+                
+                addObject.account = account
+                addObject.etag = etag
+                addObject.exifDate = NSDate()
+                addObject.exifLatitude = "-1"
+                addObject.exifLongitude = "-1"
+                addObject.ocId = ocId
+                addObject.fileName = fileName
             
                 realm.add(addObject, update: .all)
             }

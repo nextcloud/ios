@@ -50,8 +50,7 @@ extension NCNetworking {
                 
                 NCContentPresenter.shared.messageNotification("_error_", description: "_err_file_not_found_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode:NCGlobal.shared.errorReadFile, forced: true)
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))                
-                completion(uploadErrorCode, uploadErrorDescription)
-                return
+                return completion(uploadErrorCode, uploadErrorDescription)
             }
             
         } else {

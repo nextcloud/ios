@@ -175,8 +175,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                         if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
                             NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCGlobal.shared.dismissAfterSecond, type: .error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
                         }
-                        completion(counterItemsUpload)
-                        return
+                        return completion(counterItemsUpload)
                     }
                 }
                 
@@ -343,8 +342,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                     } else if account.autoUploadVideo {
                         predicate = predicateVideo
                     } else {
-                        completion(nil)
-                        return
+                        return completion(nil)
                     }
                     
                     fetchOptions.predicate = predicate

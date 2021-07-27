@@ -395,8 +395,7 @@ import Queuer
 
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            completion(NCGlobal.shared.errorInternalError, "Internal error")
-            return
+            return completion(NCGlobal.shared.errorInternalError, "Internal error")
         }
         
         var fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -436,8 +435,7 @@ import Queuer
                    
                 guard let extractMetadata = extractMetadata else {
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    completion(NCGlobal.shared.errorInternalError, "Internal error")
-                    return
+                    return completion(NCGlobal.shared.errorInternalError, "Internal error")
                 }
                        
                 fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId, fileNameView: extractMetadata.fileNameView)
@@ -672,15 +670,13 @@ import Queuer
 
         if metadata.session.count == 0 {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            completion()
-            return
+            return completion()
         }
 
         if metadata.session == NCCommunicationCommon.shared.sessionIdentifierDownload {
             
             NCNetworking.shared.cancelDownload(ocId: metadata.ocId, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView)
-            completion()
-            return
+            return completion()
         }
         
         if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
@@ -695,8 +691,7 @@ import Queuer
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "account":metadata.account])
             }
             
-            completion()
-            return
+            return completion()
         }
         
         var session: URLSession?
@@ -708,8 +703,7 @@ import Queuer
         if session == nil {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "account":metadata.account])
-            completion()
-            return
+            return completion()
         }
         
         session?.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) in
@@ -875,8 +869,7 @@ import Queuer
             fileNameFolder = NCUtilityFileSystem.shared.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
         }
         if fileNameFolder.count == 0 {
-            completion(0, "")
-            return
+            return completion(0, "")
         }
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
         
@@ -971,9 +964,7 @@ import Queuer
             
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": metadata.ocId, "fileNameView": metadata.fileNameView, "typeFile": metadata.typeFile, "onlyLocal": true])
             }
-            completion(0, "")
-            
-            return
+            return completion(0, "")
         }
         
         let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: urlBase)
@@ -1013,9 +1004,7 @@ import Queuer
         // verify permission
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanDelete)
         if metadata.permissions != "" && permission == false {
-            
-            completion(NCGlobal.shared.errorInternalError, "_no_permission_delete_file_")
-            return
+            return completion(NCGlobal.shared.errorInternalError, "_no_permission_delete_file_")
         }
                 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
@@ -1146,16 +1135,13 @@ import Queuer
         
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {
-            completion(NCGlobal.shared.errorInternalError, "_no_permission_modify_file_")
-            return
+            return completion(NCGlobal.shared.errorInternalError, "_no_permission_modify_file_")
         }
         guard let fileNameNew = CCUtility.removeForbiddenCharactersServer(fileNameNew) else {
-            completion(0, "")
-            return
+            return completion(0, "")
         }
         if fileNameNew.count == 0 || fileNameNew == metadata.fileNameView {
-            completion(0, "")
-            return
+            return completion(0, "")
         }
         
         let fileNamePath = metadata.serverUrl + "/" + metadata.fileName
@@ -1231,8 +1217,7 @@ import Queuer
     
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {
-            completion(NCGlobal.shared.errorInternalError, "_no_permission_modify_file_")
-            return
+            return completion(NCGlobal.shared.errorInternalError, "_no_permission_modify_file_")
         }
         
         let serverUrlFrom = metadata.serverUrl
@@ -1277,8 +1262,7 @@ import Queuer
     
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {
-            completion(NCGlobal.shared.errorInternalError, "_no_permission_modify_file_")
-            return
+            return completion(NCGlobal.shared.errorInternalError, "_no_permission_modify_file_")
         }
         
         let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName

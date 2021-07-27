@@ -79,7 +79,7 @@ class NCGlobal: NSObject {
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 182
+    let databaseSchemaVersion: UInt64               = 183
     
     // Intro selector
     //
@@ -119,7 +119,7 @@ class NCGlobal: NSObject {
 
     // Nextcloud unsupported
     //
-    let nextcloud_unsupported_version: Int          = 13
+    let nextcloud_unsupported_version: Int          = 16
     
     // Layout
     //
