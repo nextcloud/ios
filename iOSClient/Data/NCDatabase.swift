@@ -183,7 +183,7 @@ class tableChunk: Object {
     @objc dynamic var fileName = ""
     @objc dynamic var index = ""
     @objc dynamic var ocId = ""
-    @objc dynamic var totalBytes: Int64 = 0
+    @objc dynamic var size: Int64 = 0
 
     override static func primaryKey() -> String {
         return "index"

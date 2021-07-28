@@ -1051,7 +1051,7 @@ class NCManageDatabase: NSObject {
                     object.fileName = fileName
                     object.index = ocId + fileName
                     object.ocId = ocId
-                    object.totalBytes = size
+                    object.size = size
                                         
                     realm.add(object, update: .all)
                 }

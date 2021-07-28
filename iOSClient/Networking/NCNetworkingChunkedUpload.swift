@@ -75,9 +75,9 @@ extension NCNetworking {
                         let serverUrlFileName = chunkFolderPath + "/" + fileName
                         let fileNameChunkLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)!
                         
-                        var totalBytes: Int64?
+                        var size: Int64?
                         if let tableChunk = NCManageDatabase.shared.getChunk(account: metadata.account, fileName: fileName) {
-                            totalBytes = tableChunk.totalBytes - NCUtilityFileSystem.shared.getFileSize(filePath: fileNameChunkLocalPath)
+                            size = tableChunk.size - NCUtilityFileSystem.shared.getFileSize(filePath: fileNameChunkLocalPath)
                         }
                                                 
                         let semaphore = Semaphore()
@@ -92,8 +92,9 @@ extension NCNetworking {
                            
                         }, progressHandler: { (progress) in
                             
-                            if let totalBytes = totalBytes {
-                                let totalBytesExpected = totalBytes + progress.completedUnitCount
+                            if let size = size {
+                                
+                                let totalBytesExpected = size + progress.completedUnitCount
                                 let totalBytes = metadata.size
                                 let fractionCompleted = Float(totalBytesExpected) / Float(totalBytes)
                                     
