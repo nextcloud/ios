@@ -71,37 +71,34 @@ extension NCNetworking {
                 DispatchQueue.global(qos: .background).async {
                         
                     for fileName in filesNames {
-                                                
-                        let counterString = (fileName as NSString).pathExtension
-                        let counter = Int64(counterString) ?? 0
+                            
                         let serverUrlFileName = chunkFolderPath + "/" + fileName
                         let fileNameChunkLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)!
-                        let chunkSize = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameChunkLocalPath)
                         
+                        var totalBytes: Int64?
+                        if let tableChunk = NCManageDatabase.shared.getChunk(account: metadata.account, fileName: fileName) {
+                            totalBytes = tableChunk.totalBytes - NCUtilityFileSystem.shared.getFileSize(filePath: fileNameChunkLocalPath)
+                        }
+                                                
                         let semaphore = Semaphore()
                                                     
                         NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, requestHandler: { (request) in
                                 
                             self.uploadRequest[fileNameLocalPath] = request
                             
-                            let chunksremains = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId).count
-                            let totalBytes = (counter + 1) * chunkSize
-                            let totalBytesExpected: Int64 = metadata.size
-                            var progress: Float = 0
-
-                            if chunksremains == 1 {
-                                progress = 1
-                            } else {
-                                progress = Float(totalBytes) / Float(totalBytesExpected)
-                            }
-                            
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "fileName":metadata.fileName, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress":NSNumber(value: progress), "totalBytes":NSNumber(value: totalBytes), "totalBytesExpected":NSNumber(value: totalBytesExpected)])
-                            
                         }, taskHandler: { (task) in
                             
                             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
                            
-                        }, progressHandler: { (_) in
+                        }, progressHandler: { (progress) in
+                            
+                            if let totalBytes = totalBytes {
+                                let totalBytesExpected = totalBytes + progress.completedUnitCount
+                                let totalBytes = metadata.size
+                                let fractionCompleted = Float(totalBytesExpected) / Float(totalBytes)
+                                    
+                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "fileName":metadata.fileName, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress":NSNumber(value: fractionCompleted), "totalBytes":NSNumber(value: totalBytes), "totalBytesExpected":NSNumber(value: totalBytesExpected)])
+                            }
                             
                         }) { (_, _, _, _, _, _, _, errorCode, errorDescription) in
                                

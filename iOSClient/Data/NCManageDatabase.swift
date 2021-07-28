@@ -1036,6 +1036,7 @@ class NCManageDatabase: NSObject {
     func addChunks(account: String, ocId: String, chunkFolder: String, fileNames: [String]) {
         
         let realm = try! Realm()
+        var size: Int64 = 0
         
         do {
             try realm.safeWrite {
@@ -1043,18 +1044,31 @@ class NCManageDatabase: NSObject {
                 for fileName in fileNames {
                     
                     let object = tableChunk()
+                    size = size + NCUtilityFileSystem.shared.getFileSize(filePath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!)
                     
                     object.account = account
                     object.chunkFolder = chunkFolder
                     object.fileName = fileName
                     object.index = ocId + fileName
                     object.ocId = ocId
-
+                    object.totalBytes = size
+                                        
                     realm.add(object, update: .all)
                 }
             }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    func getChunk(account: String, fileName: String) -> tableChunk? {
+        
+        let realm = try! Realm()
+
+        if let result = realm.objects(tableChunk.self).filter("account == %@ AND fileName == %@", account, fileName).first {
+            return tableChunk.init(value: result)
+        } else {
+            return nil
         }
     }
     
