@@ -31,8 +31,6 @@ class NCGridMediaCell: UICollectionViewCell, NCImageCellProtocol {
 
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
-    @IBOutlet weak var imageFavorite: UIImageView!
-    @IBOutlet weak var imageLocal: UIImageView!
     
     var date: Date?
 
@@ -55,8 +53,6 @@ class NCGridMediaCell: UICollectionViewCell, NCImageCellProtocol {
     func initCell() {
         imageItem.backgroundColor = UIColor.lightGray
         imageStatus.image = nil
-        imageLocal.image = nil
-        imageFavorite.image = nil
         imageItem.image = nil
         imageItem.layer.masksToBounds = true
         imageItem.layer.cornerRadius = 6
