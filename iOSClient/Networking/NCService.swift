@@ -182,7 +182,6 @@ class NCService: NSObject {
                                 DispatchQueue.global().async {
                                 
                                     NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
-                                    
                                 }
                             }
                         }
@@ -222,11 +221,25 @@ class NCService: NSObject {
                         }
                     }
                 
-                    // Handwerkcloud
-                    let isHandwerkcloudEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesHWCEnabled, exists: false)
-                    if (isHandwerkcloudEnabled) {
-                        self.requestHC()
+//                    Handwerkcloud
+//                    let isHandwerkcloudEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesHWCEnabled, exists: false)
+//                    if (isHandwerkcloudEnabled) {
+//                        self.requestHC()
+//                    }
+                    
+                    // Added UTI for Collabora
+                    if let richdocumentsMimetypes = NCManageDatabase.shared.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes) {
+                        for mimeType in richdocumentsMimetypes {
+                            NCCommunicationCommon.shared.addInternalUTI(UTIString: mimeType, typeFile:  NCCommunicationCommon.typeFile.document.rawValue, iconName: NCCommunicationCommon.iconName.document.rawValue, fileName: "document")
+                        }
                     }
+                    // Added UTI for ONLYOFFICE & Text
+                    if let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: account) {
+                        for directEditing in directEditingCreators {
+                            NCCommunicationCommon.shared.addInternalUTI(UTIString: directEditing.mimetype, typeFile:  NCCommunicationCommon.typeFile.document.rawValue, iconName: NCCommunicationCommon.iconName.document.rawValue, fileName: "document")
+                        }
+                    }
+
                 }
                 
             } else if errorCode != 0 {
