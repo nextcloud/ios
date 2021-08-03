@@ -495,7 +495,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ogC-ph-Xdr" userLabel="View Link">
-                                        <rect key="frame" x="5" y="550" width="404" height="90"/>
+                                        <rect key="frame" x="5" y="550" width="404" height="40"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Home server" textAlignment="natural" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PD5-8h-ZLm">
                                                 <rect key="frame" x="40" y="0.0" width="359" height="40"/>
@@ -513,40 +513,19 @@
                                                     <constraint firstAttribute="width" constant="30" id="SVh-sE-fdn"/>
                                                 </constraints>
                                             </imageView>
-                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dav" translatesAutoresizingMaskIntoConstraints="NO" id="Tlp-7L-xxK">
-                                                <rect key="frame" x="0.0" y="50" width="30" height="30"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="30" id="rLb-Wg-jyl"/>
-                                                    <constraint firstAttribute="width" constant="30" id="uBn-NU-oCg"/>
-                                                </constraints>
-                                            </imageView>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DAV" textAlignment="natural" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="q89-9y-xvK">
-                                                <rect key="frame" x="40" y="45" width="359" height="40"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="40" id="Y1A-ji-0GZ"/>
-                                                </constraints>
-                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstAttribute="trailing" secondItem="PD5-8h-ZLm" secondAttribute="trailing" constant="5" id="71i-FN-PmV"/>
-                                            <constraint firstItem="q89-9y-xvK" firstAttribute="top" secondItem="PD5-8h-ZLm" secondAttribute="bottom" constant="5" id="7Fy-Hw-dJJ"/>
                                             <constraint firstItem="pyf-iS-YYP" firstAttribute="leading" secondItem="ogC-ph-Xdr" secondAttribute="leading" id="D7Q-nx-Lcr"/>
-                                            <constraint firstAttribute="height" constant="90" id="HZv-dy-zeu"/>
-                                            <constraint firstAttribute="trailing" secondItem="q89-9y-xvK" secondAttribute="trailing" constant="5" id="Hea-W8-yyG"/>
-                                            <constraint firstItem="q89-9y-xvK" firstAttribute="leading" secondItem="Tlp-7L-xxK" secondAttribute="trailing" constant="10" id="SA4-nu-KU9"/>
-                                            <constraint firstItem="Tlp-7L-xxK" firstAttribute="top" secondItem="pyf-iS-YYP" secondAttribute="bottom" constant="15" id="evE-Ew-zMu"/>
-                                            <constraint firstItem="Tlp-7L-xxK" firstAttribute="leading" secondItem="ogC-ph-Xdr" secondAttribute="leading" id="gCa-6C-ZmV"/>
+                                            <constraint firstAttribute="height" constant="40" id="HZv-dy-zeu"/>
                                             <constraint firstItem="PD5-8h-ZLm" firstAttribute="top" secondItem="ogC-ph-Xdr" secondAttribute="top" id="m3v-SO-f43"/>
                                             <constraint firstItem="PD5-8h-ZLm" firstAttribute="leading" secondItem="pyf-iS-YYP" secondAttribute="trailing" constant="10" id="pD9-5x-n4a"/>
                                             <constraint firstItem="pyf-iS-YYP" firstAttribute="top" secondItem="ogC-ph-Xdr" secondAttribute="top" constant="5" id="uht-S6-R6J"/>
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OO4-N7-9vp" userLabel="View JSON">
-                                        <rect key="frame" x="0.0" y="650" width="414" height="40.5"/>
+                                        <rect key="frame" x="0.0" y="600" width="414" height="40.5"/>
                                         <subviews>
                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="RIO-6X-GG1">
                                                 <rect key="frame" x="5" y="5" width="404" height="30.5"/>
@@ -567,7 +546,7 @@
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="ogC-ph-Xdr" firstAttribute="top" secondItem="hTE-ys-qsF" secondAttribute="top" constant="550" id="9yP-Qs-EjJ"/>
-                                    <constraint firstItem="OO4-N7-9vp" firstAttribute="top" secondItem="hTE-ys-qsF" secondAttribute="top" constant="650" id="A9O-TK-Vz6" userLabel="View JSON.top = top + 550"/>
+                                    <constraint firstItem="OO4-N7-9vp" firstAttribute="top" secondItem="hTE-ys-qsF" secondAttribute="top" constant="600" id="A9O-TK-Vz6" userLabel="View JSON.top = top + 550"/>
                                     <constraint firstAttribute="trailing" secondItem="ogC-ph-Xdr" secondAttribute="trailing" constant="5" id="JLe-vC-Oyq"/>
                                     <constraint firstAttribute="bottom" secondItem="OO4-N7-9vp" secondAttribute="bottom" id="MpX-OZ-MDh"/>
                                     <constraint firstItem="OO4-N7-9vp" firstAttribute="width" secondItem="hTE-ys-qsF" secondAttribute="width" id="PWW-C3-Qcw"/>
@@ -591,8 +570,6 @@
                     </view>
                     <navigationItem key="navigationItem" id="fnR-ht-Muv"/>
                     <connections>
-                        <outlet property="davFiles" destination="q89-9y-xvK" id="eHD-Ph-7x2"/>
-                        <outlet property="davImage" destination="Tlp-7L-xxK" id="K25-ye-TED"/>
                         <outlet property="homeImage" destination="pyf-iS-YYP" id="gAh-bM-f5J"/>
                         <outlet property="homeServer" destination="PD5-8h-ZLm" id="Hge-8o-YY1"/>
                         <outlet property="imageActivity" destination="tl5-S1-p9X" id="pT5-X7-R2q"/>
@@ -647,7 +624,6 @@
         <image name="activity" width="512" height="512"/>
         <image name="collabora" width="425" height="425"/>
         <image name="comments" width="425" height="425"/>
-        <image name="dav" width="425" height="425"/>
         <image name="delete" width="425" height="425"/>
         <image name="externalsites" width="425" height="425"/>
         <image name="home" width="425" height="425"/>

@@ -63,10 +63,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     
     @IBOutlet weak var homeImage: UIImageView!
     @IBOutlet weak var homeServer: UILabel!
-   
-    @IBOutlet weak var davImage: UIImageView!
-    @IBOutlet weak var davFiles: UILabel!
-    
+       
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var documentController: UIDocumentInteractionController?
     private var account: String = ""
@@ -170,9 +167,6 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         
         homeImage.image = UIImage.init(named: "home")!.image(color: NCBrandColor.shared.gray, size: 50)
         homeServer.text = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) + "/"
-        
-        davImage.image = UIImage.init(named: "dav")!.image(color: NCBrandColor.shared.gray, size: 50)
-        davFiles.text = appDelegate.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: appDelegate.account) + "/files/" + appDelegate.user + "/"
     }
 
     @objc func updateCapabilities() {
