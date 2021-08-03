@@ -46,7 +46,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
 
         appDelegate.activeViewController = self
         
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) {
             self.navigationItem.title = NCBrandOptions.shared.brand
         } else {
             self.navigationItem.title = (serverUrl as NSString).lastPathComponent

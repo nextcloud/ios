@@ -170,7 +170,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         
         // set the serverUrl
         if serverUrl == "" {
-            serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account)
+            serverUrl = NCUtilityFileSystem.shared.getHomeServer(account: activeAccount.account)
         }
                     
         // get auto upload folder

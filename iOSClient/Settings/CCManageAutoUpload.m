@@ -493,14 +493,14 @@
 {
     if (serverUrl != nil) {
         
-        if ([serverUrl isEqualToString:[[NCUtilityFileSystem shared] getHomeServerWithUrlBase:appDelegate.urlBase account:appDelegate.account]]) {
+        if ([serverUrl isEqualToString:[[NCUtilityFileSystem shared] getHomeServerWithAccount:appDelegate.account]]) {
             [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_autoupload_error_select_folder_" delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:NCGlobal.shared.errorInternalError forced:true];
             return;
         }
         
         // Settings new folder Automatatic upload
         [[NCManageDatabase shared] setAccountAutoUploadFileName:serverUrl.lastPathComponent];
-        [[NCManageDatabase shared] setAccountAutoUploadDirectory:[[NCUtilityFileSystem shared] deletingLastPathComponentWithServerUrl:serverUrl urlBase:appDelegate.urlBase account:appDelegate.account] urlBase:appDelegate.urlBase account:appDelegate.account];
+        [[NCManageDatabase shared] setAccountAutoUploadDirectory:[[NCUtilityFileSystem shared] deletingLastPathComponentWithAccount:appDelegate.account serverUrl:serverUrl] urlBase:appDelegate.urlBase account:appDelegate.account];
         // Reload
         [self.tableView reloadData];
     }

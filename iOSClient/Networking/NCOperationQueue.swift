@@ -186,7 +186,7 @@ class NCOperationDelete: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCNetworking.shared.deleteMetadata(metadata, account: metadata.account, urlBase: metadata.urlBase, onlyLocal: onlyLocal) { (errorCode, errorDescription) in
+            NCNetworking.shared.deleteMetadata(metadata, onlyLocal: onlyLocal) { (errorCode, errorDescription) in
                 if errorCode != 0 {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }

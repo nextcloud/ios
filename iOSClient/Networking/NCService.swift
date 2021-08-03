@@ -143,7 +143,6 @@ class NCService: NSObject {
                         NCCommunicationCommon.shared.setup(nextcloudVersion: serverVersionMajor)
                     }
                     NCCommunicationCommon.shared.setup(webDav: NCUtilityFileSystem.shared.getWebDAV(account: account))
-                    NCCommunicationCommon.shared.setup(dav: NCUtilityFileSystem.shared.getDAV())
                     
                     // Theming
                     NCBrandColor.shared.settingThemingColor(account: account)

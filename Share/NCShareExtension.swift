@@ -198,13 +198,13 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         self.activeAccount = activeAccount
         
         // NETWORKING
-        NCCommunicationCommon.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), urlBase: activeAccount.urlBase, userAgent: CCUtility.getUserAgent(), webDav: NCUtilityFileSystem.shared.getWebDAV(account: activeAccount.account), dav: NCUtilityFileSystem.shared.getDAV(), nextcloudVersion: 0, delegate: NCNetworking.shared)
+        NCCommunicationCommon.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), urlBase: activeAccount.urlBase, userAgent: CCUtility.getUserAgent(), webDav: NCUtilityFileSystem.shared.getWebDAV(account: activeAccount.account), nextcloudVersion: 0, delegate: NCNetworking.shared)
                 
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: activeAccount.urlBase, account: activeAccount.account)
         
-        serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account)
+        serverUrl = NCUtilityFileSystem.shared.getHomeServer(account: activeAccount.account)
         
         layoutForView = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
             
@@ -240,7 +240,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
             
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account) {
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: activeAccount.account) {
              
 
             var title = "  "
@@ -258,7 +258,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         profileButton.sizeToFit()
         profileButton.addTarget(self, action: #selector(profileButtonTapped(sender:)), for: .touchUpInside)
                    
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account) {
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: activeAccount.account) {
 
             navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: profileButton)], animated: true)
             
@@ -354,7 +354,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                 
                 NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: true)
                                 
-                let metadata = NCManageDatabase.shared.createMetadata(account: activeAccount.account, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "", contentType: "", livePhoto: false)
+                let metadata = NCManageDatabase.shared.createMetadata(account: activeAccount.account, userId: activeAccount.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "", contentType: "", livePhoto: false)
                 
                 metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
                 metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
@@ -409,7 +409,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         reloadDatasource(withLoadFolder: true)
         
         var navigationTitle = (serverUrl as NSString).lastPathComponent
-        if NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, account: activeAccount.account) == serverUrl {
+        if NCUtilityFileSystem.shared.getHomeServer(account: activeAccount.account) == serverUrl {
             navigationTitle = NCBrandOptions.shared.brand
         }
         setNavigationBar(navigationTitle: navigationTitle)

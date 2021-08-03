@@ -230,7 +230,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
         
         NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
         
-        NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, urlBase: metadata.urlBase, viewController: self) { (errorCode, errorDescription) in
+        NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, viewController: self) { (errorCode, errorDescription) in
             
             NCUtility.shared.stopActivityIndicator()
             

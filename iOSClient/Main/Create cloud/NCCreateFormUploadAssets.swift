@@ -49,7 +49,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         
         self.init()
         
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) {
             titleServerUrl = "/"
         } else {
             if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
@@ -320,7 +320,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             
             self.serverUrl = serverUrl!
             
-            if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
+            if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) {
                 self.titleServerUrl = "/"
             } else {
                 if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account
@@ -413,7 +413,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                     continue
                 }
                 
-                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", livePhoto: livePhoto)
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", livePhoto: livePhoto)
                 
                 metadataForUpload.assetLocalIdentifier = asset.localIdentifier
                 metadataForUpload.session = self.session
@@ -431,7 +431,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                     CCUtility.extractLivePhotoAsset(asset, filePath: filePath) { (url) in
                         if let url = url {
                             let fileSize = NCUtilityFileSystem.shared.getFileSize(filePath: url.path)
-                            let metadataMOVForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, fileName: fileNameMove, fileNameView: fileNameMove, ocId:ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", livePhoto: livePhoto)
+                            let metadataMOVForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, userId: self.appDelegate.userId, fileName: fileNameMove, fileNameView: fileNameMove, ocId:ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", livePhoto: livePhoto)
 
                             metadataForUpload.livePhoto = true
                             metadataMOVForUpload.livePhoto = true

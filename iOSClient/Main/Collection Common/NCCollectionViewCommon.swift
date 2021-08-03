@@ -140,7 +140,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         appDelegate.activeViewController = self
 
         if serverUrl == "" {
-            appDelegate.activeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+            appDelegate.activeServerUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
         } else {
             appDelegate.activeServerUrl = serverUrl
         }
@@ -259,7 +259,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         if self.view?.window != nil {
             if serverUrl == "" {
-                appDelegate.activeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+                appDelegate.activeServerUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
             } else {
                 appDelegate.activeServerUrl = serverUrl
             }
@@ -629,7 +629,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 let button = UIButton(type: .custom)
                 button.setImage(image, for: .normal)
                 
-                if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
+                if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) {
                  
                     let activeAccount = NCManageDatabase.shared.getActiveAccount()
                     var titleButton = "  "

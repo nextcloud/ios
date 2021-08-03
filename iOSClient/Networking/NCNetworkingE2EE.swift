@@ -124,16 +124,16 @@ import Alamofire
     
     //MARK: - WebDav Delete
     
-    func deleteMetadata(_ metadata: tableMetadata, urlBase: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    func deleteMetadata(_ metadata: tableMetadata, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
                         
         self.lock(account:metadata.account, serverUrl: metadata.serverUrl) { (directory, e2eToken, errorCode, errorDescription) in
             if errorCode == 0 && e2eToken != nil && directory != nil {
                 let deleteE2eEncryption = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, metadata.serverUrl, metadata.fileName)
                 NCNetworking.shared.deleteMetadataPlain(metadata, addCustomHeaders: ["e2e-token" :e2eToken!]) { (errorCode, errorDescription) in
                     
-                    let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: metadata.urlBase, account: metadata.account)
+                    let home = NCUtilityFileSystem.shared.getHomeServer(account: metadata.account)
                     if metadata.serverUrl != home {
-                        self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, urlBase: urlBase) { (e2eToken, errorCode, errorDescription) in
+                        self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, urlBase: metadata.urlBase) { (e2eToken, errorCode, errorDescription) in
                             // unlock
                             if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
                                 NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
@@ -156,7 +156,7 @@ import Alamofire
     
     //MARK: - WebDav Rename
     
-    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, urlBase: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
+    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
         // verify if exists the new fileName
         if NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
@@ -165,7 +165,7 @@ import Alamofire
 
         } else {
             
-            self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, deleteE2eEncryption: nil, urlBase: urlBase) { (e2eToken, errorCode, errorDescription) in
+            self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, deleteE2eEncryption: nil, urlBase: metadata.urlBase) { (e2eToken, errorCode, errorDescription) in
                 
                 if errorCode == 0 {
                     NCManageDatabase.shared.setMetadataFileNameView(serverUrl: metadata.serverUrl, fileName: metadata.fileName, newFileNameView: fileNameNew, account: metadata.account)
@@ -192,7 +192,7 @@ import Alamofire
     
     //MARK: - Upload
     
-    func upload(metadata: tableMetadata, account: tableAccount, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    func upload(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         let objectE2eEncryption = tableE2eEncryption()
         var key: NSString?, initializationVector: NSString?, authenticationTag: NSString?
@@ -261,7 +261,7 @@ import Alamofire
         
         NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_e2ee_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: NCGlobal.shared.dismissAfterSecond, name: nil)
         
-        NCNetworkingE2EE.shared.sendE2EMetadata(account: metadata.account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: account.urlBase, upload: true) { (e2eToken, errorCode, errorDescription) in
+        NCNetworkingE2EE.shared.sendE2EMetadata(account: metadata.account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: metadata.urlBase, upload: true) { (e2eToken, errorCode, errorDescription) in
             
             start()
             

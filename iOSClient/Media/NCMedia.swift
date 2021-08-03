@@ -485,7 +485,7 @@ extension NCMedia {
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
             self.mediaPath = activeAccount.mediaPath
         }
-        let startServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) + mediaPath
+        let startServerUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) + mediaPath
         
         predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NCGlobal.shared.metadataTypeFileImage, NCGlobal.shared.metadataTypeFileVideo)
         

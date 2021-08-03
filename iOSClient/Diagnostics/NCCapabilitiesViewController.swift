@@ -169,10 +169,10 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         }
         
         homeImage.image = UIImage.init(named: "home")!.image(color: NCBrandColor.shared.gray, size: 50)
-        homeServer.text = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) + "/"
+        homeServer.text = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) + "/"
         
         davImage.image = UIImage.init(named: "dav")!.image(color: NCBrandColor.shared.gray, size: 50)
-        davFiles.text = appDelegate.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/files/" + appDelegate.user + "/"
+        davFiles.text = appDelegate.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: appDelegate.account) + "/files/" + appDelegate.user + "/"
     }
 
     @objc func updateCapabilities() {

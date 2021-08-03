@@ -155,7 +155,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                     
                     do {
                         try data?.write(to: path)
-                        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
+                        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
                         
                         metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
                         metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile

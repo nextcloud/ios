@@ -605,7 +605,7 @@ import Queuer
         let topViewController = viewController
         var listViewController = [NCFileViewInFolder]()
         var serverUrl = serverUrl
-        let homeUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        let homeUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
         
         while true {
             
@@ -628,7 +628,7 @@ import Queuer
             listViewController.insert(vc, at: 0)
             
             if serverUrl != homeUrl {
-                serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)
+                serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(account: appDelegate.account, serverUrl: serverUrl)
             } else {
                 break
             }
@@ -667,7 +667,7 @@ import Queuer
             copyItems.append(item)
         }
         
-        let homeUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        let homeUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
         var serverUrl = (copyItems[0] as! Nextcloud.tableMetadata).serverUrl
         
         // Setup view controllers such that the current view is of the same directory the items to be copied are in
@@ -695,7 +695,7 @@ import Queuer
             listViewController.insert(vc, at: 0)
             
             if serverUrl != homeUrl {
-                serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)
+                serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(account: appDelegate.account, serverUrl: serverUrl)
             } else {
                 break
             }
@@ -832,7 +832,7 @@ import Queuer
         
         let favorite = UIAction(title: titleFavorite, image: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite)) { action in
             
-            NCNetworking.shared.favoriteMetadata(metadata, urlBase: self.appDelegate.urlBase) { (errorCode, errorDescription) in
+            NCNetworking.shared.favoriteMetadata(metadata) { (errorCode, errorDescription) in
                 if errorCode != 0 {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
@@ -840,7 +840,7 @@ import Queuer
         }
         
         let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile, image: UIImage(systemName: "trash"), attributes: .destructive) { action in
-            NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
+            NCNetworking.shared.deleteMetadata(metadata, onlyLocal: false) { (errorCode, errorDescription) in
                 if errorCode != 0 {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
@@ -848,7 +848,7 @@ import Queuer
         }
         
         let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { action in
-            NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: true) { (errorCode, errorDescription) in
+            NCNetworking.shared.deleteMetadata(metadata, onlyLocal: true) { (errorCode, errorDescription) in
             }
         }
         

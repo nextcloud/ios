@@ -374,6 +374,7 @@ class tableMetadata: Object {
     @objc dynamic var uploadDate = NSDate()
     @objc dynamic var url = ""
     @objc dynamic var urlBase = ""
+    @objc dynamic var userId = ""
 
     override static func primaryKey() -> String {
         return "ocId"

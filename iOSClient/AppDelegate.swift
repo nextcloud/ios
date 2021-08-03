@@ -605,7 +605,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         NCCommunicationCommon.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
         NCCommunicationCommon.shared.setup(webDav: NCUtilityFileSystem.shared.getWebDAV(account: account))
-        NCCommunicationCommon.shared.setup(dav: NCUtilityFileSystem.shared.getDAV())
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor > 0 {
             NCCommunicationCommon.shared.setup(nextcloudVersion: serverVersionMajor)

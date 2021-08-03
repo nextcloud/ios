@@ -420,7 +420,7 @@ class NCManageDatabase: NSObject {
         if result.autoUploadDirectory.count > 0 {
             return result.autoUploadDirectory
         } else {
-            return NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, account: account)
+            return NCUtilityFileSystem.shared.getHomeServer(account: account)
         }
     }
 
@@ -1872,6 +1872,7 @@ class NCManageDatabase: NSObject {
             metadata.uploadDate = file.date
         }
         metadata.urlBase = file.urlBase
+        metadata.userId = file.userId
         
         // E2EE find the fileName for fileNameView
         if isEncrypted || metadata.e2eEncrypted {
@@ -1936,7 +1937,7 @@ class NCManageDatabase: NSObject {
         completion(metadataFolder, metadataFolders, metadatas)
     }
     
-    @objc func createMetadata(account: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, livePhoto: Bool) -> tableMetadata {
+    @objc func createMetadata(account: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, livePhoto: Bool) -> tableMetadata {
         
         let metadata = tableMetadata()
         let resultInternalType = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
@@ -1961,6 +1962,7 @@ class NCManageDatabase: NSObject {
         metadata.uploadDate = Date() as NSDate
         metadata.url = url
         metadata.urlBase = urlBase
+        metadata.userId = userId
         
         return metadata
     }
@@ -2393,13 +2395,13 @@ class NCManageDatabase: NSObject {
         var serverUrl = serverUrl
         var fileName = ""
         
-        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, account: account)
+        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(account: account)
         if serverUrlHome == serverUrl {
             fileName = "."
             serverUrl = ".."
         } else {
             fileName = (serverUrl as NSString).lastPathComponent
-            serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: urlBase, account: account)
+            serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(account: account, serverUrl: serverUrl)
         }
         
         guard let result = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).first else { return nil }
@@ -2649,8 +2651,8 @@ class NCManageDatabase: NSObject {
         for share in shares {
             
             let addObject = tableShare()
-            let fullPath = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, account: account) + share.path
-            let serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(serverUrl:fullPath, urlBase: urlBase, account: account)
+            let fullPath = NCUtilityFileSystem.shared.getHomeServer(account: account) + share.path
+            let serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(account: account, serverUrl:fullPath)
             let fileName = NSString(string: fullPath).lastPathComponent
                         
             addObject.account = account

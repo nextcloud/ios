@@ -38,7 +38,7 @@ extension NCCollectionViewCommon {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
         let serverUrl = metadata.serverUrl+"/"+metadata.fileName
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
-        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
         var isOffline = false
         
         var titleDelete = NSLocalizedString("_delete_", comment: "")
@@ -99,7 +99,7 @@ extension NCCollectionViewCommon {
                 title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
                 action: { menuAction in
-                    NCNetworking.shared.favoriteMetadata(metadata, urlBase: self.appDelegate.urlBase) { (errorCode, errorDescription) in
+                    NCNetworking.shared.favoriteMetadata(metadata) { (errorCode, errorDescription) in
                         if errorCode != 0 {
                             NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }

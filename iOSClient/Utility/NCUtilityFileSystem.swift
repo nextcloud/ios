@@ -174,19 +174,20 @@ class NCUtilityFileSystem: NSObject {
     // MARK: - 
     
     @objc func getWebDAV(account: String) -> String {
-        return NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesWebDavRoot) ?? "remote.php/webdav"
-    }
-    
-    @objc func getDAV() -> String {
+        //return NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesWebDavRoot) ?? "remote.php/webdav"
         return "remote.php/dav"
     }
     
-    @objc func getHomeServer(urlBase: String, account: String) -> String {
-        return urlBase + "/" + self.getWebDAV(account: account)
+    @objc func getHomeServer(account: String) -> String {
+        var home = ""
+        if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
+            home = tableAccount.urlBase + "/" + self.getWebDAV(account: account) + "/files/" + tableAccount.userId
+        }
+        return home
     }
     
-    @objc func deletingLastPathComponent(serverUrl: String, urlBase: String, account: String) -> String {
-        if getHomeServer(urlBase: urlBase, account: account) == serverUrl { return serverUrl }
+    @objc func deletingLastPathComponent(account: String, serverUrl: String) -> String {
+        if getHomeServer(account: account) == serverUrl { return serverUrl }
         let fileName = (serverUrl as NSString).lastPathComponent
         let serverUrl = serverUrl.replacingOccurrences(of: "/"+fileName, with: "", options: String.CompareOptions.backwards, range: nil)
         return serverUrl

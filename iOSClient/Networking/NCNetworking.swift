@@ -393,17 +393,10 @@ import Queuer
 
     @objc func upload(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->())  {
            
-        let metadata = tableMetadata.init(value: metadata)
-
-        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else {
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            return completion(NCGlobal.shared.errorInternalError, "Internal error")
-        }
-        
+        var metadata = tableMetadata.init(value: metadata)
         var fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                    
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-            let metadata = tableMetadata.init(value: metadata)
             
             let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
             metadata.contentType = results.mimeType
@@ -418,17 +411,18 @@ import Queuer
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameLocalPath)
                
             NCManageDatabase.shared.addMetadata(metadata)
+            metadata = tableMetadata.init(value: metadata)
            
             if metadata.e2eEncrypted {
                 #if !EXTENSION_FILE_PROVIDER_EXTENSION
-                NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: metadata), account: account, start: { start() }, completion: completion)
+                NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: metadata), start: { start() }, completion: completion)
                 #endif
             } else if metadata.chunk {
-                uploadChunkedFile(metadata: tableMetadata.init(value: metadata), userId: account.userId, start: { start() }, completion: completion)
+                uploadChunkedFile(metadata: metadata, start: { start() }, completion: completion)
             } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
-                uploadFile(metadata: tableMetadata.init(value: metadata), account: account, start: { start() }, completion: completion)
+                uploadFile(metadata: metadata, start: { start() }, completion: completion)
             } else {
-                uploadFileInBackground(metadata: tableMetadata.init(value: metadata), account: account, start: { start() }, completion: completion)
+                uploadFileInBackground(metadata: metadata, start: { start() }, completion: completion)
             }
            
         } else {
@@ -439,7 +433,8 @@ import Queuer
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     return completion(NCGlobal.shared.errorInternalError, "Internal error")
                 }
-                       
+                
+                let metadata = tableMetadata.init(value: extractMetadata)
                 fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId, fileNameView: extractMetadata.fileNameView)
                 NCUtilityFileSystem.shared.moveFileInBackground(atPath: fileNamePath!, toPath: fileNameLocalPath)
 
@@ -447,20 +442,20 @@ import Queuer
                
                 if metadata.e2eEncrypted {
                     #if !EXTENSION_FILE_PROVIDER_EXTENSION
-                    NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: extractMetadata), account: account, start: { start() }, completion: completion)
+                    NCNetworkingE2EE.shared.upload(metadata: extractMetadata, start: { start() }, completion: completion)
                     #endif
                 } else if metadata.chunk {
-                    self.uploadChunkedFile(metadata: tableMetadata.init(value: metadata), userId: account.userId, start: { start() }, completion: completion)
+                    self.uploadChunkedFile(metadata: metadata, start: { start() }, completion: completion)
                 } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
-                    self.uploadFile(metadata: tableMetadata.init(value: extractMetadata), account: account, start: { start() }, completion: completion)
+                    self.uploadFile(metadata: metadata, start: { start() }, completion: completion)
                 } else {
-                    self.uploadFileInBackground(metadata: tableMetadata.init(value: extractMetadata), account: account, start: { start() }, completion: completion)
+                    self.uploadFileInBackground(metadata: metadata, start: { start() }, completion: completion)
                 }
             }
         }
     }
     
-    private func uploadFile(metadata: tableMetadata, account: tableAccount, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    private func uploadFile(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -491,7 +486,7 @@ import Queuer
         }
     }
     
-    private func uploadFileInBackground(metadata: tableMetadata, account: tableAccount, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    private func uploadFileInBackground(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         var session: URLSession?
         let metadata = tableMetadata.init(value: metadata)
@@ -943,7 +938,7 @@ import Queuer
     
     //MARK: - WebDav Delete
 
-    @objc func deleteMetadata(_ metadata: tableMetadata, account: String, urlBase: String, onlyLocal: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func deleteMetadata(_ metadata: tableMetadata, onlyLocal: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
                 
         if (onlyLocal) {
             
@@ -951,7 +946,7 @@ import Queuer
             
             if metadata.directory {
                 let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", account, serverUrl))
+                metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl))
             }
             
             for metadata in metadatas {
@@ -969,17 +964,17 @@ import Queuer
             return completion(0, "")
         }
         
-        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: urlBase)
+        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         
         if isDirectoryEncrypted {
             #if !EXTENSION
             if metadataLive == nil {
-                NCNetworkingE2EE.shared.deleteMetadata(metadata, urlBase: urlBase, completion: completion)
+                NCNetworkingE2EE.shared.deleteMetadata(metadata, completion: completion)
             } else {
-                NCNetworkingE2EE.shared.deleteMetadata(metadataLive!, urlBase: urlBase) { (errorCode, errorDescription) in
+                NCNetworkingE2EE.shared.deleteMetadata(metadataLive!) { (errorCode, errorDescription) in
                     if errorCode == 0 {
-                        NCNetworkingE2EE.shared.deleteMetadata(metadata, urlBase: urlBase, completion: completion)
+                        NCNetworkingE2EE.shared.deleteMetadata(metadata, completion: completion)
                     } else {
                         completion(errorCode, errorDescription)
                     }
@@ -1034,24 +1029,24 @@ import Queuer
     
     //MARK: - WebDav Favorite
 
-    @objc func favoriteMetadata(_ metadata: tableMetadata, urlBase: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func favoriteMetadata(_ metadata: tableMetadata, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-            favoriteMetadataPlain(metadataLive, urlBase: urlBase) { (errorCode, errorDescription) in
+            favoriteMetadataPlain(metadataLive) { (errorCode, errorDescription) in
                 if errorCode == 0 {
-                    self.favoriteMetadataPlain(metadata, urlBase: urlBase, completion: completion)
+                    self.favoriteMetadataPlain(metadata, completion: completion)
                 } else {
                     completion(errorCode, errorDescription)
                 }
             }
         } else {
-            favoriteMetadataPlain(metadata, urlBase: urlBase, completion: completion)
+            favoriteMetadataPlain(metadata, completion: completion)
         }
     }
     
-    private func favoriteMetadataPlain(_ metadata: tableMetadata, urlBase: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    private func favoriteMetadataPlain(_ metadata: tableMetadata, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
-        let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
+        let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
         let favorite = !metadata.favorite
         let ocId = metadata.ocId
         
@@ -1098,20 +1093,20 @@ import Queuer
     
     //MARK: - WebDav Rename
 
-    @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, urlBase: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
+    @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
-        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: urlBase)
+        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"
 
         if isDirectoryEncrypted {
             #if !EXTENSION
             if metadataLive == nil {
-                NCNetworkingE2EE.shared.renameMetadata(metadata, fileNameNew: fileNameNew, urlBase: urlBase, completion: completion)
+                NCNetworkingE2EE.shared.renameMetadata(metadata, fileNameNew: fileNameNew, completion: completion)
             } else {
-                NCNetworkingE2EE.shared.renameMetadata(metadataLive!, fileNameNew: fileNameNewLive, urlBase: urlBase) { (errorCode, errorDescription) in
+                NCNetworkingE2EE.shared.renameMetadata(metadataLive!, fileNameNew: fileNameNewLive) { (errorCode, errorDescription) in
                     if errorCode == 0 {
-                        NCNetworkingE2EE.shared.renameMetadata(metadata, fileNameNew: fileNameNew, urlBase: urlBase, completion: completion)
+                        NCNetworkingE2EE.shared.renameMetadata(metadata, fileNameNew: fileNameNew, completion: completion)
                     } else {
                         completion(errorCode, errorDescription)
                     }
