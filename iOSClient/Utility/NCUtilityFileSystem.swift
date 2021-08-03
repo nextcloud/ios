@@ -179,7 +179,7 @@ class NCUtilityFileSystem: NSObject {
     }
     
     @objc func getHomeServer(account: String) -> String {
-        var home = ""
+        var home = self.getWebDAV(account: account)
         if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
             home = tableAccount.urlBase + "/" + self.getWebDAV(account: account) + "/files/" + tableAccount.userId
         }

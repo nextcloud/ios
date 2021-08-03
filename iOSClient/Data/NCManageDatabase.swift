@@ -87,31 +87,20 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableActivity.className())
                         migration.deleteData(forType: tableActivityPreview.className())
                         migration.deleteData(forType: tableActivitySubjectRich.className())
-                        migration.deleteData(forType: tableDirectEditingCreators.className())
-                        migration.deleteData(forType: tableDirectEditingEditors.className())
                         migration.deleteData(forType: tableExternalSites.className())
                         migration.deleteData(forType: tableGPS.className())
-                        migration.deleteData(forType: tableShare.className())
                         migration.deleteData(forType: tableTag.className())
-                        migration.deleteData(forType: tableTrash.className())
                     }
                     
                     if oldSchemaVersion < 120 {
-                        migration.deleteData(forType: tableE2eEncryptionLock.className())
                         migration.deleteData(forType: tableCapabilities.className())
                         migration.deleteData(forType: tableComments.className())
-                        migration.deleteData(forType: tableDirectory.className())
                     }
                     
                     if oldSchemaVersion < 134 {
-                        migration.deleteData(forType: tableShare.className())
                         migration.deleteData(forType: tableDirectEditingCreators.className())
                         migration.deleteData(forType: tableDirectEditingEditors.className())
                         migration.deleteData(forType: tableExternalSites.className())
-                    }
-                    
-                    if oldSchemaVersion < 139 {
-                        migration.deleteData(forType: tableMetadata.className())
                     }
                     
                     if oldSchemaVersion < 141 {
@@ -127,9 +116,12 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if oldSchemaVersion < 183 {
+                    if oldSchemaVersion < 191 {
                         migration.deleteData(forType: tableDirectory.className())
+                        migration.deleteData(forType: tableE2eEncryption.className())
+                        migration.deleteData(forType: tableE2eEncryptionLock.className())
                         migration.deleteData(forType: tableMetadata.className())
+                        migration.deleteData(forType: tableShare.className())
                     }
                     
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
