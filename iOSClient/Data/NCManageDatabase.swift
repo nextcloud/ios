@@ -1879,10 +1879,10 @@ class NCManageDatabase: NSObject {
         }
         
         // Live Photo "DETECT"
-        if !metadata.directory && !metadata.livePhoto && (metadata.classFile == NCGlobal.shared.metadataClassVideo || metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue) {
+        if !metadata.directory && !metadata.livePhoto && (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue) {
             var classFile = metadata.classFile
             if classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
-                classFile = NCGlobal.shared.metadataClassVideo
+                classFile = NCCommunicationCommon.typeClassFile.video.rawValue
             } else {
                 classFile = NCCommunicationCommon.typeClassFile.image.rawValue
             }
@@ -2494,7 +2494,7 @@ class NCManageDatabase: NSObject {
         }
         
         if classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
-            classFile = NCGlobal.shared.metadataClassVideo
+            classFile = NCCommunicationCommon.typeClassFile.video.rawValue
         } else {
             classFile = NCCommunicationCommon.typeClassFile.image.rawValue
         }

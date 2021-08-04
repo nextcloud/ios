@@ -162,7 +162,7 @@ class NCViewerImageDetailView: UIView {
                 dimLabel.text = NSLocalizedString("_dimension_", comment: "")
                 dimValue.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
             }
-        } else if metadata?.classFile == NCGlobal.shared.metadataClassVideo || metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue  {
+        } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue  {
             NCNetworking.shared.getVideoUrl(metadata: metadata!) { url in
                 if let url = url {
                     let playerVideo = AVPlayer(url: url)

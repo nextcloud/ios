@@ -43,7 +43,7 @@ class NCViewer: NSObject {
         var editor = editor
         
         // IMAGE AUDIO VIDEO
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || metadata.classFile == NCGlobal.shared.metadataClassVideo {
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             
             if let navigationController = viewController.navigationController {
                             
@@ -64,7 +64,7 @@ class NCViewer: NSObject {
         }
         
         // DOCUMENTS
-        if metadata.classFile == NCGlobal.shared.metadataClassDocument {
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.document.rawValue {
                 
             // PDF
             if metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {

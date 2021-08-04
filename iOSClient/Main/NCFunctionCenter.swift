@@ -75,7 +75,7 @@ import Queuer
                                 
                                 self.openDocumentController(metadata: metadata)
                                 
-                            } else if metadata.classFile == NCGlobal.shared.metadataClassFileCompress || metadata.classFile == NCGlobal.shared.metadataClassUnknown {
+                            } else if metadata.classFile == NCCommunicationCommon.typeClassFile.compress.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.unknow.rawValue {
 
                                 self.openDocumentController(metadata: metadata)
                                 
@@ -320,7 +320,7 @@ import Queuer
                 NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorFileNotSaved)
             }
             
-        } else if metadata.classFile == NCGlobal.shared.metadataClassVideo && status == PHAuthorizationStatus.authorized {
+        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && status == PHAuthorizationStatus.authorized {
             
             if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath) {
                 UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
@@ -872,7 +872,7 @@ import Queuer
         
         var children: [UIMenuElement] = [favorite, offline, openIn, rename, moveCopy, copy, delete]
 
-        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCGlobal.shared.metadataClassVideo) {
+        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue) {
             children.insert(save, at: 2)
         }
         

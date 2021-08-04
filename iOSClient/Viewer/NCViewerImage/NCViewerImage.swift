@@ -325,7 +325,7 @@ class NCViewerImage: UIViewController {
             return image
         }
         
-        if metadata.classFile == NCGlobal.shared.metadataClassVideo && !metadata.hasPreview {
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && !metadata.hasPreview {
             NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
         }
         
@@ -531,7 +531,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             return
         }
         
-        if currentMetadata.classFile == NCGlobal.shared.metadataClassVideo || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+        if currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             
             if self.viewerVideo?.pictureInPictureOcId != currentMetadata.ocId {
                                 
@@ -593,7 +593,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         toolBar.isHidden = true
         viewerVideo = NCViewerVideo.init(view: viewerImageZoom.imageView, progressView: progressView, viewerVideoToolBar: toolBar)
         
-        if (currentMetadata.classFile == NCGlobal.shared.metadataClassVideo || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
+        if (currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.viewerVideo?.videoPlay(metadata: metadata)
             }

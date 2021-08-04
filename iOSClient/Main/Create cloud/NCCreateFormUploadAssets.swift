@@ -23,6 +23,7 @@
 
 import UIKit
 import Queuer
+import NCCommunication
 
 protocol createFormUploadAssetsDelegate {
     func dismissFormUploadAssets()
@@ -440,7 +441,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                             metadataMOVForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
                             metadataMOVForUpload.size = fileSize
                             metadataMOVForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-                            metadataMOVForUpload.classFile = NCGlobal.shared.metadataClassVideo
+                            metadataMOVForUpload.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
 
                             metadatasMOV.append(metadataMOVForUpload)
                         }

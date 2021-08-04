@@ -80,7 +80,7 @@ class NCViewerImageZoom: UIViewController {
         if image == nil {
             var named = "noPreview"
             if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue { named = "noPreviewAudio" }
-            if metadata.classFile == NCGlobal.shared.metadataClassVideo { named = "noPreviewVideo" }
+            if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue { named = "noPreviewVideo" }
             image = UIImage.init(named: named)!.image(color: .gray, size: view.frame.width)
             self.noPreview = true
         }

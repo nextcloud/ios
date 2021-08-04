@@ -240,7 +240,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                         metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(asset: asset)
                         metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                         if assetMediaType == PHAssetMediaType.video {
-                            metadataForUpload.classFile = NCGlobal.shared.metadataClassVideo
+                            metadataForUpload.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
                         } else if (assetMediaType == PHAssetMediaType.image) {
                             metadataForUpload.classFile = NCCommunicationCommon.typeClassFile.image.rawValue
                         }
@@ -269,7 +269,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                                     metadataForUpload.sessionSelector = selector
                                     metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
                                     metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-                                    metadataForUpload.classFile = NCGlobal.shared.metadataClassVideo
+                                    metadataForUpload.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
                                     
                                     if selector == NCGlobal.shared.selectorUploadAutoUpload {
                                         NCCommunicationCommon.shared.writeLog("Automatic upload added Live Photo \(metadataForUpload.fileNameView) (\(metadataForUpload.size) bytes) with Identifier \(metadataForUpload.assetLocalIdentifier)")

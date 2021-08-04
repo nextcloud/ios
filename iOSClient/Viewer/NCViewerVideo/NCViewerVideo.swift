@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import NCCommunication
 
 class NCViewerVideo: NSObject {
     
@@ -57,7 +58,7 @@ class NCViewerVideo: NSObject {
 
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
         
-        if metadata?.classFile == NCGlobal.shared.metadataClassVideo {
+        if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             player?.pause()
         }
     }
