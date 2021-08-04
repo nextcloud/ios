@@ -46,13 +46,13 @@ extension NCMedia {
 
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString(filterTypeFileImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""),
+                    title: NSLocalizedString(filterClassTypeImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "photo"),
-                    selected: filterTypeFileImage,
+                    selected: filterClassTypeImage,
                     on: true,
                     action: { menuAction in
-                        self.filterTypeFileImage = !self.filterTypeFileImage
-                        self.filterTypeFileVideo = false
+                        self.filterClassTypeImage = !self.filterClassTypeImage
+                        self.filterClassTypeVideo = false
                         self.reloadDataSource()
                     }
                 )
@@ -60,13 +60,13 @@ extension NCMedia {
 
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString(filterTypeFileVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""),
+                    title: NSLocalizedString(filterClassTypeVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "video"),
-                    selected: filterTypeFileVideo,
+                    selected: filterClassTypeVideo,
                     on: true,
                     action: { menuAction in
-                        self.filterTypeFileVideo = !self.filterTypeFileVideo
-                        self.filterTypeFileImage = false
+                        self.filterClassTypeVideo = !self.filterClassTypeVideo
+                        self.filterClassTypeImage = false
                         self.reloadDataSource()
                     }
                 )
@@ -172,7 +172,7 @@ extension NCMedia {
                         self.isEditMode = false
                         for ocId in self.selectOcId {
                             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                if metadata.classFile == NCGlobal.shared.metadataTypeFileImage || metadata.classFile == NCGlobal.shared.metadataTypeFileVideo {
+                                if metadata.classFile == NCGlobal.shared.metadataClassImage || metadata.classFile == NCGlobal.shared.metadataClassVideo {
                                     if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                                         NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
                                     } else {

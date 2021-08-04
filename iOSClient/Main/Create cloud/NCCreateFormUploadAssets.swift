@@ -440,7 +440,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                             metadataMOVForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
                             metadataMOVForUpload.size = fileSize
                             metadataMOVForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-                            metadataMOVForUpload.classFile = NCGlobal.shared.metadataTypeFileVideo
+                            metadataMOVForUpload.classFile = NCGlobal.shared.metadataClassVideo
 
                             metadatasMOV.append(metadataMOVForUpload)
                         }

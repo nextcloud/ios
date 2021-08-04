@@ -56,7 +56,7 @@ class NCViewerAVPlayerViewController: AVPlayerViewController {
             
             player = AVPlayer(url: url)
             
-            if  metadata.classFile == NCGlobal.shared.metadataTypeFileAudio {
+            if  metadata.classFile == NCGlobal.shared.metadataClassFileAudio {
                                 
                 let imageView = UIImageView.init(image: imageBackground)
                 imageView.translatesAutoresizingMaskIntoConstraints = false

@@ -438,9 +438,9 @@ class NCUtility: NSObject {
         
         if FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
         if !CCUtility.fileProviderStorageExists(ocId, fileNameView: fileName) { return }
-        if classFile != NCGlobal.shared.metadataTypeFileImage && classFile != NCGlobal.shared.metadataTypeFileVideo { return }
+        if classFile != NCGlobal.shared.metadataClassImage && classFile != NCGlobal.shared.metadataClassVideo { return }
         
-        if classFile == NCGlobal.shared.metadataTypeFileImage {
+        if classFile == NCGlobal.shared.metadataClassImage {
             
             originalImage = UIImage.init(contentsOfFile: fileNamePath)
             
@@ -450,7 +450,7 @@ class NCUtility: NSObject {
             try? scaleImagePreview?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
             try? scaleImageIcon?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
             
-        } else if classFile == NCGlobal.shared.metadataTypeFileVideo {
+        } else if classFile == NCGlobal.shared.metadataClassVideo {
             
             let videoPath = NSTemporaryDirectory()+"tempvideo.mp4"
             NCUtilityFileSystem.shared.linkItem(atPath: fileNamePath, toPath: videoPath)

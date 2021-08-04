@@ -158,7 +158,7 @@ extension NCCollectionViewCommon {
         //
         // OPEN with external editor
         //
-        if metadata.classFile == NCGlobal.shared.metadataTypeFileDocument && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument))  {
+        if metadata.classFile == NCGlobal.shared.metadataClassDocument && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument))  {
             
             var editor = ""
             var title = ""
@@ -205,7 +205,7 @@ extension NCCollectionViewCommon {
         //
         // PRINT
         //
-        if (metadata.classFile == NCGlobal.shared.metadataTypeFileImage && metadata.contentType != "image/svg+xml") || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
+        if (metadata.classFile == NCGlobal.shared.metadataClassImage && metadata.contentType != "image/svg+xml") || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_print_", comment: ""),
@@ -220,7 +220,7 @@ extension NCCollectionViewCommon {
         //
         // SAVE
         //
-        if (metadata.classFile == NCGlobal.shared.metadataTypeFileImage && metadata.contentType != "image/svg+xml") || metadata.classFile == NCGlobal.shared.metadataTypeFileVideo {
+        if (metadata.classFile == NCGlobal.shared.metadataClassImage && metadata.contentType != "image/svg+xml") || metadata.classFile == NCGlobal.shared.metadataClassVideo {
             var title: String = NSLocalizedString("_save_selected_files_", comment: "")
             var icon = NCUtility.shared.loadImage(named: "square.and.arrow.down")
             let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
@@ -252,7 +252,7 @@ extension NCCollectionViewCommon {
         // SAVE AS SCAN
         //
         if #available(iOS 13.0, *) {
-            if (metadata.classFile == NCGlobal.shared.metadataTypeFileImage && metadata.contentType != "image/svg+xml") {
+            if (metadata.classFile == NCGlobal.shared.metadataClassImage && metadata.contentType != "image/svg+xml") {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_save_as_scan_", comment: ""),
@@ -340,7 +340,7 @@ extension NCCollectionViewCommon {
         // USE AS BACKGROUND
         //
         if #available(iOS 13.0, *) {
-            if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && self.layoutKey == NCGlobal.shared.layoutViewFiles && !NCBrandOptions.shared.disable_background_image {
+            if metadata.typeFile == NCGlobal.shared.metadataClassImage && self.layoutKey == NCGlobal.shared.layoutViewFiles && !NCBrandOptions.shared.disable_background_image {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_use_as_background_", comment: ""),
@@ -362,7 +362,7 @@ extension NCCollectionViewCommon {
         // MODIFY
         //
         if #available(iOS 13.0, *) {
-            if !isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NCGlobal.shared.metadataTypeFileImage) {
+            if !isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NCGlobal.shared.metadataClassImage) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_modify_", comment: ""),
@@ -501,7 +501,7 @@ extension NCCollectionViewCommon {
                 action: { menuAction in
                     for ocId in self.selectOcId {
                         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                            if metadata.classFile == NCGlobal.shared.metadataTypeFileImage || metadata.classFile == NCGlobal.shared.metadataTypeFileVideo {
+                            if metadata.classFile == NCGlobal.shared.metadataClassImage || metadata.classFile == NCGlobal.shared.metadataClassVideo {
                                 if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                                     NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
                                 } else {

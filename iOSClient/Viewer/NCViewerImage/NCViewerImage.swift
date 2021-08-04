@@ -325,7 +325,7 @@ class NCViewerImage: UIViewController {
             return image
         }
         
-        if metadata.classFile == NCGlobal.shared.metadataTypeFileVideo && !metadata.hasPreview {
+        if metadata.classFile == NCGlobal.shared.metadataClassVideo && !metadata.hasPreview {
             NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
         }
         
@@ -343,7 +343,7 @@ class NCViewerImage: UIViewController {
         let ext = CCUtility.getExtension(metadata.fileNameView)
         var image: UIImage?
         
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.classFile == NCGlobal.shared.metadataTypeFileImage {
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.classFile == NCGlobal.shared.metadataClassImage {
            
             let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -531,7 +531,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             return
         }
         
-        if currentMetadata.classFile == NCGlobal.shared.metadataTypeFileVideo || currentMetadata.classFile == NCGlobal.shared.metadataTypeFileAudio {
+        if currentMetadata.classFile == NCGlobal.shared.metadataClassVideo || currentMetadata.classFile == NCGlobal.shared.metadataClassFileAudio {
             
             if self.viewerVideo?.pictureInPictureOcId != currentMetadata.ocId {
                                 
@@ -593,7 +593,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         toolBar.isHidden = true
         viewerVideo = NCViewerVideo.init(view: viewerImageZoom.imageView, progressView: progressView, viewerVideoToolBar: toolBar)
         
-        if (currentMetadata.classFile == NCGlobal.shared.metadataTypeFileVideo || currentMetadata.classFile == NCGlobal.shared.metadataTypeFileAudio) {
+        if (currentMetadata.classFile == NCGlobal.shared.metadataClassVideo || currentMetadata.classFile == NCGlobal.shared.metadataClassFileAudio) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.viewerVideo?.videoPlay(metadata: metadata)
             }
@@ -615,7 +615,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         }
         
         // DOWNLOAD FILE
-        if ((metadata.classFile == NCGlobal.shared.metadataTypeFileImage && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+        if ((metadata.classFile == NCGlobal.shared.metadataClassImage && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             NCOperationQueue.shared.download(metadata: metadata, selector: "")
         }
         
