@@ -102,7 +102,7 @@ class NCViewerProviderContextMenu: UIViewController  {
             }
             
             // AUTO DOWNLOAD VIDEO / AUDIO
-            // if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.typeFile == NCGlobal.shared.metadataClassVideo || metadata.typeFile == NCGlobal.shared.metadataClassFileAudio || metadata.contentType == "application/pdf") {
+            // if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.classFile == NCGlobal.shared.metadataClassVideo || metadata.classFile == NCGlobal.shared.metadataClassFileAudio || metadata.contentType == "application/pdf") {
             if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.classFile == NCGlobal.shared.metadataClassVideo || metadata.classFile == NCGlobal.shared.metadataClassFileAudio) {
                 
                 var maxDownload: UInt64 = 0

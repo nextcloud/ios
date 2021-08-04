@@ -455,6 +455,7 @@ class tableTag: Object {
 class tableTrash: Object {
     
     @objc dynamic var account = ""
+    @objc dynamic var classFile = ""
     @objc dynamic var contentType = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
@@ -464,7 +465,6 @@ class tableTrash: Object {
     @objc dynamic var hasPreview: Bool = false
     @objc dynamic var iconName = ""
     @objc dynamic var size: Int64 = 0
-    @objc dynamic var typeFile = ""
     @objc dynamic var trashbinFileName = ""
     @objc dynamic var trashbinOriginalLocation = ""
     @objc dynamic var trashbinDeletionTime = NSDate()

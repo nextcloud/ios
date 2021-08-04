@@ -116,12 +116,13 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if oldSchemaVersion < 191 {
+                    if oldSchemaVersion < 193 {
                         migration.deleteData(forType: tableDirectory.className())
                         migration.deleteData(forType: tableE2eEncryption.className())
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
                         migration.deleteData(forType: tableMetadata.className())
                         migration.deleteData(forType: tableShare.className())
+                        migration.deleteData(forType: tableTrash.className())
                     }
                     
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
@@ -2875,7 +2876,7 @@ class NCManageDatabase: NSObject {
                     object.trashbinDeletionTime = trash.trashbinDeletionTime
                     object.trashbinFileName = trash.trashbinFileName
                     object.trashbinOriginalLocation = trash.trashbinOriginalLocation
-                    object.typeFile = trash.typeFile
+                    object.classFile = trash.classFile
                     
                     realm.add(object, update: .all)
                 }
