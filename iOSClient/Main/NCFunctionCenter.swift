@@ -312,7 +312,7 @@ import Queuer
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let status = PHPhotoLibrary.authorizationStatus()
 
-        if metadata.classFile == NCGlobal.shared.metadataClassImage && status == PHAuthorizationStatus.authorized {
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && status == PHAuthorizationStatus.authorized {
             
             if let image = UIImage.init(contentsOfFile: fileNamePath) {
                 UIImageWriteToSavedPhotosAlbum(image, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
@@ -872,15 +872,15 @@ import Queuer
         
         var children: [UIMenuElement] = [favorite, offline, openIn, rename, moveCopy, copy, delete]
 
-        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCGlobal.shared.metadataClassImage || metadata.classFile == NCGlobal.shared.metadataClassVideo) {
+        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCGlobal.shared.metadataClassVideo) {
             children.insert(save, at: 2)
         }
         
-        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCGlobal.shared.metadataClassImage) {
+        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue) {
             children.insert(saveAsScan, at: 2)
         }
         
-        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCGlobal.shared.metadataClassImage || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf") {
+        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf") {
             children.insert(print, at: 2)
         }
         
@@ -888,11 +888,11 @@ import Queuer
             children.insert(viewInFolder, at: children.count-1)
         }
         
-        if (!isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml") && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NCGlobal.shared.metadataClassImage) {
+        if (!isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml") && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue) {
             children.insert(modify, at: children.count-1)
         }
         
-        if metadata.classFile == NCGlobal.shared.metadataClassImage && viewController is NCCollectionViewCommon && !NCBrandOptions.shared.disable_background_image {
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && viewController is NCCollectionViewCommon && !NCBrandOptions.shared.disable_background_image {
             let viewController: NCCollectionViewCommon = viewController as! NCCollectionViewCommon
             let layoutKey = viewController.layoutKey
             if layoutKey == NCGlobal.shared.layoutViewFiles {

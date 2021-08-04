@@ -425,7 +425,7 @@ extension NCMedia: UICollectionViewDataSource {
             }
             cell.date = metadata.date as Date
 
-            if metadata.classFile == NCGlobal.shared.metadataClassVideo || metadata.classFile == NCGlobal.shared.metadataClassFileAudio {
+            if metadata.classFile == NCGlobal.shared.metadataClassVideo || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
                 cell.imageStatus.image = cacheImages.cellPlayImage
             } else if metadata.livePhoto && livePhoto {
                 cell.imageStatus.image = cacheImages.cellLivePhotoImage
@@ -487,12 +487,12 @@ extension NCMedia {
         }
         let startServerUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) + mediaPath
         
-        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NCGlobal.shared.metadataClassImage, NCGlobal.shared.metadataClassVideo)
+        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NCCommunicationCommon.typeClassFile.image.rawValue, NCGlobal.shared.metadataClassVideo)
         
         if filterClassTypeImage {
             predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NCGlobal.shared.metadataClassVideo)
         } else if filterClassTypeVideo {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NCGlobal.shared.metadataClassImage)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NCCommunicationCommon.typeClassFile.image.rawValue)
         } else {
             predicate = predicateDefault
         }

@@ -438,9 +438,9 @@ class NCUtility: NSObject {
         
         if FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
         if !CCUtility.fileProviderStorageExists(ocId, fileNameView: fileName) { return }
-        if classFile != NCGlobal.shared.metadataClassImage && classFile != NCGlobal.shared.metadataClassVideo { return }
+        if classFile != NCCommunicationCommon.typeClassFile.image.rawValue && classFile != NCGlobal.shared.metadataClassVideo { return }
         
-        if classFile == NCGlobal.shared.metadataClassImage {
+        if classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             
             originalImage = UIImage.init(contentsOfFile: fileNamePath)
             

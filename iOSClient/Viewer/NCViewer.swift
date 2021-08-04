@@ -43,7 +43,7 @@ class NCViewer: NSObject {
         var editor = editor
         
         // IMAGE AUDIO VIDEO
-        if metadata.classFile == NCGlobal.shared.metadataClassImage || metadata.classFile == NCGlobal.shared.metadataClassFileAudio || metadata.classFile == NCGlobal.shared.metadataClassVideo {
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || metadata.classFile == NCGlobal.shared.metadataClassVideo {
             
             if let navigationController = viewController.navigationController {
                             

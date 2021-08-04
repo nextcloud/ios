@@ -23,6 +23,7 @@
 
 import UIKit
 import MapKit
+import NCCommunication
 
 class NCViewerImageDetailView: UIView {
     
@@ -109,7 +110,7 @@ class NCViewerImageDetailView: UIView {
         self.size = metadata.size
         self.date = metadata.date
         
-        if metadata.classFile == NCGlobal.shared.metadataClassImage {
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensMode) in
                 self.latitude = latitude
                 self.longitude = longitude
@@ -156,12 +157,12 @@ class NCViewerImageDetailView: UIView {
         }
         
         // Dimensions / Durations
-        if metadata?.classFile == NCGlobal.shared.metadataClassImage {
+        if metadata?.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             if let image = self.image {
                 dimLabel.text = NSLocalizedString("_dimension_", comment: "")
                 dimValue.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
             }
-        } else if metadata?.classFile == NCGlobal.shared.metadataClassVideo || metadata?.classFile == NCGlobal.shared.metadataClassFileAudio  {
+        } else if metadata?.classFile == NCGlobal.shared.metadataClassVideo || metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue  {
             NCNetworking.shared.getVideoUrl(metadata: metadata!) { url in
                 if let url = url {
                     let playerVideo = AVPlayer(url: url)

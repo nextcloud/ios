@@ -343,7 +343,7 @@ class NCViewerImage: UIViewController {
         let ext = CCUtility.getExtension(metadata.fileNameView)
         var image: UIImage?
         
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.classFile == NCGlobal.shared.metadataClassImage {
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
            
             let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -531,7 +531,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             return
         }
         
-        if currentMetadata.classFile == NCGlobal.shared.metadataClassVideo || currentMetadata.classFile == NCGlobal.shared.metadataClassFileAudio {
+        if currentMetadata.classFile == NCGlobal.shared.metadataClassVideo || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             
             if self.viewerVideo?.pictureInPictureOcId != currentMetadata.ocId {
                                 
@@ -593,7 +593,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         toolBar.isHidden = true
         viewerVideo = NCViewerVideo.init(view: viewerImageZoom.imageView, progressView: progressView, viewerVideoToolBar: toolBar)
         
-        if (currentMetadata.classFile == NCGlobal.shared.metadataClassVideo || currentMetadata.classFile == NCGlobal.shared.metadataClassFileAudio) {
+        if (currentMetadata.classFile == NCGlobal.shared.metadataClassVideo || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.viewerVideo?.videoPlay(metadata: metadata)
             }
@@ -615,7 +615,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         }
         
         // DOWNLOAD FILE
-        if ((metadata.classFile == NCGlobal.shared.metadataClassImage && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+        if ((metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             NCOperationQueue.shared.download(metadata: metadata, selector: "")
         }
         

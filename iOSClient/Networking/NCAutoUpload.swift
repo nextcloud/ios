@@ -242,7 +242,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                         if assetMediaType == PHAssetMediaType.video {
                             metadataForUpload.classFile = NCGlobal.shared.metadataClassVideo
                         } else if (assetMediaType == PHAssetMediaType.image) {
-                            metadataForUpload.classFile = NCGlobal.shared.metadataClassImage
+                            metadataForUpload.classFile = NCCommunicationCommon.typeClassFile.image.rawValue
                         }
                         
                         if selector == NCGlobal.shared.selectorUploadAutoUpload {

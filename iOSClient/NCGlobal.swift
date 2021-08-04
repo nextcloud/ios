@@ -224,11 +224,9 @@ class NCGlobal: NSObject {
     
     // classType (metadata)
     //
-    @objc let metadataClassFileAudio                = "audio"
     @objc let metadataClassFileCompress             = "compress"
     @objc let metadataClassDirectory                = "directory"
     @objc let metadataClassDocument                 = "document"
-    @objc let metadataClassImage                    = "image"
     @objc let metadataClassUnknown                  = "unknow"
     @objc let metadataClassVideo                    = "video"
     

@@ -1879,12 +1879,12 @@ class NCManageDatabase: NSObject {
         }
         
         // Live Photo "DETECT"
-        if !metadata.directory && !metadata.livePhoto && (metadata.classFile == NCGlobal.shared.metadataClassVideo || metadata.classFile == NCGlobal.shared.metadataClassImage) {
+        if !metadata.directory && !metadata.livePhoto && (metadata.classFile == NCGlobal.shared.metadataClassVideo || metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue) {
             var classFile = metadata.classFile
-            if classFile == NCGlobal.shared.metadataClassImage {
+            if classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
                 classFile = NCGlobal.shared.metadataClassVideo
             } else {
-                classFile = NCGlobal.shared.metadataClassImage
+                classFile = NCCommunicationCommon.typeClassFile.image.rawValue
             }
             if getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId, classFile)) != nil {
                 metadata.livePhoto = true
@@ -2296,7 +2296,7 @@ class NCManageDatabase: NSObject {
         
         // For Live Photo
         var fileNameImages: [String] = []
-        let filtered = results.filter{ $0.classFile.contains(NCGlobal.shared.metadataClassImage) }
+        let filtered = results.filter{ $0.classFile.contains(NCCommunicationCommon.typeClassFile.image.rawValue) }
         filtered.forEach { print($0)
             let fileName = ($0.fileNameView as NSString).deletingPathExtension
             fileNameImages.append(fileName)
@@ -2493,10 +2493,10 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        if classFile == NCGlobal.shared.metadataClassImage {
+        if classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             classFile = NCGlobal.shared.metadataClassVideo
         } else {
-            classFile = NCGlobal.shared.metadataClassImage
+            classFile = NCCommunicationCommon.typeClassFile.image.rawValue
         }
         
         guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId, classFile)).first else {

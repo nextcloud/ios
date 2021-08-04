@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import NCCommunication
 
 protocol NCViewerImageZoomDelegate {
     func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata)
@@ -78,7 +79,7 @@ class NCViewerImageZoom: UIViewController {
         
         if image == nil {
             var named = "noPreview"
-            if metadata.classFile == NCGlobal.shared.metadataClassFileAudio { named = "noPreviewAudio" }
+            if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue { named = "noPreviewAudio" }
             if metadata.classFile == NCGlobal.shared.metadataClassVideo { named = "noPreviewVideo" }
             image = UIImage.init(named: named)!.image(color: .gray, size: view.frame.width)
             self.noPreview = true
