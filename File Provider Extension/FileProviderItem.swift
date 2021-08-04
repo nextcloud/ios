@@ -44,7 +44,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     
     var typeIdentifier: String {
         let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: "", directory: metadata.directory)
-        return results.uniformTypeIdentifier
+        return results.typeIdentifier
     }
     
     var contentModificationDate: Date? {

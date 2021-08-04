@@ -230,13 +230,13 @@ class NCService: NSObject {
                     // Added UTI for Collabora
                     if let richdocumentsMimetypes = NCManageDatabase.shared.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes) {
                         for mimeType in richdocumentsMimetypes {
-                            NCCommunicationCommon.shared.addInternalUTI(UTIString: mimeType, classFile:  NCCommunicationCommon.typeClassFile.document.rawValue, iconName: NCCommunicationCommon.typeIconFile.document.rawValue, name: "document")
+                            NCCommunicationCommon.shared.addInternalTypeIdentifier(typeIdentifier: mimeType, classFile:  NCCommunicationCommon.typeClassFile.document.rawValue, iconName: NCCommunicationCommon.typeIconFile.document.rawValue, name: "document")
                         }
                     }
                     // Added UTI for ONLYOFFICE & Text
                     if let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: account) {
                         for directEditing in directEditingCreators {
-                            NCCommunicationCommon.shared.addInternalUTI(UTIString: directEditing.mimetype, classFile:  NCCommunicationCommon.typeClassFile.document.rawValue, iconName: NCCommunicationCommon.typeIconFile.document.rawValue, name: "document")
+                            NCCommunicationCommon.shared.addInternalTypeIdentifier(typeIdentifier: directEditing.mimetype, classFile:  NCCommunicationCommon.typeClassFile.document.rawValue, iconName: NCCommunicationCommon.typeIconFile.document.rawValue, name: "document")
                         }
                     }
 

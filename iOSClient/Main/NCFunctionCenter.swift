@@ -447,7 +447,7 @@ import Queuer
             guard let data = data else { return false}
             guard let pasteboardType = pasteboardType else { return false }
             
-            let results = NCCommunicationCommon.shared.getDescriptionFile(inUTI: pasteboardType as CFString)
+            let results = NCCommunicationCommon.shared.getFileProperties(inUTI: pasteboardType as CFString)
             if results.ext == "" { return false }
             if results.classFile != NCCommunicationCommon.typeClassFile.unknow.rawValue {
                 
