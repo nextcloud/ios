@@ -449,30 +449,28 @@ import Queuer
             
             let results = NCCommunicationCommon.shared.getFileProperties(inUTI: pasteboardType as CFString)
             if results.ext == "" { return false }
-            if results.classFile != NCCommunicationCommon.typeClassFile.unknow.rawValue {
                 
-                do {
-                    let fileName = results.name + "_" + CCUtility.getIncrementalNumber() + "." + results.ext
-                    let serverUrlFileName = serverUrl + "/" + fileName
-                    let ocIdUpload = UUID().uuidString
-                    let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
-                    try data.write(to: URL(fileURLWithPath: fileNameLocalPath))
-                   
-                    NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
-                    NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { account, ocId, etag, date, size, allHeaderFields, errorCode, errorDescription in
-                        if errorCode == 0 && etag != nil && ocId != nil {
-                            let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
-                            NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
-                            NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
-                        } else {
-                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: false)
-                        }
-                        NCUtility.shared.stopActivityIndicator()
+            do {
+                let fileName = results.name + "_" + CCUtility.getIncrementalNumber() + "." + results.ext
+                let serverUrlFileName = serverUrl + "/" + fileName
+                let ocIdUpload = UUID().uuidString
+                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
+                try data.write(to: URL(fileURLWithPath: fileNameLocalPath))
+               
+                NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+                NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { account, ocId, etag, date, size, allHeaderFields, errorCode, errorDescription in
+                    if errorCode == 0 && etag != nil && ocId != nil {
+                        let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
+                        NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
+                        NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
+                    } else {
+                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: false)
                     }
-                } catch {
-                    return false
+                    NCUtility.shared.stopActivityIndicator()
                 }
+            } catch {
+                return false
             }
             return true
         }
