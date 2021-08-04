@@ -222,7 +222,7 @@ class NCEndToEndMetadata : NSObject  {
                         
                         metadata.contentType = results.mimeType
                         metadata.iconName = results.iconName
-                        metadata.typeFile = results.typeFile
+                        metadata.classFile = results.classFile
                                                 
                         NCManageDatabase.shared.addMetadata(metadata)
                     }

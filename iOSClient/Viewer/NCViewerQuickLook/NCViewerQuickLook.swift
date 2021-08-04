@@ -66,7 +66,7 @@ import QuickLook
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if editingMode && metadata?.typeFile == NCGlobal.shared.metadataTypeFileImage {
+        if editingMode && metadata?.classFile == NCGlobal.shared.metadataTypeFileImage {
             Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { (t) in
                 if self.navigationItem.rightBarButtonItems?.count ?? 0 > 1 || !(self.navigationController?.isToolbarHidden ?? false) {
                     if #available(iOS 14.0, *) {

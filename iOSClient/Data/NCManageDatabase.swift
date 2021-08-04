@@ -1857,7 +1857,7 @@ class NCManageDatabase: NSObject {
         metadata.serverUrl = file.serverUrl
         metadata.sharePermissions = file.sharePermissions
         metadata.size = file.size
-        metadata.typeFile = file.typeFile
+        metadata.classFile = file.classFile
         if let date = file.uploadDate {
             metadata.uploadDate = date
         } else {
@@ -1873,19 +1873,19 @@ class NCManageDatabase: NSObject {
                 let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory)
                 metadata.contentType = results.mimeType
                 metadata.iconName = results.iconName
-                metadata.typeFile = results.typeFile
+                metadata.classFile = results.classFile
             }
         }
         
         // Live Photo "DETECT"
-        if !metadata.directory && !metadata.livePhoto && (metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage) {
-            var typeFile = metadata.typeFile
-            if typeFile == NCGlobal.shared.metadataTypeFileImage {
-                typeFile = NCGlobal.shared.metadataTypeFileVideo
+        if !metadata.directory && !metadata.livePhoto && (metadata.classFile == NCGlobal.shared.metadataTypeFileVideo || metadata.classFile == NCGlobal.shared.metadataTypeFileImage) {
+            var classFile = metadata.classFile
+            if classFile == NCGlobal.shared.metadataTypeFileImage {
+                classFile = NCGlobal.shared.metadataTypeFileVideo
             } else {
-                typeFile = NCGlobal.shared.metadataTypeFileImage
+                classFile = NCGlobal.shared.metadataTypeFileImage
             }
-            if getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@ AND typeFile == %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId, typeFile)) != nil {
+            if getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId, classFile)) != nil {
                 metadata.livePhoto = true
             }
         }
@@ -1950,7 +1950,7 @@ class NCManageDatabase: NSObject {
         metadata.ocId = ocId
         metadata.permissions = "RGDNVW"
         metadata.serverUrl = serverUrl
-        metadata.typeFile = resultInternalType.typeFile
+        metadata.classFile = resultInternalType.classFile
         metadata.uploadDate = Date() as NSDate
         metadata.url = url
         metadata.urlBase = urlBase
@@ -2051,7 +2051,7 @@ class NCManageDatabase: NSObject {
                     }
                     result.iconName = resultsType.iconName
                     result.contentType = resultsType.mimeType
-                    result.typeFile = resultsType.typeFile
+                    result.classFile = resultsType.classFile
                 }
             }
         } catch let error {
@@ -2295,7 +2295,7 @@ class NCManageDatabase: NSObject {
         
         // For Live Photo
         var fileNameImages: [String] = []
-        let filtered = results.filter{ $0.typeFile.contains(NCGlobal.shared.metadataTypeFileImage) }
+        let filtered = results.filter{ $0.classFile.contains(NCGlobal.shared.metadataTypeFileImage) }
         filtered.forEach { print($0)
             let fileName = ($0.fileNameView as NSString).deletingPathExtension
             fileNameImages.append(fileName)
@@ -2484,7 +2484,7 @@ class NCManageDatabase: NSObject {
     @objc func getMetadataLivePhoto(metadata: tableMetadata) -> tableMetadata? {
            
         let realm = try! Realm()
-        var typeFile = metadata.typeFile
+        var classFile = metadata.classFile
 
         realm.refresh()
         
@@ -2492,13 +2492,13 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        if typeFile == NCGlobal.shared.metadataTypeFileImage {
-            typeFile = NCGlobal.shared.metadataTypeFileVideo
+        if classFile == NCGlobal.shared.metadataTypeFileImage {
+            classFile = NCGlobal.shared.metadataTypeFileVideo
         } else {
-            typeFile = NCGlobal.shared.metadataTypeFileImage
+            classFile = NCGlobal.shared.metadataTypeFileImage
         }
         
-        guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@ AND typeFile == %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId, typeFile)).first else {
+        guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId, classFile)).first else {
             return nil
         }
         

@@ -75,11 +75,11 @@ import Queuer
                                 
                                 self.openDocumentController(metadata: metadata)
                                 
-                            } else if metadata.typeFile == NCGlobal.shared.metadataTypeFileCompress || metadata.typeFile == NCGlobal.shared.metadataTypeFileUnknown {
+                            } else if metadata.classFile == NCGlobal.shared.metadataTypeFileCompress || metadata.classFile == NCGlobal.shared.metadataTypeFileUnknown {
 
                                 self.openDocumentController(metadata: metadata)
                                 
-                            } else if metadata.typeFile == NCGlobal.shared.metadataTypeFileImagemeter {
+                            } else if metadata.classFile == NCGlobal.shared.metadataTypeFileImagemeter {
                                 
                                 self.openDocumentController(metadata: metadata)
                                 
@@ -316,7 +316,7 @@ import Queuer
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let status = PHPhotoLibrary.authorizationStatus()
 
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && status == PHAuthorizationStatus.authorized {
+        if metadata.classFile == NCGlobal.shared.metadataTypeFileImage && status == PHAuthorizationStatus.authorized {
             
             if let image = UIImage.init(contentsOfFile: fileNamePath) {
                 UIImageWriteToSavedPhotosAlbum(image, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
@@ -324,7 +324,7 @@ import Queuer
                 NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorFileNotSaved)
             }
             
-        } else if metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo && status == PHAuthorizationStatus.authorized {
+        } else if metadata.classFile == NCGlobal.shared.metadataTypeFileVideo && status == PHAuthorizationStatus.authorized {
             
             if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath) {
                 UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
@@ -452,11 +452,11 @@ import Queuer
             guard let pasteboardType = pasteboardType else { return false }
             
             let results = NCCommunicationCommon.shared.getDescriptionFile(inUTI: pasteboardType as CFString)
-            if results.resultExtension == "" { return false }
-            if results.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue {
+            if results.ext == "" { return false }
+            if results.classFile != NCCommunicationCommon.typeClassFile.unknow.rawValue {
                 
                 do {
-                    let fileName = results.resultFilename + "_" + CCUtility.getIncrementalNumber() + "." + results.resultExtension
+                    let fileName = results.name + "_" + CCUtility.getIncrementalNumber() + "." + results.ext
                     let serverUrlFileName = serverUrl + "/" + fileName
                     let ocIdUpload = UUID().uuidString
                     let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
@@ -876,15 +876,15 @@ import Queuer
         
         var children: [UIMenuElement] = [favorite, offline, openIn, rename, moveCopy, copy, delete]
 
-        if (metadata.contentType != "image/svg+xml") && (metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo) {
+        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCGlobal.shared.metadataTypeFileImage || metadata.classFile == NCGlobal.shared.metadataTypeFileVideo) {
             children.insert(save, at: 2)
         }
         
-        if (metadata.contentType != "image/svg+xml") && (metadata.typeFile == NCGlobal.shared.metadataTypeFileImage) {
+        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCGlobal.shared.metadataTypeFileImage) {
             children.insert(saveAsScan, at: 2)
         }
         
-        if (metadata.contentType != "image/svg+xml") && (metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf") {
+        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf") {
             children.insert(print, at: 2)
         }
         
@@ -892,11 +892,11 @@ import Queuer
             children.insert(viewInFolder, at: children.count-1)
         }
         
-        if (!isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml") && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage) {
+        if (!isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml") && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NCGlobal.shared.metadataTypeFileImage) {
             children.insert(modify, at: children.count-1)
         }
         
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && viewController is NCCollectionViewCommon && !NCBrandOptions.shared.disable_background_image {
+        if metadata.classFile == NCGlobal.shared.metadataTypeFileImage && viewController is NCCollectionViewCommon && !NCBrandOptions.shared.disable_background_image {
             let viewController: NCCollectionViewCommon = viewController as! NCCollectionViewCommon
             let layoutKey = viewController.layoutKey
             if layoutKey == NCGlobal.shared.layoutViewFiles {

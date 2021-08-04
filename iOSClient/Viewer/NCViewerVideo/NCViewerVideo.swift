@@ -57,7 +57,7 @@ class NCViewerVideo: NSObject {
 
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
         
-        if metadata?.typeFile == NCGlobal.shared.metadataTypeFileVideo {
+        if metadata?.classFile == NCGlobal.shared.metadataTypeFileVideo {
             player?.pause()
         }
     }

@@ -329,6 +329,7 @@ class tableMetadata: Object {
     @objc dynamic var assetLocalIdentifier = ""
     @objc dynamic var checksums = ""
     @objc dynamic var chunk: Bool = false
+    @objc dynamic var classFile = ""
     @objc dynamic var commentsUnread: Bool = false
     @objc dynamic var contentType = ""
     @objc dynamic var creationDate = NSDate()
@@ -370,7 +371,6 @@ class tableMetadata: Object {
     @objc dynamic var trashbinFileName = ""
     @objc dynamic var trashbinOriginalLocation = ""
     @objc dynamic var trashbinDeletionTime = NSDate()
-    @objc dynamic var typeFile = ""
     @objc dynamic var uploadDate = NSDate()
     @objc dynamic var url = ""
     @objc dynamic var urlBase = ""

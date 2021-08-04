@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import NCCommunication
 
 @objc protocol NCCreateFormUploadConflictDelegate {
     @objc func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?)
@@ -387,7 +388,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             } else if FileManager().fileExists(atPath: filePathNewFile) {
                 
                 do {
-                    if metadataNewFile.typeFile == NCGlobal.shared.metadataTypeFileImage {
+                    if metadataNewFile.classFile ==  NCCommunicationCommon.typeClassFile.image.rawValue {
                         let data = try Data(contentsOf: URL(fileURLWithPath: filePathNewFile))
                         if let image = UIImage(data: data) {
                             cell.imageNewFile.image = image

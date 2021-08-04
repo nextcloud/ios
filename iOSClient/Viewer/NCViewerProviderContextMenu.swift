@@ -80,7 +80,7 @@ class NCViewerProviderContextMenu: UIViewController  {
             }
              
             // VIEW IMAGE
-            if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            if metadata.classFile == NCGlobal.shared.metadataTypeFileImage && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 
                 viewImage(metadata: metadata)
             }
@@ -92,18 +92,18 @@ class NCViewerProviderContextMenu: UIViewController  {
             }
             
             // VIEW VIDEO
-            if metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            if metadata.classFile == NCGlobal.shared.metadataTypeFileVideo && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 viewVideo(metadata: metadata)
             }
             
             // PLAY SOUND
-            if metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            if metadata.classFile == NCGlobal.shared.metadataTypeFileAudio && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 playSound(metadata: metadata)
             }
             
             // AUTO DOWNLOAD VIDEO / AUDIO
             // if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio || metadata.contentType == "application/pdf") {
-            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio) {
+            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.classFile == NCGlobal.shared.metadataTypeFileVideo || metadata.classFile == NCGlobal.shared.metadataTypeFileAudio) {
                 
                 var maxDownload: UInt64 = 0
                 
@@ -189,11 +189,11 @@ class NCViewerProviderContextMenu: UIViewController  {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
                 if errorCode == 0 && metadata.ocId == self.metadata?.ocId {
-                    if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
+                    if metadata.classFile == NCGlobal.shared.metadataTypeFileImage {
                         viewImage(metadata: metadata)
-                    } else if metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
+                    } else if metadata.classFile == NCGlobal.shared.metadataTypeFileVideo {
                         viewVideo(metadata: metadata)
-                    } else if metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio {
+                    } else if metadata.classFile == NCGlobal.shared.metadataTypeFileAudio {
                         playSound(metadata: metadata)
                     }
                 }

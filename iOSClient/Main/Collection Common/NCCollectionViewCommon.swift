@@ -1255,10 +1255,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             guard let metadataTouch = metadataTouch else { return }
             let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
             
-            if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio {
+            if metadata.classFile == NCGlobal.shared.metadataTypeFileImage || metadata.classFile == NCGlobal.shared.metadataTypeFileVideo || metadata.classFile == NCGlobal.shared.metadataTypeFileAudio {
                 var metadatas: [tableMetadata] = []
                 for metadata in dataSource.metadatas {
-                    if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio {
+                    if metadata.classFile == NCGlobal.shared.metadataTypeFileImage || metadata.classFile == NCGlobal.shared.metadataTypeFileVideo || metadata.classFile == NCGlobal.shared.metadataTypeFileAudio {
                         metadatas.append(metadata)
                     }
                 }
