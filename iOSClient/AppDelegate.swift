@@ -823,7 +823,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     
                     if matchedAccount != nil {
                         
-                        let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: activeAccount.account)
+                        let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: activeAccount.account) + "/files/" + activeAccount.userId
                         if pathScheme.contains("/") {
                             fileName = (pathScheme as NSString).lastPathComponent
                             serverUrl = matchedAccount!.urlBase + "/" + webDAV + "/" + (pathScheme as NSString).deletingLastPathComponent
