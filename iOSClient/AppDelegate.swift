@@ -633,10 +633,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let accounts = NCManageDatabase.shared.getAccounts()
             if accounts?.count ?? 0 > 0 {
                 if let newAccount = accounts?.first {
-                    if let account = NCManageDatabase.shared.setAccountActive(newAccount) {
-                        settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
-                    }
+                    self.changeAccount(newAccount)
                 }
             } else {
                 openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
@@ -812,10 +809,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         for account in accounts {
                             guard let accountURL = URL(string: account.urlBase) else { return false }
                             if linkScheme.contains(accountURL.host ?? "") && userScheme == account.user {
-                                NCManageDatabase.shared.setAccountActive(account.account)
-                                settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
+                                changeAccount(account.account)
                                 matchedAccount = account
-                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
                                 break
                             }
                         }
@@ -832,9 +827,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                             serverUrl = matchedAccount!.urlBase + "/" + webDAV
                         }
                         
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            NCFunctionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileName: fileName)
-                        }
+                        NCFunctionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileName: fileName)
                         
                     } else {
                         
