@@ -827,7 +827,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                             serverUrl = matchedAccount!.urlBase + "/" + webDAV
                         }
                         
-                        NCFunctionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileName: fileName)
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterOpenFileViewInFolder, userInfo: ["serverUrl": serverUrl, "fileName": fileName], second: 1)
+                        
+                        //NCFunctionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileName: fileName)
                         
                     } else {
                         
