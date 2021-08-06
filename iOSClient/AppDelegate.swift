@@ -818,7 +818,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     
                     if matchedAccount != nil {
                         
-                        let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: activeAccount.account) + "/files/" + activeAccount.userId
+                        let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: self.account) + "/files/" + self.userId
                         if pathScheme.contains("/") {
                             fileName = (pathScheme as NSString).lastPathComponent
                             serverUrl = matchedAccount!.urlBase + "/" + webDAV + "/" + (pathScheme as NSString).deletingLastPathComponent
@@ -827,9 +827,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                             serverUrl = matchedAccount!.urlBase + "/" + webDAV
                         }
                         
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterOpenFileViewInFolder, userInfo: ["serverUrl": serverUrl, "fileName": fileName], second: 1)
-                        
-                        //NCFunctionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileName: fileName)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            NCFunctionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileName: fileName)
+                        }
                         
                     } else {
                         
