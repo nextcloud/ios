@@ -644,12 +644,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc func changeAccount(_ account: String) {
         
         NCManageDatabase.shared.setAccountActive(account)
-        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+        if let tableAccount = NCManageDatabase.shared.getActiveAccount() {
             
             NCOperationQueue.shared.cancelAllQueue()
             NCNetworking.shared.cancelAllTask()
             
-            settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
+            settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId, password: CCUtility.getPassword(tableAccount.account))
             
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
         }
