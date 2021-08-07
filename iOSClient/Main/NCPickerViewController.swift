@@ -137,52 +137,41 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
         appDelegate.window?.rootViewController?.present(documentProviderMenu, animated: true, completion: nil)
     }
     
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+    
+        for url in urls {
             
-        if controller.documentPickerMode == .import {
+            let fileName = url.lastPathComponent
+            let serverUrl = appDelegate.activeServerUrl
+            let ocId = NSUUID().uuidString
+            let atPath = url.path
+            let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
             
-            let coordinator = NSFileCoordinator.init(filePresenter: nil)
-
-            coordinator.coordinate(readingItemAt: url, options: NSFileCoordinator.ReadingOptions.forUploading, error: nil) { (url) in
+            if NCUtilityFileSystem.shared.copyFile(atPath: atPath, toPath: toPath) {
                 
-                let fileName = url.lastPathComponent
-                let serverUrl = appDelegate.activeServerUrl
-                let ocId = NSUUID().uuidString
-                let data = try? Data.init(contentsOf: url)
-                let path = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!)
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
                 
-                if data != nil {
+                metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
+                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+                metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
+                metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+                
+                if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {
                     
-                    do {
-                        try data?.write(to: path)
-                        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
+                    if let conflict = UIStoryboard.init(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
                         
-                        metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
-                        metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-                        metadataForUpload.size = Int64(data?.count ?? 0)
-                        metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-                        
-                        if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {
-                            
-                            if let conflict = UIStoryboard.init(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
-                                
-                                conflict.serverUrl = serverUrl
-                                conflict.metadatasUploadInConflict = [metadataForUpload]
-                            
-                                appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
-                            }
-                        
-                        } else {
-                            
-                            appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: [metadataForUpload])
-                        }
-                        
-                    } catch {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_write_file_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                        conflict.serverUrl = serverUrl
+                        conflict.metadatasUploadInConflict = [metadataForUpload]
+                    
+                        appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
                     }
+                
                 } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_read_file_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                    appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: [metadataForUpload])
                 }
+                
+            } else {
+                NCContentPresenter.shared.messageNotification("_error_", description: "_read_file_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             }
         }
     }
