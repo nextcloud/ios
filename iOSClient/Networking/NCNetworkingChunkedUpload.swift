@@ -38,9 +38,19 @@ extension NCNetworking {
         var uploadErrorCode: Int = 0
         var uploadErrorDescription: String = ""
         var filesNames = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
-        
         if filesNames.count == 0 {
                         
+            do {
+                let fileNamePath = directoryProviderStorageOcId + "/" + metadata.fileName
+                try filesNames = chunkedFile(fileNamePath: fileNamePath, outputDirectory: directoryProviderStorageOcId, fileName: metadata.fileName, chunkSizeMB: chunkSize)
+                NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, fileNames: filesNames)
+            } catch {
+                NCContentPresenter.shared.messageNotification("_error_", description: "_err_file_not_found_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode:NCGlobal.shared.errorReadFile, forced: true)
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                return completion(uploadErrorCode, uploadErrorDescription)
+            }
+            
+            /*
             if let chunkedFilesNames = NCCommunicationCommon.shared.chunkedFile(path: directoryProviderStorageOcId, fileName: metadata.fileName, outPath: directoryProviderStorageOcId, sizeInMB: chunkSize) {
                 
                 filesNames = chunkedFilesNames
@@ -52,6 +62,7 @@ extension NCNetworking {
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))                
                 return completion(uploadErrorCode, uploadErrorDescription)
             }
+            */
             
         } else {
             
@@ -225,5 +236,55 @@ extension NCNetworking {
         }
         
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":metadata.serverUrl])
+    }
+    
+    func chunkedFile(fileNamePath: String, outputDirectory: String, fileName: String, chunkSizeMB:Int) throws-> [String] {
+        
+        let fileManager:FileManager = .default
+        
+        var isDirectory:ObjCBool = false
+        if !fileManager.fileExists( atPath:outputDirectory, isDirectory:&isDirectory ) {
+            try fileManager.createDirectory(atPath: outputDirectory, withIntermediateDirectories: true, attributes: nil)
+        }
+        
+        let chunkSize = chunkSizeMB * 1000000
+        var outputFilesName: [String] = []
+        let reader: FileHandle = try .init(forReadingFrom: URL(fileURLWithPath: fileNamePath))
+        var writer: FileHandle?
+        var buffer: Data?
+        var chunk: Int = 0
+        var counter: Int = 0
+        
+        repeat {
+            
+            if chunk >= chunkSize {
+                writer?.closeFile()
+                writer = nil
+                chunk = 0
+            }
+            
+            let chunkRemaining:Int = chunkSize - chunk
+            buffer = reader.readData(ofLength: min(chunkSize, chunkRemaining))
+            
+            if let buffer = buffer {
+                
+                if writer == nil {
+                    
+                    let fileNameChunk = fileName + String(format: "%010d", counter)
+                    let outputFileName = outputDirectory + "/" + fileNameChunk
+                    fileManager.createFile(atPath: outputFileName, contents: nil, attributes: nil)
+                    writer = try .init(forWritingTo: URL(fileURLWithPath: outputFileName))
+                    outputFilesName.append(fileNameChunk)
+                }
+                
+                writer?.write(buffer)
+                chunk = chunk + buffer.count
+                counter += 1
+            }
+        }
+        while buffer?.count ?? 0 > 0
+        
+        reader.closeFile()
+        return outputFilesName
     }
 }
