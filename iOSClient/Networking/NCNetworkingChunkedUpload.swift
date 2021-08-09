@@ -238,7 +238,7 @@ extension NCNetworking {
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":metadata.serverUrl])
     }
     
-    func chunkedFile(fileNamePath: String, outputDirectory: String, fileName: String, chunkSizeMB:Int) throws-> [String] {
+    func chunkedFile(fileNamePath: String, outputDirectory: String, fileName: String, chunkSizeMB:Int, bufferSize: Int = 1000) throws-> [String] {
         
         let fileManager: FileManager = .default
         var isDirectory: ObjCBool = false
@@ -260,10 +260,11 @@ extension NCNetworking {
                 writer?.closeFile()
                 writer = nil
                 chunk = 0
+                counter += 1
             }
             
             let chunkRemaining: Int = chunkSize - chunk
-            buffer = reader.readData(ofLength: min(chunkSize, chunkRemaining))
+            buffer = reader.readData(ofLength: min(bufferSize, chunkRemaining))
             
             if let buffer = buffer {
                 
@@ -278,11 +279,11 @@ extension NCNetworking {
                 
                 writer?.write(buffer)
                 chunk = chunk + buffer.count
-                counter += 1
             }
             
         } while buffer?.count ?? 0 > 0
         
+        writer?.closeFile()
         reader.closeFile()
         return outputFilesName
     }
