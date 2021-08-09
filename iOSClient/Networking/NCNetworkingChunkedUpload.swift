@@ -238,7 +238,7 @@ extension NCNetworking {
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":metadata.serverUrl])
     }
     
-    func chunkedFile(fileNamePath: String, outputDirectory: String, fileName: String, chunkSizeMB:Int, bufferSize: Int = 1000) throws-> [String] {
+    @objc func chunkedFile(fileNamePath: String, outputDirectory: String, fileName: String, chunkSizeMB:Int, bufferSize: Int = 1000000) throws-> [String] {
         
         let fileManager: FileManager = .default
         var isDirectory: ObjCBool = false
