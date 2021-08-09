@@ -240,13 +240,8 @@ extension NCNetworking {
     
     func chunkedFile(fileNamePath: String, outputDirectory: String, fileName: String, chunkSizeMB:Int) throws-> [String] {
         
-        let fileManager:FileManager = .default
-        
-        var isDirectory:ObjCBool = false
-        if !fileManager.fileExists( atPath:outputDirectory, isDirectory:&isDirectory ) {
-            try fileManager.createDirectory(atPath: outputDirectory, withIntermediateDirectories: true, attributes: nil)
-        }
-        
+        let fileManager: FileManager = .default
+        var isDirectory: ObjCBool = false
         let chunkSize = chunkSizeMB * 1000000
         var outputFilesName: [String] = []
         let reader: FileHandle = try .init(forReadingFrom: URL(fileURLWithPath: fileNamePath))
@@ -255,6 +250,10 @@ extension NCNetworking {
         var chunk: Int = 0
         var counter: Int = 0
         
+        if !fileManager.fileExists( atPath:outputDirectory, isDirectory:&isDirectory ) {
+            try fileManager.createDirectory(atPath: outputDirectory, withIntermediateDirectories: true, attributes: nil)
+        }
+       
         repeat {
             
             if chunk >= chunkSize {
@@ -263,7 +262,7 @@ extension NCNetworking {
                 chunk = 0
             }
             
-            let chunkRemaining:Int = chunkSize - chunk
+            let chunkRemaining: Int = chunkSize - chunk
             buffer = reader.readData(ofLength: min(chunkSize, chunkRemaining))
             
             if let buffer = buffer {
@@ -281,8 +280,8 @@ extension NCNetworking {
                 chunk = chunk + buffer.count
                 counter += 1
             }
-        }
-        while buffer?.count ?? 0 > 0
+            
+        } while buffer?.count ?? 0 > 0
         
         reader.closeFile()
         return outputFilesName
