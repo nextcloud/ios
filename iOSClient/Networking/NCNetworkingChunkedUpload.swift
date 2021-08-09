@@ -41,8 +41,7 @@ extension NCNetworking {
         if filesNames.count == 0 {
                         
             do {
-                let fileNamePath = directoryProviderStorageOcId + "/" + metadata.fileName
-                try filesNames = chunkedFile(fileNamePath: fileNamePath, outputDirectory: directoryProviderStorageOcId, fileName: metadata.fileName, chunkSizeMB: chunkSize)
+                try filesNames = chunkedFile(inputDirectory: directoryProviderStorageOcId, outputDirectory: directoryProviderStorageOcId, fileName: metadata.fileName, chunkSizeMB: chunkSize)
                 NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, fileNames: filesNames)
             } catch {
                 NCContentPresenter.shared.messageNotification("_error_", description: "_err_file_not_found_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode:NCGlobal.shared.errorReadFile, forced: true)
@@ -238,19 +237,19 @@ extension NCNetworking {
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":metadata.serverUrl])
     }
     
-    @objc func chunkedFile(fileNamePath: String, outputDirectory: String, fileName: String, chunkSizeMB:Int, bufferSize: Int = 1000000) throws-> [String] {
+    @objc func chunkedFile(inputDirectory: String, outputDirectory: String, fileName: String, chunkSizeMB:Int, bufferSize: Int = 1000000) throws-> [String] {
         
         let fileManager: FileManager = .default
         var isDirectory: ObjCBool = false
         let chunkSize = chunkSizeMB * 1000000
         var outputFilesName: [String] = []
-        let reader: FileHandle = try .init(forReadingFrom: URL(fileURLWithPath: fileNamePath))
+        let reader: FileHandle = try .init(forReadingFrom: URL(fileURLWithPath: inputDirectory + "/" + fileName))
         var writer: FileHandle?
         var buffer: Data?
         var chunk: Int = 0
         var counter: Int = 0
         
-        if !fileManager.fileExists( atPath:outputDirectory, isDirectory:&isDirectory ) {
+        if !fileManager.fileExists(atPath:outputDirectory, isDirectory:&isDirectory) {
             try fileManager.createDirectory(atPath: outputDirectory, withIntermediateDirectories: true, attributes: nil)
         }
        
