@@ -142,11 +142,12 @@ class NCGlobal: NSObject {
     let buttonMoreMore                              = "more"
     let buttonMoreStop                              = "stop"
     
-    // Text -  OnlyOffice - Collabora
+    // Text -  OnlyOffice - Collabora - QuickLook
     //
     let editorText                                  = "text"
     let editorOnlyoffice                            = "onlyoffice"
     let editorCollabora                             = "collabora"
+    let editorQuickLook                             = "quicklook"
 
     let onlyofficeDocx                              = "onlyoffice_docx"
     let onlyofficeXlsx                              = "onlyoffice_xlsx"
