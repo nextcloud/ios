@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/firebase/firebase-ios-sdk",
         "state": {
           "branch": null,
-          "revision": "b97bfcd2e5eecc7aa7e1aeb27d097d610876cf93",
-          "version": "7.11.1"
+          "revision": "b8e974d8863536e93c1dd3ea65477a65d671847e",
+          "version": "8.5.0"
         }
       },
       {
@@ -60,8 +60,8 @@
         "repositoryURL": "https://github.com/google/GoogleAppMeasurement.git",
         "state": {
           "branch": null,
-          "revision": "22cb3ab5588200b210ae01e42665f52ac4e8ad28",
-          "version": "7.11.1"
+          "revision": "06e74ef7ee7326e1af724d462091eed1e5c6fb4a",
+          "version": "8.3.1"
         }
       },
       {
@@ -69,8 +69,8 @@
         "repositoryURL": "https://github.com/google/GoogleDataTransport.git",
         "state": {
           "branch": null,
-          "revision": "369716b8d7518a530ce3c3a251436d72546debd8",
-          "version": "8.4.0"
+          "revision": "9e79fd8deddbef5646fbb5dbb3eaf963e338f007",
+          "version": "9.1.0"
         }
       },
       {
@@ -105,7 +105,7 @@
         "repositoryURL": "https://github.com/nextcloud/ios-communication-library/",
         "state": {
           "branch": null,
-          "revision": "1c1f2a13efdc79096837bd5c3329f312cd838292",
+          "revision": "f44a21c4709b869e3eb603bee53d5b0ea06e3c03",
           "version": null
         }
       },
