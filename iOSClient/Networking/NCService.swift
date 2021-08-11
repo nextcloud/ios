@@ -107,10 +107,21 @@ class NCService: NSObject {
                     self.synchronizeOffline(account: tableAccount.account)
                     
                     // Get Avatar
-                    //let avatarUrl = "\(self.appDelegate.urlBase)/index.php/avatar/\(self.appDelegate.user)/\(NCGlobal.shared.avatarSize)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                     let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + stringUser + "-" + self.appDelegate.user + ".png"
+                    let oldData = try? Data(contentsOf: URL(fileURLWithPath: fileNameLocalPath))
                     NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
+                        if let data = data, let oldData = oldData {
+                            do {
+                                let isEqual = try NCUtility.shared.compare(tolerance: 95, expected: data, observed: oldData)
+                                if !isEqual {
+                                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
+                                }
+                            } catch {
+                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
+                            }
+                        } else {
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
+                        }
                     }
                     self.requestServerCapabilities()
                 }
