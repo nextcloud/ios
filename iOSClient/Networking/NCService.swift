@@ -50,6 +50,9 @@ class NCService: NSObject {
 
         // txt
         NCCommunicationCommon.shared.addInternalTypeIdentifier(typeIdentifier: "text/plain", classFile: NCCommunicationCommon.typeClassFile.document.rawValue, editor: NCGlobal.shared.editorText, iconName: NCCommunicationCommon.typeIconFile.document.rawValue, name: "markdown")
+        
+        // html
+        NCCommunicationCommon.shared.addInternalTypeIdentifier(typeIdentifier: "text/html", classFile: NCCommunicationCommon.typeClassFile.document.rawValue, editor: NCGlobal.shared.editorText, iconName: NCCommunicationCommon.typeIconFile.document.rawValue, name: "markdown")
 
         // markdown
         NCCommunicationCommon.shared.addInternalTypeIdentifier(typeIdentifier: "net.daringfireball.markdown", classFile: NCCommunicationCommon.typeClassFile.document.rawValue, editor: NCGlobal.shared.editorText, iconName: NCCommunicationCommon.typeIconFile.document.rawValue, name: "markdown")
