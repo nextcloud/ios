@@ -48,9 +48,13 @@ class NCService: NSObject {
     
     func addInternalTypeIdentifier() {
 
+        // txt
+        NCCommunicationCommon.shared.addInternalTypeIdentifier(typeIdentifier: "text/plain", classFile: NCCommunicationCommon.typeClassFile.document.rawValue, editor: NCGlobal.shared.editorText, iconName: NCCommunicationCommon.typeIconFile.document.rawValue, name: "markdown")
+
         // markdown
         NCCommunicationCommon.shared.addInternalTypeIdentifier(typeIdentifier: "net.daringfireball.markdown", classFile: NCCommunicationCommon.typeClassFile.document.rawValue, editor: NCGlobal.shared.editorText, iconName: NCCommunicationCommon.typeIconFile.document.rawValue, name: "markdown")
-        
+        NCCommunicationCommon.shared.addInternalTypeIdentifier(typeIdentifier: "text/x-markdown", classFile: NCCommunicationCommon.typeClassFile.document.rawValue, editor: NCGlobal.shared.editorText, iconName: NCCommunicationCommon.typeIconFile.document.rawValue, name: "markdown")
+
         // document: text
         NCCommunicationCommon.shared.addInternalTypeIdentifier(typeIdentifier: "org.oasis-open.opendocument.text", classFile: NCCommunicationCommon.typeClassFile.document.rawValue, editor: NCGlobal.shared.editorCollabora, iconName: NCCommunicationCommon.typeIconFile.document.rawValue, name: "document")
         NCCommunicationCommon.shared.addInternalTypeIdentifier(typeIdentifier: "org.openxmlformats.wordprocessingml.document", classFile: NCCommunicationCommon.typeClassFile.document.rawValue, editor: NCGlobal.shared.editorOnlyoffice ,iconName: NCCommunicationCommon.typeIconFile.document.rawValue, name: "document")

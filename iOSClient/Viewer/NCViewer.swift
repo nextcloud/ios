@@ -41,6 +41,7 @@ class NCViewer: NSObject {
         self.metadatas = metadatas
     
         var editor = editor
+        var x = NCCommunicationCommon.shared.getInternalTypeIdentifier(typeIdentifier: metadata.contentType)
         
         // IMAGE AUDIO VIDEO
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
