@@ -34,9 +34,14 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
     
     var date: Date?
 
-    var filePreviewImageView: UIImageView {
+    var filePreviewImageView: UIImageView? {
         get {
             return imageItem
+        }
+    }
+    var avatarImageView: UIImageView? {
+        get{
+            return nil
         }
     }
     

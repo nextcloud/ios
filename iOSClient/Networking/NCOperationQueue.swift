@@ -412,7 +412,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                     }
                 }
                 
-                if (cell != nil) {
+                if let filePreviewImageView = cell!.filePreviewImageView  {
                     var previewImage: UIImage!
                     if errorCode == 0 && imageIcon != nil {
                         previewImage = imageIcon
@@ -423,11 +423,10 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                             previewImage = UIImage(named: "file")
                         }
                     }
-                    cell!.filePreviewImageView.backgroundColor = nil
-                    UIView.transition(with: cell!.filePreviewImageView,
+                    UIView.transition(with: filePreviewImageView,
                         duration: 0.75,
                         options: .transitionCrossDissolve,
-                        animations: { cell!.filePreviewImageView.image = previewImage! },
+                        animations: { filePreviewImageView.image = previewImage! },
                         completion: nil)
                 }
                 self.finish()

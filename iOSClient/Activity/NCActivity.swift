@@ -108,7 +108,7 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
     }
 }
 
-class activityTableViewCell: UITableViewCell {
+class activityTableViewCell: UITableViewCell, NCCellProtocol {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -120,6 +120,17 @@ class activityTableViewCell: UITableViewCell {
     @IBOutlet weak var subjectTrailingConstraint: NSLayoutConstraint!
     @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
 
+    var filePreviewImageView: UIImageView? {
+        get {
+            return nil
+        }
+    }
+    var avatarImageView: UIImageView? {
+        get{
+            return avatar
+        }
+    }
+    
     var idActivity: Int = 0
     var account: String = ""
     var activityPreviews: [tableActivityPreview] = []

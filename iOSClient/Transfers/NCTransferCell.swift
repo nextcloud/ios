@@ -40,9 +40,14 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     
-    var filePreviewImageView : UIImageView {
+    var filePreviewImageView : UIImageView? {
         get{
-         return imageItem
+            return imageItem
+        }
+    }
+    var avatarImageView: UIImageView? {
+        get{
+            return nil
         }
     }
 

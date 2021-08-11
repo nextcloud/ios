@@ -38,9 +38,14 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var progressView: UIProgressView!
 
-    var filePreviewImageView : UIImageView {
+    var filePreviewImageView: UIImageView? {
         get{
-         return imageItem
+            return imageItem
+        }
+    }
+    var avatarImageView: UIImageView? {
+        get{
+            return nil
         }
     }
     

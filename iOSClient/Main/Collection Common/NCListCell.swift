@@ -48,12 +48,17 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
-    var filePreviewImageView : UIImageView {
+    var filePreviewImageView : UIImageView? {
         get{
-         return imageItem
+            return imageItem
         }
     }
-
+    var avatarImageView: UIImageView? {
+        get{
+            return imageShared
+        }
+    }
+    
     var delegate: NCListCellDelegate?
     var objectId = ""
     var indexPath = IndexPath()
