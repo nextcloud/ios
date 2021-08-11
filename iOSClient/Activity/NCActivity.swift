@@ -230,17 +230,7 @@ extension NCActivity: UITableViewDataSource {
                 cell.avatar.isHidden = false
                 
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + activity.user + ".png"
-                if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                    if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                        cell.avatar.image = NCUtility.shared.createAvatar(image: image, size: 30) 
-                    }
-                } else {
-                    NCCommunication.shared.downloadAvatar(userId: activity.user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
-                        if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
-                            cell.avatar.image = NCUtility.shared.createAvatar(image: UIImage(data: data!)!, size: 30)
-                        }
-                    }
-                }
+                NCOperationQueue.shared.downloadAvatar(user: activity.user, fileNameLocalPath: fileNameLocalPath, imageAvatar: &cell.avatar.image)
             }
             
             // subject

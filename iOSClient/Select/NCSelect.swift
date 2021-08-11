@@ -521,16 +521,8 @@ extension NCSelect: UICollectionViewDataSource {
                 cell.imageShared.image = NCBrandColor.cacheImages.canShare
             }
             if metadata.ownerId.count > 0 && metadata.ownerId != activeAccount.userId {
-                let fileNameUser = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(activeAccount.user, urlBase: activeAccount.urlBase)) + "-" + metadata.ownerId + ".png"
-                if FileManager.default.fileExists(atPath: fileNameUser) {
-                    cell.imageShared.image = UIImage(contentsOfFile: fileNameUser)
-                } else {
-                    NCCommunication.shared.downloadAvatar(userId: metadata.ownerId, fileNameLocalPath: fileNameUser, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
-                        if errorCode == 0 && account == self.activeAccount.account {
-                            cell.imageShared.image = UIImage(contentsOfFile: fileNameUser)
-                        }
-                    }
-                }
+                let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(activeAccount.user, urlBase: activeAccount.urlBase)) + "-" + metadata.ownerId + ".png"
+                NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, imageAvatar: &cell.imageShared.image)
             }
             
             cell.imageSelect.isHidden = true

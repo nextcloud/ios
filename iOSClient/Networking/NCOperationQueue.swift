@@ -37,7 +37,8 @@ import NCCommunication
     private let copyMoveQueue = Queuer(name: "copyMoveQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let synchronizationQueue = Queuer(name: "synchronizationQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-   
+    private let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+
     private var timerReadFileForMediaQueue: Timer?
 
     @objc func cancelAllQueue() {
@@ -46,6 +47,7 @@ import NCCommunication
         copyMoveCancelAll()
         synchronizationCancelAll()
         downloadThumbnailCancelAll()
+        downloadAvatarCancelAll()
     }
     
     // Download file
@@ -144,6 +146,34 @@ import NCCommunication
     
     @objc func downloadThumbnailCancelAll() {
         downloadThumbnailQueue.cancelAll()
+    }
+    
+    // Download Avatar
+    
+    func downloadAvatar(user: String, fileNameLocalPath: String, imageAvatar: inout UIImage?) {
+
+        #if !EXTENSION
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        if let image = appDelegate.avatars[user] {
+            imageAvatar = image
+            return
+        }
+        #endif
+                
+        imageAvatar = UIImage(named: "avatar")
+        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+            imageAvatar = NCUtility.shared.createAvatar(image: image, size: 30)
+        }
+        for operation in downloadAvatarQueue.operations as! [NCOperationDownloadAvatar] {
+            if operation.user == user {
+                return
+            }
+        }
+        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileNameLocalPath: fileNameLocalPath, imageAvatar: &imageAvatar))
+    }
+    
+    @objc func downloadAvatarCancelAll() {
+        downloadAvatarQueue.cancelAll()
     }
 }
 
@@ -399,6 +429,42 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                         options: .transitionCrossDissolve,
                         animations: { cell!.filePreviewImageView.image = previewImage! },
                         completion: nil)
+                }
+                self.finish()
+            }
+        }
+    }
+}
+
+//MARK: -
+
+class NCOperationDownloadAvatar: ConcurrentOperation {
+
+    var user: String
+    var fileNameLocalPath: String
+    var imageAvatar: UIImage?
+        
+    init(user: String, fileNameLocalPath: String, imageAvatar: inout UIImage?) {
+        self.user = user
+        self.fileNameLocalPath = fileNameLocalPath
+        self.imageAvatar = imageAvatar
+    }
+    
+    override func start() {
+
+        if isCancelled {
+            self.finish()
+        } else {
+            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
+                if errorCode == 0 {
+                    if var image = UIImage(contentsOfFile: self.fileNameLocalPath) {
+                        image = NCUtility.shared.createAvatar(image: image, size: 30)
+                        self.imageAvatar = image
+                        #if !EXTENSION
+                        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                        appDelegate.avatars[self.user] = image
+                        #endif
+                    }
                 }
                 self.finish()
             }

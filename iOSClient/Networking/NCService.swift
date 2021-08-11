@@ -37,6 +37,7 @@ class NCService: NSObject {
     
     @objc public func startRequestServicesServer() {
    
+        appDelegate.avatars = [:]
         if appDelegate.account == "" { return }
         
         self.addInternalTypeIdentifier()
@@ -106,24 +107,11 @@ class NCService: NSObject {
                     self.synchronizeOffline(account: tableAccount.account)
                     
                     // Get Avatar
-                    let avatarUrl = "\(self.appDelegate.urlBase)/index.php/avatar/\(self.appDelegate.user)/\(NCGlobal.shared.avatarSize)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
-                    let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + stringUser + "-" + self.appDelegate.user + ".png"
-                    NCCommunication.shared.downloadContent(serverUrl: avatarUrl) { (account, data, errorCode, errorMessage) in
-                        
-                        if errorCode == 0 && account == self.appDelegate.account {
-                                                            
-                            if let image = UIImage(data: data!) {
-                                do {
-                                    if let data = image.pngData() {
-                                        try data.write(to: URL(fileURLWithPath: fileNamePath))
-                                    }
-                                } catch {
-                                    print(error)
-                                }
-                            }
-                        }
+                    //let avatarUrl = "\(self.appDelegate.urlBase)/index.php/avatar/\(self.appDelegate.user)/\(NCGlobal.shared.avatarSize)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
+                    let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + stringUser + "-" + self.appDelegate.user + ".png"
+                    NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
                     }
-                          
                     self.requestServerCapabilities()
                 }
                 

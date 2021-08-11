@@ -144,17 +144,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                                 cell.avatar.image = image
                             }
                         } else {
-                            DispatchQueue.global().async {
-                                NCCommunication.shared.downloadAvatar(userId: userId, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
-                                    if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
-                                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                                            cell.avatar.isHidden = false
-                                            cell.avatarLeadingMargin.constant = 50
-                                            cell.avatar.image = image
-                                        }
-                                    }
-                                }
-                            }
+                            cell.avatar.isHidden = false
+                            cell.avatarLeadingMargin.constant = 50
+                            NCOperationQueue.shared.downloadAvatar(user: userId, fileNameLocalPath: fileNameLocalPath, imageAvatar: &cell.avatar.image)
                         }
                     }
                 }
