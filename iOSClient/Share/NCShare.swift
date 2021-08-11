@@ -455,7 +455,7 @@ protocol NCShareLinkCellDelegate {
 
 // MARK: - NCShareUserCell
 
-class NCShareUserCell: UITableViewCell {
+class NCShareUserCell: UITableViewCell, NCCellProtocol {
     
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
@@ -464,6 +464,17 @@ class NCShareUserCell: UITableViewCell {
     @IBOutlet weak var buttonMenu: UIButton!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var status: UILabel!
+    
+    var filePreviewImageView : UIImageView? {
+        get{
+            return nil
+        }
+    }
+    var avatarImageView: UIImageView? {
+        get{
+            return imageItem
+        }
+    }
     
     var tableShare: tableShare?
     var delegate: NCShareUserCellDelegate?
@@ -492,11 +503,22 @@ protocol NCShareUserCellDelegate {
 
 // MARK: - NCShareUserDropDownCell
 
-class NCShareUserDropDownCell: DropDownCell {
+class NCShareUserDropDownCell: DropDownCell, NCCellProtocol {
     
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var status: UILabel!
     @IBOutlet weak var imageShareeType: UIImageView!
     @IBOutlet weak var centerTitle: NSLayoutConstraint!
+    
+    var filePreviewImageView : UIImageView? {
+        get{
+            return nil
+        }
+    }
+    var avatarImageView: UIImageView? {
+        get{
+            return imageShareeType
+        }
+    }
 }

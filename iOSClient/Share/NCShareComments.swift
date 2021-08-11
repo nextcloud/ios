@@ -207,13 +207,24 @@ extension NCShareComments: UITableViewDataSource {
 
 // MARK: - NCShareCommentsCell
 
-class NCShareCommentsCell: UITableViewCell {
+class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
     
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelUser: UILabel!
     @IBOutlet weak var buttonMenu: UIButton!
     @IBOutlet weak var labelDate: UILabel!
     @IBOutlet weak var labelMessage: UILabel!
+    
+    var filePreviewImageView : UIImageView? {
+        get{
+            return nil
+        }
+    }
+    var avatarImageView: UIImageView? {
+        get{
+            return imageItem
+        }
+    }
     
     var tableComments: tableComments?
     var delegate: NCShareCommentsCellDelegate?

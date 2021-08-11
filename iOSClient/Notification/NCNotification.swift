@@ -315,7 +315,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
 // MARK: -
 
-class NCNotificationCell: UITableViewCell {
+class NCNotificationCell: UITableViewCell, NCCellProtocol {
     
     var delegate: NCNotificationCellDelegate?
     var notification: NCCommunicationNotifications?
@@ -333,6 +333,17 @@ class NCNotificationCell: UITableViewCell {
     @IBOutlet weak var messageBottomMargin: NSLayoutConstraint!
     @IBOutlet weak var primaryWidth: NSLayoutConstraint!
     @IBOutlet weak var secondaryWidth: NSLayoutConstraint!
+    
+    var filePreviewImageView : UIImageView? {
+        get{
+            return nil
+        }
+    }
+    var avatarImageView: UIImageView? {
+        get{
+            return avatar
+        }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
