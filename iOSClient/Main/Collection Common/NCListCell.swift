@@ -23,7 +23,7 @@
 
 import UIKit
 
-class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCellProtocol {
+class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
     
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!

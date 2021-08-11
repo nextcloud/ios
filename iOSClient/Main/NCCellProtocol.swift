@@ -1,5 +1,5 @@
 //
-//  NCImageCellProtocol.swift
+//  NCCellProtocol.swift
 //  Nextcloud
 //
 //  Created by Philippe Weidmann on 05.06.20.
@@ -23,6 +23,6 @@
 
 import UIKit
 
-protocol NCImageCellProtocol {
+protocol NCCellProtocol {
     var filePreviewImageView: UIImageView {get}
 }

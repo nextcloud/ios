@@ -400,15 +400,15 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
         } else {
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon) { (account, imagePreview, imageIcon,  errorCode, errorDescription) in
                 
-                var cell: NCImageCellProtocol?
+                var cell: NCCellProtocol?
                 
                 if self.view is UICollectionView {
                     if self.indexPath.section < (self.view as! UICollectionView).numberOfSections && self.indexPath.row < (self.view as! UICollectionView).numberOfItems(inSection: self.indexPath.section) {
-                        cell = (self.view as! UICollectionView).cellForItem(at: self.indexPath) as? NCImageCellProtocol
+                        cell = (self.view as! UICollectionView).cellForItem(at: self.indexPath) as? NCCellProtocol
                     }
                 } else {
                     if self.indexPath.section < (self.view as! UITableView).numberOfSections && self.indexPath.row < (self.view as! UITableView).numberOfRows(inSection: self.indexPath.section) {
-                        cell = (self.view as! UITableView).cellForRow(at: self.indexPath) as? NCImageCellProtocol
+                        cell = (self.view as! UITableView).cellForRow(at: self.indexPath) as? NCCellProtocol
                     }
                 }
                 

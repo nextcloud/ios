@@ -23,7 +23,7 @@
 
 import UIKit
 
-class NCGridMediaCell: UICollectionViewCell, NCImageCellProtocol {
+class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
 
     @IBOutlet weak var imageItem: UIImageView!
 

@@ -23,7 +23,7 @@
 
 import UIKit
 
-class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCellProtocol {
+class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
     
     @IBOutlet weak var imageItem: UIImageView!
     

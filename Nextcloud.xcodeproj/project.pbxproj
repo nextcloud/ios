@@ -14,7 +14,7 @@
 		2C33C48623E2C475005F963B /* Notification Service Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2CB7D1CA23E2EDCB00376EF9 /* NCPushNotificationEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */; };
 		3704EB2A23D5A58400455C5B /* NCMenu.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3704EB2923D5A58400455C5B /* NCMenu.storyboard */; };
-		370D26AF248A3D7A00121797 /* NCImageCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCImageCellProtocol.swift */; };
+		370D26AF248A3D7A00121797 /* NCCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCCellProtocol.swift */; };
 		371B5A2E23D0B04500FAFAE9 /* NCMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371B5A2D23D0B04500FAFAE9 /* NCMenu.swift */; };
 		3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
@@ -321,7 +321,7 @@
 		F7EDE4CC262D7B6F00414FE6 /* NCEmptyDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7239870253D86B600257F49 /* NCEmptyDataSet.swift */; };
 		F7EDE4D1262D7B8400414FE6 /* NCDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C1EEA425053A9C00866ACC /* NCDataSource.swift */; };
 		F7EDE4D6262D7B9600414FE6 /* NCListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD4121903CE00088454D /* NCListCell.swift */; };
-		F7EDE4DB262D7BA200414FE6 /* NCImageCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCImageCellProtocol.swift */; };
+		F7EDE4DB262D7BA200414FE6 /* NCCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCCellProtocol.swift */; };
 		F7EDE4E0262D7BAF00414FE6 /* NCGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD3F21903CC20088454D /* NCGridCell.swift */; };
 		F7EDE4E5262D7BBE00414FE6 /* NCSectionHeaderFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD51219046DC0088454D /* NCSectionHeaderFooter.swift */; };
 		F7EDE509262DA9D600414FE6 /* NCSelectCommandViewSelect.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7EDE508262DA9D600414FE6 /* NCSelectCommandViewSelect.xib */; };
@@ -407,7 +407,7 @@
 		2C33C48123E2C475005F963B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		2C33C48A23E2CC26005F963B /* Notification_Service_Extension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Notification_Service_Extension-Bridging-Header.h"; sourceTree = "<group>"; };
 		3704EB2923D5A58400455C5B /* NCMenu.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCMenu.storyboard; sourceTree = "<group>"; };
-		370D26AE248A3D7A00121797 /* NCImageCellProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCImageCellProtocol.swift; sourceTree = "<group>"; };
+		370D26AE248A3D7A00121797 /* NCCellProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCellProtocol.swift; sourceTree = "<group>"; };
 		371B5A2D23D0B04500FAFAE9 /* NCMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMenu.swift; sourceTree = "<group>"; };
 		371B5A3223D0BD5500FAFAE9 /* FloatingPanel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FloatingPanel.framework; path = Carthage/Build/iOS/FloatingPanel.framework; sourceTree = "<group>"; };
 		3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Menu.swift"; sourceTree = "<group>"; };
@@ -862,7 +862,7 @@
 				F7DFB7E9219C5A0500680748 /* Create cloud */,
 				F78ACD50219046AC0088454D /* Section Header Footer */,
 				F7603298252F0E550015A421 /* Collection Common */,
-				370D26AE248A3D7A00121797 /* NCImageCellProtocol.swift */,
+				370D26AE248A3D7A00121797 /* NCCellProtocol.swift */,
 				F7226EDB1EE4089300EBECB1 /* Main.storyboard */,
 				F7682FDF23C36B0500983A04 /* NCMainTabBar.swift */,
 				F729289F253B0937009CA4FD /* NCMainNavigationController.swift */,
@@ -2042,7 +2042,7 @@
 				F7BD71E62636EAFC00643C34 /* NCNetworkingE2EE.swift in Sources */,
 				F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				F702F2D025EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
-				F7EDE4DB262D7BA200414FE6 /* NCImageCellProtocol.swift in Sources */,
+				F7EDE4DB262D7BA200414FE6 /* NCCellProtocol.swift in Sources */,
 				F7EDE4D1262D7B8400414FE6 /* NCDataSource.swift in Sources */,
 				F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */,
 				F75A9EE723796C6F0044CFCE /* NCNetworking.swift in Sources */,
@@ -2097,7 +2097,7 @@
 				F702F30825EE5D47008F8E80 /* NCPopupViewController.swift in Sources */,
 				F70A58BE24D0349500DED00D /* NCCapabilitiesViewController.swift in Sources */,
 				F733598125C1C188002ABA72 /* NCAskAuthorization.swift in Sources */,
-				370D26AF248A3D7A00121797 /* NCImageCellProtocol.swift in Sources */,
+				370D26AF248A3D7A00121797 /* NCCellProtocol.swift in Sources */,
 				F77B0DF51D118A16002130FE /* CCUtility.m in Sources */,
 				F70D87D025EE6E58008CBBBD /* NCRenameFile.swift in Sources */,
 				F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */,
