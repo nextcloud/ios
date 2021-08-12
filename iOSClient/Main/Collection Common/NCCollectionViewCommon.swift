@@ -1509,7 +1509,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId && appDelegate.account == metadata.account {
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: metadata.urlBase)) + "-" + metadata.ownerId + ".png"
-                NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, imageAvatar: &cell.imageShared.image)
+                NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, view: collectionView, indexPath: indexPath)
             }
             
             // Transfer
