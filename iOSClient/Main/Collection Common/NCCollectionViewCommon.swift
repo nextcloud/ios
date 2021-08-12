@@ -1334,15 +1334,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
         
+        NCOperationQueue.shared.downloadThumbnail(metadata: metadata, view: collectionView, indexPath: indexPath)
         if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId && appDelegate.account == metadata.account {
             let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: metadata.urlBase)) + "-" + metadata.ownerId + ".png"
             NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, placeholder: nil, cell: cell)
         }
-        NCOperationQueue.shared.downloadThumbnail(metadata: metadata, view: collectionView, indexPath: indexPath)
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }        
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
+        
         NCOperationQueue.shared.cancelDownloadThumbnail(metadata: metadata)
     }
     

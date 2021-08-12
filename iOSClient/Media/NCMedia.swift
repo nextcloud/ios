@@ -658,16 +658,6 @@ extension NCMedia {
             }
         }
     }
-    
-    private func downloadThumbnail() {
-        guard let collectionView = self.collectionView else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            for indexPath in collectionView.indexPathsForVisibleItems {
-                let metadata = self.metadatas[indexPath.row]
-                NCOperationQueue.shared.downloadThumbnail(metadata: metadata, view: self.collectionView as Any, indexPath: indexPath)
-            }
-        }
-    }
 }
 
 // MARK: - ScrollView

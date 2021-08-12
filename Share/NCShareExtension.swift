@@ -549,10 +549,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         var tableShare: tableShare?
         var isShare = false
         var isMounted = false
-        
-        // Download preview
-        NCOperationQueue.shared.downloadThumbnail(metadata: metadata, view: collectionView, indexPath: indexPath)
-        
+                
         if let metadataFolder = metadataFolder {
             isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionShared)
             isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionMounted)
