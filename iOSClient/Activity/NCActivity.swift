@@ -241,7 +241,7 @@ extension NCActivity: UITableViewDataSource {
                 cell.avatar.isHidden = false
                 
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + activity.user + ".png"
-                NCOperationQueue.shared.downloadAvatar(user: activity.user, fileNameLocalPath: fileNameLocalPath, view: tableView, indexPath: indexPath)
+                NCOperationQueue.shared.downloadAvatar(user: activity.user, fileNameLocalPath: fileNameLocalPath, cell: cell)
             }
             
             // subject

@@ -420,7 +420,7 @@ extension NCShare: UITableViewDataSource {
                 cell.status.text = status.statusMessage
                 
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + tableShare.shareWith + ".png"
-                NCOperationQueue.shared.downloadAvatar(user: tableShare.shareWith, fileNameLocalPath: fileNameLocalPath, view: tableView, indexPath: indexPath)
+                NCOperationQueue.shared.downloadAvatar(user: tableShare.shareWith, fileNameLocalPath: fileNameLocalPath, cell: cell)
                 
                 if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
                     cell.switchCanEdit.setOn(true, animated: false)

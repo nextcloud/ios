@@ -150,38 +150,36 @@ import NCCommunication
     
     // Download Avatar
     
-    func downloadAvatar(user: String, fileNameLocalPath: String, view: UIView, indexPath: IndexPath) {
+    func downloadAvatar(user: String, fileNameLocalPath: String, cell: UIView) {
 
-        var cell: NCCellProtocol?
-        
-        if view is UICollectionView {
-            if indexPath.section < (view as! UICollectionView).numberOfSections && indexPath.row < (view as! UICollectionView).numberOfItems(inSection: indexPath.section) {
-                cell = (view as! UICollectionView).cellForItem(at: indexPath) as? NCCellProtocol
-            }
-        } else {
-            if indexPath.section < (view as! UITableView).numberOfSections && indexPath.row < (view as! UITableView).numberOfRows(inSection: indexPath.section) {
-                cell = (view as! UITableView).cellForRow(at: indexPath) as? NCCellProtocol
-            }
-        }
+        let cell: NCCellProtocol = cell as! NCCellProtocol
 
         #if !EXTENSION
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         if let image = appDelegate.avatars[user] {
-            cell?.avatarImageView?.image = image
+            cell.avatarImageView?.image = image
             return
         }
         #endif
                 
-        cell?.avatarImageView?.image = UIImage(named: "avatar")
+        cell.avatarImageView?.image = UIImage(named: "avatar")
         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-            cell?.avatarImageView?.image = NCUtility.shared.createAvatar(image: image, size: 30)
+            cell.avatarImageView?.image = NCUtility.shared.createAvatar(image: image, size: 30)
         }
         for operation in downloadAvatarQueue.operations as! [NCOperationDownloadAvatar] {
             if operation.user == user {
                 return
             }
         }
-        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileNameLocalPath: fileNameLocalPath, view: view, indexPath: indexPath))
+        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileNameLocalPath: fileNameLocalPath, cell: cell))
+    }
+    
+    func cancelDownloadAvatar(user: String) {
+        for operation in  downloadAvatarQueue.operations as! [NCOperationDownloadAvatar] {
+            if operation.user == user {
+                operation.cancel()
+            }
+        }
     }
     
     @objc func downloadAvatarCancelAll() {
@@ -424,7 +422,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                     }
                 }
                 
-                if let filePreviewImageView = cell!.filePreviewImageView  {
+                if let filePreviewImageView = cell?.filePreviewImageView  {
                     var previewImage: UIImage!
                     if errorCode == 0 && imageIcon != nil {
                         previewImage = imageIcon
@@ -453,14 +451,12 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
 
     var user: String
     var fileNameLocalPath: String
-    var view: Any
-    var indexPath: IndexPath
+    var cell: NCCellProtocol?
         
-    init(user: String, fileNameLocalPath: String, view: Any, indexPath: IndexPath) {
+    init(user: String, fileNameLocalPath: String, cell: NCCellProtocol) {
         self.user = user
         self.fileNameLocalPath = fileNameLocalPath
-        self.view = view
-        self.indexPath = indexPath
+        self.cell = cell
     }
     
     override func start() {
@@ -469,27 +465,20 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
             self.finish()
         } else {
             NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
-                if errorCode == 0 {
-                    if var image = UIImage(contentsOfFile: self.fileNameLocalPath) {
-                        image = NCUtility.shared.createAvatar(image: image, size: 30)
-                        
-                        var cell: NCCellProtocol?
-                        
-                        if self.view is UICollectionView {
-                            if self.indexPath.section < (self.view as! UICollectionView).numberOfSections && self.indexPath.row < (self.view as! UICollectionView).numberOfItems(inSection: self.indexPath.section) {
-                                cell = (self.view as! UICollectionView).cellForItem(at: self.indexPath) as? NCCellProtocol
-                            }
-                        } else {
-                            if self.indexPath.section < (self.view as! UITableView).numberOfSections && self.indexPath.row < (self.view as! UITableView).numberOfRows(inSection: self.indexPath.section) {
-                                cell = (self.view as! UITableView).cellForRow(at: self.indexPath) as? NCCellProtocol
-                            }
+                if let avatarImageView = self.cell?.avatarImageView  {
+                    if errorCode == 0 && data != nil {
+                        if var image = UIImage.init(data: data!) {
+                            image = NCUtility.shared.createAvatar(image: image, size: 30)
+                            UIView.transition(with: avatarImageView,
+                                              duration: 0.75,
+                                              options: .transitionCrossDissolve,
+                                              animations: { avatarImageView.image = image },
+                                              completion: nil)
+                            #if !EXTENSION
+                            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                            appDelegate.avatars[self.user] = image
+                            #endif
                         }
-                        cell?.avatarImageView?.image = image
-                       
-                        #if !EXTENSION
-                        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                        appDelegate.avatars[self.user] = image
-                        #endif
                     }
                 }
                 self.finish()

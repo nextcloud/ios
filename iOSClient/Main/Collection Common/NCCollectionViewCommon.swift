@@ -1333,12 +1333,19 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
+
         NCOperationQueue.shared.downloadThumbnail(metadata: metadata, urlBase: appDelegate.urlBase, view: collectionView, indexPath: indexPath)
+        
+        if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId && appDelegate.account == metadata.account {
+            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: metadata.urlBase)) + "-" + metadata.ownerId + ".png"
+            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, cell: cell)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }        
         NCOperationQueue.shared.cancelDownloadThumbnail(metadata: metadata)
+        NCOperationQueue.shared.cancelDownloadAvatar(user: metadata.ownerId)
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -1507,11 +1514,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             if appDelegate.account != metadata.account {
                 cell.imageShared.image = NCBrandColor.cacheImages.shared
             }
-            if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId && appDelegate.account == metadata.account {
-                let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: metadata.urlBase)) + "-" + metadata.ownerId + ".png"
-                NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, view: collectionView, indexPath: indexPath)
-            }
-            
+           
             // Transfer
             var progress: Float = 0.0
             var totalBytes: Int64 = 0
