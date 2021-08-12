@@ -354,7 +354,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                 
                 NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: true)
                                 
-                let metadata = NCManageDatabase.shared.createMetadata(account: activeAccount.account, userId: activeAccount.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "", contentType: "", livePhoto: false)
+                let metadata = NCManageDatabase.shared.createMetadata(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "", contentType: "", livePhoto: false)
                 
                 metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
                 metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
@@ -551,7 +551,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         var isMounted = false
         
         // Download preview
-        NCOperationQueue.shared.downloadThumbnail(metadata: metadata, urlBase: activeAccount.urlBase, view: collectionView, indexPath: indexPath)
+        NCOperationQueue.shared.downloadThumbnail(metadata: metadata, view: collectionView, indexPath: indexPath)
         
         if let metadataFolder = metadataFolder {
             isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionShared)
@@ -631,7 +631,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         }
         if metadata.ownerId.count > 0 && metadata.ownerId != activeAccount.userId {
             let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(activeAccount.user, urlBase: activeAccount.urlBase)) + "-" + metadata.ownerId + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, cell: cell)
+            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, placeholder: nil, cell: cell)
         }
         
         cell.imageSelect.isHidden = true

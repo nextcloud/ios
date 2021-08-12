@@ -392,7 +392,7 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if indexPath.row < self.metadatas.count {
             let metadata = self.metadatas[indexPath.row]
-            NCOperationQueue.shared.downloadThumbnail(metadata: metadata, urlBase: self.appDelegate.urlBase, view: self.collectionView as Any, indexPath: indexPath)
+            NCOperationQueue.shared.downloadThumbnail(metadata: metadata, view: self.collectionView as Any, indexPath: indexPath)
         }
     }
     
@@ -664,7 +664,7 @@ extension NCMedia {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             for indexPath in collectionView.indexPathsForVisibleItems {
                 let metadata = self.metadatas[indexPath.row]
-                NCOperationQueue.shared.downloadThumbnail(metadata: metadata, urlBase: self.appDelegate.urlBase, view: self.collectionView as Any, indexPath: indexPath)
+                NCOperationQueue.shared.downloadThumbnail(metadata: metadata, view: self.collectionView as Any, indexPath: indexPath)
             }
         }
     }

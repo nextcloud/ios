@@ -233,7 +233,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                     } else {
                         
                         /* INSERT METADATA FOR UPLOAD */
-                        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: account.account, userId: account.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", livePhoto: livePhoto)
+                        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: account.account, user: account.user, userId: account.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", livePhoto: livePhoto)
                         metadataForUpload.assetLocalIdentifier = asset.localIdentifier
                         metadataForUpload.session = session
                         metadataForUpload.sessionSelector = selector
@@ -264,7 +264,7 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                             
                             CCUtility.extractLivePhotoAsset(asset, filePath: filePath) { (url) in
                                 if url != nil {
-                                    let metadataForUpload = NCManageDatabase.shared.createMetadata(account: account.account, userId: account.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", livePhoto: livePhoto)
+                                    let metadataForUpload = NCManageDatabase.shared.createMetadata(account: account.account, user: account.user, userId: account.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", livePhoto: livePhoto)
                                     metadataForUpload.session = session
                                     metadataForUpload.sessionSelector = selector
                                     metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)

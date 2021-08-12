@@ -868,6 +868,7 @@
 				F729289F253B0937009CA4FD /* NCMainNavigationController.swift */,
 				F75B0ABC244C4DBB00E58DCA /* NCFunctionCenter.swift */,
 				F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */,
+				F7CA213725F1372B00826ABB /* Account Request */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -1479,7 +1480,6 @@
 				F7C1CDD91E6DFC6F005D92BE /* Brand */,
 				F70211F31BAC56E9003FC03E /* Main */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
-				F7CA213725F1372B00826ABB /* Account Request */,
 				F7A321621E9E37960069AD1B /* Activity */,
 				F70B866A2642A21300ED5349 /* BackgroundImageColor */,
 				F7AE00F6230E8191007ACF8A /* BrowserWeb */,
@@ -2913,7 +2913,7 @@
 			repositoryURL = "https://github.com/nextcloud/ios-communication-library/";
 			requirement = {
 				kind = revision;
-				revision = 95813aefe1c5841000d09584a42fdcbf8f0d0f9c;
+				revision = 11ed9aa348c22a4464f65f4d0e49af3096a7cbda;
 			};
 		};
 		F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */ = {

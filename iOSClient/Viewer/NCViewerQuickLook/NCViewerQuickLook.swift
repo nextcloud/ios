@@ -169,7 +169,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
             
             if NCUtilityFileSystem.shared.copyFile(atPath: modifiedContentsURL.path, toPath: fileNamePath) {
             
-                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: metadata.account, userId: metadata.userId, fileName: metadata.fileName, fileNameView: metadata.fileNameView, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: modifiedContentsURL.path, contentType: "", livePhoto: false)
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: metadata.account, user: metadata.user, userId: metadata.userId, fileName: metadata.fileName, fileNameView: metadata.fileNameView, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: modifiedContentsURL.path, contentType: "", livePhoto: false)
                                                                                
                 metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile

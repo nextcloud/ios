@@ -125,14 +125,14 @@ import NCCommunication
     
     // Download Thumbnail
     
-    @objc func downloadThumbnail(metadata: tableMetadata, urlBase: String, view: Any, indexPath: IndexPath) {
+    @objc func downloadThumbnail(metadata: tableMetadata, view: Any, indexPath: IndexPath) {
         if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
             for operation in downloadThumbnailQueue.operations as! [NCOperationDownloadThumbnail] {
                 if operation.metadata.ocId == metadata.ocId {
                     return
                 }
             }
-            downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, urlBase: urlBase, view: view, indexPath: indexPath))
+            downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, view: view, indexPath: indexPath))
         }
     }
     
@@ -150,7 +150,7 @@ import NCCommunication
     
     // Download Avatar
     
-    func downloadAvatar(user: String, fileNameLocalPath: String, cell: UIView) {
+    func downloadAvatar(user: String, fileNameLocalPath: String, placeholder: UIImage?, cell: UIView) {
 
         let cell: NCCellProtocol = cell as! NCCellProtocol
 
@@ -162,15 +162,11 @@ import NCCommunication
         }
         #endif
                 
-        cell.avatarImageView?.image = UIImage(named: "avatar")
+        cell.avatarImageView?.image = placeholder
         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
             cell.avatarImageView?.image = NCUtility.shared.createAvatar(image: image, size: 30)
         }
-        for operation in downloadAvatarQueue.operations as! [NCOperationDownloadAvatar] {
-            if operation.user == user {
-                return
-            }
-        }
+    
         downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileNameLocalPath: fileNameLocalPath, cell: cell))
     }
     
@@ -386,19 +382,17 @@ class NCOperationSynchronization: ConcurrentOperation {
 class NCOperationDownloadThumbnail: ConcurrentOperation {
    
     var metadata: tableMetadata
-    var urlBase: String
     var view: Any
     var indexPath: IndexPath
     var fileNamePath: String = ""
     var fileNamePreviewLocalPath: String = ""
     var fileNameIconLocalPath: String = ""
     
-    init(metadata: tableMetadata, urlBase: String, view: Any, indexPath: IndexPath) {
+    init(metadata: tableMetadata, view: Any, indexPath: IndexPath) {
         self.metadata = tableMetadata.init(value: metadata)
-        self.urlBase = urlBase
         self.view = view
         self.indexPath = indexPath
-        self.fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
+        self.fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
         self.fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
         self.fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
     }

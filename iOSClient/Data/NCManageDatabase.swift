@@ -116,7 +116,7 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if oldSchemaVersion < 193 {
+                    if oldSchemaVersion < 195 {
                         migration.deleteData(forType: tableDirectory.className())
                         migration.deleteData(forType: tableE2eEncryption.className())
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
@@ -1865,6 +1865,7 @@ class NCManageDatabase: NSObject {
             metadata.uploadDate = file.date
         }
         metadata.urlBase = file.urlBase
+        metadata.user = file.user
         metadata.userId = file.userId
         
         // E2EE find the fileName for fileNameView
@@ -1930,7 +1931,7 @@ class NCManageDatabase: NSObject {
         completion(metadataFolder, metadataFolders, metadatas)
     }
     
-    @objc func createMetadata(account: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, livePhoto: Bool) -> tableMetadata {
+    @objc func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, livePhoto: Bool) -> tableMetadata {
         
         let metadata = tableMetadata()
         let resultInternalType = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
@@ -1955,6 +1956,7 @@ class NCManageDatabase: NSObject {
         metadata.uploadDate = Date() as NSDate
         metadata.url = url
         metadata.urlBase = urlBase
+        metadata.user = user
         metadata.userId = userId
         
         return metadata
