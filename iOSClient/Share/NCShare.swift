@@ -324,23 +324,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                 cell.centerTitle.constant = 0
             }
 
+            
             let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(self.appDelegate.user, urlBase: self.appDelegate.urlBase)) + "-" + sharee.label + ".png"
-            if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                    cell.imageItem.image = NCUtility.shared.createAvatar(image: image, size: 30)
-                }
-            } else {
-                NCCommunication.shared.downloadAvatar(user: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
-                    if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
-                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                            DispatchQueue.main.async {
-                                cell.imageItem.image = NCUtility.shared.createAvatar(image: image, size: 30)
-                            }
-                        }
-                    }
-                }
-            }
-
+            NCOperationQueue.shared.downloadAvatar(user: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell)
+            
             cell.imageShareeType.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
         }
         
@@ -545,7 +532,7 @@ class NCShareUserDropDownCell: DropDownCell, NCCellProtocol {
     }
     var avatarImageView: UIImageView? {
         get{
-            return imageShareeType
+            return imageItem
         }
     }
 }

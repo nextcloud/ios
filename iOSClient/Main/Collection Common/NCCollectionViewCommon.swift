@@ -1331,22 +1331,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
 extension NCCollectionViewCommon: UICollectionViewDataSource {
 
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
-        
-        NCOperationQueue.shared.downloadThumbnail(metadata: metadata, view: collectionView, indexPath: indexPath)
-        if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId && appDelegate.account == metadata.account {
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: metadata.urlBase)) + "-" + metadata.ownerId + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, placeholder: nil, cell: cell)
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
-        
-        NCOperationQueue.shared.cancelDownloadThumbnail(metadata: metadata)
-    }
-    
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
         if kind == UICollectionView.elementKindSectionHeader {
@@ -1411,6 +1395,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if dataSource.metadataShare[metadata.ocId] != nil {
             tableShare = dataSource.metadataShare[metadata.ocId]
         }
+        
+        // Thumbnail
+        NCOperationQueue.shared.downloadThumbnail(metadata: metadata, view: collectionView, indexPath: indexPath)
         
         //
         // LAYOUT LIST
@@ -1512,6 +1499,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             if appDelegate.account != metadata.account {
                 cell.imageShared.image = NCBrandColor.cacheImages.shared
+            }
+            
+            // Avatar
+            if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId && appDelegate.account == metadata.account {
+                let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(metadata.user, urlBase: metadata.urlBase)) + "-" + metadata.ownerId + ".png"
+                NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, placeholder: nil, cell: cell)
             }
            
             // Transfer
