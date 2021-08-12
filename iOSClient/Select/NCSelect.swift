@@ -446,7 +446,6 @@ extension NCSelect: UICollectionViewDataSource {
             cell.delegate = self
             
             cell.objectId = metadata.ocId
-            cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
             cell.labelTitle.textColor = NCBrandColor.shared.label
             
@@ -567,7 +566,6 @@ extension NCSelect: UICollectionViewDataSource {
             cell.delegate = self
             
             cell.objectId = metadata.ocId
-            cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
             cell.labelTitle.textColor = NCBrandColor.shared.label
             

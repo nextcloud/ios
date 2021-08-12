@@ -61,7 +61,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     
     var delegate: NCListCellDelegate?
     var objectId = ""
-    var indexPath = IndexPath()
     var namedButtonMore = ""
 
     override func awakeFromNib() {

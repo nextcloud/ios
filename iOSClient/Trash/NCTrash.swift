@@ -338,7 +338,6 @@ extension NCTrash: UICollectionViewDataSource {
             cell.delegate = self
             
             cell.objectId = tableTrash.fileId
-            cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
             cell.labelTitle.textColor = NCBrandColor.shared.label
             
