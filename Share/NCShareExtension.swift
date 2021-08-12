@@ -627,7 +627,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         }
         if metadata.ownerId.count > 0 && metadata.ownerId != activeAccount.userId {
             let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(activeAccount.user, urlBase: activeAccount.urlBase)) + "-" + metadata.ownerId + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, placeholder: nil, cell: cell)
+            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, placeholder: nil, cell: cell, view: collectionView, indexPath: indexPath)
         }
         
         cell.imageSelect.isHidden = true

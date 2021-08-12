@@ -150,7 +150,7 @@ import NCCommunication
     
     // Download Avatar
     
-    func downloadAvatar(user: String, fileNameLocalPath: String, placeholder: UIImage?, cell: UIView) {
+    func downloadAvatar(user: String, fileNameLocalPath: String, placeholder: UIImage?, cell: UIView, view: Any?, indexPath: IndexPath?) {
 
         let cell: NCCellProtocol = cell as! NCCellProtocol
 
@@ -167,7 +167,7 @@ import NCCommunication
             cell.avatarImageView?.image = NCUtility.shared.createAvatar(image: image, size: 30)
         }
     
-        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileNameLocalPath: fileNameLocalPath, cell: cell))
+        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view, indexPath: indexPath))
     }
     
     func cancelDownloadAvatar(user: String) {
@@ -445,12 +445,16 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
 
     var user: String
     var fileNameLocalPath: String
-    var cell: NCCellProtocol?
+    var cell: NCCellProtocol!
+    var view: Any?
+    var indexPath: IndexPath?
         
-    init(user: String, fileNameLocalPath: String, cell: NCCellProtocol) {
+    init(user: String, fileNameLocalPath: String, cell: NCCellProtocol, view: Any?, indexPath: IndexPath?) {
         self.user = user
         self.fileNameLocalPath = fileNameLocalPath
         self.cell = cell
+        self.view = view
+        self.indexPath = indexPath
     }
     
     override func start() {
@@ -459,7 +463,23 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
             self.finish()
         } else {
             NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
-                if let avatarImageView = self.cell?.avatarImageView  {
+                
+                var cell: NCCellProtocol? = self.cell
+                
+                if let view = self.view, let indexPath = self.indexPath {
+                    
+                    if view is UICollectionView {
+                        if indexPath.section < (view as! UICollectionView).numberOfSections && indexPath.row < (view as! UICollectionView).numberOfItems(inSection: indexPath.section) {
+                            cell = (view as! UICollectionView).cellForItem(at: indexPath) as? NCCellProtocol
+                        }
+                    } else {
+                        if indexPath.section < (view as! UITableView).numberOfSections && indexPath.row < (view as! UITableView).numberOfRows(inSection: indexPath.section) {
+                            cell = (view as! UITableView).cellForRow(at: indexPath) as? NCCellProtocol
+                        }
+                    }
+                }
+                
+                if let avatarImageView = cell?.avatarImageView  {
                     if errorCode == 0 && data != nil {
                         if var image = UIImage.init(data: data!) {
                             image = NCUtility.shared.createAvatar(image: image, size: 30)
