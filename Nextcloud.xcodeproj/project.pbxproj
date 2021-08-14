@@ -1477,9 +1477,9 @@
 			children = (
 				F702F2CC25EE5B4F008F8E80 /* AppDelegate.swift */,
 				F702F2CE25EE5B5C008F8E80 /* NCGlobal.swift */,
+				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F7C1CDD91E6DFC6F005D92BE /* Brand */,
 				F70211F31BAC56E9003FC03E /* Main */,
-				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F7A321621E9E37960069AD1B /* Activity */,
 				F70B866A2642A21300ED5349 /* BackgroundImageColor */,
 				F7AE00F6230E8191007ACF8A /* BrowserWeb */,
