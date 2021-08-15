@@ -411,6 +411,7 @@ class NCManageDatabase: NSObject {
         }
         
         if result.autoUploadDirectory.count > 0 {
+            // FIX change webdav -> /dav/files/
             if result.autoUploadDirectory.contains("/webdav") {
                 return NCUtilityFileSystem.shared.getHomeServer(account: account)
             } else {
