@@ -131,6 +131,16 @@ extension NCLoginWeb: WKNavigationDelegate {
         
         let urlString: String = url.absoluteString.lowercased()
         
+        // prevent http redirection
+        if urlBase.lowercased().hasPrefix("https://") && urlString.lowercased().hasPrefix("http://") {
+            let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_prevent_http_redirection_", comment: ""), preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
+                _ = self.navigationController?.popViewController(animated: true)
+            }))
+            self.present(alertController, animated: true)
+            return
+        }
+        
         if (urlString.hasPrefix(NCBrandOptions.shared.webLoginAutenticationProtocol) == true && urlString.contains("login") == true) {
             
             var server: String = ""
