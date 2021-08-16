@@ -409,7 +409,18 @@ extension DragDropViewController : UICollectionViewDataSource {
             }
             
             cell.customImageView?.image = image
-            cell.delete.addTarget(self, action: #selector(deleteSource(_:)), for: .touchUpInside)
+            cell.delete.action(for: .touchUpInside) { sender in
+                
+                let buttonPosition:CGPoint = (sender as! UIButton).convert(.zero, to: self.collectionViewSource)
+                if let indexPath = self.collectionViewSource.indexPathForItem(at: buttonPosition) {
+                
+                    let fileNameAtPath = CCUtility.getDirectoryScan() + "/" + self.itemsSource[indexPath.row]
+                    CCUtility.removeFile(atPath: fileNameAtPath)
+                    self.itemsSource.remove(at: indexPath.row)
+                    
+                    self.collectionViewSource.reloadData()
+                }
+            }
 
             return cell
             
@@ -429,52 +440,38 @@ extension DragDropViewController : UICollectionViewDataSource {
             
             cell.customImageView?.image = self.filter(image: image)
             cell.customLabel.text = NSLocalizedString("_scan_document_pdf_page_", comment: "") + " " + "\(indexPath.row+1)"
-            cell.delete.addTarget(self, action: #selector(deleteDestination(_:)), for: .touchUpInside)
-            cell.rotate.addTarget(self, action: #selector(rotateDestination(_:)), for: .touchUpInside)
+            cell.delete.action(for: .touchUpInside) { sender in
+                
+                let buttonPosition:CGPoint = (sender as! UIButton).convert(.zero, to: self.collectionViewDestination)
+                if let indexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition) {
+                
+                    self.imagesDestination.remove(at: indexPath.row)
+                    self.itemsDestination.remove(at: indexPath.row)
+                    
+                    self.collectionViewDestination.reloadData()
+                    
+                    // Save button
+                    if self.imagesDestination.count == 0 {
+                        self.save.isEnabled = false
+                    } else {
+                        self.save.isEnabled = true
+                    }
+                }
+            }
+            cell.rotate.action(for: .touchUpInside) { sender in
+                
+                let buttonPosition:CGPoint = (sender as! UIButton).convert(.zero, to: self.collectionViewDestination)
+                if let indexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition) {
+                
+                    let image = self.imagesDestination[indexPath.row]
+                    self.imagesDestination[indexPath.row] = image.rotate(radians: .pi/2)!
+                    
+                    self.collectionViewDestination.reloadData()
+                }
+            }
             
             return cell
         }
-    }
-    
-    @objc func deleteSource(_ sender: UIButton) {
-        
-        let buttonPosition:CGPoint =  sender.convert(.zero, to: collectionViewSource)
-        let indexPath:IndexPath = collectionViewSource.indexPathForItem(at: buttonPosition)!
-        
-        let fileNameAtPath = CCUtility.getDirectoryScan() + "/" + itemsSource[indexPath.row]
-        CCUtility.removeFile(atPath: fileNameAtPath)
-        itemsSource.remove(at: indexPath.row)
-        
-        collectionViewSource.reloadData()
-    }
-    
-    @objc func deleteDestination(_ sender:UIButton) {
-        
-        let buttonPosition:CGPoint =  sender.convert(.zero, to: collectionViewDestination)
-        let indexPath:IndexPath = collectionViewDestination.indexPathForItem(at: buttonPosition)!
-        
-        imagesDestination.remove(at: indexPath.row)
-        itemsDestination.remove(at: indexPath.row)
-        
-        collectionViewDestination.reloadData()
-        
-        // Save button
-        if imagesDestination.count == 0 {
-            save.isEnabled = false
-        } else {
-            save.isEnabled = true
-        }
-    }
-    
-    @objc func rotateDestination(_ sender:UIButton) {
-        
-        let buttonPosition:CGPoint =  sender.convert(.zero, to: collectionViewDestination)
-        let indexPath:IndexPath = collectionViewDestination.indexPathForItem(at: buttonPosition)!
-        
-        let image = imagesDestination[indexPath.row]
-        imagesDestination[indexPath.row] = image.rotate(radians: .pi/2)!
-        
-        collectionViewDestination.reloadData()
     }
 }
 

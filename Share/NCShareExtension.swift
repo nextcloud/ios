@@ -458,43 +458,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         }
     }
     
-    @objc func moreButtonPressed(sender: NCShareExtensionButtonWithIndexPath) {
-        
-        if let fileName = sender.fileName {
-            let alertController = UIAlertController(title: "", message: fileName, preferredStyle: .alert)
-            
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .default) { (action:UIAlertAction) in
-                if let index = self.filesName.firstIndex(of: fileName) {
-                    
-                    self.filesName.remove(at: index)
-                    if self.filesName.count == 0 {
-                        self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
-                    } else {
-                        self.setCommandView()
-                    }
-                }
-            })
-            
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_rename_file_", comment: ""), style: .default) { (action:UIAlertAction) in
-                
-                if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
-                
-                    vcRename.delegate = self
-                    vcRename.fileName = fileName
-                    vcRename.imagePreview = sender.image
-
-                    let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
-                                            
-                    self.present(popup, animated: true)
-                }
-            })
-            
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (action:UIAlertAction) in })
-            
-            self.present(alertController, animated: true, completion:nil)
-        }
-    }
-    
     func accountRequestChangeAccount(account: String) {
         setAccount(account: account)
     }
@@ -701,8 +664,43 @@ extension NCShareExtension: UITableViewDataSource {
         moreButton?.indexPath = indexPath
         moreButton?.fileName = fileName
         moreButton?.image = imageCell?.image
-        moreButton?.addTarget(self, action:#selector(moreButtonPressed(sender:)), for: .touchUpInside)
+        moreButton?.action(for: .touchUpInside, { sender in
+            
+            if let fileName = (sender as! NCShareExtensionButtonWithIndexPath).fileName {
+                let alertController = UIAlertController(title: "", message: fileName, preferredStyle: .alert)
+                
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .default) { (action:UIAlertAction) in
+                    if let index = self.filesName.firstIndex(of: fileName) {
+                        
+                        self.filesName.remove(at: index)
+                        if self.filesName.count == 0 {
+                            self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+                        } else {
+                            self.setCommandView()
+                        }
+                    }
+                })
+                
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_rename_file_", comment: ""), style: .default) { (action:UIAlertAction) in
+                    
+                    if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
+                    
+                        vcRename.delegate = self
+                        vcRename.fileName = fileName
+                        vcRename.imagePreview = (sender as! NCShareExtensionButtonWithIndexPath).image
 
+                        let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
+                                                
+                        self.present(popup, animated: true)
+                    }
+                })
+                
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (action:UIAlertAction) in })
+                
+                self.present(alertController, animated: true, completion:nil)
+            }
+        })
+        
         return cell
     }
 }
