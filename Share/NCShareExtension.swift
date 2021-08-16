@@ -225,7 +225,21 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         backButton.semanticContentAttribute = .forceLeftToRight
         backButton.setTitle(" "+NSLocalizedString("_back_", comment: ""), for: .normal)
         backButton.setTitleColor(.systemBlue, for: .normal)
-        backButton.addTarget(self, action: #selector(backButtonTapped(sender:)), for: .touchUpInside)
+        backButton.action(for: .touchUpInside) { _ in
+            
+            while self.serverUrl.last != "/" {
+                self.serverUrl.removeLast()
+            }
+            self.serverUrl.removeLast()
+
+            self.reloadDatasource(withLoadFolder: true)
+            
+            var navigationTitle = (self.serverUrl as NSString).lastPathComponent
+            if NCUtilityFileSystem.shared.getHomeServer(account: self.activeAccount.account) == self.serverUrl {
+                navigationTitle = NCBrandOptions.shared.brand
+            }
+            self.setNavigationBar(navigationTitle: navigationTitle)
+        }
         
         // PROFILE BUTTON
                 
@@ -256,8 +270,42 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             
         profileButton.semanticContentAttribute = .forceLeftToRight
         profileButton.sizeToFit()
-        profileButton.addTarget(self, action: #selector(profileButtonTapped(sender:)), for: .touchUpInside)
+        profileButton.action(for: .touchUpInside) { _ in
+            
+            let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
+            if accounts.count > 1 {
+                
+                if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
                    
+                    // Only here change the active account
+                    for account in accounts {
+                        if account.account == self.activeAccount.account {
+                            account.active = true
+                        } else {
+                            account.active = false
+                        }
+                    }
+                    
+                    vcAccountRequest.activeAccount = self.activeAccount
+                    vcAccountRequest.accounts = accounts.sorted { (sorg, dest) -> Bool in
+                        return sorg.active && !dest.active
+                    }
+                    vcAccountRequest.enableTimerProgress = false
+                    vcAccountRequest.enableAddAccount = false
+                    vcAccountRequest.delegate = self
+                    vcAccountRequest.dismissDidEnterBackground = true
+
+                    let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
+                    let numberCell = accounts.count
+                    let height = min(CGFloat(numberCell * Int(vcAccountRequest.heightCell) + 45), screenHeighMax)
+                    
+                    let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height+20)
+                    
+                    self.present(popup, animated: true)
+                }
+            }
+        }
+                           
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: activeAccount.account) {
 
             navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: profileButton)], animated: true)
@@ -399,22 +447,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         }
     }
     
-    @objc func backButtonTapped(sender: Any) {
-                
-        while serverUrl.last != "/" {
-            serverUrl.removeLast()
-        }
-        serverUrl.removeLast()
-
-        reloadDatasource(withLoadFolder: true)
-        
-        var navigationTitle = (serverUrl as NSString).lastPathComponent
-        if NCUtilityFileSystem.shared.getHomeServer(account: activeAccount.account) == serverUrl {
-            navigationTitle = NCBrandOptions.shared.brand
-        }
-        setNavigationBar(navigationTitle: navigationTitle)
-    }
-    
     func rename(fileName: String, fileNameNew: String) {
         
         if let row = self.filesName.firstIndex(where: {$0 == fileName}) {
@@ -465,42 +497,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     
     func accountRequestChangeAccount(account: String) {
         setAccount(account: account)
-    }
-    
-    @objc func profileButtonTapped(sender: Any) {
-        
-        let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
-        if accounts.count > 1 {
-            
-            if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
-               
-                // Only here change the active account 
-                for account in accounts {
-                    if account.account == self.activeAccount.account {
-                        account.active = true
-                    } else {
-                        account.active = false
-                    }
-                }
-                
-                vcAccountRequest.activeAccount = self.activeAccount
-                vcAccountRequest.accounts = accounts.sorted { (sorg, dest) -> Bool in
-                    return sorg.active && !dest.active
-                }
-                vcAccountRequest.enableTimerProgress = false
-                vcAccountRequest.enableAddAccount = false
-                vcAccountRequest.delegate = self
-                vcAccountRequest.dismissDidEnterBackground = true
-
-                let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
-                let numberCell = accounts.count
-                let height = min(CGFloat(numberCell * Int(vcAccountRequest.heightCell) + 45), screenHeighMax)
-                
-                let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height+20)
-                
-                self.present(popup, animated: true)
-            }
-        }
     }
 }
 

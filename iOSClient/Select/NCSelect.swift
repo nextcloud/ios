@@ -83,9 +83,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private let footerHeight: CGFloat = 100
     
     private var shares: [tableShare]?
-    
-    private let refreshControl = UIRefreshControl()
-    
+        
     private var backgroundImageView = UIImageView()
     
     private var activeAccount: tableAccount!
@@ -116,12 +114,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
-        
-        // Add Refresh Control
-        collectionView.addSubview(refreshControl)
-        refreshControl.tintColor = NCBrandColor.shared.brandText
-        refreshControl.backgroundColor = NCBrandColor.shared.systemBackground
-        refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
         
@@ -707,9 +699,7 @@ extension NCSelect {
         
         if withLoadFolder {
             loadFolder()
-        } else {
-            self.refreshControl.endRefreshing()
-        }
+        } 
         
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account,serverUrl))
         richWorkspaceText = directory?.richWorkspace

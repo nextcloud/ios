@@ -113,7 +113,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         // Refresh Control
         collectionView.addSubview(refreshControl)
-        refreshControl.addTarget(self, action: #selector(reloadDataSourceNetworkRefreshControl), for: .valueChanged)
+        refreshControl.action(for: .valueChanged) { _ in
+            self.reloadDataSourceNetwork(forced: true)
+        }
         
         // Empty
         emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: headerHeight, delegate: self)
@@ -652,8 +654,30 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 
                 button.semanticContentAttribute = .forceLeftToRight
                 button.sizeToFit()
-                button.addTarget(self, action: #selector(profileButtonTapped(sender:)), for: .touchUpInside)
-                       
+                button.action(for: .touchUpInside) { _ in
+                    
+                    let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
+                    if accounts.count > 0 {
+                        
+                        if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
+                           
+                            vcAccountRequest.activeAccount = NCManageDatabase.shared.getActiveAccount()
+                            vcAccountRequest.accounts = accounts
+                            vcAccountRequest.enableTimerProgress = false
+                            vcAccountRequest.enableAddAccount = true
+                            vcAccountRequest.delegate = self
+                            vcAccountRequest.dismissDidEnterBackground = true
+
+                            let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
+                            let numberCell = accounts.count + 1
+                            let height = min(CGFloat(numberCell * Int(vcAccountRequest.heightCell) + 45), screenHeighMax)
+                            
+                            let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height)
+                            
+                            UIApplication.shared.keyWindow?.rootViewController?.present(popup, animated: true)
+                        }
+                    }
+                }
                 navigationItem.setLeftBarButton(UIBarButtonItem(customView: button), animated: true)
                 navigationItem.leftItemsSupplementBackButton = true
             }
@@ -767,31 +791,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     func accountRequestAddAccount() {
         appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
-    }
-    
-    @objc func profileButtonTapped(sender: Any) {
-        
-        let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
-        if accounts.count > 0 {
-            
-            if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
-               
-                vcAccountRequest.activeAccount = NCManageDatabase.shared.getActiveAccount()
-                vcAccountRequest.accounts = accounts
-                vcAccountRequest.enableTimerProgress = false
-                vcAccountRequest.enableAddAccount = true
-                vcAccountRequest.delegate = self
-                vcAccountRequest.dismissDidEnterBackground = true
-
-                let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
-                let numberCell = accounts.count + 1
-                let height = min(CGFloat(numberCell * Int(vcAccountRequest.heightCell) + 45), screenHeighMax)
-                
-                let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height)
-                
-                UIApplication.shared.keyWindow?.rootViewController?.present(popup, animated: true)
-            }
-        }
     }
     
     func tapSwitchHeader(sender: Any) {
@@ -1003,10 +1002,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     @objc func reloadDataSourceNetwork(forced: Bool = false) { }
-    
-    @objc func reloadDataSourceNetworkRefreshControl() {
-        reloadDataSourceNetwork(forced: true)
-    }
     
     @objc func networkSearch() {
         
