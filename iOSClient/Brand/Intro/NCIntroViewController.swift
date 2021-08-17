@@ -28,7 +28,6 @@ import UIKit
 class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     @IBOutlet weak var buttonLogin: UIButton!
-    @IBOutlet weak var buttonSignUp: UIButton!
     @IBOutlet weak var buttonHost: UIButton!
     @IBOutlet weak var introCollectionView: UICollectionView!
     @IBOutlet weak var pageControl: UIPageControl!
@@ -83,11 +82,6 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         self.buttonLogin.setTitleColor(textColorOpponent, for: .normal)
         self.buttonLogin.backgroundColor = textColor
         self.buttonLogin.setTitle(NSLocalizedString("_log_in_", comment: ""), for: .normal)
-
-        self.buttonSignUp.layer.cornerRadius = 20
-        self.buttonSignUp.setTitleColor(.white, for: .normal)
-        self.buttonSignUp.backgroundColor = UIColor(red: 25.0 / 255.0, green: 89.0 / 255.0, blue: 141.0 / 255.0, alpha: 1)
-        self.buttonSignUp.setTitle(NSLocalizedString("_sign_up_", comment: ""), for: .normal)
 
         self.buttonHost.layer.cornerRadius = 20
         self.buttonHost.setTitle(NSLocalizedString("_host_your_own_server", comment: ""), for: .normal)
@@ -169,9 +163,9 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         appDelegate.openLogin(viewController: navigationController, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
     }
 
-    @IBAction func signup(_ sender: Any) {
-        appDelegate.openLogin(viewController: navigationController, selector: NCGlobal.shared.introSignup, openLoginWeb: false)
-    }
+//    @IBAction func signup(_ sender: Any) {
+//        appDelegate.openLogin(viewController: navigationController, selector: NCGlobal.shared.introSignup, openLoginWeb: false)
+//    }
 
     @IBAction func host(_ sender: Any) {
         guard let url = URL(string: NCBrandOptions.shared.linkLoginHost) else { return }

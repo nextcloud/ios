@@ -131,12 +131,28 @@
                                     <action selector="actionQRCode:" destination="yj9-jo-WIn" eventType="touchUpInside" id="qwL-rG-ead"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mb1-fw-4Hf">
+                                <rect key="frame" x="50" y="363" width="314" height="40"/>
+                                <color key="backgroundColor" red="0.21960784310000001" green="0.50196078430000002" blue="0.76470588240000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="8C4-ay-ZVq"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <state key="normal" title="Sign up">
+                                    <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="actionButtonSignup:" destination="yj9-jo-WIn" eventType="touchUpInside" id="CSW-BM-PsZ"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="8lf-3Y-f5R"/>
                         <color key="backgroundColor" white="0.9023259132753424" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="8lf-3Y-f5R" firstAttribute="trailing" secondItem="Kfq-Bg-a0E" secondAttribute="trailing" constant="13" id="3Rl-VS-3Op"/>
                             <constraint firstItem="1Gf-Bw-Nim" firstAttribute="leading" secondItem="4OF-5u-Hd1" secondAttribute="trailing" constant="10" id="4CC-7B-dkI"/>
+                            <constraint firstItem="8lf-3Y-f5R" firstAttribute="trailing" secondItem="Mb1-fw-4Hf" secondAttribute="trailing" constant="50" id="8tC-US-hKm"/>
                             <constraint firstItem="HQd-pF-3cE" firstAttribute="top" secondItem="8lf-3Y-f5R" secondAttribute="top" constant="264" id="9hf-b4-BDZ"/>
                             <constraint firstItem="6tp-bh-Z9k" firstAttribute="centerX" secondItem="8lf-3Y-f5R" secondAttribute="centerX" id="Apc-1U-CwU"/>
                             <constraint firstItem="BpI-xK-1SU" firstAttribute="top" secondItem="8lf-3Y-f5R" secondAttribute="top" id="Fep-pw-QEQ"/>
@@ -145,6 +161,7 @@
                             <constraint firstItem="Kfq-Bg-a0E" firstAttribute="centerY" secondItem="szn-G7-5sK" secondAttribute="centerY" id="Ldo-FD-LNp"/>
                             <constraint firstItem="6tp-bh-Z9k" firstAttribute="top" secondItem="HQd-pF-3cE" secondAttribute="bottom" constant="100" id="NCo-gF-R4d"/>
                             <constraint firstItem="jU7-Iw-XfU" firstAttribute="top" secondItem="1Gf-Bw-Nim" secondAttribute="bottom" id="QHr-T7-zbl"/>
+                            <constraint firstItem="6tp-bh-Z9k" firstAttribute="top" secondItem="Mb1-fw-4Hf" secondAttribute="bottom" constant="45" id="QOD-6T-3Sf"/>
                             <constraint firstItem="owR-PS-F32" firstAttribute="centerX" secondItem="8lf-3Y-f5R" secondAttribute="centerX" id="VSS-Pz-f7g"/>
                             <constraint firstItem="4OF-5u-Hd1" firstAttribute="centerY" secondItem="1Gf-Bw-Nim" secondAttribute="centerY" id="Wkl-Is-Ay0"/>
                             <constraint firstItem="jU7-Iw-XfU" firstAttribute="leading" secondItem="7q8-rl-x2M" secondAttribute="trailing" constant="10" id="a3y-yQ-wa8"/>
@@ -163,6 +180,7 @@
                             <constraint firstItem="8lf-3Y-f5R" firstAttribute="trailing" secondItem="fhk-o9-J0l" secondAttribute="trailing" constant="10" id="sSF-C0-MZp"/>
                             <constraint firstItem="szn-G7-5sK" firstAttribute="leading" secondItem="s9o-RX-XeS" secondAttribute="trailing" constant="10" id="wG2-dF-inH"/>
                             <constraint firstItem="1Gf-Bw-Nim" firstAttribute="top" secondItem="szn-G7-5sK" secondAttribute="bottom" id="wZI-EZ-zRI"/>
+                            <constraint firstItem="Mb1-fw-4Hf" firstAttribute="leading" secondItem="8lf-3Y-f5R" secondAttribute="leading" constant="50" id="xF9-aF-2dd"/>
                             <constraint firstItem="8lf-3Y-f5R" firstAttribute="trailing" secondItem="1Gf-Bw-Nim" secondAttribute="trailing" constant="50" id="yHe-0f-GD6"/>
                             <constraint firstItem="Kfq-Bg-a0E" firstAttribute="leading" secondItem="szn-G7-5sK" secondAttribute="trailing" constant="10" id="z3g-fw-GHs"/>
                         </constraints>
@@ -180,6 +198,7 @@
                         <outlet property="loginModeButton" destination="owR-PS-F32" id="iXW-wC-T2H"/>
                         <outlet property="password" destination="jU7-Iw-XfU" id="OWi-V0-Eij"/>
                         <outlet property="qrCode" destination="6tp-bh-Z9k" id="Tw3-op-BgR"/>
+                        <outlet property="signupButton" destination="Mb1-fw-4Hf" id="EsI-uj-IKj"/>
                         <outlet property="toggleVisiblePasswordButton" destination="fhk-o9-J0l" id="e0X-WA-5cz"/>
                         <outlet property="user" destination="1Gf-Bw-Nim" id="BUW-sz-I3f"/>
                     </connections>

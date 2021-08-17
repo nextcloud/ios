@@ -39,6 +39,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     @IBOutlet weak var activity: UIActivityIndicatorView!
 
     @IBOutlet weak var loginButton: UIButton!
+    @IBOutlet weak var signupButton: UIButton!
+
     @IBOutlet weak var toggleVisiblePasswordButton: UIButton!
     @IBOutlet weak var loginModeButton: UIButton!
     
@@ -107,6 +109,12 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         loginButton.layer.cornerRadius = 20
         loginButton.clipsToBounds = true
         
+        // signup
+        signupButton.layer.cornerRadius = 20
+        signupButton.setTitleColor(.white, for: .normal)
+        signupButton.backgroundColor = UIColor(red: 25.0 / 255.0, green: 89.0 / 255.0, blue: 141.0 / 255.0, alpha: 1)
+        signupButton.setTitle(NSLocalizedString("_sign_up_", comment: ""), for: .normal)
+        
         // type of login
         loginModeButton.setTitle(NSLocalizedString("_traditional_login_", comment: ""), for: .normal)
         loginModeButton.setTitleColor(textColor.withAlphaComponent(0.5), for: .normal)
@@ -116,6 +124,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             baseUrl.text = NCBrandOptions.shared.loginBaseUrl
             imageBaseUrl.isHidden = true
             baseUrl.isHidden = true
+            signupButton.isHidden = true
         }
         
         // qrcode
@@ -183,6 +192,15 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         dismiss(animated: true) { }
     }
 
+    @IBAction func actionButtonSignup(_ sender: Any) {
+
+        if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
+            
+            loginWeb.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+            self.navigationController?.pushViewController(loginWeb, animated: true)
+        }
+    }
+    
     @IBAction func actionButtonLogin(_ sender: Any) {
         
         guard var url = baseUrl.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
