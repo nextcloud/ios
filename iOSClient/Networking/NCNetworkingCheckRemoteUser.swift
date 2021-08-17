@@ -35,9 +35,9 @@ import NCCommunication
     @objc func checkRemoteUser(account: String) {
            
         if self.checkRemoteUserInProgress {
-            return;
+            return
         } else {
-            self.checkRemoteUserInProgress = true;
+            self.checkRemoteUserInProgress = true
         }
         
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
@@ -55,7 +55,7 @@ import NCCommunication
                     self.appDelegate.deleteAccount(account, wipe: true)
                     NCContentPresenter.shared.messageNotification(tableAccount.user, description: "_wipe_account_", delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
                     NCCommunication.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token) { (account, errorCode, errorDescription) in
-                        print("wipe");
+                        print("wipe")
                     }
                     
                 } else {
