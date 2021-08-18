@@ -26,36 +26,37 @@ import UIKit
 class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
     
     @IBOutlet weak var imageItem: UIImageView!
-    
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelPath: UILabel!
     @IBOutlet weak var labelStatus: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
-
     @IBOutlet weak var imageMore: UIImageView!
     @IBOutlet weak var buttonMore: UIButton!
-    
     @IBOutlet weak var progressView: UIProgressView!
-    
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     
-    var filePreviewImageView : UIImageView? {
-        get{
-            return imageItem
-        }
-    }
-    var fileAvatarImageView: UIImageView? {
-        get{
-            return nil
-        }
-    }
-
     var delegate: NCTransferCellDelegate?
     var objectId = ""
     var indexPath = IndexPath()
     var namedButtonMore = ""
-
+    
+    var fileAvatarImageView: UIImageView? {
+        get {
+            return nil
+        }
+    }
+    var fileObjectId: String? {
+        get {
+            return objectId
+        }
+    }
+    var filePreviewImageView : UIImageView? {
+        get {
+            return imageItem
+        }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
                

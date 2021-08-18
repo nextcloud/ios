@@ -26,32 +26,34 @@ import UIKit
 class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
     
     @IBOutlet weak var imageItem: UIImageView!
-    
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
-
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
-
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var progressView: UIProgressView!
 
-    var filePreviewImageView: UIImageView? {
-        get{
-            return imageItem
-        }
-    }
+    var delegate: NCGridCellDelegate?
+    var objectId = ""
+    var namedButtonMore = ""
+    
     var fileAvatarImageView: UIImageView? {
         get{
             return nil
         }
     }
-    
-    var delegate: NCGridCellDelegate?
-    var objectId = ""
-    var namedButtonMore = ""
+    var fileObjectId: String? {
+        get{
+            return objectId
+        }
+    }
+    var filePreviewImageView: UIImageView? {
+        get{
+            return imageItem
+        }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()

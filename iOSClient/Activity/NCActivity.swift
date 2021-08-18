@@ -113,29 +113,33 @@ class activityTableViewCell: UITableViewCell, NCCellProtocol {
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     @IBOutlet weak var collectionView: UICollectionView!
-    
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var avatar: UIImageView!
     @IBOutlet weak var subject: UILabel!
     @IBOutlet weak var subjectTrailingConstraint: NSLayoutConstraint!
     @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
 
-    var filePreviewImageView: UIImageView? {
-        get {
-            return nil
-        }
-    }
-    var fileAvatarImageView: UIImageView? {
-        get{
-            return avatar
-        }
-    }
-    
     var idActivity: Int = 0
     var account: String = ""
     var activityPreviews: [tableActivityPreview] = []
     var didSelectItemEnable: Bool = true
     var viewController: UIViewController? = nil
+    
+    var fileAvatarImageView: UIImageView? {
+        get {
+            return avatar
+        }
+    }
+    var fileObjectId: String? {
+        get {
+            return nil
+        }
+    }
+    var filePreviewImageView: UIImageView? {
+        get {
+            return nil
+        }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()

@@ -476,14 +476,19 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var status: UILabel!
     
-    var filePreviewImageView : UIImageView? {
-        get{
-            return nil
-        }
-    }
     var fileAvatarImageView: UIImageView? {
         get{
             return imageItem
+        }
+    }
+    var fileObjectId: String? {
+        get {
+            return nil
+        }
+    }
+    var filePreviewImageView : UIImageView? {
+        get{
+            return nil
         }
     }
     
@@ -522,14 +527,19 @@ class NCShareUserDropDownCell: DropDownCell, NCCellProtocol {
     @IBOutlet weak var imageShareeType: UIImageView!
     @IBOutlet weak var centerTitle: NSLayoutConstraint!
     
-    var filePreviewImageView : UIImageView? {
-        get{
+    var fileAvatarImageView: UIImageView? {
+        get {
+            return imageItem
+        }
+    }
+    var fileObjectId: String? {
+        get {
             return nil
         }
     }
-    var fileAvatarImageView: UIImageView? {
-        get{
-            return imageItem
+    var filePreviewImageView : UIImageView? {
+        get {
+            return nil
         }
     }
 }

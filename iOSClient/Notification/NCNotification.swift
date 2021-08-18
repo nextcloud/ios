@@ -317,9 +317,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
 class NCNotificationCell: UITableViewCell, NCCellProtocol {
     
-    var delegate: NCNotificationCellDelegate?
-    var notification: NCCommunicationNotifications?
-
     @IBOutlet weak var icon : UIImageView!
     @IBOutlet weak var avatar : UIImageView!
     @IBOutlet weak var date: UILabel!
@@ -328,20 +325,27 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var remove: UIButton!
     @IBOutlet weak var primary: UIButton!
     @IBOutlet weak var secondary: UIButton!
-
     @IBOutlet weak var avatarLeadingMargin: NSLayoutConstraint!
     @IBOutlet weak var messageBottomMargin: NSLayoutConstraint!
     @IBOutlet weak var primaryWidth: NSLayoutConstraint!
     @IBOutlet weak var secondaryWidth: NSLayoutConstraint!
     
+    var delegate: NCNotificationCellDelegate?
+    var notification: NCCommunicationNotifications?
+
     var filePreviewImageView : UIImageView? {
-        get{
+        get {
             return nil
         }
     }
     var fileAvatarImageView: UIImageView? {
-        get{
+        get {
             return avatar
+        }
+    }
+    var fileObjectId: String? {
+        get {
+            return nil
         }
     }
     

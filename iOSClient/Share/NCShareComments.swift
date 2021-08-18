@@ -215,6 +215,9 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var labelDate: UILabel!
     @IBOutlet weak var labelMessage: UILabel!
     
+    var tableComments: tableComments?
+    var delegate: NCShareCommentsCellDelegate?
+    
     var filePreviewImageView : UIImageView? {
         get{
             return nil
@@ -225,9 +228,11 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
             return imageItem
         }
     }
-    
-    var tableComments: tableComments?
-    var delegate: NCShareCommentsCellDelegate?
+    var fileObjectId: String? {
+        get {
+            return nil
+        }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()

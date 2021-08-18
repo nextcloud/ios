@@ -26,14 +26,13 @@ import UIKit
 class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
 
     @IBOutlet weak var imageItem: UIImageView!
-
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
-
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     
     var date: Date?
-
+    var objectId: String = ""
+    
     var filePreviewImageView: UIImageView? {
         get {
             return imageItem
@@ -42,6 +41,11 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
     var fileAvatarImageView: UIImageView? {
         get{
             return nil
+        }
+    }
+    var fileObjectId: String? {
+        get{
+            return objectId
         }
     }
     

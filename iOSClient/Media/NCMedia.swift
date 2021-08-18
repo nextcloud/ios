@@ -419,6 +419,7 @@ extension NCMedia: UICollectionViewDataSource {
             self.cellHeigth = cell.frame.size.height
 
             cell.date = metadata.date as Date
+            cell.objectId = metadata.ocId
 
             if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
                 cell.imageStatus.image = cacheImages.cellPlayImage

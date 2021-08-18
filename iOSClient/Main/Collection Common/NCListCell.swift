@@ -27,42 +27,40 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
-    
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
-
     @IBOutlet weak var labelTitle: UILabel!
-
     @IBOutlet weak var labelInfo: UILabel!
-
     @IBOutlet weak var imageShared: UIImageView!
     @IBOutlet weak var buttonShared: UIButton!
-
     @IBOutlet weak var imageMore: UIImageView!
     @IBOutlet weak var buttonMore: UIButton!
-    
     @IBOutlet weak var progressView: UIProgressView!
-    
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
-    var filePreviewImageView : UIImageView? {
-        get{
-            return imageItem
-        }
-    }
+    var delegate: NCListCellDelegate?
+    var objectId = ""
+    var namedButtonMore = ""
+    
     var fileAvatarImageView: UIImageView? {
         get{
             return imageShared
         }
     }
+    var fileObjectId: String? {
+        get{
+            return objectId
+        }
+    }
+    var filePreviewImageView : UIImageView? {
+        get{
+            return imageItem
+        }
+    }
     
-    var delegate: NCListCellDelegate?
-    var objectId = ""
-    var namedButtonMore = ""
-
     override func awakeFromNib() {
         super.awakeFromNib()
                
