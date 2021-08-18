@@ -168,14 +168,14 @@ import NCCommunication
         #if !EXTENSION
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         if let image = appDelegate.avatars[user] {
-            cell.avatarImageView?.image = image
+            cell.fileAvatarImageView?.image = image
             return
         }
         #endif
                 
-        cell.avatarImageView?.image = placeholder
+        cell.fileAvatarImageView?.image = placeholder
         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-            cell.avatarImageView?.image = NCUtility.shared.createAvatar(image: image, size: 30)
+            cell.fileAvatarImageView?.image = NCUtility.shared.createAvatar(image: image, size: 30)
         }
     
         downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileNameLocalPath: fileNameLocalPath, cell: cell))
@@ -453,7 +453,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                 
                 if errorCode == 0 && data != nil {
                    
-                    if let avatarImageView = self.cell?.avatarImageView  {
+                    if let avatarImageView = self.cell?.fileAvatarImageView  {
                         
                         if var image = UIImage.init(data: data!) {
                             image = NCUtility.shared.createAvatar(image: image, size: 30)

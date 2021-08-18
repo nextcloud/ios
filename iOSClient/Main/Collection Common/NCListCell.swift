@@ -53,7 +53,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             return imageItem
         }
     }
-    var avatarImageView: UIImageView? {
+    var fileAvatarImageView: UIImageView? {
         get{
             return imageShared
         }

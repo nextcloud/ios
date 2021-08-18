@@ -220,7 +220,7 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
             return nil
         }
     }
-    var avatarImageView: UIImageView? {
+    var fileAvatarImageView: UIImageView? {
         get{
             return imageItem
         }

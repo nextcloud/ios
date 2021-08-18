@@ -481,7 +481,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
             return nil
         }
     }
-    var avatarImageView: UIImageView? {
+    var fileAvatarImageView: UIImageView? {
         get{
             return imageItem
         }
@@ -527,7 +527,7 @@ class NCShareUserDropDownCell: DropDownCell, NCCellProtocol {
             return nil
         }
     }
-    var avatarImageView: UIImageView? {
+    var fileAvatarImageView: UIImageView? {
         get{
             return imageItem
         }

@@ -45,7 +45,7 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
             return imageItem
         }
     }
-    var avatarImageView: UIImageView? {
+    var fileAvatarImageView: UIImageView? {
         get{
             return nil
         }

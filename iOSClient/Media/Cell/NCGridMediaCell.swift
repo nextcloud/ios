@@ -39,7 +39,7 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
             return imageItem
         }
     }
-    var avatarImageView: UIImageView? {
+    var fileAvatarImageView: UIImageView? {
         get{
             return nil
         }

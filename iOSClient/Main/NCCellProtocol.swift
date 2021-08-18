@@ -25,6 +25,6 @@ import UIKit
 
 protocol NCCellProtocol {
     var filePreviewImageView: UIImageView? { get }
-    var avatarImageView: UIImageView? { get }
+    var fileAvatarImageView: UIImageView? { get }
 }
 
