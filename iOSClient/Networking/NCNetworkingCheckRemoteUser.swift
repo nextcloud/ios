@@ -32,7 +32,7 @@ import NCCommunication
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var checkRemoteUserInProgress = false
 
-    @objc func checkRemoteUser(account: String) {
+    @objc func checkRemoteUser(account: String, errorCode: Int) {
            
         if self.checkRemoteUserInProgress {
             return
