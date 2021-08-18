@@ -1358,6 +1358,29 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
     }
     
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
+        
+        // Thumbnail
+        if !metadata.directory {
+            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                (cell as! NCCellProtocol).filePreviewImageView?.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+            } else {
+                NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: true, cell: cell)
+            }
+        }
+        
+        // Avatar
+        if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId && appDelegate.account == metadata.account {
+            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(metadata.user, urlBase: metadata.urlBase)) + "-" + metadata.ownerId + ".png"
+            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, placeholder: NCBrandColor.cacheImages.shared, cell: cell)
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        
+    }
+    
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
@@ -1390,9 +1413,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if dataSource.metadataShare[metadata.ocId] != nil {
             tableShare = dataSource.metadataShare[metadata.ocId]
         }
-        
-        // Thumbnail
-        NCOperationQueue.shared.downloadThumbnail(metadata: metadata, view: collectionView, indexPath: indexPath)
         
         //
         // LAYOUT LIST
@@ -1452,20 +1472,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 
             } else {
                 
-                if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                    cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-                } else {
-                    if metadata.hasPreview {
-                        cell.imageItem.backgroundColor = .lightGray
-                    } else {
-                        if metadata.iconName.count > 0 {
-                            cell.imageItem.image = UIImage.init(named: metadata.iconName)
-                        } else {
-                            cell.imageItem.image = NCBrandColor.cacheImages.file
-                        }
-                    }
-                }
-                
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
                                 
                 // image local
@@ -1494,13 +1500,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             if appDelegate.account != metadata.account {
                 cell.imageShared.image = NCBrandColor.cacheImages.shared
             }
-            
-            // Avatar
-            if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId && appDelegate.account == metadata.account {
-                let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(metadata.user, urlBase: metadata.urlBase)) + "-" + metadata.ownerId + ".png"
-                NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, placeholder: NCBrandColor.cacheImages.shared, cell: cell, view: collectionView, indexPath: indexPath)
-            }
-           
+                        
             // Transfer
             var progress: Float = 0.0
             var totalBytes: Int64 = 0
@@ -1638,20 +1638,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
                 
             } else {
-                
-                if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                    cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-                } else {
-                    if metadata.hasPreview {
-                        cell.imageItem.backgroundColor = .lightGray
-                    } else {
-                        if metadata.iconName.count > 0 {
-                            cell.imageItem.image = UIImage.init(named: metadata.iconName)
-                        } else {
-                            cell.imageItem.image = NCBrandColor.cacheImages.file
-                        }
-                    }
-                }
                 
                 // image Local
                 if dataSource.metadataOffLine.contains(metadata.ocId) {

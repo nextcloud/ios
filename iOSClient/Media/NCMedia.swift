@@ -392,7 +392,13 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if indexPath.row < self.metadatas.count {
             let metadata = self.metadatas[indexPath.row]
-            NCOperationQueue.shared.downloadThumbnail(metadata: metadata, view: self.collectionView as Any, indexPath: indexPath)
+            
+            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                (cell as! NCGridMediaCell).imageItem.backgroundColor = nil
+                (cell as! NCGridMediaCell).imageItem.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+            } else {
+                NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: false, cell: cell)
+            }
         }
     }
     
@@ -412,17 +418,6 @@ extension NCMedia: UICollectionViewDataSource {
             
             self.cellHeigth = cell.frame.size.height
 
-            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                cell.imageItem.backgroundColor = nil
-                cell.imageItem.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-            } else if(!metadata.hasPreview) {
-                cell.imageItem.backgroundColor = nil
-                if metadata.iconName.count > 0 {
-                    cell.imageItem.image = UIImage.init(named: metadata.iconName)
-                } else {
-                    cell.imageItem.image = NCBrandColor.cacheImages.file
-                }
-            }
             cell.date = metadata.date as Date
 
             if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {

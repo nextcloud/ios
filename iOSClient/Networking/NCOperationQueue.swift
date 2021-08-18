@@ -125,14 +125,25 @@ import NCCommunication
     
     // Download Thumbnail
     
-    @objc func downloadThumbnail(metadata: tableMetadata, view: Any, indexPath: IndexPath) {
+    @objc func downloadThumbnail(metadata: tableMetadata, placeholder: Bool, cell: UIView) {
+        
+        let cell: NCCellProtocol = cell as! NCCellProtocol
+        
+        if placeholder {
+            if metadata.iconName.count > 0 {
+                cell.filePreviewImageView?.image = UIImage.init(named: metadata.iconName)
+            } else {
+                cell.filePreviewImageView?.image = NCBrandColor.cacheImages.file
+            }
+        }
+        
         if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
             for operation in downloadThumbnailQueue.operations as! [NCOperationDownloadThumbnail] {
                 if operation.metadata.ocId == metadata.ocId {
                     return
                 }
             }
-            downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, view: view, indexPath: indexPath))
+            downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, cell: cell))
         }
     }
     
@@ -150,7 +161,7 @@ import NCCommunication
     
     // Download Avatar
     
-    func downloadAvatar(user: String, fileNameLocalPath: String, placeholder: UIImage?, cell: UIView, view: Any?, indexPath: IndexPath?) {
+    func downloadAvatar(user: String, fileNameLocalPath: String, placeholder: UIImage?, cell: UIView) {
 
         let cell: NCCellProtocol = cell as! NCCellProtocol
 
@@ -167,7 +178,7 @@ import NCCommunication
             cell.avatarImageView?.image = NCUtility.shared.createAvatar(image: image, size: 30)
         }
     
-        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view, indexPath: indexPath))
+        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileNameLocalPath: fileNameLocalPath, cell: cell))
     }
     
     func cancelDownloadAvatar(user: String) {
@@ -382,16 +393,14 @@ class NCOperationSynchronization: ConcurrentOperation {
 class NCOperationDownloadThumbnail: ConcurrentOperation {
    
     var metadata: tableMetadata
-    var view: Any
-    var indexPath: IndexPath
+    var cell: NCCellProtocol!
     var fileNamePath: String = ""
     var fileNamePreviewLocalPath: String = ""
     var fileNameIconLocalPath: String = ""
     
-    init(metadata: tableMetadata, view: Any, indexPath: IndexPath) {
+    init(metadata: tableMetadata, cell: NCCellProtocol) {
         self.metadata = tableMetadata.init(value: metadata)
-        self.view = view
-        self.indexPath = indexPath
+        self.cell = cell
         self.fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
         self.fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
         self.fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
@@ -404,35 +413,17 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
         } else {
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon) { (account, imagePreview, imageIcon,  errorCode, errorDescription) in
                 
-                var cell: NCCellProtocol?
-                
-                if self.view is UICollectionView {
-                    if self.indexPath.section < (self.view as! UICollectionView).numberOfSections && self.indexPath.row < (self.view as! UICollectionView).numberOfItems(inSection: self.indexPath.section) {
-                        cell = (self.view as! UICollectionView).cellForItem(at: self.indexPath) as? NCCellProtocol
-                    }
-                } else {
-                    if self.indexPath.section < (self.view as! UITableView).numberOfSections && self.indexPath.row < (self.view as! UITableView).numberOfRows(inSection: self.indexPath.section) {
-                        cell = (self.view as! UITableView).cellForRow(at: self.indexPath) as? NCCellProtocol
+                if errorCode == 0 && imageIcon != nil {
+                    
+                    if let filePreviewImageView = self.cell?.filePreviewImageView  {
+                        UIView.transition(with: filePreviewImageView,
+                            duration: 0.75,
+                            options: .transitionCrossDissolve,
+                            animations: { filePreviewImageView.image = imageIcon! },
+                            completion: nil)
                     }
                 }
                 
-                if let filePreviewImageView = cell?.filePreviewImageView  {
-                    var previewImage: UIImage!
-                    if errorCode == 0 && imageIcon != nil {
-                        previewImage = imageIcon
-                    } else {
-                        if self.metadata.iconName.count > 0 {
-                            previewImage = UIImage(named: self.metadata.iconName)
-                        } else {
-                            previewImage = UIImage(named: "file")
-                        }
-                    }
-                    UIView.transition(with: filePreviewImageView,
-                        duration: 0.75,
-                        options: .transitionCrossDissolve,
-                        animations: { filePreviewImageView.image = previewImage! },
-                        completion: nil)
-                }
                 self.finish()
             }
         }
@@ -446,15 +437,11 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
     var user: String
     var fileNameLocalPath: String
     var cell: NCCellProtocol!
-    var view: Any?
-    var indexPath: IndexPath?
         
-    init(user: String, fileNameLocalPath: String, cell: NCCellProtocol, view: Any?, indexPath: IndexPath?) {
+    init(user: String, fileNameLocalPath: String, cell: NCCellProtocol) {
         self.user = user
         self.fileNameLocalPath = fileNameLocalPath
         self.cell = cell
-        self.view = view
-        self.indexPath = indexPath
     }
     
     override func start() {
@@ -464,23 +451,10 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         } else {
             NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
                 
-                var cell: NCCellProtocol? = self.cell
-                
-                if let view = self.view, let indexPath = self.indexPath {
-                    
-                    if view is UICollectionView {
-                        if indexPath.section < (view as! UICollectionView).numberOfSections && indexPath.row < (view as! UICollectionView).numberOfItems(inSection: indexPath.section) {
-                            cell = (view as! UICollectionView).cellForItem(at: indexPath) as? NCCellProtocol
-                        }
-                    } else {
-                        if indexPath.section < (view as! UITableView).numberOfSections && indexPath.row < (view as! UITableView).numberOfRows(inSection: indexPath.section) {
-                            cell = (view as! UITableView).cellForRow(at: indexPath) as? NCCellProtocol
-                        }
-                    }
-                }
-                
-                if let avatarImageView = cell?.avatarImageView  {
-                    if errorCode == 0 && data != nil {
+                if errorCode == 0 && data != nil {
+                   
+                    if let avatarImageView = self.cell?.avatarImageView  {
+                        
                         if var image = UIImage.init(data: data!) {
                             image = NCUtility.shared.createAvatar(image: image, size: 30)
                             UIView.transition(with: avatarImageView,
@@ -495,6 +469,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                         }
                     }
                 }
+                
                 self.finish()
             }
         }

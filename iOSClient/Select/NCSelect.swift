@@ -385,14 +385,25 @@ extension NCSelect: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
-
-        NCOperationQueue.shared.downloadThumbnail(metadata: metadata, view: collectionView, indexPath: indexPath)
+        
+        // Thumbnail
+        if !metadata.directory {
+            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                (cell as! NCCellProtocol).filePreviewImageView?.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+            } else {
+                NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: true, cell: cell)
+            }
+        }
+        
+        // Avatar
+        if metadata.ownerId.count > 0 && metadata.ownerId != activeAccount.userId && activeAccount.account == metadata.account {
+            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(metadata.user, urlBase: metadata.urlBase)) + "-" + metadata.ownerId + ".png"
+            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, placeholder: NCBrandColor.cacheImages.shared, cell: cell)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
         
-        NCOperationQueue.shared.cancelDownloadThumbnail(metadata: metadata)
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -481,20 +492,6 @@ extension NCSelect: UICollectionViewDataSource {
                 
             } else {
                 
-                if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                    cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-                } else {
-                    if metadata.hasPreview {
-                        cell.imageItem.backgroundColor = .lightGray
-                    } else {
-                        if metadata.iconName.count > 0 {
-                            cell.imageItem.image = UIImage.init(named: metadata.iconName)
-                        } else {
-                            cell.imageItem.image = NCBrandColor.cacheImages.file
-                        }
-                    }
-                }
-                
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
                 
                 // image local
@@ -519,12 +516,6 @@ extension NCSelect: UICollectionViewDataSource {
                 cell.imageShared.image = NCBrandColor.cacheImages.shared
             } else {
                 cell.imageShared.image = NCBrandColor.cacheImages.canShare
-            }
-            
-            // Avatar
-            if metadata.ownerId.count > 0 && metadata.ownerId != activeAccount.userId {
-                let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(activeAccount.user, urlBase: activeAccount.urlBase)) + "-" + metadata.ownerId + ".png"
-                NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, placeholder: NCBrandColor.cacheImages.shared, cell: cell, view: collectionView, indexPath: indexPath)
             }
             
             cell.imageSelect.isHidden = true
@@ -598,20 +589,6 @@ extension NCSelect: UICollectionViewDataSource {
                 }
                 
             } else {
-                
-                if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                    cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-                } else {
-                    if metadata.hasPreview {
-                        cell.imageItem.backgroundColor = .lightGray
-                    } else {
-                        if metadata.iconName.count > 0 {
-                            cell.imageItem.image = UIImage.init(named: metadata.iconName)
-                        } else {
-                            cell.imageItem.image = NCBrandColor.cacheImages.file
-                        }
-                    }
-                }
                 
                 // image Local
                 if dataSource.metadataOffLine.contains(metadata.ocId) {
