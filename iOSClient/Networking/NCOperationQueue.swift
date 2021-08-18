@@ -413,7 +413,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
         } else {
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon) { (account, imagePreview, imageIcon,  errorCode, errorDescription) in
                 
-                if errorCode == 0 && imageIcon != nil {
+                if errorCode == 0 && imageIcon != nil && self.metadata.ocId == self.cell.fileObjectId {
                     
                     if let filePreviewImageView = self.cell?.filePreviewImageView  {
                         UIView.transition(with: filePreviewImageView,
@@ -422,6 +422,8 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                             animations: { filePreviewImageView.image = imageIcon! },
                             completion: nil)
                     }
+                } else {
+                    print("oh oh oh ")
                 }
                 
                 self.finish()
