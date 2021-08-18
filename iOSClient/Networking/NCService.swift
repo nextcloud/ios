@@ -129,7 +129,7 @@ class NCService: NSObject {
             } else {
                 
                 if errorCode == 401 || errorCode == 403 {
-                    NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account, errorCode: errorCode)
+                    NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account, errorCode: errorCode, errorDescription: errorDescription)
                 }
             }
         }
@@ -278,7 +278,7 @@ class NCService: NSObject {
                 NCBrandColor.shared.settingThemingColor(account: account)
                 
                 if errorCode == 401 || errorCode == 403 {
-                    NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account, errorCode: errorCode)
+                    NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account, errorCode: errorCode, errorDescription: errorDescription)
                 }
                 
             } else {
