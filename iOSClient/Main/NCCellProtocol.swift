@@ -27,5 +27,6 @@ protocol NCCellProtocol {
     var fileAvatarImageView: UIImageView? { get }
     var fileObjectId: String? { get }
     var filePreviewImageView: UIImageView? { get }
+    var fileUser: String? { get }
 }
 

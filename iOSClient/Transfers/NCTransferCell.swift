@@ -38,6 +38,7 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     
     var delegate: NCTransferCellDelegate?
     var objectId = ""
+    var user = ""
     var indexPath = IndexPath()
     var namedButtonMore = ""
     
@@ -54,6 +55,11 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     var filePreviewImageView : UIImageView? {
         get {
             return imageItem
+        }
+    }
+    var fileUser: String? {
+        get{
+            return user
         }
     }
     

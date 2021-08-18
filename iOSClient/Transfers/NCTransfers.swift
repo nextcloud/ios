@@ -175,6 +175,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         cell.delegate = self
             
         cell.objectId = metadata.ocId
+        cell.user = metadata.ownerId
         cell.indexPath = indexPath
         
         cell.imageItem.image = nil

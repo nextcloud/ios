@@ -420,6 +420,7 @@ extension NCMedia: UICollectionViewDataSource {
 
             cell.date = metadata.date as Date
             cell.objectId = metadata.ocId
+            cell.user = metadata.ownerId
 
             if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
                 cell.imageStatus.image = cacheImages.cellPlayImage

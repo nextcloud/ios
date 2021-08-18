@@ -318,6 +318,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             let status = NCUtility.shared.getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
             cell.imageStatus.image = status.onlineStatus
             cell.status.text = status.statusMessage
+            cell.user = sharee.shareWith
             if cell.status.text?.count ?? 0 > 0 {
                 cell.centerTitle.constant = -5
             } else {
@@ -476,6 +477,9 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var status: UILabel!
     
+    var tableShare: tableShare?
+    var delegate: NCShareUserCellDelegate?
+    
     var fileAvatarImageView: UIImageView? {
         get{
             return imageItem
@@ -491,9 +495,11 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
             return nil
         }
     }
-    
-    var tableShare: tableShare?
-    var delegate: NCShareUserCellDelegate?
+    var fileUser: String? {
+        get{
+            return tableShare?.shareWith
+        }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -527,6 +533,8 @@ class NCShareUserDropDownCell: DropDownCell, NCCellProtocol {
     @IBOutlet weak var imageShareeType: UIImageView!
     @IBOutlet weak var centerTitle: NSLayoutConstraint!
     
+    var user: String = ""
+    
     var fileAvatarImageView: UIImageView? {
         get {
             return imageItem
@@ -537,9 +545,14 @@ class NCShareUserDropDownCell: DropDownCell, NCCellProtocol {
             return nil
         }
     }
-    var filePreviewImageView : UIImageView? {
+    var filePreviewImageView: UIImageView? {
         get {
             return nil
+        }
+    }
+    var fileUser: String? {
+        get {
+            return user
         }
     }
 }

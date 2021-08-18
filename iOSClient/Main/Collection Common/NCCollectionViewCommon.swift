@@ -1423,6 +1423,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.delegate = self
             
             cell.objectId = metadata.ocId
+            cell.user = metadata.ownerId
             cell.labelTitle.text = metadata.fileNameView
             cell.labelTitle.textColor = NCBrandColor.shared.label
             cell.labelInfo.text = ""
@@ -1596,6 +1597,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.delegate = self
             
             cell.objectId = metadata.ocId
+            cell.user = metadata.ownerId
             cell.labelTitle.text = metadata.fileNameView
             cell.labelTitle.textColor = NCBrandColor.shared.label
             

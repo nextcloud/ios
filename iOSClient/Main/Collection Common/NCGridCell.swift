@@ -38,7 +38,8 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     var delegate: NCGridCellDelegate?
     var objectId = ""
     var namedButtonMore = ""
-    
+    var user = ""
+
     var fileAvatarImageView: UIImageView? {
         get{
             return nil
@@ -52,6 +53,11 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     var filePreviewImageView: UIImageView? {
         get{
             return imageItem
+        }
+    }
+    var fileUser: String? {
+        get{
+            return user
         }
     }
     

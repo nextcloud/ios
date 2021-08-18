@@ -32,6 +32,7 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
     
     var date: Date?
     var objectId: String = ""
+    var user: String = ""
     
     var filePreviewImageView: UIImageView? {
         get {
@@ -46,6 +47,11 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
     var fileObjectId: String? {
         get{
             return objectId
+        }
+    }
+    var fileUser: String? {
+        get{
+            return user
         }
     }
     

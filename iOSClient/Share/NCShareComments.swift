@@ -233,6 +233,11 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
             return nil
         }
     }
+    var fileUser: String? {
+        get{
+            return tableComments?.actorId
+        }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()

@@ -453,7 +453,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         } else {
             NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
                 
-                if errorCode == 0 && data != nil {
+                if errorCode == 0 && data != nil  && self.user == self.cell.fileUser {
                    
                     if let avatarImageView = self.cell?.fileAvatarImageView  {
                         

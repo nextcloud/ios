@@ -131,7 +131,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         // Avatar
         cell.avatar.isHidden = true
         cell.avatarLeadingMargin.constant = 10
-
         if let subjectRichParameters = notification.subjectRichParameters {
             if let parameter = JSON(subjectRichParameters).dictionary {
                 if let user = JSON(parameter).dictionary {
@@ -146,6 +145,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                         } else {
                             cell.avatar.isHidden = false
                             cell.avatarLeadingMargin.constant = 50
+                            cell.user = userId
                             NCOperationQueue.shared.downloadAvatar(user: userId, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell)
                         }
                     }
@@ -332,7 +332,8 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     
     var delegate: NCNotificationCellDelegate?
     var notification: NCCommunicationNotifications?
-
+    var user: String = ""
+    
     var filePreviewImageView : UIImageView? {
         get {
             return nil
@@ -346,6 +347,11 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     var fileObjectId: String? {
         get {
             return nil
+        }
+    }
+    var fileUser: String? {
+        get {
+            return user
         }
     }
     
