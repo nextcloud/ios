@@ -177,7 +177,14 @@
 "_certificate_installed_"   = "Certificate installed";
 "_want_delete_account_"     = "Do you want to delete the account %@";
 "_prevent_http_redirection_"= "The redirection in http is not permitted";
-
+"_single_file_conflict_title_" = "File conflict";
+"_multi_file_conflict_title_" = " %@ File conflicts";
+"_replace_action_title_" = "Replace";
+"_keep_both_action_title_" = "Keep both";
+"_cancel_keep_existing_action_title_" = "Cancel and keep existing";
+"_replace_all_action_title_" = "Replace all";
+"_keep_both_for_all_action_title_" = "Keep both for all";
+"_more_action_title_" = "More Details";
 /* Background of the file listing view */
 "_use_as_background_"       = "Use it as a background";
 

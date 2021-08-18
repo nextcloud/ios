@@ -50,7 +50,7 @@ extension NCCreateFormUploadConflictDelegate {
     @IBOutlet weak var buttonCancel: UIButton!
     @IBOutlet weak var buttonContinue: UIButton!
     
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     @objc var metadatasNOConflict: [tableMetadata]
     @objc var metadatasUploadInConflict: [tableMetadata]
@@ -63,13 +63,15 @@ extension NCCreateFormUploadConflictDelegate {
     var metadatasConflictNewFiles: [String] = []
     var metadatasConflictAlreadyExistingFiles: [String] = []
     var fileNamesPath: [String: String] = [:]
-    
+    var blurVisualEffectView: UIView
+
     // MARK: - View Life Cycle
 
     @objc required init?(coder aDecoder: NSCoder) {
         self.metadatasNOConflict = []
         self.metadatasMOV = []
         self.metadatasUploadInConflict = []
+        self.blurVisualEffectView = UIView()
         super.init(coder: aDecoder)
     }
     
@@ -106,6 +108,21 @@ extension NCCreateFormUploadConflictDelegate {
         buttonContinue.layer.masksToBounds = true
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
+        
+        if(metadatasUploadInConflict.count == 1){
+                    let blurEffect = UIBlurEffect(style: .light)
+                    let blurVisualEffectView = UIVisualEffectView(effect: blurEffect)
+                    blurVisualEffectView.frame = self.view.bounds
+                    self.view.addSubview(blurVisualEffectView)
+                    self.showSingleFileConflictAlert()
+        }else{
+                    //TODO share dialog for multiple files
+            let blurEffect = UIBlurEffect(style: .light)
+            blurVisualEffectView = UIVisualEffectView(effect: blurEffect)
+            blurVisualEffectView.frame = self.view.bounds
+            self.view.addSubview(blurVisualEffectView)
+            self.multiFilesConflictDialog(fileCount: metadatasUploadInConflict.count)
+        }
         
         changeTheming()
     }
