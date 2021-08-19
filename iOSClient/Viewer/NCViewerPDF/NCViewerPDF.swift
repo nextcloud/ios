@@ -128,6 +128,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(direction(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuPDFDisplayDirection), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
         
         //
@@ -218,6 +219,15 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         }
     }
 
+    @objc func direction(_ notification: NSNotification) {
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let direction = userInfo["direction"] as? PDFDisplayDirection {
+                pdfView.displayDirection = direction
+                CCUtility.setPDFDisplayDirection(direction)
+            }
+        }
+    }
+    
     @objc func handlePageChange() {
         
         guard let curPage = pdfView.currentPage?.pageRef?.pageNumber else { pageView.alpha = 0; return }

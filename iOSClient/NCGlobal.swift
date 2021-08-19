@@ -315,6 +315,7 @@ class NCGlobal: NSObject {
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId
 
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
+    let notificationCenterMenuPDFDisplayDirection               = "menuPDFDisplayDirection"         // userInfo: direction
     let notificationCenterMenuDetailClose                       = "menuDetailClose"
     
     let notificationCenterChangedLocation                       = "changedLocation"
