@@ -325,7 +325,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                 cell.centerTitle.constant = 0
             }
             let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(self.appDelegate.user, urlBase: self.appDelegate.urlBase)) + "-" + sharee.label + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell)
+            NCOperationQueue.shared.downloadAvatar(user: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell, view: nil)
             cell.imageShareeType.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
         }
         
@@ -405,7 +405,7 @@ extension NCShare: UITableViewDataSource {
                 cell.status.text = status.statusMessage
                 
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + tableShare.shareWith + ".png"
-                NCOperationQueue.shared.downloadAvatar(user: tableShare.shareWith, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell)
+                NCOperationQueue.shared.downloadAvatar(user: tableShare.shareWith, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
                 
                 if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
                     cell.switchCanEdit.setOn(true, animated: false)

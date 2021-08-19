@@ -161,7 +161,7 @@ import NCCommunication
     
     // Download Avatar
     
-    func downloadAvatar(user: String, fileNameLocalPath: String, placeholder: UIImage?, cell: UIView) {
+    func downloadAvatar(user: String, fileNameLocalPath: String, placeholder: UIImage?, cell: UIView, view: UIView?) {
 
         let cell: NCCellProtocol = cell as! NCCellProtocol
 
@@ -178,7 +178,7 @@ import NCCommunication
             cell.fileAvatarImageView?.image = NCUtility.shared.createAvatar(image: image, size: 30)
         }
     
-        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileNameLocalPath: fileNameLocalPath, cell: cell))
+        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view))
     }
     
     func cancelDownloadAvatar(user: String) {
@@ -447,11 +447,13 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
     var user: String
     var fileNameLocalPath: String
     var cell: NCCellProtocol!
-        
-    init(user: String, fileNameLocalPath: String, cell: NCCellProtocol) {
+    var view: UIView?
+
+    init(user: String, fileNameLocalPath: String, cell: NCCellProtocol, view: UIView?) {
         self.user = user
         self.fileNameLocalPath = fileNameLocalPath
         self.cell = cell
+        self.view = view
     }
     
     override func start() {
@@ -477,8 +479,14 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                             appDelegate.avatars[self.user] = image
                             #endif
                         }
+                        
                     } else {
-                        print("Avatar: oh oh oh ")
+                        
+                        if self.view is UICollectionView {
+                            (self.view as? UICollectionView)?.reloadData()
+                        } else if self.view is UITableView{
+                            (self.view as? UITableView)?.reloadData()
+                        }
                     }
                 }
                 

@@ -256,7 +256,7 @@ extension NCActivity: UITableViewDataSource {
                 cell.fileUser = activity.user
                 
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + activity.user + ".png"
-                NCOperationQueue.shared.downloadAvatar(user: activity.user, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell)
+                NCOperationQueue.shared.downloadAvatar(user: activity.user, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
             }
             
             // subject
