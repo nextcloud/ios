@@ -125,7 +125,7 @@ import NCCommunication
     
     // Download Thumbnail
     
-    @objc func downloadThumbnail(metadata: tableMetadata, placeholder: Bool, cell: UIView) {
+    @objc func downloadThumbnail(metadata: tableMetadata, placeholder: Bool, cell: UIView, view: UIView?) {
         
         let cell: NCCellProtocol = cell as! NCCellProtocol
         
@@ -143,7 +143,7 @@ import NCCommunication
                     return
                 }
             }
-            downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, cell: cell))
+            downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, cell: cell, view: view))
         }
     }
     
@@ -394,13 +394,15 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
    
     var metadata: tableMetadata
     var cell: NCCellProtocol!
+    var view: UIView?
     var fileNamePath: String = ""
     var fileNamePreviewLocalPath: String = ""
     var fileNameIconLocalPath: String = ""
     
-    init(metadata: tableMetadata, cell: NCCellProtocol) {
+    init(metadata: tableMetadata, cell: NCCellProtocol, view: UIView?) {
         self.metadata = tableMetadata.init(value: metadata)
         self.cell = cell
+        self.view = view
         self.fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
         self.fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
         self.fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
@@ -422,8 +424,14 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                             animations: { filePreviewImageView.image = imageIcon! },
                             completion: nil)
                     }
+                    
                 } else {
-                    print("Thumbnail: oh oh oh ")
+                    
+                    if self.view is UICollectionView {
+                        (self.view as? UICollectionView)?.reloadData()
+                    } else if self.view is UITableView{
+                        (self.view as? UITableView)?.reloadData()
+                    }                    
                 }
                 
                 self.finish()
