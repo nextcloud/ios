@@ -169,9 +169,6 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         }
     }
     
-    override func viewDidDisappear(_ animated: Bool) {        
-    }
-    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
