@@ -29,6 +29,7 @@
 #import <MessageUI/MessageUI.h>
 #import <UICKeyChainStore/UICKeyChainStore.h>
 #import <Photos/Photos.h>
+#import <PDFKit/PDFKit.h>
 
 @class tableMetadata;
 
@@ -180,6 +181,9 @@
 
 + (NSInteger)getCleanUpDay;
 + (void)setCleanUpDay:(NSInteger)days;
+
++ (PDFDisplayDirection)getPDFDisplayDirection;
++ (void)setPDFDisplayDirection:(PDFDisplayDirection)direction;
 
 // ===== Varius =====
 

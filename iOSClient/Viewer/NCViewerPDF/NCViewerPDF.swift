@@ -56,7 +56,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfView.backgroundColor = NCBrandColor.shared.systemBackground
         pdfView.displayMode = .singlePageContinuous
         pdfView.autoScales = true
-        pdfView.displayDirection = .horizontal
+        pdfView.displayDirection = CCUtility.getPDFDisplayDirection()
         pdfView.autoresizingMask = [.flexibleWidth, .flexibleHeight, .flexibleTopMargin, .flexibleBottomMargin]
         pdfView.usePageViewController(true, withViewOptions: nil)
         

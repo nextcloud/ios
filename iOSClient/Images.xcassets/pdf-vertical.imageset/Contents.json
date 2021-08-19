@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "swap-vertical-variant.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
