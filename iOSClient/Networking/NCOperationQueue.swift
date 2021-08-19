@@ -415,25 +415,23 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
         } else {
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon) { (account, imagePreview, imageIcon,  errorCode, errorDescription) in
                 
-                if errorCode == 0 && imageIcon != nil && self.metadata.ocId == self.cell.fileObjectId {
-                    
-                    if let filePreviewImageView = self.cell?.filePreviewImageView  {
-                        UIView.transition(with: filePreviewImageView,
-                            duration: 0.75,
-                            options: .transitionCrossDissolve,
-                            animations: { filePreviewImageView.image = imageIcon! },
-                            completion: nil)
+                if errorCode == 0 && imageIcon != nil {
+                    if self.metadata.ocId == self.cell.fileObjectId {
+                        if let filePreviewImageView = self.cell?.filePreviewImageView  {
+                            UIView.transition(with: filePreviewImageView,
+                                duration: 0.75,
+                                options: .transitionCrossDissolve,
+                                animations: { filePreviewImageView.image = imageIcon! },
+                                completion: nil)
+                        }
+                    } else {
+                        if self.view is UICollectionView {
+                            (self.view as? UICollectionView)?.reloadData()
+                        } else if self.view is UITableView{
+                            (self.view as? UITableView)?.reloadData()
+                        }
                     }
-                    
-                } else {
-                    
-                    if self.view is UICollectionView {
-                        (self.view as? UICollectionView)?.reloadData()
-                    } else if self.view is UITableView{
-                        (self.view as? UITableView)?.reloadData()
-                    }                    
                 }
-                
                 self.finish()
             }
         }
@@ -463,29 +461,27 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         } else {
             NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
                 
-                if errorCode == 0 && data != nil  && self.user == self.cell.fileUser {
-                   
-                    if let avatarImageView = self.cell?.fileAvatarImageView  {
-                        
-                        if var image = UIImage.init(data: data!) {
-                            image = NCUtility.shared.createAvatar(image: image, size: 30)
-                            UIView.transition(with: avatarImageView,
-                                              duration: 0.75,
-                                              options: .transitionCrossDissolve,
-                                              animations: { avatarImageView.image = image },
-                                              completion: nil)
-                            #if !EXTENSION
-                            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                            appDelegate.avatars[self.user] = image
-                            #endif
-                        }
-                        
-                    } else {
-                        
-                        if self.view is UICollectionView {
-                            (self.view as? UICollectionView)?.reloadData()
-                        } else if self.view is UITableView{
-                            (self.view as? UITableView)?.reloadData()
+                if errorCode == 0 && data != nil {
+                    if var image = UIImage.init(data: data!) {
+                        image = NCUtility.shared.createAvatar(image: image, size: 30)
+                        #if !EXTENSION
+                        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                        appDelegate.avatars[self.user] = image
+                        #endif
+                        if self.user == self.cell.fileUser {
+                            if let avatarImageView = self.cell?.fileAvatarImageView  {
+                                UIView.transition(with: avatarImageView,
+                                                  duration: 0.75,
+                                                  options: .transitionCrossDissolve,
+                                                  animations: { avatarImageView.image = image },
+                                                  completion: nil)
+                            }
+                        } else {
+                            if self.view is UICollectionView {
+                                (self.view as? UICollectionView)?.reloadData()
+                            } else if self.view is UITableView{
+                                (self.view as? UITableView)?.reloadData()
+                            }
                         }
                     }
                 }
