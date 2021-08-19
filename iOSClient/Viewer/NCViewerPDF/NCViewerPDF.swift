@@ -224,6 +224,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             if let direction = userInfo["direction"] as? PDFDisplayDirection {
                 pdfView.displayDirection = direction
                 CCUtility.setPDFDisplayDirection(direction)
+                handlePageChange()
             }
         }
     }
