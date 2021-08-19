@@ -423,7 +423,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                             completion: nil)
                     }
                 } else {
-                    print("oh oh oh ")
+                    print("Thumbnail: oh oh oh ")
                 }
                 
                 self.finish()
@@ -469,6 +469,8 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                             appDelegate.avatars[self.user] = image
                             #endif
                         }
+                    } else {
+                        print("Avatar: oh oh oh ")
                     }
                 }
                 
