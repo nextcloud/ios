@@ -318,7 +318,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             let status = NCUtility.shared.getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
             cell.imageStatus.image = status.onlineStatus
             cell.status.text = status.statusMessage
-            cell.user = sharee.shareWith
+            cell.fileUser = sharee.shareWith
             if cell.status.text?.count ?? 0 > 0 {
                 cell.centerTitle.constant = -5
             } else {
@@ -533,7 +533,7 @@ class NCShareUserDropDownCell: DropDownCell, NCCellProtocol {
     @IBOutlet weak var imageShareeType: UIImageView!
     @IBOutlet weak var centerTitle: NSLayoutConstraint!
     
-    var user: String = ""
+    private var user: String = ""
     
     var fileAvatarImageView: UIImageView? {
         get {
@@ -553,6 +553,9 @@ class NCShareUserDropDownCell: DropDownCell, NCCellProtocol {
     var fileUser: String? {
         get {
             return user
+        }
+        set {
+            user = newValue ?? ""
         }
     }
 }

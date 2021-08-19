@@ -119,12 +119,13 @@ class activityTableViewCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var subjectTrailingConstraint: NSLayoutConstraint!
     @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
 
+    private var user: String = ""
+
     var idActivity: Int = 0
     var account: String = ""
     var activityPreviews: [tableActivityPreview] = []
     var didSelectItemEnable: Bool = true
     var viewController: UIViewController? = nil
-    var user: String = ""
     
     var fileAvatarImageView: UIImageView? {
         get {
@@ -144,6 +145,9 @@ class activityTableViewCell: UITableViewCell, NCCellProtocol {
     var fileUser: String? {
         get {
             return user
+        }
+        set {
+            user = newValue ?? ""
         }
     }
     
@@ -249,7 +253,7 @@ extension NCActivity: UITableViewDataSource {
                 
                 cell.subjectTrailingConstraint.constant = 50
                 cell.avatar.isHidden = false
-                cell.user = activity.user
+                cell.fileUser = activity.user
                 
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + activity.user + ".png"
                 NCOperationQueue.shared.downloadAvatar(user: activity.user, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell)

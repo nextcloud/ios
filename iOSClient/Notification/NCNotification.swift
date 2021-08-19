@@ -145,7 +145,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                         } else {
                             cell.avatar.isHidden = false
                             cell.avatarLeadingMargin.constant = 50
-                            cell.user = userId
+                            cell.fileUser = userId
                             NCOperationQueue.shared.downloadAvatar(user: userId, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell)
                         }
                     }
@@ -330,9 +330,10 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var primaryWidth: NSLayoutConstraint!
     @IBOutlet weak var secondaryWidth: NSLayoutConstraint!
     
+    private var user = ""
+
     var delegate: NCNotificationCellDelegate?
     var notification: NCCommunicationNotifications?
-    var user: String = ""
     
     var filePreviewImageView : UIImageView? {
         get {
@@ -352,6 +353,9 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     var fileUser: String? {
         get {
             return user
+        }
+        set {
+            user = newValue ?? ""
         }
     }
     

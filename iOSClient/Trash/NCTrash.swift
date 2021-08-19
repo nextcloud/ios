@@ -337,7 +337,7 @@ extension NCTrash: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
             cell.delegate = self
             
-            cell.objectId = tableTrash.fileId
+            cell.fileObjectId = tableTrash.fileId
             cell.labelTitle.text = tableTrash.trashbinFileName
             cell.labelTitle.textColor = NCBrandColor.shared.label
             

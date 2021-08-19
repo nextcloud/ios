@@ -35,29 +35,36 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var progressView: UIProgressView!
 
+    private var objectId = ""
+    private var user = ""
+
     var delegate: NCGridCellDelegate?
-    var objectId = ""
     var namedButtonMore = ""
-    var user = ""
 
     var fileAvatarImageView: UIImageView? {
-        get{
+        get {
             return nil
         }
     }
     var fileObjectId: String? {
-        get{
+        get {
             return objectId
+        }
+        set {
+            objectId = newValue ?? ""
         }
     }
     var filePreviewImageView: UIImageView? {
-        get{
+        get {
             return imageItem
         }
     }
     var fileUser: String? {
-        get{
+        get {
             return user
+        }
+        set {
+            user = newValue ?? ""
         }
     }
     

@@ -30,28 +30,35 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     
-    var date: Date?
-    var objectId: String = ""
-    var user: String = ""
+    private var objectId: String = ""
+    private var user: String = ""
     
+    var date: Date?
+
     var filePreviewImageView: UIImageView? {
         get {
             return imageItem
         }
     }
     var fileAvatarImageView: UIImageView? {
-        get{
+        get {
             return nil
         }
     }
     var fileObjectId: String? {
-        get{
+        get {
             return objectId
+        }
+        set {
+            objectId = newValue ?? ""
         }
     }
     var fileUser: String? {
-        get{
+        get {
             return user
+        }
+        set {
+            user = newValue ?? ""
         }
     }
     

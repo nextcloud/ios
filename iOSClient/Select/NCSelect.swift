@@ -444,8 +444,8 @@ extension NCSelect: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
             cell.delegate = self
             
-            cell.objectId = metadata.ocId
-            cell.user = metadata.ownerId
+            cell.fileObjectId = metadata.ocId
+            cell.fileUser = metadata.ownerId
             cell.labelTitle.text = metadata.fileNameView
             cell.labelTitle.textColor = NCBrandColor.shared.label
             
@@ -547,8 +547,8 @@ extension NCSelect: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
             cell.delegate = self
             
-            cell.objectId = metadata.ocId
-            cell.user = metadata.ownerId
+            cell.fileObjectId = metadata.ocId
+            cell.fileUser = metadata.ownerId
             cell.labelTitle.text = metadata.fileNameView
             cell.labelTitle.textColor = NCBrandColor.shared.label
             

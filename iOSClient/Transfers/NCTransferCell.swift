@@ -36,9 +36,10 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     
+    private var objectId = ""
+    private var user = ""
+    
     var delegate: NCTransferCellDelegate?
-    var objectId = ""
-    var user = ""
     var indexPath = IndexPath()
     var namedButtonMore = ""
     
@@ -51,6 +52,9 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
         get {
             return objectId
         }
+        set {
+            objectId = newValue ?? ""
+        }
     }
     var filePreviewImageView : UIImageView? {
         get {
@@ -58,8 +62,11 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
         }
     }
     var fileUser: String? {
-        get{
+        get {
             return user
+        }
+        set {
+            user = newValue ?? ""
         }
     }
     

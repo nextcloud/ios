@@ -174,8 +174,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as! NCTransferCell
         cell.delegate = self
             
-        cell.objectId = metadata.ocId
-        cell.user = metadata.ownerId
+        cell.fileObjectId = metadata.ocId
+        cell.fileUser = metadata.ownerId
         cell.indexPath = indexPath
         
         cell.imageItem.image = nil
