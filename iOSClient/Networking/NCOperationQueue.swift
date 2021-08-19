@@ -166,8 +166,7 @@ import NCCommunication
         let cell: NCCellProtocol = cell as! NCCellProtocol
 
         #if !EXTENSION
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        if let image = appDelegate.avatars[user] {
+        if let image = (UIApplication.shared.delegate as! AppDelegate).avatars[user] {
             cell.fileAvatarImageView?.image = image
             return
         }
@@ -465,8 +464,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                     if var image = UIImage.init(data: data!) {
                         image = NCUtility.shared.createAvatar(image: image, size: 30)
                         #if !EXTENSION
-                        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                        appDelegate.avatars[self.user] = image
+                        (UIApplication.shared.delegate as! AppDelegate).avatars[self.user] = image
                         #endif
                         if self.user == self.cell.fileUser {
                             if let avatarImageView = self.cell?.fileAvatarImageView  {
