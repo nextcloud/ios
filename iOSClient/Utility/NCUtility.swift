@@ -608,6 +608,10 @@ class NCUtility: NSObject {
         }
     }
     
+    /*
+    Facebook's comparison algorithm:
+    */
+    
     func compare(tolerance: Float, expected: Data, observed: Data) throws -> Bool {
         
         enum customError: Error {
