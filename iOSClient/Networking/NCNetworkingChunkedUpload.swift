@@ -208,6 +208,9 @@ extension NCNetworking {
             
             NCCommunication.shared.deleteFileOrFolder(chunkFolderPath) { (_, _, _) in }
             
+            // Cancel
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "account":metadata.account])
+            
         } else {
             
             // NO report for the connection lost
