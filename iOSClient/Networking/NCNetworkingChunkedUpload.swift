@@ -86,6 +86,8 @@ extension NCNetworking {
                         }, taskHandler: { (task) in
                             
                             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
+                            
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId":metadata.ocId])
                            
                         }, progressHandler: { (progress) in
                             
@@ -208,7 +210,6 @@ extension NCNetworking {
             
             NCCommunication.shared.deleteFileOrFolder(chunkFolderPath) { (_, _, _) in }
             
-            // Cancel
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "account":metadata.account])
             
         } else {
@@ -224,82 +225,6 @@ extension NCNetworking {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: NCGlobal.shared.metadataStatusNormal, status: NCGlobal.shared.metadataStatusUploadError)
         }
         
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":metadata.serverUrl])
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":metadata.ocId, "errorCode":errorCode, "errorDescription":""])
     }
-    
-    /*
-    @objc func chunkedFile(inputDirectory: String, outputDirectory: String, fileName: String, chunkSizeMB:Int, bufferSize: Int = 1000000) -> [String] {
-        
-        let fileManager: FileManager = .default
-        var isDirectory: ObjCBool = false
-        let chunkSize = chunkSizeMB * 1000000
-        var outputFilesName: [String] = []
-        var reader: FileHandle?
-        var writer: FileHandle?
-        var chunk: Int = 0
-        var counter: Int = 0
-        
-        if !fileManager.fileExists(atPath:outputDirectory, isDirectory:&isDirectory) {
-            do {
-                try fileManager.createDirectory(atPath: outputDirectory, withIntermediateDirectories: true, attributes: nil)
-            } catch {
-                return []
-            }
-        }
-        
-        do {
-            reader = try .init(forReadingFrom: URL(fileURLWithPath: inputDirectory + "/" + fileName))
-        } catch {
-            return []
-        }
-        
-        repeat {
-            
-            let bufferCounter = autoreleasepool { () -> Int in
-                
-                if chunk >= chunkSize {
-                    writer?.closeFile()
-                    writer = nil
-                    chunk = 0
-                    counter += 1
-                    print("Counter: \(counter)")
-                }
-                
-                let chunkRemaining: Int = chunkSize - chunk
-                let buffer = reader?.readData(ofLength: min(bufferSize, chunkRemaining))
-                
-                if writer == nil {
-                    
-                    let fileNameChunk = fileName + String(format: "%010d", counter)
-                    let outputFileName = outputDirectory + "/" + fileNameChunk
-                    fileManager.createFile(atPath: outputFileName, contents: nil, attributes: nil)
-                    
-                    do {
-                        writer = try .init(forWritingTo: URL(fileURLWithPath: outputFileName))
-                    } catch { }
-                    
-                    outputFilesName.append(fileNameChunk)
-                }
-                    
-                if let buffer = buffer {
-                    writer?.write(buffer)
-                    chunk = chunk + buffer.count
-                    
-                    return buffer.count
-                }
-                
-                return 0
-            }
-            
-            if bufferCounter == 0 {
-                break
-            }
-            
-        } while true
-        
-        writer?.closeFile()
-        reader?.closeFile()
-        return outputFilesName
-    }
-    */
 }
