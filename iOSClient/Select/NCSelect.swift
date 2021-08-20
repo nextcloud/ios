@@ -150,6 +150,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(createFolder(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateFolder), object: nil)
 
         changeTheming()
     }
@@ -190,14 +191,27 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         }
     }
     
+    func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
+        // Dismission
+    }
+    
+    // MARK: - NotificationCenter
+
     @objc func changeTheming() {
         
         collectionView.reloadData()
         selectCommandViewSelect?.separatorView.backgroundColor = NCBrandColor.shared.separator
     }
     
-    func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
-        // Dismission
+    @objc func createFolder(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                if metadata.serverUrl == serverUrl {
+                    pushMetadata(metadata)
+                }
+            }
+        }
     }
     
     // MARK: - Empty
@@ -298,6 +312,30 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         let sortMenu = NCSortMenu()
         sortMenu.toggleMenu(viewController: self, key: keyLayout, sortButton: sender as? UIButton, serverUrl: serverUrl)
     }
+    
+    // MARK: -  Push metadata
+    
+    func pushMetadata(_ metadata: tableMetadata) {
+        
+        guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else { return }
+        guard let viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
+
+        self.serverUrlPush = serverUrlPush
+        
+        viewController.delegate = delegate
+        viewController.typeOfCommandView = typeOfCommandView
+        viewController.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
+        viewController.includeImages = includeImages
+        viewController.enableSelectFile = enableSelectFile
+        viewController.type = type
+        viewController.overwrite = overwrite
+        viewController.items = items
+
+        viewController.titleCurrentFolder = metadata.fileNameView
+        viewController.serverUrl = serverUrlPush
+               
+        self.navigationController?.pushViewController(viewController, animated: true)
+    }
 }
 
 // MARK: - Collection View
@@ -320,24 +358,7 @@ extension NCSelect: UICollectionViewDelegate {
         
         if metadata.directory {
             
-            guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else { return }
-            guard let viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
-
-            self.serverUrlPush = serverUrlPush
-            
-            viewController.delegate = delegate
-            viewController.typeOfCommandView = typeOfCommandView
-            viewController.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
-            viewController.includeImages = includeImages
-            viewController.enableSelectFile = enableSelectFile
-            viewController.type = type
-            viewController.overwrite = overwrite
-            viewController.items = items
-
-            viewController.titleCurrentFolder = metadata.fileNameView
-            viewController.serverUrl = serverUrlPush
-                   
-            self.navigationController?.pushViewController(viewController, animated: true)
+            pushMetadata(metadata)
             
         } else {
             
@@ -640,7 +661,7 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
     }
 }
 
-// MARK: - NC API & Algorithm
+// MARK: -
 
 extension NCSelect {
 
@@ -688,9 +709,7 @@ extension NCSelect {
         
         NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: activeAccount.account, urlBase: activeAccount.urlBase) { (errorCode, errorDescription) in
             
-            if errorCode == 0 {
-                self.loadDatasource(withLoadFolder: true)
-            }  else {
+            if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
         }
@@ -711,6 +730,7 @@ extension NCSelect {
     }
 }
 
+// MARK: -
 
 class NCSelectCommandView: UIView {
 
