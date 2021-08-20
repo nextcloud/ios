@@ -728,8 +728,13 @@ extension NCShareExtension {
         NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: activeAccount.account, urlBase: activeAccount.urlBase) { (errorCode, errorDescription) in
             
             if errorCode == 0 {
+                
+                self.serverUrl = self.serverUrl + "/" + fileName
                 self.reloadDatasource(withLoadFolder: true)
+                self.setNavigationBar(navigationTitle: fileName)
+                
             }  else {
+                
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
                 self.present(alertController, animated: true)
