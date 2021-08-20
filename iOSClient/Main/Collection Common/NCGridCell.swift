@@ -76,7 +76,8 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         
         imageVisualEffect.layer.cornerRadius = 6
         imageVisualEffect.clipsToBounds = true
-        
+        imageVisualEffect.alpha = 0.5
+
         progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.transform = CGAffineTransform(scaleX: 1.0, y: 0.5)
         progressView.trackTintColor = .clear
@@ -134,11 +135,9 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             if traitCollection.userInterfaceStyle == .dark {
                 imageVisualEffect.effect = UIBlurEffect(style: .dark)
                 imageVisualEffect.backgroundColor = .black
-                imageVisualEffect.alpha = 0.4
             } else {
                 imageVisualEffect.effect = UIBlurEffect(style: .extraLight)
                 imageVisualEffect.backgroundColor = .lightGray
-                imageVisualEffect.alpha = 0.4
             }
             imageSelect.image = NCBrandColor.cacheImages.checkedYes
             imageVisualEffect.isHidden = false
