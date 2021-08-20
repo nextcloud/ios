@@ -1216,7 +1216,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
     }
-
 }
 
 // MARK: - Collection View
