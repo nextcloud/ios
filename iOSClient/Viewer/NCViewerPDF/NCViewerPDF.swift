@@ -219,6 +219,16 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         }
     }
 
+    @objc func searchText() {
+        
+        let viewerPDFSearch = UIStoryboard.init(name: "NCViewerPDF", bundle: nil).instantiateViewController(withIdentifier: "NCViewerPDFSearch") as! NCViewerPDFSearch
+        viewerPDFSearch.delegate = self
+        viewerPDFSearch.pdfDocument = pdfDocument
+        
+        let navigaionController = UINavigationController.init(rootViewController: viewerPDFSearch)
+        self.present(navigaionController, animated: true)
+    }
+    
     @objc func direction(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let direction = userInfo["direction"] as? PDFDisplayDirection {
@@ -227,20 +237,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
                 handlePageChange()
             }
         }
-    }
-    
-    @objc func handlePageChange() {
-        
-        guard let curPage = pdfView.currentPage?.pageRef?.pageNumber else { pageView.alpha = 0; return }
-        guard let totalPages = pdfView.document?.pageCount else { return }
-        
-        pageView.alpha = 1
-        pageViewLabel.text = String(curPage) + " " + NSLocalizedString("_of_", comment: "") + " " + String(totalPages)
-        pageViewWidthAnchor?.constant = pageViewLabel.intrinsicContentSize.width + 10
-        
-        UIView.animate(withDuration: 1.0, delay: 3.0, animations: {
-            self.pageView.alpha = 0
-        })
     }
     
     //MARK: - Action
@@ -273,16 +269,20 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         handlePageChange()
     }
     
-    //MARK: - Search
+    //MARK: -
     
-    @objc func searchText() {
+    @objc func handlePageChange() {
         
-        let viewerPDFSearch = UIStoryboard.init(name: "NCViewerPDF", bundle: nil).instantiateViewController(withIdentifier: "NCViewerPDFSearch") as! NCViewerPDFSearch
-        viewerPDFSearch.delegate = self
-        viewerPDFSearch.pdfDocument = pdfDocument
+        guard let curPage = pdfView.currentPage?.pageRef?.pageNumber else { pageView.alpha = 0; return }
+        guard let totalPages = pdfView.document?.pageCount else { return }
         
-        let navigaionController = UINavigationController.init(rootViewController: viewerPDFSearch)
-        self.present(navigaionController, animated: true)
+        pageView.alpha = 1
+        pageViewLabel.text = String(curPage) + " " + NSLocalizedString("_of_", comment: "") + " " + String(totalPages)
+        pageViewWidthAnchor?.constant = pageViewLabel.intrinsicContentSize.width + 10
+        
+        UIView.animate(withDuration: 1.0, delay: 3.0, animations: {
+            self.pageView.alpha = 0
+        })
     }
     
     func searchPdfSelection(_ pdfSelection: PDFSelection) {
