@@ -40,7 +40,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var selectOcId: [String] = []
     internal var metadatasSource: [tableMetadata] = []
     internal var metadataFolder: tableMetadata?
-    internal var metadataTouch: tableMetadata?
     internal var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
     internal var header: UIView?
@@ -63,7 +62,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     internal var isReloadDataSourceNetworkInProgress: Bool = false
     
-    var selectedIndexPath: IndexPath!
     private var pushed: Bool = false
     
     // DECLARE
@@ -916,12 +914,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         if gestureRecognizer.state != .began { return }
         
-        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) {
-            metadataTouch = metadata
-        } else {
-            metadataTouch = nil
-        }
-        
         var listMenuItems: [UIMenuItem] = []
         let touchPoint = gestureRecognizer.location(in: collectionView)
         
@@ -1086,6 +1078,145 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
     }
+    
+    // MARK: -  Push metadata
+    
+    func pushMetadata(_ metadata: tableMetadata) {
+        
+        guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else { return }
+        appDelegate.activeMetadata = metadata
+        
+        // FILES
+        if layoutKey == NCGlobal.shared.layoutViewFiles && !pushed {
+            
+            if let viewController = appDelegate.listFilesVC[serverUrlPush] {
+                
+                if viewController.isViewLoaded {
+                    pushViewController(viewController: viewController)
+                }
+                
+            } else {
+                
+                if let viewController:NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
+                    
+                    viewController.isRoot = false
+                    viewController.serverUrl = serverUrlPush
+                    viewController.titleCurrentFolder = metadata.fileNameView
+                    
+                    appDelegate.listFilesVC[serverUrlPush] = viewController
+                                   
+                    pushViewController(viewController: viewController)
+                }
+            }
+        }
+        
+        // FAVORITE
+        if layoutKey == NCGlobal.shared.layoutViewFavorite && !pushed {
+        
+            if let viewController = appDelegate.listFavoriteVC[serverUrlPush] {
+                
+                if viewController.isViewLoaded {
+                    pushViewController(viewController: viewController)
+                }
+
+            } else {
+                                    
+                if let viewController:NCFavorite = UIStoryboard(name: "NCFavorite", bundle: nil).instantiateInitialViewController() as? NCFavorite {
+                    
+                    viewController.serverUrl = serverUrlPush
+                    viewController.titleCurrentFolder = metadata.fileNameView
+                
+                    appDelegate.listFavoriteVC[serverUrlPush] = viewController
+                    
+                    pushViewController(viewController: viewController)
+                }
+            }
+        }
+        
+        // OFFLINE
+        if layoutKey == NCGlobal.shared.layoutViewOffline && !pushed {
+            
+            if let viewController = appDelegate.listOfflineVC[serverUrlPush] {
+                
+                if viewController.isViewLoaded {
+                    pushViewController(viewController: viewController)
+                }
+                
+            } else {
+                
+                if let viewController:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as? NCOffline {
+                    
+                    viewController.serverUrl = serverUrlPush
+                    viewController.titleCurrentFolder = metadata.fileNameView
+                    
+                    appDelegate.listOfflineVC[serverUrlPush] = viewController
+                    
+                    pushViewController(viewController: viewController)
+                }
+            }
+        }
+        
+        // RECENT ( for push use Files ... he he he )
+        if layoutKey == NCGlobal.shared.layoutViewRecent && !pushed {
+            
+            if let viewController = appDelegate.listFilesVC[serverUrlPush] {
+                
+                if viewController.isViewLoaded {
+                    pushViewController(viewController: viewController)
+                }
+                
+            } else {
+                
+                if let viewController:NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
+                    
+                    viewController.isRoot = false
+                    viewController.serverUrl = serverUrlPush
+                    viewController.titleCurrentFolder = metadata.fileNameView
+                    
+                    appDelegate.listFilesVC[serverUrlPush] = viewController
+                    
+                    pushViewController(viewController: viewController)
+                }
+            }
+        }
+        
+        //VIEW IN FOLDER
+        if layoutKey == NCGlobal.shared.layoutViewViewInFolder && !pushed {
+            
+            if let viewController:NCFileViewInFolder = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as? NCFileViewInFolder {
+            
+                viewController.serverUrl = serverUrlPush
+                viewController.titleCurrentFolder = metadata.fileNameView
+                            
+                pushViewController(viewController: viewController)
+            }
+        }
+        
+        // SHARES ( for push use Files ... he he he )
+        if layoutKey == NCGlobal.shared.layoutViewShares && !pushed {
+            
+            if let viewController = appDelegate.listFilesVC[serverUrlPush] {
+                
+                if viewController.isViewLoaded {
+                    pushViewController(viewController: viewController)
+                }
+                
+            } else {
+                
+                if let viewController:NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
+                
+                    viewController.isRoot = false
+                    viewController.serverUrl = serverUrlPush
+                    viewController.titleCurrentFolder = metadata.fileNameView
+                    
+                    appDelegate.listFilesVC[serverUrlPush] = viewController
+                    
+                    pushViewController(viewController: viewController)
+                }
+            }
+        }
+    }
+
 }
 
 // MARK: - Collection View
@@ -1095,8 +1226,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
-        metadataTouch = metadata
-        selectedIndexPath = indexPath
         appDelegate.activeMetadata = metadata
         
         if isEditMode {
@@ -1117,141 +1246,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         
         if metadata.directory {
             
-            guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadataTouch!.serverUrl, addFileName: metadataTouch!.fileName) else { return }
-            
-            // FILES
-            if layoutKey == NCGlobal.shared.layoutViewFiles && !pushed {
-                
-                if let viewController = appDelegate.listFilesVC[serverUrlPush] {
-                    
-                    if viewController.isViewLoaded {
-                        pushViewController(viewController: viewController)
-                    }
-                    
-                } else {
-                    
-                    if let viewController:NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
-                        
-                        viewController.isRoot = false
-                        viewController.serverUrl = serverUrlPush
-                        viewController.titleCurrentFolder = metadataTouch!.fileNameView
-                        
-                        appDelegate.listFilesVC[serverUrlPush] = viewController
-                                       
-                        pushViewController(viewController: viewController)
-                    }
-                }
-            }
-            
-            // FAVORITE
-            if layoutKey == NCGlobal.shared.layoutViewFavorite && !pushed {
-            
-                if let viewController = appDelegate.listFavoriteVC[serverUrlPush] {
-                    
-                    if viewController.isViewLoaded {
-                        pushViewController(viewController: viewController)
-                    }
-
-                } else {
-                                        
-                    if let viewController:NCFavorite = UIStoryboard(name: "NCFavorite", bundle: nil).instantiateInitialViewController() as? NCFavorite {
-                        
-                        viewController.serverUrl = serverUrlPush
-                        viewController.titleCurrentFolder = metadataTouch!.fileNameView
-                    
-                        appDelegate.listFavoriteVC[serverUrlPush] = viewController
-                        
-                        pushViewController(viewController: viewController)
-                    }
-                }
-            }
-            
-            // OFFLINE
-            if layoutKey == NCGlobal.shared.layoutViewOffline && !pushed {
-                
-                if let viewController = appDelegate.listOfflineVC[serverUrlPush] {
-                    
-                    if viewController.isViewLoaded {
-                        pushViewController(viewController: viewController)
-                    }
-                    
-                } else {
-                    
-                    if let viewController:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as? NCOffline {
-                        
-                        viewController.serverUrl = serverUrlPush
-                        viewController.titleCurrentFolder = metadataTouch!.fileNameView
-                        
-                        appDelegate.listOfflineVC[serverUrlPush] = viewController
-                        
-                        pushViewController(viewController: viewController)
-                    }
-                }
-            }
-            
-            // RECENT ( for push use Files ... he he he )
-            if layoutKey == NCGlobal.shared.layoutViewRecent && !pushed {
-                
-                if let viewController = appDelegate.listFilesVC[serverUrlPush] {
-                    
-                    if viewController.isViewLoaded {
-                        pushViewController(viewController: viewController)
-                    }
-                    
-                } else {
-                    
-                    if let viewController:NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
-                        
-                        viewController.isRoot = false
-                        viewController.serverUrl = serverUrlPush
-                        viewController.titleCurrentFolder = metadataTouch!.fileNameView
-                        
-                        appDelegate.listFilesVC[serverUrlPush] = viewController
-                        
-                        pushViewController(viewController: viewController)
-                    }
-                }
-            }
-            
-            //VIEW IN FOLDER
-            if layoutKey == NCGlobal.shared.layoutViewViewInFolder && !pushed {
-                
-                if let viewController:NCFileViewInFolder = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as? NCFileViewInFolder {
-                
-                    viewController.serverUrl = serverUrlPush
-                    viewController.titleCurrentFolder = metadataTouch!.fileNameView
-                                
-                    pushViewController(viewController: viewController)
-                }
-            }
-            
-            // SHARES ( for push use Files ... he he he )
-            if layoutKey == NCGlobal.shared.layoutViewShares && !pushed {
-                
-                if let viewController = appDelegate.listFilesVC[serverUrlPush] {
-                    
-                    if viewController.isViewLoaded {
-                        pushViewController(viewController: viewController)
-                    }
-                    
-                } else {
-                    
-                    if let viewController:NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
-                    
-                        viewController.isRoot = false
-                        viewController.serverUrl = serverUrlPush
-                        viewController.titleCurrentFolder = metadataTouch!.fileNameView
-                        
-                        appDelegate.listFilesVC[serverUrlPush] = viewController
-                        
-                        pushViewController(viewController: viewController)
-                    }
-                }
-            }
+            pushMetadata(metadata)
             
         } else {
             
-            guard let metadataTouch = metadataTouch else { return }
             let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
             
             if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
@@ -1261,14 +1259,14 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         metadatas.append(metadata)
                     }
                 }
-                NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: metadatas, imageIcon: imageIcon)
+                NCViewer.shared.view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: imageIcon)
                 return
             }
             
-            if CCUtility.fileProviderStorageExists(metadataTouch.ocId, fileNameView: metadataTouch.fileNameView) {
-                NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch], imageIcon: imageIcon)
+            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                NCViewer.shared.view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
             } else if NCCommunication.shared.isNetworkReachable() {
-                NCNetworking.shared.download(metadata: metadataTouch, selector: NCGlobal.shared.selectorLoadFileView) { (_) in }
+                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileView) { (_) in }
             } else {
                 NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorOffline, forced: true)
             }
@@ -1295,7 +1293,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         
         if isEditMode { return nil }
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
-        metadataTouch = metadata
         let identifier = indexPath as NSCopying
         var image: UIImage?
         let cell = collectionView.cellForItem(at: indexPath)

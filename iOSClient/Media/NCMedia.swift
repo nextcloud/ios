@@ -35,7 +35,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     public var metadatas: [tableMetadata] = []
-    private var metadataTouch: tableMetadata?
     private var account: String = ""
 
     private var predicateDefault: NSPredicate?
@@ -316,7 +315,6 @@ extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         let metadata = metadatas[indexPath.row]
-        metadataTouch = metadata
         
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
@@ -331,9 +329,9 @@ extension NCMedia: UICollectionViewDelegate {
         } else {
             
             // ACTIVE SERVERURL
-            appDelegate.activeServerUrl = metadataTouch!.serverUrl
+            appDelegate.activeServerUrl = metadata.serverUrl
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell
-            NCViewer.shared.view(viewController: self, metadata: metadataTouch!, metadatas: metadatas, imageIcon: cell?.imageItem.image)
+            NCViewer.shared.view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: cell?.imageItem.image)
         }
     }
     

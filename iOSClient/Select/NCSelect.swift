@@ -59,7 +59,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     
     private let keyLayout = NCGlobal.shared.layoutViewMove
     private var serverUrlPush = ""
-    private var metadataTouch: tableMetadata?
     private var metadataFolder = tableMetadata()
     
     private var isEditMode = false
@@ -325,7 +324,6 @@ extension NCSelect: UICollectionViewDelegate {
             guard let viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
 
             self.serverUrlPush = serverUrlPush
-            self.metadataTouch = metadata
             
             viewController.delegate = delegate
             viewController.typeOfCommandView = typeOfCommandView
@@ -336,7 +334,7 @@ extension NCSelect: UICollectionViewDelegate {
             viewController.overwrite = overwrite
             viewController.items = items
 
-            viewController.titleCurrentFolder = metadataTouch!.fileNameView
+            viewController.titleCurrentFolder = metadata.fileNameView
             viewController.serverUrl = serverUrlPush
                    
             self.navigationController?.pushViewController(viewController, animated: true)
