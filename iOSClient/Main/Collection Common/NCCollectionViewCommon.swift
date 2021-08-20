@@ -435,6 +435,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 
                 if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
+                    pushMetadata(metadata)
+                    /*
                     if let row = dataSource.addMetadata(metadata) {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.performBatchUpdates({
@@ -443,6 +445,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                             self.collectionView?.reloadData()
                         })
                     }
+                    */
                 }
             }
         } else {
