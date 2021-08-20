@@ -131,9 +131,17 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     
     func selected(_ status: Bool) {
         if status {
+            if traitCollection.userInterfaceStyle == .dark {
+                imageVisualEffect.effect = UIBlurEffect(style: .dark)
+                imageVisualEffect.backgroundColor = .black
+                imageVisualEffect.alpha = 0.4
+            } else {
+                imageVisualEffect.effect = UIBlurEffect(style: .extraLight)
+                imageVisualEffect.backgroundColor = .lightGray
+                imageVisualEffect.alpha = 0.4
+            }
             imageSelect.image = NCBrandColor.cacheImages.checkedYes
             imageVisualEffect.isHidden = false
-            imageVisualEffect.alpha = 0.4
         } else {
             imageSelect.isHidden = true
             imageVisualEffect.isHidden = true
