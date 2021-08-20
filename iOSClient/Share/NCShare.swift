@@ -572,11 +572,17 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     @IBAction func touchUpInsideMenu(_ sender: Any) {
         delegate?.tapMenu(with: tableShare, sender: sender)
     }
+    
+    @IBAction func quickStatusClicked(_ sender: Any) {
+           delegate?.quickStatus(with: tableShare, sender: sender)
+       }
+
 }
 
 protocol NCShareUserCellDelegate {
     func switchCanEdit(with tableShare: tableShare?, switch: Bool, sender: UISwitch)
     func tapMenu(with tableShare: tableShare?, sender: Any)
+    func quickStatus(with tableShare: tableShare?, sender: Any)
 }
 
 // MARK: - NCShareUserDropDownCell

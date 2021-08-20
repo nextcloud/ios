@@ -33,7 +33,7 @@
                         </userDefinedRuntimeAttributes>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="shareWith" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="otH-mT-7Z4" userLabel="labelTitle">
-                        <rect key="frame" x="55" y="36" width="150" height="18"/>
+                        <rect key="frame" x="55" y="25" width="150" height="18"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="150" id="4Oa-yZ-HZK"/>
                             <constraint firstAttribute="height" constant="18" id="iet-xr-SX6"/>
@@ -42,7 +42,6 @@
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wzb-Us-kQu">
                         <rect key="frame" x="55" y="43" width="0.0" height="18"/>
                         <constraints>
@@ -113,7 +112,6 @@
                 <constraints>
                     <constraint firstItem="Wzb-Us-kQu" firstAttribute="top" secondItem="otH-mT-7Z4" secondAttribute="bottom" id="68D-LV-gIA"/>
                     <constraint firstItem="otH-mT-7Z4" firstAttribute="leading" secondItem="qDs-UG-Mn7" secondAttribute="trailing" constant="10" id="7o5-Rj-6lV"/>
-
                     <constraint firstItem="kaa-f4-d2t" firstAttribute="leading" secondItem="otH-mT-7Z4" secondAttribute="leading" id="EjD-fg-ltt"/>
                     <constraint firstItem="otH-mT-7Z4" firstAttribute="top" secondItem="qDs-UG-Mn7" secondAttribute="top" id="J9w-mc-Qkh"/>
                     <constraint firstItem="QXZ-ax-nlQ" firstAttribute="leading" secondItem="1Ju-M3-Ea4" secondAttribute="trailing" constant="10" id="JOV-hM-J9e"/>
