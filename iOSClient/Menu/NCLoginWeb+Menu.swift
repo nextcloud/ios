@@ -56,7 +56,7 @@ extension NCLoginWeb {
                             NCManageDatabase.shared.setAccountActive(account.account)
                             self.dismiss(animated: true) {
                                 self.appDelegate.settingAccount(account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, password: CCUtility.getPassword(account.account))
-                                self.appDelegate.initialize()
+                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
                             }
                         }
                     }
