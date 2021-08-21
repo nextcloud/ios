@@ -290,7 +290,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     // MARK: -
 
-    @objc func initialize() {
+    @objc private func initialize() {
         
         if account == "" { return }
 
