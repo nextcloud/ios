@@ -291,8 +291,8 @@ class NCSharePagingView: PagingView {
                 headerView.imageView.image = UIImage.init(named: "file")
             }
         }
-        headerView.fileName.text = metadata.fileNameView
-        headerView.fileName.textColor = NCBrandColor.shared.label
+        headerView.path.text = NCUtilityFileSystem.shared.getPath(metadata: metadata)
+        headerView.path.textColor = NCBrandColor.shared.label
         if metadata.favorite {
             headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
         } else {
@@ -331,7 +331,7 @@ class NCSharePagingView: PagingView {
 class NCShareHeaderView: UIView {
     
     @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var fileName: UILabel!
+    @IBOutlet weak var path: UILabel!
     @IBOutlet weak var info: UILabel!
     @IBOutlet weak var favorite: UIButton!
     

@@ -116,7 +116,7 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if oldSchemaVersion < 195 {
+                    if oldSchemaVersion < 196 {
                         migration.deleteData(forType: tableDirectory.className())
                         migration.deleteData(forType: tableE2eEncryption.className())
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
@@ -1855,6 +1855,7 @@ class NCManageDatabase: NSObject {
         metadata.ocId = file.ocId
         metadata.ownerId = file.ownerId
         metadata.ownerDisplayName = file.ownerDisplayName
+        metadata.path = file.path
         metadata.permissions = file.permissions
         metadata.quotaUsedBytes = file.quotaUsedBytes
         metadata.quotaAvailableBytes = file.quotaAvailableBytes

@@ -355,6 +355,7 @@ class tableMetadata: Object {
     @objc dynamic var ocId = ""
     @objc dynamic var ownerId = ""
     @objc dynamic var ownerDisplayName = ""
+    @objc dynamic var path = ""
     @objc dynamic var permissions = ""
     @objc dynamic var quotaUsedBytes: Int64 = 0
     @objc dynamic var quotaAvailableBytes: Int64 = 0
