@@ -1424,7 +1424,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             
             cell.fileObjectId = metadata.ocId
             cell.fileUser = metadata.ownerId
-            cell.labelTitle.text = metadata.fileNameView
+            if isSearching {
+                cell.labelTitle.text = NCUtilityFileSystem.shared.getPath(metadata: metadata)
+                cell.labelTitle.lineBreakMode = .byTruncatingHead
+            } else {
+                cell.labelTitle.text = metadata.fileNameView
+                cell.labelTitle.lineBreakMode = .byTruncatingMiddle
+
+            }
             cell.labelTitle.textColor = NCBrandColor.shared.label
             cell.labelInfo.text = ""
             cell.labelInfo.textColor = NCBrandColor.shared.systemGray
