@@ -25,6 +25,7 @@
 import UIKit
 import Parchment
 import NCCommunication
+import MarqueeLabel
 
 class NCSharePaging: UIViewController {
     
@@ -293,6 +294,7 @@ class NCSharePagingView: PagingView {
         }
         headerView.path.text = NCUtilityFileSystem.shared.getPath(metadata: metadata)
         headerView.path.textColor = NCBrandColor.shared.label
+        headerView.path.trailingBuffer = headerView.path.frame.width
         if metadata.favorite {
             headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
         } else {
@@ -331,7 +333,7 @@ class NCSharePagingView: PagingView {
 class NCShareHeaderView: UIView {
     
     @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var path: UILabel!
+    @IBOutlet weak var path: MarqueeLabel!
     @IBOutlet weak var info: UILabel!
     @IBOutlet weak var favorite: UIButton!
     
