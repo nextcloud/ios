@@ -236,14 +236,12 @@ extension NCActivity: UITableViewDataSource {
                 if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                     if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.icon.image = image }
                 } else {
-                    DispatchQueue.global().async {
-                        NCCommunication.shared.downloadContent(serverUrl: activity.icon) { (account, data, errorCode, errorMessage) in
-                            if errorCode == 0 {
-                                do {
-                                    try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
-                                    if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.icon.image = image }
-                                } catch { return }
-                            }
+                    NCCommunication.shared.downloadContent(serverUrl: activity.icon) { (account, data, errorCode, errorMessage) in
+                        if errorCode == 0 {
+                            do {
+                                try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                                tableView.reloadData()
+                            } catch { return }
                         }
                     }
                 }
