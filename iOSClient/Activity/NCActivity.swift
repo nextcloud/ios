@@ -523,7 +523,7 @@ extension activityTableViewCell: UICollectionViewDataSource {
                         
                         NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, widthPreview: 0, heightPreview: 0, useInternalEndpoint: false) { (account, imagePreview, imageIcon, errorCode, errorDescription) in
                             if errorCode == 0 && imagePreview != nil {
-                                cell.imageView.image = imagePreview
+                                self.collectionView.reloadData()
                             }
                         }
                     }
