@@ -88,6 +88,8 @@ extension NCNetworking {
                             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
                             
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId":metadata.ocId])
+                            
+                            NCCommunicationCommon.shared.writeLog("Upload chunk: " + fileName)
                            
                         }, progressHandler: { (progress) in
                             
@@ -120,7 +122,6 @@ extension NCNetworking {
                     if uploadErrorCode == 0 {
                             
                         // Assembling the chunks
-                            
                         let serverUrlFileNameSource = chunkFolderPath + "/.file"
                         let pathServerUrl = CCUtility.returnPathfromServerUrl(metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
                         let serverUrlFileNameDestination = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: metadata.account) + "/files/" + metadata.userId + pathServerUrl + "/" + metadata.fileName
@@ -133,7 +134,9 @@ extension NCNetworking {
                         addCustomHeaders["X-OC-MTime"] = modificationDate
 
                         NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders) { (_, errorCode, errorDescription) in
-                                                    
+                                       
+                            NCCommunicationCommon.shared.writeLog("Assembling chunk with error code: \(errorCode)")
+                            
                             if errorCode == 0 {
                                                                 
                                 let serverUrl = metadata.serverUrl
@@ -198,6 +201,8 @@ extension NCNetworking {
     private func uploadChunkFileError(metadata: tableMetadata, chunkFolderPath: String, directoryProviderStorageOcId: String, errorCode: Int, errorDescription: String) {
               
         var errorDescription = errorDescription
+        
+        NCCommunicationCommon.shared.writeLog("Upload chunk error code: \(errorCode)")
         
         if errorCode == NSURLErrorCancelled || errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
             
