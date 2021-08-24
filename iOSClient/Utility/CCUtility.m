@@ -792,20 +792,28 @@
     double ti = [convertedDate timeIntervalSinceDate:todayDate];
     ti = ti * -1;
     if (ti < 60) {
-        // This minute
         return NSLocalizedString(@"_less_a_minute_", nil);
     } else if (ti < 3600) {
-        // This hour
         int diff = round(ti / 60);
-        return [NSString stringWithFormat:NSLocalizedString(@"_minutes_ago_", nil), diff];
+        if (diff == 1) {
+            return NSLocalizedString(@"_a_minute_ago_", nil);
+        } else {
+            return [NSString stringWithFormat:NSLocalizedString(@"_minutes_ago_", nil), diff];
+        }
     } else if (ti < 86400) {
-        // This day
         int diff = round(ti / 60 / 60);
-        return[NSString stringWithFormat:NSLocalizedString(@"_hours_ago_", nil), diff];
+        if (diff == 1) {
+            return NSLocalizedString(@"_an_hour_ago_", nil);
+        } else {
+            return[NSString stringWithFormat:NSLocalizedString(@"_hours_ago_", nil), diff];
+        }
     } else if (ti < 86400 * 30) {
-        // This month
         int diff = round(ti / 60 / 60 / 24);
-        return[NSString stringWithFormat:NSLocalizedString(@"_days_ago_", nil), diff];
+        if (diff == 1) {
+            return NSLocalizedString(@"_a_day_ago_", nil);
+        } else {
+            return[NSString stringWithFormat:NSLocalizedString(@"_days_ago_", nil), diff];
+        }
     } else {
         // Older than one month
         NSDateFormatter *df = [[NSDateFormatter alloc] init];

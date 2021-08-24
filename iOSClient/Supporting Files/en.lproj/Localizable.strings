@@ -414,8 +414,11 @@
 "_remove_photo_CameraRoll_desc_"            = "After successful automatic uploads, a confirmation message will be displayed to delete the uploaded photos or videos from the camera roll. The deleted photos or videos will still be available in the iOS Photos Trash for 30 days.";
 "_never_"                       = "never";
 "_less_a_minute_"               = "less than a minute ago";
+"_a_minute_ago_"                = "a minute ago";
 "_minutes_ago_"                 = "%d minutes ago";
+"_an_hour_ago_"                 = "an hour ago";
 "_hours_ago_"                   = "%d hours ago";
+"_a_day_ago_"                   = "a day ago";
 "_days_ago_"                    = "%d days ago";
 "_over_30_days_"                = "over 30 days";
 "_connection_internet_offline_" = "The Internet connection appears to be offline or Wi-Fi is required";
