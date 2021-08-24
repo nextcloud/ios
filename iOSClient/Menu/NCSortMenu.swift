@@ -41,62 +41,72 @@ class NCSortMenu: NSObject {
         self.hideDirectoryOnTop = hideDirectoryOnTop
         
         var layoutForView = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
-
         let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
-
+        var title = ""
+        var icon = UIImage()
+        
+        if layoutForView.ascending {
+            title = NSLocalizedString("_order_by_name_z_a_", comment: "")
+            icon = UIImage(named: "sortFileNameZA")!.image(color: NCBrandColor.shared.gray, size: 50)
+        } else {
+            title = NSLocalizedString("_order_by_name_a_z_", comment: "")
+            icon = UIImage(named: "sortFileNameAZ")!.image(color: NCBrandColor.shared.gray, size: 50)
+        }
+       
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_order_by_name_a_z_", comment: ""),
-                icon: UIImage(named: "sortFileNameAZ")!.image(color: NCBrandColor.shared.gray, size: 50),
-                onTitle: NSLocalizedString("_order_by_name_z_a_", comment: ""),
-                onIcon: UIImage(named: "sortFileNameZA")!.image(color: NCBrandColor.shared.gray, size: 50),
+                title: title,
+                icon: icon,
                 selected: layoutForView.sort == "fileName",
                 on: layoutForView.sort == "fileName",
                 action: { menuAction in
-                    if layoutForView.sort == "fileName" {
-                        layoutForView.ascending = !layoutForView.ascending
-                    } else {
-                        layoutForView.sort = "fileName"
-                    }
+                    layoutForView.sort = "fileName"
+                    layoutForView.ascending = !layoutForView.ascending
                     self.actionMenu(layoutForView: layoutForView)
                 }
             )
         )
 
+        if layoutForView.ascending {
+            title = NSLocalizedString("_order_by_date_more_recent_", comment: "")
+            icon = UIImage(named: "sortDateMoreRecent")!.image(color: NCBrandColor.shared.gray, size: 50)
+        } else {
+            title = NSLocalizedString("_order_by_date_less_recent_", comment: "")
+            icon = UIImage(named: "sortDateLessRecent")!.image(color: NCBrandColor.shared.gray, size: 50)
+        }
+        
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_order_by_date_more_recent_", comment: ""),
-                icon: UIImage(named: "sortDateMoreRecent")!.image(color: NCBrandColor.shared.gray, size: 50),
-                onTitle: NSLocalizedString("_order_by_date_less_recent_", comment: ""),
-                onIcon: UIImage(named: "sortDateLessRecent")!.image(color: NCBrandColor.shared.gray, size: 50),
+                title: title,
+                icon: icon,
                 selected: layoutForView.sort == "date",
                 on: layoutForView.sort == "date",
                 action: { menuAction in
-                    if layoutForView.sort == "date" {
-                        layoutForView.ascending = !layoutForView.ascending
-                    } else {
-                        layoutForView.sort = "date"
-                    }
+                    layoutForView.sort = "date"
+                    layoutForView.ascending = !layoutForView.ascending
                     self.actionMenu(layoutForView: layoutForView)
                 }
             )
         )
 
+        if layoutForView.ascending {
+            title = NSLocalizedString("_order_by_size_smallest_", comment: "")
+            icon = UIImage(named: "sortSmallest")!.image(color: NCBrandColor.shared.gray, size: 50)
+        } else {
+            title = NSLocalizedString("_order_by_size_largest_", comment: "")
+            icon = UIImage(named: "sortLargest")!.image(color: NCBrandColor.shared.gray, size: 50)
+        }
+        
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_order_by_size_smallest_", comment: ""),
-                icon: UIImage(named: "sortSmallest")!.image(color: NCBrandColor.shared.gray, size: 50),
-                onTitle: NSLocalizedString("_order_by_size_largest_", comment: ""),
-                onIcon: UIImage(named: "sortLargest")!.image(color: NCBrandColor.shared.gray, size: 50),
+                title: title,
+                icon: icon,
                 selected: layoutForView.sort == "size",
                 on: layoutForView.sort == "size",
                 action: { menuAction in
-                    if layoutForView.sort == "size" {
-                        layoutForView.ascending = !layoutForView.ascending
-                    } else {
-                        layoutForView.sort = "size"
-                    }
+                    layoutForView.sort = "size"
+                    layoutForView.ascending = !layoutForView.ascending
                     self.actionMenu(layoutForView: layoutForView)
                 }
             )
