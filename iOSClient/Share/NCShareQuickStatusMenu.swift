@@ -10,9 +10,9 @@ import UIKit
 
 class NCShareQuickStatusMenu: NSObject {
         
-    func toggleMenu(viewController: UIViewController, directory: Bool, status: Int) {
+    func toggleMenu(viewController: UIViewController, directory: Bool, tableShare: tableShare) {
         
-        print(status)
+        print(tableShare.permissions)
         let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
 
@@ -25,10 +25,11 @@ class NCShareQuickStatusMenu: NSObject {
             NCMenuAction(
                 title: NSLocalizedString("_share_read_only_", comment: ""),
                 icon: UIImage(),
-                selected: status == NCGlobal.shared.permissionReadShare + NCGlobal.shared.permissionShareShare,
+                selected: tableShare.permissions == NCGlobal.shared.permissionReadShare + NCGlobal.shared.permissionShareShare,
                 on: false,
                 action: { menuAction in
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterSharePermissionReadOnly)
+                    let permission = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: directory)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShareChangePermission, userInfo: ["idShare": tableShare.idShare, "permission": permission, "hideDownload": tableShare.hideDownload])
                 }
             )
         )
@@ -37,10 +38,11 @@ class NCShareQuickStatusMenu: NSObject {
             NCMenuAction(
                 title: directory ? NSLocalizedString("_share_allow_upload_", comment: "") : NSLocalizedString("_share_editing_", comment: ""),
                 icon: UIImage(),
-                selected: status == NCGlobal.shared.permissionMaxFileShare || status == NCGlobal.shared.permissionMaxFolderShare ||  status == NCGlobal.shared.permissionDefaultFileRemoteShareNoSupportShareOption,
+                selected: tableShare.permissions == NCGlobal.shared.permissionMaxFileShare || tableShare.permissions == NCGlobal.shared.permissionMaxFolderShare ||  tableShare.permissions == NCGlobal.shared.permissionDefaultFileRemoteShareNoSupportShareOption,
                 on: false,
                 action: { menuAction in
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterSharePermissionEditing)
+                    let permission = CCUtility.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: false, andIsFolder: directory)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShareChangePermission, userInfo: ["idShare": tableShare.idShare, "permission": permission, "hideDownload": tableShare.hideDownload])
                 }
             )
         )
@@ -50,10 +52,11 @@ class NCShareQuickStatusMenu: NSObject {
                 NCMenuAction(
                     title: NSLocalizedString("_share_file_drop_", comment: ""),
                     icon: UIImage(),
-                    selected: status == NCGlobal.shared.permissionCreateShare,
+                    selected: tableShare.permissions == NCGlobal.shared.permissionCreateShare,
                     on: false,
                     action: { menuAction in
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterSharePermissionFileDrop)
+                        let permission = NCGlobal.shared.permissionCreateShare
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShareChangePermission, userInfo: ["idShare": tableShare.idShare, "permission": permission, "hideDownload": tableShare.hideDownload])
                     }
                 )
             )
