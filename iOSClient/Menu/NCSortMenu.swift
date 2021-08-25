@@ -69,11 +69,11 @@ class NCSortMenu: NSObject {
         )
 
         if layoutForView.ascending {
-            title = NSLocalizedString("_order_by_date_more_recent_", comment: "")
-            icon = UIImage(named: "sortDateMoreRecent")!.image(color: NCBrandColor.shared.gray, size: 50)
-        } else {
             title = NSLocalizedString("_order_by_date_less_recent_", comment: "")
             icon = UIImage(named: "sortDateLessRecent")!.image(color: NCBrandColor.shared.gray, size: 50)
+        } else {
+            title = NSLocalizedString("_order_by_date_more_recent_", comment: "")
+            icon = UIImage(named: "sortDateMoreRecent")!.image(color: NCBrandColor.shared.gray, size: 50)
         }
         
         actions.append(
@@ -91,11 +91,11 @@ class NCSortMenu: NSObject {
         )
 
         if layoutForView.ascending {
-            title = NSLocalizedString("_order_by_size_smallest_", comment: "")
-            icon = UIImage(named: "sortSmallest")!.image(color: NCBrandColor.shared.gray, size: 50)
-        } else {
             title = NSLocalizedString("_order_by_size_largest_", comment: "")
             icon = UIImage(named: "sortLargest")!.image(color: NCBrandColor.shared.gray, size: 50)
+        } else {
+            title = NSLocalizedString("_order_by_size_smallest_", comment: "")
+            icon = UIImage(named: "sortSmallest")!.image(color: NCBrandColor.shared.gray, size: 50)
         }
         
         actions.append(
@@ -146,7 +146,7 @@ class NCSortMenu: NSObject {
         case "fileName":
             layoutForView.titleButtonHeader = layoutForView.ascending ? "_sorted_by_name_a_z_" : "_sorted_by_name_z_a_"
         case "date":
-            layoutForView.titleButtonHeader = layoutForView.ascending ? "_sorted_by_date_less_recent_" : "_sorted_by_date_more_recent_"
+            layoutForView.titleButtonHeader = layoutForView.ascending ? "_sorted_by_date_more_recent_" : "_sorted_by_date_less_recent_"
         case "size":
             layoutForView.titleButtonHeader = layoutForView.ascending ? "_sorted_by_size_smallest_" : "_sorted_by_size_largest_"
         default:
