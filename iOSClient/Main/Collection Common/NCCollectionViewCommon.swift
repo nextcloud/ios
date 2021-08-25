@@ -1468,7 +1468,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     cell.imageItem.image = NCBrandColor.cacheImages.folder
                 }
                 
-                cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
+                cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
                 let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, lockServerUrl))
