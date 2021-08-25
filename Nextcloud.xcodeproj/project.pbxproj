@@ -221,6 +221,7 @@
 		F77B0F611D118A16002130FE /* Acknowledgements.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F7ACE42B1BAC0268006C0017 /* Acknowledgements.rtf */; };
 		F77B0F631D118A16002130FE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
 		F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
+		F77EFC0C26D6751F00806ED6 /* NCShareQuickStatusMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77EFC0B26D6751F00806ED6 /* NCShareQuickStatusMenu.swift */; };
 		F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
@@ -643,6 +644,7 @@
 		F77910A425DD517B00CEDB9E /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		F77910AA25DD53C700CEDB9E /* NCSettingsBundleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSettingsBundleHelper.swift; sourceTree = "<group>"; };
 		F77A697C250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+Menu.swift"; sourceTree = "<group>"; };
+		F77EFC0B26D6751F00806ED6 /* NCShareQuickStatusMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareQuickStatusMenu.swift; sourceTree = "<group>"; };
 		F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+MainThread.h"; sourceTree = "<group>"; };
 		F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNotificationCenter+MainThread.m"; sourceTree = "<group>"; };
 		F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EE.swift; sourceTree = "<group>"; };
@@ -993,23 +995,24 @@
 		F728CE741BF6322C00E69702 /* Share */ = {
 			isa = PBXGroup;
 			children = (
-				F73CB3B122E072A000AD728E /* NCShareHeaderView.xib */,
 				F700510022DF63AC003A3356 /* NCShare.storyboard */,
-				F787704E22E7019900F287A9 /* NCShareLinkCell.xib */,
-				F769453B22E9CFFF000A798A /* NCShareUserCell.xib */,
-				F7DFAA8922E22EF100FC4527 /* NCShareLinkMenuView.xib */,
-				F79728D322F96F2D003CACA7 /* NCShareLinkFolderMenuView.xib */,
-				F769453D22E9E97D000A798A /* NCShareUserMenuView.xib */,
-				F79728D522F9A0B0003CACA7 /* NCShareUserFolderMenuView.xib */,
-				F774264822EB4D0000B23912 /* NCShareUserDropDownCell.xib */,
-				F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */,
 				F700510422DF6A89003A3356 /* NCShare.swift */,
-				F769453F22E9F077000A798A /* NCSharePaging.swift */,
 				F7E4D9C322ED929B003675FD /* NCShareComments.swift */,
-				F769454122E9F0EE000A798A /* NCShareLinkMenuView.swift */,
-				F769454322E9F142000A798A /* NCShareUserMenuView.swift */,
-				F769454722E9F20D000A798A /* NCShareNetworking.swift */,
+				F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */,
 				F769454522E9F1B0000A798A /* NCShareCommon.swift */,
+				F73CB3B122E072A000AD728E /* NCShareHeaderView.xib */,
+				F787704E22E7019900F287A9 /* NCShareLinkCell.xib */,
+				F79728D322F96F2D003CACA7 /* NCShareLinkFolderMenuView.xib */,
+				F769454122E9F0EE000A798A /* NCShareLinkMenuView.swift */,
+				F7DFAA8922E22EF100FC4527 /* NCShareLinkMenuView.xib */,
+				F769454722E9F20D000A798A /* NCShareNetworking.swift */,
+				F769453F22E9F077000A798A /* NCSharePaging.swift */,
+				F77EFC0B26D6751F00806ED6 /* NCShareQuickStatusMenu.swift */,
+				F769453B22E9CFFF000A798A /* NCShareUserCell.xib */,
+				F774264822EB4D0000B23912 /* NCShareUserDropDownCell.xib */,
+				F79728D522F9A0B0003CACA7 /* NCShareUserFolderMenuView.xib */,
+				F769454322E9F142000A798A /* NCShareUserMenuView.swift */,
+				F769453D22E9E97D000A798A /* NCShareUserMenuView.xib */,
 			);
 			path = Share;
 			sourceTree = "<group>";
@@ -2192,6 +2195,7 @@
 				F769454422E9F142000A798A /* NCShareUserMenuView.swift in Sources */,
 				F7581D2425EFDDDF004DC699 /* NCMedia+Menu.swift in Sources */,
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
+				F77EFC0C26D6751F00806ED6 /* NCShareQuickStatusMenu.swift in Sources */,
 				F702F30125EE5D2C008F8E80 /* NYMnemonic.m in Sources */,
 				F7EFA47825ADBA500083159A /* NCViewerProviderContextMenu.swift in Sources */,
 				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
