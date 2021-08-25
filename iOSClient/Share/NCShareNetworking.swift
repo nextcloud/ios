@@ -101,9 +101,9 @@ class NCShareNetworking: NSObject {
         }
     }
     
-    func updateShare(idShare: Int, password: String?, permission: Int, note: String?, label: String?, expirationDate: String?, hideDownload: Bool) {
+    func updateShare(idShare: Int, password: String?, permissions: Int, note: String?, label: String?, expirationDate: String?, hideDownload: Bool) {
         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
-        NCCommunication.shared.updateShare(idShare: idShare, password: password, expireDate: expirationDate, permissions: permission, note: note, label: label, hideDownload: hideDownload) { (account, share, errorCode, errorDescription) in
+        NCCommunication.shared.updateShare(idShare: idShare, password: password, expireDate: expirationDate, permissions: permissions, note: note, label: label, hideDownload: hideDownload) { (account, share, errorCode, errorDescription) in
             NCUtility.shared.stopActivityIndicator()
             if errorCode == 0 && share != nil {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share!])

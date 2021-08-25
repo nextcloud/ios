@@ -321,7 +321,7 @@ class NCGlobal: NSObject {
     let notificationCenterChangedLocation                       = "changedLocation"
     let notificationStatusAuthorizationChangedLocation          = "statusAuthorizationChangedLocation"
     
-    let notificationCenterShareChangePermission                 = "shareChangePermission"           // userInfo: idShare, permission, hideDownload
+    let notificationCenterShareChangePermissions                = "shareChangePermissions"          // userInfo: idShare, permissions, hideDownload
 }
 
 //let rootView = UIApplication.shared.keyWindow?.rootViewController?.view

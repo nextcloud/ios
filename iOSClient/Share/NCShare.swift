@@ -121,7 +121,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         // changeTheming
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(sharePermissionChangePermission(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShareChangePermission), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(sharePermissionChangePermissions(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShareChangePermissions), object: nil)
         
         changeTheming()
     }
@@ -132,11 +132,11 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         tableView.reloadData()
     }
     
-    @objc func sharePermissionChangePermission(_ notification: NSNotification) {
+    @objc func sharePermissionChangePermissions(_ notification: NSNotification) {
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let idShare = userInfo["idShare"] as? Int, let permission = userInfo["permission"] as? Int, let hideDownload = userInfo["hideDownload"] as? Bool {
-                networking?.updateShare(idShare: idShare, password: nil, permission: permission, note: nil, label: nil, expirationDate: nil, hideDownload: hideDownload)
+            if let idShare = userInfo["idShare"] as? Int, let permissions = userInfo["permissions"] as? Int, let hideDownload = userInfo["hideDownload"] as? Bool {
+                networking?.updateShare(idShare: idShare, password: nil, permissions: permissions, note: nil, label: nil, expirationDate: nil, hideDownload: hideDownload)
             }
         }
     }

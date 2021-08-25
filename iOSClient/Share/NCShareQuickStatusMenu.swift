@@ -28,8 +28,8 @@ class NCShareQuickStatusMenu: NSObject {
                 selected: tableShare.permissions == NCGlobal.shared.permissionReadShare + NCGlobal.shared.permissionShareShare,
                 on: false,
                 action: { menuAction in
-                    let permission = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: directory)
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShareChangePermission, userInfo: ["idShare": tableShare.idShare, "permission": permission, "hideDownload": tableShare.hideDownload])
+                    let permissions = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: directory)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShareChangePermissions, userInfo: ["idShare": tableShare.idShare, "permissions": permissions, "hideDownload": tableShare.hideDownload])
                 }
             )
         )
@@ -41,8 +41,8 @@ class NCShareQuickStatusMenu: NSObject {
                 selected: tableShare.permissions == NCGlobal.shared.permissionMaxFileShare || tableShare.permissions == NCGlobal.shared.permissionMaxFolderShare ||  tableShare.permissions == NCGlobal.shared.permissionDefaultFileRemoteShareNoSupportShareOption,
                 on: false,
                 action: { menuAction in
-                    let permission = CCUtility.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: false, andIsFolder: directory)
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShareChangePermission, userInfo: ["idShare": tableShare.idShare, "permission": permission, "hideDownload": tableShare.hideDownload])
+                    let permissions = CCUtility.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: false, andIsFolder: directory)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShareChangePermissions, userInfo: ["idShare": tableShare.idShare, "permissions": permissions, "hideDownload": tableShare.hideDownload])
                 }
             )
         )
@@ -55,8 +55,8 @@ class NCShareQuickStatusMenu: NSObject {
                     selected: tableShare.permissions == NCGlobal.shared.permissionCreateShare,
                     on: false,
                     action: { menuAction in
-                        let permission = NCGlobal.shared.permissionCreateShare
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShareChangePermission, userInfo: ["idShare": tableShare.idShare, "permission": permission, "hideDownload": tableShare.hideDownload])
+                        let permissions = NCGlobal.shared.permissionCreateShare
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShareChangePermissions, userInfo: ["idShare": tableShare.idShare, "permissions": permissions, "hideDownload": tableShare.hideDownload])
                     }
                 )
             )
