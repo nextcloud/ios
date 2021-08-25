@@ -114,12 +114,10 @@ extension NCCreateFormUploadConflictDelegate {
         view.addSubview(blurView)
         
         changeTheming()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        conflictDialog(fileCount: self.metadatasUploadInConflict.count)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.conflictDialog(fileCount: self.metadatasUploadInConflict.count)
+        }
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
