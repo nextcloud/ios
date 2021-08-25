@@ -49,9 +49,7 @@ extension NCCreateFormUploadConflictDelegate {
     @IBOutlet weak var viewButton: UIView!
     @IBOutlet weak var buttonCancel: UIButton!
     @IBOutlet weak var buttonContinue: UIButton!
-    
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
+        
     @objc var metadatasNOConflict: [tableMetadata]
     @objc var metadatasUploadInConflict: [tableMetadata]
     @objc var metadatasMOV: [tableMetadata]
@@ -60,10 +58,12 @@ extension NCCreateFormUploadConflictDelegate {
     @objc var alwaysNewFileNameNumber: Bool = false
     @objc var textLabelDetailNewFile: String?
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadatasConflictNewFiles: [String] = []
     var metadatasConflictAlreadyExistingFiles: [String] = []
     var fileNamesPath: [String: String] = [:]
-    
+    var blurView: UIVisualEffectView!
+
     // MARK: - View Life Cycle
 
     @objc required init?(coder aDecoder: NSCoder) {
@@ -107,7 +107,19 @@ extension NCCreateFormUploadConflictDelegate {
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
         
+        let blurEffect = UIBlurEffect(style: .light)
+        blurView = UIVisualEffectView(effect: blurEffect)
+        blurView.frame = view.bounds
+        blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(blurView)
+        
         changeTheming()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        conflictDialog(fileCount: self.metadatasUploadInConflict.count)
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -124,6 +136,99 @@ extension NCCreateFormUploadConflictDelegate {
         tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         viewSwitch.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         viewButton.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+    }
+    
+    // MARK: - ConflictDialog
+    
+    func conflictDialog(fileCount: Int) {
+        
+        var tile = ""
+        var titleReplace = ""
+        var titleKeep = ""
+
+        if fileCount == 1 {
+            tile = NSLocalizedString("_single_file_conflict_title_", comment: "")
+            titleReplace = NSLocalizedString("_replace_action_title_", comment: "")
+            titleKeep = NSLocalizedString("_keep_both_action_title_", comment: "")
+        } else {
+            tile = String.localizedStringWithFormat(NSLocalizedString("_multi_file_conflict_title_", comment: ""), String(fileCount))
+            titleReplace = NSLocalizedString("_replace_all_action_title_", comment: "")
+            titleKeep = NSLocalizedString("_keep_both_for_all_action_title_", comment: "")
+        }
+        
+        let conflictAlert = UIAlertController(title: tile, message: "", preferredStyle: .alert)
+
+        conflictAlert.addAction(UIAlertAction(title: titleReplace, style: .default, handler: { (_) in
+            
+            for metadata in self.metadatasUploadInConflict {
+                self.metadatasNOConflict.append(metadata)
+            }
+            
+            self.metadatasNOConflict.append(contentsOf: self.metadatasMOV)
+            
+            if self.delegate != nil {
+                
+                self.delegate?.dismissCreateFormUploadConflict(metadatas: self.metadatasNOConflict)
+                
+            } else {
+                
+                self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: self.metadatasNOConflict)
+            }
+            
+            self.dismiss(animated: true, completion: nil)
+        }))
+        
+        conflictAlert.addAction(UIAlertAction(title: titleKeep, style: .default, handler: { (_) in
+            
+            for metadata in self.metadatasUploadInConflict {
+                
+                let fileNameMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
+                let newFileName = NCUtilityFileSystem.shared.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
+                
+                metadata.ocId = UUID().uuidString
+                metadata.fileName = newFileName
+                metadata.fileNameView = newFileName
+                
+                self.metadatasNOConflict.append(metadata)
+                
+                // MOV
+                for metadataMOV in self.metadatasMOV {
+                    
+                    if metadataMOV.fileName == fileNameMOV {
+                        
+                        let oldPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView)
+                        let newFileNameMOV = (newFileName as NSString).deletingPathExtension + ".mov"
+                        
+                        metadataMOV.ocId = UUID().uuidString
+                        metadataMOV.fileName = newFileNameMOV
+                        metadataMOV.fileNameView = newFileNameMOV
+                        
+                        let newPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: newFileNameMOV)
+                        CCUtility.moveFile(atPath: oldPath, toPath: newPath)
+                        
+                        break
+                    }
+                }
+            }
+            
+            if self.delegate != nil {
+                self.delegate?.dismissCreateFormUploadConflict(metadatas: self.metadatasNOConflict)
+            } else {
+                self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: self.metadatasNOConflict)
+            }
+            
+            self.dismiss(animated: true, completion: nil)
+        }))
+        
+        conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_keep_existing_action_title_", comment: ""), style: .cancel, handler: { (_) in
+            self.dismiss(animated: true, completion: nil)
+        }))
+        
+        conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_more_action_title_", comment: ""), style: .default, handler: { (_) in
+            self.blurView.removeFromSuperview()
+        }))
+        
+        self.present(conflictAlert, animated: true, completion: nil)
     }
     
     // MARK: - Action
