@@ -1433,7 +1433,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             }
             cell.labelTitle.textColor = NCBrandColor.shared.label
-            cell.labelInfo.text = ""
+            cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
             cell.labelInfo.textColor = NCBrandColor.shared.systemGray
             
             cell.imageSelect.image = nil
@@ -1468,8 +1468,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     cell.imageItem.image = NCBrandColor.cacheImages.folder
                 }
                 
-                cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
-                
                 let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
                 let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, lockServerUrl))
                 
@@ -1479,9 +1477,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
                 
             } else {
-                
-                cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
-                                
+                                                
                 // image local
                 if dataSource.metadataOffLine.contains(metadata.ocId) {
                     cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
