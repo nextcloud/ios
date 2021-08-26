@@ -180,7 +180,7 @@
 "_pdf_vertical_"            = "PDF vertical display";
 "_pdf_horizontal_"          = "PDF horizontal display";
 "_single_file_conflict_title_" = "File conflict";
-"_multi_file_conflict_title_" = " %@ File conflicts";
+"_multi_file_conflict_title_" = "%@ File conflicts";
 "_replace_action_title_" = "Replace";
 "_keep_both_action_title_" = "Keep both";
 "_cancel_keep_existing_action_title_" = "Cancel and keep existing";
