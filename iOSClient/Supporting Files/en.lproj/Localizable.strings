@@ -801,17 +801,4 @@
 "_used_space_"              = "Used space";
 "_open_in_onlyoffice_"      = "Open in ONLYOFFICE";
 "_open_in_collabora_"       = "Open with Collabora Online";
-
-// ----------------------------------------------------------------------------------------------------------------------------------
-// IM
-
-"_textnote_"                = "Text note";
-"_audionote_"               = "Audio note";
-"_removeaudionote_"         = "Do you want delete the audio note?";
-"_detailpicture_"           = "Detail picture";
-"_creation_archive_error_"  = "Error while creating archive";
-"_read_audio_error_"        = "Error while reading audio file";
-"_create_audio_error_"      = "Error while creating audio file";
-"_create_image_error_"      = "Error while creating image file";
-"_error_open_file_"         = "Error while opening a file";
-"_new_background_im_"       = "Select an image or take a picture and use it as background. You can also select nothing. Press \"Done\" to complete.";
+"_login_address_detail_"    = "The link to your Nextcloud web interface when you open it in the browser.";
