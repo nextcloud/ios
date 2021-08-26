@@ -109,7 +109,7 @@ class NCLoginWeb: UIViewController {
         
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
-        webView.customUserAgent = CCUtility.getUserAgent()
+        webView.customUserAgent = CCUtility.getUserAgentLogin()
         
         webView.load(request)
     }
