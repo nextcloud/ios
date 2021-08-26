@@ -480,7 +480,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         // Nextcloud standard login
-        if NCBrandOptions.shared.disable_intro && NCBrandOptions.shared.disable_request_login_url {
+        if selector == NCGlobal.shared.introSignup {
+            
+            if activeLoginWeb?.view.window == nil {
+                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
+                if selector == NCGlobal.shared.introSignup {
+                    activeLoginWeb?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+                } else {
+                    activeLoginWeb?.urlBase = self.urlBase
+                }
+                showLoginViewController(activeLoginWeb, contextViewController: viewController)
+            }
+            
+        } else if NCBrandOptions.shared.disable_intro && NCBrandOptions.shared.disable_request_login_url {
             
             if activeLoginWeb?.view.window == nil {
                 activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb

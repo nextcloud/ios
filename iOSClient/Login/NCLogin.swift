@@ -61,6 +61,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         
         // Url
         baseUrl.textColor = textColor
+        baseUrl.tintColor = textColor
         baseUrl.layer.cornerRadius = 10
         baseUrl.layer.borderWidth = 1
         baseUrl.layer.borderColor = textColor.cgColor
