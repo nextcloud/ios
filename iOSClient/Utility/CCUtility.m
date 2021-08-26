@@ -786,6 +786,14 @@
     return [NSString stringWithFormat:@"Mozilla/5.0 (iOS) %@/%@", userAgent, appVersion];
 }
 
++ (NSString *)getUserAgentLogin
+{
+    NSString *deviceName = [[UIDevice currentDevice] name];
+    NSString *userAgent = [NSString stringWithFormat:@"%@ (iOS Files)", deviceName];
+    
+    return userAgent;
+}
+
 + (NSString *)dateDiff:(NSDate *) convertedDate
 {
     NSDate *todayDate = [NSDate date];
