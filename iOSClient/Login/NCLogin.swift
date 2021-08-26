@@ -61,8 +61,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         
         // Url
         baseUrl.textColor = textColor
-        baseUrl.layer.cornerRadius = 15.0
-        baseUrl.layer.borderWidth = 1.0
+        baseUrl.layer.cornerRadius = 10
+        baseUrl.layer.borderWidth = 1
         baseUrl.layer.borderColor = textColor.cgColor
         baseUrl.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: baseUrl.frame.height))
         baseUrl.leftViewMode = .always
