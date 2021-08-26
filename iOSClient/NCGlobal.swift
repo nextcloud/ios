@@ -92,7 +92,7 @@ class NCGlobal: NSObject {
     
     // Avatar & Preview size
     //
-    let avatarSize: Int                             = 512
+    let avatarSize: Int                             = 128 * Int(UIScreen.main.scale)
     let sizePreview: Int                            = 1024
     let sizeIcon: Int                               = 512
     
