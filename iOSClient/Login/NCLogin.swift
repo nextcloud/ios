@@ -116,8 +116,11 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         signupButton.setTitle(NSLocalizedString("_sign_up_", comment: ""), for: .normal)
         
         // type of login
+        // DISABLE
         loginModeButton.setTitle(NSLocalizedString("_traditional_login_", comment: ""), for: .normal)
         loginModeButton.setTitleColor(textColor.withAlphaComponent(0.5), for: .normal)
+        loginModeButton.isEnabled = false
+        loginModeButton.isHidden = true
      
         // brand
         if NCBrandOptions.shared.disable_request_login_url {
