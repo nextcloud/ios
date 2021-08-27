@@ -166,6 +166,17 @@ class tableActivitySubjectRich: Object {
     }
 }
 
+class tableAvatar: Object {
+    
+    @objc dynamic var date = NSDate()
+    @objc dynamic var etag = ""
+    @objc dynamic var fileName = ""
+
+    override static func primaryKey() -> String {
+        return "fileName"
+    }
+}
+
 class tableCapabilities: Object {
     
     @objc dynamic var account = ""
@@ -473,18 +484,6 @@ class tableTrash: Object {
 
     override static func primaryKey() -> String {
         return "fileId"
-    }
-}
-
-class tableUser: Object {
-    
-    @objc dynamic var date = NSDate()
-    @objc dynamic var etag = ""
-    @objc dynamic var user = ""
-    @objc dynamic var userUrlBase = ""
-
-    override static func primaryKey() -> String {
-        return "userUrlBase"
     }
 }
 

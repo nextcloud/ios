@@ -180,9 +180,8 @@ extension NCShareComments: UITableViewDataSource {
             cell.sizeToFit()
             
             // Image
-            let userUrlBase = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase))
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + userUrlBase + "-" + tableComments.actorId + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: tableComments.actorId, userUrlBase: userUrlBase, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
+            let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + tableComments.actorId + ".png"
+            NCOperationQueue.shared.downloadAvatar(user: tableComments.actorId, fileName: fileName, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
             // Username
             cell.labelUser.text = tableComments.actorDisplayName
             cell.labelUser.textColor = NCBrandColor.shared.label

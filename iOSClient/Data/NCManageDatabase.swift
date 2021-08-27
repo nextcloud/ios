@@ -116,7 +116,7 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if oldSchemaVersion < 199 {
+                    if oldSchemaVersion < 200 {
                         migration.deleteData(forType: tableDirectory.className())
                         migration.deleteData(forType: tableE2eEncryption.className())
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
@@ -892,6 +892,41 @@ class NCManageDatabase: NSObject {
         }
         
         return 0
+    }
+    
+    //MARK: -
+    //MARK: Table Avatar
+    
+    @objc func addAvatar(fileName: String, etag: String) {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.safeWrite {
+                
+                // Add new
+                let addObject = tableAvatar()
+                    
+                addObject.date = NSDate()
+                addObject.etag = etag
+                addObject.fileName = fileName
+
+                realm.add(addObject, update: .all)
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    @objc func getTableAvatar(fileName: String) -> tableAvatar? {
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first else {
+            return nil
+        }
+        
+        return tableAvatar.init(value: result)
     }
     
     //MARK: -
@@ -2958,42 +2993,6 @@ class NCManageDatabase: NSObject {
         }
         
         return tableTrash.init(value: result)
-    }
-    
-    //MARK: -
-    //MARK: Table User
-    
-    @objc func addUser(_ user: String, userUrlBase: String ,etag: String) {
-        
-        let realm = try! Realm()
-        
-        do {
-            try realm.safeWrite {
-                
-                // Add new
-                let addObject = tableUser()
-                    
-                addObject.date = NSDate()
-                addObject.etag = etag
-                addObject.user = user
-                addObject.userUrlBase = userUrlBase
-
-                realm.add(addObject, update: .all)
-            }
-        } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-    
-    @objc func getTableUser(userUrlBase: String) -> tableUser? {
-        
-        let realm = try! Realm()
-        
-        guard let result = realm.objects(tableUser.self).filter("userUrlBase == %@", userUrlBase).first else {
-            return nil
-        }
-        
-        return tableUser.init(value: result)
     }
     
     //MARK: -

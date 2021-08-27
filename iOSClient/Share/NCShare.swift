@@ -333,9 +333,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             } else {
                 cell.centerTitle.constant = 0
             }
-            let userUrlBase = String(CCUtility.getUserUrlBase(self.appDelegate.user, urlBase: self.appDelegate.urlBase))
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + userUrlBase + "-" + sharee.label + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: sharee.shareWith, userUrlBase: userUrlBase, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell, view: nil)
+            let fileName = String(CCUtility.getUserUrlBase(self.appDelegate.user, urlBase: self.appDelegate.urlBase)) + "-" + sharee.label + ".png"
+            NCOperationQueue.shared.downloadAvatar(user: sharee.shareWith, fileName: fileName, placeholder: UIImage(named: "avatar"), cell: cell, view: nil)
             cell.imageShareeType.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
         }
         
@@ -412,9 +411,8 @@ extension NCShare: UITableViewDataSource {
                 cell.imageStatus.image = status.onlineStatus
                 cell.status.text = status.statusMessage
                 
-                let userUrlBase = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase))
-                let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + userUrlBase + "-" + tableShare.shareWith + ".png"
-                NCOperationQueue.shared.downloadAvatar(user: tableShare.shareWith, userUrlBase: userUrlBase, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
+                let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + tableShare.shareWith + ".png"
+                NCOperationQueue.shared.downloadAvatar(user: tableShare.shareWith, fileName: fileName, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
                 
                 // If the initiator or the recipient is not the current user, show the list of sharees without any options to edit it.
                 if tableShare.uidOwner != self.appDelegate.userId && tableShare.uidFileOwner != self.appDelegate.userId {
