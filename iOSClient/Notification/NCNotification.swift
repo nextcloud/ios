@@ -136,7 +136,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
             if let parameter = JSON(subjectRichParameters).dictionary {
                 if let user = JSON(parameter).dictionary {
                     if let userId = user["id"]?.string {
-                        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + userId + ".png"
+                        let userUrlBase = String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase))
+                        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + userUrlBase + "-" + userId + ".png"
                         if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                                 cell.avatar.isHidden = false
@@ -147,7 +148,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                             cell.avatar.isHidden = false
                             cell.avatarLeadingMargin.constant = 50
                             cell.fileUser = userId
-                            NCOperationQueue.shared.downloadAvatar(user: userId, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
+                            NCOperationQueue.shared.downloadAvatar(user: userId, userUrlBase: userUrlBase, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
                         }
                     }
                 }

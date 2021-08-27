@@ -583,8 +583,9 @@ extension NCShareExtension: UICollectionViewDataSource {
             cell.imageShared.image = NCBrandColor.cacheImages.canShare
         }
         if metadata.ownerId.count > 0 && metadata.ownerId != activeAccount.userId {
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(activeAccount.user, urlBase: activeAccount.urlBase)) + "-" + metadata.ownerId + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, placeholder: nil, cell: cell, view: collectionView)
+            let userUrlBase = String(CCUtility.getStringUser(activeAccount.user, urlBase: activeAccount.urlBase))
+            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + userUrlBase + "-" + metadata.ownerId + ".png"
+            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, userUrlBase: userUrlBase, fileNameLocalPath: fileNameLocalPath, placeholder: nil, cell: cell, view: collectionView)
         }
         
         cell.imageSelect.isHidden = true

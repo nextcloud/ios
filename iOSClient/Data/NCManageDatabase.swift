@@ -2961,6 +2961,42 @@ class NCManageDatabase: NSObject {
     }
     
     //MARK: -
+    //MARK: Table User
+    
+    @objc func addUser(_ user: String, userUrlBase: String ,etag: String) {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.safeWrite {
+                
+                // Add new
+                let addObject = tableUser()
+                    
+                addObject.date = NSDate()
+                addObject.etag = etag
+                addObject.user = user
+                addObject.userUrlBase = userUrlBase
+    
+                realm.add(addObject, update: .all)
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    @objc func getUser(userUrlBase: String) -> tableUser? {
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableUser.self).filter("userUrlBase == %@", userUrlBase).first else {
+            return nil
+        }
+        
+        return tableUser.init(value: result)
+    }
+    
+    //MARK: -
     //MARK: Table UserStatus
     
     @objc func addUserStatus(_ userStatuses: [NCCommunicationUserStatus], account: String, predefined: Bool) {

@@ -109,7 +109,7 @@ class NCService: NSObject {
                     // Get Avatar
                     let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + stringUser + "-" + self.appDelegate.user + ".png"
                     let oldData = try? Data(contentsOf: URL(fileURLWithPath: fileNameLocalPath))
-                    NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
+                    NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize, etag: nil) { (account, data, etag, errorCode, errorMessage) in
                         if let data = data, let oldData = oldData {
                             do {
                                 let isEqual = try NCUtility.shared.compare(tolerance: 95, expected: data, observed: oldData)

@@ -476,6 +476,18 @@ class tableTrash: Object {
     }
 }
 
+class tableUser: Object {
+    
+    @objc dynamic var date = NSDate()
+    @objc dynamic var etag = ""
+    @objc dynamic var user = ""
+    @objc dynamic var userUrlBase = ""
+    
+    override static func primaryKey() -> String {
+        return "userUrlBase"
+    }
+}
+
 class tableUserStatus: Object {
     
     @objc dynamic var account = ""

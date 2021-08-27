@@ -161,7 +161,7 @@ import NCCommunication
     
     // Download Avatar
     
-    func downloadAvatar(user: String, fileNameLocalPath: String, placeholder: UIImage?, cell: UIView, view: UIView?) {
+    func downloadAvatar(user: String, userUrlBase: String, fileNameLocalPath: String, placeholder: UIImage?, cell: UIView, view: UIView?) {
 
         let cell: NCCellProtocol = cell as! NCCellProtocol
 
@@ -176,8 +176,8 @@ import NCCommunication
         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
             cell.fileAvatarImageView?.image = NCUtility.shared.createAvatar(image: image, size: 30)
         }
-    
-        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view))
+        
+        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, userUrlBase: userUrlBase, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view))
     }
     
     func cancelDownloadAvatar(user: String) {
@@ -442,15 +442,19 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
 class NCOperationDownloadAvatar: ConcurrentOperation {
 
     var user: String
+    var userUrlBase: String
+    var etag: String?
     var fileNameLocalPath: String
     var cell: NCCellProtocol!
     var view: UIView?
 
-    init(user: String, fileNameLocalPath: String, cell: NCCellProtocol, view: UIView?) {
+    init(user: String, userUrlBase: String, fileNameLocalPath: String, cell: NCCellProtocol, view: UIView?) {
         self.user = user
+        self.userUrlBase = userUrlBase
         self.fileNameLocalPath = fileNameLocalPath
         self.cell = cell
         self.view = view
+        etag = NCManageDatabase.shared.getUser(userUrlBase: userUrlBase)?.etag
     }
     
     override func start() {
@@ -458,11 +462,12 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
+            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize, etag: etag) { (account, data, etag, errorCode, errorMessage) in
                 
-                if errorCode == 0 && data != nil {
+                if errorCode == 0 && data != nil && etag != nil {
                     if var image = UIImage.init(data: data!) {
                         image = NCUtility.shared.createAvatar(image: image, size: 30)
+                        NCManageDatabase.shared.addUser(self.user, userUrlBase: self.userUrlBase, etag: etag!)
                         #if !EXTENSION
                         (UIApplication.shared.delegate as! AppDelegate).avatars[self.user] = image
                         #endif
