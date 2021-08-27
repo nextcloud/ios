@@ -136,7 +136,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
             if let parameter = JSON(subjectRichParameters).dictionary {
                 if let user = JSON(parameter).dictionary {
                     if let userId = user["id"]?.string {
-                        let userUrlBase = String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase))
+                        let userUrlBase = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase))
                         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + userUrlBase + "-" + userId + ".png"
                         if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                             if let image = UIImage(contentsOfFile: fileNameLocalPath) {

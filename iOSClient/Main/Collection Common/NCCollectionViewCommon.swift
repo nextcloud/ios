@@ -625,7 +625,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if layoutKey == NCGlobal.shared.layoutViewFiles {
             
                 var image = NCUtility.shared.loadImage(named: "person.crop.circle")
-                let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
+                let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
                 if let userImage = UIImage(contentsOfFile: fileNamePath) {
                     image = userImage
                 }
@@ -1372,7 +1372,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         
         // Avatar
         if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId && appDelegate.account == metadata.account {
-            let userUrlBase = String(CCUtility.getStringUser(metadata.user, urlBase: metadata.urlBase))
+            let userUrlBase = String(CCUtility.getUserUrlBase(metadata.user, urlBase: metadata.urlBase))
             let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + userUrlBase + "-" + metadata.ownerId + ".png"
             NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, userUrlBase: userUrlBase, fileNameLocalPath: fileNameLocalPath, placeholder: NCBrandColor.cacheImages.shared, cell: cell, view: collectionView)
         }

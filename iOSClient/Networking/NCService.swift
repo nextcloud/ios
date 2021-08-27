@@ -96,7 +96,7 @@ class NCService: NSObject {
                 
                     let user = tableAccount.user
                     let url = tableAccount.urlBase
-                    let stringUser = CCUtility.getStringUser(user, urlBase: url)!
+                    let userUrlBase = CCUtility.getUserUrlBase(user, urlBase: url)!
                     
                     self.appDelegate.settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId, password: CCUtility.getPassword(tableAccount.account))
                        
@@ -107,7 +107,7 @@ class NCService: NSObject {
                     self.synchronizeOffline(account: tableAccount.account)
                     
                     // Get Avatar
-                    let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + stringUser + "-" + self.appDelegate.user + ".png"
+                    let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + userUrlBase + "-" + self.appDelegate.user + ".png"
                     let oldData = try? Data(contentsOf: URL(fileURLWithPath: fileNameLocalPath))
                     NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize, etag: nil) { (account, data, etag, errorCode, errorMessage) in
                         if let data = data, let oldData = oldData {

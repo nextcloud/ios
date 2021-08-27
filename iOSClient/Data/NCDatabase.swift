@@ -482,7 +482,7 @@ class tableUser: Object {
     @objc dynamic var etag = ""
     @objc dynamic var user = ""
     @objc dynamic var userUrlBase = ""
-    
+
     override static func primaryKey() -> String {
         return "userUrlBase"
     }

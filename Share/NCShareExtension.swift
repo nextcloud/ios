@@ -241,7 +241,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         // PROFILE BUTTON
                 
         var image = NCUtility.shared.loadImage(named: "person.crop.circle")
-        let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(activeAccount.user, urlBase: activeAccount.urlBase)) + "-" + activeAccount.user + ".png"
+        let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getUserUrlBase(activeAccount.user, urlBase: activeAccount.urlBase)) + "-" + activeAccount.user + ".png"
         if let userImage = UIImage(contentsOfFile: fileNamePath) {
             image = userImage
         }
@@ -581,11 +581,6 @@ extension NCShareExtension: UICollectionViewDataSource {
             cell.imageShared.image = NCBrandColor.cacheImages.shared
         } else {
             cell.imageShared.image = NCBrandColor.cacheImages.canShare
-        }
-        if metadata.ownerId.count > 0 && metadata.ownerId != activeAccount.userId {
-            let userUrlBase = String(CCUtility.getStringUser(activeAccount.user, urlBase: activeAccount.urlBase))
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + userUrlBase + "-" + metadata.ownerId + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, userUrlBase: userUrlBase, fileNameLocalPath: fileNameLocalPath, placeholder: nil, cell: cell, view: collectionView)
         }
         
         cell.imageSelect.isHidden = true

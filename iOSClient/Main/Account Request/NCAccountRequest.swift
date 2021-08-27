@@ -238,7 +238,7 @@ extension NCAccountRequest: UITableViewDataSource {
 
             avatarImage?.image = NCUtility.shared.loadImage(named: "person.crop.circle")
         
-            let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(account.user, urlBase: account.urlBase)) + "-" + account.user + ".png"
+            let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getUserUrlBase(account.user, urlBase: account.urlBase)) + "-" + account.user + ".png"
             
             if let image = UIImage(contentsOfFile: fileNamePath) {
                 avatarImage?.image = NCUtility.shared.createAvatar(image: image, size: 40)

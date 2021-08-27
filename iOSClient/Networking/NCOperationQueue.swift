@@ -444,6 +444,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
     var user: String
     var userUrlBase: String
     var etag: String?
+    var userFile: String = ""
     var fileNameLocalPath: String
     var cell: NCCellProtocol!
     var view: UIView?
@@ -454,7 +455,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         self.fileNameLocalPath = fileNameLocalPath
         self.cell = cell
         self.view = view
-        etag = NCManageDatabase.shared.getUser(userUrlBase: userUrlBase)?.etag
+        self.etag = NCManageDatabase.shared.getTableUser(userUrlBase: userUrlBase)?.etag
     }
     
     override func start() {

@@ -96,7 +96,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata!.ownerDisplayName
             sharedWithYouByImage.image = UIImage(named: "avatar")?.imageColor(NCBrandColor.shared.label)
 
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + metadata!.ownerId + ".png"
+            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + metadata!.ownerId + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                     sharedWithYouByImage.image = NCUtility.shared.createAvatar(image: image, size: 40)
@@ -333,7 +333,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             } else {
                 cell.centerTitle.constant = 0
             }
-            let userUrlBase = String(CCUtility.getStringUser(self.appDelegate.user, urlBase: self.appDelegate.urlBase))
+            let userUrlBase = String(CCUtility.getUserUrlBase(self.appDelegate.user, urlBase: self.appDelegate.urlBase))
             let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + userUrlBase + "-" + sharee.label + ".png"
             NCOperationQueue.shared.downloadAvatar(user: sharee.shareWith, userUrlBase: userUrlBase, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell, view: nil)
             cell.imageShareeType.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
@@ -412,7 +412,7 @@ extension NCShare: UITableViewDataSource {
                 cell.imageStatus.image = status.onlineStatus
                 cell.status.text = status.statusMessage
                 
-                let userUrlBase = String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase))
+                let userUrlBase = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase))
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + userUrlBase + "-" + tableShare.shareWith + ".png"
                 NCOperationQueue.shared.downloadAvatar(user: tableShare.shareWith, userUrlBase: userUrlBase, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
                 

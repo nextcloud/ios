@@ -116,7 +116,7 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if oldSchemaVersion < 196 {
+                    if oldSchemaVersion < 199 {
                         migration.deleteData(forType: tableDirectory.className())
                         migration.deleteData(forType: tableE2eEncryption.className())
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
@@ -2977,7 +2977,7 @@ class NCManageDatabase: NSObject {
                 addObject.etag = etag
                 addObject.user = user
                 addObject.userUrlBase = userUrlBase
-    
+
                 realm.add(addObject, update: .all)
             }
         } catch let error {
@@ -2985,7 +2985,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getUser(userUrlBase: String) -> tableUser? {
+    @objc func getTableUser(userUrlBase: String) -> tableUser? {
         
         let realm = try! Realm()
         

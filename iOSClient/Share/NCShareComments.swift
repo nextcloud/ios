@@ -72,7 +72,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         labelUser.textColor = NCBrandColor.shared.label
         
         imageItem.image = UIImage(named: "avatar")
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
         if FileManager.default.fileExists(atPath: fileNameLocalPath) {
             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                 imageItem.image = NCUtility.shared.createAvatar(image: image, size: 40)
@@ -180,7 +180,7 @@ extension NCShareComments: UITableViewDataSource {
             cell.sizeToFit()
             
             // Image
-            let userUrlBase = String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase))
+            let userUrlBase = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase))
             let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + userUrlBase + "-" + tableComments.actorId + ".png"
             NCOperationQueue.shared.downloadAvatar(user: tableComments.actorId, userUrlBase: userUrlBase, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
             // Username
