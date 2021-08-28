@@ -106,8 +106,11 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                 let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
                 NCCommunication.shared.downloadAvatar(user: metadata!.ownerId, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize, etag: etag) { (account, data, etag, errorCode, errorMessage) in
                     
-                    if errorCode == 0, let etag = etag, let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                        self.sharedWithYouByImage.image = NCUtility.shared.createAvatar(image: image, size: 40)
+                    if errorCode == 0, let etag = etag, let data = data, var image = UIImage.init(data: data) {
+                        image = NCUtility.shared.createAvatar(image: image, size: 30)
+                        (UIApplication.shared.delegate as! AppDelegate).avatars[self.metadata!.ownerId] = image
+                        NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
+                        self.sharedWithYouByImage.image = image
                     } 
                 }
             }
