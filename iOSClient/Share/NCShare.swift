@@ -103,7 +103,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                 let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
                 
-                NCCommunication.shared.downloadAvatar(user: metadata!.ownerId, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize, etag: etag) { (account, data, etag, errorCode, errorMessage) in
+                NCCommunication.shared.downloadAvatar(user: metadata!.ownerId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: etag) { (account, data, etag, errorCode, errorMessage) in
                     
                     if errorCode == 0, let etag = etag, let data = data, var image = UIImage.init(data: data) {
                         image = NCUtility.shared.createAvatar(image: image, size: 30)
@@ -348,7 +348,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                 let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
-                NCCommunication.shared.downloadAvatar(user: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize, etag: etag) { (account, data, etag, errorCode, errorMessage) in
+                NCCommunication.shared.downloadAvatar(user: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: etag) { (account, data, etag, errorCode, errorMessage) in
                     
                     if errorCode == 0, let etag = etag, let data = data, var image = UIImage.init(data: data) {
                         image = NCUtility.shared.createAvatar(image: image, size: 30)

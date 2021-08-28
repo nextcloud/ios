@@ -625,13 +625,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if layoutKey == NCGlobal.shared.layoutViewFiles {
             
                 var image = NCUtility.shared.loadImage(named: "person.crop.circle")
-                let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
+                let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
+                let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                 if let userImage = UIImage(contentsOfFile: fileNamePath) {
                     image = userImage
                 }
-                
-                image = NCUtility.shared.createAvatar(image: image, size: 30)
-                
+                                
                 let button = UIButton(type: .custom)
                 button.setImage(image, for: .normal)
                 

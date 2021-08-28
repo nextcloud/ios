@@ -463,11 +463,10 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize, etag: self.etag) { (account, data, etag, errorCode, errorMessage) in
+            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: self.etag) { (account, data, etag, errorCode, errorMessage) in
                 
-                if errorCode == 0, let data = data, let etag = etag, var image = UIImage.init(data: data) {
+                if errorCode == 0, let data = data, let etag = etag, let image = UIImage.init(data: data) {
                     
-                    image = NCUtility.shared.createAvatar(image: image, size: 30)
                     NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
                     #if !EXTENSION
                     (UIApplication.shared.delegate as! AppDelegate).avatars[self.user] = image
@@ -491,8 +490,8 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                             (self.view as? UITableView)?.reloadData()
                         }
                     }
-                } else if errorCode == NCGlobal.shared.errorNotModified, var image = UIImage(contentsOfFile: self.fileNameLocalPath) {
-                    image = NCUtility.shared.createAvatar(image: image, size: 30)
+                    
+                } else if errorCode == NCGlobal.shared.errorNotModified, let image = UIImage(contentsOfFile: self.fileNameLocalPath) {
                     #if !EXTENSION
                     (UIApplication.shared.delegate as! AppDelegate).avatars[self.user] = image
                     #endif

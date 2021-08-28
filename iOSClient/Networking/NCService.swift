@@ -110,14 +110,12 @@ class NCService: NSObject {
                     let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                     let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
                     
-                    NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize, etag: etag) { (account, data, etag, errorCode, errorMessage) in
-                        if let etag = etag, errorCode == 0, let data = data, var image = UIImage.init(data: data) {
-                            image = NCUtility.shared.createAvatar(image: image, size: 30)
+                    NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: etag) { (account, data, etag, errorCode, errorMessage) in
+                        if let etag = etag, errorCode == 0, let data = data, let image = UIImage.init(data: data) {
                             (UIApplication.shared.delegate as! AppDelegate).avatars[user] = image
                             NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
-                        } else if errorCode == NCGlobal.shared.errorNotModified, var image = UIImage(contentsOfFile: fileNameLocalPath) {
-                            image = NCUtility.shared.createAvatar(image: image, size: 30)
+                        } else if errorCode == NCGlobal.shared.errorNotModified, let image = UIImage(contentsOfFile: fileNameLocalPath) {
                             (UIApplication.shared.delegate as! AppDelegate).avatars[user] = image
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
                         }
