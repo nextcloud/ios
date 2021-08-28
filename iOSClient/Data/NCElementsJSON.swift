@@ -56,7 +56,6 @@ import UIKit
 
     @objc public let capabilitiesFilesUndelete:                 Array = ["ocs","data","capabilities","files","undelete"]
     @objc public let capabilitiesFilesComments:                 Array = ["ocs","data","capabilities","files","comments"]                                            // NC 20
-    @objc public let capabilitiesPaginationEndpoint:            Array = ["ocs","data","capabilities","files","pagination","endpoint"]
 
     @objc public let capabilitiesHWCEnabled:                    Array = ["ocs","data","capabilities","handwerkcloud","enabled"]
     

@@ -204,6 +204,7 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableActivity.self, account: account)
         self.clearTable(tableActivityPreview.self, account: account)
         self.clearTable(tableActivitySubjectRich.self, account: account)
+        self.clearTable(tableAvatar.self, account: account)
         self.clearTable(tableCapabilities.self, account: account)
         self.clearTable(tableChunk.self, account: account)
         self.clearTable(tableComments.self, account: account)

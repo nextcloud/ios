@@ -463,29 +463,32 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize, etag: etag) { (account, data, etag, errorCode, errorMessage) in
+            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize, etag: self.etag) { (account, data, etag, errorCode, errorMessage) in
                 
-                if errorCode == 0 && data != nil && etag != nil {
-                    if var image = UIImage.init(data: data!) {
-                        image = NCUtility.shared.createAvatar(image: image, size: 30)
-                        NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag!)
-                        #if !EXTENSION
-                        (UIApplication.shared.delegate as! AppDelegate).avatars[self.user] = image
-                        #endif
-                        if self.user == self.cell.fileUser {
-                            if let avatarImageView = self.cell?.fileAvatarImageView  {
-                                UIView.transition(with: avatarImageView,
-                                                  duration: 0.75,
-                                                  options: .transitionCrossDissolve,
-                                                  animations: { avatarImageView.image = image },
-                                                  completion: nil)
+                if errorCode == 0, let data = data, let etag = etag, var image = UIImage.init(data: data) {
+                    
+                    image = NCUtility.shared.createAvatar(image: image, size: 30)
+                    NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
+                    #if !EXTENSION
+                    (UIApplication.shared.delegate as! AppDelegate).avatars[self.user] = image
+                    #endif
+                    if self.user == self.cell.fileUser {
+                        if let avatarImageView = self.cell?.fileAvatarImageView  {
+                            UIView.transition(with: avatarImageView, duration: 0.75, options: .transitionCrossDissolve) {
+                                avatarImageView.image = image
+                            } completion: { _ in
+                                if self.view is UICollectionView {
+                                    (self.view as? UICollectionView)?.reloadData()
+                                } else if self.view is UITableView{
+                                    (self.view as? UITableView)?.reloadData()
+                                }
                             }
-                        } else {
-                            if self.view is UICollectionView {
-                                (self.view as? UICollectionView)?.reloadData()
-                            } else if self.view is UITableView{
-                                (self.view as? UITableView)?.reloadData()
-                            }
+                        }
+                    } else {
+                        if self.view is UICollectionView {
+                            (self.view as? UICollectionView)?.reloadData()
+                        } else if self.view is UITableView{
+                            (self.view as? UITableView)?.reloadData()
                         }
                     }
                 }

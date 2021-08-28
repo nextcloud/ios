@@ -96,17 +96,18 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata!.ownerDisplayName
             sharedWithYouByImage.image = UIImage(named: "avatar")?.imageColor(NCBrandColor.shared.label)
 
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + metadata!.ownerId + ".png"
+            let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + metadata!.ownerId + ".png"
+            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                     sharedWithYouByImage.image = NCUtility.shared.createAvatar(image: image, size: 40)
                 }
             } else {
-                NCCommunication.shared.downloadAvatar(user: metadata!.ownerId, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize, etag: nil) { (account, data, etag, errorCode, errorMessage) in
-                    if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
-                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                            self.sharedWithYouByImage.image = NCUtility.shared.createAvatar(image: image, size: 40)
-                        }
+                let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
+                NCCommunication.shared.downloadAvatar(user: metadata!.ownerId, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize, etag: etag) { (account, data, etag, errorCode, errorMessage) in
+                    
+                    if errorCode == 0, let etag = etag, let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                        self.sharedWithYouByImage.image = NCUtility.shared.createAvatar(image: image, size: 40)
                     } 
                 }
             }

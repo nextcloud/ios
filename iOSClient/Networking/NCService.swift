@@ -96,7 +96,6 @@ class NCService: NSObject {
                 
                     let user = tableAccount.user
                     let url = tableAccount.urlBase
-                    let userUrlBase = CCUtility.getUserUrlBase(user, urlBase: url)!
                     
                     self.appDelegate.settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId, password: CCUtility.getPassword(tableAccount.account))
                        
@@ -107,19 +106,12 @@ class NCService: NSObject {
                     self.synchronizeOffline(account: tableAccount.account)
                     
                     // Get Avatar
-                    let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + userUrlBase + "-" + self.appDelegate.user + ".png"
-                    let oldData = try? Data(contentsOf: URL(fileURLWithPath: fileNameLocalPath))
-                    NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize, etag: nil) { (account, data, etag, errorCode, errorMessage) in
-                        if let data = data, let oldData = oldData {
-                            do {
-                                let isEqual = try NCUtility.shared.compare(tolerance: 95, expected: data, observed: oldData)
-                                if !isEqual {
-                                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
-                                }
-                            } catch {
-                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
-                            }
-                        } else {
+                    let fileName = String(CCUtility.getUserUrlBase(user, urlBase: url)) + "-" + self.appDelegate.user + ".png"
+                    let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+                    let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
+                    NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize, etag: etag) { (account, data, etag, errorCode, errorMessage) in
+                        if let etag = etag, errorCode == 0 {
+                            NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
                         }
                     }
