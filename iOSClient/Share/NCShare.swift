@@ -332,6 +332,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             guard let cell = cell as? NCShareUserDropDownCell else { return }
             let sharee = sharees[index]
             cell.imageItem.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
+            cell.imageShareeType.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
             let status = NCUtility.shared.getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
             cell.imageStatus.image = status.onlineStatus
             cell.status.text = status.statusMessage
@@ -340,9 +341,27 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             } else {
                 cell.centerTitle.constant = 0
             }
-            let fileName = String(CCUtility.getUserUrlBase(self.appDelegate.user, urlBase: self.appDelegate.urlBase)) + "-" + sharee.label + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: sharee.shareWith, fileName: fileName, placeholder: UIImage(named: "avatar"), cell: cell, view: nil)
-            cell.imageShareeType.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
+            if let image = self.appDelegate.avatars[sharee.shareWith] {
+                cell.imageItem.image = image
+            } else {
+                let fileName = String(CCUtility.getUserUrlBase(self.appDelegate.user, urlBase: self.appDelegate.urlBase)) + "-" + sharee.shareWith + ".png"
+                let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+                let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
+
+                NCCommunication.shared.downloadAvatar(user: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize, etag: etag) { (account, data, etag, errorCode, errorMessage) in
+                    
+                    if errorCode == 0, let etag = etag, let data = data, var image = UIImage.init(data: data) {
+                        image = NCUtility.shared.createAvatar(image: image, size: 30)
+                        self.appDelegate.avatars[sharee.shareWith] = image
+                        NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
+                        cell.imageItem.image = image
+                    } else if errorCode == 304, var image = UIImage(contentsOfFile: fileNameLocalPath) {
+                        image = NCUtility.shared.createAvatar(image: image, size: 30)
+                        self.appDelegate.avatars[sharee.shareWith] = image
+                        cell.imageItem.image = image
+                    }
+                }
+            }
         }
         
         dropDown.selectionAction = { [weak self] (index, item) in
