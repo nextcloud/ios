@@ -496,6 +496,11 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                     #if !EXTENSION
                     (UIApplication.shared.delegate as! AppDelegate).avatars[self.user] = image
                     #endif
+                    if self.view is UICollectionView {
+                        (self.view as? UICollectionView)?.reloadData()
+                    } else if self.view is UITableView{
+                        (self.view as? UITableView)?.reloadData()
+                    }
                 }
                 
                 self.finish()
