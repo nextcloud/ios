@@ -117,7 +117,6 @@ class NCService: NSObject {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
                         } else if errorCode == NCGlobal.shared.errorNotModified, let image = UIImage(contentsOfFile: fileNameLocalPath) {
                             (UIApplication.shared.delegate as! AppDelegate).avatars[user] = image
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
                         }
                     }
                     self.requestServerCapabilities()
