@@ -230,6 +230,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Required unsubscribing / subscribing
         NCPushNotification.shared().pushNotification()
         
+        // Clear all avatars
+        avatars.removeAll()
+    
         // Request Service Server Nextcloud
         NCService.shared.startRequestServicesServer()
         
@@ -269,9 +272,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if NCUtility.shared.isSimulator() {
             networkingProcessUpload?.stopTimer()
         }
-        
-        // Clear all avatars
-        avatars.removeAll()
         
         NCCommunicationCommon.shared.writeLog("Application did enter in background")
         
