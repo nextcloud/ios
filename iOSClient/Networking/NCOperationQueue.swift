@@ -492,11 +492,9 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                         }
                     }
                     
-                } else if errorCode == NCGlobal.shared.errorNotModified {
+                } else if errorCode == NCGlobal.shared.errorNotModified, let image = UIImage(contentsOfFile: self.fileNameLocalPath) {
                     #if !EXTENSION
-                    if (UIApplication.shared.delegate as! AppDelegate).avatars[self.user] == nil, let image = UIImage(contentsOfFile: self.fileNameLocalPath) {
-                        (UIApplication.shared.delegate as! AppDelegate).avatars[self.user] = image
-                    }
+                    (UIApplication.shared.delegate as! AppDelegate).avatars[self.user] = image
                     #endif
                 }
                 
