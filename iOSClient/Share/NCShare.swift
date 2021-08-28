@@ -110,7 +110,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                         (UIApplication.shared.delegate as! AppDelegate).avatars[self.metadata!.ownerId] = image
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         self.sharedWithYouByImage.image = image
-                    } else if errorCode == 304, var image = UIImage(contentsOfFile: fileNameLocalPath) {
+                    } else if errorCode == NCGlobal.shared.errorNotModified, var image = UIImage(contentsOfFile: fileNameLocalPath) {
                         image = NCUtility.shared.createAvatar(image: image, size: 30)
                         (UIApplication.shared.delegate as! AppDelegate).avatars[self.metadata!.ownerId] = image
                         self.sharedWithYouByImage.image = image
@@ -355,7 +355,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                         self.appDelegate.avatars[sharee.shareWith] = image
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         cell.imageItem.image = image
-                    } else if errorCode == 304, var image = UIImage(contentsOfFile: fileNameLocalPath) {
+                    } else if errorCode == NCGlobal.shared.errorNotModified, var image = UIImage(contentsOfFile: fileNameLocalPath) {
                         image = NCUtility.shared.createAvatar(image: image, size: 30)
                         self.appDelegate.avatars[sharee.shareWith] = image
                         cell.imageItem.image = image

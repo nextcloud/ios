@@ -180,6 +180,7 @@ class NCGlobal: NSObject {
     // Error
     //
     @objc let errorRequestExplicityCancelled: Int   = 15
+    @objc let errorNotModified: Int                 = 304
     @objc let errorBadRequest: Int                  = 400
     @objc let errorResourceNotFound: Int            = 404
     @objc let errordMethodNotSupported: Int         = 405

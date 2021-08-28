@@ -611,7 +611,7 @@ extension NCActivity {
             
             NCUtility.shared.stopActivityIndicator()
             
-            if errorCode == 304 {
+            if errorCode == NCGlobal.shared.errorNotModified {
                 self.canFetchActivity = false
             } else {
                 self.canFetchActivity = true

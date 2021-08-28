@@ -491,7 +491,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                             (self.view as? UITableView)?.reloadData()
                         }
                     }
-                } else if errorCode == 304, var image = UIImage(contentsOfFile: self.fileNameLocalPath) {
+                } else if errorCode == NCGlobal.shared.errorNotModified, var image = UIImage(contentsOfFile: self.fileNameLocalPath) {
                     image = NCUtility.shared.createAvatar(image: image, size: 30)
                     #if !EXTENSION
                     (UIApplication.shared.delegate as! AppDelegate).avatars[self.user] = image
