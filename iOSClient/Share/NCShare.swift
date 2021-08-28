@@ -96,14 +96,13 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata!.ownerDisplayName
             sharedWithYouByImage.image = UIImage(named: "avatar")?.imageColor(NCBrandColor.shared.label)
 
-            let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + metadata!.ownerId + ".png"
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-            if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                    sharedWithYouByImage.image = NCUtility.shared.createAvatar(image: image, size: 40)
-                }
+            if let image = (UIApplication.shared.delegate as! AppDelegate).avatars[metadata!.ownerId] {
+                sharedWithYouByImage.image = image
             } else {
+                let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + metadata!.ownerId + ".png"
+                let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                 let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
+                
                 NCCommunication.shared.downloadAvatar(user: metadata!.ownerId, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize, etag: etag) { (account, data, etag, errorCode, errorMessage) in
                     
                     if errorCode == 0, let etag = etag, let data = data, var image = UIImage.init(data: data) {
@@ -111,7 +110,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                         (UIApplication.shared.delegate as! AppDelegate).avatars[self.metadata!.ownerId] = image
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         self.sharedWithYouByImage.image = image
-                    } 
+                    }
                 }
             }
         } 

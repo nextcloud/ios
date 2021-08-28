@@ -109,6 +109,7 @@ class NCService: NSObject {
                     let fileName = String(CCUtility.getUserUrlBase(user, urlBase: url)) + "-" + self.appDelegate.user + ".png"
                     let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                     let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
+                    
                     NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize, etag: etag) { (account, data, etag, errorCode, errorMessage) in
                         if let etag = etag, errorCode == 0, let data = data, var image = UIImage.init(data: data) {
                             image = NCUtility.shared.createAvatar(image: image, size: 30)

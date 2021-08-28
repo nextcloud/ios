@@ -270,6 +270,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             networkingProcessUpload?.stopTimer()
         }
         
+        // Clear all avatars
+        avatars.removeAll()
+        
         NCCommunicationCommon.shared.writeLog("Application did enter in background")
         
         passcodeWithAutomaticallyPromptForBiometricValidation(false)
