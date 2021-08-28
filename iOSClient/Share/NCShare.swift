@@ -105,13 +105,11 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                 
                 NCCommunication.shared.downloadAvatar(user: metadata!.ownerId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: etag) { (account, data, etag, errorCode, errorMessage) in
                     
-                    if errorCode == 0, let etag = etag, let data = data, var image = UIImage.init(data: data) {
-                        image = NCUtility.shared.createAvatar(image: image, size: 30)
+                    if errorCode == 0, let etag = etag, let data = data, let image = UIImage.init(data: data) {
                         (UIApplication.shared.delegate as! AppDelegate).avatars[self.metadata!.ownerId] = image
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         self.sharedWithYouByImage.image = image
-                    } else if errorCode == NCGlobal.shared.errorNotModified, var image = UIImage(contentsOfFile: fileNameLocalPath) {
-                        image = NCUtility.shared.createAvatar(image: image, size: 30)
+                    } else if errorCode == NCGlobal.shared.errorNotModified, let image = UIImage(contentsOfFile: fileNameLocalPath) {
                         (UIApplication.shared.delegate as! AppDelegate).avatars[self.metadata!.ownerId] = image
                         self.sharedWithYouByImage.image = image
                     }
@@ -350,13 +348,11 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
 
                 NCCommunication.shared.downloadAvatar(user: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: etag) { (account, data, etag, errorCode, errorMessage) in
                     
-                    if errorCode == 0, let etag = etag, let data = data, var image = UIImage.init(data: data) {
-                        image = NCUtility.shared.createAvatar(image: image, size: 30)
+                    if errorCode == 0, let etag = etag, let data = data, let image = UIImage.init(data: data) {
                         self.appDelegate.avatars[sharee.shareWith] = image
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         cell.imageItem.image = image
-                    } else if errorCode == NCGlobal.shared.errorNotModified, var image = UIImage(contentsOfFile: fileNameLocalPath) {
-                        image = NCUtility.shared.createAvatar(image: image, size: 30)
+                    } else if errorCode == NCGlobal.shared.errorNotModified, let image = UIImage(contentsOfFile: fileNameLocalPath) {
                         self.appDelegate.avatars[sharee.shareWith] = image
                         cell.imageItem.image = image
                     }

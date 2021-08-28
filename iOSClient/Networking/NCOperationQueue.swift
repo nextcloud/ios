@@ -175,7 +175,7 @@ import NCCommunication
                 
         cell.fileAvatarImageView?.image = placeholder
         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-            cell.fileAvatarImageView?.image = NCUtility.shared.createAvatar(image: image, size: 30)
+            cell.fileAvatarImageView?.image = image
         }
         
         downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view))

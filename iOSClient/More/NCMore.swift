@@ -326,7 +326,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
             
             if let image = UIImage.init(contentsOfFile: fileNamePath) {
-                cell.avatar?.image = NCUtility.shared.createAvatar(image: image, size: 50)
+                cell.avatar?.image = image
             } else {
                 cell.avatar?.image = UIImage.init(named: "avatar")?.imageColor(NCBrandColor.shared.gray)
             }

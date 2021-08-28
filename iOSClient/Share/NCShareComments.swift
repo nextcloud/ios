@@ -71,12 +71,12 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         }
         labelUser.textColor = NCBrandColor.shared.label
         
-        imageItem.image = UIImage(named: "avatar")
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
-        if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                imageItem.image = NCUtility.shared.createAvatar(image: image, size: 40)
-            }
+        let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+            imageItem.image = image
+        } else {
+            imageItem.image = UIImage(named: "avatar")
         }
         
         // Mark comment ad read
