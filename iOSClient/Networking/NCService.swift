@@ -116,6 +116,10 @@ class NCService: NSObject {
                             (UIApplication.shared.delegate as! AppDelegate).avatars[user] = image
                             NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
+                        } else if errorCode == 304, var image = UIImage(contentsOfFile: fileNameLocalPath) {
+                            image = NCUtility.shared.createAvatar(image: image, size: 30)
+                            (UIApplication.shared.delegate as! AppDelegate).avatars[user] = image
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
                         }
                     }
                     self.requestServerCapabilities()

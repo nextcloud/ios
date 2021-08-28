@@ -110,6 +110,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                         (UIApplication.shared.delegate as! AppDelegate).avatars[self.metadata!.ownerId] = image
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         self.sharedWithYouByImage.image = image
+                    } else if errorCode == 304, var image = UIImage(contentsOfFile: fileNameLocalPath) {
+                        image = NCUtility.shared.createAvatar(image: image, size: 30)
+                        (UIApplication.shared.delegate as! AppDelegate).avatars[self.metadata!.ownerId] = image
+                        self.sharedWithYouByImage.image = image
                     }
                 }
             }
