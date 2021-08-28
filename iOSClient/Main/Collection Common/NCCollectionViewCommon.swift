@@ -627,8 +627,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 var image = NCUtility.shared.loadImage(named: "person.crop.circle")
                 let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
                 let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-                if let userImage = UIImage(contentsOfFile: fileNamePath) {
-                    image = userImage
+                if let userImage = UIImage(contentsOfFile: fileNamePath), let avatarImage = userImage.resizeImage(size: CGSize(width: 30, height: 30), isAspectRation: true) {
+                    image = avatarImage
                 }
                                 
                 let button = UIButton(type: .custom)
