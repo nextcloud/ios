@@ -103,9 +103,9 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                 let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
                 
-                NCCommunication.shared.downloadAvatar(user: metadata!.ownerId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: etag) { (account, data, etag, errorCode, errorMessage) in
+                NCCommunication.shared.downloadAvatar(user: metadata!.ownerId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: etag) { (account, image, etag, errorCode, errorMessage) in
                     
-                    if errorCode == 0, let etag = etag, let data = data, let image = UIImage.init(data: data) {
+                    if errorCode == 0, let etag = etag, let image = image {
                         self.appDelegate.avatars[self.metadata!.ownerId] = image
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         self.sharedWithYouByImage.image = image
@@ -346,9 +346,9 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                 let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
-                NCCommunication.shared.downloadAvatar(user: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: etag) { (account, data, etag, errorCode, errorMessage) in
+                NCCommunication.shared.downloadAvatar(user: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: etag) { (account, image, etag, errorCode, errorMessage) in
                     
-                    if errorCode == 0, let etag = etag, let data = data, let image = UIImage.init(data: data) {
+                    if errorCode == 0, let etag = etag, let image = image {
                         self.appDelegate.avatars[sharee.shareWith] = image
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         cell.imageItem.image = image

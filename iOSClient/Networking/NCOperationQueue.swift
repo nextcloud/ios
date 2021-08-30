@@ -414,7 +414,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon) { (account, imagePreview, imageIcon,  errorCode, errorDescription) in
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: nil) { (account, imagePreview, imageIcon,  etag, errorCode, errorDescription) in
                 
                 if errorCode == 0 && imageIcon != nil {
                     if self.metadata.ocId == self.cell.fileObjectId {
@@ -465,9 +465,9 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: self.etag) { (account, data, etag, errorCode, errorMessage) in
+            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: self.etag) { (account, image, etag, errorCode, errorMessage) in
                 
-                if errorCode == 0, let data = data, let etag = etag, let image = UIImage.init(data: data) {
+                if errorCode == 0, let image = image, let etag = etag {
                     
                     NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
                     self.appDelegate.avatars[self.user] = image
