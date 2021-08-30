@@ -123,6 +123,16 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableMetadata.className())
                         migration.deleteData(forType: tableShare.className())
                         migration.deleteData(forType: tableTrash.className())
+                        // Delete OLD avatar image
+                        if var pathUrl = CCUtility.getDirectoryGroup() {
+                            pathUrl.appendPathComponent(NCGlobal.shared.appUserData)
+                            do {
+                                let fileURLs = try FileManager.default.contentsOfDirectory(at: pathUrl, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
+                                for fileURL in fileURLs {
+                                    try FileManager.default.removeItem(at: fileURL)
+                                }
+                            } catch { }
+                        }
                     }
                     
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
