@@ -27,16 +27,18 @@ import NCCommunication
 class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     
     @IBOutlet weak var imageBrand: UIImageView!
+    @IBOutlet weak var imageBrandConstraintY: NSLayoutConstraint!
     @IBOutlet weak var baseUrl: UITextField!
     @IBOutlet weak var loginAddressDetail: UILabel!
     @IBOutlet weak var loginButton: UIButton!
+    @IBOutlet weak var loginImage: UIImageView!
     @IBOutlet weak var qrCode: UIButton!
     @IBOutlet weak var certificate: UIButton!
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var textColor: UIColor = .white
     private var textColorOpponent: UIColor = .black
-    
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -73,10 +75,11 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         baseUrl.delegate = self
         
         // Login button
-        loginButton.setImage(UIImage(named: "arrow.right")?.image(color: textColor, size: 100), for: .normal)
-             
         loginAddressDetail.textColor = textColor
         loginAddressDetail.text = NSLocalizedString("_login_address_detail_", comment: "")
+        
+        // Login Image
+        loginImage.image = UIImage(named: "arrow.right")?.image(color: textColor, size: 100)
         
         // brand
         if NCBrandOptions.shared.disable_request_login_url {
@@ -105,6 +108,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
         
         self.navigationController?.navigationBar.setValue(true, forKey: "hidesShadow")
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -130,7 +136,20 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        actionButtonLogin(self)
         return false
+    }
+    
+    // MARK: - Keyboard notification
+    
+    @objc internal func keyboardWillShow(_ notification : Notification?) {
+                
+        imageBrandConstraintY.constant = -(self.view.frame.height / 4)
+    }
+    
+    @objc func keyboardWillHide(_ notification: Notification) {
+        
+        imageBrandConstraintY.constant = 0
     }
     
     // MARK: - Action
