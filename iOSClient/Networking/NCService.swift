@@ -111,12 +111,13 @@ class NCService: NSObject {
                     let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
                     
                     NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: etag) { (account, data, etag, errorCode, errorMessage) in
+                        
                         if let etag = etag, errorCode == 0, let data = data, let image = UIImage.init(data: data) {
                             (UIApplication.shared.delegate as! AppDelegate).avatars[user] = image
                             NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
                         } else if errorCode == NCGlobal.shared.errorNotModified, let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                            (UIApplication.shared.delegate as! AppDelegate).avatars[user] = image
+                            self.appDelegate.avatars[user] = image
                         }
                     }
                     self.requestServerCapabilities()
