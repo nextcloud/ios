@@ -443,6 +443,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
 
 class NCOperationDownloadAvatar: ConcurrentOperation {
 
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var user: String
     var fileName: String
     var etag: String?
@@ -469,9 +470,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                 if errorCode == 0, let data = data, let etag = etag, let image = UIImage.init(data: data) {
                     
                     NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
-                    #if !EXTENSION
-                    (UIApplication.shared.delegate as! AppDelegate).avatars[self.user] = image
-                    #endif
+                    self.appDelegate.avatars[self.user] = image
                     if self.user == self.cell.fileUser {
                         if let avatarImageView = self.cell?.fileAvatarImageView  {
                             UIView.transition(with: avatarImageView, duration: 0.75, options: .transitionCrossDissolve) {
@@ -493,9 +492,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                     }
                     
                 } else if errorCode == NCGlobal.shared.errorNotModified, let image = UIImage(contentsOfFile: self.fileNameLocalPath) {
-                    #if !EXTENSION
-                    (UIApplication.shared.delegate as! AppDelegate).avatars[self.user] = image
-                    #endif
+                    self.appDelegate.avatars[self.user] = image
                 }
                 
                 self.finish()
