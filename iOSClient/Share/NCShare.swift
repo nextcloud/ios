@@ -96,7 +96,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata!.ownerDisplayName
             sharedWithYouByImage.image = UIImage(named: "avatar")?.imageColor(NCBrandColor.shared.label)
 
-            if let image = (UIApplication.shared.delegate as! AppDelegate).avatars[metadata!.ownerId] {
+            if let image = appDelegate.avatars[metadata!.ownerId] {
                 sharedWithYouByImage.image = image
             } else {
                 let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + metadata!.ownerId + ".png"
