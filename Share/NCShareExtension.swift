@@ -570,17 +570,6 @@ extension NCShareExtension: UICollectionViewDataSource {
             cell.imageFavorite.image = NCBrandColor.cacheImages.favorite
         }
         
-        // Share image
-        if (isShare) {
-            cell.imageShared.image = NCBrandColor.cacheImages.shared
-        } else if (tableShare != nil && tableShare?.shareType == 3) {
-            cell.imageShared.image = NCBrandColor.cacheImages.shareByLink
-        } else if (tableShare != nil && tableShare?.shareType != 3) {
-            cell.imageShared.image = NCBrandColor.cacheImages.shared
-        } else {
-            cell.imageShared.image = NCBrandColor.cacheImages.canShare
-        }
-        
         cell.imageSelect.isHidden = true
         cell.backgroundView = nil
         cell.hideButtonMore(true)
