@@ -79,7 +79,7 @@ class NCGlobal: NSObject {
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 200
+    let databaseSchemaVersion: UInt64               = 202
     
     // Intro selector
     //
@@ -93,7 +93,7 @@ class NCGlobal: NSObject {
     // Avatar & Preview size
     //
     let avatarSize: Int                             = 128 * Int(UIScreen.main.scale)
-    let sizeRoundedAvatar: Int                      = 50
+    let sizeRoundedAvatar: Int                      = 512
     let sizePreview: Int                            = 1024
     let sizeIcon: Int                               = 512
     

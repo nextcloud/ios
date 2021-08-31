@@ -116,7 +116,7 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if oldSchemaVersion < 200 {
+                    if oldSchemaVersion < 202 {
                         migration.deleteData(forType: tableDirectory.className())
                         migration.deleteData(forType: tableE2eEncryption.className())
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
@@ -2246,6 +2246,22 @@ class NCManageDatabase: NSObject {
             return tableMetadata.init(value: result)
         } else {
             return nil
+        }
+    }
+    
+    func setMetadataEtagResource(ocId: String, etagResource: String?) {
+        
+        let realm = try! Realm()
+        var result: tableMetadata?
+        guard let etagResource = etagResource else { return }
+        
+        do {
+            try realm.safeWrite {
+                result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
+                result?.etagResource = etagResource
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     

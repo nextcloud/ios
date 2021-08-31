@@ -352,6 +352,7 @@ class tableMetadata: Object {
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var edited: Bool = false
     @objc dynamic var etag = ""
+    @objc dynamic var etagResource = ""
     @objc dynamic var ext = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileId = ""
