@@ -416,7 +416,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
             if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
                 etagResource = metadata.etagResource
             }
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource) { (account, imagePreview, imageIcon,  etag, errorCode, errorDescription) in
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource) { (account, imagePreview, imageIcon, data, etag, errorCode, errorDescription) in
                 
                 if errorCode == 0 && imageIcon != nil {
                     NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
@@ -468,7 +468,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: self.etag) { (account, image, etag, errorCode, errorMessage) in
+            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: self.etag) { (account, image, data, etag, errorCode, errorMessage) in
                 
                 if errorCode == 0, let image = image, let etag = etag {
                     
