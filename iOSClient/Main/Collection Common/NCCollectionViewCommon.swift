@@ -1372,7 +1372,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Avatar
         if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId && appDelegate.account == metadata.account {
             let fileName = String(CCUtility.getUserUrlBase(metadata.user, urlBase: metadata.urlBase)) + "-" + metadata.ownerId + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileName: fileName, placeholder: NCBrandColor.cacheImages.shared, cell: cell, view: collectionView)
+            let fileNameData = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + metadata.ownerId + ".data"
+            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileName: fileName, fileNameData: fileNameData, placeholder: NCBrandColor.cacheImages.shared, cell: cell, view: collectionView)
         }
     }
     

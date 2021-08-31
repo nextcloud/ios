@@ -181,7 +181,8 @@ extension NCShareComments: UITableViewDataSource {
             
             // Image
             let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + tableComments.actorId + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: tableComments.actorId, fileName: fileName, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
+            let fileNameData = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + tableComments.actorId + ".data"
+            NCOperationQueue.shared.downloadAvatar(user: tableComments.actorId, fileName: fileName, fileNameData: fileNameData, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
             // Username
             cell.labelUser.text = tableComments.actorDisplayName
             cell.labelUser.textColor = NCBrandColor.shared.label
