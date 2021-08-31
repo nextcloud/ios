@@ -133,25 +133,23 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.avatar.isHidden = true
         cell.avatarLeadingMargin.constant = 10
         if let subjectRichParameters = notification.subjectRichParameters {
-            if let parameter = JSON(subjectRichParameters).dictionary {
-                if let user = JSON(parameter).dictionary {
-                    if let userId = user["id"]?.string {
-                        
-                        let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + userId + ".png"
-                        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-                        
-                        if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                                cell.avatar.isHidden = false
-                                cell.avatarLeadingMargin.constant = 50
-                                cell.avatar.image = image
-                            }
-                        } else {
+            if let json = JSON(subjectRichParameters).dictionary {
+                if let user = json["user"]?["id"].stringValue {
+                    
+                    let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + user + ".png"
+                    let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+                    
+                    if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                             cell.avatar.isHidden = false
                             cell.avatarLeadingMargin.constant = 50
-                            cell.fileUser = userId
-                            NCOperationQueue.shared.downloadAvatar(user: userId, fileName: fileName, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
+                            cell.avatar.image = image
                         }
+                    } else {
+                        cell.avatar.isHidden = false
+                        cell.avatarLeadingMargin.constant = 50
+                        cell.fileUser = user
+                        NCOperationQueue.shared.downloadAvatar(user: user, fileName: fileName, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
                     }
                 }
             }
