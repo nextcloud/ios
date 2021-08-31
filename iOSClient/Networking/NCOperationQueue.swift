@@ -166,13 +166,11 @@ import NCCommunication
         let cell: NCCellProtocol = cell as! NCCellProtocol
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
 
-        #if !EXTENSION
-        if let image = (UIApplication.shared.delegate as! AppDelegate).avatars[user] {
+        if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
             cell.fileAvatarImageView?.image = image
             return
         }
-        #endif
-                
+
         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
             cell.fileAvatarImageView?.image = image
         } else {
@@ -475,7 +473,6 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                 if errorCode == 0, let image = image, let etag = etag {
                     
                     NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
-                    self.appDelegate.avatars[self.user] = image
                     if self.user == self.cell.fileUser {
                         if let avatarImageView = self.cell?.fileAvatarImageView  {
                             UIView.transition(with: avatarImageView, duration: 0.75, options: .transitionCrossDissolve) {
@@ -496,8 +493,8 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                         }
                     }
                     
-                } else if errorCode == NCGlobal.shared.errorNotModified, let image = UIImage(contentsOfFile: self.fileNameLocalPath) {
-                    self.appDelegate.avatars[self.user] = image
+                } else if errorCode == NCGlobal.shared.errorNotModified {
+                    NCManageDatabase.shared.setAvatarLoaded(fileName: self.fileName)
                 }
                 
                 self.finish()

@@ -116,7 +116,7 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if oldSchemaVersion < 202 {
+                    if oldSchemaVersion < 203 {
                         migration.deleteData(forType: tableDirectory.className())
                         migration.deleteData(forType: tableE2eEncryption.className())
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
@@ -921,6 +921,7 @@ class NCManageDatabase: NSObject {
                 addObject.date = NSDate()
                 addObject.etag = etag
                 addObject.fileName = fileName
+                addObject.loaded = true
 
                 realm.add(addObject, update: .all)
             }
@@ -929,7 +930,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getTableAvatar(fileName: String) -> tableAvatar? {
+    func getTableAvatar(fileName: String) -> tableAvatar? {
         
         let realm = try! Realm()
         
@@ -938,6 +939,65 @@ class NCManageDatabase: NSObject {
         }
         
         return tableAvatar.init(value: result)
+    }
+
+    func clearAllAvatarLoaded() {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.safeWrite {
+                
+                let results = realm.objects(tableAvatar.self)
+                for result in results {
+                    result.loaded = false
+                    realm.add(result, update: .all)
+                }
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    @discardableResult
+    func setAvatarLoaded(fileName: String) -> UIImage? {
+     
+        let realm = try! Realm()
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        var image: UIImage?
+        
+        do {
+            try realm.safeWrite {
+                if let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first {
+                    if let imageAvatar = UIImage(contentsOfFile: fileNameLocalPath) {
+                        result.loaded = true
+                        image = imageAvatar
+                    } else {
+                        realm.delete(result)
+                    }
+                }
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+        
+        return image
+    }
+    
+    func getImageAvatarLoaded(fileName: String) -> UIImage? {
+        
+        let realm = try! Realm()
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+
+        let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first
+        if result == nil {
+            NCUtilityFileSystem.shared.deleteFile(filePath: fileNameLocalPath)
+            return nil
+        } else if result?.loaded == false {
+            return nil
+        }
+        
+        return UIImage(contentsOfFile: fileNameLocalPath)
     }
     
     //MARK: -

@@ -37,7 +37,8 @@ class NCService: NSObject {
     
     @objc public func startRequestServicesServer() {
    
-        appDelegate.avatars = [:]
+        NCManageDatabase.shared.clearAllAvatarLoaded()
+        
         if appDelegate.account == "" { return }
         
         self.addInternalTypeIdentifier()
@@ -112,12 +113,11 @@ class NCService: NSObject {
                     
                     NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: etag) { (account, image, etag, errorCode, errorMessage) in
                         
-                        if let etag = etag, errorCode == 0, let image = image {
-                            (UIApplication.shared.delegate as! AppDelegate).avatars[user] = image
+                        if let etag = etag, errorCode == 0 {
                             NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
-                        } else if errorCode == NCGlobal.shared.errorNotModified, let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                            self.appDelegate.avatars[user] = image
+                        } else if errorCode == NCGlobal.shared.errorNotModified {
+                            NCManageDatabase.shared.setAvatarLoaded(fileName: fileName)
                         }
                     }
                     self.requestServerCapabilities()

@@ -64,7 +64,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var pasteboardOcIds: [String] = []
     var shares: [tableShare] = []
     var timerErrorNetworking: Timer?
-    var avatars: [String:UIImage] = [:]
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
@@ -229,10 +228,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 
         // Required unsubscribing / subscribing
         NCPushNotification.shared().pushNotification()
-        
-        // Clear all avatars
-        avatars.removeAll()
-    
+            
         // Request Service Server Nextcloud
         NCService.shared.startRequestServicesServer()
         
