@@ -473,6 +473,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                 if errorCode == 0, let image = image, let etag = etag {
                     
                     NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
+                    
                     if self.user == self.cell.fileUser {
                         if let avatarImageView = self.cell?.fileAvatarImageView  {
                             UIView.transition(with: avatarImageView, duration: 0.75, options: .transitionCrossDissolve) {
@@ -494,6 +495,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                     }
                     
                 } else if errorCode == NCGlobal.shared.errorNotModified {
+                    
                     NCManageDatabase.shared.setAvatarLoaded(fileName: self.fileName)
                 }
                 

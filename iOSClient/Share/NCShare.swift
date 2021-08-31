@@ -109,12 +109,13 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                 NCCommunication.shared.downloadAvatar(user: metadata!.ownerId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: etag) { (account, image, etag, errorCode, errorMessage) in
                     
                     if errorCode == 0, let etag = etag, let image = image {
+                        
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         self.sharedWithYouByImage.image = image
-                    } else if errorCode == NCGlobal.shared.errorNotModified {
-                        if let image = NCManageDatabase.shared.setAvatarLoaded(fileName: fileName) {
-                            self.sharedWithYouByImage.image = image
-                        }
+                        
+                    } else if errorCode == NCGlobal.shared.errorNotModified, let image = NCManageDatabase.shared.setAvatarLoaded(fileName: fileName) {
+                        
+                        self.sharedWithYouByImage.image = image
                     }
                 }
             }
@@ -356,9 +357,12 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                 NCCommunication.shared.downloadAvatar(user: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: etag) { (account, image, etag, errorCode, errorMessage) in
                     
                     if errorCode == 0, let etag = etag, let image = image {
+                        
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         cell.imageItem.image = image
+                        
                     } else if errorCode == NCGlobal.shared.errorNotModified, let image = NCManageDatabase.shared.setAvatarLoaded(fileName: fileName) {
+                        
                         cell.imageItem.image = image
                     }
                 }
