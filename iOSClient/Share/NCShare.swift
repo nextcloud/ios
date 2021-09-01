@@ -109,7 +109,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                 
                 NCCommunication.shared.downloadAvatar(user: metadata!.ownerId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag) { (account, imageAvatar, imageOriginal, etag, errorCode, errorMessage) in
                     
-                    if errorCode == 0, let etag = etag, let imageAvatar = imageAvatar, let imageOriginal = imageOriginal {
+                    if errorCode == 0, let etag = etag, let imageAvatar = imageAvatar {
                         
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         self.sharedWithYouByImage.image = imageAvatar
@@ -358,7 +358,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
 
                 NCCommunication.shared.downloadAvatar(user: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag) { (account, imageAvatar, imageOriginal, etag, errorCode, errorMessage) in
                     
-                    if errorCode == 0, let etag = etag, let imageAvatar = imageAvatar, let imageOriginal = imageOriginal {
+                    if errorCode == 0, let etag = etag, let imageAvatar = imageAvatar {
                         
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         cell.imageItem.image = imageAvatar
