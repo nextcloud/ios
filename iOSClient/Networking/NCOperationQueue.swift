@@ -468,7 +468,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: self.etag) { (account, imageAvatar, imageOriginal, etag, errorCode, errorMessage) in
+            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: self.etag) { (account, imageAvatar, imageOriginal, etag, errorCode, errorMessage) in
                 
                 if errorCode == 0, let imageAvatar = imageAvatar, let etag = etag, let imageOriginal = imageOriginal {
                     
