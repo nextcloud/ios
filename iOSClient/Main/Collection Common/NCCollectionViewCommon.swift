@@ -626,11 +626,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             
                 var image = NCUtility.shared.loadImage(named: "person.crop.circle")
                 
-                /*
-                if let data = try? Data(contentsOf: fileNameDataUrl), let imageAvatar = UIImage(data: data) {
-                    image = NCUtility.shared.createAvatar(image: imageAvatar, size: 30)
+                let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + self.appDelegate.user + "-original.png"
+                let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+                if let imageUser = UIImage(contentsOfFile: fileNameLocalPath) {
+                    image = NCUtility.shared.createAvatar(image: imageUser, size: 30)
                 }
-                */
                 
                 let button = UIButton(type: .custom)
                 button.setImage(image, for: .normal)

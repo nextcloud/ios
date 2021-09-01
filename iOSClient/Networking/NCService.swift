@@ -116,9 +116,10 @@ class NCService: NSObject {
                         if let etag = etag, errorCode == 0, let imageOriginal = imageOriginal {
                             
                             do {
-                                let image = NCUtility.shared.createAvatar(image: imageOriginal, size: 30)
-                                if let pngData = image.pngData() {
-                                    let url = URL.init(fileURLWithPath: (fileNameLocalPath + "-x30.png"))
+                                if let pngData = imageOriginal.pngData() {
+                                    let fileName = String(CCUtility.getUserUrlBase(user, urlBase: url)) + "-" + self.appDelegate.user + "-original.png"
+                                    let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+                                    let url = URL.init(fileURLWithPath: fileNameLocalPath)
                                     try pngData.write(to: url)
                                 }
                             } catch {}
