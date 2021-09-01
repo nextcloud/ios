@@ -240,7 +240,14 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         
         // PROFILE BUTTON
                 
-        var image = NCUtility.shared.loadImage(named: "person.crop.circle")
+        var image: UIImage?
+        
+        if #available(iOS 13.0, *) {
+            let config = UIImage.SymbolConfiguration(pointSize: 30)
+            image = NCUtility.shared.loadImage(named: "person.crop.circle", symbolConfiguration: config)
+        } else {
+            image = NCUtility.shared.loadImage(named: "person.crop.circle", size: 30)
+        }
         
         let fileName = String(CCUtility.getUserUrlBase(activeAccount.user, urlBase: activeAccount.urlBase)) + "-" + activeAccount.user + "-original.png"
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
