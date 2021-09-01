@@ -417,8 +417,7 @@ extension NCSelect: UICollectionViewDataSource {
         // Avatar
         if metadata.ownerId.count > 0 && metadata.ownerId != activeAccount.userId && activeAccount.account == metadata.account {
             let fileName = String(CCUtility.getUserUrlBase(metadata.user, urlBase: metadata.urlBase)) + "-" + metadata.ownerId + ".png"
-            let fileNameData = String(CCUtility.getUserUrlBase(metadata.user, urlBase: metadata.urlBase)) + "-" + metadata.ownerId + ".data"
-            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileName: fileName, fileNameData: fileNameData, placeholder: NCBrandColor.cacheImages.shared, cell: cell, view: collectionView)
+            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileName: fileName, placeholder: NCBrandColor.cacheImages.shared, cell: cell, view: collectionView)
         }
     }
     

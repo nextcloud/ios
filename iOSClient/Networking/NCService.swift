@@ -108,17 +108,13 @@ class NCService: NSObject {
                     
                     // Get Avatar
                     let fileName = String(CCUtility.getUserUrlBase(user, urlBase: url)) + "-" + self.appDelegate.user + ".png"
-                    let fileNameData = String(CCUtility.getUserUrlBase(user, urlBase: url)) + "-" + self.appDelegate.user + ".data"
                     let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-                    let fileNameDataUrl = URL.init(fileURLWithPath:String(CCUtility.getDirectoryUserData()) + "/" + fileNameData)
-
                     let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
                     
-                    NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: etag) { (account, image, data, etag, errorCode, errorMessage) in
+                    NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: etag) { (account, image, imageOriginal, etag, errorCode, errorMessage) in
                         
-                        if let etag = etag, errorCode == 0, let data = data {
+                        if let etag = etag, errorCode == 0, let imageOriginal = imageOriginal {
                             
-                            try? data.write(to: fileNameDataUrl)
                             NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
                             

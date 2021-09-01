@@ -631,7 +631,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
                 etagResource = metadata.etagResource
             }
             
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource) { (account, imagePreview, imageIcon, data, etag, errorCode, errorMessage) in
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorMessage) in
                 
                 if errorCode == 0 && metadata.ocId == self.currentMetadata.ocId {
                     NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)

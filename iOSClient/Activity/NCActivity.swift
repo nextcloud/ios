@@ -255,9 +255,8 @@ extension NCActivity: UITableViewDataSource {
                 cell.fileUser = activity.user
                 
                 let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + activity.user + ".png"
-                let fileNameData = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + activity.user + ".data"
 
-                NCOperationQueue.shared.downloadAvatar(user: activity.user, fileName: fileName, fileNameData: fileNameData, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
+                NCOperationQueue.shared.downloadAvatar(user: activity.user, fileName: fileName, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
             }
             
             // subject
@@ -521,7 +520,7 @@ extension activityTableViewCell: UICollectionViewDataSource {
                         
                     } else {
                         
-                        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, widthPreview: 0, heightPreview: 0, etag: nil, useInternalEndpoint: false) { (account, imagePreview, imageIcon, data, etag, errorCode, errorDescription) in
+                        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, widthPreview: 0, heightPreview: 0, etag: nil, useInternalEndpoint: false) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
                             if errorCode == 0 && imagePreview != nil {
                                 self.collectionView.reloadData()
                             }

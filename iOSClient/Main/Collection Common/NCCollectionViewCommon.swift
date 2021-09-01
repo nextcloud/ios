@@ -625,12 +625,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if layoutKey == NCGlobal.shared.layoutViewFiles {
             
                 var image = NCUtility.shared.loadImage(named: "person.crop.circle")
-                let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
-                let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-                if let userImage = UIImage(contentsOfFile: fileNamePath), let avatarImage = userImage.resizeImage(size: CGSize(width: 30, height: 30), isAspectRation: true) {
-                    image = avatarImage
+                
+                /*
+                if let data = try? Data(contentsOf: fileNameDataUrl), let imageAvatar = UIImage(data: data) {
+                    image = NCUtility.shared.createAvatar(image: imageAvatar, size: 30)
                 }
-                                
+                */
+                
                 let button = UIButton(type: .custom)
                 button.setImage(image, for: .normal)
                 
@@ -1372,8 +1373,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Avatar
         if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId && appDelegate.account == metadata.account {
             let fileName = String(CCUtility.getUserUrlBase(metadata.user, urlBase: metadata.urlBase)) + "-" + metadata.ownerId + ".png"
-            let fileNameData = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + metadata.ownerId + ".data"
-            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileName: fileName, fileNameData: fileNameData, placeholder: NCBrandColor.cacheImages.shared, cell: cell, view: collectionView)
+            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileName: fileName, placeholder: NCBrandColor.cacheImages.shared, cell: cell, view: collectionView)
         }
     }
     

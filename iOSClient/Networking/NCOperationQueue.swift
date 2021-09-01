@@ -161,11 +161,10 @@ import NCCommunication
     
     // Download Avatar
     
-    func downloadAvatar(user: String, fileName: String, fileNameData: String, placeholder: UIImage?, cell: UIView, view: UIView?) {
+    func downloadAvatar(user: String, fileName: String, placeholder: UIImage?, cell: UIView, view: UIView?) {
 
         let cell: NCCellProtocol = cell as! NCCellProtocol
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-        let fileNameDataUrl = URL.init(fileURLWithPath:String(CCUtility.getDirectoryUserData()) + "/" + fileNameData)
         
         if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
             cell.fileAvatarImageView?.image = image
@@ -178,7 +177,7 @@ import NCCommunication
             cell.fileAvatarImageView?.image = placeholder
         }
         
-        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, fileNameDataUrl: fileNameDataUrl, cell: cell, view: view))
+        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view))
     }
     
     func cancelDownloadAvatar(user: String) {
@@ -417,7 +416,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
             if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
                 etagResource = metadata.etagResource
             }
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource) { (account, imagePreview, imageIcon, data, etag, errorCode, errorDescription) in
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
                 
                 if errorCode == 0 && imageIcon != nil {
                     NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
@@ -452,15 +451,13 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
     var fileName: String
     var etag: String?
     var fileNameLocalPath: String
-    var fileNameDataUrl: URL
     var cell: NCCellProtocol!
     var view: UIView?
 
-    init(user: String, fileName: String, fileNameLocalPath: String, fileNameDataUrl: URL, cell: NCCellProtocol, view: UIView?) {
+    init(user: String, fileName: String, fileNameLocalPath: String, cell: NCCellProtocol, view: UIView?) {
         self.user = user
         self.fileName = fileName
         self.fileNameLocalPath = fileNameLocalPath
-        self.fileNameDataUrl = fileNameDataUrl
         self.cell = cell
         self.view = view
         self.etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
@@ -471,17 +468,16 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: self.etag) { (account, image, data, etag, errorCode, errorMessage) in
+            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, sizeRoundedAvatar: NCGlobal.shared.sizeRoundedAvatar, etag: self.etag) { (account, imageAvatar, imageOriginal, etag, errorCode, errorMessage) in
                 
-                if errorCode == 0, let image = image, let etag = etag, let data = data {
+                if errorCode == 0, let imageAvatar = imageAvatar, let etag = etag, let imageOriginal = imageOriginal {
                     
-                    try? data.write(to: self.fileNameDataUrl)
                     NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
                     
                     if self.user == self.cell.fileUser {
                         if let avatarImageView = self.cell?.fileAvatarImageView  {
                             UIView.transition(with: avatarImageView, duration: 0.75, options: .transitionCrossDissolve) {
-                                avatarImageView.image = image
+                                avatarImageView.image = imageAvatar
                             } completion: { _ in
                                 if self.view is UICollectionView {
                                     (self.view as? UICollectionView)?.reloadData()
