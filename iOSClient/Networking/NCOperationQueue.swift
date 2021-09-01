@@ -177,6 +177,11 @@ import NCCommunication
             cell.fileAvatarImageView?.image = placeholder
         }
         
+        for operation in downloadAvatarQueue.operations as! [NCOperationDownloadAvatar] {
+            if operation.fileName == fileName {
+                return
+            }
+        }
         downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view))
     }
     
@@ -470,7 +475,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         } else {
             NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: self.etag) { (account, imageAvatar, imageOriginal, etag, errorCode, errorMessage) in
                 
-                if errorCode == 0, let imageAvatar = imageAvatar, let etag = etag, let imageOriginal = imageOriginal {
+                if errorCode == 0, let imageAvatar = imageAvatar, let etag = etag {
                     
                     NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
                     
