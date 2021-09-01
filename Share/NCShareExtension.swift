@@ -241,11 +241,11 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         // PROFILE BUTTON
                 
         var image = NCUtility.shared.loadImage(named: "person.crop.circle")
-        let fileName = String(CCUtility.getUserUrlBase(activeAccount.user, urlBase: activeAccount.urlBase)) + "-" + activeAccount.user + ".png"
-        let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
         
-        if let userImage = UIImage(contentsOfFile: fileNamePath), let avatarImage = userImage.resizeImage(size: CGSize(width: 30, height: 30), isAspectRation: true) {
-            image = avatarImage
+        let fileName = String(CCUtility.getUserUrlBase(activeAccount.user, urlBase: activeAccount.urlBase)) + "-" + activeAccount.user + "-original.png"
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        if let imageUser = UIImage(contentsOfFile: fileNameLocalPath) {
+            image = NCUtility.shared.createAvatar(image: imageUser, size: 30)
         }
         
         let profileButton = UIButton(type: .custom)
