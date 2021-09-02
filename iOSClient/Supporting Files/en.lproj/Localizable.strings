@@ -802,4 +802,4 @@
 "_used_space_"              = "Used space";
 "_open_in_onlyoffice_"      = "Open in ONLYOFFICE";
 "_open_in_collabora_"       = "Open with Collabora Online";
-"_login_address_detail_"    = "The link to your Nextcloud web interface when you open it in the browser.";
+"_login_address_detail_"    = "The link to your %@ web interface when you open it in the browser.";

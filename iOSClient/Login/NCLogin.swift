@@ -76,8 +76,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         
         // Login button
         loginAddressDetail.textColor = textColor
-        loginAddressDetail.text = NSLocalizedString("_login_address_detail_", comment: "")
-        
+        loginAddressDetail.text = String.localizedStringWithFormat(NSLocalizedString("_login_address_detail_", comment: ""), NCBrandOptions.shared.brand)
+                
         // Login Image
         loginImage.image = UIImage(named: "arrow.right")?.image(color: textColor, size: 100)
         
