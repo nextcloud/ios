@@ -50,6 +50,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         serverUrl = appDelegate.activeServerUrl
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        collectionView?.collectionViewLayout = listLayout
+    }
+    
     override func setNavigationItem() {
         self.navigationItem.rightBarButtonItem = nil
         self.navigationItem.leftBarButtonItem = nil
@@ -85,12 +91,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
     override func uploadCancelFile(_ notification: NSNotification) {
         
         reloadDataSource()
-    }
-    
-    override func triggerProgressTask(_ notification: NSNotification) {
-        super.triggerProgressTask(notification)
-         
-        self.collectionView.reloadData()
     }
     
     // MARK: TAP EVENT
