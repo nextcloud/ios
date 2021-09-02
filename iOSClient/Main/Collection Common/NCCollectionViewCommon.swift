@@ -1453,7 +1453,18 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.imageItem.image = nil
             cell.imageItem.backgroundColor = nil
             
-            cell.progressView.progress = 0.0
+            // Progress
+            var progress: Float = 0.0
+            var totalBytes: Int64 = 0
+            if let progressType = appDelegate.listProgress[metadata.ocId] {
+                progress = progressType.progress
+                totalBytes = progressType.totalBytes
+                cell.progressView.progress = progress
+                cell.progressView.isHidden = false
+            } else {
+                cell.progressView.progress = 0.0
+                cell.progressView.isHidden = true
+            }
             
             if metadata.directory {
                 
@@ -1511,20 +1522,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             if appDelegate.account != metadata.account {
                 cell.imageShared.image = NCBrandColor.cacheImages.shared
             }
-                        
-            // Transfer
-            var progress: Float = 0.0
-            var totalBytes: Int64 = 0
-            if let progressType = appDelegate.listProgress[metadata.ocId] {
-                progress = progressType.progress
-                totalBytes = progressType.totalBytes
-            }
+            
             if metadata.status == NCGlobal.shared.metadataStatusInDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading ||  metadata.status >= NCGlobal.shared.metadataStatusTypeUpload {
-                cell.progressView.isHidden = false
                 cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
             } else {
-                cell.progressView.isHidden = true
-                cell.progressView.progress = progress
                 cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
             }
             
@@ -1619,7 +1620,18 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.imageItem.image = nil
             cell.imageItem.backgroundColor = nil
             
-            cell.progressView.progress = 0.0
+            // Progress
+            var progress: Float = 0.0
+            //var totalBytes: Int64 = 0
+            if let progressType = appDelegate.listProgress[metadata.ocId] {
+                progress = progressType.progress
+                //totalBytes = progressType.totalBytes
+                cell.progressView.progress = progress
+                cell.progressView.isHidden = false
+            } else {
+                cell.progressView.progress = 0.0
+                cell.progressView.isHidden = true
+            }
 
             if metadata.directory {
                 
@@ -1666,11 +1678,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             
             // Transfer
             if metadata.status == NCGlobal.shared.metadataStatusInDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading ||  metadata.status >= NCGlobal.shared.metadataStatusTypeUpload {
-                cell.progressView.isHidden = false
                 cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
             } else {
-                cell.progressView.isHidden = true
-                cell.progressView.progress = 0.0
                 cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
             }
             

@@ -212,10 +212,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         
         if metadata.status == NCGlobal.shared.metadataStatusInDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading ||  metadata.status >= NCGlobal.shared.metadataStatusTypeUpload {
             cell.progressView.isHidden = false
+            cell.progressView.progress = progress
         } else {
             cell.progressView.isHidden = true
         }
-        cell.progressView.progress = progress
         
         // Write status on Label Info
         switch metadata.status {
