@@ -87,6 +87,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         reloadDataSource()
     }
     
+    override func triggerProgressTask(_ notification: NSNotification) {
+        super.triggerProgressTask(notification)
+         
+        self.collectionView.reloadData()
+    }
+    
     // MARK: TAP EVENT
     
     override func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
@@ -208,9 +214,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
             cell.progressView.isHidden = false
         } else {
             cell.progressView.isHidden = true
-            cell.progressView.progress = progress
         }
-
+        cell.progressView.progress = progress
+        
         // Write status on Label Info
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitDownload:
