@@ -264,20 +264,15 @@ class NCGlobal: NSObject {
     //
     let metadataStatusNormal: Int                   = 0
 
-    let metadataStatustypeDownload: Int             = 1
+    let metadataStatusWaitDownload: Int             = -1
+    let metadataStatusInDownload: Int               = -2
+    let metadataStatusDownloading: Int              = -3
+    let metadataStatusDownloadError: Int            = -4
 
-    let metadataStatusWaitDownload: Int             = 2
-    let metadataStatusInDownload: Int               = 3
-    let metadataStatusDownloading: Int              = 4
-    let metadataStatusDownloadError: Int            = 5
-
-    let metadataStatusTypeUpload: Int               = 6
-
-    let metadataStatusWaitUpload: Int               = 7
-    let metadataStatusInUpload: Int                 = 8
-    let metadataStatusUploading: Int                = 9
-    let metadataStatusUploadError: Int              = 10
-    let metadataStatusUploadForcedStart: Int        = 11
+    let metadataStatusWaitUpload: Int               = 1
+    let metadataStatusInUpload: Int                 = 2
+    let metadataStatusUploading: Int                = 3
+    let metadataStatusUploadError: Int              = 4
     
     // Notification Center
     //

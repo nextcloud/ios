@@ -210,7 +210,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
             totalBytes = progressType.totalBytes
         }
         
-        if metadata.status == NCGlobal.shared.metadataStatusInDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading ||  metadata.status >= NCGlobal.shared.metadataStatusTypeUpload {
+        if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
             cell.progressView.isHidden = false
             cell.progressView.progress = progress
         } else {
@@ -264,7 +264,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
     override func reloadDataSource() {
         super.reloadDataSource()
                 
-        metadatasSource = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "(session CONTAINS 'upload') OR (session CONTAINS 'download')"), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
+        metadatasSource = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status == %i || status == %i || status == %i || status == %i || status == %i || status == %i", NCGlobal.shared.metadataStatusWaitDownload, NCGlobal.shared.metadataStatusInDownload, NCGlobal.shared.metadataStatusDownloading, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
         self.dataSource = NCDataSource.init(metadatasSource: metadatasSource)
         
         refreshControl.endRefreshing()
