@@ -361,21 +361,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func deleteFile(_ notification: NSNotification) {
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let fileNameView = userInfo["fileNameView"] as? String, let onlyLocal = userInfo["onlyLocal"] as? Bool {
-                if onlyLocal {
-                    reloadDataSource()
-                } else if fileNameView.lowercased() == NCGlobal.shared.fileNameRichWorkspace.lowercased() {
-                    reloadDataSourceNetwork(forced: true)
-                } else {
-                    if let row = dataSource.deleteMetadata(ocId: ocId) {
-                        let indexPath = IndexPath(row: row, section: 0)
-                        collectionView?.performBatchUpdates({
-                            collectionView?.deleteItems(at: [indexPath])
-                        }, completion: { (_) in
-                            self.collectionView?.reloadData()
-                        })
-                    }
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let fileNameView = userInfo["fileNameView"] as? String, let onlyLocal = userInfo["onlyLocal"] as? Bool {
+            if onlyLocal {
+                reloadDataSource()
+            } else if fileNameView.lowercased() == NCGlobal.shared.fileNameRichWorkspace.lowercased() {
+                reloadDataSourceNetwork(forced: true)
+            } else {
+                if let row = dataSource.deleteMetadata(ocId: ocId) {
+                    let indexPath = IndexPath(row: row, section: 0)
+                    collectionView?.performBatchUpdates({
+                        collectionView?.deleteItems(at: [indexPath])
+                    }, completion: { (_) in
+                        self.collectionView?.reloadData()
+                    })
                 }
             }
         }
@@ -383,29 +381,26 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
    
     @objc func moveFile(_ notification: NSNotification) {
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let serverUrlFrom = userInfo["serverUrlFrom"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                
-                // DEL
-                if serverUrlFrom == serverUrl && metadata.account == appDelegate.account {
-                    if let row = dataSource.deleteMetadata(ocId: ocId) {
-                        let indexPath = IndexPath(row: row, section: 0)
-                        collectionView?.performBatchUpdates({
-                            collectionView?.deleteItems(at: [indexPath])
-                        }, completion: { (_) in
-                            self.collectionView?.reloadData()
-                        })
-                    }
-                    // ADD
-                } else if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
-                    if let row = dataSource.addMetadata(metadata) {
-                        let indexPath = IndexPath(row: row, section: 0)
-                        collectionView?.performBatchUpdates({
-                            collectionView?.insertItems(at: [indexPath])
-                        }, completion: { (_) in
-                            self.collectionView?.reloadData()
-                        })
-                    }
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let serverUrlFrom = userInfo["serverUrlFrom"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            // DEL
+            if serverUrlFrom == serverUrl && metadata.account == appDelegate.account {
+                if let row = dataSource.deleteMetadata(ocId: ocId) {
+                    let indexPath = IndexPath(row: row, section: 0)
+                    collectionView?.performBatchUpdates({
+                        collectionView?.deleteItems(at: [indexPath])
+                    }, completion: { (_) in
+                        self.collectionView?.reloadData()
+                    })
+                }
+                // ADD
+            } else if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
+                if let row = dataSource.addMetadata(metadata) {
+                    let indexPath = IndexPath(row: row, section: 0)
+                    collectionView?.performBatchUpdates({
+                        collectionView?.insertItems(at: [indexPath])
+                    }, completion: { (_) in
+                        self.collectionView?.reloadData()
+                    })
                 }
             }
         }
@@ -413,12 +408,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func copyFile(_ notification: NSNotification) {
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let serverUrlTo = userInfo["serverUrlTo"] as? String {
-                
-                if serverUrlTo == self.serverUrl {
-                    reloadDataSource()
-                }
+        if let userInfo = notification.userInfo as NSDictionary?, let serverUrlTo = userInfo["serverUrlTo"] as? String {
+            if serverUrlTo == self.serverUrl {
+                reloadDataSource()
             }
         }
     }
@@ -430,22 +422,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func createFolder(_ notification: NSNotification) {
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                
-                if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
-                    pushMetadata(metadata)
-                    /*
-                    if let row = dataSource.addMetadata(metadata) {
-                        let indexPath = IndexPath(row: row, section: 0)
-                        collectionView?.performBatchUpdates({
-                            collectionView?.insertItems(at: [indexPath])
-                        }, completion: { (_) in
-                            self.collectionView?.reloadData()
-                        })
-                    }
-                    */
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
+                pushMetadata(metadata)
+                /*
+                if let row = dataSource.addMetadata(metadata) {
+                    let indexPath = IndexPath(row: row, section: 0)
+                    collectionView?.performBatchUpdates({
+                        collectionView?.insertItems(at: [indexPath])
+                    }, completion: { (_) in
+                        self.collectionView?.reloadData()
+                    })
                 }
+                */
             }
         } else {
             reloadDataSourceNetwork()
@@ -454,25 +443,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func favoriteFile(_ notification: NSNotification) {
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                
-                if dataSource.getIndexMetadata(ocId: metadata.ocId) != nil {
-                    reloadDataSource()
-                }
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            if dataSource.getIndexMetadata(ocId: metadata.ocId) != nil {
+                reloadDataSource()
             }
         }
     }
     
     @objc func downloadStartFile(_ notification: NSNotification) {
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
-                    let indexPath = IndexPath(row: row, section: 0)
-                    if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                        collectionView?.reloadItems(at: [indexPath])
-                    }
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
+                let indexPath = IndexPath(row: row, section: 0)
+                if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
+                    collectionView?.reloadItems(at: [indexPath])
                 }
             }
         }
@@ -480,13 +464,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func downloadedFile(_ notification: NSNotification) {
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let _ = userInfo["errorCode"] as? Int, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
-                    let indexPath = IndexPath(row: row, section: 0)
-                    if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                        collectionView?.reloadItems(at: [indexPath])
-                    }
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let _ = userInfo["errorCode"] as? Int, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
+                let indexPath = IndexPath(row: row, section: 0)
+                if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
+                    collectionView?.reloadItems(at: [indexPath])
                 }
             }
         }
@@ -494,13 +476,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
     @objc func downloadCancelFile(_ notification: NSNotification) {
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
-                    let indexPath = IndexPath(row: row, section: 0)
-                    if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                        collectionView?.reloadItems(at: [indexPath])
-                    }
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
+                let indexPath = IndexPath(row: row, section: 0)
+                if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
+                    collectionView?.reloadItems(at: [indexPath])
                 }
             }
         }
@@ -508,46 +488,40 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func uploadStartFile(_ notification: NSNotification) {
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
-                    dataSource.addMetadata(metadata)
-                    self.collectionView?.reloadData()
-                }
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
+                dataSource.addMetadata(metadata)
+                self.collectionView?.reloadData()
             }
         }
     }
         
     @objc func uploadedFile(_ notification: NSNotification) {
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-        if let ocId = userInfo["ocId"] as? String, let ocIdTemp = userInfo["ocIdTemp"] as? String, let _ = userInfo["errorCode"] as? Int, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
-                    dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
-                    collectionView?.reloadData()
-                }
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let ocIdTemp = userInfo["ocIdTemp"] as? String, let _ = userInfo["errorCode"] as? Int, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
+                dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
+                collectionView?.reloadData()
             }
         }
     }
     
     @objc func uploadCancelFile(_ notification: NSNotification) {
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let account = userInfo["account"] as? String {
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let account = userInfo["account"] as? String {
                 
-                if serverUrl == self.serverUrl && account == appDelegate.account {
-                    if let row = dataSource.deleteMetadata(ocId: ocId) {
-                        let indexPath = IndexPath(row: row, section: 0)
-                        collectionView?.performBatchUpdates({
-                            if indexPath.section < (collectionView?.numberOfSections ?? 0) && indexPath.row < (collectionView?.numberOfItems(inSection: indexPath.section) ?? 0) {
-                                collectionView?.deleteItems(at: [indexPath])
-                            }
-                        }, completion: { (_) in
-                            self.collectionView?.reloadData()
-                        })
-                    } else {
-                        self.reloadDataSource()
-                    }
+            if serverUrl == self.serverUrl && account == appDelegate.account {
+                if let row = dataSource.deleteMetadata(ocId: ocId) {
+                    let indexPath = IndexPath(row: row, section: 0)
+                    collectionView?.performBatchUpdates({
+                        if indexPath.section < (collectionView?.numberOfSections ?? 0) && indexPath.row < (collectionView?.numberOfItems(inSection: indexPath.section) ?? 0) {
+                            collectionView?.deleteItems(at: [indexPath])
+                        }
+                    }, completion: { (_) in
+                        self.collectionView?.reloadData()
+                    })
+                } else {
+                    self.reloadDataSource()
                 }
             }
         }
@@ -555,48 +529,42 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
     @objc func triggerProgressTask(_ notification: NSNotification) {
         
-        if let userInfo = notification.userInfo as NSDictionary?, let progressNumber = userInfo["progress"] as? NSNumber, let totalBytes = userInfo["totalBytes"] as? Int64, let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64 {
-            if let ocId = userInfo["ocId"] as? String {
+        if let userInfo = notification.userInfo as NSDictionary?, let progressNumber = userInfo["progress"] as? NSNumber, let totalBytes = userInfo["totalBytes"] as? Int64, let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64, let ocId = userInfo["ocId"] as? String {
                 
-                let progress = progressNumber.floatValue
-                let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
-                        
-                let progressType = NCGlobal.progressType(progress: progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected)
-                appDelegate.listProgress[ocId] = progressType
-                                
-                if let index = dataSource.getIndexMetadata(ocId: ocId) {
-                    if let cell = collectionView?.cellForItem(at: IndexPath(row: index, section: 0)) {
-                        if cell is NCListCell {
-                            let cell = cell as! NCListCell
-                            if progress > 0 {
-                                cell.progressView?.isHidden = false
-                                cell.progressView?.progress = progress
-                                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
-                                if status == NCGlobal.shared.metadataStatusInDownload {
-                                    cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
-                                } else if status == NCGlobal.shared.metadataStatusInUpload {
-                                    cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
-                                }
+            let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
+    
+            if let index = dataSource.getIndexMetadata(ocId: ocId) {
+                if let cell = collectionView?.cellForItem(at: IndexPath(row: index, section: 0)) {
+                    if cell is NCListCell {
+                        let cell = cell as! NCListCell
+                        if progressNumber.floatValue > 0 {
+                            cell.progressView?.isHidden = false
+                            cell.progressView?.progress = progressNumber.floatValue
+                            cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
+                            if status == NCGlobal.shared.metadataStatusInDownload {
+                                cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
+                            } else if status == NCGlobal.shared.metadataStatusInUpload {
+                                cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
                             }
-                        } else if cell is NCTransferCell {
-                            let cell = cell as! NCTransferCell
-                            if progress > 0 {
-                                cell.progressView?.isHidden = false
-                                cell.progressView?.progress = progress
-                                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
-                                if status == NCGlobal.shared.metadataStatusInDownload {
-                                    cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
-                                } else if status == NCGlobal.shared.metadataStatusInUpload {
-                                    cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
-                                }
+                        }
+                    } else if cell is NCTransferCell {
+                        let cell = cell as! NCTransferCell
+                        if progressNumber.floatValue > 0 {
+                            cell.progressView?.isHidden = false
+                            cell.progressView?.progress = progressNumber.floatValue
+                            cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
+                            if status == NCGlobal.shared.metadataStatusInDownload {
+                                cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
+                            } else if status == NCGlobal.shared.metadataStatusInUpload {
+                                cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
                             }
-                        } else if cell is NCGridCell {
-                            let cell = cell as! NCGridCell
-                            if progress > 0 {
-                                cell.progressView.isHidden = false
-                                cell.progressView.progress = progress
-                                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
-                            }
+                        }
+                    } else if cell is NCGridCell {
+                        let cell = cell as! NCGridCell
+                        if progressNumber.floatValue > 0 {
+                            cell.progressView.isHidden = false
+                            cell.progressView.progress = progressNumber.floatValue
+                            cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
                         }
                     }
                 }
@@ -1459,11 +1427,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             if let progressType = appDelegate.listProgress[metadata.ocId] {
                 progress = progressType.progress
                 totalBytes = progressType.totalBytes
-                cell.progressView.progress = progress
+            }
+            if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
                 cell.progressView.isHidden = false
+                cell.progressView.progress = progress
             } else {
-                cell.progressView.progress = 0.0
                 cell.progressView.isHidden = true
+                cell.progressView.progress = 0.0
             }
             
             if metadata.directory {
@@ -1622,15 +1592,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             
             // Progress
             var progress: Float = 0.0
-            //var totalBytes: Int64 = 0
             if let progressType = appDelegate.listProgress[metadata.ocId] {
                 progress = progressType.progress
-                //totalBytes = progressType.totalBytes
-                cell.progressView.progress = progress
+            }
+            
+            if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
                 cell.progressView.isHidden = false
+                cell.progressView.progress = progress
             } else {
-                cell.progressView.progress = 0.0
                 cell.progressView.isHidden = true
+                cell.progressView.progress = 0.0
             }
 
             if metadata.directory {
