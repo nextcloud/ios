@@ -323,10 +323,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.status.text = ""
             cell.displayName.text = ""
             
-            let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
-            
-            if let image = UIImage.init(contentsOfFile: fileNamePath) {
-                cell.avatar?.image = image
+            let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + self.appDelegate.user + "-original.png"
+            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+            if let image = UIImage.init(contentsOfFile: fileNameLocalPath) {
+                cell.avatar?.image = NCUtility.shared.createAvatar(image: image, size: 50)
             } else {
                 cell.avatar?.image = UIImage.init(named: "avatar")?.imageColor(NCBrandColor.shared.gray)
             }
