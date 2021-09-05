@@ -247,7 +247,7 @@ extension NCMedia {
                         self.isEditMode = false
                         for ocId in self.selectOcId {
                             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                NCNetworking.shared.deleteMetadata(metadata, onlyLocal: false) { (errorCode, errorDescription) in
+                                NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { (errorCode, errorDescription) in
                                     if errorCode != 0 {
                                         NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                     }

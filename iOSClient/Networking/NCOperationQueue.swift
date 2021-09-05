@@ -77,13 +77,13 @@ import NCCommunication
     
     // Delete file
     
-    @objc func delete(metadata: tableMetadata, onlyLocal: Bool) {
+    @objc func delete(metadata: tableMetadata, onlyLocalCache: Bool) {
         for operation in deleteQueue.operations as! [NCOperationDelete]  {
             if operation.metadata.ocId == metadata.ocId {
                 return
             }
         }
-        deleteQueue.addOperation(NCOperationDelete.init(metadata: metadata, onlyLocal: onlyLocal))
+        deleteQueue.addOperation(NCOperationDelete.init(metadata: metadata, onlyLocalCache: onlyLocalCache))
     }
     @objc func deleteCancelAll() {
         deleteQueue.cancelAll()
@@ -226,18 +226,18 @@ class NCOperationDownload: ConcurrentOperation {
 class NCOperationDelete: ConcurrentOperation {
    
     var metadata: tableMetadata
-    var onlyLocal: Bool
+    var onlyLocalCache: Bool
     
-    init(metadata: tableMetadata, onlyLocal: Bool) {
+    init(metadata: tableMetadata, onlyLocalCache: Bool) {
         self.metadata = tableMetadata.init(value: metadata)
-        self.onlyLocal = onlyLocal
+        self.onlyLocalCache = onlyLocalCache
     }
     
     override func start() {
         if isCancelled {
             self.finish()
         } else {
-            NCNetworking.shared.deleteMetadata(metadata, onlyLocal: onlyLocal) { (errorCode, errorDescription) in
+            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: onlyLocalCache) { (errorCode, errorDescription) in
                 if errorCode != 0 {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }

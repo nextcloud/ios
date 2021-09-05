@@ -996,9 +996,9 @@ import Queuer
     
     //MARK: - WebDav Delete
 
-    @objc func deleteMetadata(_ metadata: tableMetadata, onlyLocal: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func deleteMetadata(_ metadata: tableMetadata, onlyLocalCache: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
                 
-        if (onlyLocal) {
+        if (onlyLocalCache) {
             
             var metadatas = [metadata]
             
@@ -1017,7 +1017,7 @@ import Queuer
                     NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(metadataLivePhoto.ocId))
                 }
             
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": metadata.ocId, "fileNameView": metadata.fileNameView, "classFile": metadata.classFile, "onlyLocal": true])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": metadata.ocId, "fileNameView": metadata.fileNameView, "classFile": metadata.classFile, "onlyLocalCache": true])
             }
             return completion(0, "")
         }
@@ -1078,7 +1078,7 @@ import Queuer
                     NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
                 }
                 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": metadata.ocId, "fileNameView": metadata.fileNameView, "classFile": metadata.classFile, "onlyLocal": true])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": metadata.ocId, "fileNameView": metadata.fileNameView, "classFile": metadata.classFile, "onlyLocalCache": true])
             }
             
             completion(errorCode, errorDescription)
