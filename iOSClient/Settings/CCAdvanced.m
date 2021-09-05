@@ -431,7 +431,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterInitialize object:nil userInfo:nil];
     
     // Clear Media
-    [appDelegate.activeMedia reloadDataSource];
+    [appDelegate.activeMedia reloadDataSourceWithCompletion:^(NSArray *metadatas) { }];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
         [[NCUtility shared] stopActivityIndicator];

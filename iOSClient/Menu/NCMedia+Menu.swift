@@ -54,7 +54,7 @@ extension NCMedia {
                     action: { menuAction in
                         self.filterClassTypeImage = !self.filterClassTypeImage
                         self.filterClassTypeVideo = false
-                        self.reloadDataSource()
+                        self.reloadDataSourceWithCompletion { (_) in }
                     }
                 )
             )
@@ -68,7 +68,7 @@ extension NCMedia {
                     action: { menuAction in
                         self.filterClassTypeVideo = !self.filterClassTypeVideo
                         self.filterClassTypeImage = false
-                        self.reloadDataSource()
+                        self.reloadDataSourceWithCompletion { (_) in }
                     }
                 )
             )
@@ -98,7 +98,7 @@ extension NCMedia {
                     on: true,
                     action: { menuAction in
                         CCUtility.setMediaSortDate("date")
-                        self.reloadDataSource()
+                        self.reloadDataSourceWithCompletion { (_) in }
                     }
                 )
             )
@@ -111,7 +111,7 @@ extension NCMedia {
                     on: true,
                     action: { menuAction in
                         CCUtility.setMediaSortDate("creationDate")
-                        self.reloadDataSource()
+                        self.reloadDataSourceWithCompletion { (_) in }
                     }
                 )
             )
@@ -124,7 +124,7 @@ extension NCMedia {
                     on: true,
                     action: { menuAction in
                         CCUtility.setMediaSortDate("uploadDate")
-                        self.reloadDataSource()
+                        self.reloadDataSourceWithCompletion { (_) in }
                     }
                 )
             )
