@@ -24,7 +24,7 @@
 import UIKit
 import NCCommunication
 
-class NCFileViewInFolder: NCCollectionViewCommon  {
+class NCFileViewInFolder: NCCollectionViewCommon {
     
     internal var fileName: String?
 
@@ -43,7 +43,8 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-
+        super.viewWillAppear(animated)
+        
         appDelegate.activeViewController = self
         
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) {
