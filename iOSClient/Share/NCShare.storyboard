@@ -16,6 +16,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="EQO-kT-aOm"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
                     <navigationItem key="navigationItem" id="3f0-GZ-Z6m"/>
                 </viewController>
@@ -99,6 +100,7 @@
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="j3W-IW-lzW"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="jzJ-Ra-l4b" firstAttribute="leading" secondItem="j3W-IW-lzW" secondAttribute="leading" id="B4V-GC-zYM"/>
                             <constraint firstItem="j3W-IW-lzW" firstAttribute="trailing" secondItem="jzJ-Ra-l4b" secondAttribute="trailing" constant="5" id="WPr-LS-NPk"/>
