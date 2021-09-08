@@ -2204,7 +2204,7 @@ class NCManageDatabase: NSObject {
                     
                     if let result = metadatasResult.first(where: { $0.ocId == metadata.ocId }) {
                         // update
-                        if result.status == NCGlobal.shared.metadataStatusNormal && (result.etag != metadata.etag || result.fileNameView != metadata.fileNameView || result.date != metadata.date || result.permissions != metadata.permissions || result.hasPreview != metadata.hasPreview) {
+                        if result.status == NCGlobal.shared.metadataStatusNormal && (result.etag != metadata.etag || result.fileNameView != metadata.fileNameView || result.date != metadata.date || result.permissions != metadata.permissions || result.hasPreview != metadata.hasPreview || result.note != metadata.note) {
                             ocIdsUdate.append(metadata.ocId)
                             realm.add(metadata, update: .all)
                         } else if result.status == NCGlobal.shared.metadataStatusNormal && addCompareLivePhoto && result.livePhoto != metadata.livePhoto {
