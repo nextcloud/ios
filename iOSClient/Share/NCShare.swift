@@ -25,6 +25,7 @@ import UIKit
 import Parchment
 import DropDown
 import NCCommunication
+import MarqueeLabel
 
 class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDelegate, NCShareUserCellDelegate, NCShareNetworkingDelegate {
    
@@ -32,6 +33,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     @IBOutlet weak var sharedWithYouByView: UIView!
     @IBOutlet weak var sharedWithYouByImage: UIImageView!
     @IBOutlet weak var sharedWithYouByLabel: UILabel!
+    @IBOutlet weak var sharedWithYouByNoteImage: UIImageView!
+    @IBOutlet weak var sharedWithYouByNote: MarqueeLabel!
     @IBOutlet weak var searchFieldTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var searchField: UITextField!
     @IBOutlet weak var shareLinkImage: UIImageView!
@@ -95,7 +98,20 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             sharedWithYouByView.isHidden = false
             sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata!.ownerDisplayName
             sharedWithYouByImage.image = UIImage(named: "avatar")?.imageColor(NCBrandColor.shared.label)
-
+            
+            if metadata?.note.count ?? 0 > 0 {
+                searchFieldTopConstraint.constant = 95
+                sharedWithYouByNoteImage.isHidden = false
+                sharedWithYouByNoteImage.image = NCUtility.shared.loadImage(named: "note.text", color: .gray)
+                sharedWithYouByNote.isHidden = false
+                sharedWithYouByNote.text = metadata?.note
+                sharedWithYouByNote.textColor = NCBrandColor.shared.label
+                sharedWithYouByNote.trailingBuffer = sharedWithYouByNote.frame.width
+            } else {
+                sharedWithYouByNoteImage.isHidden = true
+                sharedWithYouByNote.isHidden = true
+            }
+            
             let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + metadata!.ownerId + ".png"
             
             if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
