@@ -21,9 +21,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
 import UIKit
 import NCCommunication
+import MarqueeLabel
 
 class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -349,6 +349,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                     cell.icon.image = status.onlineStatus
                     cell.status.text = status.statusMessage
                     cell.status.textColor = NCBrandColor.shared.label
+                    cell.status.trailingBuffer = cell.status.frame.width
                 }
             }
             
@@ -470,6 +471,5 @@ class NCMoreUserCell: UITableViewCell {
     @IBOutlet weak var displayName: UILabel!
     @IBOutlet weak var avatar: UIImageView!
     @IBOutlet weak var icon: UIImageView!
-    @IBOutlet weak var status: UILabel!
-
+    @IBOutlet weak var status: MarqueeLabel!
 }
