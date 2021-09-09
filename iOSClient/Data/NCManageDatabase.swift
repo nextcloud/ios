@@ -1968,8 +1968,13 @@ class NCManageDatabase: NSObject {
         metadata.richWorkspace = file.richWorkspace
         metadata.resourceType = file.resourceType
         metadata.serverUrl = file.serverUrl
-        //metadata.sharePermissionsCloudMesh = file.sharePermissionsCloudMesh
-        //metadata.sharePermissionsCollaborationServices = file.sharePermissionsCollaborationServices
+        metadata.sharePermissionsCollaborationServices = file.sharePermissionsCollaborationServices
+        for element in file.sharePermissionsCloudMesh {
+            metadata.sharePermissionsCloudMesh.append(element)
+        }
+        for element in file.shareType {
+            metadata.shareType.append(element)
+        }
         metadata.size = file.size
         metadata.classFile = file.classFile
         if let date = file.uploadDate {
