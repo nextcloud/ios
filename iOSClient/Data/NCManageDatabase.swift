@@ -116,7 +116,7 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if oldSchemaVersion < 205 {
+                    if oldSchemaVersion < 207 {
                         migration.deleteData(forType: tableDirectory.className())
                         migration.deleteData(forType: tableE2eEncryption.className())
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
@@ -1968,7 +1968,8 @@ class NCManageDatabase: NSObject {
         metadata.richWorkspace = file.richWorkspace
         metadata.resourceType = file.resourceType
         metadata.serverUrl = file.serverUrl
-        metadata.sharePermissions = file.sharePermissions
+        //metadata.sharePermissionsCloudMesh = file.sharePermissionsCloudMesh
+        //metadata.sharePermissionsCollaborationServices = file.sharePermissionsCollaborationServices
         metadata.size = file.size
         metadata.classFile = file.classFile
         if let date = file.uploadDate {

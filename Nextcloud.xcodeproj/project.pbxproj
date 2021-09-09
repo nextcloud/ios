@@ -2937,7 +2937,7 @@
 			repositoryURL = "https://github.com/nextcloud/ios-communication-library/";
 			requirement = {
 				kind = revision;
-				revision = d2aec4ac21e15f6000409a99e03c99d42b24a8b2;
+				revision = 63e9f636e086326f8ae2abe7a035433f113933ce;
 			};
 		};
 		F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */ = {
