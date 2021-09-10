@@ -572,7 +572,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         
         buttonMenu.setImage(UIImage.init(named: "shareMenu")!.image(color: .gray, size: 50), for: .normal)
         labelQuickStatus.textColor = NCBrandColor.shared.customer
-        imageDownArrow.image = UIImage(named: "downArrow")?.imageColor(NCBrandColor.shared.customer)
+        imageDownArrow.image = NCUtility.shared.loadImage(named: "arrowtriangle.down.fill", color: NCBrandColor.shared.customer)
     }
     
     @IBAction func touchUpInsideMenu(_ sender: Any) {
