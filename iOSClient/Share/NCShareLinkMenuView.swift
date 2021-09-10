@@ -247,7 +247,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, UITextFieldDeleg
 
             let frameEndUserInfoKey = UIResponder.keyboardFrameEndUserInfoKey
             if let keyboardFrame = info[frameEndUserInfoKey] as? CGRect {
-                let diff = keyboardFrame.origin.y - centerObject.y - (self.activeTextField.frame.height / 2)
+                let diff = keyboardFrame.origin.y - centerObject.y - self.activeTextField.frame.height
                 if diff < 0 {
                     activeTextfieldDiff = diff
                     self.frame.origin.y += diff
