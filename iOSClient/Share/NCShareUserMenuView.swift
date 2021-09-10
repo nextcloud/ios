@@ -181,12 +181,8 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         if let info = notification?.userInfo, let centerObject = fieldNoteToRecipient.superview?.convert(fieldNoteToRecipient.center, to: nil) {
 
             let frameEndUserInfoKey = UIResponder.keyboardFrameEndUserInfoKey
-                    
-            //  Getting UIKeyboardSize.
             if let keyboardFrame = info[frameEndUserInfoKey] as? CGRect {
-                  
                 let diff = keyboardFrame.origin.y - centerObject.y - (fieldNoteToRecipient.frame.height / 2)
-                
                 if diff < 0 {
                     selfFrameOriginYDiff = diff
                     self.frame.origin.y += selfFrameOriginYDiff
