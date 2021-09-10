@@ -38,6 +38,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var textColor: UIColor = .white
     private var textColorOpponent: UIColor = .black
+    private var activeTextfieldDiff: CGFloat = 0
+    private var activeTextField = UITextField()
 
     // MARK: - View Life Cycle
 
@@ -140,8 +142,35 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         return false
     }
     
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+   
+        self.activeTextField = textField
+    }
+        
     // MARK: - Keyboard notification
     
+    @objc internal func keyboardWillShow(_ notification : Notification?) {
+                
+        activeTextfieldDiff = 0
+        
+        if let info = notification?.userInfo, let centerObject = self.activeTextField.superview?.convert(self.activeTextField.center, to: nil) {
+
+            let frameEndUserInfoKey = UIResponder.keyboardFrameEndUserInfoKey
+            if let keyboardFrame = info[frameEndUserInfoKey] as? CGRect {
+                let diff = keyboardFrame.origin.y - centerObject.y - (self.activeTextField.frame.height / 2)
+                if diff < 0 {
+                    activeTextfieldDiff = diff
+                    imageBrandConstraintY.constant += diff
+                }
+            }
+        }
+    }
+    
+    @objc func keyboardWillHide(_ notification: Notification) {
+        imageBrandConstraintY.constant -= activeTextfieldDiff
+    }
+    
+    /*
     @objc internal func keyboardWillShow(_ notification : Notification?) {
                 
         imageBrandConstraintY.constant = -(self.view.frame.height / 4)
@@ -151,7 +180,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         
         imageBrandConstraintY.constant = 0
     }
-    
+    */
     // MARK: - Action
 
     @objc func actionCancel() {

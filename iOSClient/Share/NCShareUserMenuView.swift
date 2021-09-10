@@ -63,7 +63,7 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, UITextFieldDeleg
     var viewWindow: UIView?
     var viewWindowCalendar: UIView?
     private var calendar: FSCalendar?
-    private var selfFrameOriginYDiff: CGFloat = 0
+    private var activeTextfieldDiff : CGFloat = 0
     private var activeTextField = UITextField()
 
     override func awakeFromNib() {
@@ -184,7 +184,7 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, UITextFieldDeleg
     
     @objc internal func keyboardWillShow(_ notification : Notification?) {
                 
-        selfFrameOriginYDiff = 0
+        activeTextfieldDiff = 0
         
         if let info = notification?.userInfo, let centerObject = self.activeTextField.superview?.convert(self.activeTextField.center, to: nil) {
 
@@ -192,18 +192,19 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, UITextFieldDeleg
             if let keyboardFrame = info[frameEndUserInfoKey] as? CGRect {
                 let diff = keyboardFrame.origin.y - centerObject.y - (self.activeTextField.frame.height / 2)
                 if diff < 0 {
-                    selfFrameOriginYDiff = diff
-                    self.frame.origin.y += selfFrameOriginYDiff
+                    activeTextfieldDiff = diff
+                    self.frame.origin.y += diff
                 }
             }
         }
     }
     
     @objc func keyboardWillHide(_ notification: Notification) {
-        self.frame.origin.y -= selfFrameOriginYDiff
+        self.frame.origin.y -= activeTextfieldDiff
     }
     
     // MARK: - Tap viewWindowCalendar
+    
     @objc func tapViewWindowCalendar(gesture: UITapGestureRecognizer) {
         calendar?.removeFromSuperview()
         viewWindowCalendar?.removeFromSuperview()
