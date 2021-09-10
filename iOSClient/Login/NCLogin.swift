@@ -170,17 +170,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         imageBrandConstraintY.constant -= activeTextfieldDiff
     }
     
-    /*
-    @objc internal func keyboardWillShow(_ notification : Notification?) {
-                
-        imageBrandConstraintY.constant = -(self.view.frame.height / 4)
-    }
-    
-    @objc func keyboardWillHide(_ notification: Notification) {
-        
-        imageBrandConstraintY.constant = 0
-    }
-    */
     // MARK: - Action
 
     @objc func actionCancel() {
