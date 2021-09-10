@@ -24,7 +24,7 @@ import UIKit
 import FSCalendar
 import NCCommunication
 
-class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkingDelegate, FSCalendarDelegate, FSCalendarDelegateAppearance {
+class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, UITextFieldDelegate, NCShareNetworkingDelegate, FSCalendarDelegate, FSCalendarDelegateAppearance {
     
     @IBOutlet weak var switchCanReshare: UISwitch!
     @IBOutlet weak var labelCanReshare: UILabel!
@@ -64,6 +64,7 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     var viewWindowCalendar: UIView?
     private var calendar: FSCalendar?
     private var selfFrameOriginYDiff: CGFloat = 0
+    private var activeTextField = UITextField()
 
     override func awakeFromNib() {
         
@@ -101,6 +102,8 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         labelUnshare?.textColor = NCBrandColor.shared.label
         
         fieldSetExpirationDate.inputView = UIView()
+        
+        fieldNoteToRecipient.delegate = self
         
         imageNoteToRecipient.image = UIImage.init(named: "file_txt")!.image(color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
         imageUnshare.image = NCUtility.shared.loadImage(named: "trash", color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
@@ -172,17 +175,22 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         fieldNoteToRecipient.text = tableShare.note
     }
     
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+   
+        self.activeTextField = textField
+    }
+    
     // MARK: - Keyboard notification
     
     @objc internal func keyboardWillShow(_ notification : Notification?) {
                 
         selfFrameOriginYDiff = 0
         
-        if let info = notification?.userInfo, let centerObject = fieldNoteToRecipient.superview?.convert(fieldNoteToRecipient.center, to: nil) {
+        if let info = notification?.userInfo, let centerObject = self.activeTextField.superview?.convert(self.activeTextField.center, to: nil) {
 
             let frameEndUserInfoKey = UIResponder.keyboardFrameEndUserInfoKey
             if let keyboardFrame = info[frameEndUserInfoKey] as? CGRect {
-                let diff = keyboardFrame.origin.y - centerObject.y - (fieldNoteToRecipient.frame.height / 2)
+                let diff = keyboardFrame.origin.y - centerObject.y - (self.activeTextField.frame.height / 2)
                 if diff < 0 {
                     selfFrameOriginYDiff = diff
                     self.frame.origin.y += selfFrameOriginYDiff
