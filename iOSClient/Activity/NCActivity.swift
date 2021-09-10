@@ -254,8 +254,9 @@ extension NCActivity: UITableViewDataSource {
                 cell.avatar.isHidden = false
                 cell.fileUser = activity.user
                 
-                let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + activity.user + ".png"
-                NCOperationQueue.shared.downloadAvatar(user: activity.user, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
+                let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + activity.user + ".png"
+
+                NCOperationQueue.shared.downloadAvatar(user: activity.user, fileName: fileName, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
             }
             
             // subject
@@ -519,7 +520,7 @@ extension activityTableViewCell: UICollectionViewDataSource {
                         
                     } else {
                         
-                        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, widthPreview: 0, heightPreview: 0, useInternalEndpoint: false) { (account, imagePreview, imageIcon, errorCode, errorDescription) in
+                        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, widthPreview: 0, heightPreview: 0, etag: nil, useInternalEndpoint: false) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
                             if errorCode == 0 && imagePreview != nil {
                                 self.collectionView.reloadData()
                             }
@@ -611,7 +612,7 @@ extension NCActivity {
             
             NCUtility.shared.stopActivityIndicator()
             
-            if errorCode == 304 {
+            if errorCode == NCGlobal.shared.errorNotModified {
                 self.canFetchActivity = false
             } else {
                 self.canFetchActivity = true

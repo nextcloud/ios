@@ -106,11 +106,13 @@ class NCLoginWeb: UIViewController {
         
         let language = NSLocale.preferredLanguages[0] as String
         var request = URLRequest(url: url)
+        let deviceName = UIDevice.current.name
+        let userAgent = deviceName + " " + "(iOS Files)"
         
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
-        webView.customUserAgent = CCUtility.getUserAgent()
         
+        webView.customUserAgent = userAgent
         webView.load(request)
     }
     

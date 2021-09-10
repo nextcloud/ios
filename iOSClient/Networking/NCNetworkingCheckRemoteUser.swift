@@ -41,14 +41,20 @@ import NCCommunication
         }
         
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return }
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
+            self.checkRemoteUserInProgress = false
+            return
+        }
         
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
             
             if errorCode == 401 {
                 
                 let token = CCUtility.getPassword(account)!
-                if token == "" { return }
+                if token == "" {
+                    self.checkRemoteUserInProgress = false
+                    return
+                }
                 
                 NCCommunication.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token) { (account, wipe, errorCode, errorDescriptiuon) in
                     

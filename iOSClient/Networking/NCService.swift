@@ -37,7 +37,8 @@ class NCService: NSObject {
     
     @objc public func startRequestServicesServer() {
    
-        appDelegate.avatars = [:]
+        NCManageDatabase.shared.clearAllAvatarLoaded()
+        
         if appDelegate.account == "" { return }
         
         self.addInternalTypeIdentifier()
@@ -96,7 +97,6 @@ class NCService: NSObject {
                 
                     let user = tableAccount.user
                     let url = tableAccount.urlBase
-                    let stringUser = CCUtility.getStringUser(user, urlBase: url)!
                     
                     self.appDelegate.settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId, password: CCUtility.getPassword(tableAccount.account))
                        
@@ -107,20 +107,29 @@ class NCService: NSObject {
                     self.synchronizeOffline(account: tableAccount.account)
                     
                     // Get Avatar
-                    let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + stringUser + "-" + self.appDelegate.user + ".png"
-                    let oldData = try? Data(contentsOf: URL(fileURLWithPath: fileNameLocalPath))
-                    NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, size: NCGlobal.shared.avatarSize) { (account, data, errorCode, errorMessage) in
-                        if let data = data, let oldData = oldData {
+                    let fileName = String(CCUtility.getUserUrlBase(user, urlBase: url)) + "-" + self.appDelegate.user + ".png"
+                    let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+                    let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
+                    
+                    NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag) { (account, image, imageOriginal, etag, errorCode, errorMessage) in
+                        
+                        if let etag = etag, errorCode == 0, let imageOriginal = imageOriginal {
+                            
                             do {
-                                let isEqual = try NCUtility.shared.compare(tolerance: 95, expected: data, observed: oldData)
-                                if !isEqual {
-                                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
+                                if let pngData = imageOriginal.pngData() {
+                                    let fileName = String(CCUtility.getUserUrlBase(user, urlBase: url)) + "-" + self.appDelegate.user + "-original.png"
+                                    let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+                                    let url = URL.init(fileURLWithPath: fileNameLocalPath)
+                                    try pngData.write(to: url)
                                 }
-                            } catch {
-                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
-                            }
-                        } else {
+                            } catch {}
+                            
+                            NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
+                            
+                        } else if errorCode == NCGlobal.shared.errorNotModified {
+                            
+                            NCManageDatabase.shared.setAvatarLoaded(fileName: fileName)
                         }
                     }
                     self.requestServerCapabilities()

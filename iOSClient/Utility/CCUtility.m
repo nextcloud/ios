@@ -1077,7 +1077,7 @@
     return path;
 }
 
-+ (NSString *)getStringUser:(NSString *)user urlBase:(NSString *)urlBase
++ (NSString *)getUserUrlBase:(NSString *)user urlBase:(NSString *)urlBase
 {
     NSString *baseUrl = [urlBase lowercaseString];
     NSString *dirUserBaseUrl = @"";

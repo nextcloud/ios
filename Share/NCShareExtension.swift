@@ -240,19 +240,25 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         
         // PROFILE BUTTON
                 
-        var image = NCUtility.shared.loadImage(named: "person.crop.circle")
-        let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(activeAccount.user, urlBase: activeAccount.urlBase)) + "-" + activeAccount.user + ".png"
-        if let userImage = UIImage(contentsOfFile: fileNamePath) {
-            image = userImage
+        var image: UIImage?
+        
+        if #available(iOS 13.0, *) {
+            let config = UIImage.SymbolConfiguration(pointSize: 30)
+            image = NCUtility.shared.loadImage(named: "person.crop.circle", symbolConfiguration: config)
+        } else {
+            image = NCUtility.shared.loadImage(named: "person.crop.circle", size: 30)
         }
-            
-        image = NCUtility.shared.createAvatar(image: image, size: 30)
-            
+        
+        let fileName = String(CCUtility.getUserUrlBase(activeAccount.user, urlBase: activeAccount.urlBase)) + "-" + activeAccount.user + "-original.png"
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        if let imageUser = UIImage(contentsOfFile: fileNameLocalPath) {
+            image = NCUtility.shared.createAvatar(image: imageUser, size: 30)
+        }
+        
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
             
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: activeAccount.account) {
-             
 
             var title = "  "
             if activeAccount?.alias == "" {
@@ -570,21 +576,6 @@ extension NCShareExtension: UICollectionViewDataSource {
         // image Favorite
         if metadata.favorite {
             cell.imageFavorite.image = NCBrandColor.cacheImages.favorite
-        }
-        
-        // Share image
-        if (isShare) {
-            cell.imageShared.image = NCBrandColor.cacheImages.shared
-        } else if (tableShare != nil && tableShare?.shareType == 3) {
-            cell.imageShared.image = NCBrandColor.cacheImages.shareByLink
-        } else if (tableShare != nil && tableShare?.shareType != 3) {
-            cell.imageShared.image = NCBrandColor.cacheImages.shared
-        } else {
-            cell.imageShared.image = NCBrandColor.cacheImages.canShare
-        }
-        if metadata.ownerId.count > 0 && metadata.ownerId != activeAccount.userId {
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(activeAccount.user, urlBase: activeAccount.urlBase)) + "-" + metadata.ownerId + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, placeholder: nil, cell: cell, view: collectionView)
         }
         
         cell.imageSelect.isHidden = true

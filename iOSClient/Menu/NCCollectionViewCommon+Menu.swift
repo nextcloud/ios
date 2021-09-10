@@ -385,10 +385,10 @@ extension NCCollectionViewCommon {
                 action: { menuAction in
                     let alertController = UIAlertController(title: "", message: metadata.fileNameView + "\n\n" + NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
-                        NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: false)
+                        NCOperationQueue.shared.delete(metadata: metadata, onlyLocalCache: false)
                     })
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (action:UIAlertAction) in
-                        NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: true)
+                        NCOperationQueue.shared.delete(metadata: metadata, onlyLocalCache: true)
                     })
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })
                     self.present(alertController, animated: true, completion:nil)
@@ -571,7 +571,7 @@ extension NCCollectionViewCommon {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
                         for ocId in self.selectOcId {
                             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: false)
+                                NCOperationQueue.shared.delete(metadata: metadata, onlyLocalCache: false)
                             }
                         }
                         self.tapSelect(sender: self)
@@ -579,7 +579,7 @@ extension NCCollectionViewCommon {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (action:UIAlertAction) in
                         for ocId in self.selectOcId {
                             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: true)
+                                NCOperationQueue.shared.delete(metadata: metadata, onlyLocalCache: true)
                             }
                         }
                         self.tapSelect(sender: self)

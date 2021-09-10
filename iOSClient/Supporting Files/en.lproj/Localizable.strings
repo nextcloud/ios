@@ -724,6 +724,7 @@
 "_error_path_"                          = "Unable to open this file or folder. Please make sure it exists";
 "_file_upload_not_exitst_"              = "The file that you want to upload does not exist";
 "_forbidden_characters_from_server_"    = "The name contains at least one invalid character";
+"_error_not_modified_"                  = "Resource not modified";
 "_not_connected_internet_"              = "Server connection error";
 "_not_possible_connect_to_server_"      = "It is not possible to connect to the server at this time";
 "_not_possible_create_folder_"          = "Folder could not be created";
@@ -801,17 +802,4 @@
 "_used_space_"              = "Used space";
 "_open_in_onlyoffice_"      = "Open in ONLYOFFICE";
 "_open_in_collabora_"       = "Open with Collabora Online";
-
-// ----------------------------------------------------------------------------------------------------------------------------------
-// IM
-
-"_textnote_"                = "Text note";
-"_audionote_"               = "Audio note";
-"_removeaudionote_"         = "Do you want delete the audio note?";
-"_detailpicture_"           = "Detail picture";
-"_creation_archive_error_"  = "Error while creating archive";
-"_read_audio_error_"        = "Error while reading audio file";
-"_create_audio_error_"      = "Error while creating audio file";
-"_create_image_error_"      = "Error while creating image file";
-"_error_open_file_"         = "Error while opening a file";
-"_new_background_im_"       = "Select an image or take a picture and use it as background. You can also select nothing. Press \"Done\" to complete.";
+"_login_address_detail_"    = "The link to your %@ web interface when you open it in the browser.";

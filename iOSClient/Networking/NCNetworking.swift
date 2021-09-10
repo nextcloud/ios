@@ -100,6 +100,17 @@ import Queuer
         _ = sessionManagerBackground
         _ = sessionManagerBackgroundWWan
         #endif
+        
+        // Notification
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object:nil)
     }
     
     //MARK: - Communication Delegate
@@ -152,6 +163,61 @@ import Queuer
             completionHandler()
         }
         #endif
+    }
+    
+    // MARK: - NotificationCenter
+    
+    @objc func downloadStartFile(_ notification: NSNotification) {
+    }
+    
+    @objc func downloadedFile(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String {
+            #if !EXTENSION
+            (UIApplication.shared.delegate as! AppDelegate).listProgress[ocId] = nil
+            #endif
+        }
+    }
+    
+    @objc func downloadCancelFile(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String {
+            #if !EXTENSION
+            (UIApplication.shared.delegate as! AppDelegate).listProgress[ocId] = nil
+            #endif
+        }
+    }
+    
+    @objc func uploadStartFile(_ notification: NSNotification) {
+    }
+    
+    @objc func uploadedFile(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String {
+            #if !EXTENSION
+            (UIApplication.shared.delegate as! AppDelegate).listProgress[ocId] = nil
+            #endif
+        }
+    }
+    
+    @objc func uploadCancelFile(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String {
+            #if !EXTENSION
+            (UIApplication.shared.delegate as! AppDelegate).listProgress[ocId] = nil
+            #endif
+        }
+    }
+    
+    @objc func triggerProgressTask(_ notification: NSNotification) {
+
+        if let userInfo = notification.userInfo as NSDictionary?, let progressNumber = userInfo["progress"] as? NSNumber, let totalBytes = userInfo["totalBytes"] as? Int64, let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64, let ocId = userInfo["ocId"] as? String {
+             
+            #if !EXTENSION
+            let progressType = NCGlobal.progressType(progress: progressNumber.floatValue, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected)
+            (UIApplication.shared.delegate as! AppDelegate).listProgress[ocId] = progressType
+            #endif
+        }
     }
     
     //MARK: - Pinning check
@@ -585,16 +651,8 @@ import Queuer
                 
                 if errorCode == NSURLErrorCancelled || errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
                 
-                    if metadata.status == NCGlobal.shared.metadataStatusUploadForcedStart {
-                        
-                        NCManageDatabase.shared.setMetadataSession(ocId: ocId!, session: sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusInUpload)
-                        NCNetworking.shared.upload(metadata: metadata) { } completion: { (_, _) in }
-                                                
-                    } else {
-                        
-                        CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-                        NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    }
+                    CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "account":metadata.account])
                 
@@ -938,9 +996,9 @@ import Queuer
     
     //MARK: - WebDav Delete
 
-    @objc func deleteMetadata(_ metadata: tableMetadata, onlyLocal: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func deleteMetadata(_ metadata: tableMetadata, onlyLocalCache: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
                 
-        if (onlyLocal) {
+        if (onlyLocalCache) {
             
             var metadatas = [metadata]
             
@@ -959,7 +1017,7 @@ import Queuer
                     NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(metadataLivePhoto.ocId))
                 }
             
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": metadata.ocId, "fileNameView": metadata.fileNameView, "classFile": metadata.classFile, "onlyLocal": true])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": metadata.ocId, "fileNameView": metadata.fileNameView, "classFile": metadata.classFile, "onlyLocalCache": true])
             }
             return completion(0, "")
         }
@@ -1020,7 +1078,7 @@ import Queuer
                     NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
                 }
                 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": metadata.ocId, "fileNameView": metadata.fileNameView, "classFile": metadata.classFile, "onlyLocal": true])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": metadata.ocId, "fileNameView": metadata.fileNameView, "classFile": metadata.classFile, "onlyLocalCache": true])
             }
             
             completion(errorCode, errorDescription)

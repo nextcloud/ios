@@ -116,13 +116,23 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if oldSchemaVersion < 196 {
+                    if oldSchemaVersion < 207 {
                         migration.deleteData(forType: tableDirectory.className())
                         migration.deleteData(forType: tableE2eEncryption.className())
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
                         migration.deleteData(forType: tableMetadata.className())
                         migration.deleteData(forType: tableShare.className())
                         migration.deleteData(forType: tableTrash.className())
+                        // Delete OLD avatar image
+                        if var pathUrl = CCUtility.getDirectoryGroup() {
+                            pathUrl.appendPathComponent(NCGlobal.shared.appUserData)
+                            do {
+                                let fileURLs = try FileManager.default.contentsOfDirectory(at: pathUrl, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
+                                for fileURL in fileURLs {
+                                    try FileManager.default.removeItem(at: fileURL)
+                                }
+                            } catch { }
+                        }
                     }
                     
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
@@ -178,7 +188,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Utility Database
 
-    @objc func clearTable(_ table : Object.Type, account: String?) {
+    @objc func clearTable(_ table : Object.Type, account: String? = nil) {
         
         let realm = try! Realm()
 
@@ -204,6 +214,7 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableActivity.self, account: account)
         self.clearTable(tableActivityPreview.self, account: account)
         self.clearTable(tableActivitySubjectRich.self, account: account)
+        self.clearTable(tableAvatar.self)
         self.clearTable(tableCapabilities.self, account: account)
         self.clearTable(tableChunk.self, account: account)
         self.clearTable(tableComments.self, account: account)
@@ -892,6 +903,101 @@ class NCManageDatabase: NSObject {
         }
         
         return 0
+    }
+    
+    //MARK: -
+    //MARK: Table Avatar
+    
+    @objc func addAvatar(fileName: String, etag: String) {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.safeWrite {
+                
+                // Add new
+                let addObject = tableAvatar()
+                    
+                addObject.date = NSDate()
+                addObject.etag = etag
+                addObject.fileName = fileName
+                addObject.loaded = true
+
+                realm.add(addObject, update: .all)
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    func getTableAvatar(fileName: String) -> tableAvatar? {
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first else {
+            return nil
+        }
+        
+        return tableAvatar.init(value: result)
+    }
+
+    func clearAllAvatarLoaded() {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.safeWrite {
+                
+                let results = realm.objects(tableAvatar.self)
+                for result in results {
+                    result.loaded = false
+                    realm.add(result, update: .all)
+                }
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    @discardableResult
+    func setAvatarLoaded(fileName: String) -> UIImage? {
+     
+        let realm = try! Realm()
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        var image: UIImage?
+        
+        do {
+            try realm.safeWrite {
+                if let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first {
+                    if let imageAvatar = UIImage(contentsOfFile: fileNameLocalPath) {
+                        result.loaded = true
+                        image = imageAvatar
+                    } else {
+                        realm.delete(result)
+                    }
+                }
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+        
+        return image
+    }
+    
+    func getImageAvatarLoaded(fileName: String) -> UIImage? {
+        
+        let realm = try! Realm()
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+
+        let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first
+        if result == nil {
+            NCUtilityFileSystem.shared.deleteFile(filePath: fileNameLocalPath)
+            return nil
+        } else if result?.loaded == false {
+            return nil
+        }
+        
+        return UIImage(contentsOfFile: fileNameLocalPath)
     }
     
     //MARK: -
@@ -1862,7 +1968,13 @@ class NCManageDatabase: NSObject {
         metadata.richWorkspace = file.richWorkspace
         metadata.resourceType = file.resourceType
         metadata.serverUrl = file.serverUrl
-        metadata.sharePermissions = file.sharePermissions
+        metadata.sharePermissionsCollaborationServices = file.sharePermissionsCollaborationServices
+        for element in file.sharePermissionsCloudMesh {
+            metadata.sharePermissionsCloudMesh.append(element)
+        }
+        for element in file.shareType {
+            metadata.shareType.append(element)
+        }
         metadata.size = file.size
         metadata.classFile = file.classFile
         if let date = file.uploadDate {
@@ -2098,7 +2210,7 @@ class NCManageDatabase: NSObject {
                     
                     if let result = metadatasResult.first(where: { $0.ocId == metadata.ocId }) {
                         // update
-                        if result.status == NCGlobal.shared.metadataStatusNormal && (result.etag != metadata.etag || result.fileNameView != metadata.fileNameView || result.date != metadata.date || result.permissions != metadata.permissions || result.hasPreview != metadata.hasPreview) {
+                        if result.status == NCGlobal.shared.metadataStatusNormal && (result.etag != metadata.etag || result.fileNameView != metadata.fileNameView || result.date != metadata.date || result.permissions != metadata.permissions || result.hasPreview != metadata.hasPreview || result.note != metadata.note) {
                             ocIdsUdate.append(metadata.ocId)
                             realm.add(metadata, update: .all)
                         } else if result.status == NCGlobal.shared.metadataStatusNormal && addCompareLivePhoto && result.livePhoto != metadata.livePhoto {
@@ -2200,6 +2312,22 @@ class NCManageDatabase: NSObject {
             return tableMetadata.init(value: result)
         } else {
             return nil
+        }
+    }
+    
+    func setMetadataEtagResource(ocId: String, etagResource: String?) {
+        
+        let realm = try! Realm()
+        var result: tableMetadata?
+        guard let etagResource = etagResource else { return }
+        
+        do {
+            try realm.safeWrite {
+                result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
+                result?.etagResource = etagResource
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     

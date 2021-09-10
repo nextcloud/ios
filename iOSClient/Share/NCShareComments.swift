@@ -71,12 +71,12 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         }
         labelUser.textColor = NCBrandColor.shared.label
         
-        imageItem.image = UIImage(named: "avatar")
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
-        if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                imageItem.image = NCUtility.shared.createAvatar(image: image, size: 40)
-            }
+        let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+            imageItem.image = image
+        } else {
+            imageItem.image = UIImage(named: "avatar")
         }
         
         // Mark comment ad read
@@ -180,8 +180,8 @@ extension NCShareComments: UITableViewDataSource {
             cell.sizeToFit()
             
             // Image
-            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + String(CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + tableComments.actorId + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: tableComments.actorId, fileNameLocalPath: fileNameLocalPath, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
+            let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + tableComments.actorId + ".png"
+            NCOperationQueue.shared.downloadAvatar(user: tableComments.actorId, fileName: fileName, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
             // Username
             cell.labelUser.text = tableComments.actorDisplayName
             cell.labelUser.textColor = NCBrandColor.shared.label

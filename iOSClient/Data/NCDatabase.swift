@@ -166,6 +166,18 @@ class tableActivitySubjectRich: Object {
     }
 }
 
+class tableAvatar: Object {
+    
+    @objc dynamic var date = NSDate()
+    @objc dynamic var etag = ""
+    @objc dynamic var fileName = ""
+    @objc dynamic var loaded: Bool = false
+
+    override static func primaryKey() -> String {
+        return "fileName"
+    }
+}
+
 class tableCapabilities: Object {
     
     @objc dynamic var account = ""
@@ -341,6 +353,7 @@ class tableMetadata: Object {
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var edited: Bool = false
     @objc dynamic var etag = ""
+    @objc dynamic var etagResource = ""
     @objc dynamic var ext = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileId = ""
@@ -366,7 +379,9 @@ class tableMetadata: Object {
     @objc dynamic var sessionError = ""
     @objc dynamic var sessionSelector = ""
     @objc dynamic var sessionTaskIdentifier: Int = 0
-    @objc dynamic var sharePermissions = ""
+    @objc dynamic var sharePermissionsCollaborationServices: Int = 0
+    let sharePermissionsCloudMesh = List<String>()
+    let shareType = List<Int>()
     @objc dynamic var size: Int64 = 0
     @objc dynamic var status: Int = 0
     @objc dynamic var trashbinFileName = ""

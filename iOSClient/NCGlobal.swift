@@ -79,7 +79,7 @@ class NCGlobal: NSObject {
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 196
+    let databaseSchemaVersion: UInt64               = 207
     
     // Intro selector
     //
@@ -92,7 +92,8 @@ class NCGlobal: NSObject {
     
     // Avatar & Preview size
     //
-    let avatarSize: Int                             = 512
+    let avatarSize: Int                             = 128 * Int(UIScreen.main.scale)
+    let avatarSizeRounded: Int                      = 128
     let sizePreview: Int                            = 1024
     let sizeIcon: Int                               = 512
     
@@ -180,6 +181,7 @@ class NCGlobal: NSObject {
     // Error
     //
     @objc let errorRequestExplicityCancelled: Int   = 15
+    @objc let errorNotModified: Int                 = 304
     @objc let errorBadRequest: Int                  = 400
     @objc let errorResourceNotFound: Int            = 404
     @objc let errordMethodNotSupported: Int         = 405
@@ -262,20 +264,15 @@ class NCGlobal: NSObject {
     //
     let metadataStatusNormal: Int                   = 0
 
-    let metadataStatustypeDownload: Int             = 1
+    let metadataStatusWaitDownload: Int             = -1
+    let metadataStatusInDownload: Int               = -2
+    let metadataStatusDownloading: Int              = -3
+    let metadataStatusDownloadError: Int            = -4
 
-    let metadataStatusWaitDownload: Int             = 2
-    let metadataStatusInDownload: Int               = 3
-    let metadataStatusDownloading: Int              = 4
-    let metadataStatusDownloadError: Int            = 5
-
-    let metadataStatusTypeUpload: Int               = 6
-
-    let metadataStatusWaitUpload: Int               = 7
-    let metadataStatusInUpload: Int                 = 8
-    let metadataStatusUploading: Int                = 9
-    let metadataStatusUploadError: Int              = 10
-    let metadataStatusUploadForcedStart: Int        = 11
+    let metadataStatusWaitUpload: Int               = 1
+    let metadataStatusInUpload: Int                 = 2
+    let metadataStatusUploading: Int                = 3
+    let metadataStatusUploadError: Int              = 4
     
     // Notification Center
     //
@@ -308,7 +305,7 @@ class NCGlobal: NSObject {
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
     
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId
-    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: ocId, fileNameView, classFile, onlyLocal
+    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: ocId, fileNameView, classFile, onlyLocalCache
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, errorCode, errorDescription
     let notificationCenterMoveFile                              = "moveFile"                        // userInfo: ocId, serverUrlTo
     let notificationCenterCopyFile                              = "copyFile"                        // userInfo: ocId, serverUrlFrom
@@ -346,3 +343,6 @@ class NCGlobal: NSObject {
 //    popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
 //    popoverController.permittedArrowDirections = []
 //}
+
+// @discardableResult
+
