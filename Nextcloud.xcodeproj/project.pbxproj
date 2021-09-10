@@ -870,13 +870,13 @@
 				F7DFB7E9219C5A0500680748 /* Create cloud */,
 				F78ACD50219046AC0088454D /* Section Header Footer */,
 				F7603298252F0E550015A421 /* Collection Common */,
+				F7CA213725F1372B00826ABB /* Account Request */,
 				370D26AE248A3D7A00121797 /* NCCellProtocol.swift */,
 				F7226EDB1EE4089300EBECB1 /* Main.storyboard */,
 				F7682FDF23C36B0500983A04 /* NCMainTabBar.swift */,
 				F729289F253B0937009CA4FD /* NCMainNavigationController.swift */,
 				F75B0ABC244C4DBB00E58DCA /* NCFunctionCenter.swift */,
 				F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */,
-				F7CA213725F1372B00826ABB /* Account Request */,
 			);
 			path = Main;
 			sourceTree = "<group>";

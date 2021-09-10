@@ -64,6 +64,28 @@ extension NCLoginWeb {
                 )
             )
         }
+        
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_delete_active_account_", comment: ""),
+                icon: NCUtility.shared.loadImage(named: "trash", color: NCBrandColor.shared.gray),
+                onTitle: NSLocalizedString("_delete_active_account_", comment: ""),
+                onIcon: avatar,
+                selected: false,
+                on: false,
+                action: { menuAction in
+                    self.appDelegate.deleteAccount(self.appDelegate.account, wipe: false)
+                    self.dismiss(animated: true) {
+                        let accounts = NCManageDatabase.shared.getAllAccount()
+                        if accounts.count > 0 {
+                            self.appDelegate.changeAccount(accounts.first!.account)
+                        } else {
+                            self.appDelegate.openLogin(viewController: nil, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+                        }
+                    }
+                }
+            )
+        )
        
         menuViewController.actions = actions
 

@@ -294,6 +294,7 @@
 "_change_password_"             = "Change password";
 "_add_account_"                 = "Add account";
 "_delete_account_"              = "Remove account";
+"_delete_active_account_"       = "Remove active account";
 "_want_delete_"                 = "Do you really want to delete?";
 "_no_delete_"                   = "No, do not delete";
 "_yes_delete_"                  = "Yes, delete";
