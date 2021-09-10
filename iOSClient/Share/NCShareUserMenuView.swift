@@ -63,6 +63,7 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     var viewWindow: UIView?
     var viewWindowCalendar: UIView?
     private var calendar: FSCalendar?
+    private var selfFrameOriginYDiff: CGFloat = 0
 
     override func awakeFromNib() {
         
@@ -103,6 +104,9 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         
         imageNoteToRecipient.image = UIImage.init(named: "file_txt")!.image(color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
         imageUnshare.image = NCUtility.shared.loadImage(named: "trash", color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     override func willMove(toWindow newWindow: UIWindow?) {
@@ -166,6 +170,33 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         
         // Note to recipient
         fieldNoteToRecipient.text = tableShare.note
+    }
+    
+    // MARK: - Keyboard notification
+    
+    @objc internal func keyboardWillShow(_ notification : Notification?) {
+                
+        selfFrameOriginYDiff = 0
+        
+        if let info = notification?.userInfo, let centerObject = fieldNoteToRecipient.superview?.convert(fieldNoteToRecipient.center, to: nil) {
+
+            let frameEndUserInfoKey = UIResponder.keyboardFrameEndUserInfoKey
+                    
+            //  Getting UIKeyboardSize.
+            if let keyboardFrame = info[frameEndUserInfoKey] as? CGRect {
+                  
+                let diff = keyboardFrame.origin.y - centerObject.y - (fieldNoteToRecipient.frame.height / 2)
+                
+                if diff < 0 {
+                    selfFrameOriginYDiff = diff
+                    self.frame.origin.y += selfFrameOriginYDiff
+                }
+            }
+        }
+    }
+    
+    @objc func keyboardWillHide(_ notification: Notification) {
+        self.frame.origin.y -= selfFrameOriginYDiff
     }
     
     // MARK: - Tap viewWindowCalendar
