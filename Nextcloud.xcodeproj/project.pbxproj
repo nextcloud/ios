@@ -275,7 +275,6 @@
 		F79EC784263161BA004E59D6 /* NCRenameFile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70D87CD25EE6E58008CBBBD /* NCRenameFile.storyboard */; };
 		F79EC78926316AC4004E59D6 /* NCPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F702F30725EE5D47008F8E80 /* NCPopupViewController.swift */; };
 		F79EDAA326B004980007D134 /* NCViewerVideoToolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79EDA9F26B004980007D134 /* NCViewerVideoToolBar.swift */; };
-		F79EDAA426B004980007D134 /* NCKTVHTTPCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79EDAA026B004980007D134 /* NCKTVHTTPCache.swift */; };
 		F79EDAA526B004980007D134 /* NCViewerVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79EDAA126B004980007D134 /* NCViewerVideo.swift */; };
 		F79EDAA626B004980007D134 /* NCViewerAVPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79EDAA226B004980007D134 /* NCViewerAVPlayerViewController.swift */; };
 		F7A0D1352591FBC5008F8A13 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extensions.swift */; };
@@ -676,7 +675,6 @@
 		F79B645F26CA661600838ACA /* UIControl+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIControl+Extensions.swift"; sourceTree = "<group>"; };
 		F79B869A265E19D40085C0E0 /* NSMutableAttributedString+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSMutableAttributedString+Extensions.swift"; sourceTree = "<group>"; };
 		F79EDA9F26B004980007D134 /* NCViewerVideoToolBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerVideoToolBar.swift; sourceTree = "<group>"; };
-		F79EDAA026B004980007D134 /* NCKTVHTTPCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCKTVHTTPCache.swift; sourceTree = "<group>"; };
 		F79EDAA126B004980007D134 /* NCViewerVideo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerVideo.swift; sourceTree = "<group>"; };
 		F79EDAA226B004980007D134 /* NCViewerAVPlayerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerAVPlayerViewController.swift; sourceTree = "<group>"; };
 		F7A0D1342591FBC5008F8A13 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
@@ -1215,7 +1213,6 @@
 			isa = PBXGroup;
 			children = (
 				F79EDA9F26B004980007D134 /* NCViewerVideoToolBar.swift */,
-				F79EDAA026B004980007D134 /* NCKTVHTTPCache.swift */,
 				F79EDAA126B004980007D134 /* NCViewerVideo.swift */,
 				F79EDAA226B004980007D134 /* NCViewerAVPlayerViewController.swift */,
 			);
@@ -2128,7 +2125,6 @@
 				F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */,
 				F73B422C2476764F00A30FD3 /* NCNotification.swift in Sources */,
 				371B5A2E23D0B04500FAFAE9 /* NCMenu.swift in Sources */,
-				F79EDAA426B004980007D134 /* NCKTVHTTPCache.swift in Sources */,
 				F79EDAA326B004980007D134 /* NCViewerVideoToolBar.swift in Sources */,
 				F77444F8222816D5000D5EB0 /* NCPickerViewController.swift in Sources */,
 				F72A47EC2487B06B005AD489 /* NCOperationQueue.swift in Sources */,
