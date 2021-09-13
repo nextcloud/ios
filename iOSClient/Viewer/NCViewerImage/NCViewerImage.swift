@@ -28,7 +28,6 @@ import NCCommunication
 class NCViewerImage: UIViewController {
 
     @IBOutlet weak var progressView: UIProgressView!
-    @IBOutlet weak var toolBar: NCViewerVideoToolBar!
     
     enum ScreenMode {
         case full, normal
@@ -583,14 +582,14 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         navigationItem.title = metadata.fileNameView
         currentMetadata = metadata
         currentViewerImageZoom = viewerImageZoom
-        toolBar.isHidden = true
-        viewerVideo = NCViewerVideo.init(view: viewerImageZoom.imageView, progressView: progressView, viewerVideoToolBar: toolBar)
+        viewerImageZoom.videoToolBar.isHidden = true
+        viewerVideo = NCViewerVideo.init(view: viewerImageZoom.imageView, progressView: progressView, viewerVideoToolBar: viewerImageZoom.videoToolBar)
         
         if (currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.viewerVideo?.videoPlay(metadata: metadata)
             }
-            toolBar.isHidden = false
+            viewerImageZoom.videoToolBar.isHidden = false
         }
             
         if !NCOperationQueue.shared.downloadExists(metadata: metadata) {

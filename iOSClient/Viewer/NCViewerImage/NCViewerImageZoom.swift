@@ -44,6 +44,7 @@ class NCViewerImageZoom: UIViewController {
     @IBOutlet weak var statusViewImage: UIImageView!
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var detailView: NCViewerImageDetailView!
+    @IBOutlet weak var videoToolBar: NCViewerVideoToolBar!
     
     var delegate: NCViewerImageZoomDelegate?
     var viewerImage: NCViewerImage?
