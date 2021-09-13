@@ -34,10 +34,6 @@
 		F702F30125EE5D2C008F8E80 /* NYMnemonic.m in Sources */ = {isa = PBXBuildFile; fileRef = F702F2FD25EE5D2C008F8E80 /* NYMnemonic.m */; };
 		F702F30225EE5D2C008F8E80 /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = F702F2FF25EE5D2C008F8E80 /* english.txt */; };
 		F702F30825EE5D47008F8E80 /* NCPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F702F30725EE5D47008F8E80 /* NCPopupViewController.swift */; };
-		F703FFE6268CA52900FA1459 /* KTVHTTPCache.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86792642CF5300ED5349 /* KTVHTTPCache.xcframework */; };
-		F703FFE7268CA52900FA1459 /* KTVHTTPCache.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86792642CF5300ED5349 /* KTVHTTPCache.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F703FFE8268CA52900FA1459 /* KTVCocoaHTTPServer.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867E2642CF5400ED5349 /* KTVCocoaHTTPServer.xcframework */; };
-		F703FFE9268CA52900FA1459 /* KTVCocoaHTTPServer.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867E2642CF5400ED5349 /* KTVCocoaHTTPServer.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F70460522499061800BB98A7 /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
 		F70460532499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
 		F70460542499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
@@ -371,12 +367,10 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F703FFE7268CA52900FA1459 /* KTVHTTPCache.xcframework in Embed Frameworks */,
 				F70B869A2642CF5800ED5349 /* FSCalendar.xcframework in Embed Frameworks */,
 				F70B868E2642CF5600ED5349 /* UICKeyChainStore.xcframework in Embed Frameworks */,
 				F70B86982642CF5700ED5349 /* TOPasscodeViewController.xcframework in Embed Frameworks */,
 				F70B86942642CF5700ED5349 /* OpenSSL.xcframework in Embed Frameworks */,
-				F703FFE9268CA52900FA1459 /* KTVCocoaHTTPServer.xcframework in Embed Frameworks */,
 				F70B868C2642CF5600ED5349 /* Queuer.xcframework in Embed Frameworks */,
 				F70B868A2642CF5600ED5349 /* XLForm.xcframework in Embed Frameworks */,
 				F70B869C2642CF5800ED5349 /* DropDown.xcframework in Embed Frameworks */,
@@ -814,7 +808,6 @@
 				F70B86892642CF5600ED5349 /* XLForm.xcframework in Frameworks */,
 				F770768E263A8C3400A1BA94 /* FloatingPanel in Frameworks */,
 				F786D58D253454BF00E3DD7B /* NCCommunication in Frameworks */,
-				F703FFE6268CA52900FA1459 /* KTVHTTPCache.xcframework in Frameworks */,
 				F70B868B2642CF5600ED5349 /* Queuer.xcframework in Frameworks */,
 				F782A57B25123694007BBABD /* Realm in Frameworks */,
 				F75E57BD25BF0EC1002B72C2 /* SVGKit in Frameworks */,
@@ -823,7 +816,6 @@
 				F70B86762642CF5300ED5349 /* ChromaColorPicker.xcframework in Frameworks */,
 				F75EAED826D2552E00F4320E /* MarqueeLabel in Frameworks */,
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
-				F703FFE8268CA52900FA1459 /* KTVCocoaHTTPServer.xcframework in Frameworks */,
 				F70B86932642CF5700ED5349 /* OpenSSL.xcframework in Frameworks */,
 				F73ADD1C265546890069EA0D /* SwiftEntryKit in Frameworks */,
 				F70B868D2642CF5600ED5349 /* UICKeyChainStore.xcframework in Frameworks */,
