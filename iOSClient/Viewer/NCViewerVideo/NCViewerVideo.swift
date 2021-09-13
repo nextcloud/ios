@@ -65,46 +65,43 @@ class NCViewerVideo: NSObject, AVAssetResourceLoaderDelegate {
     }
     
     func videoPlay(metadata: tableMetadata) {
+        guard let view = self.view else { return }
         self.metadata = metadata
+        
+        NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
+            if let url = url {
+                let urlAsset = AVURLAsset(url: url)
+                urlAsset.resourceLoader.setDelegate(self, queue: .main)
                 
-       
-        if let view = view  {
-
-            NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
-                if let url = url {
-                    let urlAsset = AVURLAsset(url: url)
-                    urlAsset.resourceLoader.setDelegate(self, queue: .main)
-                    
-                    self.playerItem = AVPlayerItem(asset: urlAsset)
-                    
-                    self.player = AVPlayer(playerItem: self.playerItem)
-                    self.player?.isMuted = CCUtility.getAudioMute()
-                    
-                    self.videoLayer = AVPlayerLayer(player: self.player)
-                    self.videoLayer?.frame = view.bounds
-                    self.videoLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
-                    view.layer.addSublayer(self.videoLayer!)
-                    
-                    // At end go back to start
-                    NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
-                        if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
-                            self.player?.seek(to: .zero)
-                            if metadata.livePhoto {
-                                NCManageDatabase.shared.deleteVideoTime(metadata: metadata)
-                            }
+                self.playerItem = AVPlayerItem(asset: urlAsset)
+                
+                self.player = AVPlayer(playerItem: self.playerItem)
+                self.player?.isMuted = CCUtility.getAudioMute()
+                
+                self.videoLayer = AVPlayerLayer(player: self.player)
+                self.videoLayer?.frame = view.bounds
+                self.videoLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
+                view.layer.addSublayer(self.videoLayer!)
+                
+                // At end go back to start
+                NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
+                    if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
+                        self.player?.seek(to: .zero)
+                        if metadata.livePhoto {
+                            NCManageDatabase.shared.deleteVideoTime(metadata: metadata)
                         }
                     }
-                    
-                    self.rateObserver = self.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
-                    
-                    if self.pictureInPictureOcId != metadata.ocId {
-                        self.player?.play()
-                    }
-                    
-                    // TOOLBAR
-                    self.viewerVideoToolBar?.setPlayer(player: self.player)
-                    self.viewerVideoToolBar?.setToolBar()
                 }
+                
+                self.rateObserver = self.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+                
+                if self.pictureInPictureOcId != metadata.ocId {
+                    self.player?.play()
+                }
+                
+                // TOOLBAR
+                self.viewerVideoToolBar?.setPlayer(player: self.player)
+                self.viewerVideoToolBar?.setToolBar()
             }
         }
     }
