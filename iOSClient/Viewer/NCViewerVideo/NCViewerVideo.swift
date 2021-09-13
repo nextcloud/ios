@@ -24,12 +24,11 @@
 import Foundation
 import NCCommunication
 
-class NCViewerVideo: NSObject {
+class NCViewerVideo: NSObject, AVAssetResourceLoaderDelegate {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var progressView: UIProgressView?
 
-    private var videoLayer: AVPlayerLayer?
     private var view: UIView?
     private var timeObserver: Any?
     private var rateObserver: Any?
@@ -37,6 +36,8 @@ class NCViewerVideo: NSObject {
     
     public var viewerVideoToolBar: NCViewerVideoToolBar?
     public var player: AVPlayer?
+    public var videoLayer: AVPlayerLayer?
+    public var playerItem: AVPlayerItem?
     public var pictureInPictureOcId: String = ""
     
     init(view: UIView?, progressView: UIProgressView?, viewerVideoToolBar: NCViewerVideoToolBar?) {
@@ -65,54 +66,56 @@ class NCViewerVideo: NSObject {
     
     func videoPlay(metadata: tableMetadata) {
         self.metadata = metadata
-        
-        NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
-        
-        func play(url: URL) {
-            
-            self.player = AVPlayer(url: url)
-            self.player?.isMuted = CCUtility.getAudioMute()
-            self.videoLayer = AVPlayerLayer(player: self.player)
-
-            if let view = view  {
-
-                self.videoLayer!.frame = view.bounds
-                self.videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
-                view.layer.addSublayer(self.videoLayer!)
                 
-                // At end go back to start
-                NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
-                    if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
-                        self.player?.seek(to: .zero)
-                        if metadata.livePhoto {
-                            NCManageDatabase.shared.deleteVideoTime(metadata: metadata)
+       
+        if let view = view  {
+
+            NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
+                if let url = url {
+                    let urlAsset = AVURLAsset(url: url)
+                    urlAsset.resourceLoader.setDelegate(self, queue: .main)
+                    
+                    self.playerItem = AVPlayerItem(asset: urlAsset)
+                    
+                    self.player = AVPlayer(playerItem: self.playerItem)
+                    self.player?.isMuted = CCUtility.getAudioMute()
+                    
+                    self.videoLayer = AVPlayerLayer(player: self.player)
+                    self.videoLayer?.frame = view.bounds
+                    self.videoLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
+                    view.layer.addSublayer(self.videoLayer!)
+                    
+                    // At end go back to start
+                    NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
+                        if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
+                            self.player?.seek(to: .zero)
+                            if metadata.livePhoto {
+                                NCManageDatabase.shared.deleteVideoTime(metadata: metadata)
+                            }
                         }
                     }
-                }
-                            
-                self.rateObserver = self.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
-                
-                if self.pictureInPictureOcId != metadata.ocId {
-                    self.player?.play()
+                    
+                    self.rateObserver = self.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+                    
+                    if self.pictureInPictureOcId != metadata.ocId {
+                        self.player?.play()
+                    }
+                    
+                    // TOOLBAR
+                    self.viewerVideoToolBar?.setPlayer(player: self.player)
+                    self.viewerVideoToolBar?.setToolBar()
                 }
             }
-            
-            // TOOLBAR
-            viewerVideoToolBar?.setPlayer(player: player)
-            viewerVideoToolBar?.setToolBar()
         }
-        
-        //NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
-        //            if let url = url {
-
-        if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-            play(url: url)
-        }
+    }
+    
+    func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForResponseTo authenticationChallenge: URLAuthenticationChallenge) -> Bool {
+        return true
     }
     
     func videoStop() {
         
-        guard let metadata = self.metadata else { return }
+       // guard let metadata = self.metadata else { return }
         
         player?.pause()
         player?.seek(to: CMTime.zero)
@@ -126,7 +129,6 @@ class NCViewerVideo: NSObject {
         if rateObserver != nil {
             player?.removeObserver(self, forKeyPath: "rate")
             NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
-            NCKTVHTTPCache.shared.stopProxy(metadata: metadata)
             self.rateObserver = nil
         }
                
@@ -183,8 +185,5 @@ class NCViewerVideo: NSObject {
             }
         }
     }
-    
-
-    
 }
 

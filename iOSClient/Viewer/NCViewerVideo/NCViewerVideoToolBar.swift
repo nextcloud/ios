@@ -27,7 +27,8 @@ class NCViewerVideoToolBar: UIView {
     
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var muteButton: UIButton!
-    
+    @IBOutlet weak var playbackSlider: UISlider!
+
     var player: AVPlayer?
     
     override func willMove(toWindow newWindow: UIWindow?) {
@@ -49,6 +50,22 @@ class NCViewerVideoToolBar: UIView {
     
     func setPlayer(player: AVPlayer?) {
         self.player = player
+        
+        let duration: CMTime = (player?.currentItem?.asset.duration)!
+        let seconds: Float64 = CMTimeGetSeconds(duration)
+        
+        playbackSlider.minimumValue = 0
+        playbackSlider.maximumValue = Float(seconds)
+        playbackSlider.isContinuous = true
+        playbackSlider.tintColor = UIColor.green
+        playbackSlider.action(for: .valueChanged) { _ in
+            let seconds : Int64 = Int64(self.playbackSlider.value)
+            let targetTime:CMTime = CMTimeMake(value: seconds, timescale: 1)
+            self.player?.seek(to: targetTime)
+            if self.player?.rate == 0 {
+                self.player?.play()
+            }
+        }
     }
     
     func setToolBar() {
@@ -86,4 +103,15 @@ class NCViewerVideoToolBar: UIView {
         setToolBar()
     }
     
+    @objc func playbackSliderValueChanged(_ playbackSlider:UISlider) {
+           
+           let seconds : Int64 = Int64(playbackSlider.value)
+           let targetTime:CMTime = CMTimeMake(value: seconds, timescale: 1)
+           
+           player?.seek(to: targetTime)
+           
+           if player?.rate == 0 {
+               player?.play()
+           }
+       }
 }
