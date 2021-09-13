@@ -192,6 +192,9 @@ class NCViewerImageZoom: UIViewController {
             // save start
             startImageViewTopConstraint = imageViewTopConstraint.constant
             startImageViewBottomConstraint = imageViewBottomConstraint.constant
+             
+            // VideoToolBar
+            self.videoToolBar.isHidden = true
             
         case .ended:
             
@@ -209,6 +212,17 @@ class NCViewerImageZoom: UIViewController {
                     self.detailViewTopConstraint.constant = self.detailView.detailViewTopConstraintConstant
                     self.view.layoutIfNeeded()
                 } completion: { (_) in
+                }
+            }
+            
+            // VideoToolBar
+            if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+                if detailView.isShow() {
+                    self.videoToolBar.isHidden = true
+                } else {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        self.videoToolBar.isHidden = false
+                    }
                 }
             }
             
