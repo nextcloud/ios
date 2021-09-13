@@ -152,6 +152,11 @@ class NCViewerImageZoom: UIViewController {
         
         updateZoomScale()
         centreConstraints()
+        
+        // VideoToolBar
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+            self.videoToolBar.isHidden = false
+        }
     }
     
     //MARK: - Gesture
