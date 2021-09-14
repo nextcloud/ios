@@ -519,6 +519,10 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             
             UIView.animate(withDuration: 0.2) {
                 self.currentViewerImageZoom?.centreConstraints()
+                // VideoToolBar
+                if self.currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || self.currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+                    self.viewerVideo?.viewerVideoToolBar?.isHidden = false
+                }
             }
             return
         }

@@ -165,6 +165,9 @@ class NCViewerImageZoom: UIViewController {
         
         if detailView.isShow() { return }
         
+        // NO ZOOM for Audio / Video
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue { return }
+        
         let pointInView = gestureRecognizer.location(in: imageView)
         var newZoomScale = scrollView.maximumZoomScale
         
@@ -185,6 +188,9 @@ class NCViewerImageZoom: UIViewController {
     }
     
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
+        
+        // NO INFO for Audio / Video
+        if viewerImage?.viewerVideo?.player?.rate == 1 { return }
         
         let currentLocation = gestureRecognizer.translation(in: self.view)
         

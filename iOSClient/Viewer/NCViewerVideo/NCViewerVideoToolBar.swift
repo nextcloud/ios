@@ -148,10 +148,11 @@ class NCViewerVideoToolBar: UIView {
             let newTime = playerCurrentTime + seekDuration
             if newTime < CMTimeGetSeconds(duration) {
                 let selectedTime: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
+                
                 player.seek(to: selectedTime)
+                player.pause()
+                player.play()
             }
-            player.pause()
-            player.play()
         }
     }
     
@@ -161,13 +162,16 @@ class NCViewerVideoToolBar: UIView {
         let playerCurrenTime = CMTimeGetSeconds(player.currentTime())
         var newTime = playerCurrenTime - seekDuration
         if newTime < 0 { newTime = 0 }
-        player.pause()
         let selectedTime: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
+        
         player.seek(to: selectedTime)
+        player.pause()
         player.play()
     }
     
     //MARK: - Algorithms
+    
+    
     
     func stringFromTimeInterval(interval: TimeInterval) -> String {
     
