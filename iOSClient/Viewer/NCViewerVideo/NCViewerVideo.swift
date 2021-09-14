@@ -24,11 +24,12 @@
 import Foundation
 import NCCommunication
 
-class NCViewerVideo: NSObject, AVAssetResourceLoaderDelegate {
+class NCViewerVideo: NSObject {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var progressView: UIProgressView?
 
+    private var videoLayer: AVPlayerLayer?
     private var view: UIView?
     private var timeObserver: Any?
     private var rateObserver: Any?
@@ -36,8 +37,6 @@ class NCViewerVideo: NSObject, AVAssetResourceLoaderDelegate {
     
     public var viewerVideoToolBar: NCViewerVideoToolBar?
     public var player: AVPlayer?
-    public var videoLayer: AVPlayerLayer?
-    public var playerItem: AVPlayerItem?
     public var pictureInPictureOcId: String = ""
     
     init(view: UIView?, progressView: UIProgressView?, viewerVideoToolBar: NCViewerVideoToolBar?) {
@@ -65,22 +64,20 @@ class NCViewerVideo: NSObject, AVAssetResourceLoaderDelegate {
     }
     
     func videoPlay(metadata: tableMetadata) {
-        guard let view = self.view else { return }
         self.metadata = metadata
         
-        NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
-            if let url = url {
-                let urlAsset = AVURLAsset(url: url)
-                urlAsset.resourceLoader.setDelegate(self, queue: .main)
-                
-                self.playerItem = AVPlayerItem(asset: urlAsset)
-                
-                self.player = AVPlayer(playerItem: self.playerItem)
-                self.player?.isMuted = CCUtility.getAudioMute()
-                
-                self.videoLayer = AVPlayerLayer(player: self.player)
-                self.videoLayer?.frame = view.bounds
-                self.videoLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
+        NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
+        
+        func play(url: URL) {
+            
+            self.player = AVPlayer(url: url)
+            self.player?.isMuted = CCUtility.getAudioMute()
+            self.videoLayer = AVPlayerLayer(player: self.player)
+
+            if let view = view  {
+
+                self.videoLayer!.frame = view.bounds
+                self.videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
                 view.layer.addSublayer(self.videoLayer!)
                 
                 // At end go back to start
@@ -92,27 +89,31 @@ class NCViewerVideo: NSObject, AVAssetResourceLoaderDelegate {
                         }
                     }
                 }
-                
+                            
                 self.rateObserver = self.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
                 
                 if self.pictureInPictureOcId != metadata.ocId {
                     self.player?.play()
                 }
-                
-                // TOOLBAR
-                self.viewerVideoToolBar?.setPlayer(player: self.player)
-                self.viewerVideoToolBar?.setToolBar()
             }
+            
+            // TOOLBAR
+            viewerVideoToolBar?.setPlayer(player: player)
+            viewerVideoToolBar?.setToolBar()
         }
-    }
-    
-    func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForResponseTo authenticationChallenge: URLAuthenticationChallenge) -> Bool {
-        return true
+        
+        //NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
+        //            if let url = url {
+        //}
+
+        if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
+            play(url: url)
+        }
     }
     
     func videoStop() {
         
-       // guard let metadata = self.metadata else { return }
+        guard let metadata = self.metadata else { return }
         
         player?.pause()
         player?.seek(to: CMTime.zero)
@@ -126,6 +127,7 @@ class NCViewerVideo: NSObject, AVAssetResourceLoaderDelegate {
         if rateObserver != nil {
             player?.removeObserver(self, forKeyPath: "rate")
             NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+            NCKTVHTTPCache.shared.stopProxy(metadata: metadata)
             self.rateObserver = nil
         }
                
