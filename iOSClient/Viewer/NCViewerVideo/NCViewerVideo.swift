@@ -27,8 +27,6 @@ import NCCommunication
 class NCViewerVideo: NSObject {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    private var progressView: UIProgressView?
-
     private var videoLayer: AVPlayerLayer?
     private var view: UIView?
     private var timeObserver: Any?
@@ -39,11 +37,10 @@ class NCViewerVideo: NSObject {
     public var player: AVPlayer?
     public var pictureInPictureOcId: String = ""
     
-    init(view: UIView?, progressView: UIProgressView?, viewerVideoToolBar: NCViewerVideoToolBar?) {
+    init(view: UIView?, viewerVideoToolBar: NCViewerVideoToolBar?) {
         super.init()
 
         self.view = view
-        self.progressView = progressView
         self.viewerVideoToolBar = viewerVideoToolBar
         
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
@@ -117,7 +114,6 @@ class NCViewerVideo: NSObject {
         
         player?.pause()
         player?.seek(to: CMTime.zero)
-//        progressView.progress = 0
         
         if let timeObserver = timeObserver {
             player?.removeTimeObserver(timeObserver)
@@ -149,6 +145,7 @@ class NCViewerVideo: NSObject {
                     player?.isMuted = CCUtility.getAudioMute()
                 }
                 
+                /*
                 if rateObserver != nil && !metadata.livePhoto {
                     self.progressView?.progress = 0
                     if let duration = self.player?.currentItem?.asset.duration {
@@ -171,6 +168,7 @@ class NCViewerVideo: NSObject {
                         }
                     }
                 }
+                */
                 
             } else if !metadata.livePhoto {
                 

@@ -583,7 +583,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         currentMetadata = metadata
         currentViewerImageZoom = viewerImageZoom
         viewerImageZoom.videoToolBar.isHidden = true
-        viewerVideo = NCViewerVideo.init(view: viewerImageZoom.imageView, progressView: progressView, viewerVideoToolBar: viewerImageZoom.videoToolBar)
+        viewerVideo = NCViewerVideo.init(view: viewerImageZoom.imageView, viewerVideoToolBar: viewerImageZoom.videoToolBar)
         
         if (currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {

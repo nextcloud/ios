@@ -28,7 +28,9 @@ class NCViewerVideoToolBar: UIView {
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var muteButton: UIButton!
     @IBOutlet weak var playbackSlider: UISlider!
-
+    @IBOutlet weak var labelOverallDuration: UILabel!
+    @IBOutlet weak var labelCurrentTime: UILabel!
+    
     var player: AVPlayer?
     
     override func willMove(toWindow newWindow: UIWindow?) {
@@ -66,6 +68,20 @@ class NCViewerVideoToolBar: UIView {
                 self.player?.play()
             }
         }
+        
+        labelCurrentTime.text = stringFromTimeInterval(interval: 0)
+        labelCurrentTime.textColor = .white
+        labelOverallDuration.text = stringFromTimeInterval(interval: seconds)
+        labelOverallDuration.textColor = .white
+        
+        player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
+            
+            if self.player?.currentItem?.status == .readyToPlay {
+                let time: Float64 = CMTimeGetSeconds(self.player!.currentTime())
+                self.playbackSlider.value = Float(time)
+                self.labelCurrentTime.text = self.stringFromTimeInterval(interval: time)
+            }
+        })
     }
     
     func setToolBar() {
@@ -105,13 +121,23 @@ class NCViewerVideoToolBar: UIView {
     
     @objc func playbackSliderValueChanged(_ playbackSlider:UISlider) {
            
-           let seconds : Int64 = Int64(playbackSlider.value)
-           let targetTime:CMTime = CMTimeMake(value: seconds, timescale: 1)
+        let seconds : Int64 = Int64(playbackSlider.value)
+        let targetTime:CMTime = CMTimeMake(value: seconds, timescale: 1)
            
-           player?.seek(to: targetTime)
+        player?.seek(to: targetTime)
            
-           if player?.rate == 0 {
-               player?.play()
-           }
-       }
+        if player?.rate == 0 {
+            player?.play()
+        }
+    }
+    
+    func stringFromTimeInterval(interval: TimeInterval) -> String {
+    
+        let interval = Int(interval)
+        let seconds = interval % 60
+        let minutes = (interval / 60) % 60
+        let hours = (interval / 3600)
+        
+        return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+    }
 }

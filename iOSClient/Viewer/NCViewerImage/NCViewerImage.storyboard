@@ -270,6 +270,18 @@
                                                     <action selector="playerPause:" destination="sBp-t2-eFh" eventType="touchUpInside" id="pRl-bT-hpi"/>
                                                 </connections>
                                             </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00:00" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kVv-X4-6SK">
+                                                <rect key="frame" x="9.9999999999999964" y="45" width="52.666666666666657" height="14.333333333333336"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="99:99:99" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OUD-HH-cXH">
+                                                <rect key="frame" x="301" y="42" width="53" height="14.333333333333336"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
@@ -279,10 +291,16 @@
                                             <constraint firstAttribute="height" constant="100" id="EyI-HW-pHA"/>
                                             <constraint firstAttribute="trailing" secondItem="SR4-e8-1hC" secondAttribute="trailing" constant="10" id="Q3r-ex-Cpf"/>
                                             <constraint firstItem="SR4-e8-1hC" firstAttribute="leading" secondItem="sBp-t2-eFh" secondAttribute="leading" constant="10" id="Xec-gd-9AB"/>
+                                            <constraint firstAttribute="trailing" secondItem="OUD-HH-cXH" secondAttribute="trailing" constant="10" id="j5v-RG-0JI"/>
+                                            <constraint firstItem="kVv-X4-6SK" firstAttribute="top" secondItem="SR4-e8-1hC" secondAttribute="bottom" id="l6a-l5-ZvL"/>
                                             <constraint firstItem="x3E-b2-obf" firstAttribute="centerX" secondItem="sBp-t2-eFh" secondAttribute="centerX" id="uPa-tM-Vx6"/>
                                             <constraint firstItem="SR4-e8-1hC" firstAttribute="top" secondItem="sBp-t2-eFh" secondAttribute="top" constant="15" id="uu1-ai-wmJ"/>
+                                            <constraint firstItem="OUD-HH-cXH" firstAttribute="top" secondItem="SR4-e8-1hC" secondAttribute="bottom" constant="-3" id="wwk-tz-5dj"/>
+                                            <constraint firstItem="kVv-X4-6SK" firstAttribute="leading" secondItem="sBp-t2-eFh" secondAttribute="leading" constant="10" id="yee-JQ-gRq"/>
                                         </constraints>
                                         <connections>
+                                            <outlet property="labelCurrentTime" destination="kVv-X4-6SK" id="vyf-Bb-TPL"/>
+                                            <outlet property="labelOverallDuration" destination="OUD-HH-cXH" id="E0O-99-aeq"/>
                                             <outlet property="muteButton" destination="8AB-hx-yqN" id="9zQ-k7-auv"/>
                                             <outlet property="playButton" destination="x3E-b2-obf" id="0Nw-L4-W7M"/>
                                             <outlet property="playbackSlider" destination="SR4-e8-1hC" id="Khx-Oe-NEQ"/>
@@ -334,7 +352,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fbE-Jv-mLH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4547.826086956522" y="777.45535714285711"/>
+            <point key="canvasLocation" x="4547.826086956522" y="776.9021739130435"/>
         </scene>
     </scenes>
     <resources>
