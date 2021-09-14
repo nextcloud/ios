@@ -54,12 +54,11 @@ class NCViewerVideoToolBar: UIView {
         self.player = player
         
         let duration: CMTime = (player?.currentItem?.asset.duration)!
-        let seconds: Float64 = CMTimeGetSeconds(duration)
+        let durationSeconds: Float64 = CMTimeGetSeconds(duration)
         
         playbackSlider.minimumValue = 0
-        playbackSlider.maximumValue = Float(seconds)
+        playbackSlider.maximumValue = Float(durationSeconds)
         playbackSlider.isContinuous = true
-        playbackSlider.tintColor = UIColor.green
         playbackSlider.action(for: .valueChanged) { _ in
             let seconds : Int64 = Int64(self.playbackSlider.value)
             let targetTime:CMTime = CMTimeMake(value: seconds, timescale: 1)
@@ -70,16 +69,17 @@ class NCViewerVideoToolBar: UIView {
         }
         
         labelCurrentTime.text = stringFromTimeInterval(interval: 0)
-        labelCurrentTime.textColor = .white
-        labelOverallDuration.text = stringFromTimeInterval(interval: seconds)
-        labelOverallDuration.textColor = .white
+        labelCurrentTime.textColor = .lightGray
+        labelOverallDuration.text = "-" + stringFromTimeInterval(interval: durationSeconds)
+        labelOverallDuration.textColor = .lightGray
         
         player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             
             if self.player?.currentItem?.status == .readyToPlay {
-                let time: Float64 = CMTimeGetSeconds(self.player!.currentTime())
-                self.playbackSlider.value = Float(time)
-                self.labelCurrentTime.text = self.stringFromTimeInterval(interval: time)
+                let currentSeconds: Float64 = CMTimeGetSeconds(self.player!.currentTime())
+                self.playbackSlider.value = Float(currentSeconds)
+                self.labelCurrentTime.text = self.stringFromTimeInterval(interval: currentSeconds)
+                self.labelOverallDuration.text = "-" + self.stringFromTimeInterval(interval: durationSeconds - currentSeconds)
             }
         })
     }
@@ -138,6 +138,10 @@ class NCViewerVideoToolBar: UIView {
         let minutes = (interval / 60) % 60
         let hours = (interval / 3600)
         
-        return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+        if hours > 0 {
+            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            return String(format: "%02d:%02d", minutes, seconds)
+        }
     }
 }
