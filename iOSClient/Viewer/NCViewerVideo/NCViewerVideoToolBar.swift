@@ -27,11 +27,14 @@ class NCViewerVideoToolBar: UIView {
     
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var muteButton: UIButton!
+    @IBOutlet weak var forwardButton: UIButton!
+    @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var playbackSlider: UISlider!
     @IBOutlet weak var labelOverallDuration: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
     
     var player: AVPlayer?
+    fileprivate let seekDuration: Float64 = 15
     
     override func willMove(toWindow newWindow: UIWindow?) {
         super.willMove(toWindow: newWindow)
@@ -59,6 +62,7 @@ class NCViewerVideoToolBar: UIView {
         playbackSlider.minimumValue = 0
         playbackSlider.maximumValue = Float(durationSeconds)
         playbackSlider.isContinuous = true
+        playbackSlider.tintColor = .lightGray
         playbackSlider.action(for: .valueChanged) { _ in
             let seconds : Int64 = Int64(self.playbackSlider.value)
             let targetTime:CMTime = CMTimeMake(value: seconds, timescale: 1)
@@ -99,8 +103,13 @@ class NCViewerVideoToolBar: UIView {
         } else {
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
         }
+        
+        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white), for: .normal)
+        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .white), for: .normal)
     }
 
+    //MARK: - Action
+    
     @IBAction func playerPause(_ sender: Any) {
         
         if player?.timeControlStatus == .playing {
@@ -119,17 +128,35 @@ class NCViewerVideoToolBar: UIView {
         setToolBar()
     }
     
-    @objc func playbackSliderValueChanged(_ playbackSlider:UISlider) {
-           
-        let seconds : Int64 = Int64(playbackSlider.value)
-        let targetTime:CMTime = CMTimeMake(value: seconds, timescale: 1)
-           
-        player?.seek(to: targetTime)
-           
-        if player?.rate == 0 {
-            player?.play()
+    @IBAction func forwardButtonSec(_ sender: Any) {
+        guard let player = self.player else { return }
+        
+        if let duration = player.currentItem?.duration {
+            
+            let playerCurrentTime = CMTimeGetSeconds(player.currentTime())
+            let newTime = playerCurrentTime + seekDuration
+            if newTime < CMTimeGetSeconds(duration) {
+                let selectedTime: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
+                player.seek(to: selectedTime)
+            }
+            player.pause()
+            player.play()
         }
     }
+    
+    @IBAction func backButtonSec(_ sender: Any) {
+        guard let player = self.player else { return }
+
+        let playerCurrenTime = CMTimeGetSeconds(player.currentTime())
+        var newTime = playerCurrenTime - seekDuration
+        if newTime < 0 { newTime = 0 }
+        player.pause()
+        let selectedTime: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
+        player.seek(to: selectedTime)
+        player.play()
+    }
+    
+    //MARK: - Algorithms
     
     func stringFromTimeInterval(interval: TimeInterval) -> String {
     
