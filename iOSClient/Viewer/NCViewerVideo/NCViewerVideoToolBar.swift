@@ -34,8 +34,9 @@ class NCViewerVideoToolBar: UIView {
     @IBOutlet weak var labelCurrentTime: UILabel!
     
     var player: AVPlayer?
-    fileprivate let seekDuration: Float64 = 15
-    
+    private let seekDuration: Float64 = 15
+    private var timerAutoHide: Timer?
+
     override func willMove(toWindow newWindow: UIWindow?) {
         super.willMove(toWindow: newWindow)
 
@@ -94,14 +95,24 @@ class NCViewerVideoToolBar: UIView {
         player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             
             if self.player?.currentItem?.status == .readyToPlay {
-                let currentSeconds: Float64 = CMTimeGetSeconds(self.player!.currentTime())
-                self.playbackSlider.value = Float(currentSeconds)
-                self.labelCurrentTime.text = self.stringFromTimeInterval(interval: currentSeconds)
-                self.labelOverallDuration.text = "-" + self.stringFromTimeInterval(interval: durationSeconds - currentSeconds)
+                if self.isHidden == false {
+                    self.updateOutlet()
+                }
             }
         })
         
         setToolBar()
+    }
+    
+    @objc public func hideToolBar() {
+        self.isHidden = true
+    }
+    
+    @objc public func showToolBar() {
+        updateOutlet()
+        self.isHidden = false
+        timerAutoHide?.invalidate()
+        timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(hideToolBar), userInfo: nil, repeats: true)
     }
     
     public func setToolBar() {
@@ -116,6 +127,19 @@ class NCViewerVideoToolBar: UIView {
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
         } else {
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
+        }
+    }
+    
+    private func updateOutlet() {
+        
+        if let duration = player?.currentItem?.asset.duration, let currentTime = player?.currentTime() {
+            
+            let durationSeconds: Float64 = CMTimeGetSeconds(duration)
+            let currentSeconds: Float64 = CMTimeGetSeconds(currentTime)
+            
+            self.playbackSlider.value = Float(currentSeconds)
+            self.labelCurrentTime.text = self.stringFromTimeInterval(interval: currentSeconds)
+            self.labelOverallDuration.text = "-" + self.stringFromTimeInterval(interval: durationSeconds - currentSeconds)
         }
     }
 
@@ -170,8 +194,6 @@ class NCViewerVideoToolBar: UIView {
     }
     
     //MARK: - Algorithms
-    
-    
     
     func stringFromTimeInterval(interval: TimeInterval) -> String {
     

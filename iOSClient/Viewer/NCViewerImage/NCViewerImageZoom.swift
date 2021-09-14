@@ -152,11 +152,6 @@ class NCViewerImageZoom: UIViewController {
         
         updateZoomScale()
         centreConstraints()
-        
-        // VideoToolBar
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-            self.videoToolBar.isHidden = false
-        }
     }
     
     //MARK: - Gesture
@@ -166,7 +161,9 @@ class NCViewerImageZoom: UIViewController {
         if detailView.isShow() { return }
         
         // NO ZOOM for Audio / Video
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue { return }
+        if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) && !videoToolBar.isHidden {
+            return
+        }
         
         let pointInView = gestureRecognizer.location(in: imageView)
         var newZoomScale = scrollView.maximumZoomScale
@@ -205,7 +202,7 @@ class NCViewerImageZoom: UIViewController {
             startImageViewBottomConstraint = imageViewBottomConstraint.constant
              
             // VideoToolBar
-            self.videoToolBar.isHidden = true
+            self.videoToolBar.hideToolBar()
             
         case .ended:
             
@@ -229,10 +226,10 @@ class NCViewerImageZoom: UIViewController {
             // VideoToolBar
             if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
                 if detailView.isShow() {
-                    self.videoToolBar.isHidden = true
+                    self.videoToolBar.hideToolBar()
                 } else {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        self.videoToolBar.isHidden = false
+                        self.videoToolBar.showToolBar()
                     }
                 }
             }

@@ -521,7 +521,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
                 self.currentViewerImageZoom?.centreConstraints()
                 // VideoToolBar
                 if self.currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || self.currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-                    self.viewerVideo?.viewerVideoToolBar?.isHidden = false
+                    self.viewerVideo?.viewerVideoToolBar?.showToolBar()
                 }
             }
             return
@@ -549,6 +549,12 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             currentMode = .full
         }
         */
+        
+        if currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+            let wasHidden = viewerVideo?.viewerVideoToolBar?.isHidden
+            viewerVideo?.viewerVideoToolBar?.showToolBar()
+            if wasHidden ?? false { return }
+        }
         
         if currentMode == .full {
             
@@ -588,14 +594,14 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         navigationItem.title = metadata.fileNameView
         currentMetadata = metadata
         currentViewerImageZoom = viewerImageZoom
-        viewerImageZoom.videoToolBar.isHidden = true
+        viewerImageZoom.videoToolBar.hideToolBar()
         viewerVideo = NCViewerVideo.init(view: viewerImageZoom.imageView, viewerVideoToolBar: viewerImageZoom.videoToolBar)
         
         if (currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.viewerVideo?.videoPlay(metadata: metadata)
             }
-            viewerImageZoom.videoToolBar.isHidden = false
+            viewerImageZoom.videoToolBar.showToolBar()
         }
             
         if !NCOperationQueue.shared.downloadExists(metadata: metadata) {
