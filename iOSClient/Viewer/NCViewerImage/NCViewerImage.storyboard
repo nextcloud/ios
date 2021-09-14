@@ -240,7 +240,7 @@
                                             <outlet property="sizeValue" destination="XLb-0a-du9" id="9jm-Ku-sgt"/>
                                         </connections>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sBp-t2-eFh" customClass="NCViewerVideoToolBar" customModule="Nextcloud" customModuleProvider="target">
+                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sBp-t2-eFh" customClass="NCViewerVideoToolBar" customModule="Nextcloud" customModuleProvider="target">
                                         <rect key="frame" x="25" y="636" width="364" height="100"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8AB-hx-yqN">
@@ -348,7 +348,7 @@
                             </scrollView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Yo6-7W-moG"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="CdQ-LC-Trx" secondAttribute="bottom" id="4qB-8y-OcG"/>
                             <constraint firstItem="P8R-4f-zAl" firstAttribute="top" secondItem="Yo6-7W-moG" secondAttribute="bottom" constant="-400" id="B4O-kU-vwy"/>
