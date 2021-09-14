@@ -50,6 +50,22 @@ class NCViewerVideoToolBar: UIView {
             blurEffectView.frame = self.bounds
             blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             self.insertSubview(blurEffectView, at:0)
+            
+            playbackSlider.value = 0
+            playbackSlider.minimumValue = 0
+            playbackSlider.maximumValue = 0
+            playbackSlider.isContinuous = true
+            playbackSlider.tintColor = .lightGray
+            
+            labelCurrentTime.text = stringFromTimeInterval(interval: 0)
+            labelCurrentTime.textColor = .lightGray
+            labelOverallDuration.text = stringFromTimeInterval(interval: 0)
+            labelOverallDuration.textColor = .lightGray
+            
+            backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white), for: .normal)
+            forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .white), for: .normal)
+
+            setToolBar()
         }
     }
     
@@ -59,10 +75,10 @@ class NCViewerVideoToolBar: UIView {
         let duration: CMTime = (player?.currentItem?.asset.duration)!
         let durationSeconds: Float64 = CMTimeGetSeconds(duration)
         
+        playbackSlider.value = 0
         playbackSlider.minimumValue = 0
         playbackSlider.maximumValue = Float(durationSeconds)
-        playbackSlider.isContinuous = true
-        playbackSlider.tintColor = .lightGray
+        
         playbackSlider.action(for: .valueChanged) { _ in
             let seconds : Int64 = Int64(self.playbackSlider.value)
             let targetTime:CMTime = CMTimeMake(value: seconds, timescale: 1)
@@ -73,9 +89,7 @@ class NCViewerVideoToolBar: UIView {
         }
         
         labelCurrentTime.text = stringFromTimeInterval(interval: 0)
-        labelCurrentTime.textColor = .lightGray
         labelOverallDuration.text = "-" + stringFromTimeInterval(interval: durationSeconds)
-        labelOverallDuration.textColor = .lightGray
         
         player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             
@@ -86,26 +100,23 @@ class NCViewerVideoToolBar: UIView {
                 self.labelOverallDuration.text = "-" + self.stringFromTimeInterval(interval: durationSeconds - currentSeconds)
             }
         })
+        
+        setToolBar()
     }
     
-    func setToolBar() {
-        
-        let mute = CCUtility.getAudioMute()
-        
-        if  player?.rate == 1 {
+    public func setToolBar() {
+
+        if player?.rate == 1 {
             playButton.setImage(NCUtility.shared.loadImage(named: "pause.fill", color: .white), for: .normal)
         } else {
             playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white), for: .normal)
         }
        
-        if mute {
+        if CCUtility.getAudioMute() {
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
         } else {
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
         }
-        
-        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white), for: .normal)
-        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .white), for: .normal)
     }
 
     //MARK: - Action

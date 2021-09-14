@@ -523,10 +523,11 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             return
         }
         
+        /*
         if currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             
             if self.viewerVideo?.pictureInPictureOcId != currentMetadata.ocId {
-                                
+                   
                 // Kill PIP
                 appDelegate.activeViewerAVPlayerViewController?.player?.replaceCurrentItem(with: nil)
                 // --------
@@ -543,7 +544,8 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             
             currentMode = .full
         }
-                    
+        */
+        
         if currentMode == .full {
             
             navigationController?.setNavigationBarHidden(false, animated: false)
@@ -641,18 +643,3 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
     }
 }
 
-//MARK: - NCViewerVideoDelegate
-
-extension NCViewerImage: NCViewerAVPlayerViewControllerDelegate {
-    
-    func startPictureInPicture(metadata: tableMetadata) {
-        self.viewerVideo?.pictureInPictureOcId = metadata.ocId
-    }
-    
-    func stopPictureInPicture(metadata: tableMetadata, playing: Bool) {
-        self.viewerVideo?.pictureInPictureOcId = ""
-        if playing && currentMetadata.ocId == metadata.ocId {
-            self.viewerVideo?.viewerVideoToolBar?.playerPause(self)
-        }
-    }
-}

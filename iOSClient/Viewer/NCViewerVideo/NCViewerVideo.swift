@@ -96,7 +96,6 @@ class NCViewerVideo: NSObject {
             
             // TOOLBAR
             viewerVideoToolBar?.setPlayer(player: player)
-            viewerVideoToolBar?.setToolBar()
         }
         
         //NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
@@ -144,31 +143,6 @@ class NCViewerVideo: NSObject {
                     player?.seek(to: time)
                     player?.isMuted = CCUtility.getAudioMute()
                 }
-                
-                /*
-                if rateObserver != nil && !metadata.livePhoto {
-                    self.progressView?.progress = 0
-                    if let duration = self.player?.currentItem?.asset.duration {
-                        let durationSeconds = Double(CMTimeGetSeconds(duration))
-                        if durationSeconds > 0 {
-                            let width = Double(self.progressView?.bounds.width ?? 0)
-                            let interval = (0.5 * durationSeconds) / width
-                            let time = CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-                            if CMTIME_IS_VALID(time) && CMTimeCompare(time, .zero) != 0 {
-                                self.timeObserver = self.player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
-                                    let durationSeconds = Float(CMTimeGetSeconds(duration))
-                                    if durationSeconds > 0 {
-                                        let currentTimeSeconds = Float(CMTimeGetSeconds(time))
-                                        self?.progressView?.progress = currentTimeSeconds / durationSeconds
-                                    } else {
-                                        self?.progressView?.progress = 0
-                                    }
-                                })
-                            }
-                        }
-                    }
-                }
-                */
                 
             } else if !metadata.livePhoto {
                 
