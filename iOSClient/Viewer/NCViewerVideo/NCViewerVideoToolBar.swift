@@ -80,6 +80,7 @@ class NCViewerVideoToolBar: UIView {
         playbackSlider.minimumValue = 0
         playbackSlider.maximumValue = Float(durationSeconds)
         
+        /*
         playbackSlider.action(for: .valueChanged) { _ in
             let seconds : Int64 = Int64(self.playbackSlider.value)
             let targetTime:CMTime = CMTimeMake(value: seconds, timescale: 1)
@@ -88,7 +89,11 @@ class NCViewerVideoToolBar: UIView {
                 self.player?.play()
             }
         }
+        */
         
+        playbackSlider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
+
+                
         labelCurrentTime.text = stringFromTimeInterval(interval: 0)
         labelOverallDuration.text = "-" + stringFromTimeInterval(interval: durationSeconds)
         
@@ -140,6 +145,23 @@ class NCViewerVideoToolBar: UIView {
             self.playbackSlider.value = Float(currentSeconds)
             self.labelCurrentTime.text = self.stringFromTimeInterval(interval: currentSeconds)
             self.labelOverallDuration.text = "-" + self.stringFromTimeInterval(interval: durationSeconds - currentSeconds)
+        }
+    }
+    
+    //
+    
+    @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
+        if let touchEvent = event.allTouches?.first {
+            switch touchEvent.phase {
+            case .began: print("BEGAN")
+                // handle drag began
+            case .moved: print("MOVED")
+                // handle drag moved
+            case .ended: print ("END")
+                // handle drag ended
+            default:
+                break
+            }
         }
     }
 
