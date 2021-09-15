@@ -94,8 +94,7 @@ class NCViewerVideo: NSObject {
                 }
             }
             
-            // TOOLBAR
-            viewerVideoToolBar?.setPlayer(player: player)
+            viewerVideoToolBar?.setBarPlayer(player: player)
         }
         
         //NCNetworking.shared.getVideoUrl(metadata: metadata) { url in

@@ -79,7 +79,7 @@ class NCViewerVideoToolBar: UIView {
         }
     }
     
-    func setPlayer(player: AVPlayer?) {
+    func setBarPlayer(player: AVPlayer?) {
         self.player = player
         
         let duration: CMTime = (player?.currentItem?.asset.duration)!
