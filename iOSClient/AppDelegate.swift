@@ -48,7 +48,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc var activeMedia: NCMedia?
     var activeServerUrl: String = ""
     @objc var activeViewController: UIViewController?
-    //var activeViewerAVPlayerViewController: NCViewerAVPlayerViewController?
     var mainTabBar: NCMainTabBar?
     var activeMetadata: tableMetadata?
     
