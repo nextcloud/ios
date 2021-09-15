@@ -88,21 +88,8 @@ class NCViewerVideoToolBar: UIView {
         playbackSlider.value = 0
         playbackSlider.minimumValue = 0
         playbackSlider.maximumValue = Float(durationSeconds)
-        
-        /*
-        playbackSlider.action(for: .valueChanged) { _ in
-            let seconds : Int64 = Int64(self.playbackSlider.value)
-            let targetTime:CMTime = CMTimeMake(value: seconds, timescale: 1)
-            self.player?.seek(to: targetTime)
-            if self.player?.rate == 0 {
-                self.player?.play()
-            }
-        }
-        */
-        
         playbackSlider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
 
-                
         labelCurrentTime.text = stringFromTimeInterval(interval: 0)
         labelOverallDuration.text = "-" + stringFromTimeInterval(interval: durationSeconds)
         

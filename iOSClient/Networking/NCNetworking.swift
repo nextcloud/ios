@@ -1009,6 +1009,7 @@ import Queuer
             
             for metadata in metadatas {
             
+                NCManageDatabase.shared.deleteVideoTime(metadata: metadata)
                 NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
             
@@ -1070,7 +1071,8 @@ import Queuer
                 do {
                     try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                 } catch { }
-                                       
+                      
+                NCManageDatabase.shared.deleteVideoTime(metadata: metadata)
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
 
