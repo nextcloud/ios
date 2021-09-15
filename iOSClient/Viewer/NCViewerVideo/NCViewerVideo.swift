@@ -77,13 +77,14 @@ class NCViewerVideo: NSObject {
                 self.videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
                 view.layer.addSublayer(self.videoLayer!)
                 
-                // At end go back to start
+                // At end go back to start & show toolbar
                 NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
                     if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
                         self.player?.seek(to: .zero)
                         if metadata.livePhoto {
                             NCManageDatabase.shared.deleteVideoTime(metadata: metadata)
                         }
+                        self.viewerVideoToolBar?.showToolBar()
                     }
                 }
                             

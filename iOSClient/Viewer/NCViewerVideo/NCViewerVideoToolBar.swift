@@ -106,20 +106,26 @@ class NCViewerVideoToolBar: UIView {
     }
     
     @objc public func hideToolBar() {
+        self.isHidden = true
+    }
+    
+    @objc public func autoHideToolBar() {
         if playbackSliderEvent == .began || playbackSliderEvent == .moved {
             timerAutoHide?.invalidate()
-            timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(hideToolBar), userInfo: nil, repeats: true)
+            timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(autoHideToolBar), userInfo: nil, repeats: true)
 
             return
         }
-        self.isHidden = true
+        if self.player?.rate == 1 {
+            self.isHidden = true
+        }
     }
     
     @objc public func showToolBar() {
         updateOutlet()
         self.isHidden = false
         timerAutoHide?.invalidate()
-        timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(hideToolBar), userInfo: nil, repeats: true)
+        timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(autoHideToolBar), userInfo: nil, repeats: true)
     }
     
     public func setToolBar() {
