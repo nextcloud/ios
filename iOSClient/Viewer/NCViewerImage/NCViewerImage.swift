@@ -259,7 +259,7 @@ class NCViewerImage: UIViewController {
         
         if gestureRecognizer.state == .began {
             
-            currentViewerImageZoom?.centreConstraints()
+            currentViewerImageZoom?.updateViewConstraints()
             currentViewerImageZoom?.statusViewImage.isHidden = true
             currentViewerImageZoom?.statusLabel.isHidden = true
             
@@ -518,7 +518,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
         if currentViewerImageZoom?.detailView.isShow() ?? false {
             
             UIView.animate(withDuration: 0.2) {
-                self.currentViewerImageZoom?.centreConstraints()
+                self.currentViewerImageZoom?.updateConstraints()
                 // VideoToolBar
                 if self.currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || self.currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
                     self.viewerVideo?.viewerVideoToolBar?.showToolBar()
@@ -580,7 +580,14 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
 //MARK: - NCViewerImageZoomDelegate
 
 extension NCViewerImage: NCViewerImageZoomDelegate {
-   
+    
+    func photoPageViewController(_ viewerImageZoom: NCViewerImageZoom, scrollViewDidScroll scrollView: UIScrollView) {
+//        if scrollView.zoomScale != scrollView.minimumZoomScale && self.currentMode != .full {
+//            self.changeScreenMode(to: .full)
+//            self.currentMode = .full
+//        }
+    }
+    
     func dismissImageZoom() {
         self.navigationController?.popViewController(animated: true)
     }
