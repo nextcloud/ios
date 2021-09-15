@@ -33,9 +33,18 @@ class NCViewerVideoToolBar: UIView {
     @IBOutlet weak var labelOverallDuration: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
     
+    enum sliderEventType {
+        case began
+        case ended
+        case moved
+    }
+    
     var player: AVPlayer?
+    private var playbackSliderEvent: sliderEventType = .ended
     private let seekDuration: Float64 = 15
     private var timerAutoHide: Timer?
+
+    // MARK: - View Life Cycle
 
     override func willMove(toWindow newWindow: UIWindow?) {
         super.willMove(toWindow: newWindow)
@@ -110,6 +119,12 @@ class NCViewerVideoToolBar: UIView {
     }
     
     @objc public func hideToolBar() {
+        if playbackSliderEvent == .began || playbackSliderEvent == .moved {
+            timerAutoHide?.invalidate()
+            timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(hideToolBar), userInfo: nil, repeats: true)
+
+            return
+        }
         self.isHidden = true
     }
     
@@ -148,17 +163,23 @@ class NCViewerVideoToolBar: UIView {
         }
     }
     
-    //
+    //MARK: - Event
     
     @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
         if let touchEvent = event.allTouches?.first {
             switch touchEvent.phase {
-            case .began: print("BEGAN")
-                // handle drag began
-            case .moved: print("MOVED")
-                // handle drag moved
-            case .ended: print ("END")
-                // handle drag ended
+            case .began:
+                playbackSliderEvent = .began
+            case .moved:
+                let seconds: Int64 = Int64(self.playbackSlider.value)
+                let targetTime: CMTime = CMTimeMake(value: seconds, timescale: 1)
+                self.player?.seek(to: targetTime)
+                if self.player?.rate == 0 {
+                    self.player?.play()
+                }
+                playbackSliderEvent = .moved
+            case .ended:
+                playbackSliderEvent = .ended
             default:
                 break
             }
