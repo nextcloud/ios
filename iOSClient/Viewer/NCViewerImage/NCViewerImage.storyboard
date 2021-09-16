@@ -95,7 +95,7 @@
                                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P8R-4f-zAl" customClass="NCViewerImageDetailView" customModule="Nextcloud" customModuleProvider="target">
+                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P8R-4f-zAl" customClass="NCViewerImageDetailView" customModule="Nextcloud" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="336" width="414" height="375"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HRq-3M-yeb">

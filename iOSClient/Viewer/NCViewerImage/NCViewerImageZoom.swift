@@ -96,6 +96,8 @@ class NCViewerImageZoom: UIViewController {
             statusLabel.text = ""
         }
         
+        detailView.hide()
+        
 //        updateZoom()
 //        updateConstraints()
     }
@@ -279,44 +281,6 @@ class NCViewerImageZoom: UIViewController {
             break
         }
     }
-    
-    //MARK: - Function
-
-    /*
-    private func updateZoom() {
-        
-        let widthScale = self.view.bounds.size.width / imageView.bounds.width
-        let heightScale = self.view.bounds.size.height / imageView.bounds.height
-        let minScale = min(widthScale, heightScale)
-    
-        scrollView.minimumZoomScale = minScale
-        scrollView.zoomScale = minScale
-        scrollView.maximumZoomScale = minScale * 4
-    }
-    
-    func updateConstraints() {
-        
-        let xOffset = max(0, (self.view.bounds.size.width - imageView.frame.width) / 2)
-        let yOffset = max(0, (self.view.bounds.size.height - imageView.frame.height) / 2)
-
-        imageViewTopConstraint.constant = yOffset
-        imageViewBottomConstraint.constant = yOffset
-            
-        imageViewLeadingConstraint.constant = xOffset
-        imageViewTrailingConstraint.constant = xOffset
-
-        // reset detail
-        detailViewTopConstraint.constant = 0
-        detailView.hide()
-                
-        let contentWidth = xOffset * 2 + imageView.frame.width
-        let contentHeight = yOffset * 2 + imageView.frame.height
-        view.layoutIfNeeded()
-        self.scrollView.contentSize = CGSize(width: contentWidth, height: contentHeight)
-
-        print("x: \(xOffset) - y: \(yOffset) - contentWidth: \(contentWidth) - contentHeight: \(contentHeight)")
-    }
-    */
 }
 
 extension NCViewerImageZoom: UIScrollViewDelegate {
@@ -328,9 +292,9 @@ extension NCViewerImageZoom: UIScrollViewDelegate {
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         if scrollView.zoomScale > 1 {
             if let image = imageView.image {
+                
                 let ratioW = imageView.frame.width / image.size.width
                 let ratioH = imageView.frame.height / image.size.height
-                
                 let ratio = ratioW < ratioH ? ratioW : ratioH
                 let newWidth = image.size.width * ratio
                 let newHeight = image.size.height * ratio
@@ -341,11 +305,11 @@ extension NCViewerImageZoom: UIScrollViewDelegate {
                 let top = 0.5 * (conditioTop ? newHeight - imageView.frame.height : (scrollView.frame.height - scrollView.contentSize.height))
                 
                 scrollView.contentInset = UIEdgeInsets(top: top, left: left, bottom: top, right: left)
-                
             }
         } else {
             scrollView.contentInset = .zero
-        }    }
+        }
+    }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         self.delegate?.photoPageViewController(self, scrollViewDidScroll: scrollView)
