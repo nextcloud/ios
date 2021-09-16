@@ -33,11 +33,6 @@ protocol NCViewerImageZoomDelegate {
 
 class NCViewerImageZoom: UIViewController {
     
-    @IBOutlet weak var imageViewBottomConstraint: NSLayoutConstraint!
-    @IBOutlet weak var imageViewLeadingConstraint: NSLayoutConstraint!
-    @IBOutlet weak var imageViewTopConstraint: NSLayoutConstraint!
-    @IBOutlet weak var imageViewTrailingConstraint: NSLayoutConstraint!
-        
     @IBOutlet weak var detailViewTopConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var scrollView: UIScrollView!
@@ -75,7 +70,8 @@ class NCViewerImageZoom: UIViewController {
         super.viewDidLoad()
         
         scrollView.delegate = self
-        scrollView.contentInsetAdjustmentBehavior = .never
+        scrollView.maximumZoomScale = 4
+        scrollView.minimumZoomScale = 1
         
         view.addGestureRecognizer(doubleTapGestureRecognizer)
         
@@ -100,8 +96,8 @@ class NCViewerImageZoom: UIViewController {
             statusLabel.text = ""
         }
         
-        updateZoom()
-        updateConstraints()
+//        updateZoom()
+//        updateConstraints()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -109,8 +105,8 @@ class NCViewerImageZoom: UIViewController {
         
         if !detailView.isShow() {
             
-            updateZoom()
-            updateConstraints()
+//            updateZoom()
+//            updateConstraints()
         }
         
         delegate?.willAppearImageZoom(viewerImageZoom: self, metadata: metadata)
@@ -130,8 +126,8 @@ class NCViewerImageZoom: UIViewController {
             detailViewTopConstraint.constant = 0
             detailView.hide()
             
-            updateZoom()
-            updateConstraints()
+//            updateZoom()
+//            updateConstraints()
         }
         
         delegate?.didAppearImageZoom(viewerImageZoom: self, metadata: metadata)
@@ -143,16 +139,16 @@ class NCViewerImageZoom: UIViewController {
         if detailView.isShow() {
             
             detailView.hide()
-            updateZoom()
-            updateConstraints()
+//            updateZoom()
+//            updateConstraints()
         }
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        updateZoom()
-        updateConstraints()
+//        updateZoom()
+//        updateConstraints()
     }
     
     //MARK: - Gesture
@@ -195,8 +191,8 @@ class NCViewerImageZoom: UIViewController {
             topPoint = CGPoint(x: currentLocation.x, y: currentLocation.y)
             
             // save start
-            startImageViewTopConstraint = imageViewTopConstraint.constant
-            startImageViewBottomConstraint = imageViewBottomConstraint.constant
+//            startImageViewTopConstraint = imageViewTopConstraint.constant
+//            startImageViewBottomConstraint = imageViewBottomConstraint.constant
              
             // VideoToolBar
             self.videoToolBar.hideToolBar()
@@ -205,15 +201,15 @@ class NCViewerImageZoom: UIViewController {
             
             if !detailView.isShow() {
                 UIView.animate(withDuration: 0.3) {
-                    self.updateConstraints()
+//                    self.updateConstraints()
                 } completion: { (_) in
-                    self.updateZoom()
-                    self.updateConstraints()
+//                    self.updateZoom()
+//                    self.updateConstraints()
                 }
             } else if detailView.isSavedContraint() {
                 UIView.animate(withDuration: 0.3) {
-                    self.imageViewTopConstraint.constant = self.detailView.imageViewTopConstraintConstant
-                    self.imageViewBottomConstraint.constant = self.detailView.imageViewBottomConstraintConstant
+//                    self.imageViewTopConstraint.constant = self.detailView.imageViewTopConstraintConstant
+//                    self.imageViewBottomConstraint.constant = self.detailView.imageViewBottomConstraintConstant
                     self.detailViewTopConstraint.constant = self.detailView.detailViewTopConstraintConstant
                     self.view.layoutIfNeeded()
                 } completion: { (_) in
@@ -236,9 +232,9 @@ class NCViewerImageZoom: UIViewController {
             if currentLocation.y < topPoint.y { topPoint = currentLocation }
             let deltaY = startPoint.y - currentLocation.y
             
-            imageViewTopConstraint.constant = startImageViewTopConstraint + currentLocation.y
-            imageViewBottomConstraint.constant = startImageViewBottomConstraint - currentLocation.y
-            detailViewTopConstraint.constant = -imageViewBottomConstraint.constant
+//            imageViewTopConstraint.constant = startImageViewTopConstraint + currentLocation.y
+//            imageViewBottomConstraint.constant = startImageViewBottomConstraint - currentLocation.y
+//            detailViewTopConstraint.constant = -imageViewBottomConstraint.constant
             
             // DISMISS
             if imageView.center.y > view.center.y + 100 {
@@ -255,15 +251,15 @@ class NCViewerImageZoom: UIViewController {
                     gestureRecognizer.state = .ended
                      
                     UIView.animate(withDuration: 0.3) {
-                        self.imageViewTopConstraint.constant = self.startImageViewTopConstraint - self.detailView.frame.height
-                        self.imageViewBottomConstraint.constant = self.startImageViewBottomConstraint + self.detailView.frame.height
-                        self.detailViewTopConstraint.constant = -self.imageViewBottomConstraint.constant
+//                        self.imageViewTopConstraint.constant = self.startImageViewTopConstraint - self.detailView.frame.height
+//                        self.imageViewBottomConstraint.constant = self.startImageViewBottomConstraint + self.detailView.frame.height
+//                        self.detailViewTopConstraint.constant = -self.imageViewBottomConstraint.constant
                         self.view.layoutIfNeeded()
                     } completion: { (_) in
                         // Save detail constraints
-                        self.detailView.imageViewTopConstraintConstant = self.imageViewTopConstraint.constant
-                        self.detailView.imageViewBottomConstraintConstant = self.imageViewBottomConstraint.constant
-                        self.detailView.detailViewTopConstraintConstant = self.detailViewTopConstraint.constant
+//                        self.detailView.imageViewTopConstraintConstant = self.imageViewTopConstraint.constant
+//                        self.detailView.imageViewBottomConstraintConstant = self.imageViewBottomConstraint.constant
+//                        self.detailView.detailViewTopConstraintConstant = self.detailViewTopConstraint.constant
                     }
                 }
                 
@@ -286,6 +282,7 @@ class NCViewerImageZoom: UIViewController {
     
     //MARK: - Function
 
+    /*
     private func updateZoom() {
         
         let widthScale = self.view.bounds.size.width / imageView.bounds.width
@@ -319,6 +316,7 @@ class NCViewerImageZoom: UIViewController {
 
         print("x: \(xOffset) - y: \(yOffset) - contentWidth: \(contentWidth) - contentHeight: \(contentHeight)")
     }
+    */
 }
 
 extension NCViewerImageZoom: UIScrollViewDelegate {
@@ -328,8 +326,26 @@ extension NCViewerImageZoom: UIScrollViewDelegate {
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        updateConstraints()
-    }
+        if scrollView.zoomScale > 1 {
+            if let image = imageView.image {
+                let ratioW = imageView.frame.width / image.size.width
+                let ratioH = imageView.frame.height / image.size.height
+                
+                let ratio = ratioW < ratioH ? ratioW : ratioH
+                let newWidth = image.size.width * ratio
+                let newHeight = image.size.height * ratio
+                let conditionLeft = newWidth*scrollView.zoomScale > imageView.frame.width
+                let left = 0.5 * (conditionLeft ? newWidth - imageView.frame.width : (scrollView.frame.width - scrollView.contentSize.width))
+                let conditioTop = newHeight*scrollView.zoomScale > imageView.frame.height
+                
+                let top = 0.5 * (conditioTop ? newHeight - imageView.frame.height : (scrollView.frame.height - scrollView.contentSize.height))
+                
+                scrollView.contentInset = UIEdgeInsets(top: top, left: left, bottom: top, right: left)
+                
+            }
+        } else {
+            scrollView.contentInset = .zero
+        }    }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         self.delegate?.photoPageViewController(self, scrollViewDidScroll: scrollView)
