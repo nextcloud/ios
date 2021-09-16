@@ -243,6 +243,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
             cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
             break
+        case NCGlobal.shared.metadataStatusUploadError:
+            cell.labelStatus.text = NSLocalizedString("_status_upload_error_", comment: "")
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
+            break
         default:
             cell.labelStatus.text = ""
             cell.labelInfo.text = ""
@@ -264,7 +268,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
     override func reloadDataSource() {
         super.reloadDataSource()
                 
-        metadatasSource = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status == %i || status == %i || status == %i || status == %i || status == %i || status == %i", NCGlobal.shared.metadataStatusWaitDownload, NCGlobal.shared.metadataStatusInDownload, NCGlobal.shared.metadataStatusDownloading, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
+        metadatasSource = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
         self.dataSource = NCDataSource.init(metadatasSource: metadatasSource)
         
         refreshControl.endRefreshing()
