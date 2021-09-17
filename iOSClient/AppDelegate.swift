@@ -564,7 +564,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // check certificate untrusted (-1202)
         if CCUtility.getCertificateError(account) {
             
-            let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_changed_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
+            let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_changed_", comment: ""), message: NSLocalizedString("_server_is_trusted_", comment: ""), preferredStyle: .alert)
                         
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
                 NCNetworking.shared.writeCertificate(url: self.urlBase)
