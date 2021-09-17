@@ -147,7 +147,8 @@
 + (NSData *)getDatabaseEncryptionKey;
 
 + (BOOL)getCertificateError:(NSString *)account;
-+ (void)setCertificateError:(NSString *)account;
++ (BOOL)getCertificateErrorSavedFound:(NSString *)account;
++ (void)setCertificateError:(NSString *)account certificateSavedFound:(BOOL)certificateSavedFound;
 + (void)clearCertificateError:(NSString *)account;
 
 + (BOOL)getDisableLocalCacheAfterUpload;

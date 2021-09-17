@@ -562,17 +562,31 @@
     return true;
 }
 
-+ (void)setCertificateError:(NSString *)account
++ (BOOL)getCertificateErrorSavedFound:(NSString *)account
+{
+    NSString *key = [@"certificateErrorSavedFound" stringByAppendingString:account];
+    NSString *error = [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
+    
+    if (error == nil) {
+        return false;
+    }
+    
+    return true;
+}
+
++ (void)setCertificateError:(NSString *)account certificateSavedFound:(BOOL)certificateSavedFound
 {
     // In background do not write the error
 #if !defined(EXTENSION)
     UIApplicationState state = [[UIApplication sharedApplication] applicationState];
-    if (state == UIApplicationStateBackground || state == UIApplicationStateInactive) {
-        return;
-    }
-    NSString *key = [@"certificateError" stringByAppendingString:account];
+    if (state == UIApplicationStateBackground || state == UIApplicationStateInactive) { return; }
     
-    [UICKeyChainStore setString:@"true" forKey:key service:NCGlobal.shared.serviceShareKeyChain];
+    NSString *keyCertificateError = [@"certificateError" stringByAppendingString:account];
+    NSString *keyCertificateErrorSavedFound = [@"certificateErrorSavedFound" stringByAppendingString:account];
+
+    [UICKeyChainStore setString:@"true" forKey:keyCertificateError service:NCGlobal.shared.serviceShareKeyChain];
+    NSString *sCertificateSavedFound = (certificateSavedFound) ? @"true" : @"false";
+    [UICKeyChainStore setString:sCertificateSavedFound forKey:keyCertificateErrorSavedFound service:NCGlobal.shared.serviceShareKeyChain];
 #else
     return;
 #endif
@@ -580,9 +594,11 @@
 
 + (void)clearCertificateError:(NSString *)account
 {
-    NSString *key = [@"certificateError" stringByAppendingString:account];
+    NSString *keyCertificateError = [@"certificateError" stringByAppendingString:account];
+    NSString *keyCertificateErrorSavedFound = [@"certificateErrorSavedFound" stringByAppendingString:account];
     
-    [UICKeyChainStore setString:nil forKey:key service:NCGlobal.shared.serviceShareKeyChain];
+    [UICKeyChainStore setString:nil forKey:keyCertificateError service:NCGlobal.shared.serviceShareKeyChain];
+    [UICKeyChainStore setString:nil forKey:keyCertificateErrorSavedFound service:NCGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getDisableLocalCacheAfterUpload

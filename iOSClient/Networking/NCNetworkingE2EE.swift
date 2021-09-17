@@ -327,7 +327,7 @@ import Alamofire
                             
                             } else if errorCode == Int(CFNetworkErrors.cfurlErrorServerCertificateUntrusted.rawValue) {
                             
-                                CCUtility.setCertificateError(metadata.account)
+                                CCUtility.setCertificateError(metadata.account, certificateSavedFound: true)
                                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
                                                     
                             } else {
