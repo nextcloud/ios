@@ -94,12 +94,7 @@ class NCViewerImageZoom: UIViewController {
         }  else {
             statusViewImage.image = nil
             statusLabel.text = ""
-        }
-        
-        detailView.hide()
-        
-//        updateZoom()
-//        updateConstraints()
+        }        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -148,9 +143,6 @@ class NCViewerImageZoom: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
-//        updateZoom()
-//        updateConstraints()
     }
     
     //MARK: - Gesture
