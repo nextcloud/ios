@@ -122,6 +122,21 @@ extension NCViewer {
         }
         
         //
+        // GO TO PAGE
+        //
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_go_to_page_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "printer"),
+                    action: { menuAction in
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuGotToPageInPDF)
+                    }
+                )
+            )
+        }
+        
+        //
         // PRINT
         //
         if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {

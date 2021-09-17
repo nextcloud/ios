@@ -133,6 +133,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(goToPage), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuGotToPageInPDF), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
@@ -232,6 +233,46 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         UIView.animate(withDuration: 1.0, delay: 3.0, animations: {
             self.pageView.alpha = 0
         })
+    }
+    
+    @objc func goToPage() {
+
+        guard let pdfDocument = pdfView.document else { return }
+
+        let alertMessage = NSString(format: NSLocalizedString("_this_document_has_%@_pages_", comment: "") as NSString, "\(pdfDocument.pageCount)") as String
+        let alertController = UIAlertController(title: NSLocalizedString("_go_to_page_", comment: ""), message: alertMessage, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
+
+        alertController.addTextField(configurationHandler: { textField in
+            textField.placeholder = NSLocalizedString("_page_", comment: "")
+            textField.keyboardType = .decimalPad
+        })
+
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { [unowned self] _ in
+            if let pageLabel = alertController.textFields?.first?.text {
+                self.selectPage(with: pageLabel)
+            }
+        }))
+
+        self.present(alertController, animated: true)
+    }
+    
+    private func selectPage(with label:String) {
+        guard let pdf = pdfView.document else { return }
+
+        if let pageNr = Int(label) {
+            if pageNr > 0 && pageNr <= pdf.pageCount {
+                if let page = pdf.page(at: pageNr - 1) {
+                    self.pdfView.go(to: page)
+                }
+            } else {
+                let alertController = UIAlertController(title: NSLocalizedString("_invalid_page_", comment: ""),
+                                        message: NSLocalizedString("_the_entered_page_number_doesn't_exist_", comment: ""),
+                                        preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: nil))
+                self.present(alertController, animated: true, completion: nil)
+            }
+        }
     }
     
     //MARK: - Action

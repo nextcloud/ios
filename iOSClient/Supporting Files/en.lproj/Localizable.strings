@@ -822,3 +822,10 @@
 "_create_image_error_"      = "Error while creating image file";
 "_error_open_file_"         = "Error while opening a file";
 "_new_background_im_"       = "Select an image or take a picture and use it as background. You can also select nothing. Press \"Done\" to complete.";
+
+/* PDF Viewer */
+"_go_to_page_"                              = "Go to page";
+"_page_"                                    = "Page";
+"_this_document_has_%@_pages_"              = "This document has %@ pages";
+"_invalid_page_"                            = "Invalid Page";
+"_the_entered_page_number_doesn't_exist_"   = "The entered page number doesn't exist";

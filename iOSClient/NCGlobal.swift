@@ -327,6 +327,8 @@ class NCGlobal: NSObject {
     
     let notificationCenterChangedLocation                       = "changedLocation"
     let notificationStatusAuthorizationChangedLocation          = "statusAuthorizationChangedLocation"
+    
+    let notificationCenterMenuGotToPageInPDF                     = "menuGotToPageInPDF"
 }
 
 //let rootView = UIApplication.shared.keyWindow?.rootViewController?.view
