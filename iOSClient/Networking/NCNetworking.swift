@@ -279,7 +279,7 @@ import Queuer
                         #if !EXTENSION
                         DispatchQueue.main.async {
                             let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                            CCUtility.setCertificateError(appDelegate.account, certificateSavedFound: certificateSavedFound)
+                            CCUtility.setCertificateError(appDelegate.account)
                         }
                         #endif
                     }
