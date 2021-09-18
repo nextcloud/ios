@@ -353,12 +353,12 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="CdQ-LC-Trx" secondAttribute="bottom" id="4qB-8y-OcG"/>
-                            <constraint firstItem="P8R-4f-zAl" firstAttribute="top" secondItem="Yo6-7W-moG" secondAttribute="bottom" constant="-400" id="B4O-kU-vwy"/>
                             <constraint firstAttribute="trailing" secondItem="CdQ-LC-Trx" secondAttribute="trailing" id="IwE-oE-d3Y"/>
                             <constraint firstItem="Yo6-7W-moG" firstAttribute="bottom" secondItem="sBp-t2-eFh" secondAttribute="bottom" id="QHF-av-zeT"/>
                             <constraint firstItem="Yo6-7W-moG" firstAttribute="trailing" secondItem="sBp-t2-eFh" secondAttribute="trailing" constant="25" id="TCr-e0-gnG"/>
                             <constraint firstItem="2AU-85-K8y" firstAttribute="leading" secondItem="Yo6-7W-moG" secondAttribute="leading" constant="10" id="X10-OG-EKg"/>
                             <constraint firstItem="Yo6-7W-moG" firstAttribute="top" secondItem="2AU-85-K8y" secondAttribute="top" constant="-10" id="avO-83-uMQ"/>
+                            <constraint firstItem="Yo6-7W-moG" firstAttribute="bottom" secondItem="P8R-4f-zAl" secondAttribute="top" constant="400" id="bor-cg-Alz"/>
                             <constraint firstItem="P8R-4f-zAl" firstAttribute="leading" secondItem="Yo6-7W-moG" secondAttribute="leading" id="dly-i5-fPW"/>
                             <constraint firstItem="CdQ-LC-Trx" firstAttribute="leading" secondItem="fIE-H6-KKc" secondAttribute="leading" id="g8C-2m-KkX"/>
                             <constraint firstItem="CdQ-LC-Trx" firstAttribute="top" secondItem="fIE-H6-KKc" secondAttribute="top" id="hcQ-lB-JwU"/>
@@ -368,8 +368,10 @@
                     </view>
                     <connections>
                         <outlet property="detailView" destination="P8R-4f-zAl" id="xFW-qq-Cdi"/>
-                        <outlet property="detailViewTopConstraint" destination="B4O-kU-vwy" id="8Av-5H-ygG"/>
+                        <outlet property="detailViewTopConstraint" destination="mpQ-4V-Yfc" id="4qg-1r-9fq"/>
                         <outlet property="imageView" destination="kPV-JM-UnM" id="TEv-Tc-8pu"/>
+                        <outlet property="imageViewBottomConstraint" destination="vEd-X2-yGs" id="wp3-67-aZ2"/>
+                        <outlet property="imageViewTopConstraint" destination="tdo-XY-uqv" id="AM2-tz-fSt"/>
                         <outlet property="scrollView" destination="CdQ-LC-Trx" id="3np-FR-s39"/>
                         <outlet property="statusLabel" destination="DAi-gz-qGP" id="zZH-1B-HiI"/>
                         <outlet property="statusViewImage" destination="2AU-85-K8y" id="22h-Ec-bj0"/>

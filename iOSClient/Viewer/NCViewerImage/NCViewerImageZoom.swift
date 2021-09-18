@@ -34,6 +34,8 @@ protocol NCViewerImageZoomDelegate {
 class NCViewerImageZoom: UIViewController {
     
     @IBOutlet weak var detailViewTopConstraint: NSLayoutConstraint!
+    @IBOutlet weak var imageViewTopConstraint: NSLayoutConstraint!
+    @IBOutlet weak var imageViewBottomConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var imageView: UIImageView!
@@ -132,13 +134,6 @@ class NCViewerImageZoom: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        
-        if detailView.isShow() {
-            
-            detailView.hide()
-//            updateZoom()
-//            updateConstraints()
-        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -185,11 +180,8 @@ class NCViewerImageZoom: UIViewController {
             topPoint = CGPoint(x: currentLocation.x, y: currentLocation.y)
             
             // save start
-//            startImageViewTopConstraint = imageViewTopConstraint.constant
-//            startImageViewBottomConstraint = imageViewBottomConstraint.constant
-             
-            // VideoToolBar
-            self.videoToolBar.hideToolBar()
+            startImageViewTopConstraint = imageViewTopConstraint.constant
+            startImageViewBottomConstraint = imageViewBottomConstraint.constant
             
         case .ended:
             
@@ -202,22 +194,11 @@ class NCViewerImageZoom: UIViewController {
                 }
             } else if detailView.isSavedContraint() {
                 UIView.animate(withDuration: 0.3) {
-//                    self.imageViewTopConstraint.constant = self.detailView.imageViewTopConstraintConstant
-//                    self.imageViewBottomConstraint.constant = self.detailView.imageViewBottomConstraintConstant
+                    self.imageViewTopConstraint.constant = self.detailView.imageViewTopConstraintConstant
+                    self.imageViewBottomConstraint.constant = self.detailView.imageViewBottomConstraintConstant
                     self.detailViewTopConstraint.constant = self.detailView.detailViewTopConstraintConstant
                     self.view.layoutIfNeeded()
                 } completion: { (_) in
-                }
-            }
-            
-            // VideoToolBar
-            if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-                if detailView.isShow() {
-                    self.videoToolBar.hideToolBar()
-                } else {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        self.videoToolBar.showToolBar()
-                    }
                 }
             }
             
@@ -226,9 +207,9 @@ class NCViewerImageZoom: UIViewController {
             if currentLocation.y < topPoint.y { topPoint = currentLocation }
             let deltaY = startPoint.y - currentLocation.y
             
-//            imageViewTopConstraint.constant = startImageViewTopConstraint + currentLocation.y
-//            imageViewBottomConstraint.constant = startImageViewBottomConstraint - currentLocation.y
-//            detailViewTopConstraint.constant = -imageViewBottomConstraint.constant
+            imageViewTopConstraint.constant = startImageViewTopConstraint + currentLocation.y
+            imageViewBottomConstraint.constant = startImageViewBottomConstraint - currentLocation.y
+            detailViewTopConstraint.constant = -imageViewBottomConstraint.constant
             
             // DISMISS
             if imageView.center.y > view.center.y + 100 {
@@ -245,15 +226,15 @@ class NCViewerImageZoom: UIViewController {
                     gestureRecognizer.state = .ended
                      
                     UIView.animate(withDuration: 0.3) {
-//                        self.imageViewTopConstraint.constant = self.startImageViewTopConstraint - self.detailView.frame.height
-//                        self.imageViewBottomConstraint.constant = self.startImageViewBottomConstraint + self.detailView.frame.height
-//                        self.detailViewTopConstraint.constant = -self.imageViewBottomConstraint.constant
+                        self.imageViewTopConstraint.constant = self.startImageViewTopConstraint - self.detailView.frame.height
+                        self.imageViewBottomConstraint.constant = self.startImageViewBottomConstraint + self.detailView.frame.height
+                        self.detailViewTopConstraint.constant = -self.imageViewBottomConstraint.constant
                         self.view.layoutIfNeeded()
                     } completion: { (_) in
                         // Save detail constraints
-//                        self.detailView.imageViewTopConstraintConstant = self.imageViewTopConstraint.constant
-//                        self.detailView.imageViewBottomConstraintConstant = self.imageViewBottomConstraint.constant
-//                        self.detailView.detailViewTopConstraintConstant = self.detailViewTopConstraint.constant
+                        self.detailView.imageViewTopConstraintConstant = self.imageViewTopConstraint.constant
+                        self.detailView.imageViewBottomConstraintConstant = self.imageViewBottomConstraint.constant
+                        self.detailView.detailViewTopConstraintConstant = self.detailViewTopConstraint.constant
                     }
                 }
                 
