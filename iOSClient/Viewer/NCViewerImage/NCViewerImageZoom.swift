@@ -169,7 +169,7 @@ class NCViewerImageZoom: UIViewController {
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
         
         // NO INFO for Audio / Video
-        if viewerImage?.viewerVideo?.player?.rate == 1 { return }
+//        if viewerImage?.viewerVideo?.player?.rate == 1 { return }
         
         let currentLocation = gestureRecognizer.translation(in: self.view)
         
