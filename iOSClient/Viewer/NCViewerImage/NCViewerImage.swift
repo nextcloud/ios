@@ -515,17 +515,10 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
              
-        if currentViewerImageZoom?.detailView.isShow() ?? false {
-            
-            UIView.animate(withDuration: 0.2) {
-//                self.currentViewerImageZoom?.updateConstraints()
-                // VideoToolBar
-                if self.currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || self.currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-                    self.viewerVideo?.viewerVideoToolBar?.showToolBar()
-                }
-            }
-            return
-        }
+//        if currentViewerImageZoom?.detailView.isShow() ?? false {
+//            self.viewerVideo?.viewerVideoToolBar?.showToolBar(metadata: self.currentMetadata)
+//            return
+//        }
         
         /*
         if currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
@@ -550,11 +543,11 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
         }
         */
         
-        if currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-            let wasHidden = viewerVideo?.viewerVideoToolBar?.isHidden
-            viewerVideo?.viewerVideoToolBar?.showToolBar()
-            if wasHidden ?? false { return }
-        }
+//        if currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+//            let wasHidden = viewerVideo?.viewerVideoToolBar?.isHidden
+//            viewerVideo?.viewerVideoToolBar?.showToolBar(metadata: currentMetadata)
+//            if wasHidden ?? false { return }
+//        }
         
         if currentMode == .full {
             
@@ -608,7 +601,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.viewerVideo?.videoPlay(metadata: metadata)
             }
-            viewerImageZoom.videoToolBar.showToolBar()
+//            viewerImageZoom.videoToolBar.showToolBar(metadata: currentMetadata)
         }
             
         if !NCOperationQueue.shared.downloadExists(metadata: metadata) {

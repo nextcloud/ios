@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import NCCommunication
 
 class NCViewerVideoToolBar: UIView {
     
@@ -113,7 +114,6 @@ class NCViewerVideoToolBar: UIView {
         if playbackSliderEvent == .began || playbackSliderEvent == .moved {
             timerAutoHide?.invalidate()
             timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(autoHideToolBar), userInfo: nil, repeats: true)
-
             return
         }
         if self.player?.rate == 1 {
@@ -121,11 +121,17 @@ class NCViewerVideoToolBar: UIView {
         }
     }
     
-    @objc public func showToolBar() {
-        updateOutlet()
-        self.isHidden = false
+    @objc public func showToolBar(metadata: tableMetadata) {
+
         timerAutoHide?.invalidate()
-        timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(autoHideToolBar), userInfo: nil, repeats: true)
+
+        if !metadata.livePhoto && (metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue) {
+            updateOutlet()
+            timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(autoHideToolBar), userInfo: nil, repeats: true)
+            UIView.animate(withDuration: 0.2) {
+                self.isHidden = false
+            }
+        }
     }
     
     public func setToolBar() {
