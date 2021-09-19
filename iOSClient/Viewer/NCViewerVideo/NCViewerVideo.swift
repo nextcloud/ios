@@ -74,7 +74,7 @@ class NCViewerVideo: NSObject {
             if let view = view  {
 
                 self.videoLayer!.frame = view.bounds
-                self.videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
+                self.videoLayer!.videoGravity = .resizeAspect
                 view.layer.addSublayer(self.videoLayer!)
                 
                 // At end go back to start & show toolbar
