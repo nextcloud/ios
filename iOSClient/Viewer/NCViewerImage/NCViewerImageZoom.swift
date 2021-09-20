@@ -33,7 +33,7 @@ protocol NCViewerImageZoomDelegate {
 
 class NCViewerImageZoom: UIViewController {
     
-    @IBOutlet weak var detailViewTopConstraint: NSLayoutConstraint!
+    @IBOutlet weak var detailViewConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewBottomConstraint: NSLayoutConstraint!
     
@@ -54,10 +54,10 @@ class NCViewerImageZoom: UIViewController {
     
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
                 
-    private var startImageViewTopConstraint: CGFloat = 0
-    private var startImageViewBottomConstraint: CGFloat = 0
-    private var startPoint = CGPoint.zero
-    private var topPoint = CGPoint.zero
+//    private var startImageViewTopConstraint: CGFloat = 0
+//    private var startImageViewBottomConstraint: CGFloat = 0
+//    private var startPoint = CGPoint.zero
+//    private var topPoint = CGPoint.zero
 
     // MARK: - View Life Cycle
 
@@ -96,38 +96,25 @@ class NCViewerImageZoom: UIViewController {
         }  else {
             statusViewImage.image = nil
             statusLabel.text = ""
-        }        
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        if !detailView.isShow() {
-            
-//            updateZoom()
-//            updateConstraints()
         }
-        
-        delegate?.willAppearImageZoom(viewerImageZoom: self, metadata: metadata)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
         
         var heightMap = (view.bounds.height / 3)
         if view.bounds.width < view.bounds.height {
             heightMap = (view.bounds.width / 3)
         }
         
-        if !detailView.isShow() {
+        detailView.update(metadata: metadata, image: image, heightMap: heightMap)
+        detailView.hide()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
             
-            detailView.update(metadata: metadata, image: image, heightMap: heightMap)
-            detailViewTopConstraint.constant = 0
-            detailView.hide()
-            
-//            updateZoom()
-//            updateConstraints()
-        }
+        delegate?.willAppearImageZoom(viewerImageZoom: self, metadata: metadata)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
         delegate?.didAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
@@ -167,24 +154,21 @@ class NCViewerImageZoom: UIViewController {
     }
       
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
-        
-        // NO INFO for Audio / Video
-//        if viewerImage?.viewerVideo?.player?.rate == 1 { return }
-        
+                
         let currentLocation = gestureRecognizer.translation(in: self.view)
         
         switch gestureRecognizer.state {
         case .began:
+            print("began")
+
             
-            startPoint = CGPoint(x: currentLocation.x, y: currentLocation.y)
-            topPoint = CGPoint(x: currentLocation.x, y: currentLocation.y)
-            
-            // save start
-            startImageViewTopConstraint = imageViewTopConstraint.constant
-            startImageViewBottomConstraint = imageViewBottomConstraint.constant
-            
+//            startPoint = CGPoint(x: currentLocation.x, y: currentLocation.y)
+//            topPoint = CGPoint(x: currentLocation.x, y: currentLocation.y)
+
         case .ended:
             
+            print("end")
+            /*
             if !detailView.isShow() {
                 UIView.animate(withDuration: 0.3) {
 //                    self.updateConstraints()
@@ -197,58 +181,49 @@ class NCViewerImageZoom: UIViewController {
                     self.imageViewTopConstraint.constant = self.detailView.imageViewTopConstraintConstant
                     self.imageViewBottomConstraint.constant = self.detailView.imageViewBottomConstraintConstant
                     self.detailViewTopConstraint.constant = self.detailView.detailViewTopConstraintConstant
-                    self.view.layoutIfNeeded()
                 } completion: { (_) in
                 }
             }
-            
+            */
+        
         case .changed:
             
-            if currentLocation.y < topPoint.y { topPoint = currentLocation }
-            let deltaY = startPoint.y - currentLocation.y
+//            if currentLocation.y < topPoint.y { topPoint = currentLocation }
+//            let deltaY = startPoint.y - currentLocation.y
             
-            imageViewTopConstraint.constant = startImageViewTopConstraint + currentLocation.y
-            imageViewBottomConstraint.constant = startImageViewBottomConstraint - currentLocation.y
-            detailViewTopConstraint.constant = -imageViewBottomConstraint.constant
+            imageViewTopConstraint.constant = currentLocation.y
+            imageViewBottomConstraint.constant = -currentLocation.y
+            detailViewConstraint.constant = currentLocation.y
             
             // DISMISS
-            if imageView.center.y > view.center.y + 100 {
+            if imageView.center.y > view.center.y + 10 {
                 
                 delegate?.dismissImageZoom()
             }
 
             // OPEN DETAIL
-            if imageView.center.y < view.center.y - 30 {
-                  
-                if detailView.isHidden {
-                    
-                    detailView.show(textColor: self.viewerImage?.textColor)
+            if (imageView.center.y < view.center.y - 10) && detailView.isHidden {
+                         
+                self.detailView.show(textColor: self.viewerImage?.textColor)
+
+                UIView.animate(withDuration: 0.3) {
+                    self.imageViewTopConstraint.constant = -self.detailView.frame.height
+                    self.imageViewBottomConstraint.constant = self.detailView.frame.height
+                    self.detailViewConstraint.constant = self.detailView.frame.height
+//                    self.view.layoutIfNeeded()
+                } completion: { (_) in
                     gestureRecognizer.state = .ended
-                     
-                    UIView.animate(withDuration: 0.3) {
-                        self.imageViewTopConstraint.constant = self.startImageViewTopConstraint - self.detailView.frame.height
-                        self.imageViewBottomConstraint.constant = self.startImageViewBottomConstraint + self.detailView.frame.height
-                        self.detailViewTopConstraint.constant = -self.imageViewBottomConstraint.constant
-                        self.view.layoutIfNeeded()
-                    } completion: { (_) in
-                        // Save detail constraints
-                        self.detailView.imageViewTopConstraintConstant = self.imageViewTopConstraint.constant
-                        self.detailView.imageViewBottomConstraintConstant = self.imageViewBottomConstraint.constant
-                        self.detailView.detailViewTopConstraintConstant = self.detailViewTopConstraint.constant
-                    }
                 }
-                
-                //detailView.show(textColor: self.viewerImage?.textColor)
             }
             
             // CLOSE DETAIL
-            if (imageView.center.y > view.center.y + 30) || (deltaY < -30) || (topPoint.y + 30 < currentLocation.y) {
+//            if (imageView.center.y > view.center.y + 30) || (deltaY < -30) || (topPoint.y + 30 < currentLocation.y) {
                 
-                if detailView.isShow() {
-                    detailView.hide()
-                    gestureRecognizer.state = .ended
-                }
-            }
+//                if detailView.isShow() {
+//                    detailView.hide()
+//                    gestureRecognizer.state = .ended
+//                }
+//            }
             
         default:
             break
