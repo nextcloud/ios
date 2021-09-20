@@ -51,14 +51,8 @@ class NCViewerImageZoom: UIViewController {
     var index: Int = 0
     var minScale: CGFloat = 0
     var noPreview: Bool = false
-    
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
                 
-//    private var startImageViewTopConstraint: CGFloat = 0
-//    private var startImageViewBottomConstraint: CGFloat = 0
-//    private var startPoint = CGPoint.zero
-//    private var topPoint = CGPoint.zero
-
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
@@ -103,6 +97,7 @@ class NCViewerImageZoom: UIViewController {
             heightMap = (view.bounds.width / 3)
         }
         
+        detailViewConstraint.constant = 0
         detailView.update(metadata: metadata, image: image, heightMap: heightMap)
         detailView.hide()
     }
@@ -161,10 +156,6 @@ class NCViewerImageZoom: UIViewController {
         case .began:
             print("began")
 
-            
-//            startPoint = CGPoint(x: currentLocation.x, y: currentLocation.y)
-//            topPoint = CGPoint(x: currentLocation.x, y: currentLocation.y)
-
         case .ended:
             
             print("end")
@@ -187,10 +178,7 @@ class NCViewerImageZoom: UIViewController {
             */
         
         case .changed:
-            
-//            if currentLocation.y < topPoint.y { topPoint = currentLocation }
-//            let deltaY = startPoint.y - currentLocation.y
-            
+                        
             imageViewTopConstraint.constant = currentLocation.y
             imageViewBottomConstraint.constant = -currentLocation.y
             detailViewConstraint.constant = currentLocation.y
@@ -202,17 +190,17 @@ class NCViewerImageZoom: UIViewController {
             }
 
             // OPEN DETAIL
-            if (imageView.center.y < view.center.y - 10) && detailView.isHidden {
+            if (imageView.center.y < view.center.y - 20) && detailView.isHidden {
                          
                 self.detailView.show(textColor: self.viewerImage?.textColor)
-
+                gestureRecognizer.state = .ended
+                
                 UIView.animate(withDuration: 0.3) {
                     self.imageViewTopConstraint.constant = -self.detailView.frame.height
                     self.imageViewBottomConstraint.constant = self.detailView.frame.height
-                    self.detailViewConstraint.constant = self.detailView.frame.height
-//                    self.view.layoutIfNeeded()
+                    self.detailViewConstraint.constant = 200
+                    self.view.layoutIfNeeded()
                 } completion: { (_) in
-                    gestureRecognizer.state = .ended
                 }
             }
             
