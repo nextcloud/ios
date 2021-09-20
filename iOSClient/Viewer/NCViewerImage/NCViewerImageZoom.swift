@@ -160,7 +160,6 @@ class NCViewerImageZoom: UIViewController {
             
         case .ended:
             
-            print("end")
             if detailView.isShow() {
                 self.imageViewTopConstraint.constant = -imageViewConstraint
                 self.imageViewBottomConstraint.constant = imageViewConstraint
@@ -174,7 +173,7 @@ class NCViewerImageZoom: UIViewController {
             imageViewTopConstraint.constant = (currentLocation.y - imageViewConstraint)
             imageViewBottomConstraint.constant = -(currentLocation.y - imageViewConstraint)
             
-            // DISMISS
+            // DISMISS VIEW
             if detailView.isHidden && (currentLocation.y > 10) {
                 
                 delegate?.dismissImageZoom()
@@ -182,50 +181,59 @@ class NCViewerImageZoom: UIViewController {
             
             // CLOSE DETAIL
             if !detailView.isHidden && (currentLocation.y > 10) {
-                                
-                self.detailView.hide()
+                               
+                self.closeDetail()
                 gestureRecognizer.state = .ended
-                imageViewConstraint = 0
-                
-                UIView.animate(withDuration: 0.3) {
-                    self.imageViewTopConstraint.constant = 0
-                    self.imageViewBottomConstraint.constant = 0
-                    self.detailViewConstraint.constant = 0
-                    self.view.layoutIfNeeded()
-                } completion: { (_) in
-                }
             }
 
             // OPEN DETAIL
             if detailView.isHidden && (currentLocation.y < -10) {
                        
-                self.detailView.show(textColor: self.viewerImage?.textColor)
+                self.openDetail()
                 gestureRecognizer.state = .ended
-                
-                if let image = imageView.image {
-                    let ratioW = imageView.frame.width / image.size.width
-                    let ratioH = imageView.frame.height / image.size.height
-                    let ratio = ratioW < ratioH ? ratioW : ratioH
-                    let imageHeight = image.size.height * ratio
-                    self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - imageHeight) / 2)
-                }
-                
-                UIView.animate(withDuration: 0.3) {
-                    self.imageViewTopConstraint.constant = -self.imageViewConstraint
-                    self.imageViewBottomConstraint.constant = self.imageViewConstraint
-                    self.detailViewConstraint.constant = self.detailView.frame.height
-                    self.view.layoutIfNeeded()
-                } completion: { (_) in
-                }
             }
-            
-            print("currentLocation: \(currentLocation), imageViewConstraint: \(imageViewConstraint)")
-            
+                        
         default:
             break
         }
     }
+    
+    private func closeDetail() {
+        
+        self.detailView.hide()
+        imageViewConstraint = 0
+        
+        UIView.animate(withDuration: 0.3) {
+            self.imageViewTopConstraint.constant = 0
+            self.imageViewBottomConstraint.constant = 0
+            self.detailViewConstraint.constant = 0
+            self.view.layoutIfNeeded()
+        } completion: { (_) in
+        }
+    }
+    
+    private func openDetail() {
+        
+        self.detailView.show(textColor: self.viewerImage?.textColor)
+        
+        if let image = imageView.image {
+            let ratioW = imageView.frame.width / image.size.width
+            let ratioH = imageView.frame.height / image.size.height
+            let ratio = ratioW < ratioH ? ratioW : ratioH
+            let imageHeight = image.size.height * ratio
+            self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - imageHeight) / 2)
+        }
+        
+        UIView.animate(withDuration: 0.3) {
+            self.imageViewTopConstraint.constant = -self.imageViewConstraint
+            self.imageViewBottomConstraint.constant = self.imageViewConstraint
+            self.detailViewConstraint.constant = self.detailView.frame.height
+            self.view.layoutIfNeeded()
+        } completion: { (_) in
+        }
+    }
 }
+
 
 extension NCViewerImageZoom: UIScrollViewDelegate {
     
