@@ -52,7 +52,7 @@ class NCViewerImageZoom: UIViewController {
     var minScale: CGFloat = 0
     var noPreview: Bool = false
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
-    var saveImageViewConstraint: CGFloat = 0
+    var imageViewConstraint: CGFloat = 0
                 
     // MARK: - View Life Cycle
 
@@ -152,17 +152,6 @@ class NCViewerImageZoom: UIViewController {
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
                 
         let currentLocation = gestureRecognizer.translation(in: self.view)
-        let imageViewCenterY = imageView.center.y
-        let viewCenterY = view.center.y
-        var constraintHeight: CGFloat = 0
-        
-        if let image = imageView.image {
-            let ratioW = imageView.frame.width / image.size.width
-            let ratioH = imageView.frame.height / image.size.height
-            let ratio = ratioW < ratioH ? ratioW : ratioH
-            let imageHeight = image.size.height * ratio
-            constraintHeight = self.detailView.frame.height - ((self.view.frame.height - imageHeight) / 2)
-        }
         
         switch gestureRecognizer.state {
         case .began:
@@ -173,8 +162,8 @@ class NCViewerImageZoom: UIViewController {
             
             print("end")
             if detailView.isShow() {
-                self.imageViewTopConstraint.constant = -saveImageViewConstraint
-                self.imageViewBottomConstraint.constant = saveImageViewConstraint
+                self.imageViewTopConstraint.constant = -imageViewConstraint
+                self.imageViewBottomConstraint.constant = imageViewConstraint
             } else {
                 self.imageViewTopConstraint.constant = 0
                 self.imageViewBottomConstraint.constant = 0
@@ -182,8 +171,8 @@ class NCViewerImageZoom: UIViewController {
 
         case .changed:
                         
-            imageViewTopConstraint.constant = currentLocation.y - saveImageViewConstraint
-            imageViewBottomConstraint.constant = -(currentLocation.y - saveImageViewConstraint)
+            imageViewTopConstraint.constant = (currentLocation.y - imageViewConstraint)
+            imageViewBottomConstraint.constant = -(currentLocation.y - imageViewConstraint)
             
             // DISMISS
             if detailView.isHidden && (currentLocation.y > 10) {
@@ -196,7 +185,7 @@ class NCViewerImageZoom: UIViewController {
                                 
                 self.detailView.hide()
                 gestureRecognizer.state = .ended
-                saveImageViewConstraint = 0
+                imageViewConstraint = 0
                 
                 UIView.animate(withDuration: 0.3) {
                     self.imageViewTopConstraint.constant = 0
@@ -212,18 +201,25 @@ class NCViewerImageZoom: UIViewController {
                        
                 self.detailView.show(textColor: self.viewerImage?.textColor)
                 gestureRecognizer.state = .ended
-                saveImageViewConstraint = constraintHeight
+                
+                if let image = imageView.image {
+                    let ratioW = imageView.frame.width / image.size.width
+                    let ratioH = imageView.frame.height / image.size.height
+                    let ratio = ratioW < ratioH ? ratioW : ratioH
+                    let imageHeight = image.size.height * ratio
+                    self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - imageHeight) / 2)
+                }
                 
                 UIView.animate(withDuration: 0.3) {
-                    self.imageViewTopConstraint.constant = -constraintHeight
-                    self.imageViewBottomConstraint.constant = constraintHeight
+                    self.imageViewTopConstraint.constant = -self.imageViewConstraint
+                    self.imageViewBottomConstraint.constant = self.imageViewConstraint
                     self.detailViewConstraint.constant = self.detailView.frame.height
                     self.view.layoutIfNeeded()
                 } completion: { (_) in
                 }
             }
             
-            print("currentLocation: \(currentLocation), imageViewCenterY: \(imageViewCenterY), viewCenterY: \(viewCenterY), TopConstraint: \(imageViewTopConstraint.constant), BottomConstraint: \(imageViewBottomConstraint.constant)")
+            print("currentLocation: \(currentLocation), imageViewConstraint: \(imageViewConstraint)")
             
         default:
             break
