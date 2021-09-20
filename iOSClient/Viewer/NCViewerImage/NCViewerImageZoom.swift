@@ -175,27 +175,28 @@ class NCViewerImageZoom: UIViewController {
             if detailView.isShow() {
                 self.imageViewTopConstraint.constant = -saveImageViewConstraint
                 self.imageViewBottomConstraint.constant = saveImageViewConstraint
+            } else {
+                self.imageViewTopConstraint.constant = 0
+                self.imageViewBottomConstraint.constant = 0
             }
 
         case .changed:
                         
             imageViewTopConstraint.constant = currentLocation.y - saveImageViewConstraint
             imageViewBottomConstraint.constant = -(currentLocation.y - saveImageViewConstraint)
-            //detailViewConstraint.constant = currentLocation.y
             
             // DISMISS
-            if detailView.isHidden && (imageViewCenterY > viewCenterY + 10) {
+            if detailView.isHidden && (currentLocation.y > 10) {
                 
                 delegate?.dismissImageZoom()
             }
             
             // CLOSE DETAIL
-            if !detailView.isHidden && (imageViewCenterY > viewCenterY + 5) {
-                
-                print("close detail")
-                /*
+            if !detailView.isHidden && (currentLocation.y > 10) {
+                                
                 self.detailView.hide()
                 gestureRecognizer.state = .ended
+                saveImageViewConstraint = 0
                 
                 UIView.animate(withDuration: 0.3) {
                     self.imageViewTopConstraint.constant = 0
@@ -204,11 +205,10 @@ class NCViewerImageZoom: UIViewController {
                     self.view.layoutIfNeeded()
                 } completion: { (_) in
                 }
-                */
             }
 
             // OPEN DETAIL
-            if detailView.isHidden && (imageViewCenterY < viewCenterY - 20) {
+            if detailView.isHidden && (currentLocation.y < -10) {
                        
                 self.detailView.show(textColor: self.viewerImage?.textColor)
                 gestureRecognizer.state = .ended
