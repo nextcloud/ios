@@ -160,6 +160,7 @@ class NCViewerImageZoom: UIViewController {
         let currentLocation = gestureRecognizer.translation(in: self.view)
         
         switch gestureRecognizer.state {
+        
         case .began:
             
             print("began")
