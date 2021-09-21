@@ -598,7 +598,9 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         
         // PLAY VIDEO/AUDIO
         if (currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
-            NCViewerVideo.shared.videoPlay(view: viewerImageZoom.imageView, viewerVideoToolBar: viewerImageZoom.videoToolBar, metadata: metadata)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                NCViewerVideo.shared.videoPlay(view: viewerImageZoom.imageView, viewerVideoToolBar: viewerImageZoom.videoToolBar, metadata: metadata)
+            }
         }
             
         if !NCOperationQueue.shared.downloadExists(metadata: metadata) {

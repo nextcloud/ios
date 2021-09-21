@@ -78,7 +78,7 @@ class NCViewerVideo: NSObject {
                     if metadata.livePhoto {
                         NCManageDatabase.shared.deleteVideoTime(metadata: metadata)
                     }
-                    self.viewerVideoToolBar?.showToolBar(metadata: metadata)
+                    self.viewerVideoToolBar?.showToolBar()
                 }
             }
                         

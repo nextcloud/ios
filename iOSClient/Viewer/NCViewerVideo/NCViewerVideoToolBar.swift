@@ -104,10 +104,21 @@ class NCViewerVideoToolBar: UIView {
         })
         
         setToolBar()
+        
+        // show
+        timerAutoHide?.invalidate()
+        updateOutlet()
+        timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(autoHideToolBar), userInfo: nil, repeats: true)
+        self.isHidden = false
     }
     
     @objc public func hideToolBar() {
+        updateOutlet()
         self.isHidden = true
+    }
+    
+    @objc public func showToolBar() {
+        self.isHidden = false
     }
     
     @objc public func autoHideToolBar() {
@@ -118,19 +129,6 @@ class NCViewerVideoToolBar: UIView {
         }
         if self.player?.rate == 1 {
             self.isHidden = true
-        }
-    }
-    
-    @objc public func showToolBar(metadata: tableMetadata) {
-
-        timerAutoHide?.invalidate()
-
-        if !metadata.livePhoto && (metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue) {
-            updateOutlet()
-            timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(autoHideToolBar), userInfo: nil, repeats: true)
-            UIView.animate(withDuration: 0.2) {
-                self.isHidden = false
-            }
         }
     }
     
