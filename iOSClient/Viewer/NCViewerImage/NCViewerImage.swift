@@ -85,6 +85,7 @@ class NCViewerImage: UIViewController {
         viewerImageZoom.metadata = metadatas[currentIndex]
         viewerImageZoom.delegate = self
         viewerImageZoom.viewerImage = self
+        viewerImageZoom.isShowDetail = false
 
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
@@ -392,7 +393,8 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerImageZoom.metadata = metadatas[currentIndex]
         viewerImageZoom.delegate = self
         viewerImageZoom.viewerImage = self
-        
+        viewerImageZoom.isShowDetail = false
+
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
         pageViewController.setViewControllers([viewerImageZoom], direction: direction, animated: true, completion: nil)
@@ -412,6 +414,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
             viewerImageZoom.metadata = metadatas[currentIndex]
             viewerImageZoom.delegate = self
             viewerImageZoom.viewerImage = self
+            viewerImageZoom.isShowDetail = currentViewerImageZoom?.detailView.isShow() ?? false
             
             singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
             
@@ -430,7 +433,8 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerImageZoom.metadata = metadatas[currentIndex - 1]
         viewerImageZoom.delegate = self
         viewerImageZoom.viewerImage = self
-        
+        viewerImageZoom.isShowDetail = false
+
         self.singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
         return viewerImageZoom
@@ -446,7 +450,8 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerImageZoom.metadata = metadatas[currentIndex + 1]
         viewerImageZoom.delegate = self
         viewerImageZoom.viewerImage = self
-        
+        viewerImageZoom.isShowDetail = false
+
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
 
         return viewerImageZoom

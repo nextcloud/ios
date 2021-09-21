@@ -49,6 +49,7 @@ class NCViewerImageZoom: UIViewController {
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
+    var isShowDetail: Bool = false
     var noPreview: Bool = false
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
     var imageViewConstraint: CGFloat = 0
@@ -106,6 +107,11 @@ class NCViewerImageZoom: UIViewController {
         super.viewWillAppear(animated)
             
         delegate?.willAppearImageZoom(viewerImageZoom: self, metadata: metadata)
+        
+        if isShowDetail {
+            openDetail()
+        } else {
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
