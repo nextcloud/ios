@@ -36,9 +36,9 @@ class NCViewerVideo: NSObject {
     private var timeObserver: Any?
     private var rateObserver: Any?
     private var metadata: tableMetadata?
-    private var videoLayer: AVPlayerLayer?
-    private var player: AVPlayer?
     
+    public var videoLayer: AVPlayerLayer?
+    public var player: AVPlayer?
     public var viewerVideoToolBar: NCViewerVideoToolBar?
     public var pictureInPictureOcId: String = ""
     

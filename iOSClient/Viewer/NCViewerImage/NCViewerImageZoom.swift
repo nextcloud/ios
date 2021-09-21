@@ -118,6 +118,12 @@ class NCViewerImageZoom: UIViewController {
         delegate?.didAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        NCViewerVideo.shared.videoLayer?.frame = self.imageView.layer.bounds
+    }
+    
     //MARK: - NotificationCenter
     
     @objc func orientationChanged(notification : NSNotification) {
