@@ -121,7 +121,7 @@ class NCViewerImageZoom: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        NCViewerVideo.shared.videoLayer?.frame = self.imageView.layer.bounds
+        //NCViewerVideo.shared.videoLayer?.frame = self.imageView.layer.bounds
     }
     
     //MARK: - NotificationCenter

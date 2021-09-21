@@ -69,7 +69,16 @@ class NCViewerVideo: NSObject {
             self.videoLayer!.frame = view.bounds
             self.videoLayer!.videoGravity = .resizeAspect
             
-            view.layer.addSublayer(self.videoLayer!)
+            view.layer.addSublayer(videoLayer!)
+
+            /*
+            NSLayoutConstraint.activate([
+                view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                videoLayer.topAnchor.constraint(equalTo: view.topAnchor),
+                videoLayer.widthAnchor.constraint(equalToConstant: view.width),
+                videoLayer.heightAnchor.constraint(equalToConstant: view.height)
+            ])
+            */
             
             // At end go back to start & show toolbar
             NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
