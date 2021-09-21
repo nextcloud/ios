@@ -83,11 +83,7 @@ class NCViewerVideo: NSObject {
             }
                         
             self.rateObserver = self.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
-            
-            if self.pictureInPictureOcId != metadata.ocId {
-                self.player?.play()
-            }
-            
+            self.player?.play()
             
             viewerVideoToolBar?.setBarPlayer(player: self.player)
         }
@@ -136,6 +132,8 @@ class NCViewerVideo: NSObject {
                 if let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
                     self.player?.seek(to: time)
                     self.player?.isMuted = CCUtility.getAudioMute()
+                    let timeSecond = Double(CMTimeGetSeconds(time))
+                    print("Play video at: \(timeSecond)")
                 }
                 
             } else if !metadata.livePhoto {
@@ -145,6 +143,10 @@ class NCViewerVideo: NSObject {
                     let durationSeconds = Double(CMTimeGetSeconds(duration))
                     if timeSecond < durationSeconds {
                         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: self.player?.currentTime())
+                        if let time = self.player?.currentTime() {
+                            let timeSecond = Double(CMTimeGetSeconds(time))
+                            print("Stop video at: \(timeSecond)")
+                        }
                     } else {
                         NCManageDatabase.shared.deleteVideoTime(metadata: metadata)
                     }
