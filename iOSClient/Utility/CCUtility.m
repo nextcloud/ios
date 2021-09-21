@@ -599,13 +599,13 @@
 + (BOOL)getLivePhoto
 {
     NSString *valueString = [UICKeyChainStore stringForKey:@"livePhoto" service:NCGlobal.shared.serviceShareKeyChain];
-    
+
     // Default TRUE
     if (valueString == nil) {
         [self setLivePhoto:YES];
         return true;
     }
-    
+
     return [valueString boolValue];
 }
 
@@ -631,6 +631,25 @@
 + (void)setMediaSortDate:(NSString *)value
 {
     [UICKeyChainStore setString:value forKey:@"mediaSortDate" service:NCGlobal.shared.serviceShareKeyChain];
+}
+
++ (BOOL)getMediaSortOrder
+{
+    NSString *valueString = [UICKeyChainStore stringForKey:@"sortOrder" service:NCGlobal.shared.serviceShareKeyChain];
+
+    // Default FALSE
+    if (valueString == nil) {
+        [self setMediaSortOrder:NO];
+        return false;
+    }
+
+    return [valueString boolValue];
+}
+
++ (void)setMediaSortOrder:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"sortOrder" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSInteger)getTextRecognitionStatus

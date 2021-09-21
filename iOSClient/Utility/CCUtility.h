@@ -158,6 +158,8 @@
 
 + (NSString *)getMediaSortDate;
 + (void)setMediaSortDate:(NSString *)value;
++ (BOOL)getMediaSortOrder;
++ (void)setMediaSortOrder:(BOOL)set;
 
 + (NSInteger)getTextRecognitionStatus;
 + (void)setTextRecognitionStatus:(NSInteger)value;

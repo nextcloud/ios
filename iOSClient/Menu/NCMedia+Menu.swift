@@ -97,6 +97,9 @@ extension NCMedia {
                     selected: CCUtility.getMediaSortDate() == "date",
                     on: true,
                     action: { menuAction in
+                        if (CCUtility.getMediaSortDate() == "date") {
+                            CCUtility.setMediaSortOrder(!CCUtility.getMediaSortOrder())
+                        }
                         CCUtility.setMediaSortDate("date")
                         self.reloadDataSourceWithCompletion { (_) in }
                     }
@@ -110,6 +113,9 @@ extension NCMedia {
                     selected: CCUtility.getMediaSortDate() == "creationDate",
                     on: true,
                     action: { menuAction in
+                        if (CCUtility.getMediaSortDate() == "creationDate") {
+                            CCUtility.setMediaSortOrder(!CCUtility.getMediaSortOrder())
+                        }
                         CCUtility.setMediaSortDate("creationDate")
                         self.reloadDataSourceWithCompletion { (_) in }
                     }
@@ -123,6 +129,9 @@ extension NCMedia {
                     selected: CCUtility.getMediaSortDate() == "uploadDate",
                     on: true,
                     action: { menuAction in
+                        if (CCUtility.getMediaSortDate() == "uploadDate") {
+                            CCUtility.setMediaSortOrder(!CCUtility.getMediaSortOrder())
+                        }
                         CCUtility.setMediaSortDate("uploadDate")
                         self.reloadDataSourceWithCompletion { (_) in }
                     }
