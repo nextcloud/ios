@@ -101,6 +101,8 @@ class NCViewerImageZoom: UIViewController {
         detailViewConstraint.constant = 0
         detailView.update(metadata: metadata, image: image, heightMap: heightMap)
         detailView.hide()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(orientationChanged(notification:)), name: UIDevice.orientationDidChangeNotification, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -110,7 +112,6 @@ class NCViewerImageZoom: UIViewController {
         
         if isShowDetail {
             openDetail()
-        } else {
         }
     }
     
@@ -120,12 +121,11 @@ class NCViewerImageZoom: UIViewController {
         delegate?.didAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        // Turn landescape - portrait - landescape - portrait
-        if detailView.isShow() {
-            self.openDetail()
+    //MARK: - NotificationCenter
+    
+    @objc func orientationChanged(notification : NSNotification) {
+        if self.detailView.isShow() {
+            openDetail()
         }
     }
     
