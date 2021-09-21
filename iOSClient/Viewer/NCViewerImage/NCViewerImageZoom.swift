@@ -27,7 +27,6 @@ import NCCommunication
 protocol NCViewerImageZoomDelegate {
     func photoPageViewController(_ viewerImageZoom: NCViewerImageZoom, scrollViewDidScroll scrollView: UIScrollView)
     func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata)
-    func willAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata)
     func dismissImageZoom()
 }
 
@@ -108,8 +107,6 @@ class NCViewerImageZoom: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
             
-        delegate?.willAppearImageZoom(viewerImageZoom: self, metadata: metadata)
-        
         if isShowDetail {
             openDetail()
         }

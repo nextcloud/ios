@@ -54,7 +54,6 @@ class NCViewerImage: UIViewController {
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
     
-    var viewerVideo: NCViewerVideo?
     var textColor: UIColor = NCBrandColor.shared.label
 
     // MARK: - View Life Cycle
@@ -130,14 +129,9 @@ class NCViewerImage: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
-        if let navigationController = self.navigationController {
-            if !navigationController.viewControllers.contains(self) {
-                self.viewerVideo?.videoStop()
-            }
-        }
+           
+        NCViewerVideo.shared.videoStop()
         
-        //
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
@@ -252,7 +246,7 @@ class NCViewerImage: UIViewController {
     }
     
     //
-    // Detect for LIVE
+    // Detect for LIVE PHOTO
     //
     @objc func didLongpressGestureEvent(gestureRecognizer: UITapGestureRecognizer) {
           
@@ -270,7 +264,7 @@ class NCViewerImage: UIViewController {
                 if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                     
                     AudioServicesPlaySystemSound(1519) // peek feedback
-                    self.viewerVideo?.videoPlay(metadata: metadata)
+                    NCViewerVideo.shared.videoPlay(view: self.currentViewerImageZoom?.imageView, viewerVideoToolBar: nil, metadata: metadata)
                     
                 } else {
                     
@@ -295,7 +289,7 @@ class NCViewerImage: UIViewController {
                             
                             if gestureRecognizer.state == .changed || gestureRecognizer.state == .began {
                                 AudioServicesPlaySystemSound(1519) // peek feedback
-                                self.viewerVideo?.videoPlay(metadata: metadata)
+                                NCViewerVideo.shared.videoPlay(view: self.currentViewerImageZoom?.imageView, viewerVideoToolBar: nil, metadata: metadata)
                             }
                         }
                     }
@@ -306,7 +300,7 @@ class NCViewerImage: UIViewController {
             
             currentViewerImageZoom?.statusViewImage.isHidden = false
             currentViewerImageZoom?.statusLabel.isHidden = false
-            self.viewerVideo?.videoStop()
+            NCViewerVideo.shared.videoStop()
         }
     }
     
@@ -461,6 +455,8 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         
         guard let nextViewController = pendingViewControllers.first as? NCViewerImageZoom else { return }
         nextIndex = nextViewController.index
+        // STOP VIDEO
+        NCViewerVideo.shared.videoStop()
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
@@ -540,7 +536,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
                 appDelegate.activeViewerAVPlayerViewController?.delegateViewerVideo = self
                 if let currentViewerVideo = appDelegate.activeViewerAVPlayerViewController {
                     present(currentViewerVideo, animated: false) { }
-                    self.viewerVideo?.videoStop()
+                    
                 }
             }
             
@@ -592,24 +588,17 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
     func dismissImageZoom() {
         self.navigationController?.popViewController(animated: true)
     }
-    
-    func willAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
-        self.viewerVideo?.videoStop()
-    }
-    
+        
     func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
                 
         navigationItem.title = metadata.fileNameView
         currentMetadata = metadata
         currentViewerImageZoom = viewerImageZoom
         viewerImageZoom.videoToolBar.hideToolBar()
-        viewerVideo = NCViewerVideo.init(view: viewerImageZoom.imageView, viewerVideoToolBar: viewerImageZoom.videoToolBar)
         
+        // PLAY VIDEO/AUDIO
         if (currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.viewerVideo?.videoPlay(metadata: metadata)
-            }
-//            viewerImageZoom.videoToolBar.showToolBar(metadata: currentMetadata)
+            NCViewerVideo.shared.videoPlay(view: viewerImageZoom.imageView, viewerVideoToolBar: viewerImageZoom.videoToolBar, metadata: metadata)
         }
             
         if !NCOperationQueue.shared.downloadExists(metadata: metadata) {
