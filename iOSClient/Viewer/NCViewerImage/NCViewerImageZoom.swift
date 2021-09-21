@@ -209,6 +209,8 @@ class NCViewerImageZoom: UIViewController {
             self.view.layoutIfNeeded()
         } completion: { (_) in
         }
+        
+        scrollView.pinchGestureRecognizer?.isEnabled = true
     }
     
     private func openDetail() {
@@ -231,6 +233,8 @@ class NCViewerImageZoom: UIViewController {
             self.view.layoutIfNeeded()
         } completion: { (_) in
         }
+        
+        scrollView.pinchGestureRecognizer?.isEnabled = false
     }
 }
 
