@@ -567,6 +567,9 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             
             currentMode = .full
         }
+        
+        // Detail Text Color
+        currentViewerImageZoom?.detailView.textColor(textColor)
     }
 }
 

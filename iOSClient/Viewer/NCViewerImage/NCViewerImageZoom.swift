@@ -173,20 +173,20 @@ class NCViewerImageZoom: UIViewController {
             imageViewBottomConstraint.constant = -(currentLocation.y - imageViewConstraint)
             
             // DISMISS VIEW
-            if detailView.isHidden && (currentLocation.y > 10) {
+            if detailView.isHidden && (currentLocation.y > 20) {
                 
                 delegate?.dismissImageZoom()
             }
             
             // CLOSE DETAIL
-            if !detailView.isHidden && (currentLocation.y > 10) {
+            if !detailView.isHidden && (currentLocation.y > 20) {
                                
                 self.closeDetail()
                 gestureRecognizer.state = .ended
             }
 
             // OPEN DETAIL
-            if detailView.isHidden && (currentLocation.y < -10) {
+            if detailView.isHidden && (currentLocation.y < -20) {
                        
                 self.openDetail()
                 gestureRecognizer.state = .ended
@@ -220,7 +220,8 @@ class NCViewerImageZoom: UIViewController {
             let ratioH = imageView.frame.height / image.size.height
             let ratio = ratioW < ratioH ? ratioW : ratioH
             let imageHeight = image.size.height * ratio
-            self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - imageHeight) / 2)
+            imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - imageHeight) / 2) + self.view.safeAreaInsets.bottom
+            if imageViewConstraint < 0 { imageViewConstraint = 0 }
         }
         
         UIView.animate(withDuration: 0.3) {

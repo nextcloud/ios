@@ -71,12 +71,16 @@ class NCViewerImageDetailView: UIView {
         locationButton.setTitle("" , for: .normal)
     }
     
-    func show(textColor: UIColor?) {
+    func textColor(_ textColor: UIColor?) {
         sizeValue.textColor = textColor
         dateValue.textColor = textColor
         dimValue.textColor = textColor
         lensModelValue.textColor = textColor
         separator.backgroundColor = NCBrandColor.shared.separator
+    }
+    
+    func show(textColor: UIColor?) {
+        self.textColor(textColor)
         isHidden = false
     }
     
