@@ -203,22 +203,11 @@ class NCViewerImageZoom: UIViewController {
             break
         }
     }
-    
-    private func closeDetail() {
-        
-        self.detailView.hide()
-        imageViewConstraint = 0
-        
-        UIView.animate(withDuration: 0.3) {
-            self.imageViewTopConstraint.constant = 0
-            self.imageViewBottomConstraint.constant = 0
-            self.detailViewConstraint.constant = 0
-            self.view.layoutIfNeeded()
-        } completion: { (_) in
-        }
-        
-        scrollView.pinchGestureRecognizer?.isEnabled = true
-    }
+}
+
+//MARK: -
+
+extension NCViewerImageZoom {
     
     private func openDetail() {
         
@@ -243,8 +232,25 @@ class NCViewerImageZoom: UIViewController {
         
         scrollView.pinchGestureRecognizer?.isEnabled = false
     }
+    
+    private func closeDetail() {
+        
+        self.detailView.hide()
+        imageViewConstraint = 0
+        
+        UIView.animate(withDuration: 0.3) {
+            self.imageViewTopConstraint.constant = 0
+            self.imageViewBottomConstraint.constant = 0
+            self.detailViewConstraint.constant = 0
+            self.view.layoutIfNeeded()
+        } completion: { (_) in
+        }
+        
+        scrollView.pinchGestureRecognizer?.isEnabled = true
+    }
 }
 
+//MARK: -
 
 extension NCViewerImageZoom: UIScrollViewDelegate {
     
