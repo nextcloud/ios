@@ -41,6 +41,8 @@ class NCViewerVideoToolBar: UIView {
     }
     
     var player: AVPlayer?
+    var metadata: tableMetadata?
+    
     private var playbackSliderEvent: sliderEventType = .ended
     private let seekDuration: Float64 = 15
 
@@ -79,8 +81,9 @@ class NCViewerVideoToolBar: UIView {
         }
     }
     
-    func setBarPlayer(player: AVPlayer?) {
+    func setBarPlayer(player: AVPlayer?, metadata: tableMetadata?) {
         self.player = player
+        self.metadata = metadata
         
         let duration: CMTime = (player?.currentItem?.asset.duration)!
         let durationSeconds: Float64 = CMTimeGetSeconds(duration)
@@ -150,18 +153,21 @@ class NCViewerVideoToolBar: UIView {
     
     @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
         if let touchEvent = event.allTouches?.first {
+            let seconds: Int64 = Int64(self.playbackSlider.value)
+            let targetTime: CMTime = CMTimeMake(value: seconds, timescale: 1)
             switch touchEvent.phase {
             case .began:
+                self.player?.pause()
                 playbackSliderEvent = .began
             case .moved:
-                let seconds: Int64 = Int64(self.playbackSlider.value)
-                let targetTime: CMTime = CMTimeMake(value: seconds, timescale: 1)
                 self.player?.seek(to: targetTime)
-                if self.player?.rate == 0 {
-                    self.player?.play()
-                }
                 playbackSliderEvent = .moved
             case .ended:
+                self.player?.seek(to: targetTime)
+                if let metadata = self.metadata {
+                    NCManageDatabase.shared.addVideoTime(metadata: metadata, time: targetTime)
+                }
+                self.player?.play()
                 playbackSliderEvent = .ended
             default:
                 break

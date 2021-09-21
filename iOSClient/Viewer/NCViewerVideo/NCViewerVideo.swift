@@ -85,7 +85,7 @@ class NCViewerVideo: NSObject {
             self.rateObserver = self.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
             self.player?.play()
             
-            viewerVideoToolBar?.setBarPlayer(player: self.player)
+            viewerVideoToolBar?.setBarPlayer(player: self.player, metadata: metadata)
         }
         
         //NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
