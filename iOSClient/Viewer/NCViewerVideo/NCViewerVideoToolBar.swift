@@ -43,7 +43,6 @@ class NCViewerVideoToolBar: UIView {
     var player: AVPlayer?
     private var playbackSliderEvent: sliderEventType = .ended
     private let seekDuration: Float64 = 15
-    private var timerAutoHide: Timer?
 
     // MARK: - View Life Cycle
 
@@ -106,9 +105,7 @@ class NCViewerVideoToolBar: UIView {
         setToolBar()
         
         // show
-        timerAutoHide?.invalidate()
         updateOutlet()
-        timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(autoHideToolBar), userInfo: nil, repeats: true)
         self.isHidden = false
     }
     
@@ -119,17 +116,6 @@ class NCViewerVideoToolBar: UIView {
     
     @objc public func showToolBar() {
         self.isHidden = false
-    }
-    
-    @objc public func autoHideToolBar() {
-        if playbackSliderEvent == .began || playbackSliderEvent == .moved {
-            timerAutoHide?.invalidate()
-            timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(autoHideToolBar), userInfo: nil, repeats: true)
-            return
-        }
-        if self.player?.rate == 1 {
-            self.isHidden = true
-        }
     }
     
     public func setToolBar() {

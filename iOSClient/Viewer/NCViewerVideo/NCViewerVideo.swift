@@ -131,7 +131,7 @@ class NCViewerVideo: NSObject {
             
             self.viewerVideoToolBar?.setToolBar()
             
-            if ((self.player?.rate) == 1) {
+            if self.player?.rate == 1 {
                 
                 if let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
                     self.player?.seek(to: time)
@@ -145,6 +145,8 @@ class NCViewerVideo: NSObject {
                     let durationSeconds = Double(CMTimeGetSeconds(duration))
                     if timeSecond < durationSeconds {
                         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: self.player?.currentTime())
+                    } else {
+                        NCManageDatabase.shared.deleteVideoTime(metadata: metadata)
                     }
                 }
             }
