@@ -41,7 +41,7 @@ class NCViewerVideoToolBar: UIView {
     }
     
     var player: AVPlayer?
-    var metadata: tableMetadata?
+    var metadata: tableMetadata!
     
     private var playbackSliderEvent: sliderEventType = .ended
     private let seekDuration: Float64 = 15
@@ -164,9 +164,7 @@ class NCViewerVideoToolBar: UIView {
                 playbackSliderEvent = .moved
             case .ended:
                 self.player?.seek(to: targetTime)
-                if let metadata = self.metadata {
-                    NCManageDatabase.shared.addVideoTime(metadata: metadata, time: targetTime)
-                }
+                NCManageDatabase.shared.addVideoTime(metadata: self.metadata, time: targetTime)
                 self.player?.play()
                 playbackSliderEvent = .ended
             default:
@@ -197,18 +195,17 @@ class NCViewerVideoToolBar: UIView {
     
     @IBAction func forwardButtonSec(_ sender: Any) {
         guard let player = self.player else { return }
+        guard let duration = player.currentItem?.duration else { return }
         
-        if let duration = player.currentItem?.duration {
+        let playerCurrentTime = CMTimeGetSeconds(player.currentTime())
+        let newTime = playerCurrentTime + seekDuration
+        
+        if newTime < CMTimeGetSeconds(duration) {
+            let targetTime: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
             
-            let playerCurrentTime = CMTimeGetSeconds(player.currentTime())
-            let newTime = playerCurrentTime + seekDuration
-            if newTime < CMTimeGetSeconds(duration) {
-                let selectedTime: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
-                
-                player.seek(to: selectedTime)
-                player.pause()
-                player.play()
-            }
+            self.player?.seek(to: targetTime)
+            NCManageDatabase.shared.addVideoTime(metadata: self.metadata, time: targetTime)
+            self.player?.play()
         }
     }
     
@@ -217,12 +214,13 @@ class NCViewerVideoToolBar: UIView {
 
         let playerCurrenTime = CMTimeGetSeconds(player.currentTime())
         var newTime = playerCurrenTime - seekDuration
-        if newTime < 0 { newTime = 0 }
-        let selectedTime: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
         
-        player.seek(to: selectedTime)
-        player.pause()
-        player.play()
+        if newTime < 0 { newTime = 0 }
+        let targetTime: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
+        
+        self.player?.seek(to: targetTime)
+        NCManageDatabase.shared.addVideoTime(metadata: self.metadata, time: targetTime)
+        self.player?.play()
     }
     
     //MARK: - Algorithms
