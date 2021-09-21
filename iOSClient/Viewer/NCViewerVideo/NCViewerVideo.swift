@@ -27,14 +27,12 @@ import NCCommunication
 class NCViewerVideo: NSObject {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    private var videoLayer: AVPlayerLayer?
     private var view: UIView?
     private var timeObserver: Any?
     private var rateObserver: Any?
     private var metadata: tableMetadata?
     
     public var viewerVideoToolBar: NCViewerVideoToolBar?
-    public var player: AVPlayer?
     public var pictureInPictureOcId: String = ""
     
     init(view: UIView?, viewerVideoToolBar: NCViewerVideoToolBar?) {
@@ -56,7 +54,7 @@ class NCViewerVideo: NSObject {
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
         
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-            player?.pause()
+            appDelegate.player?.pause()
         }
     }
     
@@ -67,20 +65,20 @@ class NCViewerVideo: NSObject {
         
         func play(url: URL) {
             
-            self.player = AVPlayer(url: url)
-            self.player?.isMuted = CCUtility.getAudioMute()
-            self.videoLayer = AVPlayerLayer(player: self.player)
+            appDelegate.player = AVPlayer(url: url)
+            appDelegate.player?.isMuted = CCUtility.getAudioMute()
+            appDelegate.videoLayer = AVPlayerLayer(player: appDelegate.player)
 
             if let view = view  {
 
-                self.videoLayer!.frame = view.bounds
-                self.videoLayer!.videoGravity = .resizeAspect
-                view.layer.addSublayer(self.videoLayer!)
+                appDelegate.videoLayer!.frame = view.bounds
+                appDelegate.videoLayer!.videoGravity = .resizeAspect
+                view.layer.addSublayer(appDelegate.videoLayer!)
                 
                 // At end go back to start & show toolbar
-                NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
-                    if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
-                        self.player?.seek(to: .zero)
+                NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: appDelegate.player?.currentItem, queue: .main) { (notification) in
+                    if let item = notification.object as? AVPlayerItem, let currentItem = self.appDelegate.player?.currentItem, item == currentItem {
+                        self.appDelegate.player?.seek(to: .zero)
                         if metadata.livePhoto {
                             NCManageDatabase.shared.deleteVideoTime(metadata: metadata)
                         }
@@ -88,14 +86,14 @@ class NCViewerVideo: NSObject {
                     }
                 }
                             
-                self.rateObserver = self.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+                self.rateObserver = appDelegate.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
                 
                 if self.pictureInPictureOcId != metadata.ocId {
-                    self.player?.play()
+                    appDelegate.player?.play()
                 }
             }
             
-            viewerVideoToolBar?.setBarPlayer(player: player)
+            viewerVideoToolBar?.setBarPlayer()
         }
         
         //NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
@@ -111,22 +109,22 @@ class NCViewerVideo: NSObject {
         
         guard let metadata = self.metadata else { return }
         
-        player?.pause()
-        player?.seek(to: CMTime.zero)
+        appDelegate.player?.pause()
+        appDelegate.player?.seek(to: CMTime.zero)
         
         if let timeObserver = timeObserver {
-            player?.removeTimeObserver(timeObserver)
+            appDelegate.player?.removeTimeObserver(timeObserver)
             self.timeObserver = nil
         }
         
         if rateObserver != nil {
-            player?.removeObserver(self, forKeyPath: "rate")
+            appDelegate.player?.removeObserver(self, forKeyPath: "rate")
             NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
             NCKTVHTTPCache.shared.stopProxy(metadata: metadata)
             self.rateObserver = nil
         }
                
-        videoLayer?.removeFromSuperlayer()
+        appDelegate.videoLayer?.removeFromSuperlayer()
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -137,20 +135,20 @@ class NCViewerVideo: NSObject {
             
             self.viewerVideoToolBar?.setToolBar()
             
-            if ((player?.rate) == 1) {
+            if ((appDelegate.player?.rate) == 1) {
                 
                 if let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
-                    player?.seek(to: time)
-                    player?.isMuted = CCUtility.getAudioMute()
+                    appDelegate.player?.seek(to: time)
+                    appDelegate.player?.isMuted = CCUtility.getAudioMute()
                 }
                 
             } else if !metadata.livePhoto {
                 
-                if let time = player?.currentTime(), let duration = self.player?.currentItem?.asset.duration {
+                if let time = appDelegate.player?.currentTime(), let duration = appDelegate.player?.currentItem?.asset.duration {
                     let timeSecond = Double(CMTimeGetSeconds(time))
                     let durationSeconds = Double(CMTimeGetSeconds(duration))
                     if timeSecond < durationSeconds {
-                        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: player?.currentTime())
+                        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: appDelegate.player?.currentTime())
                     }
                 }
             }

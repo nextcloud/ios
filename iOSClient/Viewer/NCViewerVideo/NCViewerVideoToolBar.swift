@@ -40,7 +40,7 @@ class NCViewerVideoToolBar: UIView {
         case moved
     }
     
-    var player: AVPlayer?
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var playbackSliderEvent: sliderEventType = .ended
     private let seekDuration: Float64 = 15
     private var timerAutoHide: Timer?
@@ -80,10 +80,9 @@ class NCViewerVideoToolBar: UIView {
         }
     }
     
-    func setBarPlayer(player: AVPlayer?) {
-        self.player = player
+    func setBarPlayer() {
         
-        let duration: CMTime = (player?.currentItem?.asset.duration)!
+        let duration: CMTime = (appDelegate.player?.currentItem?.asset.duration)!
         let durationSeconds: Float64 = CMTimeGetSeconds(duration)
         
         playbackSlider.value = 0
@@ -94,9 +93,9 @@ class NCViewerVideoToolBar: UIView {
         labelCurrentTime.text = stringFromTimeInterval(interval: 0)
         labelOverallDuration.text = "-" + stringFromTimeInterval(interval: durationSeconds)
         
-        player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
+        appDelegate.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             
-            if self.player?.currentItem?.status == .readyToPlay {
+            if self.appDelegate.player?.currentItem?.status == .readyToPlay {
                 if self.isHidden == false {
                     self.updateOutlet()
                 }
@@ -116,7 +115,7 @@ class NCViewerVideoToolBar: UIView {
             timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(autoHideToolBar), userInfo: nil, repeats: true)
             return
         }
-        if self.player?.rate == 1 {
+        if appDelegate.player?.rate == 1 {
             self.isHidden = true
         }
     }
@@ -136,7 +135,7 @@ class NCViewerVideoToolBar: UIView {
     
     public func setToolBar() {
 
-        if player?.rate == 1 {
+        if appDelegate.player?.rate == 1 {
             playButton.setImage(NCUtility.shared.loadImage(named: "pause.fill", color: .white), for: .normal)
         } else {
             playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white), for: .normal)
@@ -151,7 +150,7 @@ class NCViewerVideoToolBar: UIView {
     
     private func updateOutlet() {
         
-        if let duration = player?.currentItem?.asset.duration, let currentTime = player?.currentTime() {
+        if let duration = appDelegate.player?.currentItem?.asset.duration, let currentTime = appDelegate.player?.currentTime() {
             
             let durationSeconds: Float64 = CMTimeGetSeconds(duration)
             let currentSeconds: Float64 = CMTimeGetSeconds(currentTime)
@@ -172,9 +171,9 @@ class NCViewerVideoToolBar: UIView {
             case .moved:
                 let seconds: Int64 = Int64(self.playbackSlider.value)
                 let targetTime: CMTime = CMTimeMake(value: seconds, timescale: 1)
-                self.player?.seek(to: targetTime)
-                if self.player?.rate == 0 {
-                    self.player?.play()
+                appDelegate.player?.seek(to: targetTime)
+                if appDelegate.player?.rate == 0 {
+                    appDelegate.player?.play()
                 }
                 playbackSliderEvent = .moved
             case .ended:
@@ -189,10 +188,10 @@ class NCViewerVideoToolBar: UIView {
     
     @IBAction func playerPause(_ sender: Any) {
         
-        if player?.timeControlStatus == .playing {
-            player?.pause()
-        } else if player?.timeControlStatus == .paused {
-            player?.play()
+        if appDelegate.player?.timeControlStatus == .playing {
+            appDelegate.player?.pause()
+        } else if appDelegate.player?.timeControlStatus == .paused {
+            appDelegate.player?.play()
         }
     }
         
@@ -201,12 +200,12 @@ class NCViewerVideoToolBar: UIView {
         let mute = CCUtility.getAudioMute()
         
         CCUtility.setAudioMute(!mute)
-        player?.isMuted = !mute
+        appDelegate.player?.isMuted = !mute
         setToolBar()
     }
     
     @IBAction func forwardButtonSec(_ sender: Any) {
-        guard let player = self.player else { return }
+        guard let player = appDelegate.player else { return }
         
         if let duration = player.currentItem?.duration {
             
@@ -223,7 +222,7 @@ class NCViewerVideoToolBar: UIView {
     }
     
     @IBAction func backButtonSec(_ sender: Any) {
-        guard let player = self.player else { return }
+        guard let player = appDelegate.player else { return }
 
         let playerCurrenTime = CMTimeGetSeconds(player.currentTime())
         var newTime = playerCurrenTime - seekDuration
