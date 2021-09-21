@@ -274,10 +274,10 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F9L-PP-AbM">
-                                                <rect key="frame" x="246.99999999999994" y="63.666666666666629" width="20" height="23"/>
+                                                <rect key="frame" x="246.99999999999994" y="62.666666666666629" width="25" height="25"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="20" id="hlL-XQ-OLa"/>
-                                                    <constraint firstAttribute="height" constant="23" id="vEe-Fb-a9N"/>
+                                                    <constraint firstAttribute="width" constant="25" id="hlL-XQ-OLa"/>
+                                                    <constraint firstAttribute="height" constant="25" id="vEe-Fb-a9N"/>
                                                 </constraints>
                                                 <state key="normal" image="goforward.15" catalog="system"/>
                                                 <connections>
@@ -285,10 +285,10 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Isy-sX-Gji">
-                                                <rect key="frame" x="97" y="63.666666666666629" width="20" height="23"/>
+                                                <rect key="frame" x="92" y="62.666666666666629" width="25" height="25"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="20" id="COm-r2-ubw"/>
-                                                    <constraint firstAttribute="height" constant="23" id="mbb-ql-zCc"/>
+                                                    <constraint firstAttribute="width" constant="25" id="COm-r2-ubw"/>
+                                                    <constraint firstAttribute="height" constant="25" id="mbb-ql-zCc"/>
                                                 </constraints>
                                                 <state key="normal" image="gobackward.15" catalog="system"/>
                                                 <connections>
