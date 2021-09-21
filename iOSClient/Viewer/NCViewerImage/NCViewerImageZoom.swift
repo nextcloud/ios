@@ -114,12 +114,13 @@ class NCViewerImageZoom: UIViewController {
         delegate?.didAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-    }
-    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        // Turn landescape - portrait - landescape - portrait
+        if detailView.isShow() {
+            self.openDetail()
+        }
     }
     
     //MARK: - Gesture
