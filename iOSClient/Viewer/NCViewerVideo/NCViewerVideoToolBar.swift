@@ -48,37 +48,38 @@ class NCViewerVideoToolBar: UIView {
 
     // MARK: - View Life Cycle
 
-    override func willMove(toWindow newWindow: UIWindow?) {
-        super.willMove(toWindow: newWindow)
+    override func awakeFromNib() {
+       super.awakeFromNib()
+        
+        // for disable gesture of UIPageViewController
+        let recognizer = UIPanGestureRecognizer(target: self, action: nil)
+        addGestureRecognizer(recognizer)
+        
+        let blurEffect = UIBlurEffect(style: .dark)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        
+        self.layer.cornerRadius = 15
+        self.layer.masksToBounds = true
+        
+        blurEffectView.frame = self.bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        self.insertSubview(blurEffectView, at:0)
+        
+        playbackSlider.value = 0
+        playbackSlider.minimumValue = 0
+        playbackSlider.maximumValue = 0
+        playbackSlider.isContinuous = true
+        playbackSlider.tintColor = .lightGray
+        
+        labelCurrentTime.text = stringFromTimeInterval(interval: 0)
+        labelCurrentTime.textColor = .lightGray
+        labelOverallDuration.text = stringFromTimeInterval(interval: 0)
+        labelOverallDuration.textColor = .lightGray
+        
+        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white), for: .normal)
+        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .white), for: .normal)
 
-        if newWindow != nil {
-            
-            let blurEffect = UIBlurEffect(style: .dark)
-            let blurEffectView = UIVisualEffectView(effect: blurEffect)
-            
-            self.layer.cornerRadius = 15
-            self.layer.masksToBounds = true
-                       
-            blurEffectView.frame = self.bounds
-            blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            self.insertSubview(blurEffectView, at:0)
-            
-            playbackSlider.value = 0
-            playbackSlider.minimumValue = 0
-            playbackSlider.maximumValue = 0
-            playbackSlider.isContinuous = true
-            playbackSlider.tintColor = .lightGray
-            
-            labelCurrentTime.text = stringFromTimeInterval(interval: 0)
-            labelCurrentTime.textColor = .lightGray
-            labelOverallDuration.text = stringFromTimeInterval(interval: 0)
-            labelOverallDuration.textColor = .lightGray
-            
-            backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white), for: .normal)
-            forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .white), for: .normal)
-
-            setToolBar()
-        }
+        setToolBar()
     }
     
     func setBarPlayer(player: AVPlayer?, metadata: tableMetadata?) {
