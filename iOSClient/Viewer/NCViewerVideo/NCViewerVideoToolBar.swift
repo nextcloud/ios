@@ -53,8 +53,10 @@ class NCViewerVideoToolBar: UIView {
        super.awakeFromNib()
         
         // for disable gesture of UIPageViewController
-        let recognizer = UIPanGestureRecognizer(target: self, action: nil)
-        addGestureRecognizer(recognizer)
+        let panRecognizer = UIPanGestureRecognizer(target: self, action: nil)
+        addGestureRecognizer(panRecognizer)
+        let singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
+        addGestureRecognizer(singleTapGestureRecognizer)
         
         let blurEffect = UIBlurEffect(style: .dark)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
@@ -166,7 +168,7 @@ class NCViewerVideoToolBar: UIView {
         }
     }
     
-    //MARK: - Event
+    //MARK: - Event / Gesture
     
     @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
         
@@ -194,6 +196,10 @@ class NCViewerVideoToolBar: UIView {
                 break
             }
         }
+    }
+    
+    @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
+        hideToolBar()
     }
     
     //MARK: - Action
