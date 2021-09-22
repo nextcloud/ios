@@ -46,7 +46,6 @@ class NCViewerVideoToolBar: UIView {
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
     private let seekDuration: Float64 = 15
-    private var singleTapGestureRecognizer: UITapGestureRecognizer!
 
     // MARK: - View Life Cycle
 
