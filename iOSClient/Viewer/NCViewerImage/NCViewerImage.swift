@@ -159,7 +159,9 @@ class NCViewerImage: UIViewController {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
                 if errorCode == 0  && metadata.ocId == currentMetadata.ocId {
-                    //self.reloadCurrentPage()
+                    if let image = getImageMetadata(metadatas[currentIndex]) {
+                        currentViewerImageZoom?.reload(image: image, metadata: metadata)
+                    }
                 }
                 if self.metadatas.first(where: { $0.ocId == metadata.ocId }) != nil {
                     progressView.progress = 0
@@ -615,7 +617,9 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
                 
                 if errorCode == 0 && metadata.ocId == self.currentMetadata.ocId {
                     NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
-                    self.reloadCurrentPage()
+                    if let image = self.getImageMetadata(self.metadatas[self.currentIndex]) {
+                        self.currentViewerImageZoom?.reload(image: image, metadata: self.currentMetadata)
+                    }
                 }
             }
         }

@@ -133,6 +133,11 @@ class NCViewerImageZoom: UIViewController {
         }) { (_) in }
     }
     
+    func reload(image: UIImage, metadata: tableMetadata) {
+        imageView.image = image
+        self.metadata = metadata
+    }
+    
     //MARK: - NotificationCenter
     
     //MARK: - Gesture
