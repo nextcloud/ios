@@ -264,7 +264,7 @@ class NCViewerImage: UIViewController {
                 if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                     
                     AudioServicesPlaySystemSound(1519) // peek feedback
-                    NCViewerVideo.shared.videoPlay(view: self.currentViewerImageZoom?.imageView, viewerVideoToolBar: nil, metadata: metadata)
+                    NCViewerVideo.shared.videoPlay(imageView: self.currentViewerImageZoom?.imageView, viewerVideoToolBar: nil, metadata: metadata)
                     
                 } else {
                     
@@ -289,7 +289,7 @@ class NCViewerImage: UIViewController {
                             
                             if gestureRecognizer.state == .changed || gestureRecognizer.state == .began {
                                 AudioServicesPlaySystemSound(1519) // peek feedback
-                                NCViewerVideo.shared.videoPlay(view: self.currentViewerImageZoom?.imageView, viewerVideoToolBar: nil, metadata: metadata)
+                                NCViewerVideo.shared.videoPlay(imageView: self.currentViewerImageZoom?.imageView, viewerVideoToolBar: nil, metadata: metadata)
                             }
                         }
                     }
@@ -599,7 +599,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         // PLAY VIDEO/AUDIO
         if (currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                NCViewerVideo.shared.videoPlay(view: viewerImageZoom.imageView, viewerVideoToolBar: viewerImageZoom.videoToolBar, metadata: metadata)
+                NCViewerVideo.shared.videoPlay(imageView: viewerImageZoom.imageView, viewerVideoToolBar: viewerImageZoom.videoToolBar, metadata: metadata)
             }
         }
             

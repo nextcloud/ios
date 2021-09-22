@@ -32,7 +32,7 @@ class NCViewerVideo: NSObject {
     }()
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    private var view: UIView?
+    private var imageView: UIImageView?
     private var timeObserver: Any?
     private var rateObserver: Any?
     private var metadata: tableMetadata?
@@ -40,8 +40,6 @@ class NCViewerVideo: NSObject {
     public var videoLayer: AVPlayerLayer?
     public var player: AVPlayer?
     public var viewerVideoToolBar: NCViewerVideoToolBar?
-    public var pictureInPictureOcId: String = ""
-    
     
     //MARK: - NotificationCenter
 
@@ -52,10 +50,10 @@ class NCViewerVideo: NSObject {
         }
     }
     
-    func videoPlay(view: UIView?, viewerVideoToolBar: NCViewerVideoToolBar?, metadata: tableMetadata) {
-        guard let view = view else { return }
+    func videoPlay(imageView: UIImageView?, viewerVideoToolBar: NCViewerVideoToolBar?, metadata: tableMetadata) {
+        guard let imageView = imageView else { return }
         
-        self.view = view
+        self.imageView = imageView
         self.viewerVideoToolBar = viewerVideoToolBar
         self.metadata = metadata
         
@@ -66,20 +64,11 @@ class NCViewerVideo: NSObject {
             self.player = AVPlayer(url: url)
             self.player?.isMuted = CCUtility.getAudioMute()
             self.videoLayer = AVPlayerLayer(player: self.player)
-            self.videoLayer!.frame = view.bounds
+            self.videoLayer!.frame = imageView.bounds
             self.videoLayer!.videoGravity = .resizeAspect
             
-            view.layer.addSublayer(videoLayer!)
+            imageView.layer.addSublayer(videoLayer!)
 
-            /*
-            NSLayoutConstraint.activate([
-                view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                videoLayer.topAnchor.constraint(equalTo: view.topAnchor),
-                videoLayer.widthAnchor.constraint(equalToConstant: view.width),
-                videoLayer.heightAnchor.constraint(equalToConstant: view.height)
-            ])
-            */
-            
             // At end go back to start & show toolbar
             NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
                 if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {

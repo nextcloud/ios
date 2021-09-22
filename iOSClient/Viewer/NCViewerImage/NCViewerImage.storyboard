@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -235,7 +236,7 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="100"/>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8AB-hx-yqN">
-                                                <rect key="frame" x="328.99999999999994" y="65" width="25" height="25"/>
+                                                <rect key="frame" x="328.99999999999994" y="67.666666666666629" width="25" height="25"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="25" id="6yU-23-dkA"/>
                                                     <constraint firstAttribute="height" constant="25" id="hBk-Ku-BAd"/>
@@ -250,13 +251,15 @@
                                                 <rect key="frame" x="8" y="15" width="348" height="31"/>
                                             </slider>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x3E-b2-obf">
-                                                <rect key="frame" x="167" y="60" width="30" height="30"/>
+                                                <rect key="frame" x="162" y="60" width="40" height="40"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="30" id="Cmv-LX-Phg"/>
-                                                    <constraint firstAttribute="height" constant="30" id="djE-Ml-YD0"/>
+                                                    <constraint firstAttribute="width" constant="40" id="Cmv-LX-Phg"/>
+                                                    <constraint firstAttribute="height" constant="40" id="djE-Ml-YD0"/>
                                                 </constraints>
                                                 <color key="tintColor" systemColor="labelColor"/>
-                                                <state key="normal" image="play.fill" catalog="system"/>
+                                                <state key="normal">
+                                                    <imageReference key="image" image="play.fill" catalog="system" symbolScale="default"/>
+                                                </state>
                                                 <connections>
                                                     <action selector="playerPause:" destination="sBp-t2-eFh" eventType="touchUpInside" id="pRl-bT-hpi"/>
                                                 </connections>
@@ -274,7 +277,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F9L-PP-AbM">
-                                                <rect key="frame" x="246.99999999999994" y="62.666666666666629" width="25" height="25"/>
+                                                <rect key="frame" x="251.99999999999994" y="67.666666666666629" width="25" height="25"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="25" id="hlL-XQ-OLa"/>
                                                     <constraint firstAttribute="height" constant="25" id="vEe-Fb-a9N"/>
@@ -285,7 +288,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Isy-sX-Gji">
-                                                <rect key="frame" x="92" y="62.666666666666629" width="25" height="25"/>
+                                                <rect key="frame" x="87" y="67.666666666666629" width="25" height="25"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="25" id="COm-r2-ubw"/>
                                                     <constraint firstAttribute="height" constant="25" id="mbb-ql-zCc"/>
@@ -299,8 +302,7 @@
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="trailing" secondItem="8AB-hx-yqN" secondAttribute="trailing" constant="10" id="4LY-8e-z3y"/>
-                                            <constraint firstAttribute="bottom" secondItem="x3E-b2-obf" secondAttribute="bottom" constant="10" id="7W8-qk-uwn"/>
-                                            <constraint firstAttribute="bottom" secondItem="8AB-hx-yqN" secondAttribute="bottom" constant="10" id="CUW-6d-CGn"/>
+                                            <constraint firstAttribute="bottom" secondItem="x3E-b2-obf" secondAttribute="bottom" id="7W8-qk-uwn"/>
                                             <constraint firstAttribute="height" constant="100" id="EyI-HW-pHA"/>
                                             <constraint firstItem="Isy-sX-Gji" firstAttribute="centerY" secondItem="x3E-b2-obf" secondAttribute="centerY" id="Hif-Fa-xc2"/>
                                             <constraint firstItem="a0D-B0-eGX" firstAttribute="leading" secondItem="sBp-t2-eFh" secondAttribute="leading" id="OIL-1t-uuh"/>
@@ -313,6 +315,7 @@
                                             <constraint firstAttribute="trailing" secondItem="OUD-HH-cXH" secondAttribute="trailing" constant="10" id="j5v-RG-0JI"/>
                                             <constraint firstItem="kVv-X4-6SK" firstAttribute="top" secondItem="SR4-e8-1hC" secondAttribute="bottom" id="l6a-l5-ZvL"/>
                                             <constraint firstAttribute="trailing" secondItem="a0D-B0-eGX" secondAttribute="trailing" id="lbh-DN-SZF"/>
+                                            <constraint firstItem="8AB-hx-yqN" firstAttribute="centerY" secondItem="F9L-PP-AbM" secondAttribute="centerY" id="o5E-tm-osC"/>
                                             <constraint firstItem="x3E-b2-obf" firstAttribute="leading" secondItem="Isy-sX-Gji" secondAttribute="trailing" constant="50" id="sIc-bL-Yjz"/>
                                             <constraint firstItem="x3E-b2-obf" firstAttribute="centerX" secondItem="sBp-t2-eFh" secondAttribute="centerX" id="uPa-tM-Vx6"/>
                                             <constraint firstItem="SR4-e8-1hC" firstAttribute="top" secondItem="sBp-t2-eFh" secondAttribute="top" constant="15" id="uu1-ai-wmJ"/>

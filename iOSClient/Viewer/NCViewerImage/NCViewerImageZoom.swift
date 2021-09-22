@@ -122,7 +122,9 @@ class NCViewerImageZoom: UIViewController {
         coordinator.animate(alongsideTransition: { (context) in
             self.view.layoutIfNeeded()
             UIView.animate(withDuration: context.transitionDuration) {
+                // resize frame video
                 NCViewerVideo.shared.videoLayer?.frame = self.imageView.layer.bounds
+                // resize detail
                 if self.detailView.isShow() {
                     self.openDetail()
                 }

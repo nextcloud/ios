@@ -1212,9 +1212,9 @@
 		F79EDA9E26B004980007D134 /* NCViewerVideo */ = {
 			isa = PBXGroup;
 			children = (
-				F716B75E26F09DF600D37EFC /* NCKTVHTTPCache.swift */,
-				F79EDA9F26B004980007D134 /* NCViewerVideoToolBar.swift */,
 				F79EDAA126B004980007D134 /* NCViewerVideo.swift */,
+				F79EDA9F26B004980007D134 /* NCViewerVideoToolBar.swift */,
+				F716B75E26F09DF600D37EFC /* NCKTVHTTPCache.swift */,
 			);
 			path = NCViewerVideo;
 			sourceTree = "<group>";

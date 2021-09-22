@@ -76,6 +76,13 @@ class NCViewerVideoToolBar: UIView {
         labelOverallDuration.text = stringFromTimeInterval(interval: 0)
         labelOverallDuration.textColor = .lightGray
         
+        if #available(iOS 13.0, *) {
+            let config = UIImage.SymbolConfiguration(scale: .large)
+            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: config), for: .normal)
+        } else {
+            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white), for: .normal)
+        }
+        
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white), for: .normal)
         forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .white), for: .normal)
 
