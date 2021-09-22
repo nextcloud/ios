@@ -81,12 +81,6 @@ class NCViewerVideoToolBar: UIView {
         setToolBarImage()
     }
     
-    //MARK: - Action
-    
-    @IBAction func buttonTouchInside(_ sender: UIButton) {
-        hideToolBar()
-    }
-    
     func setBarPlayer(player: AVPlayer?, metadata: tableMetadata?) {
         
         self.player = player
@@ -202,8 +196,12 @@ class NCViewerVideoToolBar: UIView {
             }
         }
     }
-
+    
     //MARK: - Action
+    
+    @IBAction func buttonTouchInside(_ sender: UIButton) {
+        hideToolBar()
+    }
     
     @IBAction func playerPause(_ sender: Any) {
         
