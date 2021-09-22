@@ -52,12 +52,7 @@ class NCViewerVideo: NSObject {
     
     func initVideoPlayer(imageView: UIImageView?, viewerVideoToolBar: NCViewerVideoToolBar?, metadata: tableMetadata) {
         guard let imageView = imageView else { return }
-        // already init ?
-        if self.metadata?.ocId == metadata.ocId {
-            viewerVideoToolBar?.setBarPlayer(player: self.player, metadata: metadata)
-            return
-        }
-        
+       
         self.imageView = imageView
         self.viewerVideoToolBar = viewerVideoToolBar
         self.metadata = metadata

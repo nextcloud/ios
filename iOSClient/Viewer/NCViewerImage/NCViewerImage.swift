@@ -159,7 +159,7 @@ class NCViewerImage: UIViewController {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
                 if errorCode == 0  && metadata.ocId == currentMetadata.ocId {
-                    self.reloadCurrentPage()
+                    //self.reloadCurrentPage()
                 }
                 if self.metadatas.first(where: { $0.ocId == metadata.ocId }) != nil {
                     progressView.progress = 0
@@ -173,7 +173,7 @@ class NCViewerImage: UIViewController {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
                 if errorCode == 0  && metadata.ocId == currentMetadata.ocId {
-                    self.reloadCurrentPage()
+                    //self.reloadCurrentPage()
                 }
             }
         }
@@ -396,27 +396,6 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         pageViewController.setViewControllers([viewerImageZoom], direction: direction, animated: true, completion: nil)
         
         return true
-    }
-    
-    func reloadCurrentPage() {
-        
-        if currentViewerImageZoom?.metadata.ocId == currentMetadata.ocId {
-            // Disable pan gesture for strange gui results
-            panGestureRecognizer.isEnabled = false
-            let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
-            
-            viewerImageZoom.index = currentIndex
-            viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
-            viewerImageZoom.metadata = metadatas[currentIndex]
-            viewerImageZoom.delegate = self
-            viewerImageZoom.viewerImage = self
-            viewerImageZoom.isShowDetail = currentViewerImageZoom?.detailView.isShow() ?? false
-            
-            singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
-            
-            pageViewController.setViewControllers([viewerImageZoom], direction: .forward, animated: false, completion: nil)
-            panGestureRecognizer.isEnabled = true
-        }
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
