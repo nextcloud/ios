@@ -123,7 +123,7 @@ class NCViewerVideo: NSObject {
         
         if keyPath != nil && keyPath == "rate" {
             
-            self.viewerVideoToolBar?.setToolBar()
+            self.viewerVideoToolBar?.setToolBarImage()
             
             if self.player?.rate == 1 {
                 

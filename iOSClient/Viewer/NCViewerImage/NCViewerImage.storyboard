@@ -259,6 +259,7 @@
                                                 <color key="tintColor" systemColor="labelColor"/>
                                                 <state key="normal">
                                                     <imageReference key="image" image="play.fill" catalog="system" symbolScale="default"/>
+                                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="default"/>
                                                 </state>
                                                 <connections>
                                                     <action selector="playerPause:" destination="sBp-t2-eFh" eventType="touchUpInside" id="pRl-bT-hpi"/>

@@ -43,6 +43,7 @@ class NCViewerVideoToolBar: UIView {
     var player: AVPlayer?
     var metadata: tableMetadata!
     
+    private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
     private let seekDuration: Float64 = 15
 
@@ -76,17 +77,7 @@ class NCViewerVideoToolBar: UIView {
         labelOverallDuration.text = stringFromTimeInterval(interval: 0)
         labelOverallDuration.textColor = .lightGray
         
-        if #available(iOS 13.0, *) {
-            let config = UIImage.SymbolConfiguration(scale: .large)
-            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: config), for: .normal)
-        } else {
-            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white), for: .normal)
-        }
-        
-        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white), for: .normal)
-        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .white), for: .normal)
-
-        setToolBar()
+        setToolBarImage()
     }
     
     func setBarPlayer(player: AVPlayer?, metadata: tableMetadata?) {
@@ -113,7 +104,7 @@ class NCViewerVideoToolBar: UIView {
             }
         })
         
-        setToolBar()
+        setToolBarImage()
         
         // show
         updateOutlet()
@@ -129,14 +120,21 @@ class NCViewerVideoToolBar: UIView {
         self.isHidden = false
     }
     
-    public func setToolBar() {
+    public func setToolBarImage() {
 
-        if player?.rate == 1 {
-            playButton.setImage(NCUtility.shared.loadImage(named: "pause.fill", color: .white), for: .normal)
+        var namedPlay = "play.fill"
+        if player?.rate == 1 { namedPlay = "pause.fill"}
+               
+        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white), for: .normal)
+        
+        if #available(iOS 13.0, *) {
+            playButton.setImage(NCUtility.shared.loadImage(named: namedPlay, color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
         } else {
-            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white), for: .normal)
+            playButton.setImage(NCUtility.shared.loadImage(named: namedPlay, color: .white), for: .normal)
         }
-       
+        
+        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .white), for: .normal)
+        
         if CCUtility.getAudioMute() {
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
         } else {
@@ -160,11 +158,15 @@ class NCViewerVideoToolBar: UIView {
     //MARK: - Event
     
     @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
+        
         if let touchEvent = event.allTouches?.first {
+            
             let seconds: Int64 = Int64(self.playbackSlider.value)
             let targetTime: CMTime = CMTimeMake(value: seconds, timescale: 1)
+            
             switch touchEvent.phase {
             case .began:
+                wasInPlay = player?.rate == 1 ? true : false
                 self.player?.pause()
                 playbackSliderEvent = .began
             case .moved:
@@ -173,7 +175,9 @@ class NCViewerVideoToolBar: UIView {
             case .ended:
                 self.player?.seek(to: targetTime)
                 NCManageDatabase.shared.addVideoTime(metadata: self.metadata, time: targetTime)
-                self.player?.play()
+                if wasInPlay {
+                    self.player?.play()
+                }
                 playbackSliderEvent = .ended
             default:
                 break
@@ -198,7 +202,7 @@ class NCViewerVideoToolBar: UIView {
         
         CCUtility.setAudioMute(!mute)
         player?.isMuted = !mute
-        setToolBar()
+        setToolBarImage()
     }
     
     @IBAction func forwardButtonSec(_ sender: Any) {
@@ -213,7 +217,6 @@ class NCViewerVideoToolBar: UIView {
             
             self.player?.seek(to: targetTime)
             NCManageDatabase.shared.addVideoTime(metadata: self.metadata, time: targetTime)
-            self.player?.play()
         }
     }
     
@@ -228,7 +231,6 @@ class NCViewerVideoToolBar: UIView {
         
         self.player?.seek(to: targetTime)
         NCManageDatabase.shared.addVideoTime(metadata: self.metadata, time: targetTime)
-        self.player?.play()
     }
     
     //MARK: - Algorithms
