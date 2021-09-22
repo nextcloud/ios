@@ -120,6 +120,8 @@ class NCViewerImageZoom: UIViewController {
         super.viewWillTransition(to: size, with: coordinator)
         
         coordinator.animate(alongsideTransition: { (context) in
+            // back to the original size
+            self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
             self.view.layoutIfNeeded()
             UIView.animate(withDuration: context.transitionDuration) {
                 // resize frame video
