@@ -46,6 +46,7 @@ class NCViewerVideoToolBar: UIView {
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
     private let seekDuration: Float64 = 15
+    private var singleTapGestureRecognizer: UITapGestureRecognizer!
 
     // MARK: - View Life Cycle
 
@@ -80,7 +81,14 @@ class NCViewerVideoToolBar: UIView {
         setToolBarImage()
     }
     
+    //MARK: - Action
+    
+    @IBAction func buttonTouchInside(_ sender: UIButton) {
+        hideToolBar()
+    }
+    
     func setBarPlayer(player: AVPlayer?, metadata: tableMetadata?) {
+        
         self.player = player
         self.metadata = metadata
         
@@ -105,19 +113,29 @@ class NCViewerVideoToolBar: UIView {
         })
         
         setToolBarImage()
-        
-        // show
-        updateOutlet()
-        self.isHidden = false
+        showToolBar()
     }
     
     @objc public func hideToolBar() {
+        
         updateOutlet()
-        self.isHidden = true
+      
+        UIView.animate(withDuration: 0.3, animations: {
+            self.alpha = 0
+        }, completion: { (value: Bool) in
+            self.isHidden = true
+        })
     }
     
     @objc public func showToolBar() {
-        self.isHidden = false
+        
+        updateOutlet()
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            self.alpha = 1
+        }, completion: { (value: Bool) in
+            self.isHidden = false
+        })
     }
     
     public func setToolBarImage() {

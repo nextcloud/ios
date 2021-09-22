@@ -516,11 +516,13 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
              
-//        if currentViewerImageZoom?.detailView.isShow() ?? false {
-//            self.viewerVideo?.viewerVideoToolBar?.showToolBar(metadata: self.currentMetadata)
-//            return
-//        }
-        
+        if let viewerVideoToolBar = NCViewerVideo.shared.viewerVideoToolBar {
+            if viewerVideoToolBar.isHidden {
+                viewerVideoToolBar.showToolBar()
+                return
+            }
+        }
+            
         /*
         if currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             
@@ -543,13 +545,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             currentMode = .full
         }
         */
-        
-//        if currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-//            let wasHidden = viewerVideo?.viewerVideoToolBar?.isHidden
-//            viewerVideo?.viewerVideoToolBar?.showToolBar(metadata: currentMetadata)
-//            if wasHidden ?? false { return }
-//        }
-        
+                
         if currentMode == .full {
             
             navigationController?.setNavigationBarHidden(false, animated: false)
@@ -577,13 +573,6 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
 //MARK: - NCViewerImageZoomDelegate
 
 extension NCViewerImage: NCViewerImageZoomDelegate {
-    
-    func photoPageViewController(_ viewerImageZoom: NCViewerImageZoom, scrollViewDidScroll scrollView: UIScrollView) {
-//        if scrollView.zoomScale != scrollView.minimumZoomScale && self.currentMode != .full {
-//            self.changeScreenMode(to: .full)
-//            self.currentMode = .full
-//        }
-    }
     
     func dismissImageZoom() {
         self.navigationController?.popViewController(animated: true)

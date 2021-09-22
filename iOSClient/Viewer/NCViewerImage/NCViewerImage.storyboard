@@ -234,6 +234,9 @@
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a0D-B0-eGX">
                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="100"/>
+                                                <connections>
+                                                    <action selector="buttonTouchInside:" destination="sBp-t2-eFh" eventType="touchUpInside" id="5fA-20-TD3"/>
+                                                </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8AB-hx-yqN">
                                                 <rect key="frame" x="318.99999999999994" y="62.666666666666629" width="25" height="25"/>

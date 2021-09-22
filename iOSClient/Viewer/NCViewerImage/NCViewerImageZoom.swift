@@ -25,7 +25,6 @@ import UIKit
 import NCCommunication
 
 protocol NCViewerImageZoomDelegate {
-    func photoPageViewController(_ viewerImageZoom: NCViewerImageZoom, scrollViewDidScroll scrollView: UIScrollView)
     func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata)
     func dismissImageZoom()
 }
@@ -267,6 +266,7 @@ extension NCViewerImageZoom: UIScrollViewDelegate {
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        
         if scrollView.zoomScale > 1 {
             if let image = imageView.image {
                 
@@ -289,6 +289,5 @@ extension NCViewerImageZoom: UIScrollViewDelegate {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        self.delegate?.photoPageViewController(self, scrollViewDidScroll: scrollView)
     }
 }
