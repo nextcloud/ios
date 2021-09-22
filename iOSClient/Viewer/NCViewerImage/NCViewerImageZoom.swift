@@ -243,6 +243,8 @@ extension NCViewerImageZoom {
         }
         
         scrollView.pinchGestureRecognizer?.isEnabled = false
+        
+        videoToolBar.hideToolBar()
     }
     
     private func closeDetail() {
@@ -259,6 +261,8 @@ extension NCViewerImageZoom {
         }
         
         scrollView.pinchGestureRecognizer?.isEnabled = true
+        
+        videoToolBar.showToolBar()
     }
 }
 

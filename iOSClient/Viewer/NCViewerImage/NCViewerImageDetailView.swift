@@ -159,16 +159,8 @@ class NCViewerImageDetailView: UIView {
                 if let url = url {
                     let playerVideo = AVPlayer(url: url)
                     if let duration = playerVideo.currentItem?.asset.duration {
-                        let durationVideo = Int(CMTimeGetSeconds(duration))
-                        let timer = self.secondsToHoursMinutesSeconds(seconds: durationVideo)
-                        self.dimLabel.text = NSLocalizedString("_duration_", comment: "")
-                        var hh = "\(timer.0)"
-                        var mm = "\(timer.1)"
-                        var ss = "\(timer.2)"
-                        if hh.count == 1 { hh = "0" + hh }
-                        if mm.count == 1 { mm = "0" + mm }
-                        if ss.count == 1 { ss = "0" + ss }
-                        self.dimValue.text = hh + ":" + mm + ":" + ss
+                        let durationSeconds = CMTimeGetSeconds(duration)
+                        self.dimValue.text = NCUtility.shared.stringFromTimeInterval(interval: durationSeconds)
                     }
                 }
             }

@@ -74,9 +74,9 @@ class NCViewerVideoToolBar: UIView {
         playbackSlider.isContinuous = true
         playbackSlider.tintColor = .lightGray
         
-        labelCurrentTime.text = stringFromTimeInterval(interval: 0)
+        labelCurrentTime.text = NCUtility.shared.stringFromTimeInterval(interval: 0)
         labelCurrentTime.textColor = .lightGray
-        labelOverallDuration.text = stringFromTimeInterval(interval: 0)
+        labelOverallDuration.text = NCUtility.shared.stringFromTimeInterval(interval: 0)
         labelOverallDuration.textColor = .lightGray
         
         setToolBarImage()
@@ -95,8 +95,8 @@ class NCViewerVideoToolBar: UIView {
         playbackSlider.maximumValue = Float(durationSeconds)
         playbackSlider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
 
-        labelCurrentTime.text = stringFromTimeInterval(interval: 0)
-        labelOverallDuration.text = "-" + stringFromTimeInterval(interval: durationSeconds)
+        labelCurrentTime.text = NCUtility.shared.stringFromTimeInterval(interval: 0)
+        labelOverallDuration.text = "-" + NCUtility.shared.stringFromTimeInterval(interval: durationSeconds)
         
         player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             
@@ -163,8 +163,8 @@ class NCViewerVideoToolBar: UIView {
             let currentSeconds: Float64 = CMTimeGetSeconds(currentTime)
             
             self.playbackSlider.value = Float(currentSeconds)
-            self.labelCurrentTime.text = self.stringFromTimeInterval(interval: currentSeconds)
-            self.labelOverallDuration.text = "-" + self.stringFromTimeInterval(interval: durationSeconds - currentSeconds)
+            self.labelCurrentTime.text = NCUtility.shared.stringFromTimeInterval(interval: currentSeconds)
+            self.labelOverallDuration.text = "-" + NCUtility.shared.stringFromTimeInterval(interval: durationSeconds - currentSeconds)
         }
     }
     
@@ -252,21 +252,5 @@ class NCViewerVideoToolBar: UIView {
         
         self.player?.seek(to: targetTime)
         NCManageDatabase.shared.addVideoTime(metadata: self.metadata, time: targetTime)
-    }
-    
-    //MARK: - Algorithms
-    
-    func stringFromTimeInterval(interval: TimeInterval) -> String {
-    
-        let interval = Int(interval)
-        let seconds = interval % 60
-        let minutes = (interval / 60) % 60
-        let hours = (interval / 3600)
-        
-        if hours > 0 {
-            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
-        } else {
-            return String(format: "%02d:%02d", minutes, seconds)
-        }
     }
 }
