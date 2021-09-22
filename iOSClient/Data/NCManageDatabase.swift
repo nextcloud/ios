@@ -116,13 +116,14 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if oldSchemaVersion < 207 {
+                    if oldSchemaVersion < 209 {
                         migration.deleteData(forType: tableDirectory.className())
                         migration.deleteData(forType: tableE2eEncryption.className())
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
                         migration.deleteData(forType: tableMetadata.className())
                         migration.deleteData(forType: tableShare.className())
                         migration.deleteData(forType: tableTrash.className())
+                        migration.deleteData(forType: tableVideo.className())
                         // Delete OLD avatar image
                         if var pathUrl = CCUtility.getDirectoryGroup() {
                             pathUrl.appendPathComponent(NCGlobal.shared.appUserData)

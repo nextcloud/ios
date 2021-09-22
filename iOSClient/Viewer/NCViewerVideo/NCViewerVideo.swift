@@ -35,8 +35,8 @@ class NCViewerVideo: NSObject {
     private var imageView: UIImageView?
     private var timeObserver: Any?
     private var rateObserver: Any?
-    private var metadata: tableMetadata?
     
+    public var metadata: tableMetadata?
     public var videoLayer: AVPlayerLayer?
     public var player: AVPlayer?
     public var viewerVideoToolBar: NCViewerVideoToolBar?

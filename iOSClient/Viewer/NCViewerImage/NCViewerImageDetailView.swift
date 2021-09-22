@@ -148,21 +148,17 @@ class NCViewerImageDetailView: UIView {
             dateValue.text = dateString
         }
         
-        // Dimensions / Durations
+        // Dimension / Duration
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             if let image = self.image {
                 dimLabel.text = NSLocalizedString("_dimension_", comment: "")
                 dimValue.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
             }
         } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue  {
-            NCNetworking.shared.getVideoUrl(metadata: metadata!) { url in
-                if let url = url {
-                    let playerVideo = AVPlayer(url: url)
-                    if let duration = playerVideo.currentItem?.asset.duration {
-                        let durationSeconds = CMTimeGetSeconds(duration)
-                        self.dimValue.text = NCUtility.shared.stringFromTimeInterval(interval: durationSeconds)
-                    }
-                }
+            if let ocId = metadata?.ocId, ocId == NCViewerVideo.shared.metadata?.ocId, let duration = NCViewerVideo.shared.player?.currentItem?.asset.duration {
+                let durationSeconds = Double(CMTimeGetSeconds(duration))
+                self.dimLabel.text = NSLocalizedString("_duration_", comment: "")
+                self.dimValue.text = NCUtility.shared.stringFromTimeInterval(interval: durationSeconds)
             }
         }
         
