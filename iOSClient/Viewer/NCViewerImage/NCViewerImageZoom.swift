@@ -100,8 +100,6 @@ class NCViewerImageZoom: UIViewController {
         detailViewConstraint.constant = 0
         detailView.update(metadata: metadata, image: image, heightMap: heightMap)
         detailView.hide()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(orientationChanged(notification:)), name: UIDevice.orientationDidChangeNotification, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -119,18 +117,24 @@ class NCViewerImageZoom: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
+        super.viewDidLayoutSubviews()        
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
         
-        //NCViewerVideo.shared.videoLayer?.frame = self.imageView.layer.bounds
+        coordinator.animate(alongsideTransition: { (context) in
+            self.view.layoutIfNeeded()
+            UIView.animate(withDuration: context.transitionDuration) {
+                NCViewerVideo.shared.videoLayer?.frame = self.imageView.layer.bounds
+                if self.detailView.isShow() {
+                    self.openDetail()
+                }
+            }
+        }) { (_) in }
     }
     
     //MARK: - NotificationCenter
-    
-    @objc func orientationChanged(notification : NSNotification) {
-        if self.detailView.isShow() {
-            openDetail()
-        }
-    }
     
     //MARK: - Gesture
 
