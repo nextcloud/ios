@@ -50,8 +50,13 @@ class NCViewerVideo: NSObject {
         }
     }
     
-    func videoPlay(imageView: UIImageView?, viewerVideoToolBar: NCViewerVideoToolBar?, metadata: tableMetadata) {
+    func initVideoPlayer(imageView: UIImageView?, viewerVideoToolBar: NCViewerVideoToolBar?, metadata: tableMetadata) {
         guard let imageView = imageView else { return }
+        // already init ?
+        if self.metadata?.ocId == metadata.ocId {
+            viewerVideoToolBar?.setBarPlayer(player: self.player, metadata: metadata)
+            return
+        }
         
         self.imageView = imageView
         self.viewerVideoToolBar = viewerVideoToolBar
@@ -59,7 +64,7 @@ class NCViewerVideo: NSObject {
         
         NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
         
-        func play(url: URL) {
+        func initPlayer(url: URL) {
             
             self.player = AVPlayer(url: url)
             self.player?.isMuted = CCUtility.getAudioMute()
@@ -81,7 +86,6 @@ class NCViewerVideo: NSObject {
             }
                         
             self.rateObserver = self.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
-            self.player?.play()
             
             viewerVideoToolBar?.setBarPlayer(player: self.player, metadata: metadata)
         }
@@ -91,8 +95,12 @@ class NCViewerVideo: NSObject {
         //}
 
         if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-            play(url: url)
+            initPlayer(url: url)
         }
+    }
+    
+    func videoPlay() {
+        self.player?.play()
     }
     
     func videoStop() {
