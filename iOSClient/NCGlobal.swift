@@ -313,6 +313,7 @@ class NCGlobal: NSObject {
 
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuPDFDisplayDirection               = "menuPDFDisplayDirection"         // userInfo: direction
+    let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
     let notificationCenterMenuDetailClose                       = "menuDetailClose"
     
     let notificationCenterChangedLocation                       = "changedLocation"

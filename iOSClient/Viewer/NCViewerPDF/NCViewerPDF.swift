@@ -129,6 +129,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(direction(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuPDFDisplayDirection), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(goToPage), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuGotToPageInPDF), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
         
         //
@@ -149,6 +150,9 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuPDFDisplayDirection), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuGotToPageInPDF), object: nil)
+
         NotificationCenter.default.removeObserver(self, name: Notification.Name.PDFViewPageChanged, object: nil)
     }
     
@@ -208,6 +212,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
     
     @objc func renameFile(_ notification: NSNotification) {
+        
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 
@@ -230,6 +235,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
     
     @objc func direction(_ notification: NSNotification) {
+        
         if let userInfo = notification.userInfo as NSDictionary? {
             if let direction = userInfo["direction"] as? PDFDisplayDirection {
                 pdfView.displayDirection = direction
@@ -239,6 +245,28 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         }
     }
     
+    @objc func goToPage() {
+
+        guard let pdfDocument = pdfView.document else { return }
+
+        let alertMessage = NSString(format: NSLocalizedString("_this_document_has_%@_pages_", comment: "") as NSString, "\(pdfDocument.pageCount)") as String
+        let alertController = UIAlertController(title: NSLocalizedString("_go_to_page_", comment: ""), message: alertMessage, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
+
+        alertController.addTextField(configurationHandler: { textField in
+            textField.placeholder = NSLocalizedString("_page_", comment: "")
+            textField.keyboardType = .decimalPad
+        })
+
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { [unowned self] _ in
+            if let pageLabel = alertController.textFields?.first?.text {
+                self.selectPage(with: pageLabel)
+            }
+        }))
+
+        self.present(alertController, animated: true)
+    }
+
     //MARK: - Action
     
     @objc func openMenuMore() {
@@ -286,8 +314,28 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
     
     func searchPdfSelection(_ pdfSelection: PDFSelection) {
+        
         pdfSelection.color = .yellow
         pdfView.currentSelection = pdfSelection
         pdfView.go(to: pdfSelection)
     }
+    
+    private func selectPage(with label:String) {
+        
+        guard let pdf = pdfView.document else { return }
+
+         if let pageNr = Int(label) {
+             if pageNr > 0 && pageNr <= pdf.pageCount {
+                 if let page = pdf.page(at: pageNr - 1) {
+                     self.pdfView.go(to: page)
+                 }
+             } else {
+                 let alertController = UIAlertController(title: NSLocalizedString("_invalid_page_", comment: ""),
+                                                         message: NSLocalizedString("_the_entered_page_number_doesn't_exist_", comment: ""),
+                                                         preferredStyle: .alert)
+                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: nil))
+                 self.present(alertController, animated: true, completion: nil)
+             }
+         }
+     }
 }

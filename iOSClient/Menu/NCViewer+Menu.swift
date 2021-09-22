@@ -299,6 +299,16 @@ extension NCViewer {
                     }
                 )
             )
+            
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_go_to_page_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "repeat"),
+                    action: { menuAction in
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuGotToPageInPDF)
+                    }
+                )
+            )
         }
         
         //

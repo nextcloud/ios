@@ -807,3 +807,8 @@
 "_open_in_onlyoffice_"      = "Open in ONLYOFFICE";
 "_open_in_collabora_"       = "Open with Collabora Online";
 "_login_address_detail_"    = "The link to your %@ web interface when you open it in the browser.";
+"_go_to_page_"              = "Go to page";
+"_page_"                    = "Page";
+"_this_document_has_%@_pages_"              = "This document has %@ pages";
+"_invalid_page_"                            = "Invalid Page";
+"_the_entered_page_number_doesn't_exist_"   = "The entered page number doesn't exist";
