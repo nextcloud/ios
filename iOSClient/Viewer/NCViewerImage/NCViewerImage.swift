@@ -570,7 +570,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         
         // PLAY VIDEO/AUDIO
         if (currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 NCViewerVideo.shared.initVideoPlayer(imageView: viewerImageZoom.imageView, viewerVideoToolBar: viewerImageZoom.videoToolBar, metadata: metadata)
             }
         }
