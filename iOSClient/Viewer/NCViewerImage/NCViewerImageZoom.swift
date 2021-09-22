@@ -116,10 +116,6 @@ class NCViewerImageZoom: UIViewController {
         delegate?.didAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()        
-    }
-    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
