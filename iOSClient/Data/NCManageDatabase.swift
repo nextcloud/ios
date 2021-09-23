@@ -3205,9 +3205,9 @@ class NCManageDatabase: NSObject {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
-    
-    //MARK: -
 }
+
+//MARK: -
 
 extension Realm {
     public func safeWrite(_ block: (() throws -> Void)) throws {
