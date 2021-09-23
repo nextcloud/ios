@@ -340,17 +340,21 @@ extension NCMedia: UICollectionViewDelegate {
         
         let metadata = metadatas[indexPath.row]
         let identifier = indexPath as NSCopying
-        let cell = collectionView.cellForItem(at: indexPath) as! NCGridMediaCell
-        let image = cell.imageItem.image
+        if let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell {
+        
+            let image = cell.imageItem.image
 
-        return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
-            
-            return NCViewerProviderContextMenu(metadata: metadata, image: image)
-            
-        }, actionProvider: { suggestedActions in
-            
-            return NCFunctionCenter.shared.contextMenuConfiguration(ocId: metadata.ocId, viewController: self, enableDeleteLocal: false, enableViewInFolder: true, image: image)
-        })
+            return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
+                
+                return NCViewerProviderContextMenu(metadata: metadata, image: image)
+                
+            }, actionProvider: { suggestedActions in
+                
+                return NCFunctionCenter.shared.contextMenuConfiguration(ocId: metadata.ocId, viewController: self, enableDeleteLocal: false, enableViewInFolder: true, image: image)
+            })
+        } else {
+            return nil
+        }
     }
     
     @available(iOS 13.0, *)
