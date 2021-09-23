@@ -3134,18 +3134,30 @@ class NCManageDatabase: NSObject {
         
         do {
             try realm.safeWrite {
-                let addObject = tableVideo()
-               
-                addObject.account = metadata.account
-                if let durationSeconds = durationSeconds {
-                    addObject.durationSeconds = durationSeconds
+                if let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first {
+                    
+                    if let durationSeconds = durationSeconds {
+                        result.durationSeconds = durationSeconds
+                    }
+                    if let time = time {
+                        result.time = Int64(CMTimeGetSeconds(time)) * 1000
+                    }
+                    realm.add(result, update: .all)
+
+                } else {
+                    
+                    let addObject = tableVideo()
+                   
+                    addObject.account = metadata.account
+                    if let durationSeconds = durationSeconds {
+                        addObject.durationSeconds = durationSeconds
+                    }
+                    addObject.ocId = metadata.ocId
+                    if let time = time {
+                        addObject.time = Int64(CMTimeGetSeconds(time)) * 1000
+                    }
+                    realm.add(addObject, update: .all)
                 }
-                addObject.ocId = metadata.ocId
-                if let time = time {
-                    addObject.time = Int64(CMTimeGetSeconds(time)) * 1000
-                }
-                
-                realm.add(addObject, update: .all)
             }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
