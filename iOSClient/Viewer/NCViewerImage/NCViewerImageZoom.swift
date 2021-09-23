@@ -70,7 +70,7 @@ class NCViewerImageZoom: UIViewController {
         view.addGestureRecognizer(doubleTapGestureRecognizer)
         
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-//            image = UIImage.init(named: "noPreviewVideo")!.image(color: .gray, size: view.frame.width)
+            image = UIImage.init(named: "noPreviewVideo")!.image(color: .gray, size: view.frame.width)
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             if image == nil {
                 image = UIImage.init(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
