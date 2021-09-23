@@ -3152,8 +3152,9 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getVideoDurationSeconds(metadata: tableMetadata) -> Double? {
-        
+    func getVideoDurationSeconds(metadata: tableMetadata?) -> Double? {
+        guard let metadata = metadata else { return nil }
+
         if metadata.livePhoto { return nil }
         let realm = try! Realm()
         
