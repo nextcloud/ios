@@ -101,14 +101,6 @@ class NCViewerImageZoom: UIViewController {
         detailView.hide()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-            
-        if isShowDetail {
-            openDetail()
-        }
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -137,9 +129,7 @@ class NCViewerImageZoom: UIViewController {
         imageView.image = image
         self.metadata = metadata
     }
-    
-    //MARK: - NotificationCenter
-    
+        
     //MARK: - Gesture
 
     @objc func didDoubleTapWith(gestureRecognizer: UITapGestureRecognizer) {
@@ -262,7 +252,9 @@ extension NCViewerImageZoom {
         
         scrollView.pinchGestureRecognizer?.isEnabled = true
         
-        videoToolBar.showToolBar()
+        if !metadata.livePhoto {
+            videoToolBar.showToolBar()
+        }
     }
 }
 
