@@ -370,7 +370,6 @@ class NCViewerImage: UIViewController {
     }
 }
 
-
 //MARK: - UIPageViewController Delegate Datasource
 
 extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataSource {

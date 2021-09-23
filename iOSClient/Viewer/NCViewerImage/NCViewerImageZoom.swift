@@ -185,6 +185,7 @@ class NCViewerImageZoom: UIViewController {
             if detailView.isHidden && (currentLocation.y > 20) {
                 
                 delegate?.dismissImageZoom()
+                gestureRecognizer.state = .ended
             }
             
             // CLOSE DETAIL
