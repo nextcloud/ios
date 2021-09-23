@@ -65,6 +65,7 @@ class NCViewerVideo: NSObject {
             
             self.player = AVPlayer(url: url)
             self.player?.isMuted = CCUtility.getAudioMute()
+            self.player?.seek(to: .zero)
             self.videoLayer = AVPlayerLayer(player: self.player)
             self.videoLayer!.frame = imageView.bounds
             self.videoLayer!.videoGravity = .resizeAspect
@@ -78,8 +79,7 @@ class NCViewerVideo: NSObject {
                     self.viewerVideoToolBar?.showToolBar()
                 }
             }
-                        
-            self.rateObserver = self.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+            rateObserver = self.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
             
             // save durationSeconds on database
             if let duration: CMTime = (player?.currentItem?.asset.duration) {
@@ -87,13 +87,14 @@ class NCViewerVideo: NSObject {
                 NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationSeconds: durationSeconds)
             }
             
+            // seek to datamebase ti
+            if let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
+                self.player?.seek(to: time)
+            }
+            
             viewerVideoToolBar?.setBarPlayer(player: self.player, metadata: metadata, durationSeconds: durationSeconds)
         }
         
-        //NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
-        //            if let url = url {
-        //}
-
         if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
             initPlayer(url: url)
         }

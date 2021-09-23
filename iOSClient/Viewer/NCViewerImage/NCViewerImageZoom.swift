@@ -48,7 +48,6 @@ class NCViewerImageZoom: UIViewController {
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
     var isShowDetail: Bool = false
-    var noPreview: Bool = false
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
     var imageViewConstraint: CGFloat = 0
                 
@@ -70,18 +69,18 @@ class NCViewerImageZoom: UIViewController {
         
         view.addGestureRecognizer(doubleTapGestureRecognizer)
         
-        if image == nil {
-            var named = "noPreview"
-            if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue { named = "noPreviewAudio" }
-            if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue { named = "noPreviewVideo" }
-            image = UIImage.init(named: named)!.image(color: .gray, size: view.frame.width)
-            self.noPreview = true
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+//            image = UIImage.init(named: "noPreviewVideo")!.image(color: .gray, size: view.frame.width)
+        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+            if image == nil {
+                image = UIImage.init(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
+            }
+        } else {
+            if image == nil {
+                image = UIImage.init(named: "noPreview")!.image(color: .gray, size: view.frame.width)
+            }
         }
-        
-        if let image = image {
-            imageView.image = image
-            imageView.frame = CGRect(x: imageView.frame.origin.x, y: imageView.frame.origin.y, width: image.size.width, height: image.size.height)
-        }
+        imageView.image = image
         
         if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
             statusViewImage.image = NCUtility.shared.loadImage(named: "livephoto", color: .gray)

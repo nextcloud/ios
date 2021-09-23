@@ -582,11 +582,11 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         let ext = CCUtility.getExtension(metadata.fileNameView)
         
         // NO PREVIEW [RETRAY]
-        if viewerImageZoom.noPreview {
-            if let image = getImageMetadata(metadata) {
-                viewerImageZoom.image = image
-            }
-        }
+//        if viewerImageZoom.noPreview {
+//            if let image = getImageMetadata(metadata) {
+//                viewerImageZoom.image = image
+//            }
+//        }
         
         // DOWNLOAD FILE
         if ((metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
