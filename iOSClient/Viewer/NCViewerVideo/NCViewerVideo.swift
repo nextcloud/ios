@@ -73,9 +73,6 @@ class NCViewerVideo: NSObject {
             NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
                 if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
                     self.player?.seek(to: .zero)
-                    if metadata.livePhoto {
-                        NCManageDatabase.shared.deleteVideoTime(metadata: metadata)
-                    }
                     self.viewerVideoToolBar?.showToolBar()
                 }
             }
@@ -143,7 +140,7 @@ class NCViewerVideo: NSObject {
                     let timeSecond = Double(CMTimeGetSeconds(time))
                     let durationSeconds = Double(CMTimeGetSeconds(duration))
                     if timeSecond < durationSeconds {
-                        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: self.player?.currentTime())
+                        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: self.player?.currentTime(), durationSeconds: nil)
                         if let time = self.player?.currentTime() {
                             let timeSecond = Double(CMTimeGetSeconds(time))
                             print("Stop video at: \(timeSecond)")

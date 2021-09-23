@@ -116,7 +116,7 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if oldSchemaVersion < 209 {
+                    if oldSchemaVersion < 210 {
                         migration.deleteData(forType: tableDirectory.className())
                         migration.deleteData(forType: tableE2eEncryption.className())
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
@@ -3127,10 +3127,9 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Video
     
-    func addVideoTime(metadata: tableMetadata, time: CMTime?) {
+    func addVideoTime(metadata: tableMetadata, time: CMTime?, durationSeconds: Double?) {
         
         if metadata.livePhoto { return }
-        guard let time = time else { return }
         let realm = try! Realm()
         
         do {
@@ -3138,9 +3137,14 @@ class NCManageDatabase: NSObject {
                 let addObject = tableVideo()
                
                 addObject.account = metadata.account
+                if let durationSeconds = durationSeconds {
+                    addObject.durationSeconds = durationSeconds
+                }
                 addObject.ocId = metadata.ocId
-                addObject.time = Int64(CMTimeGetSeconds(time) * 1000)
-              
+                if let time = time {
+                    addObject.time = Int64(CMTimeGetSeconds(time)) * 1000
+                }
+                
                 realm.add(addObject, update: .all)
             }
         } catch let error {
@@ -3148,15 +3152,29 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getVideoTime(metadata: tableMetadata) -> CMTime? {
+    func getVideoDurationSeconds(metadata: tableMetadata) -> Double? {
         
-        if metadata.livePhoto { return CMTime.zero }
+        if metadata.livePhoto { return nil }
         let realm = try! Realm()
         
         guard let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first else {
             return nil
         }
         
+        if result.durationSeconds == 0 { return nil }
+        return result.durationSeconds
+    }
+    
+    func getVideoTime(metadata: tableMetadata) -> CMTime? {
+        
+        if metadata.livePhoto { return nil }
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first else {
+            return nil
+        }
+        
+        if result.time == 0 { return nil }
         let time = CMTimeMake(value: result.time, timescale: 1000)
         return time
     }

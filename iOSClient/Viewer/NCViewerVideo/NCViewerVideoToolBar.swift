@@ -82,7 +82,7 @@ class NCViewerVideoToolBar: UIView {
         setToolBarImage()
     }
     
-    func setBarPlayer(player: AVPlayer?, metadata: tableMetadata?) {
+    func setBarPlayer(player: AVPlayer?, metadata: tableMetadata) {
         
         self.player = player
         self.metadata = metadata
@@ -97,6 +97,8 @@ class NCViewerVideoToolBar: UIView {
 
         labelCurrentTime.text = NCUtility.shared.stringFromTimeInterval(interval: 0)
         labelOverallDuration.text = "-" + NCUtility.shared.stringFromTimeInterval(interval: durationSeconds)
+        
+        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationSeconds: durationSeconds)
         
         player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             
@@ -188,7 +190,7 @@ class NCViewerVideoToolBar: UIView {
             case .ended:
                 self.player?.seek(to: targetTime)
                 if let metadata = self.metadata {
-                    NCManageDatabase.shared.addVideoTime(metadata: metadata, time: targetTime)
+                    NCManageDatabase.shared.addVideoTime(metadata: metadata, time: targetTime, durationSeconds: nil)
                 }
                 if wasInPlay {
                     self.player?.play()
@@ -240,7 +242,7 @@ class NCViewerVideoToolBar: UIView {
             let targetTime: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
             
             self.player?.seek(to: targetTime)
-            NCManageDatabase.shared.addVideoTime(metadata: metadata, time: targetTime)
+            NCManageDatabase.shared.addVideoTime(metadata: metadata, time: targetTime, durationSeconds: nil)
         }
     }
     
@@ -255,6 +257,6 @@ class NCViewerVideoToolBar: UIView {
         let targetTime: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
         
         self.player?.seek(to: targetTime)
-        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: targetTime)
+        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: targetTime, durationSeconds: nil)
     }
 }
