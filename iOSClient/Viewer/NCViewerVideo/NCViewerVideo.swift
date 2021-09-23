@@ -61,6 +61,8 @@ class NCViewerVideo: NSObject {
         
         func initPlayer(url: URL) {
             
+            var durationSeconds: Double = 0
+            
             self.player = AVPlayer(url: url)
             self.player?.isMuted = CCUtility.getAudioMute()
             self.videoLayer = AVPlayerLayer(player: self.player)
@@ -79,7 +81,13 @@ class NCViewerVideo: NSObject {
                         
             self.rateObserver = self.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
             
-            viewerVideoToolBar?.setBarPlayer(player: self.player, metadata: metadata)
+            // save durationSeconds on database
+            if let duration: CMTime = (player?.currentItem?.asset.duration) {
+                durationSeconds = CMTimeGetSeconds(duration)
+                NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationSeconds: durationSeconds)
+            }
+            
+            viewerVideoToolBar?.setBarPlayer(player: self.player, metadata: metadata, durationSeconds: durationSeconds)
         }
         
         //NCNetworking.shared.getVideoUrl(metadata: metadata) { url in

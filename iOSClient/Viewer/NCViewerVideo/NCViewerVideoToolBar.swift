@@ -82,14 +82,11 @@ class NCViewerVideoToolBar: UIView {
         setToolBarImage()
     }
     
-    func setBarPlayer(player: AVPlayer?, metadata: tableMetadata) {
+    func setBarPlayer(player: AVPlayer?, metadata: tableMetadata, durationSeconds: Double) {
         
         self.player = player
         self.metadata = metadata
-        
-        let duration: CMTime = (player?.currentItem?.asset.duration)!
-        let durationSeconds: Float64 = CMTimeGetSeconds(duration)
-        
+                
         playbackSlider.value = 0
         playbackSlider.minimumValue = 0
         playbackSlider.maximumValue = Float(durationSeconds)
@@ -97,9 +94,7 @@ class NCViewerVideoToolBar: UIView {
 
         labelCurrentTime.text = NCUtility.shared.stringFromTimeInterval(interval: 0)
         labelOverallDuration.text = "-" + NCUtility.shared.stringFromTimeInterval(interval: durationSeconds)
-        
-        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationSeconds: durationSeconds)
-        
+                
         player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             
             if self.player?.currentItem?.status == .readyToPlay {
