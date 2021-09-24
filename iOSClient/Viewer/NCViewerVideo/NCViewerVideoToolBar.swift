@@ -83,6 +83,10 @@ class NCViewerVideoToolBar: UIView {
         muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .lightGray), for: .normal)
     }
     
+    deinit {
+        print("deinit NCViewerVideoToolBar")
+    }
+    
     func setBarPlayer(viewerVideo: NCViewerVideo) {
                         
         self.viewerVideo = viewerVideo

@@ -63,7 +63,7 @@ class NCViewerImageZoom: UIViewController {
     }
     
     deinit {
-        print("")
+        print("deinit NCViewerImageZoom")
     }
     
     override func viewDidLoad() {

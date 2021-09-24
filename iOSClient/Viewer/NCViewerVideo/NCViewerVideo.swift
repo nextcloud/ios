@@ -89,7 +89,7 @@ class NCViewerVideo: NSObject {
     }
     
     deinit {
-        print("deinit")
+        print("deinit NCViewerVideo")
     }
     
     func setupVideoLayer(imageVideoContainer: imageVideoContainerView?) {

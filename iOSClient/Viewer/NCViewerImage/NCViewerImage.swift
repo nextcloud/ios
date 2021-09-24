@@ -154,6 +154,10 @@ class NCViewerImage: UIViewController {
         NCViewer.shared.toggleMenu(viewController: self, metadata: currentMetadata, webView: false, imageIcon: imageIcon)
     }
     
+    deinit {
+        print("deinit NCViewerImage")
+    }
+    
     //MARK: - NotificationCenter
 
     @objc func downloadedFile(_ notification: NSNotification) {
