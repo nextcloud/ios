@@ -565,7 +565,6 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         navigationItem.title = metadata.fileNameView
         currentMetadata = metadata
         currentViewerImageZoom = viewerImageZoom
-        viewerImageZoom.videoToolBar.hideToolBar()
         
         // PLAY VIDEO/AUDIO
         if (currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
@@ -580,13 +579,6 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         let ext = CCUtility.getExtension(metadata.fileNameView)
-        
-        // NO PREVIEW [RETRAY]
-//        if viewerImageZoom.noPreview {
-//            if let image = getImageMetadata(metadata) {
-//                viewerImageZoom.image = image
-//            }
-//        }
         
         // DOWNLOAD FILE
         if ((metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {

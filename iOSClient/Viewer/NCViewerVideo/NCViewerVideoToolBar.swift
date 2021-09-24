@@ -79,7 +79,10 @@ class NCViewerVideoToolBar: UIView {
         labelOverallDuration.text = NCUtility.shared.stringFromTimeInterval(interval: 0)
         labelOverallDuration.textColor = .lightGray
         
-        setToolBarImage()
+        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .lightGray), for: .normal)
+        playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray), for: .normal)
+        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .lightGray), for: .normal)
+        muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .lightGray), for: .normal)
     }
     
     func setBarPlayer(player: AVPlayer?, metadata: tableMetadata, durationSeconds: Double) {
@@ -99,18 +102,17 @@ class NCViewerVideoToolBar: UIView {
             
             if self.player?.currentItem?.status == .readyToPlay {
                 if self.isHidden == false {
-                    self.updateOutlet()
+                    self.updateToolBar()
                 }
             }
         })
         
-        setToolBarImage()
-        showToolBar()
+        updateToolBar()
     }
     
     @objc public func hideToolBar() {
         
-        updateOutlet()
+        updateToolBar()
       
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 0
@@ -121,7 +123,7 @@ class NCViewerVideoToolBar: UIView {
     
     @objc public func showToolBar() {
         
-        updateOutlet()
+        updateToolBar()
         
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 1
@@ -130,29 +132,32 @@ class NCViewerVideoToolBar: UIView {
         })
     }
     
-    public func setToolBarImage() {
+    public func updateToolBar() {
 
         var namedPlay = "play.fill"
         if player?.rate == 1 { namedPlay = "pause.fill"}
                
+        playbackSlider.isEnabled = true
+        
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white), for: .normal)
+        backButton.isEnabled = true
         
         if #available(iOS 13.0, *) {
             playButton.setImage(NCUtility.shared.loadImage(named: namedPlay, color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
         } else {
             playButton.setImage(NCUtility.shared.loadImage(named: namedPlay, color: .white), for: .normal)
         }
+        playButton.isEnabled = true
         
         forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .white), for: .normal)
+        forwardButton.isEnabled = true
         
         if CCUtility.getAudioMute() {
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
         } else {
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
         }
-    }
-    
-    private func updateOutlet() {
+        muteButton.isEnabled = true
         
         if let duration = player?.currentItem?.asset.duration, let currentTime = player?.currentTime() {
             
@@ -222,7 +227,7 @@ class NCViewerVideoToolBar: UIView {
         
         CCUtility.setAudioMute(!mute)
         player?.isMuted = !mute
-        setToolBarImage()
+        updateToolBar()
     }
     
     @IBAction func forwardButtonSec(_ sender: Any) {

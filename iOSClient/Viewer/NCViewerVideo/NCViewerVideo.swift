@@ -56,7 +56,7 @@ class NCViewerVideo: NSObject {
         self.imageView = imageView
         self.viewerVideoToolBar = viewerVideoToolBar
         self.metadata = metadata
-        
+                
         NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
         
         func initPlayer(url: URL) {
@@ -98,6 +98,8 @@ class NCViewerVideo: NSObject {
         if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
             initPlayer(url: url)
         }
+        
+        //
     }
     
     func videoPlay() {
@@ -132,7 +134,7 @@ class NCViewerVideo: NSObject {
         
         if keyPath != nil && keyPath == "rate" {
             
-            self.viewerVideoToolBar?.setToolBarImage()
+            self.viewerVideoToolBar?.updateToolBar()
             
             if self.player?.rate == 1 {
                 
