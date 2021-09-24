@@ -127,11 +127,9 @@ class NCViewerImage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object:nil)
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-           
-        NCViewerVideo.shared.videoStop()
-        
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+                   
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
@@ -438,7 +436,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         guard let nextViewController = pendingViewControllers.first as? NCViewerImageZoom else { return }
         nextIndex = nextViewController.index
         // STOP VIDEO
-        NCViewerVideo.shared.videoStop()
+//        NCViewerVideo.shared.videoStop()
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {

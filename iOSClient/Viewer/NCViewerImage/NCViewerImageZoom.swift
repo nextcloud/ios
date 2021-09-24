@@ -112,6 +112,12 @@ class NCViewerImageZoom: UIViewController {
         delegate?.didAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        NCViewerVideo.shared.videoStop()
+    }
+    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
