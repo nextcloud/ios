@@ -39,10 +39,7 @@ class NCViewerVideoToolBar: UIView {
         case ended
         case moved
     }
-    
-    var player: AVPlayer?
-    var metadata: tableMetadata?
-    
+        
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
     private let seekDuration: Float64 = 15
@@ -85,29 +82,26 @@ class NCViewerVideoToolBar: UIView {
         muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .lightGray), for: .normal)
     }
     
-    func setBarPlayer(player: AVPlayer?, metadata: tableMetadata, durationSeconds: Double) {
-        
-        self.player = player
-        self.metadata = metadata
-                
+    func setBarPlayer() {
+                        
         playbackSlider.value = 0
         playbackSlider.minimumValue = 0
-        playbackSlider.maximumValue = Float(durationSeconds)
+        playbackSlider.maximumValue = Float(NCViewerVideo.shared.getVideoDurationSeconds())
         playbackSlider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
 
         labelCurrentTime.text = NCUtility.shared.stringFromTimeInterval(interval: 0)
-        labelOverallDuration.text = "-" + NCUtility.shared.stringFromTimeInterval(interval: durationSeconds)
+        labelOverallDuration.text = "-" + NCUtility.shared.stringFromTimeInterval(interval: NCViewerVideo.shared.getVideoDurationSeconds())
                 
-        player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
+        updateToolBar()
+        
+        NCViewerVideo.shared.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             
-            if self.player?.currentItem?.status == .readyToPlay {
+            if NCViewerVideo.shared.player?.currentItem?.status == .readyToPlay {
                 if self.isHidden == false {
                     self.updateToolBar()
                 }
             }
-        })
-        
-        updateToolBar()
+        })        
     }
     
     @objc public func hideToolBar() {
@@ -135,8 +129,10 @@ class NCViewerVideoToolBar: UIView {
     public func updateToolBar() {
 
         var namedPlay = "play.fill"
-        if player?.rate == 1 { namedPlay = "pause.fill"}
-               
+        if NCViewerVideo.shared.player?.rate == 1 { namedPlay = "pause.fill"}
+        let currentSeconds = NCViewerVideo.shared.getVideoCurrentSeconds()
+        let durationSeconds = NCViewerVideo.shared.getVideoDurationSeconds()
+        
         playbackSlider.isEnabled = true
         
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white), for: .normal)
@@ -159,15 +155,8 @@ class NCViewerVideoToolBar: UIView {
         }
         muteButton.isEnabled = true
         
-        if let duration = player?.currentItem?.asset.duration, let currentTime = player?.currentTime() {
-            
-            let durationSeconds: Float64 = CMTimeGetSeconds(duration)
-            let currentSeconds: Float64 = CMTimeGetSeconds(currentTime)
-            
-            self.playbackSlider.value = Float(currentSeconds)
-            self.labelCurrentTime.text = NCUtility.shared.stringFromTimeInterval(interval: currentSeconds)
-            self.labelOverallDuration.text = "-" + NCUtility.shared.stringFromTimeInterval(interval: durationSeconds - currentSeconds)
-        }
+        self.labelCurrentTime.text = NCUtility.shared.stringFromTimeInterval(interval: currentSeconds)
+        self.labelOverallDuration.text = "-" + NCUtility.shared.stringFromTimeInterval(interval: durationSeconds - currentSeconds)
     }
     
     //MARK: - Event / Gesture
@@ -181,19 +170,16 @@ class NCViewerVideoToolBar: UIView {
             
             switch touchEvent.phase {
             case .began:
-                wasInPlay = player?.rate == 1 ? true : false
-                self.player?.pause()
+                wasInPlay = NCViewerVideo.shared.player?.rate == 1 ? true : false
+                NCViewerVideo.shared.videoPause()
                 playbackSliderEvent = .began
             case .moved:
-                self.player?.seek(to: targetTime)
+                NCViewerVideo.shared.videoSeek(time: targetTime)
                 playbackSliderEvent = .moved
             case .ended:
-                self.player?.seek(to: targetTime)
-                if let metadata = self.metadata {
-                    NCManageDatabase.shared.addVideoTime(metadata: metadata, time: targetTime, durationSeconds: nil)
-                }
+                NCViewerVideo.shared.videoSeek(time: targetTime)
                 if wasInPlay {
-                    self.player?.play()
+                    NCViewerVideo.shared.videoPlay()
                 }
                 playbackSliderEvent = .ended
             default:
@@ -214,10 +200,10 @@ class NCViewerVideoToolBar: UIView {
     
     @IBAction func playerPause(_ sender: Any) {
         
-        if player?.timeControlStatus == .playing {
-            player?.pause()
-        } else if player?.timeControlStatus == .paused {
-            player?.play()
+        if NCViewerVideo.shared.player?.timeControlStatus == .playing {
+            NCViewerVideo.shared.videoPause()
+        } else if NCViewerVideo.shared.player?.timeControlStatus == .paused {
+            NCViewerVideo.shared.videoPlay()
         }
     }
         
@@ -226,37 +212,31 @@ class NCViewerVideoToolBar: UIView {
         let mute = CCUtility.getAudioMute()
         
         CCUtility.setAudioMute(!mute)
-        player?.isMuted = !mute
+        NCViewerVideo.shared.player?.isMuted = !mute
         updateToolBar()
     }
     
     @IBAction func forwardButtonSec(_ sender: Any) {
-        guard let player = self.player else { return }
-        guard let duration = player.currentItem?.duration else { return }
-        guard let metadata = self.metadata else { return }
+        guard let player = NCViewerVideo.shared.player else { return }
         
         let playerCurrentTime = CMTimeGetSeconds(player.currentTime())
         let newTime = playerCurrentTime + seekDuration
         
-        if newTime < CMTimeGetSeconds(duration) {
-            let targetTime: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
-            
-            self.player?.seek(to: targetTime)
-            NCManageDatabase.shared.addVideoTime(metadata: metadata, time: targetTime, durationSeconds: nil)
+        if newTime < NCViewerVideo.shared.getVideoDurationSeconds() {
+            let time: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
+            NCViewerVideo.shared.videoSeek(time: time)
         }
     }
     
     @IBAction func backButtonSec(_ sender: Any) {
-        guard let player = self.player else { return }
-        guard let metadata = self.metadata else { return }
+        guard let player = NCViewerVideo.shared.player else { return }
 
         let playerCurrenTime = CMTimeGetSeconds(player.currentTime())
         var newTime = playerCurrenTime - seekDuration
         
         if newTime < 0 { newTime = 0 }
-        let targetTime: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
+        let time: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
         
-        self.player?.seek(to: targetTime)
-        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: targetTime, durationSeconds: nil)
+        NCViewerVideo.shared.videoSeek(time: time)
     }
 }

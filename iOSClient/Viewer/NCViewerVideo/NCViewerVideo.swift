@@ -35,12 +35,13 @@ class NCViewerVideo: NSObject {
     private var imageView: UIImageView?
     private var timeObserver: Any?
     private var rateObserver: Any?
-    
+    private var durationSeconds: Double = 0
+    private var viewerVideoToolBar: NCViewerVideoToolBar?
+
     public var metadata: tableMetadata?
     public var videoLayer: AVPlayerLayer?
     public var player: AVPlayer?
-    public var viewerVideoToolBar: NCViewerVideoToolBar?
-    
+
     //MARK: - NotificationCenter
 
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
@@ -60,9 +61,7 @@ class NCViewerVideo: NSObject {
         NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
         
         func initPlayer(url: URL) {
-            
-            var durationSeconds: Double = 0
-            
+                        
             self.player = AVPlayer(url: url)
             self.player?.isMuted = CCUtility.getAudioMute()
             self.player?.seek(to: .zero)
@@ -92,7 +91,7 @@ class NCViewerVideo: NSObject {
                 self.player?.seek(to: time)
             }
             
-            viewerVideoToolBar?.setBarPlayer(player: self.player, metadata: metadata, durationSeconds: durationSeconds)
+            viewerVideoToolBar?.setBarPlayer()
         }
         
         if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
@@ -103,11 +102,25 @@ class NCViewerVideo: NSObject {
     }
     
     func videoPlay() {
+        guard let metadata = self.metadata else { return }
+        
         self.player?.play()
     }
     
-    func videoStop() {
+    func videoPause() {
+        guard let metadata = self.metadata else { return }
         
+        self.player?.pause()
+    }
+    
+    func videoSeek(time: CMTime) {
+        guard let metadata = self.metadata else { return }
+
+        self.player?.seek(to: time)
+        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationSeconds: nil)
+    }
+    
+    func videoRemoved() {
         guard let metadata = self.metadata else { return }
         
         self.player?.pause()
@@ -126,6 +139,19 @@ class NCViewerVideo: NSObject {
         }
                
         self.videoLayer?.removeFromSuperlayer()
+    }
+    
+    func getVideoCurrentSeconds() -> Float64 {
+        
+        if let currentTime = NCViewerVideo.shared.player?.currentTime() {
+            return CMTimeGetSeconds(currentTime)
+        }
+        return 0
+    }
+    
+    func getVideoDurationSeconds() -> Float64 {
+        
+        return self.durationSeconds
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {

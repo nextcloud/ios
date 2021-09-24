@@ -127,8 +127,8 @@ class NCViewerImage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object:nil)
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
                    
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
@@ -302,7 +302,7 @@ class NCViewerImage: UIViewController {
             
             currentViewerImageZoom?.statusViewImage.isHidden = false
             currentViewerImageZoom?.statusLabel.isHidden = false
-            NCViewerVideo.shared.videoStop()
+            NCViewerVideo.shared.videoRemoved()
         }
     }
     
@@ -445,6 +445,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
             previousViewControllers.forEach { viewController in
                 let viewerImageZoom = viewController as! NCViewerImageZoom
                 viewerImageZoom.scrollView.zoomScale = viewerImageZoom.scrollView.minimumZoomScale
+                
             }
             currentIndex = nextIndex!
         }
@@ -496,12 +497,14 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
              
-        if let viewerVideoToolBar = NCViewerVideo.shared.viewerVideoToolBar {
-            if viewerVideoToolBar.isHidden {
-                viewerVideoToolBar.showToolBar()
-                return
+        if !currentMetadata.livePhoto {
+            if let viewerVideoToolBar = currentViewerImageZoom?.videoToolBar {
+                if viewerVideoToolBar.isHidden {
+                    viewerVideoToolBar.showToolBar()
+                    return
+                }
             }
-        }
+        }        
             
         /*
         if currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {

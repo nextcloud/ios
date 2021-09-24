@@ -60,6 +60,10 @@ class NCViewerImageZoom: UIViewController {
         doubleTapGestureRecognizer.numberOfTapsRequired = 2
     }
     
+    deinit {
+        print("")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -121,7 +125,7 @@ class NCViewerImageZoom: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        NCViewerVideo.shared.videoStop()
+//        NCViewerVideo.shared.videoStop()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
