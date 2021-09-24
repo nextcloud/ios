@@ -115,8 +115,10 @@ class NCViewerImageZoom: UIViewController {
         
         delegate?.didAppearImageZoom(viewerImageZoom: self, metadata: metadata)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            NCViewerVideo.shared.initVideoPlayer(imageView: self.imageView, viewerVideoToolBar: self.videoToolBar, metadata: self.metadata)
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                NCViewerVideo.shared.initVideoPlayer(imageView: self.imageView, viewerVideoToolBar: self.videoToolBar, metadata: self.metadata)
+            }
         }
     }
     

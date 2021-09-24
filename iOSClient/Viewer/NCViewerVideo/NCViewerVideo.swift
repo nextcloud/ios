@@ -33,8 +33,8 @@ class NCViewerVideo: NSObject {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var imageView: UIImageView?
-    private var timeObserver: Any?
-    private var rateObserver: Any?
+//    private var timeObserver: Any?
+//    private var rateObserver: Any?
     private var durationSeconds: Double = 0
     private var viewerVideoToolBar: NCViewerVideoToolBar?
 
@@ -55,10 +55,6 @@ class NCViewerVideo: NSObject {
         guard let imageView = imageView else { return }
         if self.metadata == metadata { return }
         
-        self.imageView = imageView
-        self.viewerVideoToolBar = viewerVideoToolBar
-        self.metadata = metadata
-                
         func initPlayer(url: URL) {
                         
             self.player = AVPlayer(url: url)
@@ -77,7 +73,6 @@ class NCViewerVideo: NSObject {
                     self.viewerVideoToolBar?.showToolBar()
                 }
             }
-            rateObserver = self.player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
             
             // save durationSeconds on database
             if let duration: CMTime = (player?.currentItem?.asset.duration) {
@@ -85,8 +80,8 @@ class NCViewerVideo: NSObject {
                 NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationSeconds: durationSeconds)
             }
             
-            // seek to datamebase ti
-            if let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
+            // NO Live Photo, seek to datamebase time
+            if !metadata.livePhoto, let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
                 self.player?.seek(to: time)
             }
             
@@ -94,6 +89,11 @@ class NCViewerVideo: NSObject {
         }
         
         if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
+            
+            self.imageView = imageView
+            self.viewerVideoToolBar = viewerVideoToolBar
+            self.metadata = metadata
+            
             initPlayer(url: url)
         }        
     }
@@ -110,30 +110,22 @@ class NCViewerVideo: NSObject {
         
         self.player?.pause()
         NCKTVHTTPCache.shared.stopProxy(metadata: metadata)
+        if let time = self.player?.currentTime() {
+            NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationSeconds: nil)
+        }
     }
     
     func videoSeek(time: CMTime) {
+        guard let metadata = self.metadata else { return }
+        
         self.player?.seek(to: time)
+        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationSeconds: nil)
     }
     
     func videoRemoved() {
-        guard let metadata = self.metadata else { return }
         
-        self.player?.pause()
-        self.player?.seek(to: CMTime.zero)
-        
-        if let timeObserver = timeObserver {
-            self.player?.removeTimeObserver(timeObserver)
-            self.timeObserver = nil
-        }
-        
-        if rateObserver != nil {
-            self.player?.removeObserver(self, forKeyPath: "rate")
-            NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
-            NCKTVHTTPCache.shared.stopProxy(metadata: metadata)
-            self.rateObserver = nil
-        }
-               
+        videoPause()
+                       
         self.videoLayer?.removeFromSuperlayer()
     }
     
@@ -148,42 +140,6 @@ class NCViewerVideo: NSObject {
     func getVideoDurationSeconds() -> Float64 {
         
         return self.durationSeconds
-    }
-    
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        
-        guard let metadata = self.metadata else { return }
-        
-        if keyPath != nil && keyPath == "rate" {
-            
-            self.viewerVideoToolBar?.updateToolBar()
-            
-            if self.player?.rate == 1 {
-                
-                if let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
-                    self.player?.seek(to: time)
-                    self.player?.isMuted = CCUtility.getAudioMute()
-                    let timeSecond = Double(CMTimeGetSeconds(time))
-                    print("Play video at: \(timeSecond)")
-                }
-                
-            } else if !metadata.livePhoto {
-                
-                if let time = self.player?.currentTime(), let duration = self.player?.currentItem?.asset.duration {
-                    let timeSecond = Double(CMTimeGetSeconds(time))
-                    let durationSeconds = Double(CMTimeGetSeconds(duration))
-                    if timeSecond < durationSeconds {
-                        if let time = self.player?.currentTime() {
-                            NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationSeconds: nil)
-                            let timeSecond = Double(CMTimeGetSeconds(time))
-                            print("Save video time: \(timeSecond)")
-                        }
-                    } else {
-                        NCManageDatabase.shared.deleteVideoTime(metadata: metadata)
-                    }
-                }
-            }
-        }
     }
 }
 
