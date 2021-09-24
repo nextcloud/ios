@@ -53,7 +53,7 @@ class NCViewerVideo: NSObject {
     
     func initVideoPlayer(imageView: UIImageView?, viewerVideoToolBar: NCViewerVideoToolBar?, metadata: tableMetadata) {
         guard let imageView = imageView else { return }
-        if self.imageView == imageView { return }
+        if self.metadata == metadata { return }
         
         self.imageView = imageView
         self.viewerVideoToolBar = viewerVideoToolBar
