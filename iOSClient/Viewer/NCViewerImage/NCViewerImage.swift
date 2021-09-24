@@ -498,38 +498,12 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
              
-        if !currentMetadata.livePhoto {
-            if let viewerVideoToolBar = currentViewerImageZoom?.videoToolBar {
-                if viewerVideoToolBar.isHidden {
-                    viewerVideoToolBar.showToolBar()
-                    return
-                }
+        if let viewerVideoToolBar = currentViewerImageZoom?.videoToolBar {
+            if viewerVideoToolBar.showToolBar(metadata: currentMetadata) {
+                return
             }
         }
-            
-        /*
-        if currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-            
-            if self.viewerVideo?.pictureInPictureOcId != currentMetadata.ocId {
-                   
-                // Kill PIP
-                appDelegate.activeViewerAVPlayerViewController?.player?.replaceCurrentItem(with: nil)
-                // --------
-                
-                appDelegate.activeViewerAVPlayerViewController = NCViewerAVPlayerViewController()
-                appDelegate.activeViewerAVPlayerViewController?.metadata = currentMetadata
-                appDelegate.activeViewerAVPlayerViewController?.imageBackground = UIImage(named: "file_audio")
-                appDelegate.activeViewerAVPlayerViewController?.delegateViewerVideo = self
-                if let currentViewerVideo = appDelegate.activeViewerAVPlayerViewController {
-                    present(currentViewerVideo, animated: false) { }
-                    
-                }
-            }
-            
-            currentMode = .full
-        }
-        */
-                
+
         if currentMode == .full {
             
             navigationController?.setNavigationBarHidden(false, animated: false)

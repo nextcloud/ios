@@ -69,7 +69,7 @@ class NCViewerVideo: NSObject {
             NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
                 if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
                     self.player?.seek(to: .zero)
-                    self.viewerVideoToolBar?.showToolBar()
+                    self.viewerVideoToolBar?.showToolBar(metadata: metadata)
                     NCKTVHTTPCache.shared.saveCache(metadata: metadata)
                 }
             }

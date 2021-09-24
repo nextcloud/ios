@@ -268,9 +268,7 @@ extension NCViewerImageZoom {
         
         scrollView.pinchGestureRecognizer?.isEnabled = true
         
-        if !metadata.livePhoto {
-            videoToolBar.showToolBar()
-        }
+        videoToolBar.showToolBar(metadata: metadata)
     }
 }
 

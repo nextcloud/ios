@@ -115,15 +115,27 @@ class NCViewerVideoToolBar: UIView {
         })
     }
     
-    @objc public func showToolBar() {
+    @discardableResult
+    @objc public func showToolBar(metadata: tableMetadata) -> Bool {
         
-        updateToolBar()
-        
-        UIView.animate(withDuration: 0.3, animations: {
-            self.alpha = 1
-        }, completion: { (value: Bool) in
-            self.isHidden = false
-        })
+        if !self.isHidden { return false}
+        if metadata.livePhoto { return false}
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+            
+            updateToolBar()
+            
+            UIView.animate(withDuration: 0.3, animations: {
+                self.alpha = 1
+            }, completion: { (value: Bool) in
+                self.isHidden = false
+            })
+            
+            return true
+            
+        } else {
+            
+            return false
+        }
     }
     
     public func updateToolBar() {
