@@ -52,6 +52,9 @@ class NCViewerVideo: NSObject {
     }
     
     func initVideoPlayer(imageView: UIImageView?, viewerVideoToolBar: NCViewerVideoToolBar?, metadata: tableMetadata) {
+        
+        NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password)
+        
         guard let imageView = imageView else { return }
         if self.metadata == metadata { return }
         
@@ -93,15 +96,15 @@ class NCViewerVideo: NSObject {
             self.imageView = imageView
             self.viewerVideoToolBar = viewerVideoToolBar
             self.metadata = metadata
-            
+
             initPlayer(url: url)
         }        
     }
     
     func videoPlay() {
-        guard let metadata = self.metadata else { return }
         
-        NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
+        NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password)
+        
         self.player?.play()
     }
     
@@ -109,7 +112,6 @@ class NCViewerVideo: NSObject {
         guard let metadata = self.metadata else { return }
         
         self.player?.pause()
-        NCKTVHTTPCache.shared.stopProxy(metadata: metadata)
         if let time = self.player?.currentTime() {
             NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationSeconds: nil)
         }
@@ -123,9 +125,12 @@ class NCViewerVideo: NSObject {
     }
     
     func videoRemoved() {
-        
+        guard let metadata = self.metadata else { return }
+
         videoPause()
-                       
+                  
+        NCKTVHTTPCache.shared.stopProxy(metadata: metadata)
+        
         self.videoLayer?.removeFromSuperlayer()
     }
     

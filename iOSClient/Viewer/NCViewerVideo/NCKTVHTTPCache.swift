@@ -45,7 +45,7 @@ class NCKTVHTTPCache: NSObject {
         }
     }
     
-    func startProxy(user: String, password: String, metadata: tableMetadata) {
+    func startProxy(user: String, password: String) {
         
         guard let authData = (user + ":" + password).data(using: .utf8) else { return }
         
