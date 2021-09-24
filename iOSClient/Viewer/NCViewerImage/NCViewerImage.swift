@@ -564,13 +564,6 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         currentMetadata = metadata
         currentViewerImageZoom = viewerImageZoom
         
-        // PLAY VIDEO/AUDIO
-        if (currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                NCViewerVideo.shared.initVideoPlayer(imageView: viewerImageZoom.imageView, viewerVideoToolBar: viewerImageZoom.videoToolBar, metadata: metadata)
-            }
-        }
-            
         if !NCOperationQueue.shared.downloadExists(metadata: metadata) {
             self.progressView.progress = 0
         }
