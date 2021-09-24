@@ -36,7 +36,7 @@ class NCViewerImageZoom: UIViewController {
     @IBOutlet weak var imageViewBottomConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var scrollView: UIScrollView!
-    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var imageVideoContainer: imageVideoContainerView!
     @IBOutlet weak var statusViewImage: UIImageView!
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var detailView: NCViewerImageDetailView!
@@ -90,7 +90,7 @@ class NCViewerImageZoom: UIViewController {
                 image = UIImage.init(named: "noPreview")!.image(color: .gray, size: view.frame.width)
             }
         }
-        imageView.image = image
+        imageVideoContainer.image = image
         
         if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
             statusViewImage.image = NCUtility.shared.loadImage(named: "livephoto", color: .gray)
@@ -117,7 +117,7 @@ class NCViewerImageZoom: UIViewController {
         
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                NCViewerVideo.shared.initVideoPlayer(imageView: self.imageView, viewerVideoToolBar: self.videoToolBar, metadata: self.metadata)
+                NCViewerVideo.shared.initVideoPlayer(imageVideoContainer: self.imageVideoContainer, viewerVideoToolBar: self.videoToolBar, metadata: self.metadata)
             }
         }
     }
@@ -131,7 +131,7 @@ class NCViewerImageZoom: UIViewController {
             self.view.layoutIfNeeded()
             UIView.animate(withDuration: context.transitionDuration) {
                 // resize frame video
-                NCViewerVideo.shared.videoLayer?.frame = self.imageView.layer.bounds
+                //NCViewerVideo.shared.videoLayer?.frame = self.imageView.layer.bounds
                 // resize detail
                 if self.detailView.isShow() {
                     self.openDetail()
@@ -141,7 +141,7 @@ class NCViewerImageZoom: UIViewController {
     }
     
     func reload(image: UIImage, metadata: tableMetadata) {
-        imageView.image = image
+        imageVideoContainer.image = image
         self.metadata = metadata
     }
         
@@ -156,7 +156,7 @@ class NCViewerImageZoom: UIViewController {
             return
         }
         
-        let pointInView = gestureRecognizer.location(in: self.imageView)
+        let pointInView = gestureRecognizer.location(in: self.imageVideoContainer)
         var newZoomScale = self.scrollView.maximumZoomScale
             
         if self.scrollView.zoomScale >= newZoomScale || abs(self.scrollView.zoomScale - newZoomScale) <= 0.01 {
@@ -231,9 +231,9 @@ extension NCViewerImageZoom {
         
         self.detailView.show(textColor: self.viewerImage?.textColor)
         
-        if let image = imageView.image {
-            let ratioW = imageView.frame.width / image.size.width
-            let ratioH = imageView.frame.height / image.size.height
+        if let image = imageVideoContainer.image {
+            let ratioW = imageVideoContainer.frame.width / image.size.width
+            let ratioH = imageVideoContainer.frame.height / image.size.height
             let ratio = ratioW < ratioH ? ratioW : ratioH
             let imageHeight = image.size.height * ratio
             imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - imageHeight) / 2) + self.view.safeAreaInsets.bottom
@@ -277,24 +277,24 @@ extension NCViewerImageZoom {
 extension NCViewerImageZoom: UIScrollViewDelegate {
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return imageView
+        return imageVideoContainer
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         
         if scrollView.zoomScale > 1 {
-            if let image = imageView.image {
+            if let image = imageVideoContainer.image {
                 
-                let ratioW = imageView.frame.width / image.size.width
-                let ratioH = imageView.frame.height / image.size.height
+                let ratioW = imageVideoContainer.frame.width / image.size.width
+                let ratioH = imageVideoContainer.frame.height / image.size.height
                 let ratio = ratioW < ratioH ? ratioW : ratioH
                 let newWidth = image.size.width * ratio
                 let newHeight = image.size.height * ratio
-                let conditionLeft = newWidth*scrollView.zoomScale > imageView.frame.width
-                let left = 0.5 * (conditionLeft ? newWidth - imageView.frame.width : (scrollView.frame.width - scrollView.contentSize.width))
-                let conditioTop = newHeight*scrollView.zoomScale > imageView.frame.height
+                let conditionLeft = newWidth*scrollView.zoomScale > imageVideoContainer.frame.width
+                let left = 0.5 * (conditionLeft ? newWidth - imageVideoContainer.frame.width : (scrollView.frame.width - scrollView.contentSize.width))
+                let conditioTop = newHeight*scrollView.zoomScale > imageVideoContainer.frame.height
                 
-                let top = 0.5 * (conditioTop ? newHeight - imageView.frame.height : (scrollView.frame.height - scrollView.contentSize.height))
+                let top = 0.5 * (conditioTop ? newHeight - imageVideoContainer.frame.height : (scrollView.frame.height - scrollView.contentSize.height))
                 
                 scrollView.contentInset = UIEdgeInsets(top: top, left: left, bottom: top, right: left)
             }
@@ -304,5 +304,15 @@ extension NCViewerImageZoom: UIScrollViewDelegate {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    }
+}
+
+//MARK: -
+
+class imageVideoContainerView: UIImageView {
+    var playerLayer: CALayer?
+    override func layoutSublayers(of layer: CALayer) {
+        super.layoutSublayers(of: layer)
+        playerLayer?.frame = self.bounds
     }
 }

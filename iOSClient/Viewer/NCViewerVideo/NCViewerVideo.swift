@@ -33,8 +33,7 @@ class NCViewerVideo: NSObject {
     }()
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    private var imageView: UIImageView?
-    private var image: UIImage?
+    private var imageVideoContainer: imageVideoContainerView?
     private var durationSeconds: Double = 0
     private var viewerVideoToolBar: NCViewerVideoToolBar?
 
@@ -51,9 +50,9 @@ class NCViewerVideo: NSObject {
         }
     }
     
-    func initVideoPlayer(imageView: UIImageView?, viewerVideoToolBar: NCViewerVideoToolBar?, metadata: tableMetadata) {
+    func initVideoPlayer(imageVideoContainer: imageVideoContainerView?, viewerVideoToolBar: NCViewerVideoToolBar?, metadata: tableMetadata) {
                 
-        guard let imageView = imageView else { return }
+        guard let imageVideoContainer = imageVideoContainer else { return }
         if self.metadata == metadata { return }
         
         func initPlayer(url: URL) {
@@ -62,10 +61,11 @@ class NCViewerVideo: NSObject {
             self.player?.isMuted = CCUtility.getAudioMute()
             self.player?.seek(to: .zero)
             self.videoLayer = AVPlayerLayer(player: self.player)
-            self.videoLayer!.frame = imageView.bounds
+            self.videoLayer!.frame = imageVideoContainer.bounds
             self.videoLayer!.videoGravity = .resizeAspect
             
-            imageView.layer.addSublayer(videoLayer!)
+            imageVideoContainer.layer.addSublayer(videoLayer!)
+            imageVideoContainer.playerLayer = self.videoLayer
 
             // At end go back to start & show toolbar
             NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
@@ -92,8 +92,7 @@ class NCViewerVideo: NSObject {
         
         if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
             
-            self.imageView = imageView
-            self.image = imageView.image
+            self.imageVideoContainer = imageVideoContainer
             self.viewerVideoToolBar = viewerVideoToolBar
             self.metadata = metadata
 

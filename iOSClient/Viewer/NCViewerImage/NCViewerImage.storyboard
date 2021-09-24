@@ -80,7 +80,7 @@
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" maximumZoomScale="4" translatesAutoresizingMaskIntoConstraints="NO" id="CdQ-LC-Trx">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                                 <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="kPV-JM-UnM">
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="kPV-JM-UnM" customClass="imageVideoContainerView" customModule="Nextcloud" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                                     </imageView>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="2AU-85-K8y">
@@ -371,7 +371,7 @@
                     <connections>
                         <outlet property="detailView" destination="P8R-4f-zAl" id="xFW-qq-Cdi"/>
                         <outlet property="detailViewConstraint" destination="bor-cg-Alz" id="Hwu-z8-2SS"/>
-                        <outlet property="imageView" destination="kPV-JM-UnM" id="TEv-Tc-8pu"/>
+                        <outlet property="imageVideoContainer" destination="kPV-JM-UnM" id="2pA-VW-FuK"/>
                         <outlet property="imageViewBottomConstraint" destination="vEd-X2-yGs" id="wp3-67-aZ2"/>
                         <outlet property="imageViewTopConstraint" destination="tdo-XY-uqv" id="AM2-tz-fSt"/>
                         <outlet property="scrollView" destination="CdQ-LC-Trx" id="3np-FR-s39"/>

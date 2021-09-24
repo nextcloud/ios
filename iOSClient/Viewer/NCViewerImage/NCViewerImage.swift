@@ -266,7 +266,7 @@ class NCViewerImage: UIViewController {
                 if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                     
                     AudioServicesPlaySystemSound(1519) // peek feedback
-                    NCViewerVideo.shared.initVideoPlayer(imageView: self.currentViewerImageZoom?.imageView, viewerVideoToolBar: nil, metadata: metadata)
+                    NCViewerVideo.shared.initVideoPlayer(imageVideoContainer: self.currentViewerImageZoom?.imageVideoContainer, viewerVideoToolBar: nil, metadata: metadata)
                     NCViewerVideo.shared.videoPlay()
                     
                 } else {
@@ -292,7 +292,7 @@ class NCViewerImage: UIViewController {
                             
                             if gestureRecognizer.state == .changed || gestureRecognizer.state == .began {
                                 AudioServicesPlaySystemSound(1519) // peek feedback
-                                NCViewerVideo.shared.initVideoPlayer(imageView: self.currentViewerImageZoom?.imageView, viewerVideoToolBar: nil, metadata: metadata)
+                                NCViewerVideo.shared.initVideoPlayer(imageVideoContainer: self.currentViewerImageZoom?.imageVideoContainer, viewerVideoToolBar: nil, metadata: metadata)
                                 NCViewerVideo.shared.videoPlay()
                             }
                         }
