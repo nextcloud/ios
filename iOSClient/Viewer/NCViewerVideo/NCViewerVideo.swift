@@ -33,8 +33,6 @@ class NCViewerVideo: NSObject {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var imageView: UIImageView?
-//    private var timeObserver: Any?
-//    private var rateObserver: Any?
     private var durationSeconds: Double = 0
     private var viewerVideoToolBar: NCViewerVideoToolBar?
 
@@ -52,9 +50,7 @@ class NCViewerVideo: NSObject {
     }
     
     func initVideoPlayer(imageView: UIImageView?, viewerVideoToolBar: NCViewerVideoToolBar?, metadata: tableMetadata) {
-        
-        NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password)
-        
+                
         guard let imageView = imageView else { return }
         if self.metadata == metadata { return }
         
@@ -74,6 +70,7 @@ class NCViewerVideo: NSObject {
                 if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
                     self.player?.seek(to: .zero)
                     self.viewerVideoToolBar?.showToolBar()
+                    NCKTVHTTPCache.shared.saveCache(metadata: metadata)
                 }
             }
             
@@ -102,9 +99,7 @@ class NCViewerVideo: NSObject {
     }
     
     func videoPlay() {
-        
-        NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password)
-        
+                
         self.player?.play()
     }
     
@@ -115,6 +110,8 @@ class NCViewerVideo: NSObject {
         if let time = self.player?.currentTime() {
             NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationSeconds: nil)
         }
+        
+        NCKTVHTTPCache.shared.saveCache(metadata: metadata)
     }
     
     func videoSeek(time: CMTime) {
@@ -125,12 +122,9 @@ class NCViewerVideo: NSObject {
     }
     
     func videoRemoved() {
-        guard let metadata = self.metadata else { return }
 
         videoPause()
-                  
-        NCKTVHTTPCache.shared.stopProxy(metadata: metadata)
-        
+                            
         self.videoLayer?.removeFromSuperlayer()
     }
     

@@ -61,13 +61,20 @@ class NCKTVHTTPCache: NSObject {
         }        
     }
     
-    func stopProxy(metadata: tableMetadata) {
+    func stopProxy() {
+        
+        if KTVHTTPCache.proxyIsRunning() {
+            KTVHTTPCache.proxyStop()
+        }
+    }
+    
+    func restartProxy(user: String, password: String) {
         
         if KTVHTTPCache.proxyIsRunning() {
             KTVHTTPCache.proxyStop()
         }
         
-        saveCache(metadata: metadata)
+        startProxy(user: user, password: password)
     }
     
     func getProxyURL(stringURL: String) -> URL {
