@@ -23,6 +23,7 @@
 
 import Foundation
 import NCCommunication
+import UIKit
 
 class NCViewerVideo: NSObject {
     @objc static let shared: NCViewerVideo = {
@@ -33,6 +34,7 @@ class NCViewerVideo: NSObject {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var imageView: UIImageView?
+    private var image: UIImage?
     private var durationSeconds: Double = 0
     private var viewerVideoToolBar: NCViewerVideoToolBar?
 
@@ -91,6 +93,7 @@ class NCViewerVideo: NSObject {
         if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
             
             self.imageView = imageView
+            self.image = imageView.image
             self.viewerVideoToolBar = viewerVideoToolBar
             self.metadata = metadata
 
