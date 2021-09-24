@@ -435,8 +435,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         
         guard let nextViewController = pendingViewControllers.first as? NCViewerImageZoom else { return }
         nextIndex = nextViewController.index
-        // STOP VIDEO
-//        NCViewerVideo.shared.videoStop()
+        NCViewerVideo.shared.videoPause()
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
@@ -504,7 +503,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
                     return
                 }
             }
-        }        
+        }
             
         /*
         if currentMetadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || currentMetadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {

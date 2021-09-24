@@ -53,13 +53,12 @@ class NCViewerVideo: NSObject {
     
     func initVideoPlayer(imageView: UIImageView?, viewerVideoToolBar: NCViewerVideoToolBar?, metadata: tableMetadata) {
         guard let imageView = imageView else { return }
-       
+        if self.imageView == imageView { return }
+        
         self.imageView = imageView
         self.viewerVideoToolBar = viewerVideoToolBar
         self.metadata = metadata
                 
-        NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
-        
         func initPlayer(url: URL) {
                         
             self.player = AVPlayer(url: url)
@@ -96,14 +95,13 @@ class NCViewerVideo: NSObject {
         
         if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
             initPlayer(url: url)
-        }
-        
-        //
+        }        
     }
     
     func videoPlay() {
         guard let metadata = self.metadata else { return }
         
+        NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
         self.player?.play()
     }
     
@@ -111,6 +109,7 @@ class NCViewerVideo: NSObject {
         guard let metadata = self.metadata else { return }
         
         self.player?.pause()
+        NCKTVHTTPCache.shared.stopProxy(metadata: metadata)
     }
     
     func videoSeek(time: CMTime) {

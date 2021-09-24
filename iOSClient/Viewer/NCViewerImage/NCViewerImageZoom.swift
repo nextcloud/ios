@@ -81,15 +81,9 @@ class NCViewerImageZoom: UIViewController {
             if !metadata.livePhoto {
                 videoToolBar.isHidden = false
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                NCViewerVideo.shared.initVideoPlayer(imageView: self.imageView, viewerVideoToolBar: self.videoToolBar, metadata: self.metadata)
-            }
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             if image == nil {
                 image = UIImage.init(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                NCViewerVideo.shared.initVideoPlayer(imageView: self.imageView, viewerVideoToolBar: self.videoToolBar, metadata: self.metadata)
             }
         } else {
             if image == nil {
@@ -120,12 +114,10 @@ class NCViewerImageZoom: UIViewController {
         super.viewDidAppear(animated)
         
         delegate?.didAppearImageZoom(viewerImageZoom: self, metadata: metadata)
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
         
-//        NCViewerVideo.shared.videoStop()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            NCViewerVideo.shared.initVideoPlayer(imageView: self.imageView, viewerVideoToolBar: self.videoToolBar, metadata: self.metadata)
+        }
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

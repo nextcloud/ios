@@ -133,6 +133,7 @@ class NCViewerVideoToolBar: UIView {
         let currentSeconds = NCViewerVideo.shared.getVideoCurrentSeconds()
         let durationSeconds = NCViewerVideo.shared.getVideoDurationSeconds()
         
+        playbackSlider.value = Float(currentSeconds)
         playbackSlider.isEnabled = true
         
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white), for: .normal)
@@ -155,8 +156,8 @@ class NCViewerVideoToolBar: UIView {
         }
         muteButton.isEnabled = true
         
-        self.labelCurrentTime.text = NCUtility.shared.stringFromTimeInterval(interval: currentSeconds)
-        self.labelOverallDuration.text = "-" + NCUtility.shared.stringFromTimeInterval(interval: durationSeconds - currentSeconds)
+        labelCurrentTime.text = NCUtility.shared.stringFromTimeInterval(interval: currentSeconds)
+        labelOverallDuration.text = "-" + NCUtility.shared.stringFromTimeInterval(interval: durationSeconds - currentSeconds)
     }
     
     //MARK: - Event / Gesture
