@@ -44,6 +44,8 @@ class NCViewerImageZoom: UIViewController {
     
     var delegate: NCViewerImageZoomDelegate?
     var viewerImage: NCViewerImage?
+    var viewerVideo: NCViewerVideo?
+    
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
@@ -108,6 +110,11 @@ class NCViewerImageZoom: UIViewController {
         detailViewConstraint.constant = 0
         detailView.update(metadata: metadata, image: image, heightMap: heightMap)
         detailView.hide()
+        
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+            self.viewerVideo = NCViewerVideo.init(viewerVideoToolBar: self.videoToolBar, metadata: self.metadata)
+            self.viewerImage?.viewerVideo = self.viewerVideo
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -115,10 +122,8 @@ class NCViewerImageZoom: UIViewController {
         
         delegate?.didAppearImageZoom(viewerImageZoom: self, metadata: metadata)
         
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                NCViewerVideo.shared.initVideoPlayer(imageVideoContainer: self.imageVideoContainer, viewerVideoToolBar: self.videoToolBar, metadata: self.metadata)
-            }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.viewerVideo?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer)
         }
     }
     

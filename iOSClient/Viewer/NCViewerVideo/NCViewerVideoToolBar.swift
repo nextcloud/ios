@@ -40,6 +40,7 @@ class NCViewerVideoToolBar: UIView {
         case moved
     }
         
+    private var viewerVideo: NCViewerVideo!
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
     private let seekDuration: Float64 = 15
@@ -82,21 +83,23 @@ class NCViewerVideoToolBar: UIView {
         muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .lightGray), for: .normal)
     }
     
-    func setBarPlayer() {
+    func setBarPlayer(viewerVideo: NCViewerVideo) {
                         
+        self.viewerVideo = viewerVideo
+        
         playbackSlider.value = 0
         playbackSlider.minimumValue = 0
-        playbackSlider.maximumValue = Float(NCViewerVideo.shared.getVideoDurationSeconds())
+        playbackSlider.maximumValue = Float(viewerVideo.getVideoDurationSeconds())
         playbackSlider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
 
         labelCurrentTime.text = NCUtility.shared.stringFromTimeInterval(interval: 0)
-        labelOverallDuration.text = "-" + NCUtility.shared.stringFromTimeInterval(interval: NCViewerVideo.shared.getVideoDurationSeconds())
+        labelOverallDuration.text = "-" + NCUtility.shared.stringFromTimeInterval(interval:viewerVideo.getVideoDurationSeconds())
                 
         updateToolBar()
         
-        NCViewerVideo.shared.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
+        viewerVideo.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             
-            if NCViewerVideo.shared.player?.currentItem?.status == .readyToPlay {
+            if viewerVideo.player?.currentItem?.status == .readyToPlay {
                 if self.isHidden == false {
                     self.updateToolBar()
                 }
@@ -141,9 +144,9 @@ class NCViewerVideoToolBar: UIView {
     public func updateToolBar() {
 
         var namedPlay = "play.fill"
-        if NCViewerVideo.shared.player?.rate == 1 { namedPlay = "pause.fill"}
-        let currentSeconds = NCViewerVideo.shared.getVideoCurrentSeconds()
-        let durationSeconds = NCViewerVideo.shared.getVideoDurationSeconds()
+        if viewerVideo.player?.rate == 1 { namedPlay = "pause.fill"}
+        let currentSeconds = viewerVideo.getVideoCurrentSeconds()
+        let durationSeconds = viewerVideo.getVideoDurationSeconds()
         
         playbackSlider.value = Float(currentSeconds)
         playbackSlider.isEnabled = true
@@ -183,16 +186,16 @@ class NCViewerVideoToolBar: UIView {
             
             switch touchEvent.phase {
             case .began:
-                wasInPlay = NCViewerVideo.shared.player?.rate == 1 ? true : false
-                NCViewerVideo.shared.videoPause()
+                wasInPlay = viewerVideo.player?.rate == 1 ? true : false
+                viewerVideo.videoPause()
                 playbackSliderEvent = .began
             case .moved:
-                NCViewerVideo.shared.videoSeek(time: targetTime)
+                viewerVideo.videoSeek(time: targetTime)
                 playbackSliderEvent = .moved
             case .ended:
-                NCViewerVideo.shared.videoSeek(time: targetTime)
+                viewerVideo.videoSeek(time: targetTime)
                 if wasInPlay {
-                    NCViewerVideo.shared.videoPlay()
+                    viewerVideo.videoPlay()
                 }
                 playbackSliderEvent = .ended
             default:
@@ -213,10 +216,10 @@ class NCViewerVideoToolBar: UIView {
     
     @IBAction func playerPause(_ sender: Any) {
         
-        if NCViewerVideo.shared.player?.timeControlStatus == .playing {
-            NCViewerVideo.shared.videoPause()
-        } else if NCViewerVideo.shared.player?.timeControlStatus == .paused {
-            NCViewerVideo.shared.videoPlay()
+        if viewerVideo.player?.timeControlStatus == .playing {
+            viewerVideo.videoPause()
+        } else if viewerVideo.player?.timeControlStatus == .paused {
+            viewerVideo.videoPlay()
         }
     }
         
@@ -225,24 +228,24 @@ class NCViewerVideoToolBar: UIView {
         let mute = CCUtility.getAudioMute()
         
         CCUtility.setAudioMute(!mute)
-        NCViewerVideo.shared.player?.isMuted = !mute
+        viewerVideo.player?.isMuted = !mute
         updateToolBar()
     }
     
     @IBAction func forwardButtonSec(_ sender: Any) {
-        guard let player = NCViewerVideo.shared.player else { return }
+        guard let player = viewerVideo.player else { return }
         
         let playerCurrentTime = CMTimeGetSeconds(player.currentTime())
         let newTime = playerCurrentTime + seekDuration
         
-        if newTime < NCViewerVideo.shared.getVideoDurationSeconds() {
+        if newTime < viewerVideo.getVideoDurationSeconds() {
             let time: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
-            NCViewerVideo.shared.videoSeek(time: time)
+            viewerVideo.videoSeek(time: time)
         }
     }
     
     @IBAction func backButtonSec(_ sender: Any) {
-        guard let player = NCViewerVideo.shared.player else { return }
+        guard let player = viewerVideo.player else { return }
 
         let playerCurrenTime = CMTimeGetSeconds(player.currentTime())
         var newTime = playerCurrenTime - seekDuration
@@ -250,6 +253,6 @@ class NCViewerVideoToolBar: UIView {
         if newTime < 0 { newTime = 0 }
         let time: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
         
-        NCViewerVideo.shared.videoSeek(time: time)
+        viewerVideo.videoSeek(time: time)
     }
 }

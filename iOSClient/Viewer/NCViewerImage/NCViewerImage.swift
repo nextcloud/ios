@@ -50,6 +50,8 @@ class NCViewerImage: UIViewController {
     var nextIndex: Int?
        
     var currentViewerImageZoom: NCViewerImageZoom?
+    var viewerVideo: NCViewerVideo?
+    
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
@@ -130,8 +132,8 @@ class NCViewerImage: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NCViewerVideo.shared.videoRemoved()
-                   
+        currentViewerImageZoom?.viewerVideo?.videoPause()
+
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
@@ -251,8 +253,9 @@ class NCViewerImage: UIViewController {
     // Detect for LIVE PHOTO
     //
     @objc func didLongpressGestureEvent(gestureRecognizer: UITapGestureRecognizer) {
-          
+        
         if !currentMetadata.livePhoto { return }
+        
         
         if gestureRecognizer.state == .began {
             
@@ -266,8 +269,10 @@ class NCViewerImage: UIViewController {
                 if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                     
                     AudioServicesPlaySystemSound(1519) // peek feedback
-                    NCViewerVideo.shared.initVideoPlayer(imageVideoContainer: self.currentViewerImageZoom?.imageVideoContainer, viewerVideoToolBar: nil, metadata: metadata)
-                    NCViewerVideo.shared.videoPlay()
+                    
+                    self.viewerVideo = NCViewerVideo.init(viewerVideoToolBar: nil, metadata: metadata)
+                    self.viewerVideo?.setupVideoLayer(imageVideoContainer: self.currentViewerImageZoom?.imageVideoContainer)
+                    self.viewerVideo?.videoPlay()
                     
                 } else {
                     
@@ -292,8 +297,10 @@ class NCViewerImage: UIViewController {
                             
                             if gestureRecognizer.state == .changed || gestureRecognizer.state == .began {
                                 AudioServicesPlaySystemSound(1519) // peek feedback
-                                NCViewerVideo.shared.initVideoPlayer(imageVideoContainer: self.currentViewerImageZoom?.imageVideoContainer, viewerVideoToolBar: nil, metadata: metadata)
-                                NCViewerVideo.shared.videoPlay()
+                                
+                                self.viewerVideo = NCViewerVideo.init(viewerVideoToolBar: nil, metadata: metadata)
+                                self.viewerVideo?.setupVideoLayer(imageVideoContainer: self.currentViewerImageZoom?.imageVideoContainer)
+                                self.viewerVideo?.videoPlay()
                             }
                         }
                     }
@@ -304,7 +311,7 @@ class NCViewerImage: UIViewController {
             
             currentViewerImageZoom?.statusViewImage.isHidden = false
             currentViewerImageZoom?.statusLabel.isHidden = false
-            NCViewerVideo.shared.videoRemoved()
+            self.viewerVideo?.videoRemoved()
         }
     }
     
@@ -437,7 +444,8 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         
         guard let nextViewController = pendingViewControllers.first as? NCViewerImageZoom else { return }
         nextIndex = nextViewController.index
-        NCViewerVideo.shared.videoPause()
+        
+        currentViewerImageZoom?.viewerVideo?.videoPause()
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {

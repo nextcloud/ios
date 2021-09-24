@@ -26,12 +26,7 @@ import NCCommunication
 import UIKit
 
 class NCViewerVideo: NSObject {
-    @objc static let shared: NCViewerVideo = {
-        let instance = NCViewerVideo()
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
-        return instance
-    }()
-    
+   
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var imageVideoContainer: imageVideoContainerView?
     private var durationSeconds: Double = 0
@@ -50,22 +45,16 @@ class NCViewerVideo: NSObject {
         }
     }
     
-    func initVideoPlayer(imageVideoContainer: imageVideoContainerView?, viewerVideoToolBar: NCViewerVideoToolBar?, metadata: tableMetadata) {
+    init(viewerVideoToolBar: NCViewerVideoToolBar?, metadata: tableMetadata) {
+        super.init()
                 
-        guard let imageVideoContainer = imageVideoContainer else { return }
-        if self.metadata == metadata { return }
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         
         func initPlayer(url: URL) {
                         
             self.player = AVPlayer(url: url)
             self.player?.isMuted = CCUtility.getAudioMute()
             self.player?.seek(to: .zero)
-            self.videoLayer = AVPlayerLayer(player: self.player)
-            self.videoLayer!.frame = imageVideoContainer.bounds
-            self.videoLayer!.videoGravity = .resizeAspect
-            
-            imageVideoContainer.layer.addSublayer(videoLayer!)
-            imageVideoContainer.playerLayer = self.videoLayer
 
             // At end go back to start & show toolbar
             NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
@@ -87,18 +76,37 @@ class NCViewerVideo: NSObject {
                 self.player?.seek(to: time)
             }
             
-            viewerVideoToolBar?.setBarPlayer()
+            viewerVideoToolBar?.setBarPlayer(viewerVideo: self)
         }
         
         if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
             
-            self.imageVideoContainer = imageVideoContainer
             self.viewerVideoToolBar = viewerVideoToolBar
             self.metadata = metadata
 
             initPlayer(url: url)
         }        
     }
+    
+    deinit {
+        print("deinit")
+    }
+    
+    func setupVideoLayer(imageVideoContainer: imageVideoContainerView?) {
+        
+        if let imageVideoContainer = imageVideoContainer {
+        
+            self.imageVideoContainer = imageVideoContainer
+
+            self.videoLayer = AVPlayerLayer(player: self.player)
+            self.videoLayer!.frame = imageVideoContainer.bounds
+            self.videoLayer!.videoGravity = .resizeAspect
+        
+            imageVideoContainer.layer.addSublayer(videoLayer!)
+            imageVideoContainer.playerLayer = self.videoLayer
+        }
+    }
+    
     
     func videoPlay() {
                 
@@ -132,7 +140,7 @@ class NCViewerVideo: NSObject {
     
     func getVideoCurrentSeconds() -> Float64 {
         
-        if let currentTime = NCViewerVideo.shared.player?.currentTime() {
+        if let currentTime = player?.currentTime() {
             return CMTimeGetSeconds(currentTime)
         }
         return 0
