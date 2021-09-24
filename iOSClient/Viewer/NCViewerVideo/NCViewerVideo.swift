@@ -113,10 +113,7 @@ class NCViewerVideo: NSObject {
     }
     
     func videoSeek(time: CMTime) {
-        guard let metadata = self.metadata else { return }
-
         self.player?.seek(to: time)
-        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationSeconds: nil)
     }
     
     func videoRemoved() {
@@ -176,10 +173,10 @@ class NCViewerVideo: NSObject {
                     let timeSecond = Double(CMTimeGetSeconds(time))
                     let durationSeconds = Double(CMTimeGetSeconds(duration))
                     if timeSecond < durationSeconds {
-                        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: self.player?.currentTime(), durationSeconds: nil)
                         if let time = self.player?.currentTime() {
+                            NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationSeconds: nil)
                             let timeSecond = Double(CMTimeGetSeconds(time))
-                            print("Stop video at: \(timeSecond)")
+                            print("Save video time: \(timeSecond)")
                         }
                     } else {
                         NCManageDatabase.shared.deleteVideoTime(metadata: metadata)
