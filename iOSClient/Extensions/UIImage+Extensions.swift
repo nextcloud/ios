@@ -158,4 +158,11 @@ extension UIImage {
         let data2: NSData = image!.pngData()! as NSData
         return data1.isEqual(data2)
     }
+    
+    class func imageWithView(_ view: UIView) -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(view.bounds.size, view.isOpaque, 0)
+        defer { UIGraphicsEndImageContext() }
+        view.drawHierarchy(in: view.bounds, afterScreenUpdates: true)
+        return UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
+    }
 }

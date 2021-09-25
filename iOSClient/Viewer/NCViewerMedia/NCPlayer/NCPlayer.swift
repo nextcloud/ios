@@ -155,5 +155,25 @@ class NCPlayer: AVPlayer {
         
         return self.durationSeconds
     }
+    
+    func generatorImage(to time: CMTime) -> UIImage? {
+        
+        var image: UIImage?
+
+        if let asset = self.currentItem?.asset {
+
+            do {
+                let imageGenerator = AVAssetImageGenerator(asset: asset)
+                let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
+                image = UIImage(cgImage: cgImage)
+                print("")
+            }
+            catch let error as NSError {
+                print(error.localizedDescription)
+            }
+        }
+        
+        return image
+    }
 }
 
