@@ -86,7 +86,9 @@ class NCPlayer: AVPlayer {
                         if !metadata.livePhoto, let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
                             self.seek(to: time)
                         }
-                        playerToolBar?.setBarPlayer(player: self)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            playerToolBar?.setBarPlayer(player: self)
+                        }
                     }
                     break
                 case .failed:
