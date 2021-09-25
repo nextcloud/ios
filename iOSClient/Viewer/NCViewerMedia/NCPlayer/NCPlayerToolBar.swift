@@ -215,6 +215,7 @@ class NCPlayerToolBar: UIView {
     //MARK: - Action
     
     @IBAction func buttonTouchInside(_ sender: UIButton) {
+        
         hideToolBar()
     }
     
@@ -224,6 +225,20 @@ class NCPlayerToolBar: UIView {
             player?.videoPause()
         } else if player?.timeControlStatus == .paused {
             player?.videoPlay()
+        } else if player?.timeControlStatus == .waitingToPlayAtSpecifiedRate {
+            print("timeControlStatus.waitingToPlayAtSpecifiedRate")
+                if let reason = player?.reasonForWaitingToPlay {
+                    switch reason {
+                    case .evaluatingBufferingRate:
+                        print("reasonForWaitingToPlay.evaluatingBufferingRate")
+                    case .toMinimizeStalls:
+                        print("reasonForWaitingToPlay.toMinimizeStalls")
+                    case .noItemToPlay:
+                        print("reasonForWaitingToPlay.noItemToPlay")
+                    default:
+                        print("Unknown \(reason)")
+                    }
+                }
         }
     }
         
