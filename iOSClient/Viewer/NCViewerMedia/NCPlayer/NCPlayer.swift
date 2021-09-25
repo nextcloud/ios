@@ -65,32 +65,47 @@ class NCPlayer: AVPlayer {
             }
         }
         
-        // save durationSeconds on database
-        if let duration: CMTime = (currentItem?.asset.duration) {
-            durationSeconds = CMTimeGetSeconds(duration)
-            NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationSeconds: durationSeconds)
-        }
-        
-        // NO Live Photo, seek to datamebase time
-        if !metadata.livePhoto, let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
-            seek(to: time)
-        }
-        
-        playerToolBar?.setBarPlayer(player: self)
+        currentItem?.asset.loadValuesAsynchronously(forKeys: ["duration", "playable"], completionHandler: {
+            if let duration: CMTime = (self.currentItem?.asset.duration) {
+                var error: NSError? = nil
+                let status = self.currentItem?.asset.statusOfValue(forKey: "playable", error: &error)
+                switch status {
+                case .loaded:
+                    DispatchQueue.main.async {
+                        if let imageVideoContainer = imageVideoContainer {
+                            self.imageVideoContainer = imageVideoContainer
+                            self.videoLayer = AVPlayerLayer(player: self)
+                            self.videoLayer!.frame = imageVideoContainer.bounds
+                            self.videoLayer!.videoGravity = .resizeAspect
+                            imageVideoContainer.layer.addSublayer(self.videoLayer!)
+                            imageVideoContainer.playerLayer = self.videoLayer
+                        }
+                        self.durationSeconds = CMTimeGetSeconds(duration)
+                        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationSeconds: self.durationSeconds)
+                        // NO Live Photo, seek to datamebase time
+                        if !metadata.livePhoto, let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
+                            self.seek(to: time)
+                        }
+                        playerToolBar?.setBarPlayer(player: self)
+                    }
+                    break
+                case .failed:
+                    DispatchQueue.main.async {
+                        //do something, show alert, put a placeholder image etc.
+                    }
+                    break
+                case .cancelled:
+                    DispatchQueue.main.async {
+                        //do something, show alert, put a placeholder image etc.
+                    }
+                    break
+                default:
+                    break
+                }
+            }
+        })
         
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
-        
-        if let imageVideoContainer = imageVideoContainer {
-        
-            self.imageVideoContainer = imageVideoContainer
-
-            self.videoLayer = AVPlayerLayer(player: self)
-            self.videoLayer!.frame = imageVideoContainer.bounds
-            self.videoLayer!.videoGravity = .resizeAspect
-        
-            imageVideoContainer.layer.addSublayer(videoLayer!)
-            imageVideoContainer.playerLayer = self.videoLayer
-        }
     }
     
     
