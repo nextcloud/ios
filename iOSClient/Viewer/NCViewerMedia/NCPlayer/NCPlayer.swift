@@ -93,7 +93,7 @@ class NCPlayer: AVPlayer {
                     break
                 case .failed:
                     DispatchQueue.main.async {
-                        //do something, show alert, put a placeholder image etc.
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorGeneric, forced: false)
                     }
                     break
                 case .cancelled:
