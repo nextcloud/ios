@@ -40,7 +40,7 @@ class NCPlayerToolBar: UIView {
         case moved
     }
         
-    private var player: NCPlayer!
+    private var player: NCPlayer?
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
     private let seekDuration: Float64 = 15
@@ -148,9 +148,9 @@ class NCPlayerToolBar: UIView {
     public func updateToolBar() {
 
         var namedPlay = "play.fill"
-        if player.rate == 1 { namedPlay = "pause.fill"}
-        let currentSeconds = player.getVideoCurrentSeconds()
-        let durationSeconds = player.getVideoDurationSeconds()
+        if player?.rate == 1 { namedPlay = "pause.fill"}
+        let currentSeconds = player?.getVideoCurrentSeconds() ?? 0
+        let durationSeconds = player?.getVideoDurationSeconds() ?? 0
         
         playbackSlider.value = Float(currentSeconds)
         playbackSlider.isEnabled = true
@@ -190,16 +190,16 @@ class NCPlayerToolBar: UIView {
             
             switch touchEvent.phase {
             case .began:
-                wasInPlay = player.rate == 1 ? true : false
-                player.videoPause()
+                wasInPlay = player?.rate == 1 ? true : false
+                player?.videoPause()
                 playbackSliderEvent = .began
             case .moved:
-                player.videoSeek(time: targetTime)
+                player?.videoSeek(time: targetTime)
                 playbackSliderEvent = .moved
             case .ended:
-                player.videoSeek(time: targetTime)
+                player?.videoSeek(time: targetTime)
                 if wasInPlay {
-                    player.videoPlay()
+                    player?.videoPlay()
                 }
                 playbackSliderEvent = .ended
             default:
@@ -220,10 +220,10 @@ class NCPlayerToolBar: UIView {
     
     @IBAction func playerPause(_ sender: Any) {
         
-        if player.timeControlStatus == .playing {
-            player.videoPause()
-        } else if player.timeControlStatus == .paused {
-            player.videoPlay()
+        if player?.timeControlStatus == .playing {
+            player?.videoPause()
+        } else if player?.timeControlStatus == .paused {
+            player?.videoPlay()
         }
     }
         
@@ -232,12 +232,13 @@ class NCPlayerToolBar: UIView {
         let mute = CCUtility.getAudioMute()
         
         CCUtility.setAudioMute(!mute)
-        player.isMuted = !mute
+        player?.isMuted = !mute
         updateToolBar()
     }
     
     @IBAction func forwardButtonSec(_ sender: Any) {
-        
+        guard let player = player else { return }
+
         let playerCurrentTime = CMTimeGetSeconds(player.currentTime())
         let newTime = playerCurrentTime + seekDuration
         
@@ -248,6 +249,7 @@ class NCPlayerToolBar: UIView {
     }
     
     @IBAction func backButtonSec(_ sender: Any) {
+        guard let player = player else { return }
 
         let playerCurrenTime = CMTimeGetSeconds(player.currentTime())
         var newTime = playerCurrenTime - seekDuration
