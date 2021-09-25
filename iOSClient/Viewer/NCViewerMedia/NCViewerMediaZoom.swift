@@ -276,7 +276,7 @@ extension NCViewerMediaZoom {
         
         scrollView.pinchGestureRecognizer?.isEnabled = true
         
-        playerToolBar.showToolBar(metadata: metadata)
+        playerToolBar.showToolBar(metadata: metadata, detailView: nil)
     }
 }
 

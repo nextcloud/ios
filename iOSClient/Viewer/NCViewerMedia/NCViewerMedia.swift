@@ -441,13 +441,14 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
     }
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
-             
-        if let playerToolBar = currentViewerMediaZoom?.playerToolBar {
-            if playerToolBar.showToolBar(metadata: currentMetadata) {
+
+        if let viewerMediaZoom = currentViewerMediaZoom, let playerToolBar = viewerMediaZoom.playerToolBar {
+            
+            if playerToolBar.showToolBar(metadata: currentMetadata, detailView: viewerMediaZoom.detailView) {
                 return
             }
         }
-
+        
         if currentMode == .full {
             
             navigationController?.setNavigationBarHidden(false, animated: false)

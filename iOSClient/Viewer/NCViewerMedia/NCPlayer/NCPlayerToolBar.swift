@@ -123,10 +123,13 @@ class NCPlayerToolBar: UIView {
     }
     
     @discardableResult
-    @objc public func showToolBar(metadata: tableMetadata) -> Bool {
+    @objc public func showToolBar(metadata: tableMetadata, detailView: NCViewerMediaDetailView?) -> Bool {
         
         if !self.isHidden { return false}
         if metadata.livePhoto { return false}
+        if let detailView = detailView {
+            if detailView.isShow() { return false }
+        }
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             
             updateToolBar()

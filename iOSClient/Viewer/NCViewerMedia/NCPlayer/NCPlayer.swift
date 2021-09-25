@@ -47,7 +47,7 @@ class NCPlayer: AVPlayer {
         NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: currentItem, queue: .main) { (notification) in
             if let item = notification.object as? AVPlayerItem, let currentItem = self.currentItem, item == currentItem {
                 self.seek(to: .zero)
-                self.playerToolBar?.showToolBar(metadata: metadata)
+                self.playerToolBar?.showToolBar(metadata: metadata, detailView: nil)
                 NCKTVHTTPCache.shared.saveCache(metadata: metadata)
             }
         }
