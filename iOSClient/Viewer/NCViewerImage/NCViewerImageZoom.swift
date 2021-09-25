@@ -40,11 +40,11 @@ class NCViewerImageZoom: UIViewController {
     @IBOutlet weak var statusViewImage: UIImageView!
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var detailView: NCViewerImageDetailView!
-    @IBOutlet weak var videoToolBar: NCViewerVideoToolBar!
+    @IBOutlet weak var playerToolBar: NCPlayerToolBar!
     
     var delegate: NCViewerImageZoomDelegate?
     var viewerImage: NCViewerImage?
-    var viewerVideo: NCViewerVideo?
+    var player: NCPlayer?
     
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
@@ -81,7 +81,7 @@ class NCViewerImageZoom: UIViewController {
             }
             // Show Video Toolbar
             if !metadata.livePhoto {
-                videoToolBar.isHidden = false
+                playerToolBar.isHidden = false
             }
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             if image == nil {
@@ -111,9 +111,10 @@ class NCViewerImageZoom: UIViewController {
         detailView.update(metadata: metadata, image: image, heightMap: heightMap)
         detailView.hide()
         
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-            self.viewerVideo = NCViewerVideo.init(viewerVideoToolBar: self.videoToolBar, metadata: self.metadata)
-            self.viewerImage?.viewerVideo = self.viewerVideo
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue,  let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
+            
+//            self.viewerVideo = NCViewerVideo.init(url: url, viewerVideoToolBar: self.videoToolBar, metadata: self.metadata)
+//            self.viewerImage?.viewerVideo = self.viewerVideo
         }
     }
     
@@ -123,7 +124,7 @@ class NCViewerImageZoom: UIViewController {
         delegate?.didAppearImageZoom(viewerImageZoom: self, metadata: metadata)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.viewerVideo?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer)
+//            self.viewerVideo?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer)
         }
     }
     
@@ -135,8 +136,6 @@ class NCViewerImageZoom: UIViewController {
             self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
             self.view.layoutIfNeeded()
             UIView.animate(withDuration: context.transitionDuration) {
-                // resize frame video
-                //NCViewerVideo.shared.videoLayer?.frame = self.imageView.layer.bounds
                 // resize detail
                 if self.detailView.isShow() {
                     self.openDetail()
@@ -157,7 +156,7 @@ class NCViewerImageZoom: UIViewController {
         if detailView.isShow() { return }
         
         // NO ZOOM for Audio / Video
-        if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) && !videoToolBar.isHidden {
+        if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) && !playerToolBar.isHidden {
             return
         }
         
@@ -255,7 +254,7 @@ extension NCViewerImageZoom {
         
         scrollView.pinchGestureRecognizer?.isEnabled = false
         
-        videoToolBar.hideToolBar()
+        playerToolBar.hideToolBar()
     }
     
     private func closeDetail() {
@@ -273,7 +272,7 @@ extension NCViewerImageZoom {
         
         scrollView.pinchGestureRecognizer?.isEnabled = true
         
-        videoToolBar.showToolBar(metadata: metadata)
+        playerToolBar.showToolBar(metadata: metadata)
     }
 }
 

@@ -50,7 +50,7 @@ class NCViewerImage: UIViewController {
     var nextIndex: Int?
        
     var currentViewerImageZoom: NCViewerImageZoom?
-    var viewerVideo: NCViewerVideo?
+    var player: NCPlayer?
     
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
@@ -132,7 +132,7 @@ class NCViewerImage: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        currentViewerImageZoom?.viewerVideo?.videoPause()
+        currentViewerImageZoom?.player?.videoPause()
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
@@ -274,9 +274,11 @@ class NCViewerImage: UIViewController {
                     
                     AudioServicesPlaySystemSound(1519) // peek feedback
                     
-                    self.viewerVideo = NCViewerVideo.init(viewerVideoToolBar: nil, metadata: metadata)
-                    self.viewerVideo?.setupVideoLayer(imageVideoContainer: self.currentViewerImageZoom?.imageVideoContainer)
-                    self.viewerVideo?.videoPlay()
+                    if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
+                        self.player = NCPlayer.init(url: url)
+                        self.player?.setupVideoLayer(imageVideoContainer: self.currentViewerImageZoom?.imageVideoContainer, playerToolBar: nil, metadata: metadata)
+                        self.player?.videoPlay()
+                    }
                     
                 } else {
                     
@@ -302,9 +304,11 @@ class NCViewerImage: UIViewController {
                             if gestureRecognizer.state == .changed || gestureRecognizer.state == .began {
                                 AudioServicesPlaySystemSound(1519) // peek feedback
                                 
-                                self.viewerVideo = NCViewerVideo.init(viewerVideoToolBar: nil, metadata: metadata)
-                                self.viewerVideo?.setupVideoLayer(imageVideoContainer: self.currentViewerImageZoom?.imageVideoContainer)
-                                self.viewerVideo?.videoPlay()
+                                if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
+                                    self.player = NCPlayer.init(url: url)
+                                    self.player?.setupVideoLayer(imageVideoContainer: self.currentViewerImageZoom?.imageVideoContainer, playerToolBar: nil, metadata: metadata)
+                                    self.player?.videoPlay()
+                                }
                             }
                         }
                     }
@@ -315,7 +319,7 @@ class NCViewerImage: UIViewController {
             
             currentViewerImageZoom?.statusViewImage.isHidden = false
             currentViewerImageZoom?.statusLabel.isHidden = false
-            self.viewerVideo?.videoRemoved()
+            self.player?.videoRemoved()
         }
     }
     
@@ -449,7 +453,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         guard let nextViewController = pendingViewControllers.first as? NCViewerImageZoom else { return }
         nextIndex = nextViewController.index
         
-        currentViewerImageZoom?.viewerVideo?.videoPause()
+        currentViewerImageZoom?.player?.videoPause()
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
@@ -510,8 +514,8 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
              
-        if let viewerVideoToolBar = currentViewerImageZoom?.videoToolBar {
-            if viewerVideoToolBar.showToolBar(metadata: currentMetadata) {
+        if let playerToolBar = currentViewerImageZoom?.playerToolBar {
+            if playerToolBar.showToolBar(metadata: currentMetadata) {
                 return
             }
         }

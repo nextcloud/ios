@@ -229,7 +229,7 @@
                                             <outlet property="sizeValue" destination="XLb-0a-du9" id="9jm-Ku-sgt"/>
                                         </connections>
                                     </view>
-                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sBp-t2-eFh" customClass="NCViewerVideoToolBar" customModule="Nextcloud" customModuleProvider="target">
+                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sBp-t2-eFh" customClass="NCPlayerToolBar" customModule="Nextcloud" customModuleProvider="target">
                                         <rect key="frame" x="25" y="626" width="364" height="100"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a0D-B0-eGX">
@@ -374,10 +374,10 @@
                         <outlet property="imageVideoContainer" destination="kPV-JM-UnM" id="2pA-VW-FuK"/>
                         <outlet property="imageViewBottomConstraint" destination="vEd-X2-yGs" id="wp3-67-aZ2"/>
                         <outlet property="imageViewTopConstraint" destination="tdo-XY-uqv" id="AM2-tz-fSt"/>
+                        <outlet property="playerToolBar" destination="sBp-t2-eFh" id="E24-0a-bN6"/>
                         <outlet property="scrollView" destination="CdQ-LC-Trx" id="3np-FR-s39"/>
                         <outlet property="statusLabel" destination="DAi-gz-qGP" id="zZH-1B-HiI"/>
                         <outlet property="statusViewImage" destination="2AU-85-K8y" id="22h-Ec-bj0"/>
-                        <outlet property="videoToolBar" destination="sBp-t2-eFh" id="mee-f9-Nko"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fbE-Jv-mLH" userLabel="First Responder" sceneMemberID="firstResponder"/>
