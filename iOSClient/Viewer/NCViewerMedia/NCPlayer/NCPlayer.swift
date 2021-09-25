@@ -110,7 +110,6 @@ class NCPlayer: AVPlayer {
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }
     
-    
     func videoPlay() {
                 
         play()
