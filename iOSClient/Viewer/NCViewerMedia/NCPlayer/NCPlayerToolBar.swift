@@ -48,7 +48,7 @@ class NCPlayerToolBar: UIView {
     // MARK: - View Life Cycle
 
     override func awakeFromNib() {
-       super.awakeFromNib()
+        super.awakeFromNib()
         
         // for disable gesture of UIPageViewController
         let panRecognizer = UIPanGestureRecognizer(target: self, action: nil)
@@ -209,6 +209,7 @@ class NCPlayerToolBar: UIView {
     }
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
+        
         hideToolBar()
     }
     
@@ -226,19 +227,20 @@ class NCPlayerToolBar: UIView {
         } else if player?.timeControlStatus == .paused {
             player?.videoPlay()
         } else if player?.timeControlStatus == .waitingToPlayAtSpecifiedRate {
+            player?.deleteLocalFile()
             print("timeControlStatus.waitingToPlayAtSpecifiedRate")
-                if let reason = player?.reasonForWaitingToPlay {
-                    switch reason {
-                    case .evaluatingBufferingRate:
-                        print("reasonForWaitingToPlay.evaluatingBufferingRate")
-                    case .toMinimizeStalls:
-                        print("reasonForWaitingToPlay.toMinimizeStalls")
-                    case .noItemToPlay:
-                        print("reasonForWaitingToPlay.noItemToPlay")
-                    default:
-                        print("Unknown \(reason)")
-                    }
+            if let reason = player?.reasonForWaitingToPlay {
+                switch reason {
+                case .evaluatingBufferingRate:
+                    print("reasonForWaitingToPlay.evaluatingBufferingRate")
+                case .toMinimizeStalls:
+                    print("reasonForWaitingToPlay.toMinimizeStalls")
+                case .noItemToPlay:
+                    print("reasonForWaitingToPlay.noItemToPlay")
+                default:
+                    print("Unknown \(reason)")
                 }
+            }
         }
     }
         

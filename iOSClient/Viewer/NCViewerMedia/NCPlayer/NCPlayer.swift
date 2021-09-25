@@ -112,6 +112,14 @@ class NCPlayer: AVPlayer {
     
     //MARK: -
     
+    func deleteLocalFile() {
+        guard let metadata = self.metadata else { return }
+
+        NCManageDatabase.shared.deleteVideoTime(metadata: metadata)
+        NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+    }
+    
     func videoPlay() {
                 
         play()
