@@ -61,7 +61,7 @@ class NCPlayer: AVPlayer {
             if let item = notification.object as? AVPlayerItem, let currentItem = self.currentItem, item == currentItem {
                 self.seek(to: .zero)
                 self.playerToolBar?.showToolBar(metadata: metadata)
-                //NCKTVHTTPCache.shared.saveCache(metadata: metadata)
+                NCKTVHTTPCache.shared.saveCache(metadata: metadata)
             }
         }
         
@@ -119,7 +119,7 @@ class NCPlayer: AVPlayer {
         guard let metadata = self.metadata else { return }
         
         pause()
-        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: currentTime(), durationSeconds: nil)        
+        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: currentTime(), durationSeconds: nil)
     }
     
     func videoSeek(time: CMTime) {
