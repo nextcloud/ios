@@ -381,9 +381,7 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         
         guard let nextViewController = pendingViewControllers.first as? NCViewerMediaZoom else { return }
-        nextIndex = nextViewController.index
-        
-        currentViewerMediaZoom?.player?.videoPause()
+        nextIndex = nextViewController.index        
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
@@ -392,7 +390,7 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
             previousViewControllers.forEach { viewController in
                 let viewerMediaZoom = viewController as! NCViewerMediaZoom
                 viewerMediaZoom.scrollView.zoomScale = viewerMediaZoom.scrollView.minimumZoomScale
-                
+                viewerMediaZoom.player?.videoPause()
             }
             currentIndex = nextIndex!
         }
