@@ -1,5 +1,5 @@
 //
-//  NCViewerImageDetailView.swift
+//  NCViewerMediaDetailView.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 31/10/2020.
@@ -25,7 +25,7 @@ import UIKit
 import MapKit
 import NCCommunication
 
-class NCViewerImageDetailView: UIView {
+class NCViewerMediaDetailView: UIView {
     
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var sizeLabel: UILabel!

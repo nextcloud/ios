@@ -48,17 +48,17 @@ class NCViewer: NSObject {
             
             if let navigationController = viewController.navigationController {
                             
-                let viewerImagePageContainer:NCViewerImage = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateInitialViewController() as! NCViewerImage
+                let viewerMediaPageContainer:NCViewerMedia = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateInitialViewController() as! NCViewerMedia
                 var index = 0
                 for medatasImage in metadatas {
                     if medatasImage.ocId == metadata.ocId {
-                        viewerImagePageContainer.currentIndex = index
+                        viewerMediaPageContainer.currentIndex = index
                         break
                     }
                     index += 1
                 }
-                viewerImagePageContainer.metadatas = metadatas
-                navigationController.pushViewController(viewerImagePageContainer, animated: true)
+                viewerMediaPageContainer.metadatas = metadatas
+                navigationController.pushViewController(viewerMediaPageContainer, animated: true)
             }
     
             return

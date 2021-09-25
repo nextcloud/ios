@@ -1,5 +1,5 @@
 //
-//  NCViewerImage.swift
+//  NCViewerMedia.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 24/10/2020.
@@ -25,7 +25,7 @@ import UIKit
 import SVGKit
 import NCCommunication
 
-class NCViewerImage: UIViewController {
+class NCViewerMedia: UIViewController {
 
     @IBOutlet weak var progressView: UIProgressView!
     
@@ -38,8 +38,8 @@ class NCViewerImage: UIViewController {
         return self.children[0] as! UIPageViewController
     }
     
-    var currentViewController: NCViewerImageZoom {
-        return self.pageViewController.viewControllers![0] as! NCViewerImageZoom
+    var currentViewController: NCViewerMediaZoom {
+        return self.pageViewController.viewControllers![0] as! NCViewerMediaZoom
     }
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -49,7 +49,7 @@ class NCViewerImage: UIViewController {
     var currentIndex = 0
     var nextIndex: Int?
        
-    var currentViewerImageZoom: NCViewerImageZoom?
+    var currentViewerMediaZoom: NCViewerMediaZoom?
     var player: NCPlayer?
     
     var panGestureRecognizer: UIPanGestureRecognizer!
@@ -79,18 +79,18 @@ class NCViewerImage: UIViewController {
         pageViewController.view.addGestureRecognizer(singleTapGestureRecognizer)
         pageViewController.view.addGestureRecognizer(longtapGestureRecognizer)
         
-        let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
+        let viewerMediaZoom = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMediaZoom") as! NCViewerMediaZoom
                 
-        viewerImageZoom.index = currentIndex
-        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
-        viewerImageZoom.metadata = metadatas[currentIndex]
-        viewerImageZoom.delegate = self
-        viewerImageZoom.viewerImage = self
-        viewerImageZoom.isShowDetail = false
+        viewerMediaZoom.index = currentIndex
+        viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex])
+        viewerMediaZoom.metadata = metadatas[currentIndex]
+        viewerMediaZoom.delegate = self
+        viewerMediaZoom.viewerMedia = self
+        viewerMediaZoom.isShowDetail = false
 
-        singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
+        singleTapGestureRecognizer.require(toFail: viewerMediaZoom.doubleTapGestureRecognizer)
         
-        pageViewController.setViewControllers([viewerImageZoom], direction: .forward, animated: true, completion: nil)
+        pageViewController.setViewControllers([viewerMediaZoom], direction: .forward, animated: true, completion: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
@@ -132,7 +132,7 @@ class NCViewerImage: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        currentViewerImageZoom?.player?.videoPause()
+        currentViewerMediaZoom?.player?.videoPause()
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
@@ -155,7 +155,7 @@ class NCViewerImage: UIViewController {
     }
     
     deinit {
-        print("deinit NCViewerImage")
+        print("deinit NCViewerMedia")
     }
     
     //MARK: - NotificationCenter
@@ -166,7 +166,7 @@ class NCViewerImage: UIViewController {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
                 if errorCode == 0  && metadata.ocId == currentMetadata.ocId {
                     if let image = getImageMetadata(metadatas[currentIndex]) {
-                        currentViewerImageZoom?.reload(image: image, metadata: metadata)
+                        currentViewerMediaZoom?.reload(image: image, metadata: metadata)
                     }
                 }
                 if self.metadatas.first(where: { $0.ocId == metadata.ocId }) != nil {
@@ -212,7 +212,7 @@ class NCViewerImage: UIViewController {
                 if self.metadatas.count == metadatas.count { return }
                 self.metadatas = metadatas
                 
-                if ocId == currentViewerImageZoom?.metadata.ocId {
+                if ocId == currentViewerMediaZoom?.metadata.ocId {
                     if !shiftCurrentPage() {
                         self.viewUnload()
                     }
@@ -230,7 +230,7 @@ class NCViewerImage: UIViewController {
                     metadatas[index] = metadata
                     if index == currentIndex {
                         navigationItem.title = metadata.fileNameView
-                        currentViewerImageZoom?.metadata = metadata
+                        currentViewerMediaZoom?.metadata = metadata
                         self.currentMetadata = metadata
                     }
                 }
@@ -317,7 +317,7 @@ class NCViewerImage: UIViewController {
 
 //MARK: - UIPageViewController Delegate Datasource
 
-extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
+extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
     
     func shiftCurrentPage() -> Bool {
         if metadatas.count == 0 { return false }
@@ -328,18 +328,18 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
             direction = .reverse
         }
         
-        let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
+        let viewerMediaZoom = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMediaZoom") as! NCViewerMediaZoom
         
-        viewerImageZoom.index = currentIndex
-        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
-        viewerImageZoom.metadata = metadatas[currentIndex]
-        viewerImageZoom.delegate = self
-        viewerImageZoom.viewerImage = self
-        viewerImageZoom.isShowDetail = false
+        viewerMediaZoom.index = currentIndex
+        viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex])
+        viewerMediaZoom.metadata = metadatas[currentIndex]
+        viewerMediaZoom.delegate = self
+        viewerMediaZoom.viewerMedia = self
+        viewerMediaZoom.isShowDetail = false
 
-        singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
+        singleTapGestureRecognizer.require(toFail: viewerMediaZoom.doubleTapGestureRecognizer)
         
-        pageViewController.setViewControllers([viewerImageZoom], direction: direction, animated: true, completion: nil)
+        pageViewController.setViewControllers([viewerMediaZoom], direction: direction, animated: true, completion: nil)
         
         return true
     }
@@ -347,51 +347,51 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         if currentIndex == 0 { return nil }
         
-        let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
+        let viewerMediaZoom = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMediaZoom") as! NCViewerMediaZoom
                 
-        viewerImageZoom.index = currentIndex - 1
-        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex - 1])
-        viewerImageZoom.metadata = metadatas[currentIndex - 1]
-        viewerImageZoom.delegate = self
-        viewerImageZoom.viewerImage = self
-        viewerImageZoom.isShowDetail = false
+        viewerMediaZoom.index = currentIndex - 1
+        viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex - 1])
+        viewerMediaZoom.metadata = metadatas[currentIndex - 1]
+        viewerMediaZoom.delegate = self
+        viewerMediaZoom.viewerMedia = self
+        viewerMediaZoom.isShowDetail = false
 
-        self.singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
+        self.singleTapGestureRecognizer.require(toFail: viewerMediaZoom.doubleTapGestureRecognizer)
         
-        return viewerImageZoom
+        return viewerMediaZoom
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         if currentIndex == metadatas.count - 1 { return nil }
                 
-        let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
+        let viewerMediaZoom = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMediaZoom") as! NCViewerMediaZoom
         
-        viewerImageZoom.index = currentIndex + 1
-        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex + 1])
-        viewerImageZoom.metadata = metadatas[currentIndex + 1]
-        viewerImageZoom.delegate = self
-        viewerImageZoom.viewerImage = self
-        viewerImageZoom.isShowDetail = false
+        viewerMediaZoom.index = currentIndex + 1
+        viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex + 1])
+        viewerMediaZoom.metadata = metadatas[currentIndex + 1]
+        viewerMediaZoom.delegate = self
+        viewerMediaZoom.viewerMedia = self
+        viewerMediaZoom.isShowDetail = false
 
-        singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
+        singleTapGestureRecognizer.require(toFail: viewerMediaZoom.doubleTapGestureRecognizer)
 
-        return viewerImageZoom
+        return viewerMediaZoom
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         
-        guard let nextViewController = pendingViewControllers.first as? NCViewerImageZoom else { return }
+        guard let nextViewController = pendingViewControllers.first as? NCViewerMediaZoom else { return }
         nextIndex = nextViewController.index
         
-        currentViewerImageZoom?.player?.videoPause()
+        currentViewerMediaZoom?.player?.videoPause()
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         
         if (completed && nextIndex != nil) {
             previousViewControllers.forEach { viewController in
-                let viewerImageZoom = viewController as! NCViewerImageZoom
-                viewerImageZoom.scrollView.zoomScale = viewerImageZoom.scrollView.minimumZoomScale
+                let viewerMediaZoom = viewController as! NCViewerMediaZoom
+                viewerMediaZoom.scrollView.zoomScale = viewerMediaZoom.scrollView.minimumZoomScale
                 
             }
             currentIndex = nextIndex!
@@ -403,7 +403,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
 
 //MARK: - UIGestureRecognizerDelegate
 
-extension NCViewerImage: UIGestureRecognizerDelegate {
+extension NCViewerMedia: UIGestureRecognizerDelegate {
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         
@@ -439,12 +439,12 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
 
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
         
-        currentViewerImageZoom?.didPanWith(gestureRecognizer: gestureRecognizer)
+        currentViewerMediaZoom?.didPanWith(gestureRecognizer: gestureRecognizer)
     }
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
              
-        if let playerToolBar = currentViewerImageZoom?.playerToolBar {
+        if let playerToolBar = currentViewerMediaZoom?.playerToolBar {
             if playerToolBar.showToolBar(metadata: currentMetadata) {
                 return
             }
@@ -470,7 +470,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
         }
         
         // Detail Text Color
-        currentViewerImageZoom?.detailView.textColor(textColor)
+        currentViewerMediaZoom?.detailView.textColor(textColor)
     }
     
     //
@@ -483,9 +483,9 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
         
         if gestureRecognizer.state == .began {
             
-            currentViewerImageZoom?.updateViewConstraints()
-            currentViewerImageZoom?.statusViewImage.isHidden = true
-            currentViewerImageZoom?.statusLabel.isHidden = true
+            currentViewerMediaZoom?.updateViewConstraints()
+            currentViewerMediaZoom?.statusViewImage.isHidden = true
+            currentViewerMediaZoom?.statusLabel.isHidden = true
             
             let fileName = (currentMetadata.fileNameView as NSString).deletingPathExtension + ".mov"
             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentMetadata.account, currentMetadata.serverUrl, fileName)) {
@@ -496,7 +496,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
                     
                     if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
                         self.player = NCPlayer.init(url: url)
-                        self.player?.setupVideoLayer(imageVideoContainer: self.currentViewerImageZoom?.imageVideoContainer, playerToolBar: nil, metadata: metadata)
+                        self.player?.setupVideoLayer(imageVideoContainer: self.currentViewerMediaZoom?.imageVideoContainer, playerToolBar: nil, metadata: metadata)
                         self.player?.videoPlay()
                     }
                     
@@ -526,7 +526,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
                                 
                                 if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
                                     self.player = NCPlayer.init(url: url)
-                                    self.player?.setupVideoLayer(imageVideoContainer: self.currentViewerImageZoom?.imageVideoContainer, playerToolBar: nil, metadata: metadata)
+                                    self.player?.setupVideoLayer(imageVideoContainer: self.currentViewerMediaZoom?.imageVideoContainer, playerToolBar: nil, metadata: metadata)
                                     self.player?.videoPlay()
                                 }
                             }
@@ -537,26 +537,26 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             
         } else if gestureRecognizer.state == .ended {
             
-            currentViewerImageZoom?.statusViewImage.isHidden = false
-            currentViewerImageZoom?.statusLabel.isHidden = false
+            currentViewerMediaZoom?.statusViewImage.isHidden = false
+            currentViewerMediaZoom?.statusLabel.isHidden = false
             self.player?.videoRemoved()
         }
     }
 }
 
-//MARK: - NCViewerImageZoomDelegate
+//MARK: - NCViewerMediaZoomDelegate
 
-extension NCViewerImage: NCViewerImageZoomDelegate {
+extension NCViewerMedia: NCViewerMediaZoomDelegate {
     
     func dismissImageZoom() {
         self.navigationController?.popViewController(animated: true)
     }
         
-    func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
+    func didAppearImageZoom(viewerMediaZoom: NCViewerMediaZoom, metadata: tableMetadata) {
                 
         navigationItem.title = metadata.fileNameView
         currentMetadata = metadata
-        currentViewerImageZoom = viewerImageZoom
+        currentViewerMediaZoom = viewerMediaZoom
         
         if !NCOperationQueue.shared.downloadExists(metadata: metadata) {
             self.progressView.progress = 0
@@ -594,7 +594,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
                 if errorCode == 0 && metadata.ocId == self.currentMetadata.ocId {
                     NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
                     if let image = self.getImageMetadata(self.metadatas[self.currentIndex]) {
-                        self.currentViewerImageZoom?.reload(image: image, metadata: self.currentMetadata)
+                        self.currentViewerMediaZoom?.reload(image: image, metadata: self.currentMetadata)
                     }
                 }
             }

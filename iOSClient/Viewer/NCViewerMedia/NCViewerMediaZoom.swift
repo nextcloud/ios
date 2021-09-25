@@ -1,5 +1,5 @@
 //
-//  NCViewerImageZoom.swift
+//  NCViewerMediaZoom.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 24/10/2020.
@@ -24,12 +24,12 @@
 import UIKit
 import NCCommunication
 
-protocol NCViewerImageZoomDelegate {
-    func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata)
+protocol NCViewerMediaZoomDelegate {
+    func didAppearImageZoom(viewerMediaZoom: NCViewerMediaZoom, metadata: tableMetadata)
     func dismissImageZoom()
 }
 
-class NCViewerImageZoom: UIViewController {
+class NCViewerMediaZoom: UIViewController {
     
     @IBOutlet weak var detailViewConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewTopConstraint: NSLayoutConstraint!
@@ -39,11 +39,11 @@ class NCViewerImageZoom: UIViewController {
     @IBOutlet weak var imageVideoContainer: imageVideoContainerView!
     @IBOutlet weak var statusViewImage: UIImageView!
     @IBOutlet weak var statusLabel: UILabel!
-    @IBOutlet weak var detailView: NCViewerImageDetailView!
+    @IBOutlet weak var detailView: NCViewerMediaDetailView!
     @IBOutlet weak var playerToolBar: NCPlayerToolBar!
     
-    var delegate: NCViewerImageZoomDelegate?
-    var viewerImage: NCViewerImage?
+    var delegate: NCViewerMediaZoomDelegate?
+    var viewerMedia: NCViewerMedia?
     var player: NCPlayer?
     
     var image: UIImage?
@@ -63,7 +63,7 @@ class NCViewerImageZoom: UIViewController {
     }
     
     deinit {
-        print("deinit NCViewerImageZoom")
+        print("deinit NCViewerMediaZoom")
     }
     
     override func viewDidLoad() {
@@ -114,14 +114,14 @@ class NCViewerImageZoom: UIViewController {
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue,  let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
             
             self.player = NCPlayer.init(url: url)
-            self.viewerImage?.player = self.player
+            self.viewerMedia?.player = self.player
         }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        delegate?.didAppearImageZoom(viewerImageZoom: self, metadata: metadata)
+        delegate?.didAppearImageZoom(viewerMediaZoom: self, metadata: metadata)
         
         if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) && imageVideoContainer.playerLayer == nil {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -232,11 +232,11 @@ class NCViewerImageZoom: UIViewController {
 
 //MARK: -
 
-extension NCViewerImageZoom {
+extension NCViewerMediaZoom {
     
     private func openDetail() {
         
-        self.detailView.show(textColor: self.viewerImage?.textColor)
+        self.detailView.show(textColor: self.viewerMedia?.textColor)
         
         if let image = imageVideoContainer.image {
             let ratioW = imageVideoContainer.frame.width / image.size.width
@@ -281,7 +281,7 @@ extension NCViewerImageZoom {
 
 //MARK: -
 
-extension NCViewerImageZoom: UIScrollViewDelegate {
+extension NCViewerMediaZoom: UIScrollViewDelegate {
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return imageVideoContainer

@@ -10,10 +10,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Viewer Image-->
+        <!--Viewer Media-->
         <scene sceneID="yQe-Pb-BKZ">
             <objects>
-                <viewController automaticallyAdjustsScrollViewInsets="NO" hidesBottomBarWhenPushed="YES" id="ne8-hS-cp3" customClass="NCViewerImage" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController automaticallyAdjustsScrollViewInsets="NO" hidesBottomBarWhenPushed="YES" id="ne8-hS-cp3" customClass="NCViewerMedia" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="8k6-KQ-iNa"/>
                         <viewControllerLayoutGuide type="bottom" id="baP-ZX-MR4"/>
@@ -65,10 +65,10 @@
             </objects>
             <point key="canvasLocation" x="3748" y="777.66116941529242"/>
         </scene>
-        <!--Viewer Image Zoom-->
+        <!--Viewer Media Zoom-->
         <scene sceneID="rpT-vc-Kiv">
             <objects>
-                <viewController storyboardIdentifier="NCViewerImageZoom" automaticallyAdjustsScrollViewInsets="NO" id="gXy-ag-ank" customClass="NCViewerImageZoom" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NCViewerMediaZoom" automaticallyAdjustsScrollViewInsets="NO" id="gXy-ag-ank" customClass="NCViewerMediaZoom" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="IQm-1K-tBr"/>
                         <viewControllerLayoutGuide type="bottom" id="zwn-Sc-mqc"/>
@@ -96,7 +96,7 @@
                                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P8R-4f-zAl" customClass="NCViewerImageDetailView" customModule="Nextcloud" customModuleProvider="target">
+                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P8R-4f-zAl" customClass="NCViewerMediaDetailView" customModule="Nextcloud" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="736" width="414" height="345"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HRq-3M-yeb">
