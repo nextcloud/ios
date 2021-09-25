@@ -35,19 +35,6 @@ class NCPlayer: AVPlayer {
     public var metadata: tableMetadata?
     public var videoLayer: AVPlayerLayer?
 
-    //MARK: - NotificationCenter
-
-    @objc func applicationDidEnterBackground(_ notification: NSNotification) {
-        
-        if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-            self.pause()
-        }
-    }
-    
-    deinit {
-        print("deinit NCPlayer")
-    }
-    
     func setupVideoLayer(imageVideoContainer: imageVideoContainerView?, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata) {
         
         self.playerToolBar = playerToolBar
@@ -109,6 +96,21 @@ class NCPlayer: AVPlayer {
         
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }
+    
+    deinit {
+        print("deinit NCPlayer")
+    }
+    
+    //MARK: - NotificationCenter
+
+    @objc func applicationDidEnterBackground(_ notification: NSNotification) {
+        
+        if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+            self.pause()
+        }
+    }
+    
+    //MARK: -
     
     func videoPlay() {
                 
