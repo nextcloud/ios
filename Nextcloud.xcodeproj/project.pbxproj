@@ -1174,6 +1174,7 @@
 		F79018B1240962C7007C9B6D /* NCViewerMedia */ = {
 			isa = PBXGroup;
 			children = (
+				F79EDA9E26B004980007D134 /* NCPlayer */,
 				F70753F62542A9C000972D44 /* NCViewerMedia.storyboard */,
 				F70753EA2542A99800972D44 /* NCViewerMedia.swift */,
 				F70753F02542A9A200972D44 /* NCViewerMediaZoom.swift */,
@@ -1188,7 +1189,6 @@
 				F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */,
 				F7EFA47725ADBA500083159A /* NCViewerProviderContextMenu.swift */,
 				F79018B1240962C7007C9B6D /* NCViewerMedia */,
-				F79EDA9E26B004980007D134 /* NCPlayer */,
 				F723986A253C9C0E00257F49 /* NCViewerQuickLook */,
 				F76D3CEF2428B3DD005DFA87 /* NCViewerPDF */,
 				F73D11FF253C5F5400DF9BEC /* NCViewerNextcloudText */,
