@@ -253,76 +253,6 @@ class NCViewerImage: UIViewController {
     @objc func changeTheming() {
     }
     
-    //
-    // Detect for LIVE PHOTO
-    //
-    @objc func didLongpressGestureEvent(gestureRecognizer: UITapGestureRecognizer) {
-        
-        if !currentMetadata.livePhoto { return }
-        
-        
-        if gestureRecognizer.state == .began {
-            
-            currentViewerImageZoom?.updateViewConstraints()
-            currentViewerImageZoom?.statusViewImage.isHidden = true
-            currentViewerImageZoom?.statusLabel.isHidden = true
-            
-            let fileName = (currentMetadata.fileNameView as NSString).deletingPathExtension + ".mov"
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentMetadata.account, currentMetadata.serverUrl, fileName)) {
-                
-                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                    
-                    AudioServicesPlaySystemSound(1519) // peek feedback
-                    
-                    if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                        self.player = NCPlayer.init(url: url)
-                        self.player?.setupVideoLayer(imageVideoContainer: self.currentViewerImageZoom?.imageVideoContainer, playerToolBar: nil, metadata: metadata)
-                        self.player?.videoPlay()
-                    }
-                    
-                } else {
-                    
-                    let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileNameView
-                    let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                                    
-                    NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
-                        
-                    }, taskHandler: { (_) in
-                        
-                    }, progressHandler: { (progress) in
-                                        
-                        self.progressView.progress = Float(progress.fractionCompleted)
-                        
-                    }) { (account, etag, date, length, allHeaderFields, error, errorCode, errorDescription) in
-                        
-                        self.progressView.progress = 0
-                        
-                        if errorCode == 0 && account == metadata.account {
-                            
-                            NCManageDatabase.shared.addLocalFile(metadata: metadata)
-                            
-                            if gestureRecognizer.state == .changed || gestureRecognizer.state == .began {
-                                AudioServicesPlaySystemSound(1519) // peek feedback
-                                
-                                if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                                    self.player = NCPlayer.init(url: url)
-                                    self.player?.setupVideoLayer(imageVideoContainer: self.currentViewerImageZoom?.imageVideoContainer, playerToolBar: nil, metadata: metadata)
-                                    self.player?.videoPlay()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            
-        } else if gestureRecognizer.state == .ended {
-            
-            currentViewerImageZoom?.statusViewImage.isHidden = false
-            currentViewerImageZoom?.statusLabel.isHidden = false
-            self.player?.videoRemoved()
-        }
-    }
-    
     //MARK: - Image
     
     func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
@@ -541,6 +471,76 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
         
         // Detail Text Color
         currentViewerImageZoom?.detailView.textColor(textColor)
+    }
+    
+    //
+    // LIVE PHOTO
+    //
+    @objc func didLongpressGestureEvent(gestureRecognizer: UITapGestureRecognizer) {
+        
+        if !currentMetadata.livePhoto { return }
+        
+        
+        if gestureRecognizer.state == .began {
+            
+            currentViewerImageZoom?.updateViewConstraints()
+            currentViewerImageZoom?.statusViewImage.isHidden = true
+            currentViewerImageZoom?.statusLabel.isHidden = true
+            
+            let fileName = (currentMetadata.fileNameView as NSString).deletingPathExtension + ".mov"
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentMetadata.account, currentMetadata.serverUrl, fileName)) {
+                
+                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                    
+                    AudioServicesPlaySystemSound(1519) // peek feedback
+                    
+                    if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
+                        self.player = NCPlayer.init(url: url)
+                        self.player?.setupVideoLayer(imageVideoContainer: self.currentViewerImageZoom?.imageVideoContainer, playerToolBar: nil, metadata: metadata)
+                        self.player?.videoPlay()
+                    }
+                    
+                } else {
+                    
+                    let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileNameView
+                    let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                                    
+                    NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
+                        
+                    }, taskHandler: { (_) in
+                        
+                    }, progressHandler: { (progress) in
+                                        
+                        self.progressView.progress = Float(progress.fractionCompleted)
+                        
+                    }) { (account, etag, date, length, allHeaderFields, error, errorCode, errorDescription) in
+                        
+                        self.progressView.progress = 0
+                        
+                        if errorCode == 0 && account == metadata.account {
+                            
+                            NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                            
+                            if gestureRecognizer.state == .changed || gestureRecognizer.state == .began {
+                                AudioServicesPlaySystemSound(1519) // peek feedback
+                                
+                                if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
+                                    self.player = NCPlayer.init(url: url)
+                                    self.player?.setupVideoLayer(imageVideoContainer: self.currentViewerImageZoom?.imageVideoContainer, playerToolBar: nil, metadata: metadata)
+                                    self.player?.videoPlay()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+        } else if gestureRecognizer.state == .ended {
+            
+            currentViewerImageZoom?.statusViewImage.isHidden = false
+            currentViewerImageZoom?.statusLabel.isHidden = false
+            self.player?.videoRemoved()
+        }
     }
 }
 

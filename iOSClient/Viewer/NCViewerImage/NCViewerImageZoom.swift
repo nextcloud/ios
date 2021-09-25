@@ -113,8 +113,8 @@ class NCViewerImageZoom: UIViewController {
         
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue,  let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
             
-//            self.viewerVideo = NCViewerVideo.init(url: url, viewerVideoToolBar: self.videoToolBar, metadata: self.metadata)
-//            self.viewerImage?.viewerVideo = self.viewerVideo
+            self.player = NCPlayer.init(url: url)
+            self.viewerImage?.player = self.player
         }
     }
     
@@ -123,8 +123,11 @@ class NCViewerImageZoom: UIViewController {
         
         delegate?.didAppearImageZoom(viewerImageZoom: self, metadata: metadata)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-//            self.viewerVideo?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer)
+        if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) && imageVideoContainer.playerLayer == nil {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.player?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
+                //self.player?.videoPlay()
+            }
         }
     }
     
