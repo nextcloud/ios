@@ -132,9 +132,13 @@ class NCViewerMedia: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        currentViewerMediaZoom?.ncplayer?.videoPause()
-        currentViewerMediaZoom?.ncplayer?.saveCurrentTime()
-
+        if let player = appDelegate.player, let time = appDelegate.player?.currentTime() {
+            if player.rate == 1 {
+                player.pause()
+                NCManageDatabase.shared.addVideoTime(metadata: currentMetadata, time: time, durationSeconds: nil)
+            }
+        }
+        
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)

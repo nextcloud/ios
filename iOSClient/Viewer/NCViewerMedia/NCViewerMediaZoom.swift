@@ -41,6 +41,7 @@ class NCViewerMediaZoom: UIViewController {
     @IBOutlet weak var detailView: NCViewerMediaDetailView!
     @IBOutlet weak var playerToolBar: NCPlayerToolBar!
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var delegate: NCViewerMediaZoomDelegate?
     var viewerMedia: NCViewerMedia?
     var ncplayer: NCPlayer?
@@ -117,15 +118,21 @@ class NCViewerMediaZoom: UIViewController {
         viewerMedia?.navigationItem.title = metadata.fileNameView
         viewerMedia?.currentViewerMediaZoom = self
         viewerMedia?.currentMetadata = metadata
-
         
+        self.appDelegate.player?.pause()
+
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue,  let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
             
             self.ncplayer = NCPlayer.init(url: url)
             self.viewerMedia?.ncplayer = self.ncplayer
-            self.ncplayer?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
-            //self.player?.videoPlay()
         }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.ncplayer?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
+        //self.player?.videoPlay()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
