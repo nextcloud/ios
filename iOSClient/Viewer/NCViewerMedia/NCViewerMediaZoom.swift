@@ -83,16 +83,18 @@ class NCViewerMediaZoom: UIViewController {
             if !metadata.livePhoto {
                 playerToolBar.isHidden = false
             }
+            imageVideoContainer.image = image
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             if image == nil {
                 image = UIImage.init(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
             }
+            imageVideoContainer.image = image
         } else {
             if image == nil {
                 image = UIImage.init(named: "noPreview")!.image(color: .gray, size: view.frame.width)
             }
+            imageVideoContainer.image = image
         }
-        imageVideoContainer.image = image
         
         if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
             statusViewImage.image = NCUtility.shared.loadImage(named: "livephoto", color: .gray)
