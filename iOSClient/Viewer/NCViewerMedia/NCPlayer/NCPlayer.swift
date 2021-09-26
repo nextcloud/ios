@@ -131,9 +131,13 @@ class NCPlayer: NSObject {
     }
     
     func videoPause() {
-        guard let metadata = self.metadata else { return }
         
         appDelegate.player?.pause()
+    }
+    
+    func saveCurrentTime() {
+        guard let metadata = self.metadata else { return }
+
         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: appDelegate.player?.currentTime(), durationSeconds: nil)
     }
     
@@ -147,7 +151,7 @@ class NCPlayer: NSObject {
     func videoRemoved() {
 
         videoPause()
-                            
+
         self.videoLayer?.removeFromSuperlayer()
     }
     

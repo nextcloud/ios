@@ -133,6 +133,7 @@ class NCViewerMedia: UIViewController {
         super.viewWillDisappear(animated)
         
         currentViewerMediaZoom?.ncplayer?.videoPause()
+        currentViewerMediaZoom?.ncplayer?.saveCurrentTime()
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
@@ -378,12 +379,14 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
         return viewerMediaZoom
     }
     
+    // START TRANSITION
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         
         guard let nextViewController = pendingViewControllers.first as? NCViewerMediaZoom else { return }
         nextIndex = nextViewController.index        
     }
     
+    // END TRANSITION
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         
         if (completed && nextIndex != nil) {
