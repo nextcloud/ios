@@ -109,6 +109,13 @@ class NCViewerMediaZoom: UIViewController {
         detailViewConstraint.constant = 0
         detailView.update(metadata: metadata, image: image, heightMap: heightMap)
         detailView.hide()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        viewerMedia?.navigationItem.title = metadata.fileNameView
+        viewerMedia?.currentViewerMediaZoom = self
         
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue,  let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
             
@@ -116,14 +123,7 @@ class NCViewerMediaZoom: UIViewController {
             self.viewerMedia?.ncplayer = self.ncplayer
             self.ncplayer?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
             //self.player?.videoPlay()
-            print("Metadata \(metadata.fileNameView)")
         }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        navigationItem.title = metadata.fileNameView
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
