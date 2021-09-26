@@ -382,8 +382,11 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
     // START TRANSITION
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         
-        if appDelegate.player?.rate == 1 {
-            self.currentViewerMediaZoom?.ncplayer?.saveCurrentTime()
+        // Save time video
+        if let player = appDelegate.player, let time = appDelegate.player?.currentTime() {
+            if player.rate == 1 {
+                NCManageDatabase.shared.addVideoTime(metadata: currentMetadata, time: time, durationSeconds: nil)
+            }
         }
         
         guard let nextViewController = pendingViewControllers.first as? NCViewerMediaZoom else { return }
@@ -397,7 +400,6 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
             previousViewControllers.forEach { viewController in
                 let viewerMediaZoom = viewController as! NCViewerMediaZoom
                 viewerMediaZoom.scrollView.zoomScale = viewerMediaZoom.scrollView.minimumZoomScale
-                viewerMediaZoom.ncplayer?.videoPause()
             }
             currentIndex = nextIndex!
         }
