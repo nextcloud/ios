@@ -102,13 +102,7 @@ class NCViewerMediaZoom: UIViewController {
             statusLabel.text = ""
         }
         
-        var heightMap = (view.bounds.height / 3)
-        if view.bounds.width < view.bounds.height {
-            heightMap = (view.bounds.width / 3)
-        }
-        
         detailViewConstraint.constant = 0
-        detailView.update(metadata: metadata, image: image, heightMap: heightMap)
         detailView.hide()
     }
     
@@ -191,8 +185,12 @@ class NCViewerMediaZoom: UIViewController {
         
         case .began:
             
-            print("began")
-            
+            var heightMap = (view.bounds.height / 3)
+            if view.bounds.width < view.bounds.height {
+                heightMap = (view.bounds.width / 3)
+            }
+            detailView.update(metadata: metadata, image: image, heightMap: heightMap)
+
         case .ended:
             
             if detailView.isShow() {
