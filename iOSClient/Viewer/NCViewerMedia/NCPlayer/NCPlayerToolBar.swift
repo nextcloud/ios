@@ -102,9 +102,9 @@ class NCPlayerToolBar: UIView {
                 
         updateToolBar()
         
-        appDelegate.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
+        ncplayer.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             
-            if self.appDelegate.player?.currentItem?.status == .readyToPlay {
+            if ncplayer.player?.currentItem?.status == .readyToPlay {
                 if self.isHidden == false {
                     self.updateToolBar()
                 }
@@ -152,7 +152,7 @@ class NCPlayerToolBar: UIView {
     public func updateToolBar() {
 
         var namedPlay = "play.fill"
-        if appDelegate.player?.rate == 1 { namedPlay = "pause.fill"}
+        if ncplayer?.player?.rate == 1 { namedPlay = "pause.fill"}
         let currentSeconds = ncplayer?.getVideoCurrentSeconds() ?? 0
         let durationSeconds = ncplayer?.getVideoDurationSeconds() ?? 0
         
@@ -194,7 +194,7 @@ class NCPlayerToolBar: UIView {
             
             switch touchEvent.phase {
             case .began:
-                wasInPlay = appDelegate.player?.rate == 1 ? true : false
+                wasInPlay = ncplayer?.player?.rate == 1 ? true : false
                 ncplayer?.videoPause()
                 playbackSliderEvent = .began
             case .moved:
@@ -226,15 +226,15 @@ class NCPlayerToolBar: UIView {
     
     @IBAction func playerPause(_ sender: Any) {
         
-        if appDelegate.player?.timeControlStatus == .playing {
+        if ncplayer?.player?.timeControlStatus == .playing {
             ncplayer?.videoPause()
             ncplayer?.saveCurrentTime()
-        } else if appDelegate.player?.timeControlStatus == .paused {
+        } else if ncplayer?.player?.timeControlStatus == .paused {
             ncplayer?.videoPlay()
-        } else if appDelegate.player?.timeControlStatus == .waitingToPlayAtSpecifiedRate {
+        } else if ncplayer?.player?.timeControlStatus == .waitingToPlayAtSpecifiedRate {
             ncplayer?.deleteLocalFile()
             print("timeControlStatus.waitingToPlayAtSpecifiedRate")
-            if let reason = appDelegate.player?.reasonForWaitingToPlay {
+            if let reason = ncplayer?.player?.reasonForWaitingToPlay {
                 switch reason {
                 case .evaluatingBufferingRate:
                     print("reasonForWaitingToPlay.evaluatingBufferingRate")
@@ -254,13 +254,13 @@ class NCPlayerToolBar: UIView {
         let mute = CCUtility.getAudioMute()
         
         CCUtility.setAudioMute(!mute)
-        appDelegate.player?.isMuted = !mute
+        ncplayer?.player?.isMuted = !mute
         updateToolBar()
     }
     
     @IBAction func forwardButtonSec(_ sender: Any) {
         guard let ncplayer = ncplayer else { return }
-        guard let player = appDelegate.player else { return }
+        guard let player = ncplayer.player else { return }
 
         let playerCurrentTime = CMTimeGetSeconds(player.currentTime())
         let newTime = playerCurrentTime + seekDuration
@@ -273,7 +273,7 @@ class NCPlayerToolBar: UIView {
     
     @IBAction func backButtonSec(_ sender: Any) {
         guard let ncplayer = ncplayer else { return }
-        guard let player = appDelegate.player else { return }
+        guard let player = ncplayer.player else { return }
 
         let playerCurrenTime = CMTimeGetSeconds(player.currentTime())
         var newTime = playerCurrenTime - seekDuration

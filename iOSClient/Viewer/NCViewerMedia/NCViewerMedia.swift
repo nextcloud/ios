@@ -132,7 +132,7 @@ class NCViewerMedia: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if let player = appDelegate.player, let time = appDelegate.player?.currentTime() {
+        if let player = ncplayer?.player, let time = ncplayer?.player?.currentTime() {
             if player.rate == 1 {
                 player.pause()
                 NCManageDatabase.shared.addVideoTime(metadata: currentMetadata, time: time, durationSeconds: nil)
@@ -387,7 +387,7 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         
         // Save time video
-        if let player = appDelegate.player, let time = appDelegate.player?.currentTime() {
+        if let player = ncplayer?.player, let time = ncplayer?.player?.currentTime() {
             if player.rate == 1 {
                 NCManageDatabase.shared.addVideoTime(metadata: currentMetadata, time: time, durationSeconds: nil)
             }
