@@ -382,6 +382,10 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
     // START TRANSITION
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         
+        if appDelegate.player?.rate == 1 {
+            self.currentViewerMediaZoom?.ncplayer?.saveCurrentTime()
+        }
+        
         guard let nextViewController = pendingViewControllers.first as? NCViewerMediaZoom else { return }
         nextIndex = nextViewController.index        
     }
