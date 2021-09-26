@@ -50,7 +50,7 @@ class NCViewerMedia: UIViewController {
     var nextIndex: Int?
        
     var currentViewerMediaZoom: NCViewerMediaZoom?
-    var player: NCPlayer?
+    var ncplayer: NCPlayer?
     
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
@@ -132,7 +132,7 @@ class NCViewerMedia: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        currentViewerMediaZoom?.player?.videoPause()
+        currentViewerMediaZoom?.ncplayer?.videoPause()
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
@@ -390,7 +390,7 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
             previousViewControllers.forEach { viewController in
                 let viewerMediaZoom = viewController as! NCViewerMediaZoom
                 viewerMediaZoom.scrollView.zoomScale = viewerMediaZoom.scrollView.minimumZoomScale
-                viewerMediaZoom.player?.videoPause()
+                viewerMediaZoom.ncplayer?.videoPause()
             }
             currentIndex = nextIndex!
         }
@@ -494,9 +494,9 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
                     AudioServicesPlaySystemSound(1519) // peek feedback
                     
                     if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                        self.player = NCPlayer.init(url: url)
-                        self.player?.setupVideoLayer(imageVideoContainer: self.currentViewerMediaZoom?.imageVideoContainer, playerToolBar: nil, metadata: metadata)
-                        self.player?.videoPlay()
+                        self.ncplayer = NCPlayer.init(url: url)
+                        self.ncplayer?.setupVideoLayer(imageVideoContainer: self.currentViewerMediaZoom?.imageVideoContainer, playerToolBar: nil, metadata: metadata)
+                        self.ncplayer?.videoPlay()
                     }
                     
                 } else {
@@ -524,9 +524,9 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
                                 AudioServicesPlaySystemSound(1519) // peek feedback
                                 
                                 if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                                    self.player = NCPlayer.init(url: url)
-                                    self.player?.setupVideoLayer(imageVideoContainer: self.currentViewerMediaZoom?.imageVideoContainer, playerToolBar: nil, metadata: metadata)
-                                    self.player?.videoPlay()
+                                    self.ncplayer = NCPlayer.init(url: url)
+                                    self.ncplayer?.setupVideoLayer(imageVideoContainer: self.currentViewerMediaZoom?.imageVideoContainer, playerToolBar: nil, metadata: metadata)
+                                    self.ncplayer?.videoPlay()
                                 }
                             }
                         }
@@ -538,7 +538,7 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
             
             currentViewerMediaZoom?.statusViewImage.isHidden = false
             currentViewerMediaZoom?.statusLabel.isHidden = false
-            self.player?.videoRemoved()
+            self.ncplayer?.videoRemoved()
         }
     }
 }

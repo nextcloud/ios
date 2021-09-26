@@ -44,7 +44,7 @@ class NCViewerMediaZoom: UIViewController {
     
     var delegate: NCViewerMediaZoomDelegate?
     var viewerMedia: NCViewerMedia?
-    var player: NCPlayer?
+    var ncplayer: NCPlayer?
     
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
@@ -113,8 +113,8 @@ class NCViewerMediaZoom: UIViewController {
         
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue,  let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
             
-            self.player = NCPlayer.init(url: url)
-            self.viewerMedia?.player = self.player
+            self.ncplayer = NCPlayer.init(url: url)
+            self.viewerMedia?.ncplayer = self.ncplayer
         }
     }
     
@@ -123,12 +123,14 @@ class NCViewerMediaZoom: UIViewController {
         
         delegate?.didAppearImageZoom(viewerMediaZoom: self, metadata: metadata)
         
+        /*
         if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) && imageVideoContainer.playerLayer == nil {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.player?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
+                self.ncplayer?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
                 //self.player?.videoPlay()
             }
         }
+        */
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
