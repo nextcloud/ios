@@ -116,7 +116,12 @@ class NCViewerMediaZoom: UIViewController {
             self.viewerMedia?.ncplayer = self.ncplayer
             self.ncplayer?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
             //self.player?.videoPlay()
+            print("Metadata \(metadata.fileNameView)")
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
         navigationItem.title = metadata.fileNameView
     }
