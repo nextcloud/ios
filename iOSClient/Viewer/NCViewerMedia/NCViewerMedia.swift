@@ -552,7 +552,8 @@ extension NCViewerMedia: NCViewerMediaZoomDelegate {
     }
         
     func didAppearImageZoom(viewerMediaZoom: NCViewerMediaZoom, metadata: tableMetadata) {
-                
+         
+        /*
         navigationItem.title = metadata.fileNameView
         currentMetadata = metadata
         currentViewerMediaZoom = viewerMediaZoom
@@ -598,6 +599,7 @@ extension NCViewerMedia: NCViewerMediaZoomDelegate {
                 }
             }
         }
+        */
     }
 }
 
