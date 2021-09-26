@@ -128,10 +128,8 @@ class NCViewerMediaZoom: UIViewController {
         super.viewDidAppear(animated)
         
         if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) && imageVideoContainer.playerLayer == nil {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.ncplayer?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
-                //self.player?.videoPlay()
-            }
+            self.ncplayer?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
+            //self.player?.videoPlay()
         }
     }
     
