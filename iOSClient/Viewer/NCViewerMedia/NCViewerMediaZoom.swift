@@ -117,7 +117,7 @@ class NCViewerMediaZoom: UIViewController {
         
         self.appDelegate.player?.pause()
 
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue,  let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
+        if ncplayer == nil, (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue),  let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
             
             self.ncplayer = NCPlayer.init(url: url)
             self.viewerMedia?.ncplayer = self.ncplayer
@@ -127,8 +127,12 @@ class NCViewerMediaZoom: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        self.ncplayer?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
-        //self.player?.videoPlay()
+        if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) && imageVideoContainer.playerLayer == nil {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.ncplayer?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
+                //self.player?.videoPlay()
+            }
+        }
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -323,7 +327,11 @@ extension NCViewerMediaZoom: UIScrollViewDelegate {
 
 class imageVideoContainerView: UIImageView {
     var playerLayer: CALayer?
+    var metadata: tableMetadata?
     override func layoutSublayers(of layer: CALayer) {
+        if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && metadata?.livePhoto == false {
+            self.image = nil
+        }
         super.layoutSublayers(of: layer)
         playerLayer?.frame = self.bounds
     }

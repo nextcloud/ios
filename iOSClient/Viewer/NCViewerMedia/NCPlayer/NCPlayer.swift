@@ -75,6 +75,7 @@ class NCPlayer: NSObject {
                             self.videoLayer!.videoGravity = .resizeAspect
                             imageVideoContainer.layer.addSublayer(self.videoLayer!)
                             imageVideoContainer.playerLayer = self.videoLayer
+                            imageVideoContainer.metadata = self.metadata
                         }
                         self.durationSeconds = CMTimeGetSeconds(duration)
                         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationSeconds: self.durationSeconds)
