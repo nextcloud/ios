@@ -24,8 +24,9 @@
 import Foundation
 import NCCommunication
 import UIKit
+import AVFoundation
 
-class NCPlayer: AVPlayer {
+class NCPlayer: NSObject {
    
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var imageVideoContainer: imageVideoContainerView?
@@ -35,33 +36,41 @@ class NCPlayer: AVPlayer {
     public var metadata: tableMetadata?
     public var videoLayer: AVPlayerLayer?
 
+    init(url: URL) {
+        appDelegate.player = AVPlayer(url: url)
+    }
+    
+    deinit {
+        print("deinit NCPlayer")
+    }
+    
     func setupVideoLayer(imageVideoContainer: imageVideoContainerView?, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata) {
         
         self.playerToolBar = playerToolBar
         self.metadata = metadata
         
-        isMuted = CCUtility.getAudioMute()
-        seek(to: .zero)
+        appDelegate.player?.isMuted = CCUtility.getAudioMute()
+        appDelegate.player?.seek(to: .zero)
 
         // At end go back to start & show toolbar
-        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: currentItem, queue: .main) { (notification) in
-            if let item = notification.object as? AVPlayerItem, let currentItem = self.currentItem, item == currentItem {
-                self.seek(to: .zero)
+        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: appDelegate.player?.currentItem, queue: .main) { (notification) in
+            if let item = notification.object as? AVPlayerItem, let currentItem = self.appDelegate.player?.currentItem, item == currentItem {
+                self.appDelegate.player?.seek(to: .zero)
                 self.playerToolBar?.showToolBar(metadata: metadata, detailView: nil)
                 NCKTVHTTPCache.shared.saveCache(metadata: metadata)
             }
         }
         
-        currentItem?.asset.loadValuesAsynchronously(forKeys: ["duration", "playable"], completionHandler: {
-            if let duration: CMTime = (self.currentItem?.asset.duration) {
+        appDelegate.player?.currentItem?.asset.loadValuesAsynchronously(forKeys: ["duration", "playable"], completionHandler: {
+            if let duration: CMTime = (self.appDelegate.player?.currentItem?.asset.duration) {
                 var error: NSError? = nil
-                let status = self.currentItem?.asset.statusOfValue(forKey: "playable", error: &error)
+                let status = self.appDelegate.player?.currentItem?.asset.statusOfValue(forKey: "playable", error: &error)
                 switch status {
                 case .loaded:
                     DispatchQueue.main.async {
                         if let imageVideoContainer = imageVideoContainer {
                             self.imageVideoContainer = imageVideoContainer
-                            self.videoLayer = AVPlayerLayer(player: self)
+                            self.videoLayer = AVPlayerLayer(player: self.appDelegate.player)
                             self.videoLayer!.frame = imageVideoContainer.bounds
                             self.videoLayer!.videoGravity = .resizeAspect
                             imageVideoContainer.layer.addSublayer(self.videoLayer!)
@@ -71,10 +80,10 @@ class NCPlayer: AVPlayer {
                         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationSeconds: self.durationSeconds)
                         // NO Live Photo, seek to datamebase time
                         if !metadata.livePhoto, let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
-                            self.seek(to: time)
+                            self.appDelegate.player?.seek(to: time)
                         }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            playerToolBar?.setBarPlayer(player: self)
+                            playerToolBar?.setBarPlayer(ncplayer: self)
                         }
                     }
                     break
@@ -96,17 +105,13 @@ class NCPlayer: AVPlayer {
         
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }
-    
-    deinit {
-        print("deinit NCPlayer")
-    }
-    
+
     //MARK: - NotificationCenter
 
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
         
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-            self.pause()
+            appDelegate.player?.pause()
         }
     }
     
@@ -122,20 +127,20 @@ class NCPlayer: AVPlayer {
     
     func videoPlay() {
                 
-        play()
+        appDelegate.player?.play()
     }
     
     func videoPause() {
         guard let metadata = self.metadata else { return }
         
-        pause()
-        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: currentTime(), durationSeconds: nil)
+        appDelegate.player?.pause()
+        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: appDelegate.player?.currentTime(), durationSeconds: nil)
     }
     
     func videoSeek(time: CMTime) {
         guard let metadata = self.metadata else { return }
         
-        seek(to: time)
+        appDelegate.player?.seek(to: time)
         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationSeconds: nil)
     }
     
@@ -148,7 +153,7 @@ class NCPlayer: AVPlayer {
     
     func getVideoCurrentSeconds() -> Float64 {
         
-        return CMTimeGetSeconds(currentTime())
+        return CMTimeGetSeconds(appDelegate.player?.currentTime() ?? .zero)
     }
     
     func getVideoDurationSeconds() -> Float64 {
@@ -160,7 +165,7 @@ class NCPlayer: AVPlayer {
         
         var image: UIImage?
 
-        if let asset = self.currentItem?.asset {
+        if let asset = appDelegate.player?.currentItem?.asset {
 
             do {
                 let imageGenerator = AVAssetImageGenerator(asset: asset)
