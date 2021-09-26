@@ -114,7 +114,11 @@ class NCViewerMediaZoom: UIViewController {
             
             self.ncplayer = NCPlayer.init(url: url)
             self.viewerMedia?.ncplayer = self.ncplayer
+            self.ncplayer?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
+            //self.player?.videoPlay()
         }
+        
+        navigationItem.title = metadata.fileNameView
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
