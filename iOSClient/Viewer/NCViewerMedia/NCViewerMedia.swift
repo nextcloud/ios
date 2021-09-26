@@ -482,7 +482,6 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
         
         if !currentMetadata.livePhoto { return }
         
-        
         if gestureRecognizer.state == .began {
             
             currentViewerMediaZoom?.updateViewConstraints()

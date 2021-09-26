@@ -116,6 +116,8 @@ class NCViewerMediaZoom: UIViewController {
         
         viewerMedia?.navigationItem.title = metadata.fileNameView
         viewerMedia?.currentViewerMediaZoom = self
+        viewerMedia?.currentMetadata = metadata
+
         
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue,  let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
             
