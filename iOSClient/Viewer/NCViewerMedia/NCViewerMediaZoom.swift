@@ -115,19 +115,26 @@ class NCViewerMediaZoom: UIViewController {
         viewerMedia?.currentViewerMediaZoom = self
         viewerMedia?.currentMetadata = metadata
         
+        /*
         if ncplayer == nil, (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue),  let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
             
             self.ncplayer = NCPlayer.init(url: url)
             self.viewerMedia?.ncplayer = self.ncplayer
         }
+        */
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) && imageVideoContainer.playerLayer == nil {
-            self.ncplayer?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
-            //self.player?.videoPlay()
+        if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) && ncplayer == nil && imageVideoContainer.playerLayer == nil {
+            
+            if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
+                self.ncplayer = NCPlayer.init(url: url)
+                self.viewerMedia?.ncplayer = self.ncplayer
+                self.ncplayer?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
+                //self.player?.videoPlay()
+            }
         }
     }
     
