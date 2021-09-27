@@ -564,9 +564,6 @@ extension NCViewerMedia: NCViewerMediaZoomDelegate {
     func didAppearImageZoom(viewerMediaZoom: NCViewerMediaZoom, metadata: tableMetadata) {
          
         /*
-        navigationItem.title = metadata.fileNameView
-        currentMetadata = metadata
-        currentViewerMediaZoom = viewerMediaZoom
         
         if !NCOperationQueue.shared.downloadExists(metadata: metadata) {
             self.progressView.progress = 0

@@ -165,4 +165,12 @@ extension UIImage {
         view.drawHierarchy(in: view.bounds, afterScreenUpdates: true)
         return UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
     }
+    
+    func image(alpha: CGFloat) -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        draw(at: .zero, blendMode: .normal, alpha: alpha)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage
+    }
 }

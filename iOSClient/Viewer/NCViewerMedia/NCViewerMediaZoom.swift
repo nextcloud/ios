@@ -84,16 +84,19 @@ class NCViewerMediaZoom: UIViewController {
                 playerToolBar.isHidden = false
             }
             imageVideoContainer.image = image
+            imageVideoContainer.imageOriginal = image
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             if image == nil {
                 image = UIImage.init(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
             }
             imageVideoContainer.image = image
+            imageVideoContainer.imageOriginal = image
         } else {
             if image == nil {
                 image = UIImage.init(named: "noPreview")!.image(color: .gray, size: view.frame.width)
             }
             imageVideoContainer.image = image
+            imageVideoContainer.imageOriginal = image
         }
         
         if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
@@ -114,14 +117,6 @@ class NCViewerMediaZoom: UIViewController {
         viewerMedia?.navigationItem.title = metadata.fileNameView
         viewerMedia?.currentViewerMediaZoom = self
         viewerMedia?.currentMetadata = metadata
-        
-        /*
-        if ncplayer == nil, (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue),  let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-            
-            self.ncplayer = NCPlayer.init(url: url)
-            self.viewerMedia?.ncplayer = self.ncplayer
-        }
-        */
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -131,7 +126,6 @@ class NCViewerMediaZoom: UIViewController {
             if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
                 self.ncplayer = NCPlayer.init(url: url, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
                 self.viewerMedia?.ncplayer = self.ncplayer
-                //self.player?.videoPlay()
             }
         }
     }
@@ -335,10 +329,8 @@ extension NCViewerMediaZoom: UIScrollViewDelegate {
 class imageVideoContainerView: UIImageView {
     var playerLayer: CALayer?
     var metadata: tableMetadata?
+    var imageOriginal: UIImage?
     override func layoutSublayers(of layer: CALayer) {
-        if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && metadata?.livePhoto == false {
-            self.image = nil
-        }
         super.layoutSublayers(of: layer)
         playerLayer?.frame = self.bounds
     }
