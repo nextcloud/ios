@@ -34,34 +34,32 @@ class NCPlayer: NSObject {
     private var playerToolBar: NCPlayerToolBar?
 
     public var metadata: tableMetadata?
-    public var player: AVPlayer
+    public var player: AVPlayer?
     public var videoLayer: AVPlayerLayer?
 
     init(url: URL, imageVideoContainer: imageVideoContainerView?, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata) {
-        
-        self.player = AVPlayer(url: url)
-        
         super.init()
-        
+
+        self.player = AVPlayer(url: url)
         self.playerToolBar = playerToolBar
         self.metadata = metadata
         
-        self.player.isMuted = CCUtility.getAudioMute()
-        self.player.seek(to: .zero)
+        self.player?.isMuted = CCUtility.getAudioMute()
+        self.player?.seek(to: .zero)
 
         // At end go back to start & show toolbar
-        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player.currentItem, queue: .main) { (notification) in
-            if let item = notification.object as? AVPlayerItem, let currentItem = self.player.currentItem, item == currentItem {
-                self.player.seek(to: .zero)
+        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
+            if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
+                self.player?.seek(to: .zero)
                 self.playerToolBar?.showToolBar(metadata: metadata, detailView: nil)
                 NCKTVHTTPCache.shared.saveCache(metadata: metadata)
             }
         }
         
-        self.player.currentItem?.asset.loadValuesAsynchronously(forKeys: ["duration", "playable"], completionHandler: {
-            if let duration: CMTime = (self.player.currentItem?.asset.duration) {
+        self.player?.currentItem?.asset.loadValuesAsynchronously(forKeys: ["duration", "playable"], completionHandler: {
+            if let duration: CMTime = (self.player?.currentItem?.asset.duration) {
                 var error: NSError? = nil
-                let status = self.player.currentItem?.asset.statusOfValue(forKey: "playable", error: &error)
+                let status = self.player?.currentItem?.asset.statusOfValue(forKey: "playable", error: &error)
                 switch status {
                 case .loaded:
                     DispatchQueue.main.async {
@@ -78,7 +76,7 @@ class NCPlayer: NSObject {
                         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationSeconds: self.durationSeconds)
                         // NO Live Photo, seek to datamebase time
                         if !metadata.livePhoto, let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
-                            self.player.seek(to: time)
+                            self.player?.seek(to: time)
                         }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             playerToolBar?.setBarPlayer(ncplayer: self)
@@ -113,7 +111,7 @@ class NCPlayer: NSObject {
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
         
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-            self.player.pause()
+            self.player?.pause()
         }
     }
     
@@ -121,24 +119,24 @@ class NCPlayer: NSObject {
     
     func videoPlay() {
                 
-        self.player.play()
+        self.player?.play()
     }
     
     func videoPause() {
         
-        self.player.pause()
+        self.player?.pause()
     }
     
     func saveCurrentTime() {
         guard let metadata = self.metadata else { return }
 
-        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: self.player.currentTime(), durationSeconds: nil)
+        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: self.player?.currentTime(), durationSeconds: nil)
     }
     
     func videoSeek(time: CMTime) {
         guard let metadata = self.metadata else { return }
         
-        self.player.seek(to: time)
+        self.player?.seek(to: time)
         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationSeconds: nil)
     }
     
@@ -151,7 +149,7 @@ class NCPlayer: NSObject {
     
     func getVideoCurrentSeconds() -> Float64 {
         
-        return CMTimeGetSeconds(self.player.currentTime())
+        return CMTimeGetSeconds(self.player?.currentTime() ?? .zero)
     }
     
     func getVideoDurationSeconds() -> Float64 {
@@ -163,7 +161,7 @@ class NCPlayer: NSObject {
         
         var image: UIImage?
 
-        if let asset = self.player.currentItem?.asset {
+        if let asset = self.player?.currentItem?.asset {
 
             do {
                 let imageGenerator = AVAssetImageGenerator(asset: asset)
