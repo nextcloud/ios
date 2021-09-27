@@ -151,7 +151,7 @@ class NCViewerMediaDetailView: UIView {
         // Dimension / Duration
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             if let image = self.image {
-                dimLabel.text = NSLocalizedString("_dimension_", comment: "")
+                dimLabel.text = NSLocalizedString("_resolution_", comment: "")
                 dimValue.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
             }
         } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue  {
