@@ -40,6 +40,7 @@ class NCPlayer: NSObject {
     init(url: URL, imageVideoContainer: imageVideoContainerView?, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata) {
         super.init()
 
+        print("Play URL: \(url)")
         self.player = AVPlayer(url: url)
         self.playerToolBar = playerToolBar
         self.metadata = metadata
