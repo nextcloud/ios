@@ -32,15 +32,18 @@ class NCPlayer: NSObject {
     private var imageVideoContainer: imageVideoContainerView?
     private var durationSeconds: Double = 0
     private var playerToolBar: NCPlayerToolBar?
-
+    private var observerAVPlayerItemDidPlayToEndTime: Any?
+    
     public var metadata: tableMetadata?
     public var player: AVPlayer?
     public var videoLayer: AVPlayerLayer?
+    
 
     init(url: URL, imageVideoContainer: imageVideoContainerView?, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata) {
         super.init()
-
+        
         print("Play URL: \(url)")
+        
         self.player = AVPlayer(url: url)
         self.playerToolBar = playerToolBar
         self.metadata = metadata
@@ -49,7 +52,7 @@ class NCPlayer: NSObject {
         self.player?.seek(to: .zero)
 
         // At end go back to start & show toolbar
-        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
+        observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
             if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
                 self.player?.seek(to: .zero)
                 self.playerToolBar?.showToolBar(metadata: metadata, detailView: nil)
@@ -145,7 +148,19 @@ class NCPlayer: NSObject {
 
         videoPause()
 
+        if let observerAVPlayerItemDidPlayToEndTime = self.observerAVPlayerItemDidPlayToEndTime {
+            NotificationCenter.default.removeObserver(observerAVPlayerItemDidPlayToEndTime)
+        }
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+        
         self.videoLayer?.removeFromSuperlayer()
+        
+        self.player = nil
+        self.videoLayer = nil
+        self.observerAVPlayerItemDidPlayToEndTime = nil
+        self.imageVideoContainer = nil
+        self.playerToolBar = nil
+        self.metadata = nil
     }
     
     func getVideoCurrentSeconds() -> Float64 {
