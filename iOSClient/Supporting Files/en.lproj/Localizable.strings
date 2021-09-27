@@ -812,4 +812,4 @@
 "_this_document_has_%@_pages_"              = "This document has %@ pages";
 "_invalid_page_"                            = "Invalid Page";
 "_the_entered_page_number_doesn't_exist_"   = "The entered page number doesn't exist";
-"_error_something_wrong_"   = "Something seems to have gone wrong";
+"_error_something_wrong_"   = "Something went wrong";
