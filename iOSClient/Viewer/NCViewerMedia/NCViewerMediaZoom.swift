@@ -128,11 +128,9 @@ class NCViewerMediaZoom: UIViewController {
         super.viewDidAppear(animated)
         
         if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) && ncplayer == nil && imageVideoContainer.playerLayer == nil {
-            
             if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                self.ncplayer = NCPlayer.init(url: url)
+                self.ncplayer = NCPlayer.init(url: url, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
                 self.viewerMedia?.ncplayer = self.ncplayer
-                self.ncplayer?.setupVideoLayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
                 //self.player?.videoPlay()
             }
         }
