@@ -232,7 +232,6 @@ class NCPlayerToolBar: UIView {
         } else if ncplayer?.player.timeControlStatus == .paused {
             ncplayer?.videoPlay()
         } else if ncplayer?.player.timeControlStatus == .waitingToPlayAtSpecifiedRate {
-            ncplayer?.deleteLocalFile()
             print("timeControlStatus.waitingToPlayAtSpecifiedRate")
             if let reason = ncplayer?.player.reasonForWaitingToPlay {
                 switch reason {
