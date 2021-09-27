@@ -132,6 +132,7 @@ class NCPlayer: NSObject {
     func videoPause() {
         
         self.player?.pause()
+        let image = generatorImage()
     }
     
     func saveCurrentTime() {
@@ -176,7 +177,8 @@ class NCPlayer: NSObject {
         return self.durationSeconds
     }
     
-    func generatorImage(to time: CMTime) -> UIImage? {
+    func generatorImage() -> UIImage? {
+        guard let time = self.player?.currentTime() else { return nil }
         
         var image: UIImage?
 
@@ -186,7 +188,6 @@ class NCPlayer: NSObject {
                 let imageGenerator = AVAssetImageGenerator(asset: asset)
                 let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
                 image = UIImage(cgImage: cgImage)
-                print("")
             }
             catch let error as NSError {
                 print(error.localizedDescription)
