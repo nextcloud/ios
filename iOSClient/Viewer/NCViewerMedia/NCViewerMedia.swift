@@ -135,7 +135,7 @@ class NCViewerMedia: UIViewController {
         if let player = ncplayer?.player {
             if player.rate == 1 {
                 player.pause()
-                NCManageDatabase.shared.addVideoTime(metadata: currentMetadata, time: player.currentTime(), durationSeconds: nil)
+                ncplayer?.saveTime(player.currentTime())
             }
         }
         
@@ -389,7 +389,7 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
         // Save time video
         if let player = ncplayer?.player {
             if player.rate == 1 {
-                NCManageDatabase.shared.addVideoTime(metadata: currentMetadata, time: player.currentTime(), durationSeconds: nil)
+                ncplayer?.saveTime(player.currentTime())
             }
         }
         

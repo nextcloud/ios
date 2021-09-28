@@ -80,7 +80,7 @@ class NCPlayer: NSObject {
                             imageVideoContainer.metadata = self.metadata
                         }
                         self.durationSeconds = CMTimeGetSeconds(duration)
-                        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationSeconds: self.durationSeconds)
+                        self.saveDurationSeconds(self.durationSeconds)
                         // NO Live Photo, seek to datamebase time
                         if !metadata.livePhoto, let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
                             self.player?.seek(to: time)
@@ -132,20 +132,24 @@ class NCPlayer: NSObject {
     func videoPause() {
         
         self.player?.pause()
-        let image = generatorImage()
     }
     
-    func saveCurrentTime() {
+    func saveTime(_ time: CMTime) {
         guard let metadata = self.metadata else { return }
 
-        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: self.player?.currentTime(), durationSeconds: nil)
+        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationSeconds: nil)
+    }
+    
+    func saveDurationSeconds(_ durationSeconds: Double) {
+        guard let metadata = self.metadata else { return }
+
+        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationSeconds: durationSeconds)
     }
     
     func videoSeek(time: CMTime) {
-        guard let metadata = self.metadata else { return }
         
         self.player?.seek(to: time)
-        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationSeconds: nil)
+        self.saveTime(time)
     }
     
     func videoRemoved() {

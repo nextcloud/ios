@@ -228,7 +228,9 @@ class NCPlayerToolBar: UIView {
         
         if ncplayer?.player?.timeControlStatus == .playing {
             ncplayer?.videoPause()
-            ncplayer?.saveCurrentTime()
+            if let time = ncplayer?.player?.currentTime() {
+                ncplayer?.saveTime(time)
+            }
         } else if ncplayer?.player?.timeControlStatus == .paused {
             ncplayer?.videoPlay()
         } else if ncplayer?.player?.timeControlStatus == .waitingToPlayAtSpecifiedRate {
