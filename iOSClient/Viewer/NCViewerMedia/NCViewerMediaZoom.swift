@@ -122,6 +122,9 @@ class NCViewerMediaZoom: UIViewController {
                 self.viewerMedia?.ncplayer = self.ncplayer
             }
         }
+        
+        // DOWNLOAD
+        downloadFile()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -280,6 +283,51 @@ extension NCViewerMediaZoom {
         scrollView.pinchGestureRecognizer?.isEnabled = true
         
         playerToolBar.showToolBar(metadata: metadata, detailView: nil)
+    }
+    
+    func downloadFile() {
+        
+        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        let ext = CCUtility.getExtension(metadata.fileNameView)
+        
+        if !NCOperationQueue.shared.downloadExists(metadata: metadata) {
+            viewerMedia?.progressView.progress = 0
+        }
+        
+        // DOWNLOAD FILE
+        if ((metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            NCOperationQueue.shared.download(metadata: metadata, selector: "")
+        }
+        
+        // DOWNLOAD FILE LIVE PHOTO
+        if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+            if CCUtility.getAutomaticDownloadImage() && !CCUtility.fileProviderStorageExists(metadataLivePhoto.ocId, fileNameView: metadataLivePhoto.fileNameView) {
+                NCOperationQueue.shared.download(metadata: metadataLivePhoto, selector: "")
+            }
+        }
+        
+        // DOWNLOAD preview
+        if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) && metadata.hasPreview {
+            
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+            var etagResource: String?
+            
+            if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
+                etagResource = metadata.etagResource
+            }
+            
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorMessage) in
+                
+                if errorCode == 0 {
+                    NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
+                    if let image = self.viewerMedia?.getImageMetadata(self.metadata) {
+                        self.reload(image: image, metadata: self.metadata)
+                    }
+                }
+            }
+        }
     }
 }
 
