@@ -270,6 +270,13 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                     if action["label"].string == label {
                         let serverUrl = action["link"].stringValue
                         let method = action["type"].stringValue
+                        
+                        if method == "WEB" {
+                            if let url = action["link"].url {
+                                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                            }
+                            return
+                        }
                             
                         NCCommunication.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { (account, errorCode, errorDescription) in
                             
