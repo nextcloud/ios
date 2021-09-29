@@ -24,10 +24,6 @@
 import UIKit
 import NCCommunication
 
-protocol NCViewerMediaZoomDelegate {
-    func dismissImageZoom()
-}
-
 class NCViewerMediaZoom: UIViewController {
     
     @IBOutlet weak var detailViewConstraint: NSLayoutConstraint!
@@ -42,7 +38,6 @@ class NCViewerMediaZoom: UIViewController {
     @IBOutlet weak var playerToolBar: NCPlayerToolBar!
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var delegate: NCViewerMediaZoomDelegate?
     var viewerMedia: NCViewerMedia?
     var ncplayer: NCPlayer?
     
@@ -215,7 +210,7 @@ class NCViewerMediaZoom: UIViewController {
             // DISMISS VIEW
             if detailView.isHidden && (currentLocation.y > 20) {
                 
-                delegate?.dismissImageZoom()
+                viewerMedia?.navigationController?.popViewController(animated: true)
                 gestureRecognizer.state = .ended
             }
             

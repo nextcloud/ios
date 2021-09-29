@@ -82,7 +82,6 @@ class NCViewerMedia: UIViewController {
         viewerMediaZoom.index = currentIndex
         viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex])
         viewerMediaZoom.metadata = metadatas[currentIndex]
-        viewerMediaZoom.delegate = self
         viewerMediaZoom.viewerMedia = self
         viewerMediaZoom.isShowDetail = false
 
@@ -336,7 +335,6 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerMediaZoom.index = currentIndex
         viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex])
         viewerMediaZoom.metadata = metadatas[currentIndex]
-        viewerMediaZoom.delegate = self
         viewerMediaZoom.viewerMedia = self
         viewerMediaZoom.isShowDetail = false
 
@@ -355,7 +353,6 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerMediaZoom.index = currentIndex - 1
         viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex - 1])
         viewerMediaZoom.metadata = metadatas[currentIndex - 1]
-        viewerMediaZoom.delegate = self
         viewerMediaZoom.viewerMedia = self
         viewerMediaZoom.isShowDetail = false
 
@@ -372,7 +369,6 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerMediaZoom.index = currentIndex + 1
         viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex + 1])
         viewerMediaZoom.metadata = metadatas[currentIndex + 1]
-        viewerMediaZoom.delegate = self
         viewerMediaZoom.viewerMedia = self
         viewerMediaZoom.isShowDetail = false
 
@@ -551,6 +547,7 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
     }
 }
 
+/*
 //MARK: - NCViewerMediaZoomDelegate
 
 extension NCViewerMedia: NCViewerMediaZoomDelegate {
@@ -607,4 +604,4 @@ extension NCViewerMedia: NCViewerMediaZoomDelegate {
         */
     }
 }
-
+*/
