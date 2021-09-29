@@ -350,6 +350,11 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                     cell.status.text = status.statusMessage
                     cell.status.textColor = NCBrandColor.shared.label
                     cell.status.trailingBuffer = cell.status.frame.width
+                    if cell.status.labelShouldScroll() {
+                        cell.status.tapToScroll = true
+                    } else {
+                        cell.status.tapToScroll = false
+                    }
                 }
             }
             
