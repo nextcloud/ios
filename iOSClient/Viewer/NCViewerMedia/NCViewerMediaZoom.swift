@@ -152,6 +152,7 @@ class NCViewerMediaZoom: UIViewController {
     func reload(image: UIImage, metadata: tableMetadata) {
         
         imageVideoContainer.image = image
+        self.image = image
         self.metadata = metadata
     }
         
