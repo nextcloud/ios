@@ -87,7 +87,7 @@ class NCPlayer: NSObject {
                         self.saveDurationSeconds(self.durationSeconds)
                         // NO Live Photo, seek to datamebase time
                         if !metadata.livePhoto, let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
-                            self.videoSeek(time: time)
+                            self.player?.seek(to: time)
                         }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             playerToolBar?.setBarPlayer(ncplayer: self)
