@@ -269,6 +269,8 @@ class NCPlayerToolBar: UIView {
         if newTime < ncplayer.getVideoDurationSeconds() {
             let time: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
             ncplayer.videoSeek(time: time)
+        } else if newTime >= ncplayer.getVideoDurationSeconds() {
+            ncplayer.videoSeek(time: .zero)
         }
     }
     
