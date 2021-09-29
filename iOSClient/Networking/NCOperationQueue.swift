@@ -125,15 +125,15 @@ import NCCommunication
     
     // Download Thumbnail
     
-    @objc func downloadThumbnail(metadata: tableMetadata, placeholder: Bool, cell: UIView, view: UIView?) {
+    @objc func downloadThumbnail(metadata: tableMetadata, placeholder: Bool, cell: UIView?, view: UIView?) {
         
-        let cell: NCCellProtocol = cell as! NCCellProtocol
+        let cell: NCCellProtocol? = cell as? NCCellProtocol
         
         if placeholder {
             if metadata.iconName.count > 0 {
-                cell.filePreviewImageView?.image = UIImage.init(named: metadata.iconName)
+                cell?.filePreviewImageView?.image = UIImage.init(named: metadata.iconName)
             } else {
-                cell.filePreviewImageView?.image = NCBrandColor.cacheImages.file
+                cell?.filePreviewImageView?.image = NCBrandColor.cacheImages.file
             }
         }
         
@@ -397,13 +397,13 @@ class NCOperationSynchronization: ConcurrentOperation {
 class NCOperationDownloadThumbnail: ConcurrentOperation {
    
     var metadata: tableMetadata
-    var cell: NCCellProtocol!
+    var cell: NCCellProtocol?
     var view: UIView?
     var fileNamePath: String = ""
     var fileNamePreviewLocalPath: String = ""
     var fileNameIconLocalPath: String = ""
     
-    init(metadata: tableMetadata, cell: NCCellProtocol, view: UIView?) {
+    init(metadata: tableMetadata, cell: NCCellProtocol?, view: UIView?) {
         self.metadata = tableMetadata.init(value: metadata)
         self.cell = cell
         self.view = view
@@ -425,7 +425,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                 
                 if errorCode == 0 && imageIcon != nil {
                     NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                    if self.metadata.ocId == self.cell.fileObjectId {
+                    if self.metadata.ocId == self.cell?.fileObjectId {
                         if let filePreviewImageView = self.cell?.filePreviewImageView  {
                             UIView.transition(with: filePreviewImageView,
                                 duration: 0.75,
@@ -440,6 +440,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                             (self.view as? UITableView)?.reloadData()
                         }
                     }
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedThumbnail, userInfo: ["ocId": self.metadata.ocId])
                 }
                 self.finish()
             }

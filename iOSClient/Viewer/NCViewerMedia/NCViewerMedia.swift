@@ -124,6 +124,8 @@ class NCViewerMedia: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object:nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadedThumbnail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedThumbnail), object: nil)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -143,6 +145,8 @@ class NCViewerMedia: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedThumbnail), object: nil)
     }
     
     @objc func viewUnload() {
@@ -174,6 +178,15 @@ class NCViewerMedia: UIViewController {
                 if self.metadatas.first(where: { $0.ocId == metadata.ocId }) != nil {
                     progressView.progress = 0
                 }
+            }
+        }
+    }
+    
+    @objc func downloadedThumbnail(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            if let image = getImageMetadata(metadatas[currentIndex]) {
+                currentViewController.reload(image: image, metadata: metadata)
             }
         }
     }

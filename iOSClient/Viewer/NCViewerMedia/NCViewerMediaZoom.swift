@@ -309,24 +309,7 @@ extension NCViewerMediaZoom {
         // DOWNLOAD preview
         if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) && metadata.hasPreview {
             
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
-            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-            var etagResource: String?
-            
-            if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
-                etagResource = metadata.etagResource
-            }
-            
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorMessage) in
-                
-                if errorCode == 0 {
-                    NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                    if let image = self.viewerMedia?.getImageMetadata(self.metadata) {
-                        self.reload(image: image, metadata: self.metadata)
-                    }
-                }
-            }
+            NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: false, cell: nil, view: nil)
         }
     }
 }
