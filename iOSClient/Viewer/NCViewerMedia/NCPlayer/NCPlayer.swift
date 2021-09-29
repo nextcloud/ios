@@ -76,9 +76,9 @@ class NCPlayer: NSObject {
                             self.videoLayer = AVPlayerLayer(player: self.player)
                             self.videoLayer!.frame = imageVideoContainer.bounds
                             self.videoLayer!.videoGravity = .resizeAspect
-//                            if !metadata.livePhoto {
-//                                imageVideoContainer.image = imageVideoContainer.image?.image(alpha: 0)
-//                            }
+                            if !metadata.livePhoto {
+                                imageVideoContainer.image = imageVideoContainer.image?.image(alpha: 0)
+                            }
                             imageVideoContainer.layer.addSublayer(self.videoLayer!)
                             imageVideoContainer.playerLayer = self.videoLayer
                             imageVideoContainer.metadata = self.metadata
