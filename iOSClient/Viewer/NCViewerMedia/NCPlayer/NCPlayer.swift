@@ -198,6 +198,7 @@ class NCPlayer: NSObject {
                 let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
                 let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
                 let imageGenerator = AVAssetImageGenerator(asset: asset)
+                imageGenerator.appliesPreferredTrackTransform = true
                 let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
                 image = UIImage(cgImage: cgImage)
                 // Preview
