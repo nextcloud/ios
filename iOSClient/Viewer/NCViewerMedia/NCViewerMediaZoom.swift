@@ -79,16 +79,20 @@ class NCViewerMediaZoom: UIViewController {
                 playerToolBar.isHidden = false
             }
             imageVideoContainer.image = image
+            imageVideoContainer.sourceImage = image
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             if image == nil {
                 image = UIImage.init(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
             }
             imageVideoContainer.image = image
+            imageVideoContainer.sourceImage = image
+
         } else {
             if image == nil {
                 image = UIImage.init(named: "noPreview")!.image(color: .gray, size: view.frame.width)
             }
             imageVideoContainer.image = image
+            imageVideoContainer.sourceImage = image
         }
         
         if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
@@ -151,8 +155,11 @@ class NCViewerMediaZoom: UIViewController {
     
     func reload(image: UIImage, metadata: tableMetadata) {
         
-        imageVideoContainer.image = image
         self.image = image
+
+        imageVideoContainer.image = image
+        imageVideoContainer.sourceImage = image
+        
         self.metadata = metadata
     }
         
@@ -355,6 +362,7 @@ extension NCViewerMediaZoom: UIScrollViewDelegate {
 class imageVideoContainerView: UIImageView {
     var playerLayer: CALayer?
     var metadata: tableMetadata?
+    var sourceImage: UIImage?
     override func layoutSublayers(of layer: CALayer) {
         super.layoutSublayers(of: layer)
         playerLayer?.frame = self.bounds
