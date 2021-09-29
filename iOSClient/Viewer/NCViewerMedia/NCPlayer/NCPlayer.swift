@@ -58,7 +58,7 @@ class NCPlayer: NSObject {
         // At end go back to start & show toolbar
         observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
             if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
-                self.player?.seek(to: .zero)
+                self.videoSeek(time: .zero)
                 self.playerToolBar?.showToolBar(metadata: metadata, detailView: nil)
                 NCKTVHTTPCache.shared.saveCache(metadata: metadata)
             }
@@ -142,6 +142,7 @@ class NCPlayer: NSObject {
         guard let metadata = self.metadata else { return }
 
         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationSeconds: nil)
+        generatorImagePreview()
     }
     
     func saveDurationSeconds(_ durationSeconds: Double) {
@@ -185,9 +186,9 @@ class NCPlayer: NSObject {
         return self.durationSeconds
     }
     
-    func generatorImagePreview() -> UIImage? {
-        guard let time = self.player?.currentTime() else { return nil }
-        guard let metadata = self.metadata else { return nil }
+    func generatorImagePreview() {
+        guard let time = self.player?.currentTime() else { return }
+        guard let metadata = self.metadata else { return }
 
         var image: UIImage?
 
@@ -212,8 +213,6 @@ class NCPlayer: NSObject {
                 print(error.localizedDescription)
             }
         }
-        
-        return image
     }
 }
 
