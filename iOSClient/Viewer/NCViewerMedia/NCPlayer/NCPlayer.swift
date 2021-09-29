@@ -48,7 +48,11 @@ class NCPlayer: NSObject {
         self.playerToolBar = playerToolBar
         self.metadata = metadata
         
-        self.player?.isMuted = CCUtility.getAudioMute()
+        if metadata.livePhoto {
+            self.player?.isMuted = false
+        } else {
+            self.player?.isMuted = CCUtility.getAudioMute()
+        }
         self.player?.seek(to: .zero)
 
         // At end go back to start & show toolbar
