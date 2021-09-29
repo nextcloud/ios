@@ -80,6 +80,7 @@ class NCViewerMediaZoom: UIViewController {
             }
             imageVideoContainer.image = image
             imageVideoContainer.sourceImage = image
+            
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             if image == nil {
                 image = UIImage.init(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
