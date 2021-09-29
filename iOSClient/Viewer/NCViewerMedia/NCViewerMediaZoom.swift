@@ -106,14 +106,12 @@ class NCViewerMediaZoom: UIViewController {
         
         detailViewConstraint.constant = 0
         detailView.hide()
-        
-        viewerMedia?.navigationItem.title = metadata.fileNameView
-
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        viewerMedia?.navigationItem.title = metadata.fileNameView
         
         imageVideoContainer.image = image
     }

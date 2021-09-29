@@ -50,11 +50,16 @@ class NCPlayer: NSObject {
         
         if metadata.livePhoto {
             self.player?.isMuted = false
+            self.player?.seek(to: .zero)
         } else {
             self.player?.isMuted = CCUtility.getAudioMute()
+            if let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
+                self.player?.seek(to: time)
+            } else {
+                self.player?.seek(to: .zero)
+            }
         }
-        self.player?.seek(to: .zero)
-
+        
         // At end go back to start & show toolbar
         observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
             if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
@@ -85,10 +90,6 @@ class NCPlayer: NSObject {
                         }
                         self.durationSeconds = CMTimeGetSeconds(duration)
                         self.saveDurationSeconds(self.durationSeconds)
-                        // NO Live Photo, seek to datamebase time
-                        if !metadata.livePhoto, let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
-                            self.player?.seek(to: time)
-                        }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             playerToolBar?.setBarPlayer(ncplayer: self)
                         }
