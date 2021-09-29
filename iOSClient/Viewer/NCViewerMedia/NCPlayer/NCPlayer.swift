@@ -87,7 +87,7 @@ class NCPlayer: NSObject {
                         self.saveDurationSeconds(self.durationSeconds)
                         // NO Live Photo, seek to datamebase time
                         if !metadata.livePhoto, let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
-                            self.player?.seek(to: time)
+                            self.videoSeek(time: time)
                         }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             playerToolBar?.setBarPlayer(ncplayer: self)
@@ -185,17 +185,28 @@ class NCPlayer: NSObject {
         return self.durationSeconds
     }
     
-    func generatorImage() -> UIImage? {
+    func generatorImagePreview() -> UIImage? {
         guard let time = self.player?.currentTime() else { return nil }
-        
+        guard let metadata = self.metadata else { return nil }
+
         var image: UIImage?
 
         if let asset = self.player?.currentItem?.asset {
 
             do {
+                let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+                let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
                 let imageGenerator = AVAssetImageGenerator(asset: asset)
                 let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
                 image = UIImage(cgImage: cgImage)
+                // Preview
+                if let data = image?.jpegData(compressionQuality: 0.5) {
+                    try data.write(to: URL.init(fileURLWithPath: fileNamePreviewLocalPath), options: .atomic)
+                }
+                // Icon
+                if let data = image?.jpegData(compressionQuality: 0.5) {
+                    try data.write(to: URL.init(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
+                }
             }
             catch let error as NSError {
                 print(error.localizedDescription)
