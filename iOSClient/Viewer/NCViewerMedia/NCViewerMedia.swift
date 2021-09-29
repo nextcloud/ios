@@ -45,11 +45,9 @@ class NCViewerMedia: UIViewController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     var metadatas: [tableMetadata] = []
-    var currentMetadata: tableMetadata = tableMetadata()
     var currentIndex = 0
     var nextIndex: Int?
        
-    var currentViewerMediaZoom: NCViewerMediaZoom?
     var ncplayer: NCPlayer?
     
     var panGestureRecognizer: UIPanGestureRecognizer!
@@ -155,8 +153,8 @@ class NCViewerMedia: UIViewController {
     
     @objc func openMenuMore() {
         
-        let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(currentMetadata.ocId, etag: currentMetadata.etag))
-        NCViewer.shared.toggleMenu(viewController: self, metadata: currentMetadata, webView: false, imageIcon: imageIcon)
+        let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(currentViewController.metadata.ocId, etag: currentViewController.metadata.etag))
+        NCViewer.shared.toggleMenu(viewController: self, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon)
     }
     
     deinit {
@@ -169,9 +167,9 @@ class NCViewerMedia: UIViewController {
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode == 0  && metadata.ocId == currentMetadata.ocId {
+                if errorCode == 0  && metadata.ocId == currentViewController.metadata.ocId {
                     if let image = getImageMetadata(metadatas[currentIndex]) {
-                        currentViewerMediaZoom?.reload(image: image, metadata: metadata)
+                        currentViewController.reload(image: image, metadata: metadata)
                     }
                 }
                 if self.metadatas.first(where: { $0.ocId == metadata.ocId }) != nil {
@@ -185,7 +183,7 @@ class NCViewerMedia: UIViewController {
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode == 0  && metadata.ocId == currentMetadata.ocId {
+                if errorCode == 0  && metadata.ocId == currentViewController.metadata.ocId {
                     //self.reloadCurrentPage()
                 }
             }
@@ -217,7 +215,7 @@ class NCViewerMedia: UIViewController {
                 if self.metadatas.count == metadatas.count { return }
                 self.metadatas = metadatas
                 
-                if ocId == currentViewerMediaZoom?.metadata.ocId {
+                if ocId == currentViewController.metadata.ocId {
                     if !shiftCurrentPage() {
                         self.viewUnload()
                     }
@@ -235,8 +233,8 @@ class NCViewerMedia: UIViewController {
                     metadatas[index] = metadata
                     if index == currentIndex {
                         navigationItem.title = metadata.fileNameView
-                        currentViewerMediaZoom?.metadata = metadata
-                        self.currentMetadata = metadata
+                        currentViewController.metadata = metadata
+                        self.currentViewController.metadata = metadata
                     }
                 }
             }
@@ -450,14 +448,14 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
 
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
         
-        currentViewerMediaZoom?.didPanWith(gestureRecognizer: gestureRecognizer)
+        currentViewController.didPanWith(gestureRecognizer: gestureRecognizer)
     }
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
 
-        if let viewerMediaZoom = currentViewerMediaZoom, let playerToolBar = viewerMediaZoom.playerToolBar {
+        if let playerToolBar = currentViewController.playerToolBar {
             
-            if playerToolBar.showToolBar(metadata: currentMetadata, detailView: viewerMediaZoom.detailView) {
+            if playerToolBar.showToolBar(metadata: currentViewController.metadata, detailView: currentViewController.detailView) {
                 return
             }
         }
@@ -482,7 +480,7 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
         }
         
         // Detail Text Color
-        currentViewerMediaZoom?.detailView.textColor(textColor)
+        currentViewController.detailView.textColor(textColor)
     }
     
     //
@@ -490,23 +488,23 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
     //
     @objc func didLongpressGestureEvent(gestureRecognizer: UITapGestureRecognizer) {
         
-        if !currentMetadata.livePhoto { return }
+        if !currentViewController.metadata.livePhoto { return }
         
         if gestureRecognizer.state == .began {
             
-            currentViewerMediaZoom?.updateViewConstraints()
-            currentViewerMediaZoom?.statusViewImage.isHidden = true
-            currentViewerMediaZoom?.statusLabel.isHidden = true
+            currentViewController.updateViewConstraints()
+            currentViewController.statusViewImage.isHidden = true
+            currentViewController.statusLabel.isHidden = true
             
-            let fileName = (currentMetadata.fileNameView as NSString).deletingPathExtension + ".mov"
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentMetadata.account, currentMetadata.serverUrl, fileName)) {
+            let fileName = (currentViewController.metadata.fileNameView as NSString).deletingPathExtension + ".mov"
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentViewController.metadata.account, currentViewController.metadata.serverUrl, fileName)) {
                 
                 if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                     
                     AudioServicesPlaySystemSound(1519) // peek feedback
                     
                     if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                        self.ncplayer = NCPlayer.init(url: url, imageVideoContainer: self.currentViewerMediaZoom?.imageVideoContainer, playerToolBar: nil, metadata: metadata)
+                        self.ncplayer = NCPlayer.init(url: url, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata)
                         self.ncplayer?.videoPlay()
                     }
                     
@@ -535,7 +533,7 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
                                 AudioServicesPlaySystemSound(1519) // peek feedback
                                 
                                 if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                                    self.ncplayer = NCPlayer.init(url: url, imageVideoContainer: self.currentViewerMediaZoom?.imageVideoContainer, playerToolBar: nil, metadata: metadata)
+                                    self.ncplayer = NCPlayer.init(url: url, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata)
                                     self.ncplayer?.videoPlay()
                                 }
                             }
@@ -546,8 +544,8 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
             
         } else if gestureRecognizer.state == .ended {
             
-            currentViewerMediaZoom?.statusViewImage.isHidden = false
-            currentViewerMediaZoom?.statusLabel.isHidden = false
+            currentViewController.statusViewImage.isHidden = false
+            currentViewController.statusLabel.isHidden = false
             self.ncplayer?.videoRemoved()
         }
     }
