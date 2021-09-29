@@ -90,9 +90,10 @@ class NCPlayer: NSObject {
                         }
                         self.durationSeconds = CMTimeGetSeconds(duration)
                         self.saveDurationSeconds(self.durationSeconds)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        //DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             playerToolBar?.setBarPlayer(ncplayer: self)
-                        }
+                        //}
+                        self.generatorImagePreview()
                     }
                     break
                 case .failed:
