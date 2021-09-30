@@ -91,15 +91,16 @@ class NCPlayerToolBar: UIView {
     func setBarPlayer(ncplayer: NCPlayer) {
                         
         self.ncplayer = ncplayer
+        if let durationTime = NCManageDatabase.shared.getVideoDurationTime(metadata: ncplayer.metadata) {
         
-        playbackSlider.value = 0
-        playbackSlider.minimumValue = 0
-        playbackSlider.maximumValue = Float(ncplayer.getVideoDurationSeconds())
-        playbackSlider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
+            playbackSlider.value = 0
+            playbackSlider.minimumValue = 0
+            playbackSlider.maximumValue = Float(durationTime.value)
+            playbackSlider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
 
-        labelCurrentTime.text = NCUtility.shared.stringFromTime(.zero)
-        labelOverallDuration.text = "-" + NCUtility.shared.stringFromTimeInterval(interval:ncplayer.getVideoDurationSeconds())
-                
+            labelCurrentTime.text = NCUtility.shared.stringFromTime(.zero)
+            labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(durationTime)
+        }
         updateToolBar()
         
         ncplayer.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
@@ -152,11 +153,12 @@ class NCPlayerToolBar: UIView {
     public func updateToolBar() {
 
         var namedPlay = "play.fill"
-        if ncplayer?.player?.rate == 1 { namedPlay = "pause.fill"}
-        let currentSeconds = ncplayer?.getVideoCurrentSeconds() ?? 0
-        let durationSeconds = ncplayer?.getVideoDurationSeconds() ?? 0
+        let durationTime = NCManageDatabase.shared.getVideoDurationTime(metadata: ncplayer?.metadata) ?? .zero
+        let currentTime = ncplayer?.player?.currentTime() ?? .zero
         
-        playbackSlider.value = Float(currentSeconds)
+        if ncplayer?.player?.rate == 1 { namedPlay = "pause.fill"}
+        
+        playbackSlider.value = Float(currentTime.value)
         playbackSlider.isEnabled = true
         
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white), for: .normal)
@@ -179,8 +181,8 @@ class NCPlayerToolBar: UIView {
         }
         muteButton.isEnabled = true
         
-        labelCurrentTime.text = NCUtility.shared.stringFromTimeInterval(interval: currentSeconds)
-        labelOverallDuration.text = "-" + NCUtility.shared.stringFromTimeInterval(interval: durationSeconds - currentSeconds)
+        labelCurrentTime.text = NCUtility.shared.stringFromTime(currentTime)
+        labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(durationTime - currentTime)
     }
     
     //MARK: - Event / Gesture
@@ -263,27 +265,27 @@ class NCPlayerToolBar: UIView {
         guard let ncplayer = ncplayer else { return }
         guard let player = ncplayer.player else { return }
         
-        let playerCurrentTime = CMTimeGetSeconds(player.currentTime())
-        let newTime = playerCurrentTime + seekDuration
+//        let playerCurrentTime = CMTimeGetSeconds(player.currentTime())
+//        let newTime = playerCurrentTime + seekDuration
         
-        if newTime < ncplayer.getVideoDurationSeconds() {
-            let time: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
-            ncplayer.videoSeek(time: time)
-        } else if newTime >= ncplayer.getVideoDurationSeconds() {
-            ncplayer.videoSeek(time: .zero)
-        }
+//        if newTime < ncplayer.getVideoDurationSeconds() {
+//            let time: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
+//            ncplayer.videoSeek(time: time)
+//        } else if newTime >= ncplayer.getVideoDurationSeconds() {
+//            ncplayer.videoSeek(time: .zero)
+//        }
     }
     
     @IBAction func backButtonSec(_ sender: Any) {
         guard let ncplayer = ncplayer else { return }
         guard let player = ncplayer.player else { return }
         
-        let playerCurrenTime = CMTimeGetSeconds(player.currentTime())
-        var newTime = playerCurrenTime - seekDuration
+//        let playerCurrenTime = CMTimeGetSeconds(player.currentTime())
+//        var newTime = playerCurrenTime - seekDuration
         
-        if newTime < 0 { newTime = 0 }
-        let time: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
+//        if newTime < 0 { newTime = 0 }
+//        let time: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
         
-        ncplayer.videoSeek(time: time)
+//        ncplayer.videoSeek(time: time)
     }
 }

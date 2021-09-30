@@ -3128,7 +3128,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Video
     
-    func addVideoTime(metadata: tableMetadata, time: CMTime?, duration: CMTime?) {
+    func addVideoTime(metadata: tableMetadata, time: CMTime?, durationTime: CMTime?) {
         
         if metadata.livePhoto { return }
         let realm = try! Realm()
@@ -3137,11 +3137,11 @@ class NCManageDatabase: NSObject {
             try realm.safeWrite {
                 if let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first {
                     
-                    if let duration = duration {
-                        result.duration = Int64(CMTimeGetSeconds(duration)) * 1000
+                    if let durationTime = durationTime {
+                        result.duration = durationTime.value
                     }
                     if let time = time {
-                        result.time = Int64(CMTimeGetSeconds(time)) * 1000
+                        result.time = time.value
                     }
                     realm.add(result, update: .all)
 
@@ -3150,12 +3150,12 @@ class NCManageDatabase: NSObject {
                     let addObject = tableVideo()
                    
                     addObject.account = metadata.account
-                    if let duration = duration {
-                        addObject.duration = Int64(CMTimeGetSeconds(duration)) * 1000
+                    if let durationTime = durationTime {
+                        addObject.duration = durationTime.value //Int64(CMTimeGetSeconds(duration)) * 1000
                     }
                     addObject.ocId = metadata.ocId
                     if let time = time {
-                        addObject.time = Int64(CMTimeGetSeconds(time)) * 1000
+                        addObject.time = time.value //Int64(CMTimeGetSeconds(time)) * 1000
                     }
                     realm.add(addObject, update: .all)
                 }
@@ -3165,7 +3165,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getVideoDuration(metadata: tableMetadata?) -> CMTime? {
+    func getVideoDurationTime(metadata: tableMetadata?) -> CMTime? {
         guard let metadata = metadata else { return nil }
 
         if metadata.livePhoto { return nil }
@@ -3176,7 +3176,7 @@ class NCManageDatabase: NSObject {
         }
         
         if result.duration == 0 { return nil }
-        let duration = CMTimeMake(value: result.duration, timescale: 1000)
+        let duration = CMTimeMake(value: result.duration, timescale: 0)
         return duration
     }
     
@@ -3190,11 +3190,11 @@ class NCManageDatabase: NSObject {
         }
         
         if result.time == 0 { return nil }
-        let time = CMTimeMake(value: result.time, timescale: 1000)
+        let time = CMTimeMake(value: result.time, timescale: 0)
         return time
     }
     
-    func deleteVideoTime(metadata: tableMetadata) {
+    func deleteVideo(metadata: tableMetadata) {
         
         let realm = try! Realm()
 

@@ -155,9 +155,9 @@ class NCViewerMediaDetailView: UIView {
                 dimValue.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
             }
         } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue  {
-            if let duration = NCManageDatabase.shared.getVideoDuration(metadata: metadata) {
+            if let durationTime = NCManageDatabase.shared.getVideoDurationTime(metadata: metadata) {
                 self.dimLabel.text = NSLocalizedString("_duration_", comment: "")
-                self.dimValue.text = NCUtility.shared.stringFromTime(duration)
+                self.dimValue.text = NCUtility.shared.stringFromTime(durationTime)
             }
         }
         

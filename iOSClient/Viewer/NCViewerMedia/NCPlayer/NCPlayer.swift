@@ -177,15 +177,15 @@ class NCPlayer: NSObject {
         self.metadata = nil
     }
     
-    func getVideoCurrentSeconds() -> Float64 {
-        
-        return CMTimeGetSeconds(self.player?.currentTime() ?? .zero)
-    }
+//    func getVideoCurrentSeconds() -> Float64 {
+//
+//        return CMTimeGetSeconds(self.player?.currentTime() ?? .zero)
+//    }
     
-    func getVideoDurationSeconds() -> Float64 {
-        
-        return self.durationSeconds
-    }
+//    func getVideoDurationSeconds() -> Float64 {
+//
+//        return self.durationSeconds
+//    }
     
     func generatorImagePreview() {
         guard let time = self.player?.currentTime() else { return }
