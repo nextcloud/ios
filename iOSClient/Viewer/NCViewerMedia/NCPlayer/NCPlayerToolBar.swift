@@ -23,6 +23,7 @@
 
 import Foundation
 import NCCommunication
+import CoreMedia
 
 class NCPlayerToolBar: UIView {
     
@@ -45,6 +46,7 @@ class NCPlayerToolBar: UIView {
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
     private let seekDuration: Float64 = 15
+    private var durationTime: CMTime = .zero
 
     // MARK: - View Life Cycle
 
@@ -93,6 +95,8 @@ class NCPlayerToolBar: UIView {
         self.ncplayer = ncplayer
         if let durationTime = NCManageDatabase.shared.getVideoDurationTime(metadata: ncplayer.metadata) {
         
+            self.durationTime = durationTime
+            
             playbackSlider.value = 0
             playbackSlider.minimumValue = 0
             playbackSlider.maximumValue = Float(durationTime.value)
@@ -153,7 +157,6 @@ class NCPlayerToolBar: UIView {
     public func updateToolBar() {
 
         var namedPlay = "play.fill"
-        let durationTime = NCManageDatabase.shared.getVideoDurationTime(metadata: ncplayer?.metadata) ?? .zero
         var currentTime = ncplayer?.player?.currentTime() ?? .zero
         currentTime = currentTime.convertScale(1000, method: .default)
         
@@ -183,7 +186,7 @@ class NCPlayerToolBar: UIView {
         muteButton.isEnabled = true
         
         labelCurrentTime.text = NCUtility.shared.stringFromTime(currentTime)
-        labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(durationTime - currentTime)
+        labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(self.durationTime - currentTime)
     }
     
     //MARK: - Event / Gesture
@@ -193,7 +196,7 @@ class NCPlayerToolBar: UIView {
         if let touchEvent = event.allTouches?.first {
             
             let seconds: Int64 = Int64(self.playbackSlider.value)
-            let targetTime: CMTime = CMTimeMake(value: seconds, timescale: 1)
+            let targetTime: CMTime = CMTimeMake(value: seconds, timescale: 1000)
             
             switch touchEvent.phase {
             case .began:
