@@ -88,9 +88,6 @@ class NCPlayer: NSObject {
                             imageVideoContainer.metadata = self.metadata
                         }
                         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationTime: durationTime)
-
-//                        self.durationSeconds = CMTimeGetSeconds(duration)
-//                        self.saveDurationSeconds(self.durationSeconds)
                         self.playerToolBar?.setBarPlayer(ncplayer: self)
                         self.generatorImagePreview()
                     }

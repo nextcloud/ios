@@ -154,7 +154,8 @@ class NCPlayerToolBar: UIView {
 
         var namedPlay = "play.fill"
         let durationTime = NCManageDatabase.shared.getVideoDurationTime(metadata: ncplayer?.metadata) ?? .zero
-        let currentTime = ncplayer?.player?.currentTime() ?? .zero
+        var currentTime = ncplayer?.player?.currentTime() ?? .zero
+        currentTime = currentTime.convertScale(1000, method: .default)
         
         if ncplayer?.player?.rate == 1 { namedPlay = "pause.fill"}
         

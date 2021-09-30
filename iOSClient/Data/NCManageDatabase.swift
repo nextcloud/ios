@@ -3138,10 +3138,10 @@ class NCManageDatabase: NSObject {
                 if let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first {
                     
                     if let durationTime = durationTime {
-                        result.duration = durationTime.value
+                        result.duration = durationTime.convertScale(1000, method: .default).value
                     }
                     if let time = time {
-                        result.time = time.value
+                        result.time = time.convertScale(1000, method: .default).value
                     }
                     realm.add(result, update: .all)
 
@@ -3151,11 +3151,11 @@ class NCManageDatabase: NSObject {
                    
                     addObject.account = metadata.account
                     if let durationTime = durationTime {
-                        addObject.duration = durationTime.value //Int64(CMTimeGetSeconds(duration)) * 1000
+                        addObject.duration = durationTime.convertScale(1000, method: .default).value
                     }
                     addObject.ocId = metadata.ocId
                     if let time = time {
-                        addObject.time = time.value //Int64(CMTimeGetSeconds(time)) * 1000
+                        addObject.time = time.convertScale(1000, method: .default).value
                     }
                     realm.add(addObject, update: .all)
                 }
@@ -3176,7 +3176,7 @@ class NCManageDatabase: NSObject {
         }
         
         if result.duration == 0 { return nil }
-        let duration = CMTimeMake(value: result.duration, timescale: 0)
+        let duration = CMTimeMake(value: result.duration, timescale: 1000)
         return duration
     }
     
@@ -3190,7 +3190,7 @@ class NCManageDatabase: NSObject {
         }
         
         if result.time == 0 { return nil }
-        let time = CMTimeMake(value: result.time, timescale: 0)
+        let time = CMTimeMake(value: result.time, timescale: 1000)
         return time
     }
     
