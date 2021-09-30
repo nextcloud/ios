@@ -69,7 +69,7 @@ class NCPlayer: NSObject {
         }
         
         self.player?.currentItem?.asset.loadValuesAsynchronously(forKeys: ["duration", "playable"], completionHandler: {
-            if let duration: CMTime = (self.player?.currentItem?.asset.duration) {
+            if let durationTime: CMTime = (self.player?.currentItem?.asset.duration) {
                 var error: NSError? = nil
                 let status = self.player?.currentItem?.asset.statusOfValue(forKey: "playable", error: &error)
                 switch status {
@@ -87,7 +87,7 @@ class NCPlayer: NSObject {
                             imageVideoContainer.playerLayer = self.videoLayer
                             imageVideoContainer.metadata = self.metadata
                         }
-                        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, duration: duration)
+                        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationTime: durationTime)
 
 //                        self.durationSeconds = CMTimeGetSeconds(duration)
 //                        self.saveDurationSeconds(self.durationSeconds)
@@ -142,14 +142,8 @@ class NCPlayer: NSObject {
     func saveTime(_ time: CMTime) {
         guard let metadata = self.metadata else { return }
 
-        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, duration: nil)
+        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationTime: nil)
         generatorImagePreview()
-    }
-    
-    func saveDurationSecondsxx(_ duration: CMTime) {
-        guard let metadata = self.metadata else { return }
-
-        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, duration: duration)
     }
     
     func videoSeek(time: CMTime) {
@@ -176,17 +170,7 @@ class NCPlayer: NSObject {
         self.playerToolBar = nil
         self.metadata = nil
     }
-    
-//    func getVideoCurrentSeconds() -> Float64 {
-//
-//        return CMTimeGetSeconds(self.player?.currentTime() ?? .zero)
-//    }
-    
-//    func getVideoDurationSeconds() -> Float64 {
-//
-//        return self.durationSeconds
-//    }
-    
+        
     func generatorImagePreview() {
         guard let time = self.player?.currentTime() else { return }
         guard let metadata = self.metadata else { return }
