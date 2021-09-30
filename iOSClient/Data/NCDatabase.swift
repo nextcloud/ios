@@ -508,7 +508,7 @@ class tableUserStatus: Object {
 class tableVideo: Object {
     
     @objc dynamic var account = ""
-    @objc dynamic var durationSeconds: Double = 0
+    @objc dynamic var duration: Int64 = 0
     @objc dynamic var ocId = ""
     @objc dynamic var time: Int64 = 0
     

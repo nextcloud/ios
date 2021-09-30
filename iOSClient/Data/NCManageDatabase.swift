@@ -25,6 +25,7 @@ import UIKit
 import RealmSwift
 import NCCommunication
 import SwiftyJSON
+import CoreMedia
 
 class NCManageDatabase: NSObject {
     @objc static let shared: NCManageDatabase = {
@@ -3127,7 +3128,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Video
     
-    func addVideoTime(metadata: tableMetadata, time: CMTime?, durationSeconds: Double?) {
+    func addVideoTime(metadata: tableMetadata, time: CMTime?, duration: CMTime?) {
         
         if metadata.livePhoto { return }
         let realm = try! Realm()
@@ -3136,8 +3137,8 @@ class NCManageDatabase: NSObject {
             try realm.safeWrite {
                 if let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first {
                     
-                    if let durationSeconds = durationSeconds {
-                        result.durationSeconds = durationSeconds
+                    if let duration = duration {
+                        result.duration = Int64(CMTimeGetSeconds(duration)) * 1000
                     }
                     if let time = time {
                         result.time = Int64(CMTimeGetSeconds(time)) * 1000
@@ -3149,8 +3150,8 @@ class NCManageDatabase: NSObject {
                     let addObject = tableVideo()
                    
                     addObject.account = metadata.account
-                    if let durationSeconds = durationSeconds {
-                        addObject.durationSeconds = durationSeconds
+                    if let duration = duration {
+                        addObject.duration = Int64(CMTimeGetSeconds(duration)) * 1000
                     }
                     addObject.ocId = metadata.ocId
                     if let time = time {
@@ -3164,7 +3165,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getVideoDurationSeconds(metadata: tableMetadata?) -> Double? {
+    func getVideoDuration(metadata: tableMetadata?) -> CMTime? {
         guard let metadata = metadata else { return nil }
 
         if metadata.livePhoto { return nil }
@@ -3174,8 +3175,9 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        if result.durationSeconds == 0 { return nil }
-        return result.durationSeconds
+        if result.duration == 0 { return nil }
+        let duration = CMTimeMake(value: result.duration, timescale: 1000)
+        return duration
     }
     
     func getVideoTime(metadata: tableMetadata) -> CMTime? {

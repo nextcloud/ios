@@ -27,6 +27,7 @@ import KTVHTTPCache
 import NCCommunication
 import PDFKit
 import Accelerate
+import CoreMedia
 
 class NCUtility: NSObject {
     @objc static let shared: NCUtility = {
@@ -692,9 +693,10 @@ class NCUtility: NSObject {
         return isEqual
     }
     
-    func stringFromTimeInterval(interval: TimeInterval) -> String {
+    func stringFromTime(_ time: CMTime) -> String {
     
-        let interval = Int(interval)
+        let interval = Int(CMTimeGetSeconds(time))
+        
         let seconds = interval % 60
         let minutes = (interval / 60) % 60
         let hours = (interval / 3600)

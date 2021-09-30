@@ -73,9 +73,9 @@ class NCPlayerToolBar: UIView {
         playbackSlider.isContinuous = true
         playbackSlider.tintColor = .lightGray
         
-        labelCurrentTime.text = NCUtility.shared.stringFromTimeInterval(interval: 0)
+        labelCurrentTime.text = NCUtility.shared.stringFromTime(.zero)
         labelCurrentTime.textColor = .lightGray
-        labelOverallDuration.text = NCUtility.shared.stringFromTimeInterval(interval: 0)
+        labelOverallDuration.text = NCUtility.shared.stringFromTime(.zero)
         labelOverallDuration.textColor = .lightGray
         
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .lightGray), for: .normal)
@@ -97,7 +97,7 @@ class NCPlayerToolBar: UIView {
         playbackSlider.maximumValue = Float(ncplayer.getVideoDurationSeconds())
         playbackSlider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
 
-        labelCurrentTime.text = NCUtility.shared.stringFromTimeInterval(interval: 0)
+        labelCurrentTime.text = NCUtility.shared.stringFromTime(.zero)
         labelOverallDuration.text = "-" + NCUtility.shared.stringFromTimeInterval(interval:ncplayer.getVideoDurationSeconds())
                 
         updateToolBar()

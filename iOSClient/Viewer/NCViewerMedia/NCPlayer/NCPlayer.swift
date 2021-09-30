@@ -30,7 +30,6 @@ class NCPlayer: NSObject {
    
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var imageVideoContainer: imageVideoContainerView?
-    private var durationSeconds: Double = 0
     private var playerToolBar: NCPlayerToolBar?
     private var observerAVPlayerItemDidPlayToEndTime: Any?
     
@@ -88,8 +87,10 @@ class NCPlayer: NSObject {
                             imageVideoContainer.playerLayer = self.videoLayer
                             imageVideoContainer.metadata = self.metadata
                         }
-                        self.durationSeconds = CMTimeGetSeconds(duration)
-                        self.saveDurationSeconds(self.durationSeconds)
+                        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, duration: duration)
+
+//                        self.durationSeconds = CMTimeGetSeconds(duration)
+//                        self.saveDurationSeconds(self.durationSeconds)
                         self.playerToolBar?.setBarPlayer(ncplayer: self)
                         self.generatorImagePreview()
                     }
@@ -141,14 +142,14 @@ class NCPlayer: NSObject {
     func saveTime(_ time: CMTime) {
         guard let metadata = self.metadata else { return }
 
-        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationSeconds: nil)
+        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, duration: nil)
         generatorImagePreview()
     }
     
-    func saveDurationSeconds(_ durationSeconds: Double) {
+    func saveDurationSecondsxx(_ duration: CMTime) {
         guard let metadata = self.metadata else { return }
 
-        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationSeconds: durationSeconds)
+        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, duration: duration)
     }
     
     func videoSeek(time: CMTime) {
