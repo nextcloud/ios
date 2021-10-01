@@ -45,9 +45,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = NCBrandColor.shared.customer
-        
+                
         // Text color
         if NCBrandColor.shared.customer.isTooLight() {
             textColor = .black
@@ -97,6 +95,23 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         certificate.isHidden = true
         certificate.isEnabled = false
         
+        // navigation
+        if #available(iOS 13.0, *) {
+            let navBarAppearance = UINavigationBarAppearance()
+            navBarAppearance.configureWithTransparentBackground()
+            navBarAppearance.shadowColor = .clear
+            navBarAppearance.shadowImage = UIImage()
+            self.navigationController?.navigationBar.standardAppearance = navBarAppearance
+            self.navigationController?.view.backgroundColor = NCBrandColor.shared.customer
+        } else {
+            self.navigationController?.navigationBar.isTranslucent = true
+            self.navigationController?.navigationBar.shadowImage = UIImage()
+            self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+            self.navigationController?.navigationBar.backgroundColor = .clear
+            self.navigationController?.navigationBar.barTintColor = NCBrandColor.shared.customer
+        }
+        self.navigationController?.navigationBar.tintColor = textColor
+        
         if NCManageDatabase.shared.getAccounts()?.count ?? 0 == 0 {
             
         } else {
@@ -110,6 +125,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
         
         self.navigationController?.navigationBar.setValue(true, forKey: "hidesShadow")
+        view.backgroundColor = NCBrandColor.shared.customer
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)

@@ -66,6 +66,7 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
             navBarAppearance.shadowColor = .clear
             navBarAppearance.shadowImage = UIImage()
             self.navigationController?.navigationBar.standardAppearance = navBarAppearance
+            self.navigationController?.view.backgroundColor = NCBrandColor.shared.customer
         } else {
             self.navigationController?.navigationBar.isTranslucent = true
             self.navigationController?.navigationBar.shadowImage = UIImage()
