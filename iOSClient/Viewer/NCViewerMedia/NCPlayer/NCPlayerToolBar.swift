@@ -45,7 +45,7 @@ class NCPlayerToolBar: UIView {
     private var ncplayer: NCPlayer?
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
-    private let seekDuration: Float64 = 15
+    private let timeToAdd: CMTime = CMTimeMakeWithSeconds(15, preferredTimescale: 1)
     private var durationTime: CMTime = .zero
 
     // MARK: - View Life Cycle
@@ -269,27 +269,23 @@ class NCPlayerToolBar: UIView {
         guard let ncplayer = ncplayer else { return }
         guard let player = ncplayer.player else { return }
         
-//        let playerCurrentTime = CMTimeGetSeconds(player.currentTime())
-//        let newTime = playerCurrentTime + seekDuration
+        let currentTime = player.currentTime()
+        let newTime = CMTimeAdd(currentTime, timeToAdd)
         
-//        if newTime < ncplayer.getVideoDurationSeconds() {
-//            let time: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
-//            ncplayer.videoSeek(time: time)
-//        } else if newTime >= ncplayer.getVideoDurationSeconds() {
-//            ncplayer.videoSeek(time: .zero)
-//        }
+        if newTime < durationTime {
+            ncplayer.videoSeek(time: newTime)
+        } else if newTime >= durationTime {
+            ncplayer.videoSeek(time: .zero)
+        }
     }
     
     @IBAction func backButtonSec(_ sender: Any) {
         guard let ncplayer = ncplayer else { return }
         guard let player = ncplayer.player else { return }
         
-//        let playerCurrenTime = CMTimeGetSeconds(player.currentTime())
-//        var newTime = playerCurrenTime - seekDuration
+        let currentTime = player.currentTime()
+        let newTime = CMTimeSubtract(currentTime, timeToAdd)
         
-//        if newTime < 0 { newTime = 0 }
-//        let time: CMTime = CMTimeMake(value: Int64(newTime * 1000 as Float64), timescale: 1000)
-        
-//        ncplayer.videoSeek(time: time)
+        ncplayer.videoSeek(time: newTime)
     }
 }
