@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/firebase/firebase-ios-sdk",
         "state": {
           "branch": null,
-          "revision": "2f972249c520cbf87ac8856f176ebc994cb1c9a6",
-          "version": "8.7.0"
+          "revision": "bb8965c3ce61634ad15ab82cb36e4ad3a9962d77",
+          "version": "8.8.0"
         }
       },
       {
@@ -60,8 +60,8 @@
         "repositoryURL": "https://github.com/google/GoogleAppMeasurement.git",
         "state": {
           "branch": null,
-          "revision": "4901bde146b0269da35470d261f741f0e910d8df",
-          "version": "8.7.0"
+          "revision": "06add56b27b88ae5180e92d4ee21a1199ee888a1",
+          "version": "8.8.0"
         }
       },
       {
@@ -147,11 +147,11 @@
       },
       {
         "package": "Parchment",
-        "repositoryURL": "https://github.com/rechsteiner/Parchment",
+        "repositoryURL": "https://github.com/marinofaggiana/Parchment",
         "state": {
-          "branch": null,
-          "revision": "689ecaa80b7b0f712887ec87746f8598f2e12907",
-          "version": "3.0.1"
+          "branch": "master",
+          "revision": "f4081dbd1a1793217686a381330e90b6626710c7",
+          "version": null
         }
       },
       {
@@ -186,8 +186,8 @@
         "repositoryURL": "https://github.com/realm/realm-cocoa",
         "state": {
           "branch": null,
-          "revision": "4cbe20f31b1bcc20190c724632143b4f9b8ac3e3",
-          "version": "10.15.1"
+          "revision": "052f92ef8dd411616cfcfae8dd82888dcd4ecf45",
+          "version": "10.16.0"
         }
       },
       {
