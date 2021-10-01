@@ -104,29 +104,17 @@ class NCViewerMediaDetailView: UIView {
         
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensMode) in
+                
                 self.latitude = latitude
                 self.longitude = longitude
                 self.location = location
                 self.date = date as NSDate?
+                
                 self.updateContent()
             };
+        } else {
+            self.updateContent()
         }
-    
-        if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
-            
-            let latitudeString = localFile.exifLatitude
-            let longitudeString = localFile.exifLongitude
-            self.latitude = Double(localFile.exifLatitude) ?? 0
-            self.longitude = Double(localFile.exifLongitude) ?? 0
-            self.date = localFile.exifDate
-            self.lensModel = localFile.exifLensModel
-            
-            if let locationDB = NCManageDatabase.shared.getLocationFromGeoLatitude(latitudeString, longitude: longitudeString) {
-                location = locationDB
-            }
-        }
-        
-        self.updateContent()
     }
     
     //MARK: - Map

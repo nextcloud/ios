@@ -191,16 +191,20 @@ class NCViewerMediaZoom: UIViewController {
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
                 
         let currentLocation = gestureRecognizer.translation(in: self.view)
+        let velocity = gestureRecognizer.velocity(in: self.view)
         
         switch gestureRecognizer.state {
         
         case .began:
             
-            var heightMap = (view.bounds.height / 3)
-            if view.bounds.width < view.bounds.height {
-                heightMap = (view.bounds.width / 3)
+            // gesture moving Up
+            if velocity.y < 0 {
+                var heightMap = (view.bounds.height / 3)
+                if view.bounds.width < view.bounds.height {
+                    heightMap = (view.bounds.width / 3)
+                }
+                detailView.update(metadata: metadata, image: image, heightMap: heightMap)
             }
-            detailView.update(metadata: metadata, image: image, heightMap: heightMap)
 
         case .ended:
             
