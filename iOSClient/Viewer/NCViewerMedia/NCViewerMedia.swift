@@ -497,6 +497,11 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
             textColor = .white
             progressView.isHidden = true
             
+            // Hide playerToolBar
+            if !currentViewController.playerToolBar.isHidden {
+                currentViewController.playerToolBar.hideToolBar()
+            }
+            
             currentMode = .full
         }
         
