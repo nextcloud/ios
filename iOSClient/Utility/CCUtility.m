@@ -1676,7 +1676,7 @@
     double latitude = 0;
     double longitude = 0;
     
-    NSDate *date = [NSDate new];
+    NSDate *date = nil;
     long fileSize = 0;
     int pixelY = 0;
     int pixelX = 0;
@@ -1697,7 +1697,7 @@
     CFDictionaryRef fileProperties = CGImageSourceCopyProperties(originalSource, nil);
     if (!fileProperties) {
         CFRelease(originalSource);
-        completition(latitude, longitude, location,date, lensModel);
+        completition(latitude, longitude, location, date, lensModel);
         return;
     }
     
@@ -1705,12 +1705,11 @@
     NSNumber *fileSizeNumber = CFDictionaryGetValue(fileProperties, kCGImagePropertyFileSize);
     fileSize = [fileSizeNumber longValue];
     
-    
     CFDictionaryRef imageProperties = CGImageSourceCopyPropertiesAtIndex(originalSource, 0, NULL);
     if (!imageProperties) {
         CFRelease(originalSource);
         CFRelease(fileProperties);
-        completition(latitude, longitude, location,date, lensModel);
+        completition(latitude, longitude, location, date, lensModel);
         return;
     }
 
@@ -1725,6 +1724,10 @@
         NSString *sPixelY = (NSString *)CFDictionaryGetValue(exif, kCGImagePropertyExifPixelYDimension);
         pixelY = [sPixelY intValue];
         lensModel = (NSString *)CFDictionaryGetValue(exif, kCGImagePropertyExifLensModel);
+        dateTime = (NSString *)CFDictionaryGetValue(exif, kCGImagePropertyExifDateTimeOriginal);
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss"];
+        date = [dateFormatter dateFromString:dateTime];
     }
  
     if (tiff) {
@@ -1733,7 +1736,6 @@
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss"];
         date = [dateFormatter dateFromString:dateTime];
-        if (!date) date = metadata.date;
     }
     
     if (gps) {

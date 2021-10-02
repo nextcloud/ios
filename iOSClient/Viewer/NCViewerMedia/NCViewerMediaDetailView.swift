@@ -100,7 +100,6 @@ class NCViewerMediaDetailView: UIView {
         self.heightMap = heightMap
         self.image = image
         self.size = metadata.size
-        self.date = metadata.date
         
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensMode) in
@@ -134,6 +133,9 @@ class NCViewerMediaDetailView: UIView {
             
             dateLabel.text = NSLocalizedString("_date_", comment: "")
             dateValue.text = dateString
+        } else {
+            dateLabel.text = NSLocalizedString("_date_", comment: "")
+            dateValue.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         // Dimension / Duration
