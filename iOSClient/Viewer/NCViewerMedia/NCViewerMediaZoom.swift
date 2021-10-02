@@ -85,6 +85,8 @@ class NCViewerMediaZoom: UIViewController {
             if image == nil {
                 image = UIImage.init(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
             }
+            // Show Video Toolbar
+            playerToolBar.isHidden = false
             imageVideoContainer.image = image
             imageVideoContainer.sourceImage = image
 

@@ -50,6 +50,9 @@ class NCPlayer: NSObject {
         if metadata.livePhoto {
             self.player?.isMuted = false
             self.player?.seek(to: .zero)
+        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+            self.player?.isMuted = CCUtility.getAudioMute()
+            self.player?.seek(to: .zero)
         } else {
             self.player?.isMuted = CCUtility.getAudioMute()
             if let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
@@ -76,16 +79,21 @@ class NCPlayer: NSObject {
                 case .loaded:
                     DispatchQueue.main.async {
                         if let imageVideoContainer = imageVideoContainer {
+                            
                             self.imageVideoContainer = imageVideoContainer
                             self.videoLayer = AVPlayerLayer(player: self.player)
                             self.videoLayer!.frame = imageVideoContainer.bounds
                             self.videoLayer!.videoGravity = .resizeAspect
-                            if !metadata.livePhoto {
-                                imageVideoContainer.image = imageVideoContainer.image?.image(alpha: 0)
+                            
+                            if metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue {
+                            
+                                if !metadata.livePhoto {
+                                    imageVideoContainer.image = imageVideoContainer.image?.image(alpha: 0)
+                                }
+                                imageVideoContainer.layer.addSublayer(self.videoLayer!)
+                                imageVideoContainer.playerLayer = self.videoLayer
+                                imageVideoContainer.metadata = self.metadata
                             }
-                            imageVideoContainer.layer.addSublayer(self.videoLayer!)
-                            imageVideoContainer.playerLayer = self.videoLayer
-                            imageVideoContainer.metadata = self.metadata
                         }
                         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationTime: durationTime)
                         self.playerToolBar?.setBarPlayer(ncplayer: self)
@@ -138,6 +146,7 @@ class NCPlayer: NSObject {
     
     func saveTime(_ time: CMTime) {
         guard let metadata = self.metadata else { return }
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue { return }
 
         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationTime: nil)
         generatorImagePreview()
@@ -171,6 +180,8 @@ class NCPlayer: NSObject {
     func generatorImagePreview() {
         guard let time = self.player?.currentTime() else { return }
         guard let metadata = self.metadata else { return }
+        if metadata.livePhoto { return }
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue { return }
 
         var image: UIImage?
 
