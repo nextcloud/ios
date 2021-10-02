@@ -36,12 +36,12 @@ class NCPlayer: NSObject {
     public var metadata: tableMetadata?
     public var player: AVPlayer?
     public var videoLayer: AVPlayerLayer?
-    
 
     init(url: URL, imageVideoContainer: imageVideoContainerView?, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata) {
         super.init()
         
         print("Play URL: \(url)")
+        var timeSeek: CMTime = .zero
         
         self.player = AVPlayer(url: url)
         self.playerToolBar = playerToolBar
@@ -49,18 +49,15 @@ class NCPlayer: NSObject {
         
         if metadata.livePhoto {
             self.player?.isMuted = false
-            self.player?.seek(to: .zero)
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             self.player?.isMuted = CCUtility.getAudioMute()
-            self.player?.seek(to: .zero)
         } else {
             self.player?.isMuted = CCUtility.getAudioMute()
             if let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
-                self.player?.seek(to: time)
-            } else {
-                self.player?.seek(to: .zero)
+                timeSeek = time
             }
         }
+        self.player?.seek(to: timeSeek)
         
         // At end go back to start & show toolbar
         observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: .main) { (notification) in
@@ -96,7 +93,7 @@ class NCPlayer: NSObject {
                             }
                         }
                         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationTime: durationTime)
-                        self.playerToolBar?.setBarPlayer(ncplayer: self)
+                        self.playerToolBar?.setBarPlayer(ncplayer: self, timeSeek: timeSeek)
                         self.generatorImagePreview()
                     }
                     break

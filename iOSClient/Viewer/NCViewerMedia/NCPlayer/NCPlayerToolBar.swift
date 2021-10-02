@@ -90,7 +90,7 @@ class NCPlayerToolBar: UIView {
         print("deinit NCPlayerToolBar")
     }
     
-    func setBarPlayer(ncplayer: NCPlayer) {
+    func setBarPlayer(ncplayer: NCPlayer, timeSeek: CMTime) {
                         
         self.ncplayer = ncplayer
         if let durationTime = NCManageDatabase.shared.getVideoDurationTime(metadata: ncplayer.metadata) {
@@ -105,7 +105,7 @@ class NCPlayerToolBar: UIView {
             labelCurrentTime.text = NCUtility.shared.stringFromTime(.zero)
             labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(durationTime)
         }
-        updateToolBar()
+        updateToolBar(timeSeek: timeSeek)
         
         ncplayer.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             
@@ -154,7 +154,7 @@ class NCPlayerToolBar: UIView {
         }
     }
     
-    public func updateToolBar() {
+    public func updateToolBar(timeSeek: CMTime? = nil) {
 
         var namedPlay = "play.fill"
         var currentTime = ncplayer?.player?.currentTime() ?? .zero
@@ -162,7 +162,11 @@ class NCPlayerToolBar: UIView {
         
         if ncplayer?.player?.rate == 1 { namedPlay = "pause.fill"}
         
-        playbackSlider.value = Float(currentTime.value)
+        if timeSeek != nil {
+            playbackSlider.value = Float(timeSeek!.value)
+        } else {
+            playbackSlider.value = Float(currentTime.value)
+        }
         playbackSlider.isEnabled = true
         
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white), for: .normal)
