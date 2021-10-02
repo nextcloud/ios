@@ -114,10 +114,17 @@ class NCPlayer: NSObject {
         })
         
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
     deinit {
         print("deinit NCPlayer")
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+
     }
     
     //MARK: - NotificationCenter
@@ -127,6 +134,11 @@ class NCPlayer: NSObject {
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             self.player?.pause()
         }
+    }
+    
+    @objc func applicationDidBecomeActive(_ notification: NSNotification) {
+        
+        playerToolBar?.updateToolBar()
     }
     
     //MARK: -
