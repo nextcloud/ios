@@ -47,6 +47,7 @@ class NCPlayerToolBar: UIView {
     private var playbackSliderEvent: sliderEventType = .ended
     private let timeToAdd: CMTime = CMTimeMakeWithSeconds(15, preferredTimescale: 1)
     private var durationTime: CMTime = .zero
+    private var timeObserver: Any?
 
     // MARK: - View Life Cycle
 
@@ -88,6 +89,10 @@ class NCPlayerToolBar: UIView {
     
     deinit {
         print("deinit NCPlayerToolBar")
+        
+        if self.timeObserver != nil {
+            self.ncplayer?.player?.removeTimeObserver(self.timeObserver!)
+        }
     }
     
     func setBarPlayer(ncplayer: NCPlayer, timeSeek: CMTime) {
@@ -107,7 +112,7 @@ class NCPlayerToolBar: UIView {
         }
         updateToolBar(timeSeek: timeSeek)
         
-        ncplayer.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
+        self.timeObserver = ncplayer.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             
             if ncplayer.player?.currentItem?.status == .readyToPlay {
                 if self.isHidden == false {

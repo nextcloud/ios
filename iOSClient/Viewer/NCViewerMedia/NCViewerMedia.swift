@@ -47,9 +47,7 @@ class NCViewerMedia: UIViewController {
     var metadatas: [tableMetadata] = []
     var currentIndex = 0
     var nextIndex: Int?
-       
-    var ncplayer: NCPlayer?
-    
+    var ncplayer: NCPlayer?    
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
@@ -162,6 +160,8 @@ class NCViewerMedia: UIViewController {
     
     deinit {
         print("deinit NCViewerMedia")
+        
+        ncplayer = nil
     }
     
     //MARK: - NotificationCenter

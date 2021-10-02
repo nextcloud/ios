@@ -125,6 +125,7 @@ class NCPlayer: NSObject {
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
 
+        videoRemoved()
     }
     
     //MARK: - NotificationCenter

@@ -40,7 +40,6 @@ class NCViewerMediaZoom: UIViewController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var viewerMedia: NCViewerMedia?
     var ncplayer: NCPlayer?
-    
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
@@ -59,6 +58,8 @@ class NCViewerMediaZoom: UIViewController {
     
     deinit {
         print("deinit NCViewerMediaZoom")
+        
+        self.ncplayer = nil
     }
     
     override func viewDidLoad() {
