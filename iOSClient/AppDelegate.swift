@@ -250,7 +250,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         // Clear operation queue
         NCOperationQueue.shared.cancelAllQueue()
-        
+        // Clear download
+        NCNetworking.shared.cancelAllDownloadTransfer()
+
         // Clear older files
         let days = CCUtility.getCleanUpDay()
         if let directory = CCUtility.getDirectoryProviderStorage() {
@@ -283,6 +285,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // L'applicazione terminerà
     func applicationWillTerminate(_ application: UIApplication) {
         
+        NCNetworking.shared.cancelAllDownloadTransfer()
         NCCommunicationCommon.shared.writeLog("bye bye")
     }
     

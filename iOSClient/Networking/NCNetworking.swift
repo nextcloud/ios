@@ -815,6 +815,27 @@ import Queuer
         NCOperationQueue.shared.downloadCancelAll()
         #endif
     }
+    
+    func cancelAllDownloadTransfer() {
+       
+        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal))
+        
+        for metadata in metadatas {
+
+            if (metadata.status == NCGlobal.shared.metadataStatusWaitDownload || metadata.status == NCGlobal.shared.metadataStatusDownloadError) {
+                
+                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
+            }
+            
+            if metadata.status == NCGlobal.shared.metadataStatusDownloading && metadata.session == NCCommunicationCommon.shared.sessionIdentifierDownload {
+                NCNetworking.shared.cancelDownload(ocId: metadata.ocId, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView)
+            }
+        }
+        
+        #if !EXTENSION
+        NCOperationQueue.shared.downloadCancelAll()
+        #endif
+    }
         
     //MARK: - WebDav Read file, folder
     
