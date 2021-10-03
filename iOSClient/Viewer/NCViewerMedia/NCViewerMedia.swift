@@ -471,13 +471,6 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
     }
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
-
-        if let playerToolBar = currentViewController.playerToolBar {
-            
-            if playerToolBar.showToolBar(metadata: currentViewController.metadata, detailView: currentViewController.detailView) {
-                return
-            }
-        }
         
         if currentMode == .full {
             
@@ -495,16 +488,14 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
             textColor = .white
             progressView.isHidden = true
             
-            // Hide playerToolBar
-            if !currentViewController.playerToolBar.isHidden {
-                currentViewController.playerToolBar.hideToolBar()
-            }
-            
             currentMode = .full
         }
         
         // Detail Text Color
         currentViewController.detailView.textColor(textColor)
+        
+        // show playerToolBar
+        currentViewController.playerToolBar.showToolBar(metadata: currentViewController.metadata, detailView: currentViewController.detailView)
     }
     
     //

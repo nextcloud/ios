@@ -48,6 +48,8 @@ class NCPlayerToolBar: UIView {
     private let timeToAdd: CMTime = CMTimeMakeWithSeconds(15, preferredTimescale: 1)
     private var durationTime: CMTime = .zero
     private var timeObserver: Any?
+    private var timerAutoHide: Timer?
+
 
     // MARK: - View Life Cycle
 
@@ -133,14 +135,17 @@ class NCPlayerToolBar: UIView {
         })
     }
     
-    @discardableResult
-    @objc public func showToolBar(metadata: tableMetadata, detailView: NCViewerMediaDetailView?) -> Bool {
+    @objc public func showToolBar(metadata: tableMetadata, detailView: NCViewerMediaDetailView?) {
         
-        if !self.isHidden { return false}
-        if metadata.livePhoto { return false}
+        timerAutoHide?.invalidate()
+        timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(hideToolBar), userInfo: nil, repeats: false)
+        
+        if !self.isHidden { return }
+        if metadata.livePhoto { return }
         if let detailView = detailView {
-            if detailView.isShow() { return false }
+            if detailView.isShow() { return }
         }
+        
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             
             updateToolBar()
@@ -150,12 +155,6 @@ class NCPlayerToolBar: UIView {
             }, completion: { (value: Bool) in
                 self.isHidden = false
             })
-            
-            return true
-            
-        } else {
-            
-            return false
         }
     }
     
