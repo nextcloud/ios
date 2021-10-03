@@ -110,9 +110,35 @@ class NCViewerMediaZoom: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        viewerMedia?.navigationItem.title = metadata.fileNameView
-        
         imageVideoContainer.image = image
+
+        viewerMedia?.navigationController?.navigationBar.prefersLargeTitles = false
+        viewerMedia?.navigationItem.title = metadata.fileNameView
+                
+        if viewerMedia?.currentMode == .full {
+            
+            viewerMedia?.navigationController?.setNavigationBarHidden(true, animated: false)
+            viewerMedia?.view.backgroundColor = .black
+            viewerMedia?.textColor = .white
+            viewerMedia?.progressView.isHidden = true
+            
+        } else {
+            
+            viewerMedia?.navigationController?.setNavigationBarHidden(false, animated: false)
+            
+            if (!metadata.livePhoto && metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue) {
+                
+                viewerMedia?.view.backgroundColor = .black
+                viewerMedia?.textColor = .white
+                
+            } else {
+                
+                viewerMedia?.view.backgroundColor = NCBrandColor.shared.systemBackground
+                viewerMedia?.textColor = NCBrandColor.shared.label
+            }
+
+            viewerMedia?.progressView.isHidden = false
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {

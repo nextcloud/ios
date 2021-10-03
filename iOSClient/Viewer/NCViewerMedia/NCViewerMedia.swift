@@ -98,23 +98,6 @@ class NCViewerMedia: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     
-        navigationController?.navigationBar.prefersLargeTitles = false
-
-        if currentMode == .full {
-            
-            navigationController?.setNavigationBarHidden(true, animated: false)
-            view.backgroundColor = .black
-            textColor = .white
-            progressView.isHidden = true
-            
-        } else {
-            
-            navigationController?.setNavigationBarHidden(false, animated: false)
-            view.backgroundColor = NCBrandColor.shared.systemBackground
-            textColor = NCBrandColor.shared.label
-            progressView.isHidden = false
-        }
-        
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
