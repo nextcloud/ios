@@ -74,9 +74,7 @@ class NCViewerMediaZoom: UIViewController {
                 image = UIImage.init(named: "noPreviewVideo")!.image(color: .gray, size: view.frame.width)
             }
             // Show Video Toolbar
-            if !metadata.livePhoto {
-                playerToolBar.isHidden = false
-            }
+            playerToolBar.showToolBar(metadata: metadata, detailView: detailView)
             imageVideoContainer.image = image
             imageVideoContainer.sourceImage = image
             
@@ -85,7 +83,7 @@ class NCViewerMediaZoom: UIViewController {
                 image = UIImage.init(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
             }
             // Show Video Toolbar
-            playerToolBar.isHidden = false
+            playerToolBar.showToolBar(metadata: metadata, detailView: detailView)
             imageVideoContainer.image = image
             imageVideoContainer.sourceImage = image
 

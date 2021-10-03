@@ -235,7 +235,7 @@ class NCPlayerToolBar: UIView {
     
     @IBAction func buttonTouchInside(_ sender: UIButton) {
         
-        hideToolBar()
+//        hideToolBar()
     }
     
     @IBAction func playerPause(_ sender: Any) {
