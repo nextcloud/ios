@@ -725,13 +725,13 @@ class NCUtility: NSObject {
             navigationController?.navigationBar.scrollEdgeAppearance = appearance
             
         } else {
-            
-            navigationController?.navigationBar.isTranslucent = true
-            navigationController?.navigationBar.shadowImage = UIImage()
-            navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-            navigationController?.navigationBar.backgroundColor = .clear
+                        
             navigationController?.navigationBar.barTintColor = backgroundColor
-            navigationController?.navigationBar.tintColor = titleColor
+            let titleDict: NSDictionary = [NSAttributedString.Key.foregroundColor: titleColor]
+            navigationController?.navigationBar.titleTextAttributes = titleDict as? [NSAttributedString.Key : Any]
+            if let tintColor = tintColor {
+                navigationController?.navigationBar.tintColor = tintColor
+            }
         }
     }
 }
