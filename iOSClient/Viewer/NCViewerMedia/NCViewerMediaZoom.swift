@@ -118,6 +118,7 @@ class NCViewerMediaZoom: UIViewController {
         if viewerMedia?.currentMode == .full {
             
             viewerMedia?.navigationController?.setNavigationBarHidden(true, animated: false)
+            
             NCUtility.shared.colorNavigationController(viewerMedia?.navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil)
             
             viewerMedia?.view.backgroundColor = .black

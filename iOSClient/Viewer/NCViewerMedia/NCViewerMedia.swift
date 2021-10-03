@@ -458,27 +458,43 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
         if currentMode == .full {
             
             navigationController?.setNavigationBarHidden(false, animated: false)
-            view.backgroundColor = NCBrandColor.shared.systemBackground
-            textColor = NCBrandColor.shared.label
             progressView.isHidden = false
+
+            // show playerToolBar
+            currentViewController.playerToolBar.showToolBar(metadata: currentViewController.metadata, detailView: currentViewController.detailView)
+            
+            if (!currentViewController.metadata.livePhoto && currentViewController.metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue) {
+                
+                NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil)
+                view.backgroundColor = .black
+                textColor = .white
+                
+            } else {
+                
+                NCUtility.shared.colorNavigationController(navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil)
+                view.backgroundColor = NCBrandColor.shared.systemBackground
+                textColor = NCBrandColor.shared.label
+            }
             
             currentMode = .normal
             
         } else {
             
             navigationController?.setNavigationBarHidden(true, animated: false)
-            view.backgroundColor = .black
-            textColor = .white
             progressView.isHidden = true
             
+            currentViewController.playerToolBar.hideToolBar()
+
+            NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil)
+            
+            view.backgroundColor = .black
+            textColor = .white
+                        
             currentMode = .full
         }
         
         // Detail Text Color
         currentViewController.detailView.textColor(textColor)
-        
-        // show playerToolBar
-        currentViewController.playerToolBar.showToolBar(metadata: currentViewController.metadata, detailView: currentViewController.detailView)
     }
     
     //
