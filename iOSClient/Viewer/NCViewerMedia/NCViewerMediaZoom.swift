@@ -118,6 +118,8 @@ class NCViewerMediaZoom: UIViewController {
         if viewerMedia?.currentMode == .full {
             
             viewerMedia?.navigationController?.setNavigationBarHidden(true, animated: false)
+            NCUtility.shared.colorNavigationController(viewerMedia?.navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil)
+            
             viewerMedia?.view.backgroundColor = .black
             viewerMedia?.textColor = .white
             viewerMedia?.progressView.isHidden = true
@@ -128,11 +130,13 @@ class NCViewerMediaZoom: UIViewController {
             
             if (!metadata.livePhoto && metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue) {
                 
+                NCUtility.shared.colorNavigationController(viewerMedia?.navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil)
                 viewerMedia?.view.backgroundColor = .black
                 viewerMedia?.textColor = .white
                 
             } else {
                 
+                NCUtility.shared.colorNavigationController(viewerMedia?.navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil)
                 viewerMedia?.view.backgroundColor = NCBrandColor.shared.systemBackground
                 viewerMedia?.textColor = NCBrandColor.shared.label
             }

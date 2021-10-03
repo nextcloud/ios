@@ -707,6 +707,33 @@ class NCUtility: NSObject {
             return String(format: "%02d:%02d", minutes, seconds)
         }
     }
+    
+    func colorNavigationController(_ navigationController: UINavigationController?, backgroundColor: UIColor, titleColor: UIColor, tintColor: UIColor?) {
+        
+        if #available(iOS 13.0, *) {
+            
+            let appearance = UINavigationBarAppearance()
+            appearance.backgroundColor = backgroundColor
+            appearance.titleTextAttributes = [.foregroundColor: titleColor]
+            appearance.largeTitleTextAttributes = [.foregroundColor: titleColor]
+
+            if let tintColor = tintColor {
+                navigationController?.navigationBar.tintColor = tintColor
+            }
+            navigationController?.navigationBar.standardAppearance = appearance
+            navigationController?.navigationBar.compactAppearance = appearance
+            navigationController?.navigationBar.scrollEdgeAppearance = appearance
+            
+        } else {
+            
+            navigationController?.navigationBar.isTranslucent = true
+            navigationController?.navigationBar.shadowImage = UIImage()
+            navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+            navigationController?.navigationBar.backgroundColor = .clear
+            navigationController?.navigationBar.barTintColor = backgroundColor
+            navigationController?.navigationBar.tintColor = titleColor
+        }
+    }
 }
 
 // MARK: -
