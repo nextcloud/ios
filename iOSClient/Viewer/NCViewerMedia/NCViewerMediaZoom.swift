@@ -73,8 +73,6 @@ class NCViewerMediaZoom: UIViewController {
             if image == nil {
                 image = UIImage.init(named: "noPreviewVideo")!.image(color: .gray, size: view.frame.width)
             }
-            // Show Video Toolbar
-            playerToolBar.showToolBar(metadata: metadata, detailView: detailView)
             imageVideoContainer.image = image
             imageVideoContainer.sourceImage = image
             
@@ -82,8 +80,6 @@ class NCViewerMediaZoom: UIViewController {
             if image == nil {
                 image = UIImage.init(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
             }
-            // Show Video Toolbar
-            playerToolBar.showToolBar(metadata: metadata, detailView: detailView)
             imageVideoContainer.image = image
             imageVideoContainer.sourceImage = image
 
@@ -151,7 +147,7 @@ class NCViewerMediaZoom: UIViewController {
         
         if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
             if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                self.ncplayer = NCPlayer.init(url: url, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata)
+                self.ncplayer = NCPlayer.init(url: url, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView)
             }
         }
         

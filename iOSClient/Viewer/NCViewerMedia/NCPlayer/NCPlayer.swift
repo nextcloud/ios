@@ -37,7 +37,7 @@ class NCPlayer: NSObject {
     public var player: AVPlayer?
     public var videoLayer: AVPlayerLayer?
 
-    init(url: URL, imageVideoContainer: imageVideoContainerView?, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata) {
+    init(url: URL, imageVideoContainer: imageVideoContainerView?, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?) {
         super.init()
         
         print("Play URL: \(url)")
@@ -95,6 +95,7 @@ class NCPlayer: NSObject {
                         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationTime: durationTime)
                         self.playerToolBar?.setBarPlayer(ncplayer: self, timeSeek: timeSeek)
                         self.generatorImagePreview()
+                        self.playerToolBar?.showToolBar(metadata: metadata, detailView: detailView)
                     }
                     break
                 case .failed:
