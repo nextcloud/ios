@@ -151,7 +151,7 @@ class NCViewerMedia: UIViewController {
         
         if mode == .normal {
             
-            navigationController?.setNavigationBarHidden(false, animated: false)
+            navigationController?.setNavigationBarHidden(false, animated: true)
             progressView.isHidden = false
 
             // show playerToolBar
@@ -174,7 +174,7 @@ class NCViewerMedia: UIViewController {
             
         } else {
             
-            navigationController?.setNavigationBarHidden(true, animated: false)
+            navigationController?.setNavigationBarHidden(true, animated: true)
             progressView.isHidden = true
             
             currentViewController.playerToolBar.hideToolBar()

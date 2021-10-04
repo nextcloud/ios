@@ -113,7 +113,7 @@ class NCViewerMediaZoom: UIViewController {
                 
         if viewerMedia?.currentMode == .full {
             
-            viewerMedia?.navigationController?.setNavigationBarHidden(true, animated: false)
+            viewerMedia?.navigationController?.setNavigationBarHidden(true, animated: true)
             
             NCUtility.shared.colorNavigationController(viewerMedia?.navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil)
             
@@ -123,7 +123,7 @@ class NCViewerMediaZoom: UIViewController {
             
         } else {
             
-            viewerMedia?.navigationController?.setNavigationBarHidden(false, animated: false)
+            viewerMedia?.navigationController?.setNavigationBarHidden(false, animated: true)
             
             if (!metadata.livePhoto && metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue) {
                 
@@ -316,9 +316,7 @@ extension NCViewerMediaZoom {
         } completion: { (_) in
         }
         
-        scrollView.pinchGestureRecognizer?.isEnabled = true
-        
-        playerToolBar.showToolBar(metadata: metadata, detailView: nil)
+        scrollView.pinchGestureRecognizer?.isEnabled = true        
     }
     
     func downloadFile() {
