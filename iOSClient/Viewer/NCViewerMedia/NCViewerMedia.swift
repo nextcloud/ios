@@ -107,6 +107,8 @@ class NCViewerMedia: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object:nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedThumbnail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedThumbnail), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(hidePlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -143,6 +145,50 @@ class NCViewerMedia: UIViewController {
     
     deinit {
         print("deinit NCViewerMedia")        
+    }
+    
+    func changeScreenMode(mode: ScreenMode) {
+        
+        if mode == .normal {
+            
+            navigationController?.setNavigationBarHidden(false, animated: false)
+            progressView.isHidden = false
+
+            // show playerToolBar
+            currentViewController.playerToolBar.showToolBar(metadata: currentViewController.metadata, detailView: currentViewController.detailView)
+            
+            if (!currentViewController.metadata.livePhoto && currentViewController.metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue) {
+                
+                NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil)
+                view.backgroundColor = .black
+                textColor = .white
+                
+            } else {
+                
+                NCUtility.shared.colorNavigationController(navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil)
+                view.backgroundColor = NCBrandColor.shared.systemBackground
+                textColor = NCBrandColor.shared.label
+            }
+            
+            currentMode = .normal
+            
+        } else {
+            
+            navigationController?.setNavigationBarHidden(true, animated: false)
+            progressView.isHidden = true
+            
+            currentViewController.playerToolBar.hideToolBar()
+
+            NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil)
+            
+            view.backgroundColor = .black
+            textColor = .white
+                        
+            currentMode = .full
+        }
+        
+        // Detail Text Color
+        currentViewController.detailView.textColor(textColor)
     }
     
     //MARK: - NotificationCenter
@@ -259,6 +305,10 @@ class NCViewerMedia: UIViewController {
     }
     
     @objc func changeTheming() {
+    }
+    
+    @objc func hidePlayerToolBar(_ notification: NSNotification) {
+        changeScreenMode(mode: .full)
     }
     
     //MARK: - Image
@@ -454,47 +504,15 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
     }
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
-        
+                
         if currentMode == .full {
             
-            navigationController?.setNavigationBarHidden(false, animated: false)
-            progressView.isHidden = false
-
-            // show playerToolBar
-            currentViewController.playerToolBar.showToolBar(metadata: currentViewController.metadata, detailView: currentViewController.detailView)
-            
-            if (!currentViewController.metadata.livePhoto && currentViewController.metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue) {
-                
-                NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil)
-                view.backgroundColor = .black
-                textColor = .white
-                
-            } else {
-                
-                NCUtility.shared.colorNavigationController(navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil)
-                view.backgroundColor = NCBrandColor.shared.systemBackground
-                textColor = NCBrandColor.shared.label
-            }
-            
-            currentMode = .normal
-            
+            changeScreenMode(mode: .normal)
+                        
         } else {
             
-            navigationController?.setNavigationBarHidden(true, animated: false)
-            progressView.isHidden = true
-            
-            currentViewController.playerToolBar.hideToolBar()
-
-            NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil)
-            
-            view.backgroundColor = .black
-            textColor = .white
-                        
-            currentMode = .full
+            changeScreenMode(mode: .full)
         }
-        
-        // Detail Text Color
-        currentViewController.detailView.textColor(textColor)
     }
     
     //

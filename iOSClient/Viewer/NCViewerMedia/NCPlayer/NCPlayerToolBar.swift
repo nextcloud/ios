@@ -126,8 +126,10 @@ class NCPlayerToolBar: UIView {
     
     @objc public func hideToolBar() {
         
-        updateToolBar()
+        if self.isHidden { return }
       
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar)
+        
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 0
         }, completion: { (value: Bool) in
