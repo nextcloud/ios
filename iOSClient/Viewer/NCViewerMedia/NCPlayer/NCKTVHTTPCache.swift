@@ -117,13 +117,7 @@ class NCKTVHTTPCache: NSObject {
         if ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil {
             KTVHTTPCache.logSetConsoleLogEnable(true)
         }
-        
-//        do {
-//            try KTVHTTPCache.proxyStart()
-//        } catch let error {
-//            print("Proxy Start error : \(error)")
-//        }
-        
+                
         KTVHTTPCache.encodeSetURLConverter { (url) -> URL? in
             print("URL Filter received URL : " + String(describing: url))
             return url

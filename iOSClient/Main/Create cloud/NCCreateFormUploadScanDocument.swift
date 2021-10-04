@@ -730,7 +730,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
 @available(iOS 13.0, *)
 class NCCreateScanDocument : NSObject, VNDocumentCameraViewControllerDelegate {
-    
     @objc static let shared: NCCreateScanDocument = {
         let instance = NCCreateScanDocument()
         return instance
