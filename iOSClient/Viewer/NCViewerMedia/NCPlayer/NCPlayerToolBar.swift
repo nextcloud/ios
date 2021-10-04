@@ -180,17 +180,25 @@ class NCPlayerToolBar: UIView {
         }
         playbackSlider.isEnabled = true
         
-        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white), for: .normal)
+        if #available(iOS 13.0, *) {
+            backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white), for: .normal)
+        } else {
+            backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white, size: 30), for: .normal)
+        }
         backButton.isEnabled = true
         
         if #available(iOS 13.0, *) {
             playButton.setImage(NCUtility.shared.loadImage(named: namedPlay, color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
         } else {
-            playButton.setImage(NCUtility.shared.loadImage(named: namedPlay, color: .white), for: .normal)
+            playButton.setImage(NCUtility.shared.loadImage(named: namedPlay, color: .white, size: 30), for: .normal)
         }
         playButton.isEnabled = true
         
-        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .white), for: .normal)
+        if #available(iOS 13.0, *) {
+            forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .white), for: .normal)
+        } else {
+            forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .white, size: 30), for: .normal)
+        }
         forwardButton.isEnabled = true
         
         if CCUtility.getAudioMute() {
