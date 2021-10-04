@@ -124,12 +124,8 @@ class NCPlayerToolBar: UIView {
         })        
     }
     
-    @objc public func hideToolBar() {
-        
-        if self.isHidden { return }
-      
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar)
-        
+    public func hideToolBar() {
+              
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 0
         }, completion: { (value: Bool) in
@@ -137,27 +133,30 @@ class NCPlayerToolBar: UIView {
         })
     }
     
-    @objc public func showToolBar(metadata: tableMetadata, detailView: NCViewerMediaDetailView?) {
+    @objc private func automaticHideToolBar() {
+        
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar)
+    }
+    
+    public func showToolBar(metadata: tableMetadata, detailView: NCViewerMediaDetailView?) {
+        
+        if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue && metadata.livePhoto { return }
         
         timerAutoHide?.invalidate()
-        timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(hideToolBar), userInfo: nil, repeats: false)
+        timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(automaticHideToolBar), userInfo: nil, repeats: false)
         
         if !self.isHidden { return }
-        if metadata.livePhoto { return }
         if let detailView = detailView {
             if detailView.isShow() { return }
         }
         
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+        updateToolBar()
             
-            updateToolBar()
-            
-            UIView.animate(withDuration: 0.3, animations: {
-                self.alpha = 1
-            }, completion: { (value: Bool) in
-                self.isHidden = false
-            })
-        }
+        UIView.animate(withDuration: 0.3, animations: {
+            self.alpha = 1
+        }, completion: { (value: Bool) in
+            self.isHidden = false
+        })
     }
     
     public func updateToolBar(timeSeek: CMTime? = nil) {
@@ -236,8 +235,6 @@ class NCPlayerToolBar: UIView {
     //MARK: - Action
     
     @IBAction func buttonTouchInside(_ sender: UIButton) {
-        
-//        hideToolBar()
     }
     
     @IBAction func playerPause(_ sender: Any) {
