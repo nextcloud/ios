@@ -27,7 +27,6 @@ import KTVHTTPCache
 class NCKTVHTTPCache: NSObject {
     @objc static let shared: NCKTVHTTPCache = {
         let instance = NCKTVHTTPCache()
-        instance.setupHTTPCache()
         return instance
     }()
     
@@ -52,6 +51,8 @@ class NCKTVHTTPCache: NSObject {
         let authValue = "Basic " + authData.base64EncodedString(options: [])
         KTVHTTPCache.downloadSetAdditionalHeaders(["Authorization":authValue, "User-Agent":CCUtility.getUserAgent()])
         
+        self.setupHTTPCache()
+        
         if !KTVHTTPCache.proxyIsRunning() {
             do {
                 try KTVHTTPCache.proxyStart()
@@ -69,7 +70,7 @@ class NCKTVHTTPCache: NSObject {
     }
     
     func restartProxy(user: String, password: String) {
-        
+                
         if KTVHTTPCache.proxyIsRunning() {
             KTVHTTPCache.proxyStop()
         }
@@ -117,19 +118,19 @@ class NCKTVHTTPCache: NSObject {
             KTVHTTPCache.logSetConsoleLogEnable(true)
         }
         
-        do {
-            try KTVHTTPCache.proxyStart()
-        } catch let error {
-            print("Proxy Start error : \(error)")
-        }
+//        do {
+//            try KTVHTTPCache.proxyStart()
+//        } catch let error {
+//            print("Proxy Start error : \(error)")
+//        }
         
         KTVHTTPCache.encodeSetURLConverter { (url) -> URL? in
-            print("URL Filter reviced URL : " + String(describing: url))
+            print("URL Filter received URL : " + String(describing: url))
             return url
         }
         
         KTVHTTPCache.downloadSetUnacceptableContentTypeDisposer { (url, contentType) -> Bool in
-            print("Unsupport Content-Type Filter reviced URL : " + String(describing: url) + " " + String(describing: contentType))
+            print("Unsupport Content-Type Filter received URL : " + String(describing: url) + " " + String(describing: contentType))
             return false
         }
     }
