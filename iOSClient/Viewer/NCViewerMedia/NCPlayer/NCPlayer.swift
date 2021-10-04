@@ -31,6 +31,7 @@ class NCPlayer: NSObject {
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var imageVideoContainer: imageVideoContainerView?
     private var playerToolBar: NCPlayerToolBar?
+    private var detailView: NCViewerMediaDetailView?
     private var observerAVPlayerItemDidPlayToEndTime: Any?
     
     public var metadata: tableMetadata?
@@ -44,8 +45,10 @@ class NCPlayer: NSObject {
         var timeSeek: CMTime = .zero
         
         self.player = AVPlayer(url: url)
+        
         self.playerToolBar = playerToolBar
         self.metadata = metadata
+        self.detailView = detailView
         
         if metadata.livePhoto {
             self.player?.isMuted = false

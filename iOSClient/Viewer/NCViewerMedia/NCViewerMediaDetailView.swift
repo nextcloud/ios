@@ -102,12 +102,13 @@ class NCViewerMediaDetailView: UIView {
         self.size = metadata.size
         
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
-            CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensMode) in
+            CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
                 
                 self.latitude = latitude
                 self.longitude = longitude
                 self.location = location
                 self.date = date as NSDate?
+                self.lensModel = lensModel
                 
                 self.updateContent()
             };
