@@ -217,7 +217,7 @@ class NCBrandColor: NSObject {
             if #available(iOS 13, *) {
                 return .separator
             } else {
-                return UIColor(red: 0.24, green: 0.24, blue: 0.26, alpha: 1.0)
+                return UIColor(red: 0.89, green: 0.89, blue: 0.89, alpha: 1.0)
             }
         }
     }
