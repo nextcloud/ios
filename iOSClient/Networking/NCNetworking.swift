@@ -225,6 +225,7 @@ import Queuer
     private func checkTrustedChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge) -> Bool {
         
         var trusted = false
+        var trustedV2 = false
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
         let directoryCertificate = CCUtility.getDirectoryCerificates()!
         let directoryCertificateUrl = URL.init(fileURLWithPath: directoryCertificate)
@@ -260,7 +261,6 @@ import Queuer
                     let data = CFDataGetBytePtr(serverCertificateData);
                     let size = CFDataGetLength(serverCertificateData);
                     let certificate = NSData(bytes: data, length: size)
-                    var certificateSavedFound = true
                     
                     // write certificate tmp to disk
                     let certificatePath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2
@@ -269,13 +269,11 @@ import Queuer
                     let certificateSavedPath = directoryCertificate + "/" + host + ".der"
                     if let certificateSaved = NSData(contentsOfFile: certificateSavedPath) {
                         if certificate.isEqual(to: certificateSaved as Data) {
-                            trusted = true
+                            trustedV2 = true
                         }
-                    } else {
-                        certificateSavedFound = false
                     }
                     
-                    if !trusted && certificateSavedFound {
+                    if !trusted && !trustedV2 {
                         #if !EXTENSION
                         DispatchQueue.main.async {
                             let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -287,7 +285,11 @@ import Queuer
             }
         }
         
-        return trusted
+        if trusted || trustedV2 {
+            return true
+        } else {
+            return false
+        }
     }
     
     func writeCertificate(url: String) {
