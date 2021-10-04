@@ -36,11 +36,11 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var dimValue: UILabel!
     @IBOutlet weak var lensModelLabel: UILabel!
     @IBOutlet weak var lensModelValue: UILabel!
+    @IBOutlet weak var messageLabel: UILabel!
     @IBOutlet weak var mapHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var locationButton: UIButton!
 
-    var localFile: tableLocalFile?
     var metadata: tableMetadata?
     
     var latitude: Double = 0
@@ -68,6 +68,7 @@ class NCViewerMediaDetailView: UIView {
         dimValue.text = ""
         lensModelLabel.text = ""
         lensModelValue.text = ""
+        messageLabel.text = ""
         locationButton.setTitle("" , for: .normal)
     }
     
@@ -156,6 +157,11 @@ class NCViewerMediaDetailView: UIView {
         if let lensModel = self.lensModel {
             lensModelLabel.text = NSLocalizedString("_model_", comment: "")
             lensModelValue.text = lensModel
+        }
+        
+        // Message
+        if let metadata = self.metadata, metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "" {
+            messageLabel.text = NSLocalizedString("_try_download_full_resolution_", comment: "")
         }
         
         // Map
