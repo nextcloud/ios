@@ -49,6 +49,7 @@ class NCPlayerToolBar: UIView {
     private var durationTime: CMTime = .zero
     private var timeObserver: Any?
     private var timerAutoHide: Timer?
+    private var metadata: tableMetadata?
 
 
     // MARK: - View Life Cycle
@@ -97,9 +98,11 @@ class NCPlayerToolBar: UIView {
         }
     }
     
-    func setBarPlayer(ncplayer: NCPlayer, timeSeek: CMTime) {
+    func setBarPlayer(ncplayer: NCPlayer, timeSeek: CMTime, metadata: tableMetadata?) {
                         
         self.ncplayer = ncplayer
+        self.metadata = metadata
+        
         if let durationTime = NCManageDatabase.shared.getVideoDurationTime(metadata: ncplayer.metadata) {
         
             self.durationTime = durationTime
@@ -135,12 +138,15 @@ class NCPlayerToolBar: UIView {
     
     @objc private func automaticHideToolBar() {
         
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar)
+        if let metadata = self.metadata {
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar, userInfo: ["ocId":metadata.ocId])
+        }
     }
     
     public func showToolBar(metadata: tableMetadata, detailView: NCViewerMediaDetailView?) {
         
-        if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue && metadata.livePhoto { return }
+        if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
+        if metadata.livePhoto { return }
         
         timerAutoHide?.invalidate()
         timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(automaticHideToolBar), userInfo: nil, repeats: false)

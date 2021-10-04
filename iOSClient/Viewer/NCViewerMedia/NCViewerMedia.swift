@@ -308,7 +308,12 @@ class NCViewerMedia: UIViewController {
     }
     
     @objc func hidePlayerToolBar(_ notification: NSNotification) {
-        changeScreenMode(mode: .full)
+        
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String {
+            if currentViewController.metadata.ocId == ocId {
+                changeScreenMode(mode: .full)
+            }
+        }
     }
     
     //MARK: - Image

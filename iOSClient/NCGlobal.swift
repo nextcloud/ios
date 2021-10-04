@@ -324,7 +324,7 @@ class NCGlobal: NSObject {
     
     let notificationCenterDownloadedThumbnail                   = "DownloadedThumbnail"             // userInfo: ocId
     
-    let notificationCenterHidePlayerToolBar                     = "hidePlayerToolBar"               // userInfo:
+    let notificationCenterHidePlayerToolBar                     = "hidePlayerToolBar"               // userInfo: ocId
 }
 
 //let rootView = UIApplication.shared.keyWindow?.rootViewController?.view

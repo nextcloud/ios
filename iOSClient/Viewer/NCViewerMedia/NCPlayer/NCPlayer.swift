@@ -96,7 +96,7 @@ class NCPlayer: NSObject {
                             }
                         }
                         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationTime: durationTime)
-                        self.playerToolBar?.setBarPlayer(ncplayer: self, timeSeek: timeSeek)
+                        self.playerToolBar?.setBarPlayer(ncplayer: self, timeSeek: timeSeek, metadata: metadata)
                         self.generatorImagePreview()
                         self.playerToolBar?.showToolBar(metadata: metadata, detailView: detailView)
                     }
