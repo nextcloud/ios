@@ -272,6 +272,7 @@
 		F79B646226CA661600838ACA /* UIControl+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B645F26CA661600838ACA /* UIControl+Extensions.swift */; };
 		F79B646326CA661600838ACA /* UIControl+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B645F26CA661600838ACA /* UIControl+Extensions.swift */; };
 		F79B869B265E19D40085C0E0 /* NSMutableAttributedString+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B869A265E19D40085C0E0 /* NSMutableAttributedString+Extensions.swift */; };
+		F79BCEEB270B49C800B5B71F /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F79BCEEA270B49C800B5B71F /* SwiftUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F79EC77F26316193004E59D6 /* NCRenameFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70D87CE25EE6E58008CBBBD /* NCRenameFile.swift */; };
 		F79EC784263161BA004E59D6 /* NCRenameFile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70D87CD25EE6E58008CBBBD /* NCRenameFile.storyboard */; };
 		F79EC78926316AC4004E59D6 /* NCPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F702F30725EE5D47008F8E80 /* NCPopupViewController.swift */; };
@@ -675,6 +676,7 @@
 		F79A65C52191D95E00FF6DCC /* NCSelect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSelect.swift; sourceTree = "<group>"; };
 		F79B645F26CA661600838ACA /* UIControl+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIControl+Extensions.swift"; sourceTree = "<group>"; };
 		F79B869A265E19D40085C0E0 /* NSMutableAttributedString+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSMutableAttributedString+Extensions.swift"; sourceTree = "<group>"; };
+		F79BCEEA270B49C800B5B71F /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		F79EDA9F26B004980007D134 /* NCPlayerToolBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPlayerToolBar.swift; sourceTree = "<group>"; };
 		F79EDAA126B004980007D134 /* NCPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPlayer.swift; sourceTree = "<group>"; };
 		F7A0D1342591FBC5008F8A13 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
@@ -806,6 +808,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F79BCEEB270B49C800B5B71F /* SwiftUI.framework in Frameworks */,
 				F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */,
 				F70B86972642CF5700ED5349 /* TOPasscodeViewController.xcframework in Frameworks */,
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
@@ -1536,6 +1539,7 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F79BCEEA270B49C800B5B71F /* SwiftUI.framework */,
 				F70B86842642CF5500ED5349 /* DropDown.xcframework */,
 				F70B86832642CF5500ED5349 /* FSCalendar.xcframework */,
 				F70B867E2642CF5400ED5349 /* KTVCocoaHTTPServer.xcframework */,
