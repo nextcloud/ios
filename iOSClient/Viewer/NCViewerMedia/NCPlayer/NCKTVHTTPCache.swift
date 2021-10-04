@@ -27,6 +27,7 @@ import KTVHTTPCache
 class NCKTVHTTPCache: NSObject {
     @objc static let shared: NCKTVHTTPCache = {
         let instance = NCKTVHTTPCache()
+        instance.setupHTTPCache()
         return instance
     }()
     
@@ -50,8 +51,6 @@ class NCKTVHTTPCache: NSObject {
         
         let authValue = "Basic " + authData.base64EncodedString(options: [])
         KTVHTTPCache.downloadSetAdditionalHeaders(["Authorization":authValue, "User-Agent":CCUtility.getUserAgent()])
-        
-        self.setupHTTPCache()
         
         if !KTVHTTPCache.proxyIsRunning() {
             do {
@@ -117,7 +116,13 @@ class NCKTVHTTPCache: NSObject {
         if ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil {
             KTVHTTPCache.logSetConsoleLogEnable(true)
         }
-                
+        
+        do {
+            try KTVHTTPCache.proxyStart()
+        } catch let error {
+            print("Proxy Start error : \(error)")
+        }
+        
         KTVHTTPCache.encodeSetURLConverter { (url) -> URL? in
             print("URL Filter received URL : " + String(describing: url))
             return url
