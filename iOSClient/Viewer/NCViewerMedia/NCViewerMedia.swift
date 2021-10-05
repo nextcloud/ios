@@ -154,21 +154,11 @@ class NCViewerMedia: UIViewController {
             navigationController?.setNavigationBarHidden(false, animated: true)
             progressView.isHidden = false
 
-            // show playerToolBar
             currentViewController.playerToolBar.showToolBar(metadata: currentViewController.metadata, detailView: currentViewController.detailView)
             
-            if (!currentViewController.metadata.livePhoto && currentViewController.metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue) {
-                
-                NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil)
-                view.backgroundColor = .black
-                textColor = .white
-                
-            } else {
-                
-                NCUtility.shared.colorNavigationController(navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil)
-                view.backgroundColor = NCBrandColor.shared.systemBackground
-                textColor = NCBrandColor.shared.label
-            }
+            NCUtility.shared.colorNavigationController(navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil)
+            view.backgroundColor = NCBrandColor.shared.systemBackground
+            textColor = NCBrandColor.shared.label
             
             currentMode = .normal
             
@@ -180,7 +170,6 @@ class NCViewerMedia: UIViewController {
             currentViewController.playerToolBar.hideToolBar()
 
             NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil)
-            
             view.backgroundColor = .black
             textColor = .white
                         

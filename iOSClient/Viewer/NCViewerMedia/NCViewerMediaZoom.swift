@@ -124,20 +124,11 @@ class NCViewerMediaZoom: UIViewController {
         } else {
             
             viewerMedia?.navigationController?.setNavigationBarHidden(false, animated: true)
+                
+            NCUtility.shared.colorNavigationController(viewerMedia?.navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil)
             
-            if (!metadata.livePhoto && metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue) {
-                
-                NCUtility.shared.colorNavigationController(viewerMedia?.navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil)
-                viewerMedia?.view.backgroundColor = .black
-                viewerMedia?.textColor = .white
-                
-            } else {
-                
-                NCUtility.shared.colorNavigationController(viewerMedia?.navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil)
-                viewerMedia?.view.backgroundColor = NCBrandColor.shared.systemBackground
-                viewerMedia?.textColor = NCBrandColor.shared.label
-            }
-
+            viewerMedia?.view.backgroundColor = NCBrandColor.shared.systemBackground
+            viewerMedia?.textColor = NCBrandColor.shared.label
             viewerMedia?.progressView.isHidden = false
         }
     }
