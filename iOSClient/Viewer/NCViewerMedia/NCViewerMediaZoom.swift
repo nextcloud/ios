@@ -111,8 +111,11 @@ class NCViewerMediaZoom: UIViewController {
         viewerMedia?.navigationController?.navigationBar.prefersLargeTitles = false
         viewerMedia?.navigationItem.title = metadata.fileNameView
         
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue, let viewerMedia = self.viewerMedia {
+            viewerMedia.currentScreenMode = viewerMedia.saveScreenModeImage
+        }
                 
-        if viewerMedia?.currentMode == .full {
+        if viewerMedia?.currentScreenMode == .full {
             
             viewerMedia?.navigationController?.setNavigationBarHidden(true, animated: true)
             

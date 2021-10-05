@@ -32,8 +32,8 @@ class NCViewerMedia: UIViewController {
     enum ScreenMode {
         case full, normal
     }
-    var currentMode: ScreenMode = .normal
-    var lastModeImage: ScreenMode = .normal
+    var currentScreenMode: ScreenMode = .normal
+    var saveScreenModeImage: ScreenMode = .normal
 
     var pageViewController: UIPageViewController {
         return self.children[0] as! UIPageViewController
@@ -173,7 +173,11 @@ class NCViewerMedia: UIViewController {
             textColor = .white
         }
         
-        currentMode = mode
+        currentScreenMode = mode
+        
+        if currentViewController.metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+            saveScreenModeImage = mode
+        }
         
         // Detail Text Color
         currentViewController.detailView.textColor(textColor)
@@ -498,7 +502,7 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
                 
-        if currentMode == .full {
+        if currentScreenMode == .full {
             
             changeScreenMode(mode: .normal)
                         
