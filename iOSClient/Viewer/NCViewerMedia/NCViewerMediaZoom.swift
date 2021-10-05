@@ -110,6 +110,7 @@ class NCViewerMediaZoom: UIViewController {
 
         viewerMedia?.navigationController?.navigationBar.prefersLargeTitles = false
         viewerMedia?.navigationItem.title = metadata.fileNameView
+        
                 
         if viewerMedia?.currentMode == .full {
             

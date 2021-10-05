@@ -33,7 +33,8 @@ class NCViewerMedia: UIViewController {
         case full, normal
     }
     var currentMode: ScreenMode = .normal
-        
+    var lastModeImage: ScreenMode = .normal
+
     var pageViewController: UIPageViewController {
         return self.children[0] as! UIPageViewController
     }
@@ -160,8 +161,6 @@ class NCViewerMedia: UIViewController {
             view.backgroundColor = NCBrandColor.shared.systemBackground
             textColor = NCBrandColor.shared.label
             
-            currentMode = .normal
-            
         } else {
             
             navigationController?.setNavigationBarHidden(true, animated: true)
@@ -172,9 +171,9 @@ class NCViewerMedia: UIViewController {
             NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil)
             view.backgroundColor = .black
             textColor = .white
-                        
-            currentMode = .full
         }
+        
+        currentMode = mode
         
         // Detail Text Color
         currentViewController.detailView.textColor(textColor)
