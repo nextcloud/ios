@@ -69,6 +69,7 @@ class NCViewerMediaDetailView: UIView {
         lensModelLabel.text = ""
         lensModelValue.text = ""
         messageLabel.text = ""
+        messageLabel.textColor = NCBrandColor.shared.brand
         locationButton.setTitle("" , for: .normal)
     }
     
@@ -162,6 +163,8 @@ class NCViewerMediaDetailView: UIView {
         // Message
         if let metadata = self.metadata, metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "" {
             messageLabel.text = NSLocalizedString("_try_download_full_resolution_", comment: "")
+        } else {
+            messageLabel.text = ""
         }
         
         // Map
