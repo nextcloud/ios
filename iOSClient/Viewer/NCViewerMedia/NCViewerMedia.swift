@@ -115,7 +115,7 @@ class NCViewerMedia: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if let player = currentViewController.ncplayer?.player {
+        if let player = appDelegate.player {
             if player.rate == 1 {
                 player.pause()
                 currentViewController.ncplayer?.saveTime(player.currentTime())
@@ -434,7 +434,7 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         
         // Save time video
-        if let player = currentViewController.ncplayer?.player {
+        if let player = appDelegate.player {
             if player.rate == 1 {
                 currentViewController.ncplayer?.saveTime(player.currentTime())
             }

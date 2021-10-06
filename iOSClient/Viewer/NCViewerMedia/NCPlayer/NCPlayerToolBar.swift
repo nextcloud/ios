@@ -94,7 +94,7 @@ class NCPlayerToolBar: UIView {
         print("deinit NCPlayerToolBar")
         
         if self.timeObserver != nil {
-            self.ncplayer?.player?.removeTimeObserver(self.timeObserver!)
+            appDelegate.player?.removeTimeObserver(self.timeObserver!)
         }
     }
     
@@ -117,9 +117,9 @@ class NCPlayerToolBar: UIView {
         }
         updateToolBar(timeSeek: timeSeek)
         
-        self.timeObserver = ncplayer.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
+        self.timeObserver = appDelegate.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             
-            if ncplayer.player?.currentItem?.status == .readyToPlay {
+            if self.appDelegate.player?.currentItem?.status == .readyToPlay {
                 if self.isHidden == false {
                     self.updateToolBar()
                 }
@@ -168,10 +168,10 @@ class NCPlayerToolBar: UIView {
     public func updateToolBar(timeSeek: CMTime? = nil) {
 
         var namedPlay = "play.fill"
-        var currentTime = ncplayer?.player?.currentTime() ?? .zero
+        var currentTime = appDelegate.player?.currentTime() ?? .zero
         currentTime = currentTime.convertScale(1000, method: .default)
         
-        if ncplayer?.player?.rate == 1 { namedPlay = "pause.fill"}
+        if appDelegate.player?.rate == 1 { namedPlay = "pause.fill"}
         
         if timeSeek != nil {
             playbackSlider.value = Float(timeSeek!.value)
@@ -223,7 +223,7 @@ class NCPlayerToolBar: UIView {
             
             switch touchEvent.phase {
             case .began:
-                wasInPlay = ncplayer?.player?.rate == 1 ? true : false
+                wasInPlay = appDelegate.player?.rate == 1 ? true : false
                 ncplayer?.videoPause()
                 playbackSliderEvent = .began
             case .moved:
@@ -253,16 +253,16 @@ class NCPlayerToolBar: UIView {
     
     @IBAction func playerPause(_ sender: Any) {
         
-        if ncplayer?.player?.timeControlStatus == .playing {
+        if appDelegate.player?.timeControlStatus == .playing {
             ncplayer?.videoPause()
-            if let time = ncplayer?.player?.currentTime() {
+            if let time = appDelegate.player?.currentTime() {
                 ncplayer?.saveTime(time)
             }
-        } else if ncplayer?.player?.timeControlStatus == .paused {
+        } else if appDelegate.player?.timeControlStatus == .paused {
             ncplayer?.videoPlay()
-        } else if ncplayer?.player?.timeControlStatus == .waitingToPlayAtSpecifiedRate {
+        } else if appDelegate.player?.timeControlStatus == .waitingToPlayAtSpecifiedRate {
             print("timeControlStatus.waitingToPlayAtSpecifiedRate")
-            if let reason = ncplayer?.player?.reasonForWaitingToPlay {
+            if let reason = appDelegate.player?.reasonForWaitingToPlay {
                 switch reason {
                 case .evaluatingBufferingRate:
                     print("reasonForWaitingToPlay.evaluatingBufferingRate")
@@ -282,13 +282,13 @@ class NCPlayerToolBar: UIView {
         let mute = CCUtility.getAudioMute()
         
         CCUtility.setAudioMute(!mute)
-        ncplayer?.player?.isMuted = !mute
+        appDelegate.player?.isMuted = !mute
         updateToolBar()
     }
     
     @IBAction func forwardButtonSec(_ sender: Any) {
         guard let ncplayer = ncplayer else { return }
-        guard let player = ncplayer.player else { return }
+        guard let player = appDelegate.player else { return }
         
         let currentTime = player.currentTime()
         let newTime = CMTimeAdd(currentTime, timeToAdd)
@@ -302,7 +302,7 @@ class NCPlayerToolBar: UIView {
     
     @IBAction func backButtonSec(_ sender: Any) {
         guard let ncplayer = ncplayer else { return }
-        guard let player = ncplayer.player else { return }
+        guard let player = appDelegate.player else { return }
         
         let currentTime = player.currentTime()
         let newTime = CMTimeSubtract(currentTime, timeToAdd)
