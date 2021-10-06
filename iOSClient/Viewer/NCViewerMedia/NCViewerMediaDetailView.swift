@@ -73,6 +73,10 @@ class NCViewerMediaDetailView: UIView {
         locationButton.setTitle("" , for: .normal)
     }
     
+    deinit {
+        print("deinit NCViewerMediaDetailView")
+    }
+    
     func textColor(_ textColor: UIColor?) {
         sizeValue.textColor = textColor
         dateValue.textColor = textColor
