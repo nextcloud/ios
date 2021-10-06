@@ -26,19 +26,20 @@ import NCCommunication
 
 class NCViewerMediaZoom: UIViewController {
     
+    @IBOutlet weak var detailViewConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewBottomConstraint: NSLayoutConstraint!
+    
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var imageVideoContainer: imageVideoContainerView!
     @IBOutlet weak var statusViewImage: UIImageView!
     @IBOutlet weak var statusLabel: UILabel!
+    @IBOutlet weak var detailView: NCViewerMediaDetailView!
     @IBOutlet weak var playerToolBar: NCPlayerToolBar!
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var viewerMedia: NCViewerMedia?
     var ncplayer: NCPlayer?
-    var detailView: NCViewerMediaDetailView?
-    var detailViewTopConstraint: NSLayoutConstraint?
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
@@ -96,7 +97,10 @@ class NCViewerMediaZoom: UIViewController {
         }  else {
             statusViewImage.image = nil
             statusLabel.text = ""
-        }        
+        }
+        
+        detailViewConstraint.constant = 0
+        detailView.hide()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -159,12 +163,12 @@ class NCViewerMediaZoom: UIViewController {
             // back to the original size
             self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
             self.view.layoutIfNeeded()
-//            UIView.animate(withDuration: context.transitionDuration) {
+            UIView.animate(withDuration: context.transitionDuration) {
                 // resize detail
-//                if let detailView = self.detailView, detailView.isShow() {
-//                    self.openDetail()
-//                }
-//            }
+                if self.detailView.isShow() {
+                    self.openDetail()
+                }
+            }
         }) { (_) in }
     }
     
@@ -182,7 +186,7 @@ class NCViewerMediaZoom: UIViewController {
 
     @objc func didDoubleTapWith(gestureRecognizer: UITapGestureRecognizer) {
         
-        if detailView != nil { return }
+        if detailView.isShow() { return }
         
         // NO ZOOM for Audio / Video
         if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) && !playerToolBar.isHidden {
@@ -215,17 +219,16 @@ class NCViewerMediaZoom: UIViewController {
             
             // gesture moving Up
             if velocity.y < 0 {
-//                var heightMap = (view.bounds.height / 3)
-//                if view.bounds.width < view.bounds.height {
-//                    heightMap = (view.bounds.width / 3)
-//                }
-//                detailView.update(metadata: metadata, image: image, heightMap: heightMap)
+                var heightMap = (view.bounds.height / 3)
+                if view.bounds.width < view.bounds.height {
+                    heightMap = (view.bounds.width / 3)
+                }
+                detailView.update(metadata: metadata, image: image, heightMap: heightMap)
             }
-            break
 
         case .ended:
             
-            if self.detailView != nil {
+            if detailView.isShow() {
                 self.imageViewTopConstraint.constant = -imageViewConstraint
                 self.imageViewBottomConstraint.constant = imageViewConstraint
             } else {
@@ -239,21 +242,21 @@ class NCViewerMediaZoom: UIViewController {
             imageViewBottomConstraint.constant = -(currentLocation.y - imageViewConstraint)
             
             // DISMISS VIEW
-            if detailView == nil && (currentLocation.y > 20) {
+            if detailView.isHidden && (currentLocation.y > 20) {
                 
                 viewerMedia?.navigationController?.popViewController(animated: true)
                 gestureRecognizer.state = .ended
             }
             
             // CLOSE DETAIL
-            if detailView != nil && (currentLocation.y > 20) {
+            if !detailView.isHidden && (currentLocation.y > 20) {
                                
                 self.closeDetail()
                 gestureRecognizer.state = .ended
             }
 
             // OPEN DETAIL
-            if detailView == nil && (currentLocation.y < -20) {
+            if detailView.isHidden && (currentLocation.y < -20) {
                        
                 self.openDetail()
                 gestureRecognizer.state = .ended
@@ -271,51 +274,41 @@ extension NCViewerMediaZoom {
     
     private func openDetail() {
         
-        if let detailView = Bundle.main.loadNibNamed("NCViewerMediaDetailView", owner: self, options: nil)?.first as? NCViewerMediaDetailView {
-            detailView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height/2)
-            self.detailView = detailView
-            self.view.addSubview(detailView)
-            detailView.translatesAutoresizingMaskIntoConstraints = false
-            detailViewTopConstraint = detailView.topAnchor.constraint(equalTo: view.topAnchor, constant: 400)
-            detailViewTopConstraint?.isActive = true
-            detailView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-            detailView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
-            detailView.heightAnchor.constraint(equalToConstant: self.view.frame.height/2).isActive = true
-            detailView.update(metadata: metadata, image: image, textColor: self.viewerMedia?.textColor)
-            
-            if let image = imageVideoContainer.image {
-                let ratioW = imageVideoContainer.frame.width / image.size.width
-                let ratioH = imageVideoContainer.frame.height / image.size.height
-                let ratio = ratioW < ratioH ? ratioW : ratioH
-                let imageHeight = image.size.height * ratio
-                imageViewConstraint = detailView.frame.height - ((self.view.frame.height - imageHeight) / 2) + self.view.safeAreaInsets.bottom
-                if imageViewConstraint < 0 { imageViewConstraint = 0 }
-            }
-            
-            UIView.animate(withDuration: 0.3) {
-                self.imageViewTopConstraint.constant = -self.imageViewConstraint
-                self.imageViewBottomConstraint.constant = self.imageViewConstraint
-                self.view.layoutIfNeeded()
-            } completion: { (_) in
-            }
-            
-            scrollView.pinchGestureRecognizer?.isEnabled = false
-            playerToolBar.hideToolBar()
+        self.detailView.show(textColor: self.viewerMedia?.textColor)
+        
+        if let image = imageVideoContainer.image {
+            let ratioW = imageVideoContainer.frame.width / image.size.width
+            let ratioH = imageVideoContainer.frame.height / image.size.height
+            let ratio = ratioW < ratioH ? ratioW : ratioH
+            let imageHeight = image.size.height * ratio
+            imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - imageHeight) / 2) + self.view.safeAreaInsets.bottom
+            if imageViewConstraint < 0 { imageViewConstraint = 0 }
         }
+        
+        UIView.animate(withDuration: 0.3) {
+            self.imageViewTopConstraint.constant = -self.imageViewConstraint
+            self.imageViewBottomConstraint.constant = self.imageViewConstraint
+            self.detailViewConstraint.constant = self.detailView.frame.height
+            self.view.layoutIfNeeded()
+        } completion: { (_) in
+        }
+        
+        scrollView.pinchGestureRecognizer?.isEnabled = false
+        
+        playerToolBar.hideToolBar()
     }
     
     private func closeDetail() {
         
-//        detailView?.hide()
+        self.detailView.hide()
         imageViewConstraint = 0
         
         UIView.animate(withDuration: 0.3) {
             self.imageViewTopConstraint.constant = 0
             self.imageViewBottomConstraint.constant = 0
+            self.detailViewConstraint.constant = 0
             self.view.layoutIfNeeded()
         } completion: { (_) in
-            self.detailView?.removeFromSuperview()
-            self.detailView = nil
         }
         
         scrollView.pinchGestureRecognizer?.isEnabled = true        

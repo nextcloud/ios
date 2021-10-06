@@ -153,7 +153,7 @@ class NCPlayerToolBar: UIView {
         
         if !self.isHidden { return }
         if let detailView = detailView {
-            //if detailView.isShow() { return }
+            if detailView.isShow() { return }
         }
         
         updateToolBar()
