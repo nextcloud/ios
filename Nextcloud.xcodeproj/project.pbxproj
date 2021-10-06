@@ -136,6 +136,7 @@
 		F7434B3420E23FD700417916 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7434B3820E2400600417916 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
+		F744583C270DCFD50004631B /* NCViewerMediaDetailView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F744583B270DCFD50004631B /* NCViewerMediaDetailView.xib */; };
 		F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F745B252222D88AE00346520 /* NCLoginQRCode.swift */; };
 		F747BA1F22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F747BA1E22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard */; };
 		F749C10B23C4A5340027D966 /* NCIntroCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F749C10723C4A5330027D966 /* NCIntroCollectionViewCell.swift */; };
@@ -541,6 +542,7 @@
 		F7417DB2216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashSectionHeaderFooter.swift; sourceTree = "<group>"; };
 		F7421EAE2294044B00C4B7C1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		F7434B5F20E2440600417916 /* FileProviderExtension-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "FileProviderExtension-Bridging-Header.h"; sourceTree = "<group>"; };
+		F744583B270DCFD50004631B /* NCViewerMediaDetailView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCViewerMediaDetailView.xib; sourceTree = "<group>"; };
 		F745B250222D871800346520 /* QRCodeReader.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QRCodeReader.framework; path = Carthage/Build/iOS/QRCodeReader.framework; sourceTree = "<group>"; };
 		F745B252222D88AE00346520 /* NCLoginQRCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginQRCode.swift; sourceTree = "<group>"; };
 		F747BA1E22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCCreateFormUploadVoiceNote.storyboard; sourceTree = "<group>"; };
@@ -1180,8 +1182,9 @@
 				F79EDA9E26B004980007D134 /* NCPlayer */,
 				F70753F62542A9C000972D44 /* NCViewerMedia.storyboard */,
 				F70753EA2542A99800972D44 /* NCViewerMedia.swift */,
-				F70753F02542A9A200972D44 /* NCViewerMediaZoom.swift */,
 				F718C24D254D507B00C5C256 /* NCViewerMediaDetailView.swift */,
+				F744583B270DCFD50004631B /* NCViewerMediaDetailView.xib */,
+				F70753F02542A9A200972D44 /* NCViewerMediaZoom.swift */,
 			);
 			path = NCViewerMedia;
 			sourceTree = "<group>";
@@ -1984,6 +1987,7 @@
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
 				F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */,
 				F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */,
+				F744583C270DCFD50004631B /* NCViewerMediaDetailView.xib in Resources */,
 				F7EDE514262DC2CD00414FE6 /* NCSelectCommandViewSelect+CreateFolder.xib in Resources */,
 				F78ACD58219048040088454D /* NCSectionHeaderMenu.xib in Resources */,
 				F7501C322212E57500FB1415 /* NCMedia.storyboard in Resources */,
