@@ -37,7 +37,6 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var lensModelLabel: UILabel!
     @IBOutlet weak var lensModelValue: UILabel!
     @IBOutlet weak var messageLabel: UILabel!
-    @IBOutlet weak var mapHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var locationButton: UIButton!
 
@@ -48,7 +47,6 @@ class NCViewerMediaDetailView: UIView {
     var location: String?
     var date: NSDate?
     var lensModel: String?
-    var heightMap: CGFloat = 0
     var size: Int64 = 0
     var image: UIImage?
     
@@ -70,8 +68,6 @@ class NCViewerMediaDetailView: UIView {
     
     deinit {
         print("deinit NCViewerMediaDetailView")
-        
-        mapView.delegate = nil
     }
     
     func textColor(_ textColor: UIColor?) {
@@ -84,25 +80,16 @@ class NCViewerMediaDetailView: UIView {
     
     func show(textColor: UIColor?) {
         self.textColor(textColor)
-        isHidden = false
-    }
-    
-    func hide() {
-        isHidden = true
-    }
-    
-    func isShow() -> Bool {
-        return !isHidden
     }
     
     //MARK: - EXIF
     
-    func update(metadata: tableMetadata, image: UIImage?, heightMap:  CGFloat) {
+    func update(metadata: tableMetadata, image: UIImage?, textColor: UIColor?) {
                     
         self.metadata = metadata
-        self.heightMap = heightMap
         self.image = image
         self.size = metadata.size
+        self.textColor(textColor)
         
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
@@ -118,6 +105,7 @@ class NCViewerMediaDetailView: UIView {
         } else {
             self.updateContent()
         }
+        
     }
     
     //MARK: - Map
@@ -180,11 +168,6 @@ class NCViewerMediaDetailView: UIView {
             mapView.addAnnotation(annotation)
             mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
             locationButton.setTitle(location, for: .normal)
-            mapHeightConstraint.constant = self.heightMap
-            
-        } else {
-            
-            mapHeightConstraint.constant = 0
         }
     }
     

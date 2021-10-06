@@ -180,7 +180,7 @@ class NCViewerMedia: UIViewController {
         }
         
         // Detail Text Color
-        currentViewController.detailView.textColor(textColor)
+        currentViewController.detailView?.textColor(textColor)
     }
     
     //MARK: - NotificationCenter

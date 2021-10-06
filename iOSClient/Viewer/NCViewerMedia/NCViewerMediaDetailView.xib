@@ -92,13 +92,10 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="snG-1k-HmS">
-                    <rect key="frame" x="15" y="175" width="384" height="174"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="174" id="DtD-XU-pOq"/>
-                    </constraints>
+                    <rect key="frame" x="15" y="160" width="384" height="548"/>
                 </mapView>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="drq-Kr-R07">
-                    <rect key="frame" x="15" y="349" width="384" height="28"/>
+                    <rect key="frame" x="15" y="708" width="384" height="28"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <state key="normal" title="location"/>
                     <connections>
@@ -112,9 +109,10 @@
                 <constraint firstItem="dlG-kQ-oGT" firstAttribute="top" secondItem="EcH-At-xUC" secondAttribute="bottom" constant="15" id="0Of-Q9-Hl2"/>
                 <constraint firstItem="Hmr-2m-q93" firstAttribute="centerY" secondItem="mCm-dF-HVt" secondAttribute="centerY" id="1MY-1H-KaA"/>
                 <constraint firstItem="EcH-At-xUC" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="15" id="4K4-g2-pH5"/>
+                <constraint firstItem="drq-Kr-R07" firstAttribute="top" secondItem="snG-1k-HmS" secondAttribute="bottom" id="4vU-DF-2YK"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="drq-Kr-R07" secondAttribute="trailing" constant="15" id="52Z-Ke-8Xi"/>
                 <constraint firstItem="khY-FW-U5G" firstAttribute="leading" secondItem="MX3-5v-hDP" secondAttribute="trailing" constant="10" id="7q8-EE-Hyk"/>
-                <constraint firstItem="snG-1k-HmS" firstAttribute="top" secondItem="mCm-dF-HVt" secondAttribute="bottom" constant="30" id="8ax-hx-czr"/>
+                <constraint firstItem="snG-1k-HmS" firstAttribute="top" secondItem="mCm-dF-HVt" secondAttribute="bottom" constant="15" id="8ax-hx-czr"/>
                 <constraint firstItem="vfh-7h-knB" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="16" id="BZe-Rb-6ct"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="hIh-Bh-Vi7" secondAttribute="trailing" constant="15" id="IEl-eR-0h6"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="snG-1k-HmS" secondAttribute="trailing" constant="15" id="KMR-fn-x76"/>
@@ -131,10 +129,10 @@
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="CVj-Qv-laX" secondAttribute="trailing" constant="15" id="dhJ-G2-IIA"/>
                 <constraint firstItem="hIh-Bh-Vi7" firstAttribute="top" secondItem="mCm-dF-HVt" secondAttribute="bottom" constant="15" id="eRW-8O-CRi"/>
                 <constraint firstItem="drq-Kr-R07" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="15" id="f11-b0-Rnc"/>
-                <constraint firstItem="drq-Kr-R07" firstAttribute="top" secondItem="snG-1k-HmS" secondAttribute="bottom" id="g0B-P8-rMR"/>
                 <constraint firstItem="mCm-dF-HVt" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="15" id="hzW-Wz-ReU"/>
                 <constraint firstItem="khY-FW-U5G" firstAttribute="centerY" secondItem="MX3-5v-hDP" secondAttribute="centerY" id="lNa-IL-htI"/>
                 <constraint firstItem="cGN-I7-3e4" firstAttribute="centerY" secondItem="dlG-kQ-oGT" secondAttribute="centerY" id="nUy-Dh-aiP"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="drq-Kr-R07" secondAttribute="bottom" id="pEo-vl-dAo"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="vfh-7h-knB" secondAttribute="trailing" constant="15" id="q3I-og-2ys"/>
                 <constraint firstItem="CVj-Qv-laX" firstAttribute="centerY" secondItem="EcH-At-xUC" secondAttribute="centerY" id="r7D-zh-hzt"/>
                 <constraint firstItem="mCm-dF-HVt" firstAttribute="top" secondItem="MX3-5v-hDP" secondAttribute="bottom" constant="15" id="rIJ-LG-DMc"/>
@@ -150,7 +148,6 @@
                 <outlet property="lensModelLabel" destination="mCm-dF-HVt" id="6IB-VE-uic"/>
                 <outlet property="lensModelValue" destination="Hmr-2m-q93" id="lYj-fL-sZ2"/>
                 <outlet property="locationButton" destination="drq-Kr-R07" id="as2-Tv-OtA"/>
-                <outlet property="mapHeightConstraint" destination="DtD-XU-pOq" id="DJq-dQ-W6e"/>
                 <outlet property="mapView" destination="snG-1k-HmS" id="vDK-1x-nQR"/>
                 <outlet property="messageLabel" destination="hIh-Bh-Vi7" id="uLd-IC-mNO"/>
                 <outlet property="separator" destination="vfh-7h-knB" id="BcM-QY-v4Z"/>
