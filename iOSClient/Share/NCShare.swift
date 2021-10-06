@@ -392,7 +392,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             self!.networking?.createShare(shareWith: sharee.shareWith, shareType: sharee.shareType, metadata: self!.metadata!)
         }
         
-        let window = UIApplication.shared.keyWindow
         dropDown.show()
     }
 }
