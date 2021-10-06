@@ -318,7 +318,6 @@ class NCUserStatus: UIViewController {
         
         clearStatusMessageAfterText.text = " " + NSLocalizedString("_select_option_", comment: "")
         
-        let window = UIApplication.shared.keyWindow
         dropDown.show()
     }
     

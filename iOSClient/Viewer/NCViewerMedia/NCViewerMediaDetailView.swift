@@ -55,11 +55,6 @@ class NCViewerMediaDetailView: UIView {
     override func awakeFromNib() {
         super.awakeFromNib()
            
-        mapView.layer.cornerRadius = 6
-        mapView.isZoomEnabled = false
-        mapView.isScrollEnabled = false
-        mapView.isUserInteractionEnabled = false
-                
         sizeLabel.text = ""
         sizeValue.text = ""
         dateLabel.text = ""
@@ -75,6 +70,8 @@ class NCViewerMediaDetailView: UIView {
     
     deinit {
         print("deinit NCViewerMediaDetailView")
+        
+        mapView.delegate = nil
     }
     
     func textColor(_ textColor: UIColor?) {
@@ -176,6 +173,10 @@ class NCViewerMediaDetailView: UIView {
             
             let annotation = MKPointAnnotation()
             annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            mapView.layer.cornerRadius = 6
+            mapView.isZoomEnabled = false
+            mapView.isScrollEnabled = false
+            mapView.isUserInteractionEnabled = false
             mapView.addAnnotation(annotation)
             mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
             locationButton.setTitle(location, for: .normal)
