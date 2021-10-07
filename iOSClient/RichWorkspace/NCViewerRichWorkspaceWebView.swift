@@ -85,7 +85,7 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
             
             if message.body as? String == "share" {
                 if (metadata != nil) {
-                    NCFunctionCenter.shared.openShare(ViewController: self, metadata: metadata!, indexPage: 2)
+                    NCFunctionCenter.shared.openShare(ViewController: self, metadata: metadata!, indexPage: .sharing)
                 }
             }
             

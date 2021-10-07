@@ -181,7 +181,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
             }
             
             if message.body as? String == "share" {
-                NCFunctionCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 2)
+                NCFunctionCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: .sharing)
             }
             
             if let param = message.body as? Dictionary<AnyHashable,Any> {
