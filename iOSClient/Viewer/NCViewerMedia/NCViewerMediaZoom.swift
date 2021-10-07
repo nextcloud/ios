@@ -26,10 +26,10 @@ import NCCommunication
 
 class NCViewerMediaZoom: UIViewController {
     
-    @IBOutlet weak var detailViewConstraint: NSLayoutConstraint!
+    @IBOutlet weak var detailViewTopConstraint: NSLayoutConstraint!
+    @IBOutlet weak var detailViewHeighConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewBottomConstraint: NSLayoutConstraint!
-    
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var imageVideoContainer: imageVideoContainerView!
     @IBOutlet weak var statusViewImage: UIImageView!
@@ -99,7 +99,6 @@ class NCViewerMediaZoom: UIViewController {
             statusLabel.text = ""
         }
         
-        detailViewConstraint.constant = 0
         detailView.hide()
     }
     
@@ -219,11 +218,12 @@ class NCViewerMediaZoom: UIViewController {
             
             // gesture moving Up
             if velocity.y < 0 {
-                var heightMap = (view.bounds.height / 3)
+                var heightDetailView = (view.bounds.height / 2)
                 if view.bounds.width < view.bounds.height {
-                    heightMap = (view.bounds.width / 3)
+                    heightDetailView = (view.bounds.width / 2)
                 }
-                detailView.update(metadata: metadata, image: image, heightMap: heightMap)
+                detailViewHeighConstraint.constant = heightDetailView
+                //detailView.update(metadata: metadata, image: image)
             }
 
         case .ended:
@@ -274,7 +274,7 @@ extension NCViewerMediaZoom {
     
     private func openDetail() {
         
-        self.detailView.show(textColor: self.viewerMedia?.textColor)
+        self.detailView.show(metadata: metadata, image: image, textColor: self.viewerMedia?.textColor, detailView: self.detailView)
         
         if let image = imageVideoContainer.image {
             let ratioW = imageVideoContainer.frame.width / image.size.width
@@ -288,7 +288,7 @@ extension NCViewerMediaZoom {
         UIView.animate(withDuration: 0.3) {
             self.imageViewTopConstraint.constant = -self.imageViewConstraint
             self.imageViewBottomConstraint.constant = self.imageViewConstraint
-            self.detailViewConstraint.constant = self.detailView.frame.height
+            self.detailViewTopConstraint.constant = self.detailView.frame.height
             self.view.layoutIfNeeded()
         } completion: { (_) in
         }
@@ -306,7 +306,7 @@ extension NCViewerMediaZoom {
         UIView.animate(withDuration: 0.3) {
             self.imageViewTopConstraint.constant = 0
             self.imageViewBottomConstraint.constant = 0
-            self.detailViewConstraint.constant = 0
+            self.detailViewTopConstraint.constant = 0
             self.view.layoutIfNeeded()
         } completion: { (_) in
         }

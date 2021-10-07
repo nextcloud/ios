@@ -178,9 +178,6 @@ class NCViewerMedia: UIViewController {
         if currentViewController.metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             saveScreenModeImage = mode
         }
-        
-        // Detail Text Color
-        currentViewController.detailView.textColor(textColor)
     }
     
     //MARK: - NotificationCenter

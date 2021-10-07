@@ -920,6 +920,14 @@
 			path = BackgroundImageColor;
 			sourceTree = "<group>";
 		};
+		F70D08D7270F3A4B0023FC25 /* Zzz */ = {
+			isa = PBXGroup;
+			children = (
+				F744583B270DCFD50004631B /* NCViewerMediaDetailView.xib */,
+			);
+			path = Zzz;
+			sourceTree = "<group>";
+		};
 		F70D87CC25EE6E58008CBBBD /* Rename file */ = {
 			isa = PBXGroup;
 			children = (
@@ -1183,7 +1191,6 @@
 				F70753F62542A9C000972D44 /* NCViewerMedia.storyboard */,
 				F70753EA2542A99800972D44 /* NCViewerMedia.swift */,
 				F718C24D254D507B00C5C256 /* NCViewerMediaDetailView.swift */,
-				F744583B270DCFD50004631B /* NCViewerMediaDetailView.xib */,
 				F70753F02542A9A200972D44 /* NCViewerMediaZoom.swift */,
 			);
 			path = NCViewerMedia;
@@ -1525,6 +1532,7 @@
 				F7A0D14E259229FA008F8A13 /* Extensions */,
 				F7BFFA991A24D7BB0044ED85 /* Utility */,
 				F79630EC215526B60015EEA5 /* Viewer */,
+				F70D08D7270F3A4B0023FC25 /* Zzz */,
 			);
 			path = iOSClient;
 			sourceTree = "<group>";
