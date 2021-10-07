@@ -845,7 +845,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         
         let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "idActivity", ascending: false)
-        let allActivity = Array(results.map { tableActivity.init(value:$0) })
+        let allActivity = Array(results.map(tableActivity.init))
         if filterFileId != nil {
             var resultsFilter: [tableActivity] = []
             for result in results {
@@ -857,7 +857,7 @@ class NCManageDatabase: NSObject {
                     }
                 }
             }
-            return(all: allActivity, filter: Array(resultsFilter.map { tableActivity.init(value:$0) }))
+            return(all: allActivity, filter: Array(resultsFilter.map(tableActivity.init)))
         } else {
             return(all: allActivity, filter: allActivity)
         }
