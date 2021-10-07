@@ -46,6 +46,7 @@ class NCViewerMediaZoom: UIViewController {
     var isShowDetail: Bool = false
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
     var imageViewConstraint: CGFloat = 0
+    var isMapAvailable: Bool = false
                 
     // MARK: - View Life Cycle
 
@@ -164,6 +165,7 @@ class NCViewerMediaZoom: UIViewController {
             self.view.layoutIfNeeded()
             UIView.animate(withDuration: context.transitionDuration) {
                 self.closeDetail()
+                self.openDetail()
             }
         }) { (_) in }
     }
@@ -276,10 +278,11 @@ extension NCViewerMediaZoom {
         CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
             
             if (latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0) {
-                self.detailViewHeighConstraint.constant = self.view.frame.height / 2
+                self.detailViewHeighConstraint.constant = self.view.bounds.height / 2
             } else {
-                self.detailViewHeighConstraint.constant = 0
+                self.detailViewHeighConstraint.constant = self.view.bounds.height / 3
             }
+            self.view.layoutIfNeeded()
             
             self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMedia?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel)
                 
@@ -295,7 +298,7 @@ extension NCViewerMediaZoom {
             UIView.animate(withDuration: 0.3) {
                 self.imageViewTopConstraint.constant = -self.imageViewConstraint
                 self.imageViewBottomConstraint.constant = self.imageViewConstraint
-                self.detailViewTopConstraint.constant = self.detailView.frame.height
+                self.detailViewTopConstraint.constant = self.detailViewHeighConstraint.constant
                 self.view.layoutIfNeeded()
             } completion: { (_) in
             }
