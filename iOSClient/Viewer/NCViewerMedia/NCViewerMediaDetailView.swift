@@ -65,9 +65,9 @@ class NCViewerMediaDetailView: UIView {
         print("deinit NCViewerMediaDetailView")
     }
     
-    func show(metadata: tableMetadata, image: UIImage?, textColor: UIColor?, detailView: UIView) {
+    func show(metadata: tableMetadata, image: UIImage?, textColor: UIColor?, completion: @escaping (_ showMap: Bool)->()) {
                         
-        func updateContent(date: Date?, lensModel: String?, location: String?) {
+        func updateContent(date: Date?, lensModel: String?, location: String?, showMap: Bool) {
             
             // Size
             sizeLabel.text = NSLocalizedString("_size_", comment: "")
@@ -122,6 +122,8 @@ class NCViewerMediaDetailView: UIView {
             if let location = location {
                 self.locationButton.setTitle(location, for: .normal)
             }
+            
+            completion(showMap)
         }
         
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
@@ -136,22 +138,35 @@ class NCViewerMediaDetailView: UIView {
                     let annotation = MKPointAnnotation()
                     annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
                     
-                    let mapView = MKMapView.init(frame: self.frame)
-                    mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                    let mapView = MKMapView.init()
+                    mapView.translatesAutoresizingMaskIntoConstraints = false
+                    self.mapContainer.addSubview(mapView)
+                    
+                    NSLayoutConstraint.activate([
+                        mapView.topAnchor.constraint(equalTo: self.mapContainer.topAnchor),
+                        mapView.bottomAnchor.constraint(equalTo: self.mapContainer.bottomAnchor),
+                        mapView.leadingAnchor.constraint(equalTo: self.mapContainer.leadingAnchor),
+                        mapView.trailingAnchor.constraint(equalTo: self.mapContainer.trailingAnchor),
+                    ])
+                    
                     mapView.layer.cornerRadius = 6
                     mapView.isZoomEnabled = false
                     mapView.isScrollEnabled = false
                     mapView.isUserInteractionEnabled = false
                     mapView.addAnnotation(annotation)
                     mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
-                    self.addSubview(mapView)
+
+                    updateContent(date: date, lensModel: lensModel, location: location, showMap: true)
+                    
+                } else {
+                    
+                    updateContent(date: date, lensModel: lensModel, location: location, showMap: false)
                 }
                 
-                updateContent(date: date, lensModel: lensModel, location: location)
                 self.isHidden = false
             };
         } else {
-            updateContent(date: nil, lensModel: nil, location: nil)
+            updateContent(date: nil, lensModel: nil, location: nil, showMap: false)
             self.isHidden = false
         }
     }
@@ -162,6 +177,21 @@ class NCViewerMediaDetailView: UIView {
     
     func isShow() -> Bool {
         return !self.isHidden
+    }
+    
+    func isMapAvailable(metadata: tableMetadata, completion: @escaping (_ available: Bool)->()) {
+        
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+            CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
+                if latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0 {
+                    completion(true)
+                } else {
+                    completion(false)
+                }
+            }
+        } else {
+            completion(false)
+        }
     }
         
     //MARK: - Action

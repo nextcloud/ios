@@ -219,11 +219,16 @@ class NCViewerMediaZoom: UIViewController {
             // gesture moving Up
             if velocity.y < 0 {
                 var heightDetailView = (view.bounds.height / 2)
-                if view.bounds.width < view.bounds.height {
+                if view.bounds.width > view.bounds.height {
                     heightDetailView = (view.bounds.width / 2)
                 }
-                detailViewHeighConstraint.constant = heightDetailView
-                //detailView.update(metadata: metadata, image: image)
+                detailView.isMapAvailable(metadata: metadata, completion: { available in
+                    if available {
+                        self.detailViewHeighConstraint.constant = heightDetailView
+                    } else {
+                        self.detailViewHeighConstraint.constant = 0
+                    }
+                })
             }
 
         case .ended:
@@ -274,28 +279,29 @@ extension NCViewerMediaZoom {
     
     private func openDetail() {
         
-        self.detailView.show(metadata: metadata, image: image, textColor: self.viewerMedia?.textColor, detailView: self.detailView)
-        
-        if let image = imageVideoContainer.image {
-            let ratioW = imageVideoContainer.frame.width / image.size.width
-            let ratioH = imageVideoContainer.frame.height / image.size.height
-            let ratio = ratioW < ratioH ? ratioW : ratioH
-            let imageHeight = image.size.height * ratio
-            imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - imageHeight) / 2) + self.view.safeAreaInsets.bottom
-            if imageViewConstraint < 0 { imageViewConstraint = 0 }
+        self.detailView.show(metadata: metadata, image: image, textColor: self.viewerMedia?.textColor) { showMap in
+            
+            if let image = self.imageVideoContainer.image {
+                let ratioW = self.imageVideoContainer.frame.width / image.size.width
+                let ratioH = self.imageVideoContainer.frame.height / image.size.height
+                let ratio = ratioW < ratioH ? ratioW : ratioH
+                let imageHeight = image.size.height * ratio
+                self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - imageHeight) / 2) + self.view.safeAreaInsets.bottom
+                if self.imageViewConstraint < 0 { self.imageViewConstraint = 0 }
+            }
+            
+            UIView.animate(withDuration: 0.3) {
+                self.imageViewTopConstraint.constant = -self.imageViewConstraint
+                self.imageViewBottomConstraint.constant = self.imageViewConstraint
+                self.detailViewTopConstraint.constant = self.detailView.frame.height
+                self.view.layoutIfNeeded()
+            } completion: { (_) in
+            }
+            
+            self.scrollView.pinchGestureRecognizer?.isEnabled = false
+            
+            self.playerToolBar.hideToolBar()
         }
-        
-        UIView.animate(withDuration: 0.3) {
-            self.imageViewTopConstraint.constant = -self.imageViewConstraint
-            self.imageViewBottomConstraint.constant = self.imageViewConstraint
-            self.detailViewTopConstraint.constant = self.detailView.frame.height
-            self.view.layoutIfNeeded()
-        } completion: { (_) in
-        }
-        
-        scrollView.pinchGestureRecognizer?.isEnabled = false
-        
-        playerToolBar.hideToolBar()
     }
     
     private func closeDetail() {
