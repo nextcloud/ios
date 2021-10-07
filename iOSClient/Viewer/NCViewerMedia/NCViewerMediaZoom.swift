@@ -163,10 +163,7 @@ class NCViewerMediaZoom: UIViewController {
             self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
             self.view.layoutIfNeeded()
             UIView.animate(withDuration: context.transitionDuration) {
-                // resize detail
-                if self.detailView.isShow() {
-                    self.openDetail()
-                }
+                self.closeDetail()
             }
         }) { (_) in }
     }
@@ -210,26 +207,23 @@ class NCViewerMediaZoom: UIViewController {
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
                 
         let currentLocation = gestureRecognizer.translation(in: self.view)
-        let velocity = gestureRecognizer.velocity(in: self.view)
+//        let velocity = gestureRecognizer.velocity(in: self.view)
         
         switch gestureRecognizer.state {
         
         case .began:
             
-            // gesture moving Up
-            if velocity.y < 0 {
-                var heightDetailView = (view.bounds.height / 2)
-                if view.bounds.width > view.bounds.height {
-                    heightDetailView = (view.bounds.width / 2)
-                }
-                detailView.isMapAvailable(metadata: metadata, completion: { available in
-                    if available {
-                        self.detailViewHeighConstraint.constant = heightDetailView
-                    } else {
-                        self.detailViewHeighConstraint.constant = 0
-                    }
-                })
-            }
+//            gesture moving Up
+//            if velocity.y < 0 {
+//                detailView.isMapAvailable(metadata: metadata, completion: { available in
+//                    if available {
+//                        self.detailViewHeighConstraint.constant = self.view.frame.height / 2
+//                    } else {
+//                        self.detailViewHeighConstraint.constant = 0
+//                    }
+//                })
+//            }
+            break
 
         case .ended:
             
@@ -279,8 +273,16 @@ extension NCViewerMediaZoom {
     
     private func openDetail() {
         
-        self.detailView.show(metadata: metadata, image: image, textColor: self.viewerMedia?.textColor) { showMap in
+        CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
             
+            if (latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0) {
+                self.detailViewHeighConstraint.constant = self.view.frame.height / 2
+            } else {
+                self.detailViewHeighConstraint.constant = 0
+            }
+            
+            self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMedia?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel)
+                
             if let image = self.imageVideoContainer.image {
                 let ratioW = self.imageVideoContainer.frame.width / image.size.width
                 let ratioH = self.imageVideoContainer.frame.height / image.size.height
@@ -289,7 +291,7 @@ extension NCViewerMediaZoom {
                 self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - imageHeight) / 2) + self.view.safeAreaInsets.bottom
                 if self.imageViewConstraint < 0 { self.imageViewConstraint = 0 }
             }
-            
+                
             UIView.animate(withDuration: 0.3) {
                 self.imageViewTopConstraint.constant = -self.imageViewConstraint
                 self.imageViewBottomConstraint.constant = self.imageViewConstraint
@@ -297,9 +299,8 @@ extension NCViewerMediaZoom {
                 self.view.layoutIfNeeded()
             } completion: { (_) in
             }
-            
+                
             self.scrollView.pinchGestureRecognizer?.isEnabled = false
-            
             self.playerToolBar.hideToolBar()
         }
     }
