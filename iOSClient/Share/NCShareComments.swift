@@ -173,35 +173,35 @@ extension NCShareComments: UITableViewDataSource {
         let comments = NCManageDatabase.shared.getComments(account: metadata!.account, objectId: metadata!.fileId)
         let tableComments = comments[indexPath.row]
         
-        if let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NCShareCommentsCell {
-            
-            cell.tableComments = tableComments
-            cell.delegate = self
-            cell.sizeToFit()
-            
-            // Image
-            let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + tableComments.actorId + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: tableComments.actorId, fileName: fileName, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
-            // Username
-            cell.labelUser.text = tableComments.actorDisplayName
-            cell.labelUser.textColor = NCBrandColor.shared.label
-            // Date
-            cell.labelDate.text = CCUtility.dateDiff(tableComments.creationDateTime as Date)
-            cell.labelDate.textColor = NCBrandColor.shared.systemGray4
-            // Message
-            cell.labelMessage.text = tableComments.message
-            cell.labelMessage.textColor = NCBrandColor.shared.label
-            // Button Menu
-            if tableComments.actorId == appDelegate.userId {
-                cell.buttonMenu.isHidden = false
-            } else {
-                cell.buttonMenu.isHidden = true
-            }
-            
-            return cell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NCShareCommentsCell else {
+            return UITableViewCell()
         }
         
-        return UITableViewCell()
+        cell.tableComments = tableComments
+        cell.delegate = self
+        cell.sizeToFit()
+        
+        // Image
+        let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + tableComments.actorId + ".png"
+        NCOperationQueue.shared.downloadAvatar(user: tableComments.actorId, fileName: fileName, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
+        // Username
+        cell.labelUser.text = tableComments.actorDisplayName
+        cell.labelUser.textColor = NCBrandColor.shared.label
+        // Date
+        cell.labelDate.text = CCUtility.dateDiff(tableComments.creationDateTime as Date)
+        cell.labelDate.textColor = NCBrandColor.shared.systemGray4
+        // Message
+        cell.labelMessage.text = tableComments.message
+        cell.labelMessage.textColor = NCBrandColor.shared.label
+        // Button Menu
+        if tableComments.actorId == appDelegate.userId {
+            cell.buttonMenu.isHidden = false
+        } else {
+            cell.buttonMenu.isHidden = true
+        }
+        
+        return cell
+        
     }
 }
 

@@ -24,6 +24,10 @@
 import UIKit
 import RealmSwift
 
+protocol DateCompareable {
+    var dateKey: Date { get }
+}
+
 class tableAccount: Object {
 
     @objc dynamic var account = ""
@@ -103,8 +107,9 @@ class tableAccount: Object {
     }
 }
 
-class tableActivity: Object {
-    
+class tableActivity: Object, DateCompareable {
+    var dateKey: Date { date as Date }
+
     @objc dynamic var account = ""
     @objc dynamic var idPrimaryKey = ""
     @objc dynamic var action = "Activity"
@@ -202,7 +207,9 @@ class tableChunk: Object {
     }
 }
 
-class tableComments: Object {
+class tableComments: Object, DateCompareable {
+    var dateKey: Date { creationDateTime as Date }
+    
     
     @objc dynamic var account = ""
     @objc dynamic var actorDisplayName = ""
