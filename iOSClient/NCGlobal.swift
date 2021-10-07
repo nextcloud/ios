@@ -141,10 +141,10 @@ class NCGlobal: NSObject {
     
     // NCSharePaging
     //
-    let indexPageActivity: Int                      = 0
-    let indexPageComments: Int                      = 1
-    let indexPageSharing: Int                       = 2
-    
+    enum NCSharePagingIndex: Int, CaseIterable {
+        case activity, /*commets, */ sharing
+    }
+
     // NCViewerProviderContextMenu
     //
     let maxAutoDownload: UInt64                     = 50000000      // 50MB

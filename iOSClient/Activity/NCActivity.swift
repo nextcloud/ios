@@ -29,6 +29,15 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
     
     @IBOutlet weak var tableView: UITableView!
 
+
+    @IBOutlet weak var commentView: UIView!
+    @IBOutlet weak var imageItem: UIImageView!
+    @IBOutlet weak var labelUser: UILabel!
+    @IBOutlet weak var newCommentField: UITextField!
+    @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
+    var height: CGFloat = 0
+    var metadata: tableMetadata?
+
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     var emptyDataSet: NCEmptyDataSet?
@@ -38,7 +47,7 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
     var sectionDate: [Date] = []
     var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     var didSelectItemEnable: Bool = true
-    var filterFileId: String?
+//    var filterFileId: String?
     var objectType: String?
     
     var canFetchActivity = true
@@ -65,6 +74,34 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         
         changeTheming()
+        
+        setupComments()
+    }
+    
+    func setupComments() {
+        newCommentField.placeholder = NSLocalizedString("_new_comment_", comment: "")
+        viewContainerConstraint.constant = height
+
+        // Display Name user & Quota
+        guard let activeAccount = NCManageDatabase.shared.getActiveAccount(), height > 0 else {
+            commentView.isHidden = true
+            return
+        }
+        
+        let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+            imageItem.image = image
+        } else {
+            imageItem.image = UIImage(named: "avatar")
+        }
+        
+        if activeAccount.displayName.isEmpty {
+            labelUser.text = activeAccount.user
+        } else {
+            labelUser.text = activeAccount.displayName
+        }
+        labelUser.textColor = NCBrandColor.shared.label
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -106,6 +143,23 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
         view.emptyImage.image = UIImage.init(named: "bolt")?.image(color: .gray, size: UIScreen.main.bounds.width)
         view.emptyTitle.text = NSLocalizedString("_no_activity_", comment: "")
         view.emptyDescription.text = ""
+    }
+    
+    @IBAction func newCommentFieldDidEndOnExit(textField: UITextField) {
+        guard
+            let message = textField.text,
+            !message.isEmpty,
+            let metadata = self.metadata else { return }
+
+        NCCommunication.shared.putComments(fileId: metadata.fileId, message: message) { (account, errorCode, errorDescription) in
+            if errorCode == 0 {
+                self.newCommentField.text = ""
+                //TODO:...
+//                self.reloadData()
+            } else {
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            }
+        }
     }
 }
 
@@ -567,7 +621,9 @@ extension NCActivity {
         
         sectionDate.removeAll()
         
-        let activities = NCManageDatabase.shared.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.account), filterFileId: filterFileId)
+        let activities = NCManageDatabase.shared.getActivity(
+            predicate: NSPredicate(format: "account == %@", appDelegate.account),
+            filterFileId: metadata?.fileId)
         allActivities = activities.all
         filterActivities = activities.filter
         for tableActivity in filterActivities {
@@ -589,7 +645,12 @@ extension NCActivity {
             return Calendar.current.date(byAdding: components, to: startDate)!
         }()
         
-        let activities = NCManageDatabase.shared.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.account, [startDate, endDate]), filterFileId: filterFileId)
+        let activities = NCManageDatabase.shared.getActivity(
+            predicate: NSPredicate(
+                format: "account == %@ && date BETWEEN %@",
+                appDelegate.account,
+                [startDate, endDate]),
+            filterFileId: metadata?.fileId)
         return activities.filter
     }
     
@@ -604,21 +665,26 @@ extension NCActivity {
             NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: height + 50, style: .gray)
         }
         
-        NCCommunication.shared.getActivity(since: idActivity, limit: 200, objectId: filterFileId, objectType: objectType, previews: true) { (account, activities, errorCode, errorDescription) in
-            
-           if errorCode == 0 && account == self.appDelegate.account {
-                NCManageDatabase.shared.addActivity(activities , account: account)
+        NCCommunication.shared.getActivity(
+            since: idActivity,
+            limit: 200,
+            objectId: metadata?.fileId,
+            objectType: objectType,
+            previews: true) { (account, activities, errorCode, errorDescription) in
+                
+                if errorCode == 0 && account == self.appDelegate.account {
+                    NCManageDatabase.shared.addActivity(activities , account: account)
+                }
+                
+                NCUtility.shared.stopActivityIndicator()
+                
+                if errorCode == NCGlobal.shared.errorNotModified {
+                    self.canFetchActivity = false
+                } else {
+                    self.canFetchActivity = true
+                }
+                
+                self.loadDataSource()
             }
-            
-            NCUtility.shared.stopActivityIndicator()
-            
-            if errorCode == NCGlobal.shared.errorNotModified {
-                self.canFetchActivity = false
-            } else {
-                self.canFetchActivity = true
-            }
-            
-            self.loadDataSource()
-        }
     }
 }
