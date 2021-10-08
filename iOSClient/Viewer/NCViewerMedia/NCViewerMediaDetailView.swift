@@ -80,13 +80,11 @@ class NCViewerMediaDetailView: UIView {
         self.date = date
         self.lensModel = lensModel
         
-        if (latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0) {
+        if mapView == nil && (latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0) {
             
             let annotation = MKPointAnnotation()
             annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
             
-            self.mapView?.removeFromSuperview()
-            self.mapView = nil
             self.mapView = MKMapView.init()
             if let mapView = self.mapView {
                 mapView.translatesAutoresizingMaskIntoConstraints = false
@@ -100,9 +98,9 @@ class NCViewerMediaDetailView: UIView {
                 ])
                 
                 mapView.layer.cornerRadius = 6
-                mapView.isZoomEnabled = false
+                mapView.isZoomEnabled = true
                 mapView.isScrollEnabled = false
-                mapView.isUserInteractionEnabled = false
+                mapView.isUserInteractionEnabled = true
                 mapView.addAnnotation(annotation)
                 mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
             }
@@ -127,7 +125,6 @@ class NCViewerMediaDetailView: UIView {
             dateValue.text = NSLocalizedString("_not_available_", comment: "")
         }
         dateValue.textColor = textColor
-
         
         // Dimension / Duration
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
@@ -166,10 +163,6 @@ class NCViewerMediaDetailView: UIView {
     }
     
     func hide() {
-        
-        self.mapView?.removeFromSuperview()
-        self.mapView = nil
-        
         self.isHidden = true
     }
     

@@ -46,7 +46,7 @@ class NCViewerMediaZoom: UIViewController {
     var isShowDetail: Bool = false
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
     var imageViewConstraint: CGFloat = 0
-    var isMapAvailable: Bool = false
+    var isDetailViewInitializze: Bool = false
                 
     // MARK: - View Life Cycle
 
@@ -164,8 +164,9 @@ class NCViewerMediaZoom: UIViewController {
             self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
             self.view.layoutIfNeeded()
             UIView.animate(withDuration: context.transitionDuration) {
-                self.closeDetail()
-                self.openDetail()
+                if self.detailView.isShow() {
+                    self.openDetail()
+                }
             }
         }) { (_) in }
     }
@@ -209,21 +210,16 @@ class NCViewerMediaZoom: UIViewController {
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
                 
         let currentLocation = gestureRecognizer.translation(in: self.view)
-//        let velocity = gestureRecognizer.velocity(in: self.view)
         
         switch gestureRecognizer.state {
         
         case .began:
             
+//        let velocity = gestureRecognizer.velocity(in: self.view)
+
 //            gesture moving Up
 //            if velocity.y < 0 {
-//                detailView.isMapAvailable(metadata: metadata, completion: { available in
-//                    if available {
-//                        self.detailViewHeighConstraint.constant = self.view.frame.height / 2
-//                    } else {
-//                        self.detailViewHeighConstraint.constant = 0
-//                    }
-//                })
+
 //            }
             break
 
@@ -280,11 +276,11 @@ extension NCViewerMediaZoom {
             if (latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0) {
                 self.detailViewHeighConstraint.constant = self.view.bounds.height / 2
             } else {
-                self.detailViewHeighConstraint.constant = self.view.bounds.height / 3
+                self.detailViewHeighConstraint.constant = 200
             }
             self.view.layoutIfNeeded()
             
-            self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMedia?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel)
+           self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMedia?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel)
                 
             if let image = self.imageVideoContainer.image {
                 let ratioW = self.imageVideoContainer.frame.width / image.size.width
