@@ -185,21 +185,12 @@ class NCViewerMedia: UIViewController {
 
     @objc func downloadedFile(_ notification: NSNotification) {
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
-                
-                if errorCode == 0 {
-                    for viewController in self.pageViewController.viewControllers! {
-                        let viewerMediaZoom = viewController as! NCViewerMediaZoom
-                        if viewerMediaZoom.metadata.ocId == ocId {
-                            if let image = getImageMetadata(metadata) {
-                                viewerMediaZoom.reload(image: image, metadata: metadata)
-                            }
-                        }
-                    }
-                    if self.metadatas.first(where: { $0.ocId == metadata.ocId }) != nil {
-                        progressView.progress = 0
-                    }
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
+          
+            if errorCode == 0 && currentViewController.metadata.ocId == ocId, let image = getImageMetadata(metadata) {
+                currentViewController.reload(image: image, metadata: metadata)
+                if self.metadatas.first(where: { $0.ocId == metadata.ocId }) != nil {
+                    progressView.progress = 0
                 }
             }
         }
@@ -209,13 +200,8 @@ class NCViewerMedia: UIViewController {
         
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             
-            for viewController in self.pageViewController.viewControllers! {
-                let viewerMediaZoom = viewController as! NCViewerMediaZoom
-                if viewerMediaZoom.metadata.ocId == ocId {
-                    if let image = getImageMetadata(metadata) {
-                        viewerMediaZoom.reload(image: image, metadata: metadata)
-                    }
-                }
+            if currentViewController.metadata.ocId == ocId, let image = getImageMetadata(metadata) {
+                currentViewController.reload(image: image, metadata: metadata)
             }
         }
     }
