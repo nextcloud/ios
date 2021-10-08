@@ -329,26 +329,28 @@ class NCGlobal: NSObject {
 
 //let rootView = UIApplication.shared.keyWindow?.rootViewController?.view
 
-//DispatchQueue.main.async
-//DispatchQueue.main.asyncAfter(deadline: .now() + 0.1)
-//DispatchQueue.global().async
-//DispatchQueue.global(qos: .background).async
+/*
+DispatchQueue.main.async {
+DispatchQueue.main.asyncAfter(deadline: .now() + 0.1)
+DispatchQueue.global().async
+DispatchQueue.global(qos: .background).async
 
-//#if targetEnvironment(simulator)
-//#endif
+#if targetEnvironment(simulator)
+#endif
 
-//dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//dispatch_async(dispatch_get_main_queue(), ^{
-//dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+dispatch_async(dispatch_get_main_queue(), ^{
+dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
 
-//#if TARGET_OS_SIMULATOR
-//#endif
+#if TARGET_OS_SIMULATOR
+#endif
 
-//if let popoverController = alertController.popoverPresentationController {
-//    popoverController.sourceView = self.view
-//    popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
-//    popoverController.permittedArrowDirections = []
-//}
+if let popoverController = alertController.popoverPresentationController {
+    popoverController.sourceView = self.view
+    popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+    popoverController.permittedArrowDirections = []
+}
 
-// @discardableResult
+@discardableResult
+*/
 

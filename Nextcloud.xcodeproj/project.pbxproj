@@ -2941,7 +2941,7 @@
 			repositoryURL = "https://github.com/realm/realm-cocoa";
 			requirement = {
 				kind = exactVersion;
-				version = 10.16.0;
+				version = 10.17.0;
 			};
 		};
 		F786D58B253454BF00E3DD7B /* XCRemoteSwiftPackageReference "ios-communication-library" */ = {
@@ -2949,7 +2949,7 @@
 			repositoryURL = "https://github.com/nextcloud/ios-communication-library/";
 			requirement = {
 				kind = revision;
-				revision = 191b69d74ed12acc76a3d291542f0c587c43c7c0;
+				revision = 2e4363dc1689282e957fcbef430cdc6ffde94147;
 			};
 		};
 		F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */ = {
