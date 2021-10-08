@@ -100,7 +100,7 @@ class NCViewerMediaDetailView: UIView {
                 mapView.layer.cornerRadius = 6
                 mapView.isZoomEnabled = true
                 mapView.isScrollEnabled = false
-                mapView.isUserInteractionEnabled = true
+                mapView.isUserInteractionEnabled = false
                 mapView.addAnnotation(annotation)
                 mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
             }
