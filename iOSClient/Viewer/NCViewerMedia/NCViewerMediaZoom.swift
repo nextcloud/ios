@@ -120,7 +120,7 @@ class NCViewerMediaZoom: UIViewController {
             
             viewerMedia?.navigationController?.setNavigationBarHidden(true, animated: true)
             
-            NCUtility.shared.colorNavigationController(viewerMedia?.navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil)
+            NCUtility.shared.colorNavigationController(viewerMedia?.navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil, withoutShadow: false)
             
             viewerMedia?.view.backgroundColor = .black
             viewerMedia?.textColor = .white
@@ -130,7 +130,7 @@ class NCViewerMediaZoom: UIViewController {
             
             viewerMedia?.navigationController?.setNavigationBarHidden(false, animated: true)
                 
-            NCUtility.shared.colorNavigationController(viewerMedia?.navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil)
+            NCUtility.shared.colorNavigationController(viewerMedia?.navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil, withoutShadow: false)
             
             viewerMedia?.view.backgroundColor = NCBrandColor.shared.systemBackground
             viewerMedia?.textColor = NCBrandColor.shared.label

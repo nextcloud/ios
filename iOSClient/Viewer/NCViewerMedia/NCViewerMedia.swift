@@ -157,7 +157,7 @@ class NCViewerMedia: UIViewController {
 
             currentViewController.playerToolBar.showToolBar(metadata: currentViewController.metadata, detailView: currentViewController.detailView)
             
-            NCUtility.shared.colorNavigationController(navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil)
+            NCUtility.shared.colorNavigationController(navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil, withoutShadow: false)
             view.backgroundColor = NCBrandColor.shared.systemBackground
             textColor = NCBrandColor.shared.label
             
@@ -168,7 +168,7 @@ class NCViewerMedia: UIViewController {
             
             currentViewController.playerToolBar.hideToolBar()
 
-            NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil)
+            NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil, withoutShadow: false)
             view.backgroundColor = .black
             textColor = .white
         }
