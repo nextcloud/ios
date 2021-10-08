@@ -168,7 +168,6 @@ class NCViewerMedia: UIViewController {
             
             currentViewController.playerToolBar.hideToolBar()
 
-            NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil, withoutShadow: false)
             view.backgroundColor = .black
             textColor = .white
         }

@@ -712,8 +712,8 @@ class NCUtility: NSObject {
         
         if #available(iOS 13.0, *) {
             
+            // iOS 14, 15
             let appearance = UINavigationBarAppearance()
-//            appearance.configureWithTransparentBackground()
             appearance.titleTextAttributes = [.foregroundColor: titleColor]
             appearance.largeTitleTextAttributes = [.foregroundColor: titleColor]
             
@@ -725,7 +725,9 @@ class NCUtility: NSObject {
             if let tintColor = tintColor {
                 navigationController?.navigationBar.tintColor = tintColor
             }
+
             navigationController?.view.backgroundColor = backgroundColor
+            navigationController?.navigationBar.barTintColor = titleColor
             navigationController?.navigationBar.standardAppearance = appearance
             navigationController?.navigationBar.compactAppearance = appearance
             navigationController?.navigationBar.scrollEdgeAppearance = appearance
