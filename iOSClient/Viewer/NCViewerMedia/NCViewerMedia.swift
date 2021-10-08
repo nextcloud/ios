@@ -155,7 +155,7 @@ class NCViewerMedia: UIViewController {
             navigationController?.setNavigationBarHidden(false, animated: true)
             progressView.isHidden = false
 
-            currentViewController.playerToolBar.showToolBar(metadata: currentViewController.metadata, detailView: currentViewController.detailView)
+            currentViewController.playerToolBar.showToolBar(metadata: currentViewController.metadata, detailView: currentViewController.detailView, enableTimerAutoHide: true)
             
             NCUtility.shared.colorNavigationController(navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil, withoutShadow: false)
             view.backgroundColor = NCBrandColor.shared.systemBackground

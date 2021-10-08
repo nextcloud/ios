@@ -143,13 +143,21 @@ class NCPlayerToolBar: UIView {
         }
     }
     
-    public func showToolBar(metadata: tableMetadata, detailView: NCViewerMediaDetailView?) {
+    private func startTimerAutoHide() {
+        
+        timerAutoHide?.invalidate()
+        timerAutoHide = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(automaticHideToolBar), userInfo: nil, repeats: false)
+    }
+    
+    public func showToolBar(metadata: tableMetadata, detailView: NCViewerMediaDetailView?, enableTimerAutoHide: Bool) {
         
         if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
         if metadata.livePhoto { return }
         
         timerAutoHide?.invalidate()
-        timerAutoHide = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(automaticHideToolBar), userInfo: nil, repeats: false)
+        if enableTimerAutoHide {
+            startTimerAutoHide()
+        }
         
         if !self.isHidden { return }
         if let detailView = detailView {
@@ -258,8 +266,10 @@ class NCPlayerToolBar: UIView {
             if let time = appDelegate.player?.currentTime() {
                 ncplayer?.saveTime(time)
             }
+            timerAutoHide?.invalidate()
         } else if appDelegate.player?.timeControlStatus == .paused {
             ncplayer?.videoPlay()
+            startTimerAutoHide()
         } else if appDelegate.player?.timeControlStatus == .waitingToPlayAtSpecifiedRate {
             print("timeControlStatus.waitingToPlayAtSpecifiedRate")
             if let reason = appDelegate.player?.reasonForWaitingToPlay {
