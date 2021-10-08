@@ -178,6 +178,8 @@ class NCViewerMedia: UIViewController {
         if currentViewController.metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             saveScreenModeImage = mode
         }
+        
+        currentViewController.reloadDetail()
     }
     
     //MARK: - NotificationCenter

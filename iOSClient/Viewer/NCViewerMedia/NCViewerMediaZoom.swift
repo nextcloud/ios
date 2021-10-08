@@ -320,6 +320,15 @@ extension NCViewerMediaZoom {
         scrollView.pinchGestureRecognizer?.isEnabled = true        
     }
     
+    func reloadDetail() {
+        
+        if self.detailView.isShow() {
+            CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
+                self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMedia?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel)
+            }
+        }
+    }
+    
     func downloadFile() {
         
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
