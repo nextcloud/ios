@@ -100,6 +100,7 @@ class NCViewerMediaZoom: UIViewController {
             statusLabel.text = ""
         }
         
+        detailViewTopConstraint.constant = 0
         detailView.hide()
     }
     
@@ -276,7 +277,7 @@ extension NCViewerMediaZoom {
             if (latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0) {
                 self.detailViewHeighConstraint.constant = self.view.bounds.height / 2
             } else {
-                self.detailViewHeighConstraint.constant = 200
+                self.detailViewHeighConstraint.constant = 170
             }
             self.view.layoutIfNeeded()
             
