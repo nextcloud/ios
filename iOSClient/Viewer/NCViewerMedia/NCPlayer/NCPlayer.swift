@@ -104,7 +104,9 @@ class NCPlayer: NSObject {
                     break
                 case .failed:
                     DispatchQueue.main.async {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorGeneric, forced: false)
+                        let descriptionError = "Error: \(String(describing: self.appDelegate.player?.currentItem?.error?.localizedDescription)), error: \(String(describing: self.appDelegate.player?.currentItem?.error))"
+
+                        NCContentPresenter.shared.messageNotification("_error_", description: NSLocalizedString("_error_something_wrong_", comment: "") + ", " + descriptionError, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorGeneric, forced: false)
                     }
                     break
                 case .cancelled:
