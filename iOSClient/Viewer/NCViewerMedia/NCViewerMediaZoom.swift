@@ -318,7 +318,10 @@ extension NCViewerMediaZoom {
         } completion: { (_) in
         }
         
-        scrollView.pinchGestureRecognizer?.isEnabled = true        
+        scrollView.pinchGestureRecognizer?.isEnabled = true
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && !metadata.livePhoto && appDelegate.player?.timeControlStatus == .paused {
+            playerToolBar?.showToolBar(metadata: metadata, detailView: detailView, enableTimerAutoHide: false)
+        }
     }
     
     func reloadDetail() {
