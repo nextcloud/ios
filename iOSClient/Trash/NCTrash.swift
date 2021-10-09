@@ -340,6 +340,7 @@ extension NCTrash: UICollectionViewDataSource {
             cell.fileObjectId = tableTrash.fileId
             cell.labelTitle.text = tableTrash.trashbinFileName
             cell.labelTitle.textColor = NCBrandColor.shared.label
+            cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
             
             if tableTrash.directory {
                 cell.imageItem.image = NCBrandColor.cacheImages.folder
