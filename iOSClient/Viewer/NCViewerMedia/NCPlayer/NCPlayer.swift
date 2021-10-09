@@ -44,6 +44,7 @@ class NCPlayer: NSObject {
 
         print("Play URL: \(url)")
         appDelegate.player?.pause()
+        //TODO: Simultaneous accesses to 0x14fd07578, but modification requires exclusive access
         appDelegate.player = AVPlayer(url: url)
 
         self.playerToolBar = playerToolBar
