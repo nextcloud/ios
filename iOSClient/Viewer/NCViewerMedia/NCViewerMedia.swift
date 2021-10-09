@@ -133,6 +133,10 @@ class NCViewerMedia: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedThumbnail), object: nil)
     }
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+
     @objc func viewUnload() {
         
         navigationController?.popViewController(animated: true)
