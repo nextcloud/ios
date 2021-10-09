@@ -135,7 +135,11 @@ class NCViewerMedia: UIViewController {
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         
-        return .lightContent
+        if currentScreenMode == .normal {
+            return .default
+        } else {
+            return .lightContent
+        }
     }
 
     @objc func viewUnload() {
@@ -183,6 +187,7 @@ class NCViewerMedia: UIViewController {
             saveScreenModeImage = mode
         }
         
+        setNeedsStatusBarAppearanceUpdate()
         currentViewController.reloadDetail()
     }
     
