@@ -241,25 +241,37 @@
                                         </connections>
                                     </view>
                                     <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dgJ-dQ-lSp" userLabel="Player Top Tool Bar">
-                                        <rect key="frame" x="354" y="10" width="45" height="45"/>
+                                        <rect key="frame" x="319" y="10" width="80" height="45"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8AB-hx-yqN" userLabel="Mute Button">
-                                                <rect key="frame" x="10" y="10" width="25" height="25"/>
+                                                <rect key="frame" x="50" y="10" width="25" height="25"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="25" id="6yU-23-dkA"/>
                                                     <constraint firstAttribute="height" constant="25" id="hBk-Ku-BAd"/>
                                                 </constraints>
-                                                <color key="tintColor" systemColor="labelColor"/>
                                                 <state key="normal" image="audioOn"/>
                                                 <connections>
                                                     <action selector="setMute:" destination="sBp-t2-eFh" eventType="touchUpInside" id="cVl-BA-mPJ"/>
                                                 </connections>
                                             </button>
+                                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NwE-zQ-Y5D" userLabel="Mute Button">
+                                                <rect key="frame" x="5" y="10" width="25" height="25"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="25" id="CaQ-c0-MES"/>
+                                                    <constraint firstAttribute="height" constant="25" id="N06-qe-ZVY"/>
+                                                </constraints>
+                                                <state key="normal" image="pip.enter" catalog="system"/>
+                                                <connections>
+                                                    <action selector="setPip:" destination="sBp-t2-eFh" eventType="touchUpInside" id="svR-8R-DQY"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstItem="8AB-hx-yqN" firstAttribute="centerX" secondItem="dgJ-dQ-lSp" secondAttribute="centerX" id="AqQ-8Y-T0u"/>
-                                            <constraint firstAttribute="width" constant="45" id="LTs-QZ-nVw"/>
+                                            <constraint firstItem="NwE-zQ-Y5D" firstAttribute="centerY" secondItem="dgJ-dQ-lSp" secondAttribute="centerY" id="Ad6-Aj-hvc"/>
+                                            <constraint firstAttribute="width" constant="80" id="LTs-QZ-nVw"/>
+                                            <constraint firstAttribute="trailing" secondItem="8AB-hx-yqN" secondAttribute="trailing" constant="5" id="bQK-xA-Jyu"/>
+                                            <constraint firstItem="NwE-zQ-Y5D" firstAttribute="leading" secondItem="dgJ-dQ-lSp" secondAttribute="leading" constant="5" id="cZY-tl-BOh"/>
                                             <constraint firstItem="8AB-hx-yqN" firstAttribute="centerY" secondItem="dgJ-dQ-lSp" secondAttribute="centerY" id="uNT-D4-mK3"/>
                                             <constraint firstAttribute="height" constant="45" id="xf9-B5-HMs"/>
                                         </constraints>
@@ -293,7 +305,6 @@
                                                             <constraint firstAttribute="width" constant="40" id="Cmv-LX-Phg"/>
                                                             <constraint firstAttribute="height" constant="40" id="djE-Ml-YD0"/>
                                                         </constraints>
-                                                        <color key="tintColor" systemColor="labelColor"/>
                                                         <state key="normal">
                                                             <imageReference key="image" image="play.fill" catalog="system" symbolScale="default"/>
                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="default"/>
@@ -365,6 +376,7 @@
                                             <outlet property="labelCurrentTime" destination="kVv-X4-6SK" id="vyf-Bb-TPL"/>
                                             <outlet property="labelOverallDuration" destination="OUD-HH-cXH" id="E0O-99-aeq"/>
                                             <outlet property="muteButton" destination="8AB-hx-yqN" id="9zQ-k7-auv"/>
+                                            <outlet property="pipButton" destination="NwE-zQ-Y5D" id="veJ-QD-fOd"/>
                                             <outlet property="playButton" destination="x3E-b2-obf" id="0Nw-L4-W7M"/>
                                             <outlet property="playbackSlider" destination="SR4-e8-1hC" id="Khx-Oe-NEQ"/>
                                             <outlet property="playerTopToolBarView" destination="dgJ-dQ-lSp" id="22g-Yn-k5r"/>
@@ -427,10 +439,8 @@
         <image name="gobackward.15" catalog="system" width="121" height="128"/>
         <image name="goforward.15" catalog="system" width="121" height="128"/>
         <image name="logo" width="256" height="128"/>
+        <image name="pip.enter" catalog="system" width="128" height="96"/>
         <image name="play.fill" catalog="system" width="116" height="128"/>
-        <systemColor name="labelColor">
-            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

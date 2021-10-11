@@ -25,6 +25,10 @@ import Foundation
 import NCCommunication
 import UIKit
 import AVFoundation
+import AVKit
+
+/// The Set of custom player controllers currently using or transitioning out of PiP
+private var activeNCPlayer = Set<NCPlayer>()
 
 class NCPlayer: NSObject {
    
@@ -36,6 +40,7 @@ class NCPlayer: NSObject {
     
     public var metadata: tableMetadata?
     public var videoLayer: AVPlayerLayer?
+    public var pictureInPictureController: AVPictureInPictureController?
 
     init(url: URL, imageVideoContainer: imageVideoContainerView?, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?) {
         super.init()
@@ -94,6 +99,11 @@ class NCPlayer: NSObject {
                                 imageVideoContainer.layer.addSublayer(self.videoLayer!)
                                 imageVideoContainer.playerLayer = self.videoLayer
                                 imageVideoContainer.metadata = self.metadata
+                                // PiP
+                                if let playerLayer = self.videoLayer {
+                                    self.pictureInPictureController = AVPictureInPictureController(playerLayer: playerLayer)
+                                    self.pictureInPictureController?.delegate = self
+                                }
                             }
                         }
                         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationTime: durationTime)
@@ -138,7 +148,8 @@ class NCPlayer: NSObject {
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
         
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-            appDelegate.player?.pause()
+            if let pictureInPictureController = pictureInPictureController, pictureInPictureController.isPictureInPictureActive { return }
+            playerPause()
         }
     }
     
@@ -149,12 +160,12 @@ class NCPlayer: NSObject {
     
     //MARK: -
     
-    func videoPlay() {
+    func playerPlay() {
                 
         appDelegate.player?.play()
     }
     
-    func videoPause() {
+    func playerPause() {
         
         appDelegate.player?.pause()
     }
@@ -175,7 +186,7 @@ class NCPlayer: NSObject {
     
     func videoRemoved() {
 
-        videoPause()
+        playerPause()
 
         if let observerAVPlayerItemDidPlayToEndTime = self.observerAVPlayerItemDidPlayToEndTime {
             NotificationCenter.default.removeObserver(observerAVPlayerItemDidPlayToEndTime)
@@ -221,6 +232,17 @@ class NCPlayer: NSObject {
                 print(error.localizedDescription)
             }
         }
+    }
+}
+
+extension NCPlayer: AVPictureInPictureControllerDelegate {
+    
+    func pictureInPictureControllerWillStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        activeNCPlayer.insert(self)
+    }
+    
+    func pictureInPictureControllerDidStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        
     }
 }
 

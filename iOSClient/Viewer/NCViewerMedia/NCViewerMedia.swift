@@ -528,7 +528,7 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
                     
                     if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
                         self.ncplayerLivePhoto = NCPlayer.init(url: url, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil)
-                        self.ncplayerLivePhoto?.videoPlay()
+                        self.ncplayerLivePhoto?.playerPlay()
                     }
                     
                 } else {
@@ -557,7 +557,7 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
                                 
                                 if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
                                     self.ncplayerLivePhoto = NCPlayer.init(url: url, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil)
-                                    self.ncplayerLivePhoto?.videoPlay()
+                                    self.ncplayerLivePhoto?.playerPlay()
                                 }
                             }
                         }

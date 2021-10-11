@@ -29,8 +29,9 @@ import UIKit
 class NCPlayerToolBar: UIView {
     
     @IBOutlet weak var playerTopToolBarView: UIView!
-    @IBOutlet weak var playButton: UIButton!
+    @IBOutlet weak var pipButton: UIButton!
     @IBOutlet weak var muteButton: UIButton!
+    @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var forwardButton: UIButton!
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var playbackSlider: UISlider!
@@ -84,6 +85,8 @@ class NCPlayerToolBar: UIView {
         blurEffectTopToolBarView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         playerTopToolBarView.insertSubview(blurEffectTopToolBarView, at:0)
         
+        pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .lightGray), for: .normal)
+        muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .lightGray), for: .normal)
         
         playbackSlider.value = 0
         playbackSlider.minimumValue = 0
@@ -99,7 +102,6 @@ class NCPlayerToolBar: UIView {
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .lightGray), for: .normal)
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray), for: .normal)
         forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .lightGray), for: .normal)
-        muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .lightGray), for: .normal)
     }
     
     deinit {
@@ -199,6 +201,21 @@ class NCPlayerToolBar: UIView {
         var currentTime = appDelegate.player?.currentTime() ?? .zero
         currentTime = currentTime.convertScale(1000, method: .default)
         
+        if CCUtility.getAudioMute() {
+            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
+        } else {
+            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
+        }
+        muteButton.isEnabled = true
+        
+        if ncplayer?.pictureInPictureController != nil {
+            pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .white), for: .normal)
+            pipButton.isEnabled = true
+        } else {
+            pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .gray), for: .normal)
+            pipButton.isEnabled = false
+        }
+        
         if appDelegate.player?.rate == 1 { namedPlay = "pause.fill"}
         
         if timeSeek != nil {
@@ -229,13 +246,6 @@ class NCPlayerToolBar: UIView {
         }
         forwardButton.isEnabled = true
         
-        if CCUtility.getAudioMute() {
-            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
-        } else {
-            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
-        }
-        muteButton.isEnabled = true
-        
         labelCurrentTime.text = NCUtility.shared.stringFromTime(currentTime)
         labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(self.durationTime - currentTime)
     }
@@ -252,7 +262,7 @@ class NCPlayerToolBar: UIView {
             switch touchEvent.phase {
             case .began:
                 wasInPlay = appDelegate.player?.rate == 1 ? true : false
-                ncplayer?.videoPause()
+                ncplayer?.playerPause()
                 playbackSliderEvent = .began
             case .moved:
                 ncplayer?.videoSeek(time: targetTime)
@@ -260,7 +270,7 @@ class NCPlayerToolBar: UIView {
             case .ended:
                 ncplayer?.videoSeek(time: targetTime)
                 if wasInPlay {
-                    ncplayer?.videoPlay()
+                    ncplayer?.playerPlay()
                 }
                 playbackSliderEvent = .ended
             default:
@@ -282,13 +292,13 @@ class NCPlayerToolBar: UIView {
     @IBAction func playerPause(_ sender: Any) {
         
         if appDelegate.player?.timeControlStatus == .playing {
-            ncplayer?.videoPause()
+            ncplayer?.playerPause()
             if let time = appDelegate.player?.currentTime() {
                 ncplayer?.saveTime(time)
             }
             timerAutoHide?.invalidate()
         } else if appDelegate.player?.timeControlStatus == .paused {
-            ncplayer?.videoPlay()
+            ncplayer?.playerPlay()
             startTimerAutoHide()
         } else if appDelegate.player?.timeControlStatus == .waitingToPlayAtSpecifiedRate {
             print("timeControlStatus.waitingToPlayAtSpecifiedRate")
@@ -314,6 +324,11 @@ class NCPlayerToolBar: UIView {
         CCUtility.setAudioMute(!mute)
         appDelegate.player?.isMuted = !mute
         updateToolBar()
+    }
+    
+    @IBAction func setPip(_ sender: Any) {
+        
+        ncplayer?.pictureInPictureController?.startPictureInPicture()
     }
     
     @IBAction func forwardButtonSec(_ sender: Any) {
