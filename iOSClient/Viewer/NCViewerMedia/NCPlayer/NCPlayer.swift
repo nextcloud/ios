@@ -168,6 +168,10 @@ class NCPlayer: NSObject {
     func playerPause() {
         
         appDelegate.player?.pause()
+        
+        if let pictureInPictureController = pictureInPictureController, pictureInPictureController.isPictureInPictureActive {
+            pictureInPictureController.stopPictureInPicture()
+        }
     }
     
     func saveTime(_ time: CMTime) {
@@ -242,7 +246,15 @@ extension NCPlayer: AVPictureInPictureControllerDelegate {
     }
     
     func pictureInPictureControllerDidStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-        
+        // nothing
+    }
+    
+    func pictureInPictureControllerWillStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        //nothing
+    }
+    
+    func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        // nothing
     }
 }
 

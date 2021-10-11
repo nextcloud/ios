@@ -241,10 +241,10 @@
                                         </connections>
                                     </view>
                                     <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dgJ-dQ-lSp" userLabel="Player Top Tool Bar">
-                                        <rect key="frame" x="319" y="10" width="80" height="45"/>
+                                        <rect key="frame" x="299" y="10" width="100" height="45"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8AB-hx-yqN" userLabel="Mute Button">
-                                                <rect key="frame" x="50" y="10" width="25" height="25"/>
+                                                <rect key="frame" x="60" y="10" width="25" height="25"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="25" id="6yU-23-dkA"/>
                                                     <constraint firstAttribute="height" constant="25" id="hBk-Ku-BAd"/>
@@ -255,7 +255,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NwE-zQ-Y5D" userLabel="Mute Button">
-                                                <rect key="frame" x="5" y="10" width="25" height="25"/>
+                                                <rect key="frame" x="15" y="10" width="25" height="25"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="25" id="CaQ-c0-MES"/>
                                                     <constraint firstAttribute="height" constant="25" id="N06-qe-ZVY"/>
@@ -269,9 +269,9 @@
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstItem="NwE-zQ-Y5D" firstAttribute="centerY" secondItem="dgJ-dQ-lSp" secondAttribute="centerY" id="Ad6-Aj-hvc"/>
-                                            <constraint firstAttribute="width" constant="80" id="LTs-QZ-nVw"/>
-                                            <constraint firstAttribute="trailing" secondItem="8AB-hx-yqN" secondAttribute="trailing" constant="5" id="bQK-xA-Jyu"/>
-                                            <constraint firstItem="NwE-zQ-Y5D" firstAttribute="leading" secondItem="dgJ-dQ-lSp" secondAttribute="leading" constant="5" id="cZY-tl-BOh"/>
+                                            <constraint firstAttribute="width" constant="100" id="LTs-QZ-nVw"/>
+                                            <constraint firstAttribute="trailing" secondItem="8AB-hx-yqN" secondAttribute="trailing" constant="15" id="bQK-xA-Jyu"/>
+                                            <constraint firstItem="NwE-zQ-Y5D" firstAttribute="leading" secondItem="dgJ-dQ-lSp" secondAttribute="leading" constant="15" id="cZY-tl-BOh"/>
                                             <constraint firstItem="8AB-hx-yqN" firstAttribute="centerY" secondItem="dgJ-dQ-lSp" secondAttribute="centerY" id="uNT-D4-mK3"/>
                                             <constraint firstAttribute="height" constant="45" id="xf9-B5-HMs"/>
                                         </constraints>
