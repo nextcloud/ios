@@ -591,22 +591,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             // PROFILE BUTTON
             
             if layoutKey == NCGlobal.shared.layoutViewFiles {
-            
-                var image: UIImage?
-                
-                if #available(iOS 13.0, *) {
-                    let config = UIImage.SymbolConfiguration(pointSize: 30)
-                    image = NCUtility.shared.loadImage(named: "person.crop.circle", symbolConfiguration: config)
-                } else {
-                    image = NCUtility.shared.loadImage(named: "person.crop.circle", size: 30)
-                }
-                
-                let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + self.appDelegate.user + "-original.png"
-                let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-                if let imageUser = UIImage(contentsOfFile: fileNameLocalPath) {
-                    image = NCUtility.shared.createAvatar(image: imageUser, size: 30)
-                }
-                
+
+                let image = NCUtility.shared.loadUserImage(for: appDelegate.user, urlBase: appDelegate.urlBase)
+
                 let button = UIButton(type: .custom)
                 button.setImage(image, for: .normal)
                 
@@ -614,17 +601,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                  
                     let activeAccount = NCManageDatabase.shared.getActiveAccount()
                     var titleButton = "  "
-                    
-                    if activeAccount?.alias == "" {
-                        titleButton = titleButton + (activeAccount?.user ?? "")
-                    } else {
-                        titleButton = titleButton + (activeAccount?.alias ?? "")
-                    }
-                    
+
                     if getNavigationTitle() == activeAccount?.alias {
                         titleButton = ""
+                    } else {
+                        titleButton += activeAccount?.displayName ?? ""
                     }
-                    
+
                     button.setTitle(titleButton, for: .normal)
                     button.setTitleColor(.systemBlue, for: .normal)
                 }
@@ -662,13 +645,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     func getNavigationTitle() -> String {
-        
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
-        if activeAccount?.alias == "" {
+        guard let userAlias = activeAccount?.alias, !userAlias.isEmpty else {
             return NCBrandOptions.shared.brand
-        } else {
-            return activeAccount?.alias ?? NCBrandOptions.shared.brand
         }
+        return userAlias
     }
     
     // MARK: - BackgroundImageColor Delegate

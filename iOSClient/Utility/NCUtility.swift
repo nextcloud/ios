@@ -39,6 +39,24 @@ class NCUtility: NSObject {
     private var viewActivityIndicator: UIView?
     private var viewBackgroundActivityIndicator: UIView?
 
+    func loadUserImage(for user: String, urlBase: String) -> UIImage {
+        var image: UIImage
+        
+        let fileName = String(CCUtility.getUserUrlBase(user, urlBase: urlBase)) + "-" + user + "-original.png"
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        if let imageUser = UIImage(contentsOfFile: fileNameLocalPath) {
+            image = NCUtility.shared.createAvatar(image: imageUser, size: 30)
+        } else {
+            if #available(iOS 13.0, *) {
+                let config = UIImage.SymbolConfiguration(pointSize: 30)
+                image = NCUtility.shared.loadImage(named: "person.crop.circle", symbolConfiguration: config)
+            } else {
+                image = NCUtility.shared.loadImage(named: "person.crop.circle", size: 30)
+            }
+        }
+        return image
+    }
+
     func setLayoutForView(key: String, serverUrl: String, layoutForView: NCGlobal.layoutForViewType) {
         
         let string =  layoutForView.layout + "|" + layoutForView.sort + "|" + "\(layoutForView.ascending)" + "|" + layoutForView.groupBy + "|" + "\(layoutForView.directoryOnTop)" + "|" + layoutForView.titleButtonHeader + "|" + "\(layoutForView.itemForLine)" + "|" + layoutForView.imageBackgroud + "|" + layoutForView.imageBackgroudContentMode
