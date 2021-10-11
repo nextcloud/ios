@@ -58,6 +58,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     
     private var timeIntervalSearchNewMedia: TimeInterval = 3.0
     private var timerSearchNewMedia: Timer?
+    
+    private let insetsTop: CGFloat = 75
         
     struct cacheImages {
         static var cellLivePhotoImage = UIImage()
@@ -76,7 +78,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         collectionView.register(UINib.init(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         
         collectionView.alwaysBounceVertical = true
-        collectionView.contentInset = UIEdgeInsets(top: 75, left: 0, bottom: 50, right: 0);
+        collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0);
         collectionView.backgroundColor = NCBrandColor.shared.systemBackground
         collectionView.bounces = false
                 
@@ -693,7 +695,7 @@ extension NCMedia: UIScrollViewDelegate {
     
     func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
         let y = view.safeAreaInsets.top
-        scrollView.contentOffset.y = -y
+        scrollView.contentOffset.y = -(insetsTop + y)
     }
 }
 
