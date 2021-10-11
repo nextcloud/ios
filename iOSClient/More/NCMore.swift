@@ -323,7 +323,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.status.text = ""
             cell.displayName.text = ""
 
-            cell.avatar.image = NCUtility.shared.loadUserImage(for: appDelegate.user, urlBase: appDelegate.urlBase)
+            cell.avatar.image = NCUtility.shared.loadUserImage(for: appDelegate.user, displayName: tabAccount?.displayName, urlBase: appDelegate.urlBase)
 
             if let account = tabAccount {
                 if account.alias == "" {

@@ -38,7 +38,7 @@ extension NCLoginWeb {
             
             let title = account.user + " " + (URL(string: account.urlBase)?.host ?? "")
 
-            avatar = NCUtility.shared.loadUserImage(for: account.user, urlBase: account.urlBase)
+            avatar = NCUtility.shared.loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase)
 
             actions.append(
                 NCMenuAction(

@@ -591,15 +591,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             // PROFILE BUTTON
             
             if layoutKey == NCGlobal.shared.layoutViewFiles {
+                let activeAccount = NCManageDatabase.shared.getActiveAccount()
 
-                let image = NCUtility.shared.loadUserImage(for: appDelegate.user, urlBase: appDelegate.urlBase)
+                let image = NCUtility.shared.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, urlBase: appDelegate.urlBase)
 
                 let button = UIButton(type: .custom)
                 button.setImage(image, for: .normal)
                 
                 if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) {
                  
-                    let activeAccount = NCManageDatabase.shared.getActiveAccount()
                     var titleButton = "  "
 
                     if getNavigationTitle() == activeAccount?.alias {
