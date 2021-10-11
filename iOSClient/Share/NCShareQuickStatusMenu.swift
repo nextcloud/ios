@@ -52,7 +52,7 @@ class NCShareQuickStatusMenu: NSObject {
             NCMenuAction(
                 title: directory ? NSLocalizedString("_share_allow_upload_", comment: "") : NSLocalizedString("_share_editing_", comment: ""),
                 icon: UIImage(),
-                selected: tableShare.permissions == NCGlobal.shared.permissionMaxFileShare || tableShare.permissions == NCGlobal.shared.permissionMaxFolderShare ||  tableShare.permissions == NCGlobal.shared.permissionDefaultFileRemoteShareNoSupportShareOption,
+                selected: tableShare.permissions == NCGlobal.shared.permissionMaxFileShare || tableShare.permissions == NCGlobal.shared.permissionMaxFolderShare || tableShare.permissions == NCGlobal.shared.permissionDefaultFileRemoteShareNoSupportShareOption || tableShare.permissions == NCGlobal.shared.permissionDefaultFolderRemoteShareNoSupportShareOption,
                 on: false,
                 action: { menuAction in
                     let canShare = CCUtility.isPermission(toCanShare: tableShare.permissions)
