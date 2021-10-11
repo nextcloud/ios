@@ -690,6 +690,11 @@ extension NCMedia: UIScrollViewDelegate {
             searchOldMedia()
         }
     }
+    
+    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
+        let y = view.safeAreaInsets.top
+        scrollView.contentOffset.y = -y
+    }
 }
 
 // MARK: - Media Command View
