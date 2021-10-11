@@ -67,7 +67,7 @@ class NCPlayer: NSObject {
         observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: appDelegate.player?.currentItem, queue: .main) { (notification) in
             if let item = notification.object as? AVPlayerItem, let currentItem = self.appDelegate.player?.currentItem, item == currentItem {
                 self.videoSeek(time: .zero)
-                self.playerToolBar?.showToolBar(metadata: metadata, detailView: nil, enableTimerAutoHide: false)
+                self.playerToolBar?.show(metadata: metadata, detailView: nil, enableTimerAutoHide: false)
                 NCKTVHTTPCache.shared.saveCache(metadata: metadata)
             }
         }
@@ -99,7 +99,7 @@ class NCPlayer: NSObject {
                         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationTime: durationTime)
                         self.playerToolBar?.setBarPlayer(ncplayer: self, timeSeek: timeSeek, metadata: metadata)
                         self.generatorImagePreview()
-                        self.playerToolBar?.showToolBar(metadata: metadata, detailView: detailView, enableTimerAutoHide: false)
+                        self.playerToolBar?.show(metadata: metadata, detailView: detailView, enableTimerAutoHide: false)
                     }
                     break
                 case .failed:

@@ -127,7 +127,7 @@ class NCPlayerToolBar: UIView {
         })        
     }
     
-    public func hideToolBar() {
+    public func hide() {
               
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 0
@@ -136,7 +136,7 @@ class NCPlayerToolBar: UIView {
         })
     }
     
-    @objc private func automaticHideToolBar() {
+    @objc private func automaticHide() {
         
         if let metadata = self.metadata {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar, userInfo: ["ocId":metadata.ocId])
@@ -146,10 +146,10 @@ class NCPlayerToolBar: UIView {
     private func startTimerAutoHide() {
         
         timerAutoHide?.invalidate()
-        timerAutoHide = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(automaticHideToolBar), userInfo: nil, repeats: false)
+        timerAutoHide = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(automaticHide), userInfo: nil, repeats: false)
     }
     
-    public func showToolBar(metadata: tableMetadata, detailView: NCViewerMediaDetailView?, enableTimerAutoHide: Bool) {
+    public func show(metadata: tableMetadata, detailView: NCViewerMediaDetailView?, enableTimerAutoHide: Bool) {
         
         if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
         if metadata.livePhoto { return }
@@ -171,6 +171,10 @@ class NCPlayerToolBar: UIView {
         }, completion: { (value: Bool) in
             self.isHidden = false
         })
+    }
+    
+    func isShow() -> Bool {
+        return !self.isHidden
     }
     
     public func updateToolBar(timeSeek: CMTime? = nil) {
@@ -251,7 +255,7 @@ class NCPlayerToolBar: UIView {
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
         
-        hideToolBar()
+        hide()
     }
     
     //MARK: - Action

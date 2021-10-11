@@ -189,7 +189,7 @@ class NCViewerMediaZoom: UIViewController {
         if detailView.isShow() { return }
         
         // NO ZOOM for Audio / Video
-        if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) && !playerToolBar.isHidden {
+        if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) && playerToolBar.isShow() {
             return
         }
         
@@ -301,7 +301,7 @@ extension NCViewerMediaZoom {
             }
                 
             self.scrollView.pinchGestureRecognizer?.isEnabled = false
-            self.playerToolBar.hideToolBar()
+            self.playerToolBar.hide()
         }
     }
     
@@ -320,7 +320,7 @@ extension NCViewerMediaZoom {
         
         scrollView.pinchGestureRecognizer?.isEnabled = true
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && !metadata.livePhoto && appDelegate.player?.timeControlStatus == .paused {
-            playerToolBar?.showToolBar(metadata: metadata, detailView: detailView, enableTimerAutoHide: false)
+            playerToolBar?.show(metadata: metadata, detailView: detailView, enableTimerAutoHide: false)
         }
     }
     
