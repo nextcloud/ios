@@ -24,9 +24,11 @@
 import Foundation
 import NCCommunication
 import CoreMedia
+import UIKit
 
 class NCPlayerToolBar: UIView {
     
+    @IBOutlet weak var playerTopToolBarView: UIView!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var muteButton: UIButton!
     @IBOutlet weak var forwardButton: UIButton!
@@ -34,6 +36,7 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var playbackSlider: UISlider!
     @IBOutlet weak var labelOverallDuration: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
+
     
     enum sliderEventType {
         case began
@@ -63,15 +66,24 @@ class NCPlayerToolBar: UIView {
         let singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
         addGestureRecognizer(singleTapGestureRecognizer)
         
-        let blurEffect = UIBlurEffect(style: .dark)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        
+        // self
         self.layer.cornerRadius = 15
         self.layer.masksToBounds = true
         
+        let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         blurEffectView.frame = self.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.insertSubview(blurEffectView, at:0)
+        
+        // Top ToolBar
+        playerTopToolBarView.layer.cornerRadius = 10
+        playerTopToolBarView.layer.masksToBounds = true
+        
+        let blurEffectTopToolBarView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        blurEffectTopToolBarView.frame = playerTopToolBarView.bounds
+        blurEffectTopToolBarView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        playerTopToolBarView.insertSubview(blurEffectTopToolBarView, at:0)
+        
         
         playbackSlider.value = 0
         playbackSlider.minimumValue = 0
@@ -131,8 +143,10 @@ class NCPlayerToolBar: UIView {
               
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 0
+            self.playerTopToolBarView.alpha = 0
         }, completion: { (value: Bool) in
             self.isHidden = true
+            self.playerTopToolBarView.isHidden = true
         })
     }
     
@@ -168,9 +182,11 @@ class NCPlayerToolBar: UIView {
             
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 1
+            self.playerTopToolBarView.alpha = 1
         }, completion: { (value: Bool) in
             self.isHidden = false
-        })
+            self.playerTopToolBarView.isHidden = false
+        })        
     }
     
     func isShow() -> Bool {
