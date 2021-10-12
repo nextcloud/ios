@@ -15,12 +15,12 @@ jobs:
     runs-on: macos-latest
     env:
       PROJECT: Nextcloud.xcodeproj
-      DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode_13.0.app/Contents/Developer
     steps:
     - uses: actions/checkout@v2
     - name: Carthage Bootstrap
       run: carthage bootstrap --use-xcframeworks
-    - run: wget "https://github.com/firebase/quickstart-ios/blob/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
+    - run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
     - name: Build iOS
       run: |
         xcodebuild clean build -project $PROJECT -scheme $SCHEME -destination "$DESTINATION"
