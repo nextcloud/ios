@@ -270,8 +270,9 @@ extension NCPlayer: AVPictureInPictureControllerDelegate {
     }
     
     func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-        // nothing
+
         if !isPlay() {
+            playerToolBar?.show(enableTimerAutoHide: false)
         }
     }
 }

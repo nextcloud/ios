@@ -174,10 +174,7 @@ class NCPlayerToolBar: UIView {
         }
         
         if !self.isHidden { return }
-//        if let detailView = detailView {
-//            if detailView.isShow() { return }
-//        }
-        
+
         updateToolBar()
             
         UIView.animate(withDuration: 0.3, animations: {
