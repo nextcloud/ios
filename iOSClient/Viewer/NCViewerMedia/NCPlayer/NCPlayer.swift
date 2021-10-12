@@ -73,7 +73,7 @@ class NCPlayer: NSObject {
             if let item = notification.object as? AVPlayerItem, let currentItem = self.appDelegate.player?.currentItem, item == currentItem {
                 self.videoSeek(time: .zero)
                 if !(detailView?.isShow() ?? false) {
-                    self.playerToolBar?.show(enableTimerAutoHide: false)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
                 }
                 NCKTVHTTPCache.shared.saveCache(metadata: metadata)
             }
@@ -112,7 +112,7 @@ class NCPlayer: NSObject {
                         self.playerToolBar?.setBarPlayer(ncplayer: self, timeSeek: timeSeek, metadata: metadata)
                         self.generatorImagePreview()
                         if !(detailView?.isShow() ?? false) {
-                            self.playerToolBar?.show(enableTimerAutoHide: false)
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
                         }
                     }
                     break
@@ -167,6 +167,15 @@ class NCPlayer: NSObject {
     func isPlay() -> Bool {
         
         if appDelegate.player?.rate == 1 { return true } else { return false }
+    }
+    
+    func isPictureInPictureActive() -> Bool {
+        
+        if let pictureInPictureController = pictureInPictureController, pictureInPictureController.isPictureInPictureActive {
+            return true
+        } else {
+            return false
+        }
     }
     
     func playerPlay() {
@@ -270,9 +279,10 @@ extension NCPlayer: AVPictureInPictureControllerDelegate {
     }
     
     func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        guard let metadata = self.metadata else { return }
 
         if !isPlay() {
-            playerToolBar?.show(enableTimerAutoHide: false)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
         }
     }
 }

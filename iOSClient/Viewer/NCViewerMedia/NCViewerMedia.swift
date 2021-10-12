@@ -110,6 +110,7 @@ class NCViewerMedia: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedThumbnail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedThumbnail), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(hidePlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(showPlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -156,7 +157,7 @@ class NCViewerMedia: UIViewController {
         print("deinit NCViewerMedia")        
     }
     
-    func changeScreenMode(mode: ScreenMode) {
+    func changeScreenMode(mode: ScreenMode, enableTimerAutoHide: Bool = false) {
         
         if mode == .normal {
             
@@ -164,7 +165,7 @@ class NCViewerMedia: UIViewController {
             progressView.isHidden = false
 
             if !currentViewController.detailView.isShow() {
-                currentViewController.playerToolBar.show(enableTimerAutoHide: true)
+                currentViewController.playerToolBar.show(enableTimerAutoHide: enableTimerAutoHide)
             }
             
             NCUtility.shared.colorNavigationController(navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil, withoutShadow: false)
@@ -299,6 +300,15 @@ class NCViewerMedia: UIViewController {
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String {
             if currentViewController.metadata.ocId == ocId {
                 changeScreenMode(mode: .full)
+            }
+        }
+    }
+    
+    @objc func showPlayerToolBar(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let enableTimerAutoHide = userInfo["enableTimerAutoHide"] as? Bool{
+            if currentViewController.metadata.ocId == ocId, let ncplayer = currentViewController.ncplayer, !ncplayer.isPictureInPictureActive() {
+                changeScreenMode(mode: .normal, enableTimerAutoHide: enableTimerAutoHide)
             }
         }
     }
@@ -503,7 +513,7 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
         
         if currentScreenMode == .full {
             
-            changeScreenMode(mode: .normal)
+            changeScreenMode(mode: .normal, enableTimerAutoHide: true)
                         
         } else {
             
