@@ -84,13 +84,17 @@ class NCPlayerToolBar: UIView {
         playerTopToolBarView.insertSubview(blurEffectTopToolBarView, at:0)
         
         pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .lightGray), for: .normal)
+        pipButton.isEnabled = false
+        
         muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .lightGray), for: .normal)
+        muteButton.isEnabled = false
         
         playbackSlider.value = 0
         playbackSlider.minimumValue = 0
         playbackSlider.maximumValue = 0
         playbackSlider.isContinuous = true
         playbackSlider.tintColor = .lightGray
+        playbackSlider.isEnabled = false
         
         labelCurrentTime.text = NCUtility.shared.stringFromTime(.zero)
         labelCurrentTime.textColor = .lightGray
@@ -98,8 +102,11 @@ class NCPlayerToolBar: UIView {
         labelOverallDuration.textColor = .lightGray
         
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .lightGray), for: .normal)
+        backButton.isEnabled = false
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray), for: .normal)
+        playButton.isEnabled = false
         forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .lightGray), for: .normal)
+        forwardButton.isEnabled = false
     }
     
     deinit {
@@ -210,7 +217,7 @@ class NCPlayerToolBar: UIView {
         }
         muteButton.isEnabled = true
         
-        if ncplayer?.pictureInPictureController != nil {
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && ncplayer?.pictureInPictureController != nil {
             pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .white), for: .normal)
             pipButton.isEnabled = true
         } else {
@@ -342,12 +349,14 @@ class NCPlayerToolBar: UIView {
         guard let player = appDelegate.player else { return }
         
         let currentTime = player.currentTime()
-        let newTime = CMTimeAdd(currentTime, timeToAdd)
+        var newTime = CMTimeAdd(currentTime, timeToAdd)
         
         if newTime < durationTime {
             ncplayer.videoSeek(time: newTime)
         } else if newTime >= durationTime {
-            ncplayer.videoSeek(time: .zero)
+            let timeToSubtract: CMTime = CMTimeMakeWithSeconds(3, preferredTimescale: 1)
+            newTime = CMTimeSubtract(durationTime, timeToSubtract)
+            ncplayer.videoSeek(time: newTime)
         }
         
         reStartTimerAutoHide()
