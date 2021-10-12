@@ -356,7 +356,9 @@ class NCPlayerToolBar: UIView {
         } else if newTime >= durationTime {
             let timeToSubtract: CMTime = CMTimeMakeWithSeconds(3, preferredTimescale: 1)
             newTime = CMTimeSubtract(durationTime, timeToSubtract)
-            ncplayer.videoSeek(time: newTime)
+            if newTime > currentTime {
+                ncplayer.videoSeek(time: newTime)
+            }
         }
         
         reStartTimerAutoHide()
