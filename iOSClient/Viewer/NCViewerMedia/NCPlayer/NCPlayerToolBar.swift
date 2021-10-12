@@ -324,7 +324,7 @@ class NCPlayerToolBar: UIView {
     @IBAction func setPip(_ sender: Any) {
         
         ncplayer?.pictureInPictureController?.startPictureInPicture()
-        hide()
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar, userInfo: ["ocId":metadata.ocId])
     }
     
     @IBAction func forwardButtonSec(_ sender: Any) {
