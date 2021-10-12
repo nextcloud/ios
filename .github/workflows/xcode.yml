@@ -15,8 +15,9 @@ jobs:
     runs-on: macos-latest
     env:
       PROJECT: Nextcloud.xcodeproj
-      DEVELOPER_DIR: /Applications/Xcode_13.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
     steps:
+    - run: ls /Applications
     - uses: actions/checkout@v2
     - name: Carthage Bootstrap
       run: carthage bootstrap --use-xcframeworks
