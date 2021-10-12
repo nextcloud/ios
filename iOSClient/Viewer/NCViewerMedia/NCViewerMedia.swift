@@ -115,11 +115,10 @@ class NCViewerMedia: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if let player = appDelegate.player {
-            if player.rate == 1 {
-                player.pause()
-                currentViewController.ncplayer?.saveTime(player.currentTime())
-            }
+        // Save time video
+        if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
+            ncplayer.playerPause()
+            ncplayer.saveCurrentTime()
         }
         
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
@@ -428,10 +427,8 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         
         // Save time video
-        if let player = appDelegate.player {
-            if player.rate == 1 {
-                currentViewController.ncplayer?.saveTime(player.currentTime())
-            }
+        if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
+            ncplayer.saveCurrentTime()
         }
         
         guard let nextViewController = pendingViewControllers.first as? NCViewerMediaZoom else { return }

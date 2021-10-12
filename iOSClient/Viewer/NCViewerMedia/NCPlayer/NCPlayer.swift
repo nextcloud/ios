@@ -160,6 +160,11 @@ class NCPlayer: NSObject {
     
     //MARK: -
     
+    func isPlay() -> Bool {
+        
+        if appDelegate.player?.rate == 1 { return true } else { return false }
+    }
+    
     func playerPlay() {
                 
         appDelegate.player?.play()
@@ -180,6 +185,13 @@ class NCPlayer: NSObject {
 
         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationTime: nil)
         generatorImagePreview()
+    }
+    
+    func saveCurrentTime() {
+        
+        if let player = appDelegate.player {
+            saveTime(player.currentTime())
+        }
     }
     
     func videoSeek(time: CMTime) {

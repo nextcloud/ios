@@ -216,8 +216,10 @@ class NCPlayerToolBar: UIView {
             pipButton.isEnabled = false
         }
         
-        if appDelegate.player?.rate == 1 { namedPlay = "pause.fill"}
-        
+        if let ncplayer = ncplayer, ncplayer.isPlay() {
+            namedPlay = "pause.fill"
+        }
+                
         if timeSeek != nil {
             playbackSlider.value = Float(timeSeek!.value)
         } else {
@@ -254,23 +256,23 @@ class NCPlayerToolBar: UIView {
     
     @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
         
-        if let touchEvent = event.allTouches?.first {
+        if let touchEvent = event.allTouches?.first, let ncplayer = ncplayer {
             
             let seconds: Int64 = Int64(self.playbackSlider.value)
             let targetTime: CMTime = CMTimeMake(value: seconds, timescale: 1000)
             
             switch touchEvent.phase {
             case .began:
-                wasInPlay = appDelegate.player?.rate == 1 ? true : false
-                ncplayer?.playerPause()
+                wasInPlay = ncplayer.isPlay()
+                ncplayer.playerPause()
                 playbackSliderEvent = .began
             case .moved:
-                ncplayer?.videoSeek(time: targetTime)
+                ncplayer.videoSeek(time: targetTime)
                 playbackSliderEvent = .moved
             case .ended:
-                ncplayer?.videoSeek(time: targetTime)
+                ncplayer.videoSeek(time: targetTime)
                 if wasInPlay {
-                    ncplayer?.playerPlay()
+                    ncplayer.playerPlay()
                 }
                 playbackSliderEvent = .ended
             default:
@@ -293,9 +295,7 @@ class NCPlayerToolBar: UIView {
         
         if appDelegate.player?.timeControlStatus == .playing {
             ncplayer?.playerPause()
-            if let time = appDelegate.player?.currentTime() {
-                ncplayer?.saveTime(time)
-            }
+            ncplayer?.saveCurrentTime()
             timerAutoHide?.invalidate()
         } else if appDelegate.player?.timeControlStatus == .paused {
             ncplayer?.playerPlay()
@@ -329,6 +329,7 @@ class NCPlayerToolBar: UIView {
     @IBAction func setPip(_ sender: Any) {
         
         ncplayer?.pictureInPictureController?.startPictureInPicture()
+        hide()
     }
     
     @IBAction func forwardButtonSec(_ sender: Any) {
