@@ -1,0 +1,8 @@
+github "AssistoLab/DropDown" "v2.3.13"
+github "FabrizioBrancati/Queuer" "2.1.1"
+github "WenchaoD/FSCalendar" "2.8.0"
+github "kishikawakatsumi/UICKeyChainStore" "v2.2.1"
+github "marinofaggiana/ChromaColorPicker" "b1b2c58c3c5617c73863a073cb6393c79195932e"
+github "marinofaggiana/KTVHTTPCache" "2.0.2"
+github "marinofaggiana/TOPasscodeViewController" "7a750031bb86d9dc9f193bf34a38bbd288b3c4fd"
+github "tilltue/TLPhotoPicker" "2.1.4"
