@@ -13,10 +13,16 @@ on:
 jobs:
   XCBuild:
     runs-on: macos-latest
+    env:
+      PROJECT: Nextcloud.xcodeproj
+      DEVELOPER_DIR: /Applications/Xcode_12.4.app/Contents/Developer
     steps:
     - uses: actions/checkout@v2
-    - run: ls
-    - uses: devbotsxyz/carthage-bootstrap@v1
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-    - uses: mxcl/xcodebuild@v1
+    - name: Carthage Bootstrap
+      run: carthage bootstrap --use-xcframeworks
+    - name: Build iOS
+      run: |
+        xcodebuild clean build -project $PROJECT -scheme $SCHEME -destination "$DESTINATION"
+      env:
+          SCHEME: Nextcloud
+          DESTINATION: platform=iOS Simulator,name=iPhone 11
