@@ -160,7 +160,14 @@ class NCPlayerToolBar: UIView {
     private func startTimerAutoHide() {
         
         timerAutoHide?.invalidate()
-        timerAutoHide = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(automaticHide), userInfo: nil, repeats: false)
+        timerAutoHide = Timer.scheduledTimer(timeInterval: 3.5, target: self, selector: #selector(automaticHide), userInfo: nil, repeats: false)
+    }
+    
+    private func reStartTimerAutoHide() {
+        
+        if let timerAutoHide = timerAutoHide, timerAutoHide.isValid {
+            startTimerAutoHide()
+        }
     }
     
     public func show(enableTimerAutoHide: Bool) {
@@ -273,6 +280,8 @@ class NCPlayerToolBar: UIView {
             default:
                 break
             }
+            
+            reStartTimerAutoHide()
         }
     }
     
@@ -319,6 +328,7 @@ class NCPlayerToolBar: UIView {
         CCUtility.setAudioMute(!mute)
         appDelegate.player?.isMuted = !mute
         updateToolBar()
+        reStartTimerAutoHide()
     }
     
     @IBAction func setPip(_ sender: Any) {
@@ -339,6 +349,8 @@ class NCPlayerToolBar: UIView {
         } else if newTime >= durationTime {
             ncplayer.videoSeek(time: .zero)
         }
+        
+        reStartTimerAutoHide()
     }
     
     @IBAction func backButtonSec(_ sender: Any) {
@@ -349,5 +361,7 @@ class NCPlayerToolBar: UIView {
         let newTime = CMTimeSubtract(currentTime, timeToAdd)
         
         ncplayer.videoSeek(time: newTime)
+        
+        reStartTimerAutoHide()
     }
 }
