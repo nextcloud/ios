@@ -340,6 +340,13 @@ class NCShareHeaderView: UIView {
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var ocId = ""
 
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        let longGesture = UILongPressGestureRecognizer(target: self, action: #selector(self.longTap))
+        path.addGestureRecognizer(longGesture)
+    }
+    
     @IBAction func touchUpInsideFavorite(_ sender: UIButton) {
         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             NCNetworking.shared.favoriteMetadata(metadata) { (errorCode, errorDescription) in
@@ -354,5 +361,13 @@ class NCShareHeaderView: UIView {
                 }
             }
         }
+    }
+    
+    @objc func longTap(sender : UIGestureRecognizer) {
+        
+        let board = UIPasteboard.general
+        board.string = path.text
+        
+        NCContentPresenter.shared.messageNotification("_copy_", description: "_copy_path_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorNoError, forced: false)
     }
 }
