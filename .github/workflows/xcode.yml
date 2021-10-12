@@ -18,9 +18,19 @@ jobs:
       DEVELOPER_DIR: /Applications/Xcode_13.0.app/Contents/Developer
     steps:
     - uses: actions/checkout@v2
-    - name: Carthage Bootstrap
+    - name: Restore Carhage Cache
+      uses: actions/cache@v2
+      id: carthage-cache
+      with:
+        path: Carthage
+        key: ${{ runner.os }}-carthage-${{ hashFiles('**/Cartfile.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-carthage-
+    - name: Carthage
+      if: steps.carthage-cache.outputs.cache-hit != 'true'
       run: carthage bootstrap --use-xcframeworks
-    - run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
+    - name: Download GoogleService-Info.plist
+      run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
     - name: Build iOS
       run: |
         xcodebuild clean build -project $PROJECT -scheme $SCHEME -destination "$DESTINATION"
