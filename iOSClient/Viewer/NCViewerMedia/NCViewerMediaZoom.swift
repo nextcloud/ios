@@ -320,7 +320,9 @@ extension NCViewerMediaZoom {
         
         scrollView.pinchGestureRecognizer?.isEnabled = true
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && !metadata.livePhoto && appDelegate.player?.timeControlStatus == .paused {
-            playerToolBar?.show(metadata: metadata, detailView: detailView, enableTimerAutoHide: false)
+            if !detailView.isShow() {
+                playerToolBar?.show(enableTimerAutoHide: false)
+            }
         }
     }
     

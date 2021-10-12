@@ -37,7 +37,6 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var playbackSlider: UISlider!
     @IBOutlet weak var labelOverallDuration: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
-
     
     enum sliderEventType {
         case began
@@ -53,8 +52,7 @@ class NCPlayerToolBar: UIView {
     private var durationTime: CMTime = .zero
     private var timeObserver: Any?
     private var timerAutoHide: Timer?
-    private var metadata: tableMetadata?
-
+    private var metadata: tableMetadata!
 
     // MARK: - View Life Cycle
 
@@ -112,7 +110,7 @@ class NCPlayerToolBar: UIView {
         }
     }
     
-    func setBarPlayer(ncplayer: NCPlayer, timeSeek: CMTime, metadata: tableMetadata?) {
+    func setBarPlayer(ncplayer: NCPlayer, timeSeek: CMTime, metadata: tableMetadata) {
                         
         self.ncplayer = ncplayer
         self.metadata = metadata
@@ -165,7 +163,7 @@ class NCPlayerToolBar: UIView {
         timerAutoHide = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(automaticHide), userInfo: nil, repeats: false)
     }
     
-    public func show(metadata: tableMetadata, detailView: NCViewerMediaDetailView?, enableTimerAutoHide: Bool) {
+    public func show(enableTimerAutoHide: Bool) {
         
         if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
         if metadata.livePhoto { return }
@@ -176,9 +174,9 @@ class NCPlayerToolBar: UIView {
         }
         
         if !self.isHidden { return }
-        if let detailView = detailView {
-            if detailView.isShow() { return }
-        }
+//        if let detailView = detailView {
+//            if detailView.isShow() { return }
+//        }
         
         updateToolBar()
             
