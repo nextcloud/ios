@@ -79,56 +79,56 @@ class NCPlayer: NSObject {
             }
         }
         
-        appDelegate.player?.currentItem?.asset.loadValuesAsynchronously(forKeys: ["duration", "playable"], completionHandler: {
-            if let durationTime: CMTime = (self.appDelegate.player?.currentItem?.asset.duration) {
-                var error: NSError? = nil
-                let status = self.appDelegate.player?.currentItem?.asset.statusOfValue(forKey: "playable", error: &error)
-                switch status {
-                case .loaded:
-                    DispatchQueue.main.async {
-                        if let imageVideoContainer = imageVideoContainer {
-                            
-                            self.imageVideoContainer = imageVideoContainer
-                            self.videoLayer = AVPlayerLayer(player: self.appDelegate.player)
-                            self.videoLayer!.frame = imageVideoContainer.bounds
-                            self.videoLayer!.videoGravity = .resizeAspect
-                            
-                            if metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue {
-                            
-                                if !metadata.livePhoto {
-                                    imageVideoContainer.image = imageVideoContainer.image?.image(alpha: 0)
-                                }
-                                imageVideoContainer.layer.addSublayer(self.videoLayer!)
-                                imageVideoContainer.playerLayer = self.videoLayer
-                                imageVideoContainer.metadata = self.metadata
-                                // PiP
-                                if let playerLayer = self.videoLayer {
-                                    self.pictureInPictureController = AVPictureInPictureController(playerLayer: playerLayer)
-                                    self.pictureInPictureController?.delegate = self
-                                }
+        appDelegate.player?.currentItem?.asset.loadValuesAsynchronously(forKeys: ["playable"], completionHandler: {
+            var error: NSError? = nil
+            let status = self.appDelegate.player?.currentItem?.asset.statusOfValue(forKey: "playable", error: &error)
+            switch status {
+            case .loaded:
+                DispatchQueue.main.async {
+                    if let imageVideoContainer = imageVideoContainer {
+                        
+                        self.imageVideoContainer = imageVideoContainer
+                        self.videoLayer = AVPlayerLayer(player: self.appDelegate.player)
+                        self.videoLayer!.frame = imageVideoContainer.bounds
+                        self.videoLayer!.videoGravity = .resizeAspect
+                        
+                        if metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue {
+                        
+                            if !metadata.livePhoto {
+                                imageVideoContainer.image = imageVideoContainer.image?.image(alpha: 0)
+                            }
+                            imageVideoContainer.layer.addSublayer(self.videoLayer!)
+                            imageVideoContainer.playerLayer = self.videoLayer
+                            imageVideoContainer.metadata = self.metadata
+                            // PiP
+                            if let playerLayer = self.videoLayer {
+                                self.pictureInPictureController = AVPictureInPictureController(playerLayer: playerLayer)
+                                self.pictureInPictureController?.delegate = self
                             }
                         }
+                    }
+                    if let durationTime: CMTime = (self.appDelegate.player?.currentItem?.asset.duration) {
                         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationTime: durationTime)
-                        self.playerToolBar?.setBarPlayer(ncplayer: self, timeSeek: timeSeek, metadata: metadata)
-                        self.generatorImagePreview()
-                        if !(detailView?.isShow() ?? false) {
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
-                        }
                     }
-                    break
-                case .failed:
-                    DispatchQueue.main.async {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorGeneric, forced: false)
+                    self.playerToolBar?.setBarPlayer(ncplayer: self, timeSeek: timeSeek, metadata: metadata)
+                    self.generatorImagePreview()
+                    if !(detailView?.isShow() ?? false) {
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
                     }
-                    break
-                case .cancelled:
-                    DispatchQueue.main.async {
-                        //do something, show alert, put a placeholder image etc.
-                    }
-                    break
-                default:
-                    break
                 }
+                break
+            case .failed:
+                DispatchQueue.main.async {
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorGeneric, forced: false)
+                }
+                break
+            case .cancelled:
+                DispatchQueue.main.async {
+                    //do something, show alert, put a placeholder image etc.
+                }
+                break
+            default:
+                break
             }
         })
         
