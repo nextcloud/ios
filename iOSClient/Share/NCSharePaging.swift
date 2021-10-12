@@ -368,6 +368,6 @@ class NCShareHeaderView: UIView {
         let board = UIPasteboard.general
         board.string = path.text
         
-        NCContentPresenter.shared.messageNotification("_copy_", description: "_copy_path_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorNoError, forced: false)
+        NCContentPresenter.shared.messageNotification("", description: "_copied_path_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorNoError, forced: false)
     }
 }

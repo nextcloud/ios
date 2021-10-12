@@ -636,6 +636,12 @@ import Queuer
             self.copyPasteboard()
         }
         
+        let copyPath = UIAction(title: NSLocalizedString("_copy_path_", comment: ""), image: UIImage(systemName: "doc.on.clipboard")) { action in
+            let board = UIPasteboard.general
+            board.string = NCUtilityFileSystem.shared.getPath(metadata: metadata)
+            NCContentPresenter.shared.messageNotification("", description: "_copied_path_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorNoError, forced: false)
+        }
+        
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info")) { action in
             self.openShare(ViewController: viewController, metadata: metadata, indexPage: 0)
         }
@@ -761,13 +767,13 @@ import Queuer
         
         if metadata.directory {
             
-            let submenu = UIMenu(title: "", options: .displayInline, children: [favorite, offline, rename, moveCopy, delete])
+            let submenu = UIMenu(title: "", options: .displayInline, children: [favorite, offline, rename, moveCopy, copyPath, delete])
             return UIMenu(title: "", children: [detail, submenu])
         }
         
         // FILE
         
-        var children: [UIMenuElement] = [favorite, offline, openIn, rename, moveCopy, copy, delete]
+        var children: [UIMenuElement] = [favorite, offline, openIn, rename, moveCopy, copy, copyPath, delete]
 
         if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue) {
             children.insert(save, at: 2)

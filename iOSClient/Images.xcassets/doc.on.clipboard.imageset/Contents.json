@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "doc.on.clipboard.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
