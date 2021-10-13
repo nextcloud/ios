@@ -52,7 +52,7 @@ class NCPlayerToolBar: UIView {
     private var durationTime: CMTime = .zero
     private var timeObserver: Any?
     private var timerAutoHide: Timer?
-    private var metadata: tableMetadata!
+    private var metadata: tableMetadata?
 
     // MARK: - View Life Cycle
 
@@ -178,6 +178,7 @@ class NCPlayerToolBar: UIView {
     }
     
     public func show(enableTimerAutoHide: Bool) {
+        guard let metadata = self.metadata else { return }
         
         if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
         if metadata.livePhoto { return }
@@ -205,7 +206,8 @@ class NCPlayerToolBar: UIView {
     }
     
     public func updateToolBar(timeSeek: CMTime? = nil) {
-
+        guard let metadata = self.metadata else { return }
+        
         var namedPlay = "play.fill"
         var currentTime = appDelegate.player?.currentTime() ?? .zero
         currentTime = currentTime.convertScale(1000, method: .default)
@@ -339,7 +341,8 @@ class NCPlayerToolBar: UIView {
     }
     
     @IBAction func setPip(_ sender: Any) {
-        
+        guard let metadata = self.metadata else { return }
+
         ncplayer?.pictureInPictureController?.startPictureInPicture()
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar, userInfo: ["ocId":metadata.ocId])
     }
