@@ -31,7 +31,7 @@ class NCGlobal: NSObject {
 
     func usernameToColor(_ username: String) -> CGColor {
         // Normalize hash
-        let loweUserName = username.lowercased()
+        let lowerUsername = username.lowercased()
         var hash: String
 
         let regex = try! NSRegularExpression(pattern: "^([0-9a-f]{4}-?){8}$")
