@@ -29,6 +29,38 @@ class NCGlobal: NSObject {
         return instance
     }()
 
+    func usernameToColor(_ username: String) -> CGColor {
+        // Normalize hash
+        let lowerUsername = username.lowercased()
+        var hash: String
+
+        let regex = try! NSRegularExpression(pattern: "^([0-9a-f]{4}-?){8}$")
+        let matches = regex.matches(
+            in: username,
+            range: NSRange(username.startIndex..., in: username))
+
+        if (!matches.isEmpty) {
+            // Already a md5 hash?
+            // done, use as is.
+            hash = lowerUsername
+        } else {
+            hash = lowerUsername.md5()
+        }
+
+        hash = hash.replacingOccurrences(of: "[^0-9a-f]", with: "", options: .regularExpression)
+
+        // userColors has 18 colors by default
+        let userColorIx = NCGlobal.hashToInt(hash: hash, maximum: 18)
+        return NCBrandColor.shared.userColors[userColorIx]
+    }
+
+    // Convert a string to an integer evenly
+    // hash is hex string
+    static func hashToInt(hash: String, maximum: Int) -> Int {
+        let result = hash.compactMap(\.hexDigitValue)
+        return result.reduce(0, { $0 + $1 }) % maximum
+    }
+
     // Struct for Progress
     //
     struct progressType {
@@ -355,4 +387,3 @@ if let popoverController = alertController.popoverPresentationController {
 
 @discardableResult
 */
-

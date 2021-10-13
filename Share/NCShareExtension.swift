@@ -237,36 +237,23 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             }
             self.setNavigationBar(navigationTitle: navigationTitle)
         }
-        
+
         // PROFILE BUTTON
-                
-        var image: UIImage?
-        
-        if #available(iOS 13.0, *) {
-            let config = UIImage.SymbolConfiguration(pointSize: 30)
-            image = NCUtility.shared.loadImage(named: "person.crop.circle", symbolConfiguration: config)
-        } else {
-            image = NCUtility.shared.loadImage(named: "person.crop.circle", size: 30)
-        }
-        
-        let fileName = String(CCUtility.getUserUrlBase(activeAccount.user, urlBase: activeAccount.urlBase)) + "-" + activeAccount.user + "-original.png"
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-        if let imageUser = UIImage(contentsOfFile: fileNameLocalPath) {
-            image = NCUtility.shared.createAvatar(image: imageUser, size: 30)
-        }
-        
+
+        let image = NCUtility.shared.loadUserImage(for: activeAccount.user, displayName: activeAccount.displayName, urlBase: activeAccount.urlBase)
+
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
-            
+
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: activeAccount.account) {
 
             var title = "  "
-            if activeAccount?.alias == "" {
-                title = title + (activeAccount?.user ?? "")
+            if let userAlias = activeAccount?.alias, !userAlias.isEmpty {
+                title += userAlias
             } else {
-                title = title + (activeAccount?.alias ?? "")
+                title += activeAccount?.displayName ?? ""
             }
-                
+
             profileButton.setTitle(title, for: .normal)
             profileButton.setTitleColor(.systemBlue, for: .normal)
         }

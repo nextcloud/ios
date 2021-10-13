@@ -107,6 +107,7 @@ class NCBrandColor: NSObject {
     @objc static let shared: NCBrandColor = {
         let instance = NCBrandColor()
         instance.createImagesThemingColor()
+        instance.createUserColors()
         return instance
     }()
     
@@ -151,6 +152,8 @@ class NCBrandColor: NSObject {
     @objc public let gray:                  UIColor = UIColor(red: 104.0/255.0, green: 104.0/255.0, blue: 104.0/255.0, alpha: 1.0)
     @objc public let lightGray:             UIColor = UIColor(red: 229.0/255.0, green: 229.0/229.0, blue: 104.0/255.0, alpha: 1.0)
     @objc public let yellowFavorite:        UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
+    
+    public var userColors: [CGColor] = []
 
     @objc public var systemBackground: UIColor {
         get {
@@ -307,7 +310,11 @@ class NCBrandColor: NSObject {
         self.brandElement = self.customer
         self.brandText = self.customerText        
     }
-    
+
+    private func createUserColors() {
+        self.userColors = generateColors()
+    }
+
     public func createImagesThemingColor() {
         
         let gray: UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
@@ -426,5 +433,45 @@ class NCBrandColor: NSObject {
         } else {
             NCBrandColor.shared.brandElement = NCBrandColor.shared.brand
         }
+    }
+
+    private func stepCalc(steps: Int, color1: CGColor, color2: CGColor) -> [CGFloat] {
+        var step = [CGFloat](repeating: 0, count: 3)
+        step[0] = (color2.components![0] - color1.components![0]) / CGFloat(steps)
+        step[1] = (color2.components![1] - color1.components![1]) / CGFloat(steps)
+        step[2] = (color2.components![2] - color1.components![2]) / CGFloat(steps)
+        return step
+    }
+
+    private func mixPalette(steps: Int, color1: CGColor, color2: CGColor) -> [CGColor] {
+        var palette = [color1]
+        let step = stepCalc(steps: steps, color1: color1, color2: color2)
+        
+        let c1Components = color1.components!
+        for i in 1 ..< steps {
+            let r = c1Components[0] + step[0] * CGFloat(i)
+            let g = c1Components[1] + step[1] * CGFloat(i)
+            let b = c1Components[2] + step[2] * CGFloat(i)
+            
+            palette.append(UIColor(red: r, green: g, blue: b, alpha: 1).cgColor)
+        }
+        return palette
+    }
+
+    /**
+     Generate colors from the official nextcloud color.
+     You can provide how many colors you want (multiplied by 3).
+     if `step` = 6,
+     3 colors \* 6 will result in 18 generated colors
+     */
+    func generateColors(steps: Int = 6) -> [CGColor] {
+        let red = UIColor(red: 182/255, green: 70/255, blue: 157/255, alpha: 1).cgColor
+        let yellow = UIColor(red: 221/255, green: 203/255, blue: 85/255, alpha: 1).cgColor
+        let blue = UIColor(red: 0/255, green: 130/255, blue: 201/255, alpha: 1).cgColor
+
+        let palette1 = mixPalette(steps: steps, color1: red, color2: yellow)
+        let palette2 = mixPalette(steps: steps, color1: yellow, color2: blue)
+        let palette3 = mixPalette(steps: steps, color1: blue, color2: red)
+        return palette1 + palette2 + palette3
     }
 }

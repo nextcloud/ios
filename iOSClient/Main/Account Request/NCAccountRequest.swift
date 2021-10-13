@@ -235,16 +235,9 @@ extension NCAccountRequest: UITableViewDataSource {
         } else {
         
             let account = accounts[indexPath.row]
-            
-            let fileName = String(CCUtility.getUserUrlBase(account.user, urlBase: account.urlBase)) + "-" + account.user + ".png"
-            let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-            
-            if let image = UIImage(contentsOfFile: fileNamePath) {
-                avatarImage?.image = image
-            } else {
-                avatarImage?.image = NCUtility.shared.loadImage(named: "person.crop.circle")
-            }
-                    
+
+            avatarImage?.image = NCUtility.shared.loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase)
+
             if account.alias != "" {
                 userLabel?.text = account.alias.uppercased()
             } else {

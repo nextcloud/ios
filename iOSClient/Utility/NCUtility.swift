@@ -384,7 +384,9 @@ class NCUtility: NSObject {
                 
         return(onlineStatus, statusMessage, descriptionMessage)
     }
-    
+
+    // MARK: -
+
     func imageFromVideo(url: URL, at time: TimeInterval) -> UIImage? {
         
         let asset = AVURLAsset(url: url)
@@ -496,6 +498,30 @@ class NCUtility: NSObject {
         return  UIImage(named: "file")!.image(color: color, size: size)
     }
     
+    func loadUserImage(for user: String, displayName: String?, urlBase: String) -> UIImage {
+        var image: UIImage?
+        
+        let fileName = String(CCUtility.getUserUrlBase(user, urlBase: urlBase)) + "-" + user + "-original.png"
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        if let imageUser = UIImage(contentsOfFile: fileNameLocalPath) {
+            image = NCUtility.shared.createAvatar(image: imageUser, size: 30)
+        } else if let displayName = displayName, !displayName.isEmpty {
+            image = createAvatar(displayName: displayName, size: 30)
+        } else {
+            // fallback to default icon
+        }
+        return image ?? getDefaultUserIcon()
+    }
+    
+    func getDefaultUserIcon() -> UIImage {
+        if #available(iOS 13.0, *) {
+            let config = UIImage.SymbolConfiguration(pointSize: 30)
+            return NCUtility.shared.loadImage(named: "person.crop.circle", symbolConfiguration: config)
+        } else {
+            return NCUtility.shared.loadImage(named: "person.crop.circle", size: 30)
+        }
+    }
+    
     @objc func createAvatar(image: UIImage, size: CGFloat) -> UIImage {
         
         var avatarImage = image
@@ -510,6 +536,32 @@ class NCUtility: NSObject {
         return avatarImage
     }
     
+    func createAvatar(displayName: String, size: CGFloat) -> UIImage? {
+        guard let initials = displayName.uppercaseInitials else {
+            return nil
+        }
+        let userColor = NCGlobal.shared.usernameToColor(displayName)
+        let rect = CGRect(x: 0, y: 0, width: size, height: size)
+        var avatarImage: UIImage?
+        
+        UIGraphicsBeginImageContextWithOptions(rect.size, false, 3.0)
+        let context = UIGraphicsGetCurrentContext()
+        UIBezierPath.init(roundedRect: rect, cornerRadius: rect.size.height).addClip()
+        context?.setFillColor(userColor)
+        context?.fill(rect)
+        let textStyle = NSMutableParagraphStyle()
+        textStyle.alignment = NSTextAlignment.center
+        let lineHeight = UIFont.systemFont(ofSize: UIFont.systemFontSize).pointSize
+        NSString(string: initials)
+            .draw(
+                in: CGRect(x: 0, y: (size - lineHeight) / 2, width: size, height: lineHeight),
+                withAttributes: [NSAttributedString.Key.paragraphStyle: textStyle])
+        avatarImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        return avatarImage
+    }
+
     // MARK: -
 
     @objc func startActivityIndicator(backgroundView: UIView?, blurEffect: Bool, bottom: CGFloat = 0, style: UIActivityIndicatorView.Style = .whiteLarge) {

@@ -37,13 +37,9 @@ extension NCLoginWeb {
         for account in accounts {
             
             let title = account.user + " " + (URL(string: account.urlBase)?.host ?? "")
-            let fileName = String(CCUtility.getUserUrlBase(account.user, urlBase: account.urlBase)) + "-" + account.user + ".png"
-            let fileNamePath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
 
-            if let image = UIImage(contentsOfFile: fileNamePath) {
-                avatar = image
-            }
-            
+            avatar = NCUtility.shared.loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase)
+
             actions.append(
                 NCMenuAction(
                     title: title,
@@ -64,7 +60,7 @@ extension NCLoginWeb {
                 )
             )
         }
-        
+
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_active_account_", comment: ""),
