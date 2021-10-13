@@ -42,9 +42,9 @@ class NCGlobal: NSObject {
         if (!matches.isEmpty) {
             // Already a md5 hash?
             // done, use as is.
-            hash = loweUserName
+            hash = lowerUsername
         } else {
-            hash = loweUserName.md5()
+            hash = lowerUsername.md5()
         }
 
         hash = hash.replacingOccurrences(of: "[^0-9a-f]", with: "", options: .regularExpression)
