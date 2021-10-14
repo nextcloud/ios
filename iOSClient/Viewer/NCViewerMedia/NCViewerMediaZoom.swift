@@ -277,7 +277,6 @@ extension NCViewerMediaZoom {
             if (latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0) {
                 self.detailViewHeighConstraint.constant = self.view.bounds.height / 2
             } else {
-                //let height = self.detailView.messageButton.frame.origin.y + self.detailView.messageButton.frame.height
                 self.detailViewHeighConstraint.constant = 170
             }
             self.view.layoutIfNeeded()
