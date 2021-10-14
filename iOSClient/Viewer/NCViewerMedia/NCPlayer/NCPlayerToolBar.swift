@@ -25,6 +25,7 @@ import Foundation
 import NCCommunication
 import CoreMedia
 import UIKit
+import MediaPlayer
 
 class NCPlayerToolBar: UIView {
     
@@ -377,5 +378,63 @@ class NCPlayerToolBar: UIView {
         ncplayer.videoSeek(time: newTime)
         
         reStartTimerAutoHide()
+    }
+}
+
+extension NCPlayerToolBar {
+    
+    func setupRemoteTransportControls() {
+        guard let ncplayer = ncplayer else { return }
+
+        let commandCenter = MPRemoteCommandCenter.shared()
+      
+        // Add handler for Play Command
+        commandCenter.playCommand.addTarget { event in
+            
+            if !ncplayer.isPlay() {
+                ncplayer.playerPlay()
+                return .success
+            }
+            return .commandFailed
+        }
+      
+        // Add handler for Pause Command
+        commandCenter.pauseCommand.addTarget { event in
+          
+            if ncplayer.isPlay() {
+                ncplayer.playerPause()
+                return .success
+            }
+            return .commandFailed
+        }
+    }
+    
+    func setupNowPlaying() {
+        
+        var nowPlayingInfo = [String : Any]()
+        nowPlayingInfo[MPMediaItemPropertyTitle] = metadata?.fileNameView
+      
+//        if let image = UIImage(named: "artist") {
+//            nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
+//                return image
+//            }
+//        }
+        
+        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = appDelegate.player?.currentTime
+        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = appDelegate.player?.currentItem?.asset.duration
+        nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = appDelegate.player?.rate
+      
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+    
+    func updateNowPlaying(isPause: Bool) {
+
+        var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo!
+      
+        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = appDelegate.player?.currentTime
+        nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = isPause ? 0 : 1
+      
+        // Set the metadata
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
 }
