@@ -130,6 +130,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
         let documentProviderMenu = UIDocumentPickerViewController(documentTypes: ["public.data"], in: .import)
         
         documentProviderMenu.modalPresentationStyle = .formSheet
+        documentProviderMenu.allowsMultipleSelection = true
         documentProviderMenu.popoverPresentationController?.sourceView = tabBarController.tabBar
         documentProviderMenu.popoverPresentationController?.sourceRect = tabBarController.tabBar.bounds
         documentProviderMenu.delegate = self
