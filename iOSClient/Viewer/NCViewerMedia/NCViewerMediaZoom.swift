@@ -136,6 +136,9 @@ class NCViewerMediaZoom: UIViewController {
             viewerMedia?.textColor = NCBrandColor.shared.label
             viewerMedia?.progressView.isHidden = false
         }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -149,6 +152,12 @@ class NCViewerMediaZoom: UIViewController {
         
         // DOWNLOAD
         downloadFile()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -269,6 +278,13 @@ class NCViewerMediaZoom: UIViewController {
 //MARK: -
 
 extension NCViewerMediaZoom {
+    
+    @objc func openDetail(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, ocId == metadata.ocId {
+            openDetail()
+        }
+    }
     
     private func openDetail() {
         
@@ -401,7 +417,7 @@ extension NCViewerMediaZoom: NCViewerMediaDetailViewDelegate  {
     
     func downloadFullResolution() {
         closeDetail()
-        NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
+        NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenDetail) { (_) in }
     }
 }
 

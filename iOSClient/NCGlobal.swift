@@ -288,6 +288,7 @@ class NCGlobal: NSObject {
     let selectorSaveAlbumLivePhotoIMG               = "saveAlbumLivePhotoIMG"
     let selectorSaveAlbumLivePhotoMOV               = "saveAlbumLivePhotoMOV"
     let selectorSaveAsScan                          = "saveAsScan"
+    let selectorOpenDetail                          = "openDetail"
 
     // Metadata : Status
     //
@@ -359,6 +360,9 @@ class NCGlobal: NSObject {
     
     let notificationCenterHidePlayerToolBar                     = "hidePlayerToolBar"               // userInfo: ocId
     let notificationCenterShowPlayerToolBar                     = "showPlayerToolBar"               // userInfo: ocId, enableTimerAutoHide
+    
+    let notificationCenterOpenMediaDetail                       = "openMediaDetail"                 // userInfo: ocId
+
 }
 
 //let rootView = UIApplication.shared.keyWindow?.rootViewController?.view

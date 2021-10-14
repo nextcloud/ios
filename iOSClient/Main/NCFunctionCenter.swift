@@ -137,6 +137,10 @@ import Queuer
                         
                         saveAsScan(metadata: metadata)
                         
+                    case NCGlobal.shared.selectorOpenDetail:
+                        
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterOpenMediaDetail, userInfo: ["ocId":metadata.ocId])
+                        
                     default:
                         
                         break
