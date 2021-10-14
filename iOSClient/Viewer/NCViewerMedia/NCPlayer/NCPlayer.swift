@@ -94,12 +94,14 @@ class NCPlayer: NSObject {
                         
                         if metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue {
                         
-                            if !metadata.livePhoto {
-                                imageVideoContainer.image = imageVideoContainer.image?.image(alpha: 0)
-                            }
                             imageVideoContainer.layer.addSublayer(self.videoLayer!)
                             imageVideoContainer.playerLayer = self.videoLayer
                             imageVideoContainer.metadata = self.metadata
+                            if !metadata.livePhoto {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    imageVideoContainer.image = imageVideoContainer.image?.image(alpha: 0)
+                                }
+                            }
                             // PiP
                             if let playerLayer = self.videoLayer {
                                 self.pictureInPictureController = AVPictureInPictureController(playerLayer: playerLayer)
