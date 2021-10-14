@@ -25,6 +25,10 @@ import UIKit
 import MapKit
 import NCCommunication
 
+public protocol NCViewerMediaDetailViewDelegate {
+    func downloadFullResolution()
+}
+
 class NCViewerMediaDetailView: UIView {
     
     @IBOutlet weak var separator: UIView!
@@ -36,7 +40,7 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var dimValue: UILabel!
     @IBOutlet weak var lensModelLabel: UILabel!
     @IBOutlet weak var lensModelValue: UILabel!
-    @IBOutlet weak var messageLabel: UILabel!
+    @IBOutlet weak var messageButton: UIButton!
     @IBOutlet weak var mapContainer: UIView!
     @IBOutlet weak var locationButton: UIButton!
     
@@ -45,8 +49,9 @@ class NCViewerMediaDetailView: UIView {
     var location: String?
     var date: Date?
     var lensModel: String?
-    
+    var metadata: tableMetadata?
     var mapView: MKMapView?
+    var delegate: NCViewerMediaDetailViewDelegate?
         
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -60,8 +65,7 @@ class NCViewerMediaDetailView: UIView {
         dimValue.text = ""
         lensModelLabel.text = ""
         lensModelValue.text = ""
-        messageLabel.text = ""
-        messageLabel.textColor = NCBrandColor.shared.brand
+        messageButton.setTitle("" , for: .normal)
         locationButton.setTitle("" , for: .normal)
     }
     
@@ -72,13 +76,15 @@ class NCViewerMediaDetailView: UIView {
         self.mapView = nil
     }
     
-    func show(metadata: tableMetadata, image: UIImage?, textColor: UIColor?, latitude: Double, longitude: Double, location: String?, date: Date?, lensModel: String?) {
+    func show(metadata: tableMetadata, image: UIImage?, textColor: UIColor?, latitude: Double, longitude: Double, location: String?, date: Date?, lensModel: String?, delegate: NCViewerMediaDetailViewDelegate?) {
                         
+        self.metadata = metadata
         self.latitude = latitude
         self.longitude = longitude
         self.location = location
         self.date = date
         self.lensModel = lensModel
+        self.delegate = delegate
         
         if mapView == nil && (latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0) {
             
@@ -149,14 +155,20 @@ class NCViewerMediaDetailView: UIView {
         
         // Message
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "" {
-            messageLabel.text = NSLocalizedString("_try_download_full_resolution_", comment: "")
+            messageButton.setTitle(NSLocalizedString("_try_download_full_resolution_", comment: ""), for: .normal)
+            messageButton.isHidden = false
         } else {
-            messageLabel.text = ""
+            messageButton.setTitle("" , for: .normal)
+            messageButton.isHidden = true
         }
         
         // Location
         if let location = location {
-            self.locationButton.setTitle(location, for: .normal)
+            locationButton.setTitle(location, for: .normal)
+            locationButton.isHidden = false
+        } else {
+            locationButton.setTitle("" , for: .normal)
+            locationButton.isHidden = true
         }
         
         self.isHidden = false
@@ -195,6 +207,11 @@ class NCViewerMediaDetailView: UIView {
     
     @IBAction func touchFavorite(_ sender: Any) {
         
+    }
+    
+    @IBAction func touchMessage(_ sender: Any) {
+        
+        delegate?.downloadFullResolution()
     }
     
     //MARK: -

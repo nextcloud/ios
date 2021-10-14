@@ -277,11 +277,12 @@ extension NCViewerMediaZoom {
             if (latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0) {
                 self.detailViewHeighConstraint.constant = self.view.bounds.height / 2
             } else {
+                //let height = self.detailView.messageButton.frame.origin.y + self.detailView.messageButton.frame.height
                 self.detailViewHeighConstraint.constant = 170
             }
             self.view.layoutIfNeeded()
             
-           self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMedia?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel)
+           self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMedia?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel, delegate: self)
                 
             if let image = self.imageVideoContainer.image {
                 let ratioW = self.imageVideoContainer.frame.width / image.size.width
@@ -328,7 +329,7 @@ extension NCViewerMediaZoom {
         
         if self.detailView.isShow() {
             CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
-                self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMedia?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel)
+                self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMedia?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel, delegate: self)
             }
         }
     }
@@ -394,6 +395,14 @@ extension NCViewerMediaZoom: UIScrollViewDelegate {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    }
+}
+
+extension NCViewerMediaZoom: NCViewerMediaDetailViewDelegate  {
+    
+    func downloadFullResolution() {
+        closeDetail()
+        NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
     }
 }
 
