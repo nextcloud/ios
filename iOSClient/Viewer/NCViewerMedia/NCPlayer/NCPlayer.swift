@@ -121,7 +121,7 @@ class NCPlayer: NSObject {
                 DispatchQueue.main.async {
                     var description = NSLocalizedString("_error_something_wrong_", comment: "")
                     if let errorDescription = error?.localizedDescription, let failureReason = error?.localizedFailureReason {
-                        description = NSLocalizedString("_error_something_wrong_", comment: "") + "\n" + errorDescription + "\n" + failureReason
+                        description = errorDescription + "\n" + failureReason
                     }
                     NCContentPresenter.shared.messageNotification("_error_", description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorGeneric, forced: false)
                 }
