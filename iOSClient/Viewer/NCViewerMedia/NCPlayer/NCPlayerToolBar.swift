@@ -179,6 +179,7 @@ class NCPlayerToolBar: UIView {
                         
         self.ncplayer = ncplayer
         self.metadata = metadata
+        self.image = image
                 
         if let durationTime = NCManageDatabase.shared.getVideoDurationTime(metadata: ncplayer.metadata) {
         
@@ -192,6 +193,7 @@ class NCPlayerToolBar: UIView {
             labelCurrentTime.text = NCUtility.shared.stringFromTime(.zero)
             labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(durationTime)
         }
+        
         setupRemoteTransportControls()
         updateToolBar(timeSeek: timeSeek)
         
