@@ -257,6 +257,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if let directory = CCUtility.getDirectoryProviderStorage() {
             NCUtilityFileSystem.shared.cleanUp(directory: directory, days: TimeInterval(days))
         }
+        
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationWillResignActive)
     }
     
     // L' applicazione è entrata nello sfondo

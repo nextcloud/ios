@@ -26,6 +26,7 @@ import NCCommunication
 import UIKit
 import AVFoundation
 import AVKit
+import MediaPlayer
 
 /// The Set of custom player controllers currently using or transitioning out of PiP
 private var activeNCPlayer = Set<NCPlayer>()
@@ -146,12 +147,16 @@ class NCPlayer: NSObject {
             }
         })
         
+        NotificationCenter.default.addObserver(self, selector: #selector(generatorImagePreview), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
+        
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
     deinit {
         print("deinit NCPlayer")
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
         
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
@@ -249,7 +254,7 @@ class NCPlayer: NSObject {
         self.saveTime(time)
     }
     
-    func generatorImagePreview() {
+    @objc func generatorImagePreview() {
         guard let time = appDelegate.player?.currentTime() else { return }
         guard let metadata = self.metadata else { return }
         if metadata.livePhoto { return }
@@ -266,6 +271,12 @@ class NCPlayer: NSObject {
                 imageGenerator.appliesPreferredTrackTransform = true
                 let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
                 image = UIImage(cgImage: cgImage)
+                // Update Playing Info Center
+                if let image = image {
+                    MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
+                        return image
+                    }
+                }
                 // Preview
                 if let data = image?.jpegData(compressionQuality: 0.5) {
                     try data.write(to: URL.init(fileURLWithPath: fileNamePreviewLocalPath), options: .atomic)
