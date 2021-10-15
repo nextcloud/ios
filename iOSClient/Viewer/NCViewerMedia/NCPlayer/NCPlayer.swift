@@ -206,6 +206,12 @@ class NCPlayer: NSObject {
         if let pauseCommand = appDelegate.commandCenterPauseCommand {
             MPRemoteCommandCenter.shared().pauseCommand.removeTarget(pauseCommand)
         }
+        if let previousCommand = appDelegate.commandCenterPreviousCommand {
+            MPRemoteCommandCenter.shared().previousTrackCommand.removeTarget(previousCommand)
+        }
+        if let nextCommand = appDelegate.commandCenterNextCommand {
+            MPRemoteCommandCenter.shared().nextTrackCommand.removeTarget(nextCommand)
+        }
     }
     
     //MARK: - NotificationCenter

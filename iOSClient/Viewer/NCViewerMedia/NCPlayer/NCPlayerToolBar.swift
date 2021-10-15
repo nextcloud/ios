@@ -213,6 +213,7 @@ class NCPlayerToolBar: UIView {
                 
                 if !ncplayer.isPlay() {
                     ncplayer.playerPlay()
+                    self.updateToolBar(timeSeek: nil)
                     return .success
                 }
                 return .commandFailed
@@ -223,20 +224,35 @@ class NCPlayerToolBar: UIView {
               
                 if ncplayer.isPlay() {
                     ncplayer.playerPause()
+                    self.updateToolBar(timeSeek: nil)
                     return .success
                 }
                 return .commandFailed
             }
+            
+            // Add handler for Previous Command
+            appDelegate.commandCenterPreviousCommand = commandCenter.previousTrackCommand.addTarget { event in
+                
+                ncplayer.videoSeek(time: .zero)
+                self.updateToolBar(timeSeek: .zero)
+                return.success
+            }
+                
+            // Add handler for Next Command
+            appDelegate.commandCenterNextCommand = commandCenter.nextTrackCommand.addTarget { event in
+                
+                ncplayer.videoSeek(time: .zero)
+                self.updateToolBar(timeSeek: .zero)
+                return.success
+            }
                   
+            nowPlayingInfo[MPMediaItemPropertyTitle] = metadata.fileNameView
+            nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = appDelegate.player?.currentItem?.asset.duration.seconds
             if let image = self.image {
                 nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
                     return image
                 }
             }
-            
-            nowPlayingInfo[MPMediaItemPropertyTitle] = metadata.fileNameView
-            nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = appDelegate.player?.currentItem?.asset.duration.seconds
-            
             MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
         }
         
