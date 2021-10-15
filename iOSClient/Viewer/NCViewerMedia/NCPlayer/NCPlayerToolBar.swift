@@ -128,6 +128,7 @@ class NCPlayerToolBar: UIView {
     }
     
     // MARK: Handle Notifications
+    
     @objc func handleRouteChange(notification: Notification) {
         guard let userInfo = notification.userInfo, let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt, let reason = AVAudioSession.RouteChangeReason(rawValue:reasonValue) else { return }
         
@@ -137,17 +138,18 @@ class NCPlayerToolBar: UIView {
             for output in session.currentRoute.outputs where output.portType == AVAudioSession.Port.headphones {
                 print("headphones connected")
                 DispatchQueue.main.sync {
-                    //self.play()
+                    ncplayer?.playerPlay()
+                    startTimerAutoHide()
                 }
                 break
             }
         case .oldDeviceUnavailable:
-            if let previousRoute =
-                userInfo[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription {
+            if let previousRoute = userInfo[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription {
                 for output in previousRoute.outputs where output.portType == AVAudioSession.Port.headphones {
                     print("headphones disconnected")
                     DispatchQueue.main.sync {
-                        //self.pause()
+                        ncplayer?.playerPause()
+                        ncplayer?.saveCurrentTime()
                     }
                     break
                 }
@@ -168,7 +170,8 @@ class NCPlayerToolBar: UIView {
                 if options.contains(.shouldResume) {
                     // Interruption Ended - playback should resume
                     print("Interruption Ended - playback should resume")
-                    //play()
+                    ncplayer?.playerPlay()
+                    startTimerAutoHide()
                 } else {
                     // Interruption Ended - playback should NOT resume
                     print("Interruption Ended - playback should NOT resume")
