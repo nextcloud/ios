@@ -85,7 +85,6 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
             startStop()
         } else {
             dismiss(animated: true) {
-                self.appDelegate.setAVAudioSession()
                 self.delegate?.didFinishWithoutRecording(self, fileName: self.fileName)
             }
         }
@@ -100,7 +99,6 @@ class NCAudioRecorderViewController: UIViewController , NCAudioRecorderDelegate 
             voiceRecordHUD.update(0.0)
         
             dismiss(animated: true) {
-                self.appDelegate.setAVAudioSession()
                 self.delegate?.didFinishRecording(self, fileName: self.fileName)
             }
             
@@ -179,7 +177,6 @@ open class NCAudioRecorder : NSObject {
     open var sampleRate = 44100.0
     open var channels = 1
     
-    fileprivate let session = AVAudioSession.sharedInstance()
     var recorder: AVAudioRecorder?
     fileprivate var player: AVAudioPlayer?
     fileprivate var link: CADisplayLink?
@@ -195,9 +192,19 @@ open class NCAudioRecorder : NSObject {
         super.init()
         
         do {
-            try session.setCategory(.playAndRecord, mode: .default)
-            try session.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
-            try session.setActive(true)
+            try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default)
+            try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print(error)
+        }
+    }
+    
+    deinit {
+        print("deinit NCAudioRecorder")
+        
+        do {
+            try AVAudioSession.sharedInstance().setActive(false)
         } catch {
             print(error)
         }

@@ -54,6 +54,7 @@ class NCPlayerToolBar: UIView {
     private var timeObserver: Any?
     private var timerAutoHide: Timer?
     private var metadata: tableMetadata?
+    private var image: UIImage?
 
     // MARK: - View Life Cycle
 
@@ -174,11 +175,11 @@ class NCPlayerToolBar: UIView {
         }
     }
     
-    func setBarPlayer(ncplayer: NCPlayer, timeSeek: CMTime, metadata: tableMetadata) {
+    func setBarPlayer(ncplayer: NCPlayer, timeSeek: CMTime, metadata: tableMetadata, image: UIImage?) {
                         
         self.ncplayer = ncplayer
         self.metadata = metadata
-        
+                
         if let durationTime = NCManageDatabase.shared.getVideoDurationTime(metadata: ncplayer.metadata) {
         
             self.durationTime = durationTime
@@ -191,6 +192,7 @@ class NCPlayerToolBar: UIView {
             labelCurrentTime.text = NCUtility.shared.stringFromTime(.zero)
             labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(durationTime)
         }
+        setupRemoteTransportControls()
         updateToolBar(timeSeek: timeSeek)
         
         self.timeObserver = appDelegate.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
@@ -444,8 +446,13 @@ extension NCPlayerToolBar {
     func setupRemoteTransportControls() {
         guard let ncplayer = ncplayer else { return }
 
+        UIApplication.shared.beginReceivingRemoteControlEvents()
+        
         let commandCenter = MPRemoteCommandCenter.shared()
-      
+        var nowPlayingInfo = [String : Any]()
+
+        commandCenter.playCommand.isEnabled = true
+        
         // Add handler for Play Command
         commandCenter.playCommand.addTarget { event in
             
@@ -465,23 +472,19 @@ extension NCPlayerToolBar {
             }
             return .commandFailed
         }
-    }
-    
-    func setupNowPlaying() {
         
-        var nowPlayingInfo = [String : Any]()
         nowPlayingInfo[MPMediaItemPropertyTitle] = metadata?.fileNameView
       
-//        if let image = UIImage(named: "artist") {
-//            nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
-//                return image
-//            }
-//        }
+        if let image = self.image {
+            nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
+                return image
+            }
+        }
         
         nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = appDelegate.player?.currentTime
         nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = appDelegate.player?.currentItem?.asset.duration
         nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = appDelegate.player?.rate
-      
+              
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
     

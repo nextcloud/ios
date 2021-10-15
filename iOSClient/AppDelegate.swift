@@ -141,9 +141,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { (_, _) in }
 
-        // Audio Session
-        setAVAudioSession()
-        
         // Store review
         if !NCUtility.shared.isSimulatorOrTestFlight() {
             let review = NCStoreReview()
@@ -324,18 +321,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         //FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
         //[fileProviderDomain removeAllDomains];
         //[fileProviderDomain registerDomains];
-    }
-  
-    // MARK: - AVAudioSession
-    
-    func setAVAudioSession() {
-        do {
-            try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.PortOverride.none)
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback, options: [.mixWithOthers, .allowAirPlay])
-            try AVAudioSession.sharedInstance().setActive(true)
-        } catch {
-            print(error)
-        }
     }
     
     // MARK: - Background Task
