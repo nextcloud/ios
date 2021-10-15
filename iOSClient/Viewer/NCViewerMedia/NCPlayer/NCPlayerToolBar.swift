@@ -291,19 +291,10 @@ class NCPlayerToolBar: UIView {
             pipButton.isEnabled = false
         }
         
-        if let ncplayer = ncplayer, ncplayer.isPlay() {
-            namedPlay = "pause.fill"
-            nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = 0
-        } else {
-            nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = 1
-        }
-                
         if timeSeek != nil {
             playbackSlider.value = Float(timeSeek!.value)
-            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = timeSeek
         } else {
             playbackSlider.value = Float(currentTime.value)
-            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTime
         }
         playbackSlider.isEnabled = true
         
@@ -314,6 +305,7 @@ class NCPlayerToolBar: UIView {
         }
         backButton.isEnabled = true
         
+        if let ncplayer = ncplayer, ncplayer.isPlay() { namedPlay = "pause.fill" }
         if #available(iOS 13.0, *) {
             playButton.setImage(NCUtility.shared.loadImage(named: namedPlay, color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
         } else {
@@ -484,19 +476,20 @@ extension NCPlayerToolBar {
             }
             return .commandFailed
         }
-        
-        nowPlayingInfo[MPMediaItemPropertyTitle] = metadata?.fileNameView
-      
+              
         if let image = self.image {
             nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
                 return image
             }
         }
         
-        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = appDelegate.player?.currentTime
-        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = appDelegate.player?.currentItem?.asset.duration
+        nowPlayingInfo[MPMediaItemPropertyTitle] = metadata?.fileNameView
+        
+        nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = true
+        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = appDelegate.player?.currentItem?.asset.duration.seconds
         nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = appDelegate.player?.rate
-              
+        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = appDelegate.player?.currentTime().seconds
+
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
 }
