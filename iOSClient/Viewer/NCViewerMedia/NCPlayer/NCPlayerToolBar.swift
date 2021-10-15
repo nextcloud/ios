@@ -55,6 +55,10 @@ class NCPlayerToolBar: UIView {
     private var timerAutoHide: Timer?
     private var metadata: tableMetadata?
     private var image: UIImage?
+    
+    var playCommand: Any?
+    var pauseCommand: Any?
+
 
     // MARK: - View Life Cycle
 
@@ -199,7 +203,47 @@ class NCPlayerToolBar: UIView {
             labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(durationTime)
         }
         
-        setupRemoteTransportControls()
+        if !metadata.livePhoto, let ncplayer = self.ncplayer {
+        
+            UIApplication.shared.beginReceivingRemoteControlEvents()
+            
+            let commandCenter = MPRemoteCommandCenter.shared()
+            var nowPlayingInfo = [String : Any]()
+
+            commandCenter.playCommand.isEnabled = true
+            
+            // Add handler for Play Command
+            playCommand = commandCenter.playCommand.addTarget { event in
+                
+                if !ncplayer.isPlay() {
+                    ncplayer.playerPlay()
+                    return .success
+                }
+                return .commandFailed
+            }
+          
+            // Add handler for Pause Command
+            pauseCommand = commandCenter.pauseCommand.addTarget { event in
+              
+                if ncplayer.isPlay() {
+                    ncplayer.playerPause()
+                    return .success
+                }
+                return .commandFailed
+            }
+                  
+            if let image = self.image {
+                nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
+                    return image
+                }
+            }
+            
+            nowPlayingInfo[MPMediaItemPropertyTitle] = metadata.fileNameView
+            nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = appDelegate.player?.currentItem?.asset.duration.seconds
+            
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+        }
+        
         updateToolBar(timeSeek: timeSeek)
         
         self.timeObserver = appDelegate.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
@@ -274,7 +318,6 @@ class NCPlayerToolBar: UIView {
     public func updateToolBar(timeSeek: CMTime? = nil) {
         guard let metadata = self.metadata else { return }
         
-        var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo
         var namedPlay = "play.fill"
         var currentTime = appDelegate.player?.currentTime() ?? .zero
         currentTime = currentTime.convertScale(1000, method: .default)
@@ -310,14 +353,14 @@ class NCPlayerToolBar: UIView {
         
         if let ncplayer = ncplayer, ncplayer.isPlay() {
             namedPlay = "pause.fill"
-            if let player = appDelegate.player {
-                nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime().seconds
-                nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
+            if let player = appDelegate.player, !metadata.livePhoto {
+                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime().seconds
+                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
             }
         } else {
-            if let player = appDelegate.player {
-                nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime().seconds
-                nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
+            if let player = appDelegate.player, !metadata.livePhoto {
+                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime().seconds
+                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
             }
         }
         
@@ -337,8 +380,6 @@ class NCPlayerToolBar: UIView {
         
         labelCurrentTime.text = NCUtility.shared.stringFromTime(currentTime)
         labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(self.durationTime - currentTime)
-        
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
     
     //MARK: - Event / Gesture
@@ -458,49 +499,3 @@ class NCPlayerToolBar: UIView {
     }
 }
 
-//MARK: - Remote Command Center
-
-extension NCPlayerToolBar {
-    
-    func setupRemoteTransportControls() {
-        guard let ncplayer = ncplayer else { return }
-
-        UIApplication.shared.beginReceivingRemoteControlEvents()
-        
-        let commandCenter = MPRemoteCommandCenter.shared()
-        var nowPlayingInfo = [String : Any]()
-
-        commandCenter.playCommand.isEnabled = true
-        
-        // Add handler for Play Command
-        commandCenter.playCommand.addTarget { event in
-            
-            if !ncplayer.isPlay() {
-                ncplayer.playerPlay()
-                return .success
-            }
-            return .commandFailed
-        }
-      
-        // Add handler for Pause Command
-        commandCenter.pauseCommand.addTarget { event in
-          
-            if ncplayer.isPlay() {
-                ncplayer.playerPause()
-                return .success
-            }
-            return .commandFailed
-        }
-              
-        if let image = self.image {
-            nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
-                return image
-            }
-        }
-        
-        nowPlayingInfo[MPMediaItemPropertyTitle] = metadata?.fileNameView
-        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = appDelegate.player?.currentItem?.asset.duration.seconds
-
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
-    }
-}

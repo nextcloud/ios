@@ -285,7 +285,7 @@ class NCPlayer: NSObject {
                 let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
                 image = UIImage(cgImage: cgImage)
                 // Update Playing Info Center
-                if let image = image {
+                if let image = image, !metadata.livePhoto {
                     MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
                         return image
                     }
