@@ -47,6 +47,14 @@ class NCPlayer: NSObject {
 
         var timeSeek: CMTime = .zero
 
+        do {
+            try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.PortOverride.none)
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback, options: [.allowAirPlay])
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print(error)
+        }
+        
         print("Play URL: \(url)")
         appDelegate.player?.pause()
         //TODO: Simultaneous accesses to 0x14fd07578, but modification requires exclusive access
@@ -151,6 +159,30 @@ class NCPlayer: NSObject {
         videoRemoved()
     }
     
+    func videoRemoved() {
+
+        playerPause()
+
+        if let observerAVPlayerItemDidPlayToEndTime = self.observerAVPlayerItemDidPlayToEndTime {
+            NotificationCenter.default.removeObserver(observerAVPlayerItemDidPlayToEndTime)
+        }
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+        
+        self.videoLayer?.removeFromSuperlayer()
+        
+        self.videoLayer = nil
+        self.observerAVPlayerItemDidPlayToEndTime = nil
+        self.imageVideoContainer = nil
+        self.playerToolBar = nil
+        self.metadata = nil
+        
+        do {
+            try AVAudioSession.sharedInstance().setActive(false)
+        } catch {
+            print(error)
+        }
+    }
+    
     //MARK: - NotificationCenter
 
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
@@ -217,24 +249,6 @@ class NCPlayer: NSObject {
         self.saveTime(time)
     }
     
-    func videoRemoved() {
-
-        playerPause()
-
-        if let observerAVPlayerItemDidPlayToEndTime = self.observerAVPlayerItemDidPlayToEndTime {
-            NotificationCenter.default.removeObserver(observerAVPlayerItemDidPlayToEndTime)
-        }
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
-        
-        self.videoLayer?.removeFromSuperlayer()
-        
-        self.videoLayer = nil
-        self.observerAVPlayerItemDidPlayToEndTime = nil
-        self.imageVideoContainer = nil
-        self.playerToolBar = nil
-        self.metadata = nil
-    }
-        
     func generatorImagePreview() {
         guard let time = appDelegate.player?.currentTime() else { return }
         guard let metadata = self.metadata else { return }
