@@ -56,10 +56,6 @@ class NCPlayerToolBar: UIView {
     private var metadata: tableMetadata?
     private var image: UIImage?
     
-    var playCommand: Any?
-    var pauseCommand: Any?
-
-
     // MARK: - View Life Cycle
 
     override func awakeFromNib() {
@@ -203,7 +199,7 @@ class NCPlayerToolBar: UIView {
             labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(durationTime)
         }
         
-        if !metadata.livePhoto, let ncplayer = self.ncplayer {
+        if let ncplayer = self.ncplayer {
         
             UIApplication.shared.beginReceivingRemoteControlEvents()
             
@@ -213,7 +209,7 @@ class NCPlayerToolBar: UIView {
             commandCenter.playCommand.isEnabled = true
             
             // Add handler for Play Command
-            playCommand = commandCenter.playCommand.addTarget { event in
+            appDelegate.commandCenterPlayCommand = commandCenter.playCommand.addTarget { event in
                 
                 if !ncplayer.isPlay() {
                     ncplayer.playerPlay()
@@ -223,7 +219,7 @@ class NCPlayerToolBar: UIView {
             }
           
             // Add handler for Pause Command
-            pauseCommand = commandCenter.pauseCommand.addTarget { event in
+            appDelegate.commandCenterPauseCommand = commandCenter.pauseCommand.addTarget { event in
               
                 if ncplayer.isPlay() {
                     ncplayer.playerPause()
@@ -353,12 +349,12 @@ class NCPlayerToolBar: UIView {
         
         if let ncplayer = ncplayer, ncplayer.isPlay() {
             namedPlay = "pause.fill"
-            if let player = appDelegate.player, !metadata.livePhoto {
+            if let player = appDelegate.player {
                 MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime().seconds
                 MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
             }
         } else {
-            if let player = appDelegate.player, !metadata.livePhoto {
+            if let player = appDelegate.player {
                 MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime().seconds
                 MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
             }

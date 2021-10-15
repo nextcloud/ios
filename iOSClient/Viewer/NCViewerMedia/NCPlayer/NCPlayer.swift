@@ -200,10 +200,10 @@ class NCPlayer: NSObject {
         // Remote Command Center
         UIApplication.shared.endReceivingRemoteControlEvents()
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
-        if let playCommand = playerToolBar?.playCommand {
+        if let playCommand = appDelegate.commandCenterPlayCommand {
             MPRemoteCommandCenter.shared().playCommand.removeTarget(playCommand)
         }
-        if let pauseCommand = playerToolBar?.pauseCommand {
+        if let pauseCommand = appDelegate.commandCenterPauseCommand {
             MPRemoteCommandCenter.shared().pauseCommand.removeTarget(pauseCommand)
         }
     }
@@ -292,7 +292,7 @@ class NCPlayer: NSObject {
                 let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
                 image = UIImage(cgImage: cgImage)
                 // Update Playing Info Center
-                if let image = image, !metadata.livePhoto {
+                if let image = image {
                     MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
                         return image
                     }

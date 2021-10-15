@@ -65,6 +65,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var timerErrorNetworking: Timer?
     
     var player: AVPlayer?
+    var commandCenterPlayCommand: Any?
+    var commandCenterPauseCommand: Any?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
