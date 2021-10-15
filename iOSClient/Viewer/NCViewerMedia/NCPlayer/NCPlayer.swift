@@ -197,8 +197,15 @@ class NCPlayer: NSObject {
             print(error)
         }
         
+        // Remote Command Center
         UIApplication.shared.endReceivingRemoteControlEvents()
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
+        if let playCommand = playerToolBar?.playCommand {
+            MPRemoteCommandCenter.shared().playCommand.removeTarget(playCommand)
+        }
+        if let pauseCommand = playerToolBar?.pauseCommand {
+            MPRemoteCommandCenter.shared().pauseCommand.removeTarget(pauseCommand)
+        }
     }
     
     //MARK: - NotificationCenter
