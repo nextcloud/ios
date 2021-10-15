@@ -351,8 +351,10 @@ class NCPlayerToolBar: UIView {
         
         if timeSeek != nil {
             playbackSlider.value = Float(timeSeek!.value)
+            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = timeSeek!.seconds
         } else {
             playbackSlider.value = Float(currentTime.value)
+            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTime.seconds
         }
         playbackSlider.isEnabled = true
         
@@ -365,15 +367,9 @@ class NCPlayerToolBar: UIView {
         
         if let ncplayer = ncplayer, ncplayer.isPlay() {
             namedPlay = "pause.fill"
-            if let player = appDelegate.player {
-                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime().seconds
-                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
-            }
+            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
         } else {
-            if let player = appDelegate.player {
-                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime().seconds
-                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
-            }
+            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
         }
         
         if #available(iOS 13.0, *) {
