@@ -105,8 +105,10 @@ class NCPlayerToolBar: UIView {
         
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .lightGray), for: .normal)
         backButton.isEnabled = false
+        
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray), for: .normal)
         playButton.isEnabled = false
+        
         forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .lightGray), for: .normal)
         forwardButton.isEnabled = false
         
@@ -269,6 +271,7 @@ class NCPlayerToolBar: UIView {
     public func updateToolBar(timeSeek: CMTime? = nil) {
         guard let metadata = self.metadata else { return }
         
+        var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo!
         var namedPlay = "play.fill"
         var currentTime = appDelegate.player?.currentTime() ?? .zero
         currentTime = currentTime.convertScale(1000, method: .default)
@@ -290,12 +293,17 @@ class NCPlayerToolBar: UIView {
         
         if let ncplayer = ncplayer, ncplayer.isPlay() {
             namedPlay = "pause.fill"
+            nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = 0
+        } else {
+            nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = 1
         }
                 
         if timeSeek != nil {
             playbackSlider.value = Float(timeSeek!.value)
+            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = timeSeek
         } else {
             playbackSlider.value = Float(currentTime.value)
+            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTime
         }
         playbackSlider.isEnabled = true
         
@@ -322,6 +330,8 @@ class NCPlayerToolBar: UIView {
         
         labelCurrentTime.text = NCUtility.shared.stringFromTime(currentTime)
         labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(self.durationTime - currentTime)
+        
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
     
     //MARK: - Event / Gesture
@@ -489,56 +499,4 @@ extension NCPlayerToolBar {
               
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
-    
-    func updateNowPlaying(isPause: Bool) {
-
-        var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo!
-      
-        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = appDelegate.player?.currentTime
-        nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = isPause ? 0 : 1
-      
-        // Set the metadata
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
-    }
-    
-    // MARK: AVAudioPlayerDelegate
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-      print("Audio player did finish playing: \(flag)")
-      if (flag) {
-        updateNowPlaying(isPause: true)
-        //playPauseButton.setTitle("Play", for: UIControl.State.normal)
-      }
-    }
-    
-    /*
-     // MARK: Actions
-     @IBAction func togglePlayPause(_ sender: Any) {
-       if (player.isPlaying) {
-         pause()
-       }
-       else {
-         play()
-       }
-     }
-     
-     func play() {
-       player.play()
-       playPauseButton.setTitle("Pause", for: UIControl.State.normal)
-       updateNowPlaying(isPause: false)
-       print("Play - current time: \(player.currentTime) - is playing: \(player.isPlaying)")
-     }
-     
-     func pause() {
-       player.pause()
-       playPauseButton.setTitle("Play", for: UIControl.State.normal)
-       updateNowPlaying(isPause: true)
-       print("Pause - current time: \(player.currentTime) - is playing: \(player.isPlaying)")
-     }
-     
-     @IBAction func stop(_ sender: Any) {
-       player.stop()
-       player.currentTime = 0
-       playPauseButton.setTitle("Play", for: UIControl.State.normal)
-     }
-     */
 }
