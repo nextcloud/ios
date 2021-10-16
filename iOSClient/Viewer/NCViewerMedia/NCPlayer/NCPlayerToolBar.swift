@@ -324,17 +324,14 @@ class NCPlayerToolBar: UIView {
       
         if type == .began {
             print("Interruption began")
-            // Interruption began, take appropriate actions
         } else if type == .ended {
             if let optionsValue = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt {
                 let options = AVAudioSession.InterruptionOptions(rawValue: optionsValue)
                 if options.contains(.shouldResume) {
-                    // Interruption Ended - playback should resume
                     print("Interruption Ended - playback should resume")
                     ncplayer?.playerPlay()
                     startTimerAutoHide()
                 } else {
-                    // Interruption Ended - playback should NOT resume
                     print("Interruption Ended - playback should NOT resume")
                 }
             }
