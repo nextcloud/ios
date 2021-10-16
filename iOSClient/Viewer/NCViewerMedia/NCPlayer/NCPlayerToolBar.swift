@@ -183,7 +183,7 @@ class NCPlayerToolBar: UIView {
             appDelegate.commandCenterSkipBackwardCommand = commandCenter.skipBackwardCommand.addTarget { event in
                 
                 let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
-
+                self.skip(seconds: -seconds)
                 return.success
             }
                 
@@ -191,7 +191,7 @@ class NCPlayerToolBar: UIView {
             appDelegate.commandCenterskipForwardCommand = commandCenter.skipForwardCommand.addTarget { event in
                 
                 let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
-                
+                self.skip(seconds: seconds)
                 return.success
             }
             
@@ -410,7 +410,7 @@ class NCPlayerToolBar: UIView {
         
         let currentTime = player.currentTime()
         var newTime: CMTime = .zero
-        let timeToAdd: CMTime = CMTimeMakeWithSeconds(seconds, preferredTimescale: 1)
+        let timeToAdd: CMTime = CMTimeMakeWithSeconds(abs(seconds), preferredTimescale: 1)
 
         if seconds > 0 {
             newTime = CMTimeAdd(currentTime, timeToAdd)
