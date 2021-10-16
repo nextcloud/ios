@@ -130,7 +130,7 @@ class NCPlayerToolBar: UIView {
         self.metadata = metadata
         self.image = image
                 
-        if let durationTime = NCManageDatabase.shared.getVideoDurationTime(metadata: ncplayer.metadata) {
+        if let durationTime = NCManageDatabase.shared.getVideoDurationTime(metadata: metadata) {
         
             self.durationTime = durationTime
             
