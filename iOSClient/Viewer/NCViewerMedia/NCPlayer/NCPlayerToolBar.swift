@@ -49,7 +49,7 @@ class NCPlayerToolBar: UIView {
     private var ncplayer: NCPlayer?
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
-    private let timeToAdd: CMTime = CMTimeMakeWithSeconds(15, preferredTimescale: 1)
+    private let timeToAdd: CMTime = CMTimeMakeWithSeconds(10, preferredTimescale: 1)
     private var durationTime: CMTime = .zero
     private var timeObserver: Any?
     private var timerAutoHide: Timer?
@@ -103,13 +103,13 @@ class NCPlayerToolBar: UIView {
         labelOverallDuration.text = NCUtility.shared.stringFromTime(.zero)
         labelOverallDuration.textColor = .lightGray
         
-        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .lightGray), for: .normal)
+        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .lightGray), for: .normal)
         backButton.isEnabled = false
         
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray), for: .normal)
         playButton.isEnabled = false
         
-        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .lightGray), for: .normal)
+        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .lightGray), for: .normal)
         forwardButton.isEnabled = false
         
         NotificationCenter.default.addObserver(self, selector: #selector(handleInterruption), name: AVAudioSession.interruptionNotification, object: nil)
@@ -230,22 +230,20 @@ class NCPlayerToolBar: UIView {
                 return .commandFailed
             }
             
-            // Add handler for Previous Command
-            appDelegate.commandCenterPreviousCommand = commandCenter.previousTrackCommand.addTarget { event in
+            // Add handler for Backward Command
+            appDelegate.commandCenterSkipBackwardCommand = commandCenter.skipBackwardCommand.addTarget { event in
                 
-                ncplayer.videoSeek(time: .zero)
-                self.updateToolBar(timeSeek: .zero)
+                self.forwardButtonSec(self)
                 return.success
             }
                 
-            // Add handler for Next Command
-            appDelegate.commandCenterNextCommand = commandCenter.nextTrackCommand.addTarget { event in
+            // Add handler for Forward Command
+            appDelegate.commandCenterskipForwardCommand = commandCenter.skipForwardCommand.addTarget { event in
                 
-                ncplayer.videoSeek(time: .zero)
-                self.updateToolBar(timeSeek: .zero)
+                self.backButtonSec(self)
                 return.success
             }
-                  
+            
             nowPlayingInfo[MPMediaItemPropertyTitle] = metadata.fileNameView
             nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = appDelegate.player?.currentItem?.asset.duration.seconds
             if let image = self.image {
@@ -359,9 +357,9 @@ class NCPlayerToolBar: UIView {
         playbackSlider.isEnabled = true
         
         if #available(iOS 13.0, *) {
-            backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white), for: .normal)
+            backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white), for: .normal)
         } else {
-            backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.15", color: .white, size: 30), for: .normal)
+            backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white, size: 30), for: .normal)
         }
         backButton.isEnabled = true
         
@@ -380,9 +378,9 @@ class NCPlayerToolBar: UIView {
         playButton.isEnabled = true
         
         if #available(iOS 13.0, *) {
-            forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .white), for: .normal)
+            forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white), for: .normal)
         } else {
-            forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.15", color: .white, size: 30), for: .normal)
+            forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white, size: 30), for: .normal)
         }
         forwardButton.isEnabled = true
         

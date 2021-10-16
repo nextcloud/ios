@@ -67,8 +67,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var player: AVPlayer?
     var commandCenterPlayCommand: Any?
     var commandCenterPauseCommand: Any?
-    var commandCenterPreviousCommand: Any?
-    var commandCenterNextCommand: Any?
+    var commandCenterskipForwardCommand: Any?
+    var commandCenterSkipBackwardCommand: Any?
+    var commandCenterChangePlaybackPositionCommand: Any?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         

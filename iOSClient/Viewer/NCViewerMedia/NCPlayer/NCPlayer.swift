@@ -118,7 +118,7 @@ class NCPlayer: NSObject {
                                 }
                             }
                             // PiP
-                            if let playerLayer = self.videoLayer {
+                            if let playerLayer = self.videoLayer, CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                                 self.pictureInPictureController = AVPictureInPictureController(playerLayer: playerLayer)
                                 self.pictureInPictureController?.delegate = self
                             }
@@ -206,11 +206,11 @@ class NCPlayer: NSObject {
         if let pauseCommand = appDelegate.commandCenterPauseCommand {
             MPRemoteCommandCenter.shared().pauseCommand.removeTarget(pauseCommand)
         }
-        if let previousCommand = appDelegate.commandCenterPreviousCommand {
-            MPRemoteCommandCenter.shared().previousTrackCommand.removeTarget(previousCommand)
+        if let commandCenterSkipBackwardCommand = appDelegate.commandCenterSkipBackwardCommand {
+            MPRemoteCommandCenter.shared().previousTrackCommand.removeTarget(commandCenterSkipBackwardCommand)
         }
-        if let nextCommand = appDelegate.commandCenterNextCommand {
-            MPRemoteCommandCenter.shared().nextTrackCommand.removeTarget(nextCommand)
+        if let commandCenterskipForwardCommand = appDelegate.commandCenterskipForwardCommand {
+            MPRemoteCommandCenter.shared().nextTrackCommand.removeTarget(commandCenterskipForwardCommand)
         }
     }
     
