@@ -343,6 +343,34 @@ class NCPlayerToolBar: UIView {
     
     // MARK: -
 
+    public func show(enableTimerAutoHide: Bool) {
+        guard let metadata = self.metadata else { return }
+        
+        if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
+        if metadata.livePhoto { return }
+        
+        timerAutoHide?.invalidate()
+        if enableTimerAutoHide {
+            startTimerAutoHide()
+        }
+        
+        if !self.isHidden { return }
+
+        updateToolBar()
+            
+        UIView.animate(withDuration: 0.3, animations: {
+            self.alpha = 1
+            self.playerTopToolBarView.alpha = 1
+        }, completion: { (value: Bool) in
+            self.isHidden = false
+            self.playerTopToolBarView.isHidden = false
+        })
+    }
+    
+    func isShow() -> Bool {
+        return !self.isHidden
+    }
+    
     public func hide() {
               
         UIView.animate(withDuration: 0.3, animations: {
@@ -373,36 +401,6 @@ class NCPlayerToolBar: UIView {
             startTimerAutoHide()
         }
     }
-    
-    public func show(enableTimerAutoHide: Bool) {
-        guard let metadata = self.metadata else { return }
-        
-        if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
-        if metadata.livePhoto { return }
-        
-        timerAutoHide?.invalidate()
-        if enableTimerAutoHide {
-            startTimerAutoHide()
-        }
-        
-        if !self.isHidden { return }
-
-        updateToolBar()
-            
-        UIView.animate(withDuration: 0.3, animations: {
-            self.alpha = 1
-            self.playerTopToolBarView.alpha = 1
-        }, completion: { (value: Bool) in
-            self.isHidden = false
-            self.playerTopToolBarView.isHidden = false
-        })        
-    }
-    
-    func isShow() -> Bool {
-        return !self.isHidden
-    }
-    
-    
     
     func skip(seconds: Float64) {
         guard let ncplayer = ncplayer else { return }
