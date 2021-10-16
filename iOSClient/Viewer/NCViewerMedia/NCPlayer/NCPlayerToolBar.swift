@@ -220,7 +220,6 @@ class NCPlayerToolBar: UIView {
     public func updateToolBar(timeSeek: CMTime? = nil) {
         guard let metadata = self.metadata else { return }
         
-        var namedPlay = "play.fill"
         var currentTime = appDelegate.player?.currentTime() ?? .zero
         currentTime = currentTime.convertScale(1000, method: .default)
         
@@ -262,14 +261,13 @@ class NCPlayerToolBar: UIView {
             backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white, size: 30), for: .normal)
         }
         backButton.isEnabled = true
-        
+                        
         if let ncplayer = ncplayer, ncplayer.isPlay() {
-            namedPlay = "pause.fill"
             MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
         } else {
             MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
         }
-        
+        let namedPlay = (ncplayer?.isPlay() ?? false) ? "pause.fill" : "play.fill"
         if #available(iOS 13.0, *) {
             playButton.setImage(NCUtility.shared.loadImage(named: namedPlay, color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
         } else {
