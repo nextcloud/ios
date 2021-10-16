@@ -51,7 +51,6 @@ class NCPlayerToolBar: UIView {
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
     private var durationTime: CMTime = .zero
-    private var timeObserver: Any?
     private var timerAutoHide: Timer?
     private var metadata: tableMetadata?
     private var image: UIImage?
@@ -118,10 +117,6 @@ class NCPlayerToolBar: UIView {
     
     deinit {
         print("deinit NCPlayerToolBar")
-        
-        if self.timeObserver != nil {
-            appDelegate.player?.removeTimeObserver(self.timeObserver!)
-        }
                 
         NotificationCenter.default.removeObserver(self, name: AVAudioSession.interruptionNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: AVAudioSession.routeChangeNotification, object: nil)
@@ -149,13 +144,6 @@ class NCPlayerToolBar: UIView {
         }
         
         updateToolBar(timeSeek: timeSeek, commandCenter: true)
-        
-        self.timeObserver = appDelegate.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
-            
-            if self.appDelegate.player?.currentItem?.status == .readyToPlay {
-                self.updateToolBar()
-            }
-        })
     }
     
     public func updateToolBar(timeSeek: CMTime? = nil, commandCenter: Bool = false) {

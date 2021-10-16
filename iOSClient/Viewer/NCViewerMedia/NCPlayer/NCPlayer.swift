@@ -38,7 +38,8 @@ class NCPlayer: NSObject {
     private var playerToolBar: NCPlayerToolBar?
     private var detailView: NCViewerMediaDetailView?
     private var observerAVPlayerItemDidPlayToEndTime: Any?
-    
+    private var timeObserver: Any?
+
     public var metadata: tableMetadata?
     public var videoLayer: AVPlayerLayer?
     public var pictureInPictureController: AVPictureInPictureController?
@@ -88,6 +89,13 @@ class NCPlayer: NSObject {
                 playerToolBar?.updateToolBar(timeSeek: .zero, commandCenter: true)
             }
         }
+        
+        timeObserver = appDelegate.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
+            
+            if self.appDelegate.player?.currentItem?.status == .readyToPlay {
+                self.playerToolBar?.updateToolBar()
+            }
+        })
         
         appDelegate.player?.currentItem?.asset.loadValuesAsynchronously(forKeys: ["playable"], completionHandler: {
             var error: NSError? = nil
@@ -173,12 +181,16 @@ class NCPlayer: NSObject {
         if let observerAVPlayerItemDidPlayToEndTime = self.observerAVPlayerItemDidPlayToEndTime {
             NotificationCenter.default.removeObserver(observerAVPlayerItemDidPlayToEndTime)
         }
+        if  let timeObserver = self.timeObserver {
+            appDelegate.player?.removeTimeObserver(timeObserver)
+        }
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         
         self.videoLayer?.removeFromSuperlayer()
         
         self.videoLayer = nil
         self.observerAVPlayerItemDidPlayToEndTime = nil
+        self.timeObserver = nil
         self.imageVideoContainer = nil
         self.playerToolBar = nil
         self.metadata = nil
