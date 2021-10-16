@@ -167,6 +167,7 @@ class NCPlayer: NSObject {
     func videoRemoved() {
 
         playerPause()
+        playerToolBar?.disableCommandCenter()
 
         if let observerAVPlayerItemDidPlayToEndTime = self.observerAVPlayerItemDidPlayToEndTime {
             NotificationCenter.default.removeObserver(observerAVPlayerItemDidPlayToEndTime)

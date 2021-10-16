@@ -122,9 +122,7 @@ class NCPlayerToolBar: UIView {
         if self.timeObserver != nil {
             appDelegate.player?.removeTimeObserver(self.timeObserver!)
         }
-        
-        deinitCommandCenter()
-        
+                
         NotificationCenter.default.removeObserver(self, name: AVAudioSession.interruptionNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: AVAudioSession.routeChangeNotification, object: nil)
     }
@@ -150,65 +148,6 @@ class NCPlayerToolBar: UIView {
             labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(durationTime)
         }
         
-        /*
-        if let ncplayer = self.ncplayer {
-        
-            UIApplication.shared.beginReceivingRemoteControlEvents()
-            
-            let commandCenter = MPRemoteCommandCenter.shared()
-            var nowPlayingInfo = [String : Any]()
-
-            commandCenter.playCommand.isEnabled = true
-            
-            // Add handler for Play Command
-            appDelegate.commandCenterPlayCommand = commandCenter.playCommand.addTarget { event in
-                
-                if !ncplayer.isPlay() {
-                    ncplayer.playerPlay()
-                    self.updateToolBar(timeSeek: nil)
-                    return .success
-                }
-                return .commandFailed
-            }
-          
-            // Add handler for Pause Command
-            appDelegate.commandCenterPauseCommand = commandCenter.pauseCommand.addTarget { event in
-              
-                if ncplayer.isPlay() {
-                    ncplayer.playerPause()
-                    self.updateToolBar(timeSeek: nil)
-                    return .success
-                }
-                return .commandFailed
-            }
-            
-            // Add handler for Backward Command
-            appDelegate.commandCenterSkipBackwardCommand = commandCenter.skipBackwardCommand.addTarget { event in
-                
-                let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
-                self.skip(seconds: -seconds)
-                return.success
-            }
-                
-            // Add handler for Forward Command
-            appDelegate.commandCenterSkipForwardCommand = commandCenter.skipForwardCommand.addTarget { event in
-                
-                let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
-                self.skip(seconds: seconds)
-                return.success
-            }
-            
-            nowPlayingInfo[MPMediaItemPropertyTitle] = metadata.fileNameView
-            nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = appDelegate.player?.currentItem?.asset.duration.seconds
-            if let image = self.image {
-                nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
-                    return image
-                }
-            }
-            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
-        }
-        */
-        
         updateToolBar(timeSeek: timeSeek)
         
         self.timeObserver = appDelegate.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
@@ -226,6 +165,13 @@ class NCPlayerToolBar: UIView {
         
         var currentTime = appDelegate.player?.currentTime() ?? .zero
         currentTime = currentTime.convertScale(1000, method: .default)
+        
+        // COMMAND CENTER
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            endableCommandCenter()
+        } else {
+            disableCommandCenter()
+        }
         
         // MUTE
         if CCUtility.getAudioMute() {
@@ -294,19 +240,13 @@ class NCPlayerToolBar: UIView {
         // TIME (START - END)
         labelCurrentTime.text = NCUtility.shared.stringFromTime(currentTime)
         labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(self.durationTime - currentTime)
-        
-        // COMMAND CENTER
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-            initCommandCenter()
-        } else {
-            deinitCommandCenter()
-        }
     }
     
     // MARK: - Command Center
     
-    func initCommandCenter() {
+    func endableCommandCenter() {
         guard let ncplayer = self.ncplayer else { return }
+        if MPRemoteCommandCenter.shared().playCommand.isEnabled { return }
         
         UIApplication.shared.beginReceivingRemoteControlEvents()
         MPRemoteCommandCenter.shared().playCommand.isEnabled = true
@@ -360,12 +300,12 @@ class NCPlayerToolBar: UIView {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
     
-    func deinitCommandCenter() {
+    func disableCommandCenter() {
         
         UIApplication.shared.endReceivingRemoteControlEvents()
-        MPRemoteCommandCenter.shared().playCommand.isEnabled = false
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
-        
+        MPRemoteCommandCenter.shared().playCommand.isEnabled = false
+
         if let playCommand = appDelegate.commandCenterPlayCommand {
             MPRemoteCommandCenter.shared().playCommand.removeTarget(playCommand)
         }
