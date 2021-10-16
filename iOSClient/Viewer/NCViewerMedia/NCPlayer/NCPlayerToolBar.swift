@@ -355,7 +355,7 @@ class NCPlayerToolBar: UIView {
     
     // MARK: -
 
-    public func show(enableTimerAutoHide: Bool) {
+    public func show(enableTimerAutoHide: Bool = false) {
         guard let metadata = self.metadata else { return }
         
         if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
