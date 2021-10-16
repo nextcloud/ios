@@ -199,8 +199,8 @@ class NCPlayer: NSObject {
         if let commandCenterSkipBackwardCommand = appDelegate.commandCenterSkipBackwardCommand {
             MPRemoteCommandCenter.shared().previousTrackCommand.removeTarget(commandCenterSkipBackwardCommand)
         }
-        if let commandCenterskipForwardCommand = appDelegate.commandCenterskipForwardCommand {
-            MPRemoteCommandCenter.shared().nextTrackCommand.removeTarget(commandCenterskipForwardCommand)
+        if let commandCenterSkipForwardCommand = appDelegate.commandCenterSkipForwardCommand {
+            MPRemoteCommandCenter.shared().nextTrackCommand.removeTarget(commandCenterSkipForwardCommand)
         }
     }
     

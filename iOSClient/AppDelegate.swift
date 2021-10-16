@@ -67,7 +67,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var player: AVPlayer?
     var commandCenterPlayCommand: Any?
     var commandCenterPauseCommand: Any?
-    var commandCenterskipForwardCommand: Any?
+    var commandCenterSkipForwardCommand: Any?
     var commandCenterSkipBackwardCommand: Any?
     var commandCenterChangePlaybackPositionCommand: Any?
 

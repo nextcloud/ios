@@ -188,7 +188,7 @@ class NCPlayerToolBar: UIView {
             }
                 
             // Add handler for Forward Command
-            appDelegate.commandCenterskipForwardCommand = commandCenter.skipForwardCommand.addTarget { event in
+            appDelegate.commandCenterSkipForwardCommand = commandCenter.skipForwardCommand.addTarget { event in
                 
                 let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
                 self.skip(seconds: seconds)
