@@ -224,15 +224,24 @@ class NCPlayer: NSObject {
     func playerPlay() {
                 
         appDelegate.player?.play()
+        self.playerToolBar?.updateToolBar()
     }
     
     func playerPause() {
         
         appDelegate.player?.pause()
+        self.playerToolBar?.updateToolBar()
         
         if let pictureInPictureController = pictureInPictureController, pictureInPictureController.isPictureInPictureActive {
             pictureInPictureController.stopPictureInPicture()
         }
+    }
+    
+    func videoSeek(time: CMTime) {
+        
+        appDelegate.player?.seek(to: time)
+        playerToolBar?.updateToolBar(timeSeek: time)
+        self.saveTime(time)
     }
     
     func saveTime(_ time: CMTime) {
@@ -248,12 +257,6 @@ class NCPlayer: NSObject {
         if let player = appDelegate.player {
             saveTime(player.currentTime())
         }
-    }
-    
-    func videoSeek(time: CMTime) {
-        
-        appDelegate.player?.seek(to: time)
-        self.saveTime(time)
     }
     
     @objc func generatorImagePreview() {

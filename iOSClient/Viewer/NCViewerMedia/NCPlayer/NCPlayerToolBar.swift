@@ -251,7 +251,6 @@ class NCPlayerToolBar: UIView {
             
             if !ncplayer.isPlay() {
                 ncplayer.playerPlay()
-                self.updateToolBar(timeSeek: nil)
                 return .success
             }
             return .commandFailed
@@ -262,7 +261,6 @@ class NCPlayerToolBar: UIView {
           
             if ncplayer.isPlay() {
                 ncplayer.playerPause()
-                self.updateToolBar(timeSeek: nil)
                 return .success
             }
             return .commandFailed
@@ -381,8 +379,6 @@ class NCPlayerToolBar: UIView {
         }
         
         if !self.isHidden { return }
-
-        updateToolBar()
             
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 1
