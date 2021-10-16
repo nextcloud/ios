@@ -50,7 +50,6 @@ class NCPlayerToolBar: UIView {
     private var ncplayer: NCPlayer?
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
-    private let timeToAdd: CMTime = CMTimeMakeWithSeconds(10, preferredTimescale: 1)
     private var durationTime: CMTime = .zero
     private var timeObserver: Any?
     private var timerAutoHide: Timer?
@@ -128,59 +127,8 @@ class NCPlayerToolBar: UIView {
         NotificationCenter.default.removeObserver(self, name: AVAudioSession.routeChangeNotification, object: nil)
     }
     
-    // MARK: Handle Notifications
-    
-    @objc func handleRouteChange(notification: Notification) {
-        guard let userInfo = notification.userInfo, let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt, let reason = AVAudioSession.RouteChangeReason(rawValue:reasonValue) else { return }
-        
-        switch reason {
-        case .newDeviceAvailable:
-            let session = AVAudioSession.sharedInstance()
-            for output in session.currentRoute.outputs where output.portType == AVAudioSession.Port.headphones {
-                print("headphones connected")
-                DispatchQueue.main.sync {
-                    ncplayer?.playerPlay()
-                    startTimerAutoHide()
-                }
-                break
-            }
-        case .oldDeviceUnavailable:
-            if let previousRoute = userInfo[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription {
-                for output in previousRoute.outputs where output.portType == AVAudioSession.Port.headphones {
-                    print("headphones disconnected")
-                    DispatchQueue.main.sync {
-                        ncplayer?.playerPause()
-                        ncplayer?.saveCurrentTime()
-                    }
-                    break
-                }
-            }
-        default: ()
-        }
-    }
-    
-    @objc func handleInterruption(notification: Notification) {
-        guard let userInfo = notification.userInfo, let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt, let type = AVAudioSession.InterruptionType(rawValue: typeValue) else { return }
-      
-        if type == .began {
-            print("Interruption began")
-            // Interruption began, take appropriate actions
-        } else if type == .ended {
-            if let optionsValue = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt {
-                let options = AVAudioSession.InterruptionOptions(rawValue: optionsValue)
-                if options.contains(.shouldResume) {
-                    // Interruption Ended - playback should resume
-                    print("Interruption Ended - playback should resume")
-                    ncplayer?.playerPlay()
-                    startTimerAutoHide()
-                } else {
-                    // Interruption Ended - playback should NOT resume
-                    print("Interruption Ended - playback should NOT resume")
-                }
-            }
-        }
-    }
-    
+    // MARK: -
+
     func setBarPlayer(ncplayer: NCPlayer, timeSeek: CMTime, metadata: tableMetadata, image: UIImage?) {
                         
         self.ncplayer = ncplayer
@@ -234,14 +182,16 @@ class NCPlayerToolBar: UIView {
             // Add handler for Backward Command
             appDelegate.commandCenterSkipBackwardCommand = commandCenter.skipBackwardCommand.addTarget { event in
                 
-                self.forwardButtonSec(self)
+                let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
+
                 return.success
             }
                 
             // Add handler for Forward Command
             appDelegate.commandCenterskipForwardCommand = commandCenter.skipForwardCommand.addTarget { event in
                 
-                self.backButtonSec(self)
+                let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
+                
                 return.success
             }
             
@@ -264,66 +214,7 @@ class NCPlayerToolBar: UIView {
                     self.updateToolBar()
                 }
             }
-        })        
-    }
-    
-    public func hide() {
-              
-        UIView.animate(withDuration: 0.3, animations: {
-            self.alpha = 0
-            self.playerTopToolBarView.alpha = 0
-        }, completion: { (value: Bool) in
-            self.isHidden = true
-            self.playerTopToolBarView.isHidden = true
         })
-    }
-    
-    @objc private func automaticHide() {
-        
-        if let metadata = self.metadata {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar, userInfo: ["ocId":metadata.ocId])
-        }
-    }
-    
-    private func startTimerAutoHide() {
-        
-        timerAutoHide?.invalidate()
-        timerAutoHide = Timer.scheduledTimer(timeInterval: 3.5, target: self, selector: #selector(automaticHide), userInfo: nil, repeats: false)
-    }
-    
-    private func reStartTimerAutoHide() {
-        
-        if let timerAutoHide = timerAutoHide, timerAutoHide.isValid {
-            startTimerAutoHide()
-        }
-    }
-    
-    public func show(enableTimerAutoHide: Bool) {
-        guard let metadata = self.metadata else { return }
-        
-        if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
-        if metadata.livePhoto { return }
-        
-        timerAutoHide?.invalidate()
-        if enableTimerAutoHide {
-            startTimerAutoHide()
-        }
-        
-        if !self.isHidden { return }
-
-        updateToolBar()
-            
-        UIView.animate(withDuration: 0.3, animations: {
-            self.alpha = 1
-            self.playerTopToolBarView.alpha = 1
-        }, completion: { (value: Bool) in
-            self.isHidden = false
-            self.playerTopToolBarView.isHidden = false
-        })        
-    }
-    
-    func isShow() -> Bool {
-        return !self.isHidden
     }
     
     public func updateToolBar(timeSeek: CMTime? = nil) {
@@ -395,6 +286,150 @@ class NCPlayerToolBar: UIView {
         
         labelCurrentTime.text = NCUtility.shared.stringFromTime(currentTime)
         labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(self.durationTime - currentTime)
+    }
+    
+    // MARK: Handle Notifications
+    
+    @objc func handleRouteChange(notification: Notification) {
+        guard let userInfo = notification.userInfo, let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt, let reason = AVAudioSession.RouteChangeReason(rawValue:reasonValue) else { return }
+        
+        switch reason {
+        case .newDeviceAvailable:
+            let session = AVAudioSession.sharedInstance()
+            for output in session.currentRoute.outputs where output.portType == AVAudioSession.Port.headphones {
+                print("headphones connected")
+                DispatchQueue.main.sync {
+                    ncplayer?.playerPlay()
+                    startTimerAutoHide()
+                }
+                break
+            }
+        case .oldDeviceUnavailable:
+            if let previousRoute = userInfo[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription {
+                for output in previousRoute.outputs where output.portType == AVAudioSession.Port.headphones {
+                    print("headphones disconnected")
+                    DispatchQueue.main.sync {
+                        ncplayer?.playerPause()
+                        ncplayer?.saveCurrentTime()
+                    }
+                    break
+                }
+            }
+        default: ()
+        }
+    }
+    
+    @objc func handleInterruption(notification: Notification) {
+        guard let userInfo = notification.userInfo, let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt, let type = AVAudioSession.InterruptionType(rawValue: typeValue) else { return }
+      
+        if type == .began {
+            print("Interruption began")
+            // Interruption began, take appropriate actions
+        } else if type == .ended {
+            if let optionsValue = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt {
+                let options = AVAudioSession.InterruptionOptions(rawValue: optionsValue)
+                if options.contains(.shouldResume) {
+                    // Interruption Ended - playback should resume
+                    print("Interruption Ended - playback should resume")
+                    ncplayer?.playerPlay()
+                    startTimerAutoHide()
+                } else {
+                    // Interruption Ended - playback should NOT resume
+                    print("Interruption Ended - playback should NOT resume")
+                }
+            }
+        }
+    }
+    
+    // MARK: -
+
+    public func hide() {
+              
+        UIView.animate(withDuration: 0.3, animations: {
+            self.alpha = 0
+            self.playerTopToolBarView.alpha = 0
+        }, completion: { (value: Bool) in
+            self.isHidden = true
+            self.playerTopToolBarView.isHidden = true
+        })
+    }
+    
+    @objc private func automaticHide() {
+        
+        if let metadata = self.metadata {
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar, userInfo: ["ocId":metadata.ocId])
+        }
+    }
+    
+    private func startTimerAutoHide() {
+        
+        timerAutoHide?.invalidate()
+        timerAutoHide = Timer.scheduledTimer(timeInterval: 3.5, target: self, selector: #selector(automaticHide), userInfo: nil, repeats: false)
+    }
+    
+    private func reStartTimerAutoHide() {
+        
+        if let timerAutoHide = timerAutoHide, timerAutoHide.isValid {
+            startTimerAutoHide()
+        }
+    }
+    
+    public func show(enableTimerAutoHide: Bool) {
+        guard let metadata = self.metadata else { return }
+        
+        if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
+        if metadata.livePhoto { return }
+        
+        timerAutoHide?.invalidate()
+        if enableTimerAutoHide {
+            startTimerAutoHide()
+        }
+        
+        if !self.isHidden { return }
+
+        updateToolBar()
+            
+        UIView.animate(withDuration: 0.3, animations: {
+            self.alpha = 1
+            self.playerTopToolBarView.alpha = 1
+        }, completion: { (value: Bool) in
+            self.isHidden = false
+            self.playerTopToolBarView.isHidden = false
+        })        
+    }
+    
+    func isShow() -> Bool {
+        return !self.isHidden
+    }
+    
+    
+    
+    func skip(seconds: Float64) {
+        guard let ncplayer = ncplayer else { return }
+        guard let player = appDelegate.player else { return }
+        
+        let currentTime = player.currentTime()
+        var newTime: CMTime = .zero
+        let timeToAdd: CMTime = CMTimeMakeWithSeconds(seconds, preferredTimescale: 1)
+
+        if seconds > 0 {
+            newTime = CMTimeAdd(currentTime, timeToAdd)
+            
+            if newTime < durationTime {
+                ncplayer.videoSeek(time: newTime)
+            } else if newTime >= durationTime {
+                let timeToSubtract: CMTime = CMTimeMakeWithSeconds(3, preferredTimescale: 1)
+                newTime = CMTimeSubtract(durationTime, timeToSubtract)
+                if newTime > currentTime {
+                    ncplayer.videoSeek(time: newTime)
+                }
+            }
+        } else {
+            newTime = CMTimeSubtract(currentTime, timeToAdd)
+            ncplayer.videoSeek(time: newTime)
+        }
+        
+        reStartTimerAutoHide()
     }
     
     //MARK: - Event / Gesture
@@ -482,35 +517,11 @@ class NCPlayerToolBar: UIView {
     }
     
     @IBAction func forwardButtonSec(_ sender: Any) {
-        guard let ncplayer = ncplayer else { return }
-        guard let player = appDelegate.player else { return }
-        
-        let currentTime = player.currentTime()
-        var newTime = CMTimeAdd(currentTime, timeToAdd)
-        
-        if newTime < durationTime {
-            ncplayer.videoSeek(time: newTime)
-        } else if newTime >= durationTime {
-            let timeToSubtract: CMTime = CMTimeMakeWithSeconds(3, preferredTimescale: 1)
-            newTime = CMTimeSubtract(durationTime, timeToSubtract)
-            if newTime > currentTime {
-                ncplayer.videoSeek(time: newTime)
-            }
-        }
-        
-        reStartTimerAutoHide()
+        skip(seconds: 10)
     }
     
     @IBAction func backButtonSec(_ sender: Any) {
-        guard let ncplayer = ncplayer else { return }
-        guard let player = appDelegate.player else { return }
-        
-        let currentTime = player.currentTime()
-        let newTime = CMTimeSubtract(currentTime, timeToAdd)
-        
-        ncplayer.videoSeek(time: newTime)
-        
-        reStartTimerAutoHide()
+        skip(seconds: -10)
     }
 }
 
