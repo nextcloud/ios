@@ -80,11 +80,12 @@ class NCPlayer: NSObject {
         // At end go back to start & show toolbar
         observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: appDelegate.player?.currentItem, queue: .main) { (notification) in
             if let item = notification.object as? AVPlayerItem, let currentItem = self.appDelegate.player?.currentItem, item == currentItem {
+                NCKTVHTTPCache.shared.saveCache(metadata: metadata)
                 self.videoSeek(time: .zero)
                 if !(detailView?.isShow() ?? false) {
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
                 }
-                NCKTVHTTPCache.shared.saveCache(metadata: metadata)
+                playerToolBar?.updateToolBar(timeSeek: .zero, commandCenter: true)
             }
         }
         

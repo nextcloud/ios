@@ -148,12 +148,7 @@ class NCPlayerToolBar: UIView {
             labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(durationTime)
         }
         
-        // COMMAND CENTER
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-            endableCommandCenter()
-        }
-        
-        updateToolBar(timeSeek: timeSeek)
+        updateToolBar(timeSeek: timeSeek, commandCenter: true)
         
         self.timeObserver = appDelegate.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             
@@ -165,11 +160,16 @@ class NCPlayerToolBar: UIView {
         })
     }
     
-    public func updateToolBar(timeSeek: CMTime? = nil) {
+    public func updateToolBar(timeSeek: CMTime? = nil, commandCenter: Bool = false) {
         guard let metadata = self.metadata else { return }
         
         var currentTime = appDelegate.player?.currentTime() ?? .zero
         currentTime = currentTime.convertScale(1000, method: .default)
+        
+        // COMMAND CENTER
+        if commandCenter && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            enableCommandCenter()
+        }
         
         // MUTE
         if CCUtility.getAudioMute() {
@@ -242,7 +242,7 @@ class NCPlayerToolBar: UIView {
     
     // MARK: - Command Center
     
-    func endableCommandCenter() {
+    func enableCommandCenter() {
         guard let ncplayer = self.ncplayer else { return }
         
         UIApplication.shared.beginReceivingRemoteControlEvents()
