@@ -273,7 +273,8 @@ class NCPlayer: NSObject {
                 let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
                 image = UIImage(cgImage: cgImage)
                 // Update Playing Info Center
-                if let image = image {
+                let mediaItemPropertyTitle = MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyTitle] as? String
+                if let image = image, mediaItemPropertyTitle == metadata.fileNameView {
                     MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
                         return image
                     }

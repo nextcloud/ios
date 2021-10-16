@@ -151,7 +151,7 @@ class NCPlayerToolBar: UIView {
         // COMMAND CENTER
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             endableCommandCenter()
-        } 
+        }
         
         updateToolBar(timeSeek: timeSeek)
         
@@ -246,7 +246,6 @@ class NCPlayerToolBar: UIView {
         guard let ncplayer = self.ncplayer else { return }
         
         UIApplication.shared.beginReceivingRemoteControlEvents()
-        MPRemoteCommandCenter.shared().playCommand.isEnabled = true
         var nowPlayingInfo = [String : Any]()
 
         // Add handler for Play Command
@@ -301,10 +300,10 @@ class NCPlayerToolBar: UIView {
         
         UIApplication.shared.endReceivingRemoteControlEvents()
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
-        MPRemoteCommandCenter.shared().playCommand.isEnabled = false
 
         if let playCommand = appDelegate.commandCenterPlayCommand {
             MPRemoteCommandCenter.shared().playCommand.removeTarget(playCommand)
+            appDelegate.commandCenterPlayCommand = nil
         }
         if let pauseCommand = appDelegate.commandCenterPauseCommand {
             MPRemoteCommandCenter.shared().pauseCommand.removeTarget(pauseCommand)
