@@ -296,7 +296,7 @@
                                                             <constraint firstAttribute="width" constant="40" id="COm-r2-ubw"/>
                                                             <constraint firstAttribute="height" constant="40" id="mbb-ql-zCc"/>
                                                         </constraints>
-                                                        <state key="normal" image="gobackward.15" catalog="system"/>
+                                                        <state key="normal" image="gobackward.10" catalog="system"/>
                                                         <connections>
                                                             <action selector="backButtonSec:" destination="sBp-t2-eFh" eventType="touchUpInside" id="Q46-Tp-inF"/>
                                                         </connections>
@@ -321,7 +321,7 @@
                                                             <constraint firstAttribute="width" constant="40" id="hlL-XQ-OLa"/>
                                                             <constraint firstAttribute="height" constant="40" id="vEe-Fb-a9N"/>
                                                         </constraints>
-                                                        <state key="normal" image="goforward.15" catalog="system"/>
+                                                        <state key="normal" image="goforward.10" catalog="system"/>
                                                         <connections>
                                                             <action selector="forwardButtonSec:" destination="sBp-t2-eFh" eventType="touchUpInside" id="QPi-TQ-rNF"/>
                                                         </connections>
@@ -438,8 +438,8 @@
     </scenes>
     <resources>
         <image name="audioOn" width="28" height="28"/>
-        <image name="gobackward.15" catalog="system" width="121" height="128"/>
-        <image name="goforward.15" catalog="system" width="121" height="128"/>
+        <image name="gobackward.10" catalog="system" width="121" height="128"/>
+        <image name="goforward.10" catalog="system" width="121" height="128"/>
         <image name="logo" width="256" height="128"/>
         <image name="pip.enter" catalog="system" width="128" height="96"/>
         <image name="play.fill" catalog="system" width="116" height="128"/>

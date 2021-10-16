@@ -38,7 +38,6 @@ class NCPlayer: NSObject {
     private var playerToolBar: NCPlayerToolBar?
     private var detailView: NCViewerMediaDetailView?
     private var observerAVPlayerItemDidPlayToEndTime: Any?
-    private var observerAVPlayerItemPlaybackTimeObserver: Any?
     
     public var metadata: tableMetadata?
     public var videoLayer: AVPlayerLayer?
@@ -87,11 +86,6 @@ class NCPlayer: NSObject {
                 }
                 NCKTVHTTPCache.shared.saveCache(metadata: metadata)
             }
-        }
-        
-        let interval = CMTime(seconds:1.0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-        observerAVPlayerItemPlaybackTimeObserver = appDelegate.player?.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main) { time in
-            print(time.seconds)
         }
         
         appDelegate.player?.currentItem?.asset.loadValuesAsynchronously(forKeys: ["playable"], completionHandler: {
@@ -176,10 +170,6 @@ class NCPlayer: NSObject {
 
         if let observerAVPlayerItemDidPlayToEndTime = self.observerAVPlayerItemDidPlayToEndTime {
             NotificationCenter.default.removeObserver(observerAVPlayerItemDidPlayToEndTime)
-        }
-        if let observerAVPlayerItemPlaybackTimeObserver = self.observerAVPlayerItemPlaybackTimeObserver {
-            appDelegate.player?.removeTimeObserver(observerAVPlayerItemPlaybackTimeObserver)
-            self.observerAVPlayerItemPlaybackTimeObserver = nil
         }
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         
