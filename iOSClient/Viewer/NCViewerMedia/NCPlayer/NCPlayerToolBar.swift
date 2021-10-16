@@ -25,6 +25,7 @@ import Foundation
 import NCCommunication
 import CoreMedia
 import UIKit
+import AVKit
 import MediaPlayer
 
 class NCPlayerToolBar: UIView {
@@ -339,12 +340,20 @@ class NCPlayerToolBar: UIView {
         }
         muteButton.isEnabled = true
         
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && ncplayer?.pictureInPictureController != nil {
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .white), for: .normal)
             pipButton.isEnabled = true
+            if let ncplayer = self.ncplayer, let playerLayer = ncplayer.videoLayer, ncplayer.pictureInPictureController == nil {
+                ncplayer.pictureInPictureController = AVPictureInPictureController(playerLayer: playerLayer)
+                ncplayer.pictureInPictureController?.delegate = ncplayer
+            }
         } else {
             pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .gray), for: .normal)
             pipButton.isEnabled = false
+            if let ncplayer = self.ncplayer, ncplayer.pictureInPictureController != nil {
+                ncplayer.pictureInPictureController = nil
+                ncplayer.pictureInPictureController?.delegate = nil
+            }
         }
         
         if timeSeek != nil {
