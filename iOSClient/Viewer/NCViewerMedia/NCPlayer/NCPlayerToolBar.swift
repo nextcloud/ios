@@ -123,6 +123,8 @@ class NCPlayerToolBar: UIView {
             appDelegate.player?.removeTimeObserver(self.timeObserver!)
         }
         
+        deinitCommandCenter()
+        
         NotificationCenter.default.removeObserver(self, name: AVAudioSession.interruptionNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: AVAudioSession.routeChangeNotification, object: nil)
     }
@@ -148,6 +150,7 @@ class NCPlayerToolBar: UIView {
             labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(durationTime)
         }
         
+        /*
         if let ncplayer = self.ncplayer {
         
             UIApplication.shared.beginReceivingRemoteControlEvents()
@@ -204,6 +207,7 @@ class NCPlayerToolBar: UIView {
             }
             MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
         }
+        */
         
         updateToolBar(timeSeek: timeSeek)
         
@@ -223,6 +227,7 @@ class NCPlayerToolBar: UIView {
         var currentTime = appDelegate.player?.currentTime() ?? .zero
         currentTime = currentTime.convertScale(1000, method: .default)
         
+        // MUTE
         if CCUtility.getAudioMute() {
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
         } else {
@@ -230,6 +235,7 @@ class NCPlayerToolBar: UIView {
         }
         muteButton.isEnabled = true
         
+        // PIP
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .white), for: .normal)
             pipButton.isEnabled = true
@@ -246,6 +252,7 @@ class NCPlayerToolBar: UIView {
             }
         }
         
+        // BACK
         if timeSeek != nil {
             playbackSlider.value = Float(timeSeek!.value)
             MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = timeSeek!.seconds
@@ -261,7 +268,8 @@ class NCPlayerToolBar: UIView {
             backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white, size: 30), for: .normal)
         }
         backButton.isEnabled = true
-                        
+                 
+        // PLAY
         if let ncplayer = ncplayer, ncplayer.isPlay() {
             MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
         } else {
@@ -275,6 +283,7 @@ class NCPlayerToolBar: UIView {
         }
         playButton.isEnabled = true
         
+        // FORWARD
         if #available(iOS 13.0, *) {
             forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white), for: .normal)
         } else {
@@ -282,8 +291,96 @@ class NCPlayerToolBar: UIView {
         }
         forwardButton.isEnabled = true
         
+        // TIME (START - END)
         labelCurrentTime.text = NCUtility.shared.stringFromTime(currentTime)
         labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(self.durationTime - currentTime)
+        
+        // COMMAND CENTER
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            initCommandCenter()
+        } else {
+            deinitCommandCenter()
+        }
+    }
+    
+    // MARK: - Command Center
+    
+    func initCommandCenter() {
+        guard let ncplayer = self.ncplayer else { return }
+        
+        UIApplication.shared.beginReceivingRemoteControlEvents()
+        MPRemoteCommandCenter.shared().playCommand.isEnabled = true
+        var nowPlayingInfo = [String : Any]()
+
+        // Add handler for Play Command
+        appDelegate.commandCenterPlayCommand = MPRemoteCommandCenter.shared().playCommand.addTarget { event in
+            
+            if !ncplayer.isPlay() {
+                ncplayer.playerPlay()
+                self.updateToolBar(timeSeek: nil)
+                return .success
+            }
+            return .commandFailed
+        }
+      
+        // Add handler for Pause Command
+        appDelegate.commandCenterPauseCommand = MPRemoteCommandCenter.shared().pauseCommand.addTarget { event in
+          
+            if ncplayer.isPlay() {
+                ncplayer.playerPause()
+                self.updateToolBar(timeSeek: nil)
+                return .success
+            }
+            return .commandFailed
+        }
+        
+        // Add handler for Backward Command
+        appDelegate.commandCenterSkipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
+            
+            let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
+            self.skip(seconds: -seconds)
+            return.success
+        }
+            
+        // Add handler for Forward Command
+        appDelegate.commandCenterSkipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
+            
+            let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
+            self.skip(seconds: seconds)
+            return.success
+        }
+        
+        nowPlayingInfo[MPMediaItemPropertyTitle] = metadata?.fileNameView
+        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = appDelegate.player?.currentItem?.asset.duration.seconds
+        if let image = self.image {
+            nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
+                return image
+            }
+        }
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+    
+    func deinitCommandCenter() {
+        
+        UIApplication.shared.endReceivingRemoteControlEvents()
+        MPRemoteCommandCenter.shared().playCommand.isEnabled = false
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
+        
+        if let playCommand = appDelegate.commandCenterPlayCommand {
+            MPRemoteCommandCenter.shared().playCommand.removeTarget(playCommand)
+        }
+        if let pauseCommand = appDelegate.commandCenterPauseCommand {
+            MPRemoteCommandCenter.shared().pauseCommand.removeTarget(pauseCommand)
+            appDelegate.commandCenterPauseCommand = nil
+        }
+        if let commandCenterSkipBackwardCommand = appDelegate.commandCenterSkipBackwardCommand {
+            MPRemoteCommandCenter.shared().previousTrackCommand.removeTarget(commandCenterSkipBackwardCommand)
+            appDelegate.commandCenterSkipBackwardCommand = nil
+        }
+        if let commandCenterSkipForwardCommand = appDelegate.commandCenterSkipForwardCommand {
+            MPRemoteCommandCenter.shared().nextTrackCommand.removeTarget(commandCenterSkipForwardCommand)
+            appDelegate.commandCenterSkipForwardCommand = nil
+        }
     }
     
     // MARK: Handle Notifications

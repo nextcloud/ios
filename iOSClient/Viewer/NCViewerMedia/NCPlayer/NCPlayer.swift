@@ -186,22 +186,6 @@ class NCPlayer: NSObject {
         } catch {
             print(error)
         }
-        
-        // Remote Command Center
-        UIApplication.shared.endReceivingRemoteControlEvents()
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
-        if let playCommand = appDelegate.commandCenterPlayCommand {
-            MPRemoteCommandCenter.shared().playCommand.removeTarget(playCommand)
-        }
-        if let pauseCommand = appDelegate.commandCenterPauseCommand {
-            MPRemoteCommandCenter.shared().pauseCommand.removeTarget(pauseCommand)
-        }
-        if let commandCenterSkipBackwardCommand = appDelegate.commandCenterSkipBackwardCommand {
-            MPRemoteCommandCenter.shared().previousTrackCommand.removeTarget(commandCenterSkipBackwardCommand)
-        }
-        if let commandCenterSkipForwardCommand = appDelegate.commandCenterSkipForwardCommand {
-            MPRemoteCommandCenter.shared().nextTrackCommand.removeTarget(commandCenterSkipForwardCommand)
-        }
     }
     
     //MARK: - NotificationCenter
