@@ -153,9 +153,7 @@ class NCPlayerToolBar: UIView {
         self.timeObserver = appDelegate.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             
             if self.appDelegate.player?.currentItem?.status == .readyToPlay {
-                if self.isHidden == false {
-                    self.updateToolBar()
-                }
+                self.updateToolBar()
             }
         })
     }
