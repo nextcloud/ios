@@ -93,15 +93,7 @@ class NCPlayer: NSObject {
         
         timeObserver = appDelegate.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             if self.appDelegate.player?.currentItem?.status == .readyToPlay {
-                if var currentTime = self.appDelegate.player?.currentTime(), let playerToolBar = self.playerToolBar {
-                    currentTime = currentTime.convertScale(1000, method: .default)
-                    playerToolBar.playbackSlider.value = Float(currentTime.value)
-                    MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTime.seconds
-                    playerToolBar.playbackSlider.isEnabled = true
-                    playerToolBar.labelCurrentTime.text = NCUtility.shared.stringFromTime(currentTime)
-                    playerToolBar.labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(self.durationTime - currentTime)
-                    
-                }
+                self.playerToolBar?.updateToolBar()
             }
         })
         
@@ -262,7 +254,7 @@ class NCPlayer: NSObject {
     func videoSeek(time: CMTime) {
         
         appDelegate.player?.seek(to: time)
-        playerToolBar?.updateToolBar()
+        playerToolBar?.updateToolBar(timeSeek: time)
         self.saveTime(time)
     }
     

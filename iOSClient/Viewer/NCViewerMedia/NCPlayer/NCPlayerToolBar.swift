@@ -140,11 +140,9 @@ class NCPlayerToolBar: UIView {
         updateToolBar(commandCenter: true)
     }
     
-    public func updateToolBar(commandCenter: Bool = false) {
+    public func updateToolBar(timeSeek: CMTime? = nil, commandCenter: Bool = false) {
         guard let metadata = self.metadata else { return }
-        
-        var currentTime = appDelegate.player?.currentTime() ?? .zero
-        currentTime = currentTime.convertScale(1000, method: .default)
+        var time: CMTime = .zero
         
         // COMMAND CENTER
         if commandCenter && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
@@ -177,10 +175,16 @@ class NCPlayerToolBar: UIView {
         }
         
         // SLIDER TIME (START - END)
-        playbackSlider.value = Float(currentTime.value)
-        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTime.seconds
+        if timeSeek != nil {
+            time = timeSeek!
+        } else {
+            time = (appDelegate.player?.currentTime() ?? .zero).convertScale(1000, method: .default)
+            
+        }
+        playbackSlider.value = Float(time.value)
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = time.seconds
         playbackSlider.isEnabled = true
-        labelCurrentTime.text = NCUtility.shared.stringFromTime(currentTime)
+        labelCurrentTime.text = NCUtility.shared.stringFromTime(time)
         
         // BACK
         if #available(iOS 13.0, *) {
