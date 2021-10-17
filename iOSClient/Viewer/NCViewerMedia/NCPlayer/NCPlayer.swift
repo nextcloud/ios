@@ -39,8 +39,8 @@ class NCPlayer: NSObject {
     private var detailView: NCViewerMediaDetailView?
     private var observerAVPlayerItemDidPlayToEndTime: Any?
     private var timeObserver: Any?
-    private var durationTime: CMTime = .zero
 
+    public var durationTime: CMTime = .zero
     public var metadata: tableMetadata?
     public var videoLayer: AVPlayerLayer?
     public var pictureInPictureController: AVPictureInPictureController?

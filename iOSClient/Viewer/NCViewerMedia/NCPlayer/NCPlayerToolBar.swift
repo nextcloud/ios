@@ -50,7 +50,6 @@ class NCPlayerToolBar: UIView {
     private var ncplayer: NCPlayer?
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
-    private var durationTime: CMTime = .zero
     private var timerAutoHide: Timer?
     private var metadata: tableMetadata?
     private var image: UIImage?
@@ -124,24 +123,19 @@ class NCPlayerToolBar: UIView {
     
     // MARK: -
 
-    func setBarPlayer(ncplayer: NCPlayer, timeSeek: CMTime, metadata: tableMetadata, image: UIImage?) {
+    func setBarPlayer(ncplayer: NCPlayer, timeSeek: CMTime,metadata: tableMetadata, image: UIImage?) {
                         
         self.ncplayer = ncplayer
         self.metadata = metadata
         self.image = image
-                
-        if let durationTime = NCManageDatabase.shared.getVideoDurationTime(metadata: metadata) {
-        
-            self.durationTime = durationTime
-            
-            playbackSlider.value = 0
-            playbackSlider.minimumValue = 0
-            playbackSlider.maximumValue = Float(durationTime.value)
-            playbackSlider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
+                        
+        playbackSlider.value = 0
+        playbackSlider.minimumValue = 0
+        playbackSlider.maximumValue = Float(ncplayer.durationTime.value)
+        playbackSlider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
 
-            labelCurrentTime.text = NCUtility.shared.stringFromTime(.zero)
-            labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(durationTime)
-        }
+        labelCurrentTime.text = NCUtility.shared.stringFromTime(.zero)
+        labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(ncplayer.durationTime)
         
         updateToolBar(commandCenter: true)
     }
@@ -187,7 +181,6 @@ class NCPlayerToolBar: UIView {
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTime.seconds
         playbackSlider.isEnabled = true
         labelCurrentTime.text = NCUtility.shared.stringFromTime(currentTime)
-        labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(self.durationTime - currentTime)
         
         // BACK
         if #available(iOS 13.0, *) {
@@ -417,11 +410,11 @@ class NCPlayerToolBar: UIView {
         if seconds > 0 {
             newTime = CMTimeAdd(currentTime, timeToAdd)
             
-            if newTime < durationTime {
+            if newTime < ncplayer.durationTime {
                 ncplayer.videoSeek(time: newTime)
-            } else if newTime >= durationTime {
+            } else if newTime >= ncplayer.durationTime {
                 let timeToSubtract: CMTime = CMTimeMakeWithSeconds(3, preferredTimescale: 1)
-                newTime = CMTimeSubtract(durationTime, timeToSubtract)
+                newTime = CMTimeSubtract(ncplayer.durationTime, timeToSubtract)
                 if newTime > currentTime {
                     ncplayer.videoSeek(time: newTime)
                 }
