@@ -110,7 +110,7 @@ class NCPlayer: NSObject {
                         self.videoLayer!.frame = imageVideoContainer.bounds
                         self.videoLayer!.videoGravity = .resizeAspect
                         
-                        if metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue {
+                        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
                         
                             imageVideoContainer.layer.addSublayer(self.videoLayer!)
                             imageVideoContainer.playerLayer = self.videoLayer
@@ -120,7 +120,8 @@ class NCPlayer: NSObject {
                                     imageVideoContainer.image = imageVideoContainer.image?.image(alpha: 0)
                                 }
                             }
-                            // PiP
+                            
+                            // PIP
                             if let playerLayer = self.videoLayer, CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                                 self.pictureInPictureController = AVPictureInPictureController(playerLayer: playerLayer)
                                 self.pictureInPictureController?.delegate = self
