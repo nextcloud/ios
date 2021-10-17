@@ -182,11 +182,16 @@ class NCPlayerToolBar: UIView {
             }
         }
         
-        // BACK
+        // SLIDER
         playbackSlider.value = Float(currentTime.value)
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTime.seconds
         playbackSlider.isEnabled = true
         
+        // TIME (START - END)
+        labelCurrentTime.text = NCUtility.shared.stringFromTime(currentTime)
+        labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(self.durationTime - currentTime)
+        
+        // BACK
         if #available(iOS 13.0, *) {
             backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white), for: .normal)
         } else {
@@ -215,10 +220,6 @@ class NCPlayerToolBar: UIView {
             forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white, size: 30), for: .normal)
         }
         forwardButton.isEnabled = true
-        
-        // TIME (START - END)
-        labelCurrentTime.text = NCUtility.shared.stringFromTime(currentTime)
-        labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(self.durationTime - currentTime)
     }
     
     // MARK: - Command Center
