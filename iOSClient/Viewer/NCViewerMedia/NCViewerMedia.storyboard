@@ -376,7 +376,7 @@
                                             <outlet property="backButton" destination="Isy-sX-Gji" id="RBh-0O-yAN"/>
                                             <outlet property="forwardButton" destination="F9L-PP-AbM" id="cc0-4F-r5v"/>
                                             <outlet property="labelCurrentTime" destination="kVv-X4-6SK" id="vyf-Bb-TPL"/>
-                                            <outlet property="labelOverallDuration" destination="OUD-HH-cXH" id="E0O-99-aeq"/>
+                                            <outlet property="labelLeftTime" destination="OUD-HH-cXH" id="MjW-XN-Uer"/>
                                             <outlet property="muteButton" destination="8AB-hx-yqN" id="9zQ-k7-auv"/>
                                             <outlet property="pipButton" destination="NwE-zQ-Y5D" id="veJ-QD-fOd"/>
                                             <outlet property="playButton" destination="x3E-b2-obf" id="0Nw-L4-W7M"/>

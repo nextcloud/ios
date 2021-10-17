@@ -37,7 +37,7 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var forwardButton: UIButton!
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var playbackSlider: UISlider!
-    @IBOutlet weak var labelOverallDuration: UILabel!
+    @IBOutlet weak var labelLeftTime: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
     
     enum sliderEventType {
@@ -98,8 +98,8 @@ class NCPlayerToolBar: UIView {
         
         labelCurrentTime.text = NCUtility.shared.stringFromTime(.zero)
         labelCurrentTime.textColor = .lightGray
-        labelOverallDuration.text = NCUtility.shared.stringFromTime(.zero)
-        labelOverallDuration.textColor = .lightGray
+        labelLeftTime.text = NCUtility.shared.stringFromTime(.zero)
+        labelLeftTime.textColor = .lightGray
         
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .lightGray), for: .normal)
         backButton.isEnabled = false
@@ -131,17 +131,18 @@ class NCPlayerToolBar: UIView {
                         
         playbackSlider.value = 0
         playbackSlider.minimumValue = 0
-        playbackSlider.maximumValue = Float(ncplayer.durationTime.value)
+        playbackSlider.maximumValue = Float(ncplayer.durationTime.seconds)
         playbackSlider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
 
         labelCurrentTime.text = NCUtility.shared.stringFromTime(.zero)
-        labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(ncplayer.durationTime)
+        labelLeftTime.text = "-" + NCUtility.shared.stringFromTime(ncplayer.durationTime)
         
         updateToolBar(commandCenter: true)
     }
     
     public func updateToolBar(timeSeek: CMTime? = nil, commandCenter: Bool = false) {
         guard let metadata = self.metadata else { return }
+        guard let ncplayer = self.ncplayer else { return }
         var time: CMTime = .zero
         
         // COMMAND CENTER
@@ -161,14 +162,14 @@ class NCPlayerToolBar: UIView {
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .white), for: .normal)
             pipButton.isEnabled = true
-            if let ncplayer = self.ncplayer, let playerLayer = ncplayer.videoLayer, ncplayer.pictureInPictureController == nil {
+            if let playerLayer = ncplayer.videoLayer, ncplayer.pictureInPictureController == nil {
                 ncplayer.pictureInPictureController = AVPictureInPictureController(playerLayer: playerLayer)
                 ncplayer.pictureInPictureController?.delegate = ncplayer
             }
         } else {
             pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .gray), for: .normal)
             pipButton.isEnabled = false
-            if let ncplayer = self.ncplayer, ncplayer.pictureInPictureController != nil {
+            if ncplayer.pictureInPictureController != nil {
                 ncplayer.pictureInPictureController = nil
                 ncplayer.pictureInPictureController?.delegate = nil
             }
@@ -181,10 +182,11 @@ class NCPlayerToolBar: UIView {
             time = (appDelegate.player?.currentTime() ?? .zero).convertScale(1000, method: .default)
             
         }
-        playbackSlider.value = Float(time.value)
+        playbackSlider.value = Float(time.seconds)
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = time.seconds
         playbackSlider.isEnabled = true
         labelCurrentTime.text = NCUtility.shared.stringFromTime(time)
+        labelLeftTime.text = "-" + NCUtility.shared.stringFromTime(ncplayer.durationTime - time)
         
         // BACK
         if #available(iOS 13.0, *) {
@@ -195,12 +197,12 @@ class NCPlayerToolBar: UIView {
         backButton.isEnabled = true
                  
         // PLAY
-        if let ncplayer = ncplayer, ncplayer.isPlay() {
+        if ncplayer.isPlay() {
             MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
         } else {
             MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
         }
-        let namedPlay = (ncplayer?.isPlay() ?? false) ? "pause.fill" : "play.fill"
+        let namedPlay = ncplayer.isPlay() ? "pause.fill" : "play.fill"
         if #available(iOS 13.0, *) {
             playButton.setImage(NCUtility.shared.loadImage(named: namedPlay, color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
         } else {
@@ -438,7 +440,7 @@ class NCPlayerToolBar: UIView {
         if let touchEvent = event.allTouches?.first, let ncplayer = ncplayer {
             
             let seconds: Int64 = Int64(self.playbackSlider.value)
-            let targetTime: CMTime = CMTimeMake(value: seconds, timescale: 1000)
+            let targetTime: CMTime = CMTimeMake(value: seconds, timescale: 1)
             
             switch touchEvent.phase {
             case .began:
