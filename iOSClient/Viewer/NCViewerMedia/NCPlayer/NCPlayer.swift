@@ -254,7 +254,6 @@ class NCPlayer: NSObject {
     func videoSeek(time: CMTime) {
         
         appDelegate.player?.seek(to: time)
-        playerToolBar?.updateToolBar(timeSeek: time)
         self.saveTime(time)
     }
     
