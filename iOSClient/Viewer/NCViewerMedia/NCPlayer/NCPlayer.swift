@@ -39,11 +39,12 @@ class NCPlayer: NSObject {
     private var detailView: NCViewerMediaDetailView?
     private var observerAVPlayerItemDidPlayToEndTime: Any?
     private var timeObserver: Any?
+    private var durationTime: CMTime = .zero
 
     public var metadata: tableMetadata?
     public var videoLayer: AVPlayerLayer?
     public var pictureInPictureController: AVPictureInPictureController?
-
+    
     init(url: URL, imageVideoContainer: imageVideoContainerView?, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?) {
         super.init()
 
@@ -92,9 +93,14 @@ class NCPlayer: NSObject {
         
         timeObserver = appDelegate.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             if self.appDelegate.player?.currentItem?.status == .readyToPlay {
-                if var currentTime = self.appDelegate.player?.currentTime() {
+                if var currentTime = self.appDelegate.player?.currentTime(), let playerToolBar = self.playerToolBar {
                     currentTime = currentTime.convertScale(1000, method: .default)
-                    self.playerToolBar?.playbackSlider.value = Float(currentTime.value)
+                    playerToolBar.playbackSlider.value = Float(currentTime.value)
+                    MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTime.seconds
+                    playerToolBar.playbackSlider.isEnabled = true
+                    playerToolBar.labelCurrentTime.text = NCUtility.shared.stringFromTime(currentTime)
+                    playerToolBar.labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(self.durationTime - currentTime)
+                    
                 }
             }
         })
@@ -130,9 +136,10 @@ class NCPlayer: NSObject {
                             }
                         }
                     }
-                    if let durationTime: CMTime = (self.appDelegate.player?.currentItem?.asset.duration) {
-                        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationTime: durationTime)
-                    }
+                    
+                    self.durationTime = self.appDelegate.player?.currentItem?.asset.duration ?? .zero
+                    NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationTime: self.durationTime)
+                    
                     self.playerToolBar?.setBarPlayer(ncplayer: self, timeSeek: timeSeek, metadata: metadata, image: imageVideoContainer?.image)
                     self.generatorImagePreview()
                     if !(detailView?.isShow() ?? false) {

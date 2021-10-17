@@ -182,12 +182,10 @@ class NCPlayerToolBar: UIView {
             }
         }
         
-        // SLIDER
+        // SLIDER TIME (START - END)
         playbackSlider.value = Float(currentTime.value)
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTime.seconds
         playbackSlider.isEnabled = true
-        
-        // TIME (START - END)
         labelCurrentTime.text = NCUtility.shared.stringFromTime(currentTime)
         labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(self.durationTime - currentTime)
         
