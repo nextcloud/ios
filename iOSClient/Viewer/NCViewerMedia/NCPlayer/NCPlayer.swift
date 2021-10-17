@@ -86,14 +86,16 @@ class NCPlayer: NSObject {
                 if !(detailView?.isShow() ?? false) {
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
                 }
-                playerToolBar?.updateToolBar(timeSeek: .zero, commandCenter: true)
+                playerToolBar?.updateToolBar(commandCenter: true)
             }
         }
         
         timeObserver = appDelegate.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
-            
             if self.appDelegate.player?.currentItem?.status == .readyToPlay {
-                self.playerToolBar?.updateToolBar()
+                if var currentTime = self.appDelegate.player?.currentTime() {
+                    currentTime = currentTime.convertScale(1000, method: .default)
+                    self.playerToolBar?.playbackSlider.value = Float(currentTime.value)
+                }
             }
         })
         
@@ -253,7 +255,7 @@ class NCPlayer: NSObject {
     func videoSeek(time: CMTime) {
         
         appDelegate.player?.seek(to: time)
-        playerToolBar?.updateToolBar(timeSeek: time)
+        playerToolBar?.updateToolBar()
         self.saveTime(time)
     }
     

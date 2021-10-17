@@ -143,10 +143,10 @@ class NCPlayerToolBar: UIView {
             labelOverallDuration.text = "-" + NCUtility.shared.stringFromTime(durationTime)
         }
         
-        updateToolBar(timeSeek: timeSeek, commandCenter: true)
+        updateToolBar(commandCenter: true)
     }
     
-    public func updateToolBar(timeSeek: CMTime? = nil, commandCenter: Bool = false) {
+    public func updateToolBar(commandCenter: Bool = false) {
         guard let metadata = self.metadata else { return }
         
         var currentTime = appDelegate.player?.currentTime() ?? .zero
@@ -183,13 +183,8 @@ class NCPlayerToolBar: UIView {
         }
         
         // BACK
-        if timeSeek != nil {
-            playbackSlider.value = Float(timeSeek!.value)
-            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = timeSeek!.seconds
-        } else {
-            playbackSlider.value = Float(currentTime.value)
-            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTime.seconds
-        }
+        playbackSlider.value = Float(currentTime.value)
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTime.seconds
         playbackSlider.isEnabled = true
         
         if #available(iOS 13.0, *) {
