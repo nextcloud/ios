@@ -245,6 +245,13 @@
                                     <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dgJ-dQ-lSp" userLabel="Player Top Tool Bar">
                                         <rect key="frame" x="299" y="10" width="100" height="45"/>
                                         <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9aW-Pg-83x" userLabel="Button Player Top Tool Bar">
+                                                <rect key="frame" x="0.0" y="0.0" width="100" height="45"/>
+                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                <connections>
+                                                    <action selector="buttonPlayerTopToolBarTouchInside:" destination="sBp-t2-eFh" eventType="touchUpInside" id="Afs-Nt-FaQ"/>
+                                                </connections>
+                                            </button>
                                             <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8AB-hx-yqN" userLabel="Mute Button">
                                                 <rect key="frame" x="60" y="10" width="25" height="25"/>
                                                 <constraints>
@@ -270,10 +277,14 @@
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
+                                            <constraint firstAttribute="trailing" secondItem="9aW-Pg-83x" secondAttribute="trailing" id="8db-gr-hzG"/>
                                             <constraint firstItem="NwE-zQ-Y5D" firstAttribute="centerY" secondItem="dgJ-dQ-lSp" secondAttribute="centerY" id="Ad6-Aj-hvc"/>
+                                            <constraint firstAttribute="bottom" secondItem="9aW-Pg-83x" secondAttribute="bottom" id="B8A-Zh-HYL"/>
                                             <constraint firstAttribute="width" constant="100" id="LTs-QZ-nVw"/>
                                             <constraint firstAttribute="trailing" secondItem="8AB-hx-yqN" secondAttribute="trailing" constant="15" id="bQK-xA-Jyu"/>
                                             <constraint firstItem="NwE-zQ-Y5D" firstAttribute="leading" secondItem="dgJ-dQ-lSp" secondAttribute="leading" constant="15" id="cZY-tl-BOh"/>
+                                            <constraint firstItem="9aW-Pg-83x" firstAttribute="leading" secondItem="dgJ-dQ-lSp" secondAttribute="leading" id="clL-y7-JuR"/>
+                                            <constraint firstItem="9aW-Pg-83x" firstAttribute="top" secondItem="dgJ-dQ-lSp" secondAttribute="top" id="jQP-bV-BQ9"/>
                                             <constraint firstItem="8AB-hx-yqN" firstAttribute="centerY" secondItem="dgJ-dQ-lSp" secondAttribute="centerY" id="uNT-D4-mK3"/>
                                             <constraint firstAttribute="height" constant="45" id="xf9-B5-HMs"/>
                                         </constraints>
@@ -281,10 +292,10 @@
                                     <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sBp-t2-eFh" customClass="NCPlayerToolBar" customModule="Nextcloud" customModuleProvider="target">
                                         <rect key="frame" x="15" y="661" width="384" height="65"/>
                                         <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a0D-B0-eGX">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a0D-B0-eGX" userLabel="Button Player Tool Bar">
                                                 <rect key="frame" x="0.0" y="0.0" width="384" height="65"/>
                                                 <connections>
-                                                    <action selector="buttonTouchInside:" destination="sBp-t2-eFh" eventType="touchUpInside" id="5fA-20-TD3"/>
+                                                    <action selector="buttonPlayerToolBarTouchInside:" destination="sBp-t2-eFh" eventType="touchUpInside" id="hyl-lR-OGD"/>
                                                 </connections>
                                             </button>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Z2D-bl-6Qu" userLabel="Container play">

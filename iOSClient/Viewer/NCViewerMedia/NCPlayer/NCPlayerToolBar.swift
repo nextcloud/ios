@@ -477,7 +477,10 @@ class NCPlayerToolBar: UIView {
     
     //MARK: - Action
     
-    @IBAction func buttonTouchInside(_ sender: UIButton) {
+    @IBAction func buttonPlayerToolBarTouchInside(_ sender: UIButton) {
+    }
+    
+    @IBAction func buttonPlayerTopToolBarTouchInside(_ sender: UIButton) {
     }
     
     @IBAction func playerPause(_ sender: Any) {
