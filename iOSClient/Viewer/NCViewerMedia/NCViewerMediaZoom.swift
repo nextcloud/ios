@@ -102,6 +102,8 @@ class NCViewerMediaZoom: UIViewController {
         
         detailViewTopConstraint.constant = 0
         detailView.hide()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -136,16 +138,17 @@ class NCViewerMediaZoom: UIViewController {
             viewerMedia?.textColor = NCBrandColor.shared.label
             viewerMedia?.progressView.isHidden = false
         }
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
-
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        //self.ncplayer?.videoRemoved()
+
+        
         if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
             if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
+                let currentUrl: URL? = (appDelegate.player?.currentItem?.asset as? AVURLAsset)?.url
                 self.ncplayer = NCPlayer.init(url: url, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView)
             }
         }
@@ -154,6 +157,7 @@ class NCViewerMediaZoom: UIViewController {
         downloadFile()
     }
     
+    /*
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
@@ -163,8 +167,8 @@ class NCViewerMediaZoom: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        self.ncplayer?.videoRemoved()
     }
+    */
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
