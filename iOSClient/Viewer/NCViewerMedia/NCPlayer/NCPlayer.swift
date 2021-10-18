@@ -34,6 +34,7 @@ private var activeNCPlayer = Set<NCPlayer>()
 class NCPlayer: NSObject {
    
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private var url: URL?
     private var imageVideoContainer: imageVideoContainerView?
     private var playerToolBar: NCPlayerToolBar?
     private var detailView: NCViewerMediaDetailView?
@@ -49,6 +50,11 @@ class NCPlayer: NSObject {
         super.init()
 
         var timeSeek: CMTime = .zero
+        
+        self.url = url
+        self.playerToolBar = playerToolBar
+        self.metadata = metadata
+        self.detailView = detailView
 
         do {
             try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.PortOverride.none)
@@ -59,13 +65,7 @@ class NCPlayer: NSObject {
         }
         
         print("Play URL: \(url)")
-        appDelegate.player?.pause()
-        //TODO: Simultaneous accesses to 0x14fd07578, but modification requires exclusive access
         appDelegate.player = AVPlayer(url: url)
-
-        self.playerToolBar = playerToolBar
-        self.metadata = metadata
-        self.detailView = detailView
         
         if metadata.livePhoto {
             appDelegate.player?.isMuted = false
