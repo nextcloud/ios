@@ -58,7 +58,6 @@ class NCPlayerToolBar: UIView {
     var commandCenterPauseCommand: Any?
     var commandCenterSkipForwardCommand: Any?
     var commandCenterSkipBackwardCommand: Any?
-    var commandCenterChangePlaybackPositionCommand: Any?
 
     
     // MARK: - View Life Cycle
