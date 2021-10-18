@@ -231,6 +231,7 @@ class NCPlayerToolBar: UIView {
         guard let ncplayer = self.ncplayer else { return }
         
         UIApplication.shared.beginReceivingRemoteControlEvents()
+        MPRemoteCommandCenter.shared().playCommand.isEnabled = true
         var nowPlayingInfo = [String : Any]()
 
         // Add handler for Play Command
@@ -283,6 +284,7 @@ class NCPlayerToolBar: UIView {
         
         UIApplication.shared.endReceivingRemoteControlEvents()
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
+        MPRemoteCommandCenter.shared().playCommand.isEnabled = false
 
         if let playCommand = self.commandCenterPlayCommand {
             MPRemoteCommandCenter.shared().playCommand.removeTarget(playCommand)

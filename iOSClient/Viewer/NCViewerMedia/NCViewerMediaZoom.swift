@@ -157,6 +157,7 @@ class NCViewerMediaZoom: UIViewController {
         super.viewDidDisappear(animated)
         
         self.ncplayer?.videoRemoved()
+        playerToolBar?.disableCommandCenter()
         
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
