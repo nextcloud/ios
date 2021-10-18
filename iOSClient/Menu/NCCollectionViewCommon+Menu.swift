@@ -41,7 +41,7 @@ extension NCCollectionViewCommon {
             title: NSLocalizedString("_profile_", comment: ""),
             icon: NCUtility.shared.loadImage(named: "globe"),
             action: { menuAction in
-                
+                //TODO: Wait for https://github.com/nextcloud/server/pull/28751
             }
         )
         
@@ -49,21 +49,51 @@ extension NCCollectionViewCommon {
             title: NSLocalizedString("_mail_", comment: ""),
             icon: NCUtility.shared.loadImage(named: "envelope"),
             action: { menuAction in
-                
+                //TODO: get mail
+                self.sendEmail(to: "\(account)")
             }
         )
         
-        let talkAction =
-        NCMenuAction(
+        let talkAction = NCMenuAction(
             title: NSLocalizedString("_talk_", comment: ""),
+            // TODO: Needs talk icon
             icon: NCUtility.shared.loadImage(named: "talk-icon"),
             action: { menuAction in
-                
+                //TODO:
+                if let userTalkUrl = URL(string: "nextcloudtalk://login?server=https://nextcloud.server.tld&username=theirname"),
+                   UIApplication.shared.canOpenURL(userTalkUrl) {
+                    UIApplication.shared.open(userTalkUrl)
+                } else {
+                    // TODO: POST /ocs/v2.php/apps/spreed/api/v4/room
+                    // - roomType: 1
+                    // - invite: <account.userId>
+                    // let userToken = result.ocs.data.first(where: { $0.name == account.userId }).token
+//                     let userTalkUrl = URL(string: "\(urlBase)/call/\(token)")
+                    
+                    // UIApplication.shared.open(userTalkUrl)
+                }
             }
         )
         
         let actions = [personHeader, profileAction, mailAction, talkAction]
         presentMenu(with: actions)
+    }
+    
+    fileprivate func sendEmail(to email: String) {
+        if MFMailComposeViewController.canSendMail() {
+            let mail = MFMailComposeViewController()
+            mail.mailComposeDelegate = self
+            mail.setToRecipients([email])
+
+            present(mail, animated: true)
+        } else {
+            NCContentPresenter.shared.messageNotification(
+                "_error_", description: "_error_send_mail_",
+                delay: NCGlobal.shared.dismissAfterSecond,
+                type: NCContentPresenter.messageType.error,
+                errorCode: NCGlobal.shared.errorGeneric,
+                forced: true)
+        }
     }
     
     fileprivate func presentMenu(with actions: [NCMenuAction]) {
@@ -630,15 +660,12 @@ extension NCCollectionViewCommon {
             )
         )
         
-        menuViewController.actions = actions
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-
-        present(menuPanelController, animated: true, completion: nil)
+        presentMenu(with: actions)
     }
 }
 
+extension NCCollectionViewCommon: MFMailComposeViewControllerDelegate {
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true)
+    }
+}
