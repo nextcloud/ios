@@ -96,6 +96,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             
             searchFieldTopConstraint.constant = 65
             sharedWithYouByView.isHidden = false
+            //TODO: implement open profile dialoge
             sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata!.ownerDisplayName
             sharedWithYouByImage.image = UIImage(named: "avatar")?.imageColor(NCBrandColor.shared.label)
             
@@ -136,7 +137,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                     }
                 }
             }
-        } 
+        }
         
         reloadData()
         
