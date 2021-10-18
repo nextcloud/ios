@@ -34,7 +34,6 @@ private var activeNCPlayer = Set<NCPlayer>()
 class NCPlayer: NSObject {
    
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    private var url: URL?
     private var imageVideoContainer: imageVideoContainerView?
     private var playerToolBar: NCPlayerToolBar?
     private var detailView: NCViewerMediaDetailView?
@@ -52,7 +51,6 @@ class NCPlayer: NSObject {
 
         var timeSeek: CMTime = .zero
         
-        self.url = url
         self.playerToolBar = playerToolBar
         self.metadata = metadata
         self.detailView = detailView
