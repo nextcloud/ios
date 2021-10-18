@@ -136,9 +136,6 @@ class NCViewerMediaZoom: UIViewController {
             viewerMedia?.textColor = NCBrandColor.shared.label
             viewerMedia?.progressView.isHidden = false
         }
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
-
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -152,18 +149,16 @@ class NCViewerMediaZoom: UIViewController {
         
         // DOWNLOAD
         downloadFile()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
         
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
         self.ncplayer?.videoRemoved()
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -335,7 +330,7 @@ extension NCViewerMediaZoom {
         }
         
         scrollView.pinchGestureRecognizer?.isEnabled = true
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && !metadata.livePhoto && appDelegate.player?.timeControlStatus == .paused {
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && !metadata.livePhoto && ncplayer?.player?.timeControlStatus == .paused {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
         }
     }

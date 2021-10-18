@@ -64,13 +64,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var shares: [tableShare] = []
     var timerErrorNetworking: Timer?
     
-    var player: AVPlayer?
-    var commandCenterPlayCommand: Any?
-    var commandCenterPauseCommand: Any?
-    var commandCenterSkipForwardCommand: Any?
-    var commandCenterSkipBackwardCommand: Any?
-    var commandCenterChangePlaybackPositionCommand: Any?
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         let userAgent = CCUtility.getUserAgent() as String

@@ -54,6 +54,13 @@ class NCPlayerToolBar: UIView {
     private var metadata: tableMetadata?
     private var image: UIImage?
     
+    var commandCenterPlayCommand: Any?
+    var commandCenterPauseCommand: Any?
+    var commandCenterSkipForwardCommand: Any?
+    var commandCenterSkipBackwardCommand: Any?
+    var commandCenterChangePlaybackPositionCommand: Any?
+
+    
     // MARK: - View Life Cycle
 
     override func awakeFromNib() {
@@ -179,7 +186,7 @@ class NCPlayerToolBar: UIView {
         if timeSeek != nil {
             time = timeSeek!
         } else {
-            time = (appDelegate.player?.currentTime() ?? .zero).convertScale(1000, method: .default)
+            time = (ncplayer.player?.currentTime() ?? .zero).convertScale(1000, method: .default)
             
         }
         playbackSlider.value = Float(time.seconds)
@@ -228,7 +235,7 @@ class NCPlayerToolBar: UIView {
         var nowPlayingInfo = [String : Any]()
 
         // Add handler for Play Command
-        appDelegate.commandCenterPlayCommand = MPRemoteCommandCenter.shared().playCommand.addTarget { event in
+        commandCenterPlayCommand = MPRemoteCommandCenter.shared().playCommand.addTarget { event in
             
             if !ncplayer.isPlay() {
                 ncplayer.playerPlay()
@@ -238,7 +245,7 @@ class NCPlayerToolBar: UIView {
         }
       
         // Add handler for Pause Command
-        appDelegate.commandCenterPauseCommand = MPRemoteCommandCenter.shared().pauseCommand.addTarget { event in
+        commandCenterPauseCommand = MPRemoteCommandCenter.shared().pauseCommand.addTarget { event in
           
             if ncplayer.isPlay() {
                 ncplayer.playerPause()
@@ -248,7 +255,7 @@ class NCPlayerToolBar: UIView {
         }
         
         // Add handler for Backward Command
-        appDelegate.commandCenterSkipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
+        commandCenterSkipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
             
             let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
             self.skip(seconds: -seconds)
@@ -256,7 +263,7 @@ class NCPlayerToolBar: UIView {
         }
             
         // Add handler for Forward Command
-        appDelegate.commandCenterSkipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
+        commandCenterSkipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
             
             let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
             self.skip(seconds: seconds)
@@ -264,7 +271,7 @@ class NCPlayerToolBar: UIView {
         }
         
         nowPlayingInfo[MPMediaItemPropertyTitle] = metadata?.fileNameView
-        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = appDelegate.player?.currentItem?.asset.duration.seconds
+        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = ncplayer.player?.currentItem?.asset.duration.seconds
         if let image = self.image {
             nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
                 return image
@@ -278,21 +285,21 @@ class NCPlayerToolBar: UIView {
         UIApplication.shared.endReceivingRemoteControlEvents()
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
 
-        if let playCommand = appDelegate.commandCenterPlayCommand {
+        if let playCommand = self.commandCenterPlayCommand {
             MPRemoteCommandCenter.shared().playCommand.removeTarget(playCommand)
-            appDelegate.commandCenterPlayCommand = nil
+            self.commandCenterPlayCommand = nil
         }
-        if let pauseCommand = appDelegate.commandCenterPauseCommand {
+        if let pauseCommand = self.commandCenterPauseCommand {
             MPRemoteCommandCenter.shared().pauseCommand.removeTarget(pauseCommand)
-            appDelegate.commandCenterPauseCommand = nil
+            self.commandCenterPauseCommand = nil
         }
-        if let commandCenterSkipBackwardCommand = appDelegate.commandCenterSkipBackwardCommand {
+        if let commandCenterSkipBackwardCommand = self.commandCenterSkipBackwardCommand {
             MPRemoteCommandCenter.shared().previousTrackCommand.removeTarget(commandCenterSkipBackwardCommand)
-            appDelegate.commandCenterSkipBackwardCommand = nil
+            self.commandCenterSkipBackwardCommand = nil
         }
-        if let commandCenterSkipForwardCommand = appDelegate.commandCenterSkipForwardCommand {
+        if let commandCenterSkipForwardCommand = self.commandCenterSkipForwardCommand {
             MPRemoteCommandCenter.shared().nextTrackCommand.removeTarget(commandCenterSkipForwardCommand)
-            appDelegate.commandCenterSkipForwardCommand = nil
+            self.commandCenterSkipForwardCommand = nil
         }
     }
     
@@ -407,7 +414,7 @@ class NCPlayerToolBar: UIView {
     
     func skip(seconds: Float64) {
         guard let ncplayer = ncplayer else { return }
-        guard let player = appDelegate.player else { return }
+        guard let player = ncplayer.player else { return }
         
         let currentTime = player.currentTime()
         var newTime: CMTime = .zero
@@ -476,16 +483,16 @@ class NCPlayerToolBar: UIView {
     
     @IBAction func playerPause(_ sender: Any) {
         
-        if appDelegate.player?.timeControlStatus == .playing {
+        if ncplayer?.player?.timeControlStatus == .playing {
             ncplayer?.playerPause()
             ncplayer?.saveCurrentTime()
             timerAutoHide?.invalidate()
-        } else if appDelegate.player?.timeControlStatus == .paused {
+        } else if ncplayer?.player?.timeControlStatus == .paused {
             ncplayer?.playerPlay()
             startTimerAutoHide()
-        } else if appDelegate.player?.timeControlStatus == .waitingToPlayAtSpecifiedRate {
+        } else if ncplayer?.player?.timeControlStatus == .waitingToPlayAtSpecifiedRate {
             print("timeControlStatus.waitingToPlayAtSpecifiedRate")
-            if let reason = appDelegate.player?.reasonForWaitingToPlay {
+            if let reason = ncplayer?.player?.reasonForWaitingToPlay {
                 switch reason {
                 case .evaluatingBufferingRate:
                     print("reasonForWaitingToPlay.evaluatingBufferingRate")
@@ -505,7 +512,7 @@ class NCPlayerToolBar: UIView {
         let mute = CCUtility.getAudioMute()
         
         CCUtility.setAudioMute(!mute)
-        appDelegate.player?.isMuted = !mute
+        ncplayer?.player?.isMuted = !mute
         updateToolBar()
         reStartTimerAutoHide()
     }
