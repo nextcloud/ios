@@ -473,8 +473,6 @@ class NCPlayerToolBar: UIView {
     }
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
-        
-        hide()
     }
     
     //MARK: - Action
