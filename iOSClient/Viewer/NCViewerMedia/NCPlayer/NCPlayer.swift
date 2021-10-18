@@ -314,6 +314,7 @@ class NCPlayer: NSObject {
 extension NCPlayer: AVPictureInPictureControllerDelegate {
     
     func pictureInPictureControllerWillStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        
         activeNCPlayer.insert(self)
     }
     

@@ -54,11 +54,10 @@ class NCPlayerToolBar: UIView {
     private var metadata: tableMetadata?
     private var image: UIImage?
     
-    var commandCenterPlayCommand: Any?
-    var commandCenterPauseCommand: Any?
-    var commandCenterSkipForwardCommand: Any?
-    var commandCenterSkipBackwardCommand: Any?
-
+    private var commandCenterPlayCommand: Any?
+    private var commandCenterPauseCommand: Any?
+    private var commandCenterSkipForwardCommand: Any?
+    private var commandCenterSkipBackwardCommand: Any?
     
     // MARK: - View Life Cycle
 
@@ -71,7 +70,6 @@ class NCPlayerToolBar: UIView {
         let singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
         addGestureRecognizer(singleTapGestureRecognizer)
         
-        // self
         self.layer.cornerRadius = 15
         self.layer.masksToBounds = true
         
@@ -80,7 +78,6 @@ class NCPlayerToolBar: UIView {
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.insertSubview(blurEffectView, at:0)
         
-        // Top ToolBar
         playerTopToolBarView.layer.cornerRadius = 10
         playerTopToolBarView.layer.masksToBounds = true
         
@@ -379,6 +376,7 @@ class NCPlayerToolBar: UIView {
     }
     
     func isShow() -> Bool {
+        
         return !self.isHidden
     }
     
@@ -472,10 +470,10 @@ class NCPlayerToolBar: UIView {
         }
     }
     
+    //MARK: - Action
+    
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
     }
-    
-    //MARK: - Action
     
     @IBAction func buttonPlayerToolBarTouchInside(_ sender: UIButton) {
     }
@@ -527,10 +525,12 @@ class NCPlayerToolBar: UIView {
     }
     
     @IBAction func forwardButtonSec(_ sender: Any) {
+        
         skip(seconds: 10)
     }
     
     @IBAction func backButtonSec(_ sender: Any) {
+        
         skip(seconds: -10)
     }
 }
