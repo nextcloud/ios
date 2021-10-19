@@ -686,31 +686,32 @@ extension NCActivity {
     
     func loadDataSource() {
         
-//        sectionDate.removeAll()
+        guard let metadata = self.metadata else { return }
+
+        NCCommunication.shared.getComments(fileId: metadata.fileId) { (account, comments, errorCode, errorDescription) in
+            if errorCode == 0 && comments != nil {
+                NCManageDatabase.shared.addComments(comments!, account: metadata.account, objectId: metadata.fileId)
+                //FIXME: could cause duplicate comments??
+                self.allItems += self.getComments(account: metadata.account, objectId: metadata.fileId)
+                self.tableView.reloadData()
+            } else {
+                if errorCode != NCGlobal.shared.errorResourceNotFound {
+                    NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                }
+            }
+        }
         
         let activities = NCManageDatabase.shared.getActivity(
             predicate: NSPredicate(format: "account == %@", appDelegate.account),
-            filterFileId: metadata?.fileId)
+            filterFileId: metadata.fileId)
 //        self.allActivities = activities.all
 //        self.filterActivities = activities.filter
         self.allItems = activities.filter
-        if let metadata = metadata {
-            self.allItems += getComments(account: metadata.account, objectId: metadata.fileId)
-        }
         
-//        for tableActivity in filterActivities {
-//            guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: tableActivity.date as Date)) else {
-//                continue
-//            }
-//            if !sectionDate.contains(date) {
-//                sectionDate.append(date)
-//            }
-//        }
-//
         tableView.reloadData()
     }
     
-    func getTableActivitiesFromSection(_ section: Int) -> [tableActivity] {
+    func getTableActivitiesForSection(_ section: Int) -> [tableActivity] {
         let startDate = sectionDates.sorted()[section]
         let endDate: Date = {
             let components = DateComponents(day: 1, second: -1)
@@ -745,7 +746,7 @@ extension NCActivity {
             previews: true) { (account, activities, errorCode, errorDescription) in
                 
                 if errorCode == 0 && account == self.appDelegate.account {
-                    NCManageDatabase.shared.addActivity(activities , account: account)
+                    NCManageDatabase.shared.addActivity(activities, account: account)
                 }
                 
                 NCUtility.shared.stopActivityIndicator()

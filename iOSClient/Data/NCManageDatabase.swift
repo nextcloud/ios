@@ -775,56 +775,61 @@ class NCManageDatabase: NSObject {
                     addObjectActivity.user = activity.user
                     addObjectActivity.subject = activity.subject
                     
-                    if let subject_rich = activity.subject_rich {
-                        if let json = JSON(subject_rich).array {
-                            addObjectActivity.subjectRich = json[0].stringValue
-                            if json.count > 1 {
-                                if let dict = json[1].dictionary {
-                                    for (key, value) in dict {
-                                        let addObjectActivitySubjectRich = tableActivitySubjectRich()
-                                        let dict = value as JSON
-                                        addObjectActivitySubjectRich.account = account
-                                        if dict["id"].intValue > 0 {
-                                            addObjectActivitySubjectRich.id = String(dict["id"].intValue)
-                                        } else {
-                                            addObjectActivitySubjectRich.id = dict["id"].stringValue
-                                        }
-                                        addObjectActivitySubjectRich.name = dict["name"].stringValue
-                                        addObjectActivitySubjectRich.idPrimaryKey = account + String(activity.idActivity) + addObjectActivitySubjectRich.id + addObjectActivitySubjectRich.name
-                                        addObjectActivitySubjectRich.key = key
-                                        addObjectActivitySubjectRich.idActivity = activity.idActivity
-                                        addObjectActivitySubjectRich.link = dict["link"].stringValue
-                                        addObjectActivitySubjectRich.path = dict["path"].stringValue
-                                        addObjectActivitySubjectRich.type = dict["type"].stringValue
-
-                                        realm.add(addObjectActivitySubjectRich, update: .all)
-                                    }
+                    if let subject_rich = activity.subject_rich,
+                       let json = JSON(subject_rich).array {
+                        
+                        addObjectActivity.subjectRich = json[0].stringValue
+                        if json.count > 1,
+                           let dict = json[1].dictionary {
+                            
+                            for (key, value) in dict {
+                                let addObjectActivitySubjectRich = tableActivitySubjectRich()
+                                let dict = value as JSON
+                                addObjectActivitySubjectRich.account = account
+                                
+                                if dict["id"].intValue > 0 {
+                                    addObjectActivitySubjectRich.id = String(dict["id"].intValue)
+                                } else {
+                                    addObjectActivitySubjectRich.id = dict["id"].stringValue
                                 }
+                                
+                                addObjectActivitySubjectRich.name = dict["name"].stringValue
+                                addObjectActivitySubjectRich.idPrimaryKey = account
+                                + String(activity.idActivity)
+                                + addObjectActivitySubjectRich.id
+                                + addObjectActivitySubjectRich.name
+                                
+                                addObjectActivitySubjectRich.key = key
+                                addObjectActivitySubjectRich.idActivity = activity.idActivity
+                                addObjectActivitySubjectRich.link = dict["link"].stringValue
+                                addObjectActivitySubjectRich.path = dict["path"].stringValue
+                                addObjectActivitySubjectRich.type = dict["type"].stringValue
+                                
+                                realm.add(addObjectActivitySubjectRich, update: .all)
                             }
                         }
                     }
                     
-                    if let previews = activity.previews {
-                        if let json = JSON(previews).array {
-                            for preview in json {
-                                let addObjectActivityPreview = tableActivityPreview()
-                                
-                                addObjectActivityPreview.account = account
-                                addObjectActivityPreview.idActivity = activity.idActivity
-                                addObjectActivityPreview.fileId = preview["fileId"].intValue
-                                addObjectActivityPreview.filename = preview["filename"].stringValue
-                                addObjectActivityPreview.idPrimaryKey = account + String(activity.idActivity) + String(addObjectActivityPreview.fileId)
-                                addObjectActivityPreview.source = preview["source"].stringValue
-                                addObjectActivityPreview.link = preview["link"].stringValue
-                                addObjectActivityPreview.mimeType = preview["mimeType"].stringValue
-                                addObjectActivityPreview.view = preview["view"].stringValue
-                                addObjectActivityPreview.isMimeTypeIcon = preview["isMimeTypeIcon"].boolValue
-                                
-                                realm.add(addObjectActivityPreview, update: .all)
-                            }
+                    if let previews = activity.previews,
+                       let json = JSON(previews).array {
+                        for preview in json {
+                            let addObjectActivityPreview = tableActivityPreview()
+                            
+                            addObjectActivityPreview.account = account
+                            addObjectActivityPreview.idActivity = activity.idActivity
+                            addObjectActivityPreview.fileId = preview["fileId"].intValue
+                            addObjectActivityPreview.filename = preview["filename"].stringValue
+                            addObjectActivityPreview.idPrimaryKey = account + String(activity.idActivity) + String(addObjectActivityPreview.fileId)
+                            addObjectActivityPreview.source = preview["source"].stringValue
+                            addObjectActivityPreview.link = preview["link"].stringValue
+                            addObjectActivityPreview.mimeType = preview["mimeType"].stringValue
+                            addObjectActivityPreview.view = preview["view"].stringValue
+                            addObjectActivityPreview.isMimeTypeIcon = preview["isMimeTypeIcon"].boolValue
+
+                            realm.add(addObjectActivityPreview, update: .all)
                         }
                     }
-                    
+
                     addObjectActivity.icon = activity.icon
                     addObjectActivity.link = activity.link
                     addObjectActivity.message = activity.message
@@ -846,21 +851,25 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "idActivity", ascending: false)
         let allActivity = Array(results.map(tableActivity.init))
-        if filterFileId != nil {
-            var resultsFilter: [tableActivity] = []
-            for result in results {
-                let resultsActivitySubjectRich = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d", result.account, result.idActivity)
-                for resultActivitySubjectRich in resultsActivitySubjectRich {
-                    if filterFileId!.contains(resultActivitySubjectRich.id) && resultActivitySubjectRich.key == "file" {
-                        resultsFilter.append(result)
-                        break
-                    }
+        guard let filterFileId = filterFileId else {
+            return (all: allActivity, filter: allActivity)
+        }
+        // comments are loaded seperately
+        let filtered = allActivity.filter({ String($0.objectId) == filterFileId && $0.type != "comments" })
+        return (all: allActivity, filter: filtered)
+        
+        //HELP: What is this? What is it used for? Why not using `.filter()` on the array
+        var resultsFilter: [tableActivity] = []
+        for result in results {
+            let resultsActivitySubjectRich = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d", result.account, result.idActivity)
+            for resultActivitySubjectRich in resultsActivitySubjectRich {
+                if filterFileId.contains(resultActivitySubjectRich.id) && resultActivitySubjectRich.key == "file" {
+                    resultsFilter.append(result)
+                    break
                 }
             }
-            return(all: allActivity, filter: Array(resultsFilter.map(tableActivity.init)))
-        } else {
-            return(all: allActivity, filter: allActivity)
         }
+        return(all: allActivity, filter: Array(resultsFilter.map(tableActivity.init)))
     }
     
     @objc func getActivitySubjectRich(account: String, idActivity: Int, key: String) -> tableActivitySubjectRich? {
