@@ -99,6 +99,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             //TODO: implement open profile dialoge
             sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata!.ownerDisplayName
             sharedWithYouByImage.image = UIImage(named: "avatar")?.imageColor(NCBrandColor.shared.label)
+            let shareAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
+            sharedWithYouByView.addGestureRecognizer(shareAction)
             
             if metadata?.note.count ?? 0 > 0 {
                 searchFieldTopConstraint.constant = 95
@@ -154,6 +156,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     // MARK: - Notification Center
+    
+    @objc func openShareProfile() {
+        print("Show share profile")
+    }
     
     @objc func changeTheming() {
         tableView.reloadData()

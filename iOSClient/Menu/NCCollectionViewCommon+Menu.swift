@@ -28,9 +28,9 @@ import FloatingPanel
 import NCCommunication
 import Queuer
 
-extension NCCollectionViewCommon {
-
-    func toggleMenau(account: String, image: UIImage?) {
+extension UIViewController {
+    func showProfileMenu(account: String, image: UIImage?) {
+        
         let personHeader = NCMenuAction(
             title: account,
             icon: image ?? NCUtility.shared.loadImage(named: "person.crop.circle"),
@@ -50,7 +50,7 @@ extension NCCollectionViewCommon {
             icon: NCUtility.shared.loadImage(named: "envelope"),
             action: { menuAction in
                 //TODO: get mail
-                self.sendEmail(to: "\(account)")
+                self.sendEmail(to: account)
             }
         )
         
@@ -68,7 +68,7 @@ extension NCCollectionViewCommon {
                     // - roomType: 1
                     // - invite: <account.userId>
                     // let userToken = result.ocs.data.first(where: { $0.name == account.userId }).token
-//                     let userTalkUrl = URL(string: "\(urlBase)/call/\(token)")
+                    // let userTalkUrl = URL(string: "\(urlBase)/call/\(token)")
                     
                     // UIApplication.shared.open(userTalkUrl)
                 }
@@ -79,7 +79,7 @@ extension NCCollectionViewCommon {
         presentMenu(with: actions)
     }
     
-    fileprivate func sendEmail(to email: String) {
+    func sendEmail(to email: String) {
         if MFMailComposeViewController.canSendMail() {
             let mail = MFMailComposeViewController()
             mail.mailComposeDelegate = self
@@ -97,8 +97,7 @@ extension NCCollectionViewCommon {
     }
     
     fileprivate func presentMenu(with actions: [NCMenuAction]) {
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
-        menuViewController.actions = actions
+        let menuViewController = NCMenu.makeNCMenu(with: actions)
         
         let menuPanelController = NCMenuPanelController()
         menuPanelController.parentPresenter = self
@@ -108,6 +107,16 @@ extension NCCollectionViewCommon {
         
         present(menuPanelController, animated: true, completion: nil)
     }
+}
+
+extension UIViewController: MFMailComposeViewControllerDelegate {
+    public func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true)
+    }
+}
+
+
+extension NCCollectionViewCommon {
     
     func toggleMenu(metadata: tableMetadata, imageIcon: UIImage?) {
         
@@ -661,11 +670,5 @@ extension NCCollectionViewCommon {
         )
         
         presentMenu(with: actions)
-    }
-}
-
-extension NCCollectionViewCommon: MFMailComposeViewControllerDelegate {
-    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
-        controller.dismiss(animated: true)
     }
 }
