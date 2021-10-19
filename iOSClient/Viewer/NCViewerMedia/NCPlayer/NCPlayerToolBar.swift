@@ -54,11 +54,13 @@ class NCPlayerToolBar: UIView {
     private var metadata: tableMetadata?
     private var image: UIImage?
     
-    private var commandCenterPlayCommand: Any?
-    private var commandCenterPauseCommand: Any?
-    private var commandCenterSkipForwardCommand: Any?
-    private var commandCenterSkipBackwardCommand: Any?
-    
+    private var playCommand: Any?
+    private var pauseCommand: Any?
+    private var skipForwardCommand: Any?
+    private var skipBackwardCommand: Any?
+    private var nextTrackCommand: Any?
+    private var previousTrackCommand: Any?
+   
     // MARK: - View Life Cycle
 
     override func awakeFromNib() {
@@ -232,7 +234,7 @@ class NCPlayerToolBar: UIView {
         var nowPlayingInfo = [String : Any]()
 
         // Add handler for Play Command
-        commandCenterPlayCommand = MPRemoteCommandCenter.shared().playCommand.addTarget { event in
+        playCommand = MPRemoteCommandCenter.shared().playCommand.addTarget { event in
             
             if !ncplayer.isPlay() {
                 ncplayer.playerPlay()
@@ -242,7 +244,7 @@ class NCPlayerToolBar: UIView {
         }
       
         // Add handler for Pause Command
-        commandCenterPauseCommand = MPRemoteCommandCenter.shared().pauseCommand.addTarget { event in
+        pauseCommand = MPRemoteCommandCenter.shared().pauseCommand.addTarget { event in
           
             if ncplayer.isPlay() {
                 ncplayer.playerPause()
@@ -251,20 +253,36 @@ class NCPlayerToolBar: UIView {
             return .commandFailed
         }
         
-        // Add handler for Backward Command
-        commandCenterSkipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
+        // VIDEO
+        if metadata?.classFile != NCCommunicationCommon.typeClassFile.video.rawValue {
             
-            let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
-            self.skip(seconds: -seconds)
-            return.success
+            skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
+                
+                let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
+                self.skip(seconds: seconds)
+                return.success
+            }
+            
+            skipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
+                
+                let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
+                self.skip(seconds: -seconds)
+                return.success
+            }
         }
+                
+        // AUDIO
+        if metadata?.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue {
             
-        // Add handler for Forward Command
-        commandCenterSkipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
+            nextTrackCommand = MPRemoteCommandCenter.shared().nextTrackCommand.addTarget { event in
+                
+                return.success
+            }
             
-            let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
-            self.skip(seconds: seconds)
-            return.success
+            previousTrackCommand = MPRemoteCommandCenter.shared().previousTrackCommand.addTarget { event in
+                
+                return.success
+            }
         }
         
         nowPlayingInfo[MPMediaItemPropertyTitle] = metadata?.fileNameView
@@ -283,21 +301,29 @@ class NCPlayerToolBar: UIView {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
         MPRemoteCommandCenter.shared().playCommand.isEnabled = false
 
-        if let playCommand = self.commandCenterPlayCommand {
+        if let playCommand = self.playCommand {
             MPRemoteCommandCenter.shared().playCommand.removeTarget(playCommand)
-            self.commandCenterPlayCommand = nil
+            self.playCommand = nil
         }
-        if let pauseCommand = self.commandCenterPauseCommand {
+        if let pauseCommand = self.pauseCommand {
             MPRemoteCommandCenter.shared().pauseCommand.removeTarget(pauseCommand)
-            self.commandCenterPauseCommand = nil
+            self.pauseCommand = nil
         }
-        if let commandCenterSkipBackwardCommand = self.commandCenterSkipBackwardCommand {
-            MPRemoteCommandCenter.shared().previousTrackCommand.removeTarget(commandCenterSkipBackwardCommand)
-            self.commandCenterSkipBackwardCommand = nil
+        if let skipForwardCommand = self.skipForwardCommand {
+            MPRemoteCommandCenter.shared().skipForwardCommand.removeTarget(skipForwardCommand)
+            self.skipForwardCommand = nil
         }
-        if let commandCenterSkipForwardCommand = self.commandCenterSkipForwardCommand {
-            MPRemoteCommandCenter.shared().nextTrackCommand.removeTarget(commandCenterSkipForwardCommand)
-            self.commandCenterSkipForwardCommand = nil
+        if let skipBackwardCommand = self.skipBackwardCommand {
+            MPRemoteCommandCenter.shared().skipBackwardCommand.removeTarget(skipBackwardCommand)
+            self.skipBackwardCommand = nil
+        }
+        if let nextTrackCommand = self.nextTrackCommand {
+            MPRemoteCommandCenter.shared().nextTrackCommand.removeTarget(nextTrackCommand)
+            self.nextTrackCommand = nil
+        }
+        if let previousTrackCommand = self.previousTrackCommand {
+            MPRemoteCommandCenter.shared().previousTrackCommand.removeTarget(previousTrackCommand)
+            self.previousTrackCommand = nil
         }
     }
     

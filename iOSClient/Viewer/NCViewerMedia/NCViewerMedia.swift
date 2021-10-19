@@ -430,6 +430,31 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
         return true
     }
     
+    func goTo(_ direction: UIPageViewController.NavigationDirection) {
+        
+        if direction == .forward {
+            if currentIndex == metadatas.count - 1 {
+                currentIndex = 0
+            } else {
+                currentIndex += 1
+
+            }
+        } else if direction == .forward && currentIndex == 0 {
+            if currentIndex == 0 {
+                currentIndex = 0
+            } else {
+                currentIndex -= 1
+            }
+        }
+        
+        if let viewerMediaZoom = getCache(index: currentIndex) {
+            pageViewController.setViewControllers([viewerMediaZoom], direction: direction, animated: true, completion: nil)
+        } else {
+            let viewerMediaZoom = setCache(index: currentIndex, image: getImageMetadata(metadatas[currentIndex]), metadata: metadatas[currentIndex], direction: direction)
+            pageViewController.setViewControllers([viewerMediaZoom], direction: direction, animated: true, completion: nil)
+        }
+    }
+    
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         if currentIndex == 0 { return nil }
         
