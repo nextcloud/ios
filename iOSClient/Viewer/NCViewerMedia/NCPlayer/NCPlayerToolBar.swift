@@ -53,14 +53,15 @@ class NCPlayerToolBar: UIView {
     private var timerAutoHide: Timer?
     private var metadata: tableMetadata?
     private var image: UIImage?
-    
     private var playCommand: Any?
     private var pauseCommand: Any?
     private var skipForwardCommand: Any?
     private var skipBackwardCommand: Any?
     private var nextTrackCommand: Any?
     private var previousTrackCommand: Any?
-   
+    
+    weak var viewerMedia: NCViewerMedia?
+
     // MARK: - View Life Cycle
 
     override func awakeFromNib() {
@@ -254,7 +255,7 @@ class NCPlayerToolBar: UIView {
         }
         
         // VIDEO
-        if metadata?.classFile != NCCommunicationCommon.typeClassFile.video.rawValue {
+        if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             
             skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
                 
@@ -272,15 +273,17 @@ class NCPlayerToolBar: UIView {
         }
                 
         // AUDIO
-        if metadata?.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue {
+        if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             
             nextTrackCommand = MPRemoteCommandCenter.shared().nextTrackCommand.addTarget { event in
                 
+                self.viewerMedia?.goTo(.forward)
                 return.success
             }
             
             previousTrackCommand = MPRemoteCommandCenter.shared().previousTrackCommand.addTarget { event in
                 
+                self.viewerMedia?.goTo(.reverse)
                 return.success
             }
         }

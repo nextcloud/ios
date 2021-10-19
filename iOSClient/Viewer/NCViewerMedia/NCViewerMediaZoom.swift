@@ -99,6 +99,8 @@ class NCViewerMediaZoom: UIViewController {
             statusLabel.text = ""
         }
         
+        playerToolBar.viewerMedia = viewerMedia
+        
         detailViewTopConstraint.constant = 0
         detailView.hide()
     }
