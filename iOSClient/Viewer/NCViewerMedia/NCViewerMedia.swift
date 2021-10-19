@@ -52,6 +52,8 @@ class NCViewerMedia: UIViewController {
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
+    var cache: [Int:NCViewerMediaZoom] = [:]
+    let cacheSize: Int = 5
     
     var textColor: UIColor = NCBrandColor.shared.label
 
@@ -76,17 +78,23 @@ class NCViewerMedia: UIViewController {
         pageViewController.view.addGestureRecognizer(singleTapGestureRecognizer)
         pageViewController.view.addGestureRecognizer(longtapGestureRecognizer)
         
-        let viewerMediaZoom = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMediaZoom") as! NCViewerMediaZoom
-                
-        viewerMediaZoom.index = currentIndex
-        viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex])
-        viewerMediaZoom.metadata = metadatas[currentIndex]
-        viewerMediaZoom.viewerMedia = self
-        viewerMediaZoom.isShowDetail = false
+        // save cache
+        if let viewerMediaZoom = getCache(index: currentIndex) {
+            pageViewController.setViewControllers([viewerMediaZoom], direction: .forward, animated: true, completion: nil)
+        } else {
+            let viewerMediaZoom = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMediaZoom") as! NCViewerMediaZoom
+                    
+            viewerMediaZoom.index = currentIndex
+            viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex])
+            viewerMediaZoom.metadata = metadatas[currentIndex]
+            viewerMediaZoom.viewerMedia = self
+            viewerMediaZoom.isShowDetail = false
 
-        singleTapGestureRecognizer.require(toFail: viewerMediaZoom.doubleTapGestureRecognizer)
-        
-        pageViewController.setViewControllers([viewerMediaZoom], direction: .forward, animated: true, completion: nil)
+            singleTapGestureRecognizer.require(toFail: viewerMediaZoom.doubleTapGestureRecognizer)
+            
+            pageViewController.setViewControllers([viewerMediaZoom], direction: .forward, animated: true, completion: nil)
+            setCache(index: currentIndex, viewerMediaZoom: viewerMediaZoom, direction: .forward)
+        }
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
@@ -139,6 +147,30 @@ class NCViewerMedia: UIViewController {
             return .default
         } else {
             return .lightContent
+        }
+    }
+
+    // MARK: -
+    
+    func getCache(index: Int) -> NCViewerMediaZoom? {
+        
+        return cache[index]
+    }
+    
+    func setCache(index: Int, viewerMediaZoom: NCViewerMediaZoom, direction: UIPageViewController.NavigationDirection) {
+        
+        if cache.count < cacheSize {
+            cache[index] = viewerMediaZoom
+        } else {
+            let sortedCache = cache.sorted { (first, second) -> Bool in
+                return first.key < second.key
+            }
+            if direction == .forward, let firstCache = sortedCache.first {
+                cache[firstCache.key] = nil
+            } else if direction == .reverse, let lastCache = sortedCache.last {
+                cache[lastCache.key] = nil
+            }
+            cache[index] = viewerMediaZoom
         }
     }
 
@@ -388,17 +420,23 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
             direction = .reverse
         }
         
-        let viewerMediaZoom = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMediaZoom") as! NCViewerMediaZoom
-        
-        viewerMediaZoom.index = currentIndex
-        viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex])
-        viewerMediaZoom.metadata = metadatas[currentIndex]
-        viewerMediaZoom.viewerMedia = self
-        viewerMediaZoom.isShowDetail = false
+        if let viewerMediaZoom = getCache(index: currentIndex) {
+            pageViewController.setViewControllers([viewerMediaZoom], direction: direction, animated: true, completion: nil)
+        } else {
+            let viewerMediaZoom = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMediaZoom") as! NCViewerMediaZoom
+            
+            viewerMediaZoom.index = currentIndex
+            viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex])
+            viewerMediaZoom.metadata = metadatas[currentIndex]
+            viewerMediaZoom.viewerMedia = self
+            viewerMediaZoom.isShowDetail = false
 
-        singleTapGestureRecognizer.require(toFail: viewerMediaZoom.doubleTapGestureRecognizer)
-        
-        pageViewController.setViewControllers([viewerMediaZoom], direction: direction, animated: true, completion: nil)
+            singleTapGestureRecognizer.require(toFail: viewerMediaZoom.doubleTapGestureRecognizer)
+            
+            pageViewController.setViewControllers([viewerMediaZoom], direction: direction, animated: true, completion: nil)
+            
+            setCache(index: currentIndex, viewerMediaZoom: viewerMediaZoom, direction: direction)
+        }
         
         return true
     }
@@ -406,33 +444,45 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         if currentIndex == 0 { return nil }
         
-        let viewerMediaZoom = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMediaZoom") as! NCViewerMediaZoom
-                
-        viewerMediaZoom.index = currentIndex - 1
-        viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex - 1])
-        viewerMediaZoom.metadata = metadatas[currentIndex - 1]
-        viewerMediaZoom.viewerMedia = self
-        viewerMediaZoom.isShowDetail = false
+        if let viewerMediaZoom = getCache(index: currentIndex - 1) {
+            return viewerMediaZoom
+        } else {
+            let viewerMediaZoom = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMediaZoom") as! NCViewerMediaZoom
+                    
+            viewerMediaZoom.index = currentIndex - 1
+            viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex - 1])
+            viewerMediaZoom.metadata = metadatas[currentIndex - 1]
+            viewerMediaZoom.viewerMedia = self
+            viewerMediaZoom.isShowDetail = false
 
-        self.singleTapGestureRecognizer.require(toFail: viewerMediaZoom.doubleTapGestureRecognizer)
-        
-        return viewerMediaZoom
+            self.singleTapGestureRecognizer.require(toFail: viewerMediaZoom.doubleTapGestureRecognizer)
+            
+            setCache(index: currentIndex-1, viewerMediaZoom: viewerMediaZoom, direction: .reverse)
+            
+            return viewerMediaZoom
+        }
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         if currentIndex == metadatas.count - 1 { return nil }
                 
-        let viewerMediaZoom = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMediaZoom") as! NCViewerMediaZoom
-        
-        viewerMediaZoom.index = currentIndex + 1
-        viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex + 1])
-        viewerMediaZoom.metadata = metadatas[currentIndex + 1]
-        viewerMediaZoom.viewerMedia = self
-        viewerMediaZoom.isShowDetail = false
+        if let viewerMediaZoom = getCache(index: currentIndex + 1) {
+            return viewerMediaZoom
+        } else {
+            let viewerMediaZoom = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMediaZoom") as! NCViewerMediaZoom
+            
+            viewerMediaZoom.index = currentIndex + 1
+            viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex + 1])
+            viewerMediaZoom.metadata = metadatas[currentIndex + 1]
+            viewerMediaZoom.viewerMedia = self
+            viewerMediaZoom.isShowDetail = false
 
-        singleTapGestureRecognizer.require(toFail: viewerMediaZoom.doubleTapGestureRecognizer)
+            singleTapGestureRecognizer.require(toFail: viewerMediaZoom.doubleTapGestureRecognizer)
 
-        return viewerMediaZoom
+            setCache(index: currentIndex + 1, viewerMediaZoom: viewerMediaZoom, direction: .forward)
+            
+            return viewerMediaZoom
+        }
     }
     
     // START TRANSITION
