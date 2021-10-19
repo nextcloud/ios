@@ -43,7 +43,6 @@ class NCViewerMediaZoom: UIViewController {
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
-    var isShowDetail: Bool = false
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
     var imageViewConstraint: CGFloat = 0
     var isDetailViewInitializze: Bool = false
