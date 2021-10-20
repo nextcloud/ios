@@ -53,12 +53,6 @@ class NCPlayerToolBar: UIView {
     private var timerAutoHide: Timer?
     private var metadata: tableMetadata?
     private var image: UIImage?
-    private var playCommand: Any?
-    private var pauseCommand: Any?
-    private var skipForwardCommand: Any?
-    private var skipBackwardCommand: Any?
-    private var nextTrackCommand: Any?
-    private var previousTrackCommand: Any?
     
     weak var viewerMedia: NCViewerMedia?
 
@@ -241,7 +235,7 @@ class NCPlayerToolBar: UIView {
         var nowPlayingInfo = [String : Any]()
 
         // Add handler for Play Command
-        playCommand = MPRemoteCommandCenter.shared().playCommand.addTarget { event in
+        appDelegate.playCommand = MPRemoteCommandCenter.shared().playCommand.addTarget { event in
             
             if !ncplayer.isPlay() {
                 ncplayer.playerPlay()
@@ -251,7 +245,7 @@ class NCPlayerToolBar: UIView {
         }
       
         // Add handler for Pause Command
-        pauseCommand = MPRemoteCommandCenter.shared().pauseCommand.addTarget { event in
+        appDelegate.pauseCommand = MPRemoteCommandCenter.shared().pauseCommand.addTarget { event in
           
             if ncplayer.isPlay() {
                 ncplayer.playerPause()
@@ -263,14 +257,14 @@ class NCPlayerToolBar: UIView {
         // VIDEO () ()
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             
-            skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
+            appDelegate.skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
                 
                 let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
                 self.skip(seconds: seconds)
                 return.success
             }
             
-            skipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
+            appDelegate.skipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
                 
                 let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
                 self.skip(seconds: -seconds)
@@ -281,15 +275,15 @@ class NCPlayerToolBar: UIView {
         // AUDIO < >
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
                         
-            nextTrackCommand = MPRemoteCommandCenter.shared().nextTrackCommand.addTarget { event in
+            appDelegate.nextTrackCommand = MPRemoteCommandCenter.shared().nextTrackCommand.addTarget { event in
                 
-                self.audioForward()
+                self.forward()
                 return .success
             }
             
-            previousTrackCommand = MPRemoteCommandCenter.shared().previousTrackCommand.addTarget { event in
+            appDelegate.previousTrackCommand = MPRemoteCommandCenter.shared().previousTrackCommand.addTarget { event in
              
-                self.audioBackward()
+                self.backward()
                 return .success
             }
         }
@@ -310,29 +304,29 @@ class NCPlayerToolBar: UIView {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
         MPRemoteCommandCenter.shared().playCommand.isEnabled = false
 
-        if let playCommand = self.playCommand {
+        if let playCommand = appDelegate.playCommand {
             MPRemoteCommandCenter.shared().playCommand.removeTarget(playCommand)
-            self.playCommand = nil
+            appDelegate.playCommand = nil
         }
-        if let pauseCommand = self.pauseCommand {
+        if let pauseCommand = appDelegate.pauseCommand {
             MPRemoteCommandCenter.shared().pauseCommand.removeTarget(pauseCommand)
-            self.pauseCommand = nil
+            appDelegate.pauseCommand = nil
         }
-        if let skipForwardCommand = self.skipForwardCommand {
+        if let skipForwardCommand = appDelegate.skipForwardCommand {
             MPRemoteCommandCenter.shared().skipForwardCommand.removeTarget(skipForwardCommand)
-            self.skipForwardCommand = nil
+            appDelegate.skipForwardCommand = nil
         }
-        if let skipBackwardCommand = self.skipBackwardCommand {
+        if let skipBackwardCommand = appDelegate.skipBackwardCommand {
             MPRemoteCommandCenter.shared().skipBackwardCommand.removeTarget(skipBackwardCommand)
-            self.skipBackwardCommand = nil
+            appDelegate.skipBackwardCommand = nil
         }
-        if let nextTrackCommand = self.nextTrackCommand {
+        if let nextTrackCommand = appDelegate.nextTrackCommand {
             MPRemoteCommandCenter.shared().nextTrackCommand.removeTarget(nextTrackCommand)
-            self.nextTrackCommand = nil
+            appDelegate.nextTrackCommand = nil
         }
-        if let previousTrackCommand = self.previousTrackCommand {
+        if let previousTrackCommand = appDelegate.previousTrackCommand {
             MPRemoteCommandCenter.shared().previousTrackCommand.removeTarget(previousTrackCommand)
-            self.previousTrackCommand = nil
+            appDelegate.previousTrackCommand = nil
         }
     }
     
@@ -474,7 +468,7 @@ class NCPlayerToolBar: UIView {
         reStartTimerAutoHide()
     }
     
-    func audioForward() {
+    func forward() {
         
         var index: Int = 0
         
@@ -486,13 +480,11 @@ class NCPlayerToolBar: UIView {
                 index = currentIndex + 1
             }
             
-            if metadatas[index].classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-                self.viewerMedia?.goTo(index: index, direction: .forward, autoPlay: ncplayer.isPlay())
-            }
+            self.viewerMedia?.goTo(index: index, direction: .forward, autoPlay: ncplayer.isPlay())
         }
     }
     
-    func audioBackward() {
+    func backward() {
         
         var index: Int = 0
 
@@ -504,9 +496,7 @@ class NCPlayerToolBar: UIView {
                 index = currentIndex - 1
             }
             
-            if metadatas[index].classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-                self.viewerMedia?.goTo(index: index, direction: .reverse, autoPlay: ncplayer.isPlay())
-            }
+            self.viewerMedia?.goTo(index: index, direction: .reverse, autoPlay: ncplayer.isPlay())
         }
     }
     
@@ -600,7 +590,7 @@ class NCPlayerToolBar: UIView {
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             skip(seconds: 10)
         } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-            audioForward()
+            forward()
         }
     }
     
@@ -609,7 +599,7 @@ class NCPlayerToolBar: UIView {
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             skip(seconds: -10)
         } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-            audioForward()
+            backward()
         }
     }
 }
