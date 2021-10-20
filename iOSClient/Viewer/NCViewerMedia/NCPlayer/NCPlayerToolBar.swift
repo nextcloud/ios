@@ -107,13 +107,11 @@ class NCPlayerToolBar: UIView {
         labelLeftTime.text = NCUtility.shared.stringFromTime(.zero)
         labelLeftTime.textColor = .lightGray
         
-        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .lightGray), for: .normal)
         backButton.isEnabled = false
         
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray), for: .normal)
         playButton.isEnabled = false
         
-        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .lightGray), for: .normal)
         forwardButton.isEnabled = false
         
         NotificationCenter.default.addObserver(self, selector: #selector(handleInterruption), name: AVAudioSession.interruptionNotification, object: nil)
@@ -150,6 +148,14 @@ class NCPlayerToolBar: UIView {
         guard let metadata = self.metadata else { return }
         guard let ncplayer = self.ncplayer else { return }
         var time: CMTime = .zero
+        
+        var imageNameBackward = "backward"
+        var imageNameForward = "forward"
+        
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+            imageNameBackward = "gobackward.10"
+            imageNameForward = "goforward.10"
+        }
         
         // COMMAND CENTER
         if commandCenter && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
@@ -196,9 +202,9 @@ class NCPlayerToolBar: UIView {
         
         // BACK
         if #available(iOS 13.0, *) {
-            backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white), for: .normal)
+            backButton.setImage(NCUtility.shared.loadImage(named: imageNameBackward, color: .white), for: .normal)
         } else {
-            backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white, size: 30), for: .normal)
+            backButton.setImage(NCUtility.shared.loadImage(named: imageNameBackward, color: .white, size: 30), for: .normal)
         }
         backButton.isEnabled = true
                  
@@ -218,9 +224,9 @@ class NCPlayerToolBar: UIView {
         
         // FORWARD
         if #available(iOS 13.0, *) {
-            forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white), for: .normal)
+            forwardButton.setImage(NCUtility.shared.loadImage(named: imageNameForward, color: .white), for: .normal)
         } else {
-            forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white, size: 30), for: .normal)
+            forwardButton.setImage(NCUtility.shared.loadImage(named: imageNameForward, color: .white, size: 30), for: .normal)
         }
         forwardButton.isEnabled = true
     }
@@ -274,40 +280,17 @@ class NCPlayerToolBar: UIView {
                 
         // AUDIO < >
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-            
-            if let currentIndex = self.viewerMedia?.currentIndex, let metadatas = self.viewerMedia?.metadatas {
-                            
-                var index: Int = 0
-                
-                if currentIndex == metadatas.count - 1 {
-                    index = 0
-                } else {
-                    index = currentIndex + 1
-                }
-                    
-                if metadatas[index].classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-                            
-                    nextTrackCommand = MPRemoteCommandCenter.shared().nextTrackCommand.addTarget { event in
                         
-                        self.viewerMedia?.goTo(index: index, direction: .forward, autoPlay: ncplayer.isPlay())
-                        return.success
-                    }
-                }
-            
-                if currentIndex == 0 {
-                    index = metadatas.count - 1
-                } else {
-                    index = currentIndex - 1
-                }
+            nextTrackCommand = MPRemoteCommandCenter.shared().nextTrackCommand.addTarget { event in
                 
-                if metadatas[index].classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-                    
-                    previousTrackCommand = MPRemoteCommandCenter.shared().previousTrackCommand.addTarget { event in
-                        
-                        self.viewerMedia?.goTo(index: index, direction: .reverse, autoPlay: ncplayer.isPlay())
-                        return.success
-                    }
-                }
+                self.audioForward()
+                return .success
+            }
+            
+            previousTrackCommand = MPRemoteCommandCenter.shared().previousTrackCommand.addTarget { event in
+             
+                self.audioBackward()
+                return .success
             }
         }
         
@@ -491,6 +474,42 @@ class NCPlayerToolBar: UIView {
         reStartTimerAutoHide()
     }
     
+    func audioForward() {
+        
+        var index: Int = 0
+        
+        if let currentIndex = self.viewerMedia?.currentIndex, let metadatas = self.viewerMedia?.metadatas, let ncplayer = self.ncplayer {
+        
+            if currentIndex == metadatas.count - 1 {
+                index = 0
+            } else {
+                index = currentIndex + 1
+            }
+            
+            if metadatas[index].classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+                self.viewerMedia?.goTo(index: index, direction: .forward, autoPlay: ncplayer.isPlay())
+            }
+        }
+    }
+    
+    func audioBackward() {
+        
+        var index: Int = 0
+
+        if let currentIndex = self.viewerMedia?.currentIndex, let metadatas = self.viewerMedia?.metadatas, let ncplayer = self.ncplayer {
+            
+            if currentIndex == 0 {
+                index = metadatas.count - 1
+            } else {
+                index = currentIndex - 1
+            }
+            
+            if metadatas[index].classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+                self.viewerMedia?.goTo(index: index, direction: .reverse, autoPlay: ncplayer.isPlay())
+            }
+        }
+    }
+    
     //MARK: - Event / Gesture
     
     @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
@@ -578,12 +597,20 @@ class NCPlayerToolBar: UIView {
     
     @IBAction func forwardButtonSec(_ sender: Any) {
         
-        skip(seconds: 10)
+        if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+            skip(seconds: 10)
+        } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+            audioForward()
+        }
     }
     
     @IBAction func backButtonSec(_ sender: Any) {
         
-        skip(seconds: -10)
+        if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+            skip(seconds: -10)
+        } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+            audioForward()
+        }
     }
 }
 
