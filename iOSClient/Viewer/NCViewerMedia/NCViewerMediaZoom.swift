@@ -37,6 +37,8 @@ class NCViewerMediaZoom: UIViewController {
     @IBOutlet weak var detailView: NCViewerMediaDetailView!
     @IBOutlet weak var playerToolBar: NCPlayerToolBar!
     
+    private var _autoPlay: Bool = false
+
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var viewerMedia: NCViewerMedia?
     var ncplayer: NCPlayer?
@@ -46,7 +48,18 @@ class NCViewerMediaZoom: UIViewController {
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
     var imageViewConstraint: CGFloat = 0
     var isDetailViewInitializze: Bool = false
-                
+    
+    var autoPlay: Bool {
+        get {
+            let temp = _autoPlay
+            _autoPlay = false
+            return temp
+        }
+        set(newVal) {
+            _autoPlay = newVal
+        }
+    }
+    
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
@@ -144,7 +157,7 @@ class NCViewerMediaZoom: UIViewController {
         
         if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
             if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                self.ncplayer = NCPlayer.init(url: url, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView)
+                self.ncplayer = NCPlayer.init(url: url, autoPlay: autoPlay, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView)
             }
         }
         

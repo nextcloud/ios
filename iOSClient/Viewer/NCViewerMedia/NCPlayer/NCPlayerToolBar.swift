@@ -254,7 +254,7 @@ class NCPlayerToolBar: UIView {
             return .commandFailed
         }
         
-        // VIDEO
+        // VIDEO () ()
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             
             skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
@@ -272,19 +272,42 @@ class NCPlayerToolBar: UIView {
             }
         }
                 
-        // AUDIO
+        // AUDIO < >
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             
-            nextTrackCommand = MPRemoteCommandCenter.shared().nextTrackCommand.addTarget { event in
+            if let currentIndex = self.viewerMedia?.currentIndex, let metadatas = self.viewerMedia?.metadatas {
+                            
+                var index: Int = 0
                 
-                self.viewerMedia?.goTo(.forward)
-                return.success
-            }
+                if currentIndex == metadatas.count - 1 {
+                    index = 0
+                } else {
+                    index = currentIndex + 1
+                }
+                    
+                if metadatas[index].classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+                            
+                    nextTrackCommand = MPRemoteCommandCenter.shared().nextTrackCommand.addTarget { event in
+                        
+                        self.viewerMedia?.goTo(index: index, direction: .forward, autoPlay: ncplayer.isPlay())
+                        return.success
+                    }
+                }
             
-            previousTrackCommand = MPRemoteCommandCenter.shared().previousTrackCommand.addTarget { event in
+                if currentIndex == 0 {
+                    index = metadatas.count - 1
+                } else {
+                    index = currentIndex - 1
+                }
                 
-                self.viewerMedia?.goTo(.reverse)
-                return.success
+                if metadatas[index].classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+                    
+                    previousTrackCommand = MPRemoteCommandCenter.shared().previousTrackCommand.addTarget { event in
+                        
+                        self.viewerMedia?.goTo(index: index, direction: .reverse, autoPlay: ncplayer.isPlay())
+                        return.success
+                    }
+                }
             }
         }
         

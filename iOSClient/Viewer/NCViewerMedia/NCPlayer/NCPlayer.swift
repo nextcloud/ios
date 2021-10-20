@@ -46,7 +46,7 @@ class NCPlayer: NSObject {
     public var videoLayer: AVPlayerLayer?
     public var pictureInPictureController: AVPictureInPictureController?
     
-    init(url: URL, imageVideoContainer: imageVideoContainerView?, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?) {
+    init(url: URL, autoPlay: Bool, imageVideoContainer: imageVideoContainerView?, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?) {
         super.init()
 
         var timeSeek: CMTime = .zero
@@ -130,6 +130,10 @@ class NCPlayer: NSObject {
                     
                     self.durationTime = self.player?.currentItem?.asset.duration ?? .zero
                     NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationTime: self.durationTime)
+                    
+                    if autoPlay {
+                        self.player?.play()
+                    }
                     
                     self.playerToolBar?.setBarPlayer(ncplayer: self, timeSeek: timeSeek, metadata: metadata, image: imageVideoContainer?.image)
                     self.generatorImagePreview()

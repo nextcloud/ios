@@ -431,26 +431,16 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
         return true
     }
     
-    func goTo(_ direction: UIPageViewController.NavigationDirection) {
+    func goTo(index: Int, direction: UIPageViewController.NavigationDirection, autoPlay: Bool) {
         
-        if direction == .forward {
-            if currentIndex == metadatas.count - 1 {
-                currentIndex = 0
-            } else {
-                currentIndex += 1
-            }
-        } else if direction == .forward && currentIndex == 0 {
-            if currentIndex == 0 {
-                currentIndex = 0
-            } else {
-                currentIndex -= 1
-            }
-        }
+        currentIndex = index
         
         if let viewerMediaZoom = getCache(index: currentIndex) {
+            viewerMediaZoom.autoPlay = autoPlay
             pageViewController.setViewControllers([viewerMediaZoom], direction: direction, animated: true, completion: nil)
         } else {
             let viewerMediaZoom = setCache(index: currentIndex, image: getImageMetadata(metadatas[currentIndex]), metadata: metadatas[currentIndex], direction: direction)
+            viewerMediaZoom.autoPlay = autoPlay
             pageViewController.setViewControllers([viewerMediaZoom], direction: direction, animated: true, completion: nil)
         }
     }
@@ -584,8 +574,7 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
                     AudioServicesPlaySystemSound(1519) // peek feedback
                     
                     if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                        self.ncplayerLivePhoto = NCPlayer.init(url: url, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil)
-                        self.ncplayerLivePhoto?.playerPlay()
+                        self.ncplayerLivePhoto = NCPlayer.init(url: url, autoPlay: true, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil)
                     }
                     
                 } else {
@@ -613,8 +602,7 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
                                 AudioServicesPlaySystemSound(1519) // peek feedback
                                 
                                 if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                                    self.ncplayerLivePhoto = NCPlayer.init(url: url, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil)
-                                    self.ncplayerLivePhoto?.playerPlay()
+                                    self.ncplayerLivePhoto = NCPlayer.init(url: url, autoPlay: true, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil)
                                 }
                             }
                         }
