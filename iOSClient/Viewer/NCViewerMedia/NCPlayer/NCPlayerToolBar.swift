@@ -231,10 +231,10 @@ class NCPlayerToolBar: UIView {
         guard let ncplayer = self.ncplayer else { return }
         
         UIApplication.shared.beginReceivingRemoteControlEvents()
-        MPRemoteCommandCenter.shared().playCommand.isEnabled = true
         var nowPlayingInfo = [String : Any]()
 
         // Add handler for Play Command
+        MPRemoteCommandCenter.shared().playCommand.isEnabled = true
         appDelegate.playCommand = MPRemoteCommandCenter.shared().playCommand.addTarget { event in
             
             if !ncplayer.isPlay() {
@@ -245,6 +245,7 @@ class NCPlayerToolBar: UIView {
         }
       
         // Add handler for Pause Command
+        MPRemoteCommandCenter.shared().pauseCommand.isEnabled = true
         appDelegate.pauseCommand = MPRemoteCommandCenter.shared().pauseCommand.addTarget { event in
           
             if ncplayer.isPlay() {
@@ -257,6 +258,7 @@ class NCPlayerToolBar: UIView {
         // VIDEO () ()
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             
+            MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
             appDelegate.skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
                 
                 let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
@@ -264,6 +266,7 @@ class NCPlayerToolBar: UIView {
                 return.success
             }
             
+            MPRemoteCommandCenter.shared().skipBackwardCommand.isEnabled = true
             appDelegate.skipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
                 
                 let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
@@ -275,12 +278,14 @@ class NCPlayerToolBar: UIView {
         // AUDIO < >
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
                         
+            MPRemoteCommandCenter.shared().nextTrackCommand.isEnabled = true
             appDelegate.nextTrackCommand = MPRemoteCommandCenter.shared().nextTrackCommand.addTarget { event in
                 
                 self.forward()
                 return .success
             }
             
+            MPRemoteCommandCenter.shared().previousTrackCommand.isEnabled = true
             appDelegate.previousTrackCommand = MPRemoteCommandCenter.shared().previousTrackCommand.addTarget { event in
              
                 self.backward()
@@ -302,7 +307,13 @@ class NCPlayerToolBar: UIView {
         
         UIApplication.shared.endReceivingRemoteControlEvents()
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
+
         MPRemoteCommandCenter.shared().playCommand.isEnabled = false
+        MPRemoteCommandCenter.shared().pauseCommand.isEnabled = false
+        MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = false
+        MPRemoteCommandCenter.shared().skipBackwardCommand.isEnabled = false
+        MPRemoteCommandCenter.shared().nextTrackCommand.isEnabled = false
+        MPRemoteCommandCenter.shared().previousTrackCommand.isEnabled = false
 
         if let playCommand = appDelegate.playCommand {
             MPRemoteCommandCenter.shared().playCommand.removeTarget(playCommand)
