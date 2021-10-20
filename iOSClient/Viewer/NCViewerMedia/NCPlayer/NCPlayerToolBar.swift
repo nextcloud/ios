@@ -102,10 +102,8 @@ class NCPlayerToolBar: UIView {
         labelLeftTime.textColor = .lightGray
         
         backButton.isEnabled = false
-        
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray), for: .normal)
         playButton.isEnabled = false
-        
         forwardButton.isEnabled = false
         
         NotificationCenter.default.addObserver(self, selector: #selector(handleInterruption), name: AVAudioSession.interruptionNotification, object: nil)
@@ -143,13 +141,15 @@ class NCPlayerToolBar: UIView {
         guard let ncplayer = self.ncplayer else { return }
         var time: CMTime = .zero
         
-        var imageNameBackward = "backward"
-        var imageNameForward = "forward"
+        var imageNameBackward = "gobackward.10"
+        var imageNameForward = "goforward.10"
         
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-            imageNameBackward = "gobackward.10"
-            imageNameForward = "goforward.10"
+        /*
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+            imageNameBackward = "backward"
+            imageNameForward = "forward"
         }
+        */
         
         // COMMAND CENTER
         if commandCenter && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
@@ -255,8 +255,8 @@ class NCPlayerToolBar: UIView {
             return .commandFailed
         }
         
-        // VIDEO () ()
-        if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+        // VIDEO / AUDIO () ()
+        if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             
             MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
             appDelegate.skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
@@ -276,6 +276,7 @@ class NCPlayerToolBar: UIView {
         }
                 
         // AUDIO < >
+        /*
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
                         
             MPRemoteCommandCenter.shared().nextTrackCommand.isEnabled = true
@@ -292,6 +293,7 @@ class NCPlayerToolBar: UIView {
                 return .success
             }
         }
+        */
         
         nowPlayingInfo[MPMediaItemPropertyTitle] = metadata?.fileNameView
         nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = ncplayer.player?.currentItem?.asset.duration.seconds
@@ -598,20 +600,28 @@ class NCPlayerToolBar: UIView {
     
     @IBAction func forwardButtonSec(_ sender: Any) {
         
+        skip(seconds: 10)
+        
+        /*
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             skip(seconds: 10)
         } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             forward()
         }
+        */
     }
     
     @IBAction func backButtonSec(_ sender: Any) {
         
+        skip(seconds: -10)
+        
+        /*
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             skip(seconds: -10)
         } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             backward()
         }
+        */
     }
 }
 
