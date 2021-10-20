@@ -71,6 +71,8 @@ class NCViewerMediaZoom: UIViewController {
     
     deinit {
         print("deinit NCViewerMediaZoom")
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
     
     override func viewDidLoad() {
@@ -155,12 +157,8 @@ class NCViewerMediaZoom: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
-            if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView)
-                }
-            }
+        if ncplayer == nil && (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue), let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
+            self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView)
         }
         
         // DOWNLOAD
@@ -171,11 +169,6 @@ class NCViewerMediaZoom: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        
-        self.ncplayer?.videoRemoved()
-        playerToolBar?.disableCommandCenter()
-        
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

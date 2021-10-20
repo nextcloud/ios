@@ -48,6 +48,7 @@ class NCViewerMedia: UIViewController {
     var metadatas: [tableMetadata] = []
     var currentIndex = 0
     var nextIndex: Int?
+    var IndexInPlay: Int = -1
     var ncplayerLivePhoto: NCPlayer?
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
@@ -485,6 +486,8 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
         if (completed && nextIndex != nil) {
             previousViewControllers.forEach { viewController in
                 let viewerMediaZoom = viewController as! NCViewerMediaZoom
+                viewerMediaZoom.ncplayer?.videoRemoved()
+                viewerMediaZoom.playerToolBar?.disableCommandCenter()
                 viewerMediaZoom.scrollView.zoomScale = viewerMediaZoom.scrollView.minimumZoomScale
             }
             currentIndex = nextIndex!
