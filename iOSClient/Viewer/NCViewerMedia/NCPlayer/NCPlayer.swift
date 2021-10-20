@@ -58,7 +58,7 @@ class NCPlayer: NSObject {
         do {
             try AVAudioSession.sharedInstance().setActive(true)
             try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.PortOverride.none)
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback, options: [.allowAirPlay])
+            try AVAudioSession.sharedInstance().setCategory(.playback)
         } catch {
             print(error)
         }
