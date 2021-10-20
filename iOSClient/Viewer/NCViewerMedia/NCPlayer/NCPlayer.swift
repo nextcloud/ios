@@ -199,12 +199,6 @@ class NCPlayer: NSObject {
         self.imageVideoContainer = nil
         self.playerToolBar = nil
         self.metadata = nil
-        
-        do {
-            try AVAudioSession.sharedInstance().setActive(false)
-        } catch {
-            print(error)
-        }
     }
     
     //MARK: - NotificationCenter

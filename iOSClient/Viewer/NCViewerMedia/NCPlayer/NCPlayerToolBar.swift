@@ -141,8 +141,8 @@ class NCPlayerToolBar: UIView {
         guard let ncplayer = self.ncplayer else { return }
         var time: CMTime = .zero
         
-        var imageNameBackward = "gobackward.10"
-        var imageNameForward = "goforward.10"
+        let imageNameBackward = "gobackward.10"
+        let imageNameForward = "goforward.10"
         
         /*
         if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
