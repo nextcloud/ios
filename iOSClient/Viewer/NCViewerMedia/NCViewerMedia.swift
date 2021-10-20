@@ -54,7 +54,7 @@ class NCViewerMedia: UIViewController {
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
     var cache: [Int:NCViewerMediaZoom] = [:]
-    let cacheSize: Int = 5
+    let cacheSize: Int = 3
     
     var textColor: UIColor = NCBrandColor.shared.label
 
@@ -121,6 +121,10 @@ class NCViewerMedia: UIViewController {
             ncplayer.saveCurrentTime()
         }
         
+        // Clear mem
+        cache.removeAll()
+        metadatas.removeAll()
+        
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
@@ -139,6 +143,10 @@ class NCViewerMedia: UIViewController {
         } else {
             return .lightContent
         }
+    }
+    
+    deinit {
+        print("deinit NCViewerMedia")
     }
 
     // MARK: -
@@ -184,10 +192,6 @@ class NCViewerMedia: UIViewController {
         
         let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(currentViewController.metadata.ocId, etag: currentViewController.metadata.etag))
         NCViewer.shared.toggleMenu(viewController: self, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon)
-    }
-    
-    deinit {
-        print("deinit NCViewerMedia")        
     }
     
     func changeScreenMode(mode: ScreenMode, enableTimerAutoHide: Bool = false) {
@@ -486,7 +490,7 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
         if (completed && nextIndex != nil) {
             previousViewControllers.forEach { viewController in
                 let viewerMediaZoom = viewController as! NCViewerMediaZoom
-                viewerMediaZoom.ncplayer?.videoRemoved()
+                viewerMediaZoom.ncplayer?.playerPause()
                 viewerMediaZoom.playerToolBar?.disableCommandCenter()
                 viewerMediaZoom.scrollView.zoomScale = viewerMediaZoom.scrollView.minimumZoomScale
             }
@@ -617,7 +621,7 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
             
             currentViewController.statusViewImage.isHidden = false
             currentViewController.statusLabel.isHidden = false
-            self.ncplayerLivePhoto?.videoRemoved()
+            self.ncplayerLivePhoto?.clearResource()
         }
     }
 }

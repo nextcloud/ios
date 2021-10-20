@@ -175,10 +175,10 @@ class NCPlayer: NSObject {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
 
-        videoRemoved()
+        clearResource()
     }
     
-    func videoRemoved() {
+    func clearResource() {
 
         if isPlay() {
             playerPause()
