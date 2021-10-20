@@ -413,6 +413,7 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
     
     func shiftCurrentPage() -> Bool {
         if metadatas.count == 0 { return false }
+        cache.removeAll()
         
         var direction: UIPageViewController.NavigationDirection = .forward
         if currentIndex == metadatas.count {
@@ -437,7 +438,6 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
                 currentIndex = 0
             } else {
                 currentIndex += 1
-
             }
         } else if direction == .forward && currentIndex == 0 {
             if currentIndex == 0 {
