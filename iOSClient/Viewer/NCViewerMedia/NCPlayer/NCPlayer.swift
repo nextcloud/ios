@@ -56,9 +56,9 @@ class NCPlayer: NSObject {
         self.detailView = detailView
 
         do {
-            try AVAudioSession.sharedInstance().setActive(true)
-            try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.PortOverride.none)
             try AVAudioSession.sharedInstance().setCategory(.playback)
+            try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.PortOverride.none)
+            try AVAudioSession.sharedInstance().setActive(true)
         } catch {
             print(error)
         }
