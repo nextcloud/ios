@@ -55,6 +55,14 @@ class NCViewerMedia: UIViewController {
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
     
     var textColor: UIColor = NCBrandColor.shared.label
+    
+    var playCommand: Any?
+    var pauseCommand: Any?
+    var skipForwardCommand: Any?
+    var skipBackwardCommand: Any?
+    var nextTrackCommand: Any?
+    var previousTrackCommand: Any?
+    
 
     // MARK: - View Life Cycle
 
@@ -108,11 +116,12 @@ class NCViewerMedia: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        // Save time video
         if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
             ncplayer.playerPause()
             ncplayer.saveCurrentTime()
         }
+        
+        currentViewController.playerToolBar.disableCommandCenter()
         
         // Clear mem
         metadatas.removeAll()
