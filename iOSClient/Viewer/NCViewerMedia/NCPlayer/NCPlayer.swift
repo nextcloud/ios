@@ -46,6 +46,8 @@ class NCPlayer: NSObject {
     public var videoLayer: AVPlayerLayer?
     public var pictureInPictureController: AVPictureInPictureController?
     
+    // MARK: - View Life Cycle
+
     init(url: URL, autoPlay: Bool, imageVideoContainer: imageVideoContainerView?, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?) {
         super.init()
 
@@ -167,6 +169,7 @@ class NCPlayer: NSObject {
             }
         }
         
+        // Evey 1 second update toolbar
         observerAVPlayertTime = player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
             if self.player?.currentItem?.status == .readyToPlay {
                 self.playerToolBar?.updateToolBar()
