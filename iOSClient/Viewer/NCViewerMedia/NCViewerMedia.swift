@@ -125,6 +125,7 @@ class NCViewerMedia: UIViewController {
         
         // Clear mem
         metadatas.removeAll()
+        ncplayerLivePhoto = nil
         
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
