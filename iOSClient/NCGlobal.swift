@@ -142,7 +142,7 @@ class NCGlobal: NSObject {
     // NCSharePaging
     //
     enum NCSharePagingIndex: Int, CaseIterable {
-        case activity, /*commets, */ sharing
+        case activity, sharing
     }
 
     // NCViewerProviderContextMenu

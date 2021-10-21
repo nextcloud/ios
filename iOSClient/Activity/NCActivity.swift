@@ -6,6 +6,7 @@
 //  Copyright © 2019 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -26,7 +27,7 @@ import SwiftRichString
 import NCCommunication
 import RealmSwift
 
-class NCActivity: UIViewController, NCEmptyDataSetDelegate {
+class NCActivity: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
 
@@ -41,22 +42,11 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    var emptyDataSet: NCEmptyDataSet?
-//    var allActivities: [tableActivity] = []
-//    var filterActivities: [tableActivity] = []
-
     var allItems: [DateCompareable] = []
-    var sectionDates: [Date] {
-        allItems.reduce(into: Set<Date>()) { partialResult, next in
-            let newDay = Calendar.current.startOfDay(for: next.dateKey)
-            partialResult.insert(newDay)
-        }.sorted(by: >)
-    }
+    var sectionDates: [Date] = []
 
-//    var sectionDate: [Date] = []
     var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     var didSelectItemEnable: Bool = true
-//    var filterFileId: String?
     var objectType: String?
     
     var canFetchActivity = true
@@ -71,9 +61,6 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
         view.backgroundColor = NCBrandColor.shared.systemBackground
         self.title = NSLocalizedString("_activity_", comment: "")
 
-        // Empty
-        emptyDataSet = NCEmptyDataSet(view: tableView, offset: 0, delegate: self)
-        
         tableView.allowsSelection = false
         tableView.separatorColor = UIColor.clear
         tableView.tableFooterView = UIView()
@@ -120,8 +107,7 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
         super.viewWillAppear(animated)
         
         appDelegate.activeViewController = self
-        
-        //
+
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
     }
     
@@ -148,15 +134,6 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
         tableView.reloadData()
     }
     
-    // MARK: - Empty
-    
-    func emptyDataSetView(_ view: NCEmptyView) {
-        
-        view.emptyImage.image = UIImage.init(named: "bolt")?.image(color: .gray, size: UIScreen.main.bounds.width)
-        view.emptyTitle.text = NSLocalizedString("_no_activity_", comment: "")
-        view.emptyDescription.text = ""
-    }
-    
     @IBAction func newCommentFieldDidEndOnExit(textField: UITextField) {
         guard
             let message = textField.text,
@@ -175,95 +152,6 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
     }
 }
 
-class activityTableViewCell: UITableViewCell, NCCellProtocol {
-    
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
-    @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var icon: UIImageView!
-    @IBOutlet weak var avatar: UIImageView!
-    @IBOutlet weak var subject: UILabel!
-    @IBOutlet weak var subjectTrailingConstraint: NSLayoutConstraint!
-    @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
-
-    private var user: String = ""
-
-    var idActivity: Int = 0
-    var account: String = ""
-    var activityPreviews: [tableActivityPreview] = []
-    var didSelectItemEnable: Bool = true
-    var viewController: UIViewController? = nil
-    
-    var fileAvatarImageView: UIImageView? {
-        get {
-            return avatar
-        }
-    }
-    var fileObjectId: String? {
-        get {
-            return nil
-        }
-    }
-    var filePreviewImageView: UIImageView? {
-        get {
-            return nil
-        }
-    }
-    var fileUser: String? {
-        get {
-            return user
-        }
-        set {
-            user = newValue ?? ""
-        }
-    }
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        
-        collectionView.delegate = self
-        collectionView.dataSource = self
-    }
-}
-
-// MARK: - Table View
-
-extension NCActivity: UITableViewDelegate {
-    
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 120
-    }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 60
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
-    }
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 60))
-        view.backgroundColor = .clear
-        
-        let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: 13)
-        label.textColor = NCBrandColor.shared.label
-        label.text = CCUtility.getTitleSectionDate(sectionDates[section])
-        label.textAlignment = .center
-        label.layer.cornerRadius = 11
-        label.layer.masksToBounds = true
-        label.layer.backgroundColor = UIColor(red: 152.0/255.0, green: 167.0/255.0, blue: 181.0/255.0, alpha: 0.8).cgColor
-        let widthFrame = label.intrinsicContentSize.width + 30
-        let xFrame = tableView.bounds.width / 2 - widthFrame / 2
-        label.frame = CGRect(x: xFrame, y: 10, width: widthFrame, height: 22)
-        
-        view.addSubview(label)
-        return view
-    }
-}
-
 extension NCActivity: UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -273,9 +161,6 @@ extension NCActivity: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let date = sectionDates[section]
         return allItems.filter({ Calendar.current.isDate($0.dateKey, inSameDayAs: date) }).count
-//        getTableActivitiesFromSection(section).count
-//        emptyDataSet?.numberOfItemsInSection(numberItems, section: section)
-//        return numberItems
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -325,7 +210,7 @@ extension NCActivity: UITableViewDataSource {
     }
     
     func makeActivityCell(_ activity: tableActivity, for indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "tableCell", for: indexPath) as? activityTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "tableCell", for: indexPath) as? NCActivityTableViewCell else {
             return UITableViewCell()
         }
         
@@ -418,35 +303,12 @@ extension NCActivity: UITableViewDataSource {
     }
 }
 
-/*
-extension NCActivity: UITableViewDataSourcePrefetching {
-    
-    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        
-        let section = indexPaths.last?.section ?? 0
-        let row = indexPaths.last?.row ?? 0
-        
-        let lastSection = self.sectionDate.count - 1
-        let lastRow = getTableActivitiesFromSection(section).count - 1
-        
-        if section == lastSection && row > lastRow - 1 {
-            //loadActivity(idActivity: allActivities.last!.idActivity)
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
-        //print("cancelPrefetchingForRowsAt \(indexPaths)")
-    }
-}
-*/
-
 // MARK: - ScrollView
 
 extension NCActivity: UIScrollViewDelegate {
-    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.height < 100 {
-            // comments are always loaded in full..? only load more acitvities
+            // comments are always loaded in full, only partially load more acitvities
             if let activity = allItems.compactMap({ $0 as? tableActivity }).last {
                 loadActivity(idActivity: activity.objectId)
             }
@@ -454,226 +316,10 @@ extension NCActivity: UIScrollViewDelegate {
     }
 }
 
-// MARK: - Collection View
-
-extension activityTableViewCell: UICollectionViewDelegate {
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        // Select not permitted
-        if !didSelectItemEnable {
-            return
-        }
-        
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? activityCollectionViewCell
-        
-        let activityPreview = activityPreviews[indexPath.row]
-        
-        if activityPreview.view == "trashbin" {
-            
-            var responder: UIResponder? = collectionView
-            while !(responder is UIViewController) {
-                responder = responder?.next
-                if nil == responder {
-                    break
-                }
-            }
-            if (responder as? UIViewController)!.navigationController != nil {
-                if let viewController = UIStoryboard.init(name: "NCTrash", bundle: nil).instantiateInitialViewController() as? NCTrash {
-                    if let result = NCManageDatabase.shared.getTrashItem(fileId: String(activityPreview.fileId), account: activityPreview.account) {
-                        viewController.blinkFileId = result.fileId
-                        viewController.trashPath = result.filePath
-                        (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
-                    } else {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_trash_file_not_found_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
-                    }
-                }
-            }
-            
-            return
-        }
-        
-        if activityPreview.view == "files" && activityPreview.mimeType != "dir" {
-            
-            guard let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.fileId)) else {
-                return
-            }
-            
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "fileId == %@", activitySubjectRich.id)) {
-                if let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) {
-                    do {
-                        let attr = try FileManager.default.attributesOfItem(atPath: filePath)
-                        let fileSize = attr[FileAttributeKey.size] as! UInt64
-                        if fileSize > 0 {
-                            if let viewController = self.viewController {
-                                NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: cell?.imageView.image)
-                            }
-                            return
-                        }
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-            }
-            
-            var pathComponents = activityPreview.link.components(separatedBy: "?")
-            pathComponents = pathComponents[1].components(separatedBy: "&")
-            var serverUrlFileName = pathComponents[0].replacingOccurrences(of: "dir=", with: "").removingPercentEncoding!
-            serverUrlFileName = appDelegate.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: activityPreview.account) + serverUrlFileName + "/" + activitySubjectRich.name
-            
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)!
-            
-            NCUtility.shared.startActivityIndicator(backgroundView: (appDelegate.window?.rootViewController?.view)!, blurEffect: true)
-            
-            NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
-                
-            }, taskHandler: { (_) in
-                
-            }, progressHandler: { (_) in
-                
-            }) { (account, etag, date, lenght, allHeaderFields, error, errorCode, errorDescription) in
-                
-                if account == self.appDelegate.account && errorCode == 0 {
-                    
-                    let serverUrl = (serverUrlFileName as NSString).deletingLastPathComponent
-                    let fileName = (serverUrlFileName as NSString).lastPathComponent
-                    let serverUrlFileName = serverUrl + "/" + fileName
-                    
-                    NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: activityPreview.account) { (account, metadata, errorCode, errorDescription) in
-                        
-                        NCUtility.shared.stopActivityIndicator()
-                        
-                        if account == self.appDelegate.account && errorCode == 0  {
-                            
-                            // move from id to oc:id + instanceid (ocId)
-                            let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id
-                            let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata!.ocId
-                                                       
-                            CCUtility.moveFile(atPath: atPath, toPath: toPath)
-                                                       
-                            NCManageDatabase.shared.addMetadata(metadata!)
-                            if let viewController = self.viewController {
-                                NCViewer.shared.view(viewController: viewController, metadata: metadata!, metadatas: [metadata!], imageIcon: cell?.imageView.image)
-                            }
-                        }
-                    }
-                    
-                } else {
-                    
-                    NCUtility.shared.stopActivityIndicator()
-                }
-            }
-        }
-    }
-}
-
-extension activityTableViewCell: UICollectionViewDataSource {
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return activityPreviews.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        let cell: activityCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as! activityCollectionViewCell
-            
-        cell.imageView.image = nil
-        
-        let activityPreview = activityPreviews[indexPath.row]
-        let fileId = String(activityPreview.fileId)
-        
-        // Trashbin
-        if activityPreview.view == "trashbin" {
-            
-            let source = activityPreview.source
-            
-            NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false, account: appDelegate.account) { (imageNamePath) in
-                if imageNamePath != nil {
-                    if let image = UIImage(contentsOfFile: imageNamePath!) {
-                        cell.imageView.image = image
-                    }
-                } else {
-                     cell.imageView.image = UIImage.init(named: "file")
-                }
-            }
-            
-        } else {
-            
-            if activityPreview.isMimeTypeIcon {
-                
-                let source = activityPreview.source
-                
-                NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false, account: appDelegate.account) { (imageNamePath) in
-                    if imageNamePath != nil {
-                        if let image = UIImage(contentsOfFile: imageNamePath!) {
-                            cell.imageView.image = image
-                        }
-                    } else {
-                        cell.imageView.image = UIImage.init(named: "file")
-                    }
-                }
-                
-            } else {
-                
-                if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: account, idActivity: idActivity, id: fileId) {
-                    
-                    let fileNamePath = CCUtility.getDirectoryUserData() + "/" + activitySubjectRich.name
-                    
-                    if FileManager.default.fileExists(atPath: fileNamePath) {
-                        
-                        if let image = UIImage(contentsOfFile: fileNamePath) {
-                            cell.imageView.image = image
-                        }
-                        
-                    } else {
-                        
-                        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, widthPreview: 0, heightPreview: 0, etag: nil, useInternalEndpoint: false) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
-                            if errorCode == 0 && imagePreview != nil {
-                                self.collectionView.reloadData()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-            
-        return cell
-    }
-    
-}
-
-class activityCollectionViewCell: UICollectionViewCell {
-    
-    @IBOutlet weak var imageView: UIImageView!
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-}
-
-extension activityTableViewCell: UICollectionViewDelegateFlowLayout {
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 50, height: 50)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 20
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
-    }
-}
-
 // MARK: - NC API & Algorithm
 
 extension NCActivity {
-    
+
     @objc func getComments(account: String, objectId: String) -> [tableComments] {
         
         let realm = try! Realm()
@@ -682,7 +328,7 @@ extension NCActivity {
         
         return Array(results.map(tableComments.init))
     }
-    
+
     func loadDataSource() {
         
         guard let metadata = self.metadata else { return }
@@ -706,13 +352,15 @@ extension NCActivity {
         let activities = NCManageDatabase.shared.getActivity(
             predicate: NSPredicate(format: "account == %@", appDelegate.account),
             filterFileId: metadata.fileId)
-//        self.allActivities = activities.all
-//        self.filterActivities = activities.filter
         self.allItems += activities.filter
         reloadDispatch.leave()
         
         reloadDispatch.notify(qos: .userInitiated, flags: .enforceQoS, queue: .main) {
             self.allItems.sort(by: { $0.dateKey > $1.dateKey })
+            self.sectionDates = self.allItems.reduce(into: Set<Date>()) { partialResult, next in
+                   let newDay = Calendar.current.startOfDay(for: next.dateKey)
+                   partialResult.insert(newDay)
+            }.sorted(by: >)
             self.tableView.reloadData()
         }
     }
@@ -783,8 +431,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                 title: NSLocalizedString("_edit_comment_", comment: ""),
                 icon: UIImage(named: "edit")!.image(color: NCBrandColor.shared.gray, size: 50),
                 action: { menuAction in
-                    guard let metadata = self.metadata else { return }
-                    guard let tableComments = tableComments else { return }
+                    guard let metadata = self.metadata, let tableComments = tableComments else { return }
                     
                     let alert = UIAlertController(title: NSLocalizedString("_edit_comment_", comment: ""), message: nil, preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
@@ -794,20 +441,17 @@ extension NCActivity: NCShareCommentsCellDelegate {
                     })
                     
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
-                        if let message = alert.textFields?.first?.text {
-                            if message != "" {
-                                NCCommunication.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message) { (account, errorCode, errorDescription) in
-                                    if errorCode == 0 {
-                                        //TODO:..
-//                                        self.reloadData()
-                                    } else {
-                                        NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                                    }
-                                }
+                        guard let message = alert.textFields?.first?.text, message != "" else { return }
+
+                        NCCommunication.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message) { (account, errorCode, errorDescription) in
+                            if errorCode == 0 {
+                                self.loadDataSource()
+                            } else {
+                                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                             }
                         }
                     }))
-                    
+
                     self.present(alert, animated: true)
                 }
             )
@@ -818,13 +462,11 @@ extension NCActivity: NCShareCommentsCellDelegate {
                 title: NSLocalizedString("_delete_comment_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "trash"),
                 action: { menuAction in
-                    guard let metadata = self.metadata else { return }
-                    guard let tableComments = tableComments else { return }
+                    guard let metadata = self.metadata, let tableComments = tableComments else { return }
 
                     NCCommunication.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId) { (account, errorCode, errorDescription) in
                         if errorCode == 0 {
-                            //TODO: ...
-//                            self.reloadData()
+                            self.loadDataSource()
                         } else {
                             NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
@@ -837,9 +479,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
             NCMenuAction(
                 title: NSLocalizedString("_cancel_", comment: ""),
                 icon: UIImage(named: "cancel")!.image(color: NCBrandColor.shared.gray, size: 50),
-                action: { menuAction in
-                }
-            )
+                action: nil)
         )
         
         menuViewController.actions = actions
