@@ -390,6 +390,7 @@ class NCViewerMedia: UIViewController {
 extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
     
     func shiftCurrentPage() -> Bool {
+        
         if metadatas.count == 0 { return false }
         
         var direction: UIPageViewController.NavigationDirection = .forward
@@ -453,7 +454,6 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
             previousViewControllers.forEach { viewController in
                 let viewerMediaZoom = viewController as! NCViewerMediaZoom
                 viewerMediaZoom.ncplayer?.deactivateObserver(livePhoto: false)
-//                viewerMediaZoom.scrollView.zoomScale = viewerMediaZoom.scrollView.minimumZoomScale
             }
             currentIndex = nextIndex!
         }
