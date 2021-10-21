@@ -182,7 +182,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
         switch NCGlobal.NCSharePagingIndex(rawValue: index) {
         case .activity:
             let viewController = UIStoryboard(name: "NCActivity", bundle: nil).instantiateInitialViewController() as! NCActivity
-            viewController.insets = UIEdgeInsets(top: height - topSafeArea, left: 0, bottom: 0, right: 0)
+//            viewController.insets = UIEdgeInsets(top: height - topSafeArea, left: 0, bottom: 0, right: 0)
             viewController.height = height
             viewController.didSelectItemEnable = false
 //            viewController.filterFileId = metadata.fileId

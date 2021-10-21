@@ -858,7 +858,7 @@ class NCManageDatabase: NSObject {
         let filtered = allActivity.filter({ String($0.objectId) == filterFileId && $0.type != "comments" })
         return (all: allActivity, filter: filtered)
         
-        //HELP: What is this? What is it used for? Why not using `.filter()` on the array
+        //HELP: What is this? What is it used for? Why not just use `.filter()` on the array
         var resultsFilter: [tableActivity] = []
         for result in results {
             let resultsActivitySubjectRich = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d", result.account, result.idActivity)
