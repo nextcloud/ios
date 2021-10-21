@@ -332,6 +332,7 @@ extension NCActivity {
     func loadDataSource() {
         
         guard let metadata = self.metadata else { return }
+        NCUtility.shared.startActivityIndicator(backgroundView: tableView, blurEffect: false)
         let reloadDispatch = DispatchGroup()
         self.allItems = []
         reloadDispatch.enter()
@@ -362,23 +363,8 @@ extension NCActivity {
                    partialResult.insert(newDay)
             }.sorted(by: >)
             self.tableView.reloadData()
+            NCUtility.shared.stopActivityIndicator()
         }
-    }
-    
-    func getTableActivitiesForSection(_ section: Int) -> [tableActivity] {
-        let startDate = sectionDates[section]
-        let endDate: Date = {
-            let components = DateComponents(day: 1, second: -1)
-            return Calendar.current.date(byAdding: components, to: startDate)!
-        }()
-        
-        let activities = NCManageDatabase.shared.getActivity(
-            predicate: NSPredicate(
-                format: "account == %@ && date BETWEEN %@",
-                appDelegate.account,
-                [startDate, endDate]),
-            filterFileId: metadata?.fileId)
-        return activities.filter
     }
     
     @objc func loadActivity(idActivity: Int) {
