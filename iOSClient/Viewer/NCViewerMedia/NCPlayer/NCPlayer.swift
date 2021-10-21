@@ -50,8 +50,6 @@ class NCPlayer: NSObject {
 
     init(url: URL, autoPlay: Bool, imageVideoContainer: imageVideoContainerView?, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?) {
         super.init()
-
-        var timeSeek: CMTime = .zero
         
         self.metadata = metadata
         self.detailView = detailView
@@ -74,10 +72,9 @@ class NCPlayer: NSObject {
         } else {
             player?.isMuted = CCUtility.getAudioMute()
             if let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
-                timeSeek = time
+                player?.seek(to: time)
             }
         }
-        player?.seek(to: timeSeek)
         
         player?.currentItem?.asset.loadValuesAsynchronously(forKeys: ["playable"], completionHandler: {
             var error: NSError? = nil
@@ -121,7 +118,7 @@ class NCPlayer: NSObject {
                         self.player?.play()
                     }
                     
-                    self.playerToolBar?.setBarPlayer(ncplayer: self, timeSeek: timeSeek, metadata: metadata, image: imageVideoContainer?.image)
+                    self.playerToolBar?.setBarPlayer(ncplayer: self, metadata: metadata, image: imageVideoContainer?.image)
                     self.generatorImagePreview()
                     if !(detailView?.isShow() ?? false) {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])

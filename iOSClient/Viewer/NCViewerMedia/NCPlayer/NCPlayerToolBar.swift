@@ -119,7 +119,7 @@ class NCPlayerToolBar: UIView {
     
     // MARK: -
 
-    func setBarPlayer(ncplayer: NCPlayer, timeSeek: CMTime,metadata: tableMetadata, image: UIImage?) {
+    func setBarPlayer(ncplayer: NCPlayer, metadata: tableMetadata, image: UIImage?) {
                         
         self.ncplayer = ncplayer
         self.metadata = metadata

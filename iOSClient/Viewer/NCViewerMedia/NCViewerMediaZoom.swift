@@ -163,6 +163,9 @@ class NCViewerMediaZoom: UIViewController {
                 self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView)
             } else {
                 self.ncplayer?.activateObserver(playerToolBar: self.playerToolBar)
+                if detailView.isShow() == false && ncplayer?.isPlay() == false {
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
+                }
             }
         }
         
