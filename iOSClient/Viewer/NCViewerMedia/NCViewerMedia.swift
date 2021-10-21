@@ -393,10 +393,13 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
         if metadatas.count == 0 { return false }
         
         var direction: UIPageViewController.NavigationDirection = .forward
+        
         if currentIndex == metadatas.count {
             currentIndex -= 1
             direction = .reverse
         }
+        
+        currentViewController.ncplayer?.deactivateObserver(livePhoto: currentViewController.metadata.livePhoto)
         
         let viewerMediaZoom = getViewerMediaZoom(index: currentIndex, image: getImageMetadata(metadatas[currentIndex]), metadata: metadatas[currentIndex], direction: direction)
         pageViewController.setViewControllers([viewerMediaZoom], direction: direction, animated: true, completion: nil)
@@ -408,6 +411,8 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
         
         currentIndex = index
         
+        currentViewController.ncplayer?.deactivateObserver(livePhoto: currentViewController.metadata.livePhoto)
+
         let viewerMediaZoom = getViewerMediaZoom(index: currentIndex, image: getImageMetadata(metadatas[currentIndex]), metadata: metadatas[currentIndex], direction: direction)
         viewerMediaZoom.autoPlay = autoPlay
         pageViewController.setViewControllers([viewerMediaZoom], direction: direction, animated: true, completion: nil)

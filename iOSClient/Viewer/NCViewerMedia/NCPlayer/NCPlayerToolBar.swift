@@ -415,6 +415,8 @@ class NCPlayerToolBar: UIView {
             self.isHidden = false
             self.playerTopToolBarView.isHidden = false
         })
+        
+        updateToolBar()
     }
     
     func isShow() -> Bool {
