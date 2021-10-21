@@ -107,7 +107,7 @@ class NCPlayer: NSObject {
                             }
                             
                             // PIP
-                            if let playerLayer = self.videoLayer, CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                            if let playerLayer = self.videoLayer, CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView), metadata.livePhoto == false {
                                 self.pictureInPictureController = AVPictureInPictureController(playerLayer: playerLayer)
                                 self.pictureInPictureController?.delegate = self
                             }
