@@ -51,7 +51,6 @@ class NCPlayer: NSObject {
 
         var timeSeek: CMTime = .zero
         
-        self.playerToolBar = playerToolBar
         self.metadata = metadata
         self.detailView = detailView
 
@@ -78,31 +77,16 @@ class NCPlayer: NSObject {
         }
         player?.seek(to: timeSeek)
         
-        // At end go back to start & show toolbar
-        observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
-            if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
-                NCKTVHTTPCache.shared.saveCache(metadata: metadata)
-                self.videoSeek(time: .zero)
-                if !(detailView?.isShow() ?? false) {
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
-                }
-                playerToolBar?.updateToolBar(commandCenter: true)
-            }
-        }
-        
-        observerAVPlayertTime = player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
-            if self.player?.currentItem?.status == .readyToPlay {
-                self.playerToolBar?.updateToolBar()
-            }
-        })
-        
         player?.currentItem?.asset.loadValuesAsynchronously(forKeys: ["playable"], completionHandler: {
             var error: NSError? = nil
             let status = self.player?.currentItem?.asset.statusOfValue(forKey: "playable", error: &error)
             switch status {
             case .loaded:
                 DispatchQueue.main.async {
-                    if let imageVideoContainer = imageVideoContainer {
+                    
+                    self.activateObserver(playerToolBar: playerToolBar)
+                    
+                    if let imageVideoContainer = self.imageVideoContainer {
                         
                         self.imageVideoContainer = imageVideoContainer
                         self.videoLayer = AVPlayerLayer(player: self.player)
@@ -160,45 +144,70 @@ class NCPlayer: NSObject {
                 break
             }
         })
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(generatorImagePreview), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
     deinit {
         print("deinit NCPlayer")
         
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
-        
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
-
-        clearResource()
-    }
-    
-    func clearResource() {
-
-        if isPlay() {
-            playerPause()
-        }
-
-        if let observerAVPlayerItemDidPlayToEndTime = self.observerAVPlayerItemDidPlayToEndTime {
-            NotificationCenter.default.removeObserver(observerAVPlayerItemDidPlayToEndTime)
-        }
-        if  let observerAVPlayertTime = self.observerAVPlayertTime {
-            player?.removeTimeObserver(observerAVPlayertTime)
-        }
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+        deactivateObserver()
         
         self.videoLayer?.removeFromSuperlayer()
         self.videoLayer = nil
-        self.observerAVPlayerItemDidPlayToEndTime = nil
-        self.observerAVPlayertTime = nil
         self.imageVideoContainer = nil
         self.playerToolBar = nil
         self.metadata = nil
+    }
+    
+    func activateObserver(playerToolBar: NCPlayerToolBar?) {
+        guard let metadata = self.metadata else { return }
+        
+        self.playerToolBar = playerToolBar
+        
+        // At end go back to start & show toolbar
+        observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
+            if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
+                NCKTVHTTPCache.shared.saveCache(metadata: metadata)
+                self.videoSeek(time: .zero)
+                if !(self.detailView?.isShow() ?? false) {
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
+                }
+                self.playerToolBar?.updateToolBar(commandCenter: true)
+            }
+        }
+        
+        observerAVPlayertTime = player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
+            if self.player?.currentItem?.status == .readyToPlay {
+                self.playerToolBar?.updateToolBar()
+            }
+        })
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(generatorImagePreview), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+    }
+    
+    func deactivateObserver() {
+        
+        if isPlay() {
+            playerPause()
+        }
+        
+        self.playerToolBar?.disableCommandCenter()
+        self.playerToolBar = nil
+        
+        if let observerAVPlayerItemDidPlayToEndTime = self.observerAVPlayerItemDidPlayToEndTime {
+            NotificationCenter.default.removeObserver(observerAVPlayerItemDidPlayToEndTime)
+        }
+        self.observerAVPlayerItemDidPlayToEndTime = nil
+        
+        if  let observerAVPlayertTime = self.observerAVPlayertTime {
+            player?.removeTimeObserver(observerAVPlayertTime)
+        }
+        self.observerAVPlayertTime = nil
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
     
     //MARK: - NotificationCenter
