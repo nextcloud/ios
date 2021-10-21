@@ -96,8 +96,8 @@ class NCViewerMedia: UIViewController {
         progressView.progress = 0
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
     
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
@@ -113,9 +113,10 @@ class NCViewerMedia: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(showPlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         
+        // Clear
         if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
             ncplayer.playerPause()
             ncplayer.saveCurrentTime()
@@ -123,7 +124,6 @@ class NCViewerMedia: UIViewController {
         
         currentViewController.playerToolBar.disableCommandCenter()
         
-        // Clear mem
         metadatas.removeAll()
         ncplayerLivePhoto = nil
         
@@ -136,6 +136,9 @@ class NCViewerMedia: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
         
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedThumbnail), object: nil)
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
