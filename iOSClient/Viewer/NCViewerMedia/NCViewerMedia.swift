@@ -490,7 +490,7 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
         if (completed && nextIndex != nil) {
             previousViewControllers.forEach { viewController in
                 let viewerMediaZoom = viewController as! NCViewerMediaZoom
-                viewerMediaZoom.ncplayer?.deactivateObserver()
+                viewerMediaZoom.ncplayer?.deactivateObserver(livePhoto: false)
                 viewerMediaZoom.scrollView.zoomScale = viewerMediaZoom.scrollView.minimumZoomScale
             }
             currentIndex = nextIndex!
@@ -620,7 +620,7 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
             
             currentViewController.statusViewImage.isHidden = false
             currentViewController.statusLabel.isHidden = false
-//            self.ncplayerLivePhoto?.clearResource()
+            self.ncplayerLivePhoto?.deactivateObserver(livePhoto: true)
         }
     }
 }
