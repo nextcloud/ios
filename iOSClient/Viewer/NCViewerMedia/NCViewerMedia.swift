@@ -448,7 +448,7 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
             previousViewControllers.forEach { viewController in
                 let viewerMediaZoom = viewController as! NCViewerMediaZoom
                 viewerMediaZoom.ncplayer?.deactivateObserver(livePhoto: false)
-                viewerMediaZoom.scrollView.zoomScale = viewerMediaZoom.scrollView.minimumZoomScale
+//                viewerMediaZoom.scrollView.zoomScale = viewerMediaZoom.scrollView.minimumZoomScale
             }
             currentIndex = nextIndex!
         }
