@@ -46,11 +46,11 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
 //    var filterActivities: [tableActivity] = []
 
     var allItems: [DateCompareable] = []
-    var sectionDates: Set<Date> {
+    var sectionDates: [Date] {
         allItems.reduce(into: Set<Date>()) { partialResult, next in
             let newDay = Calendar.current.startOfDay(for: next.dateKey)
             partialResult.insert(newDay)
-        }
+        }.sorted(by: >)
     }
 
 //    var sectionDate: [Date] = []
@@ -94,7 +94,7 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
         newCommentField.placeholder = NSLocalizedString("_new_comment_", comment: "")
         viewContainerConstraint.constant = height
 
-        // Display Name user & Quota
+        // Display Name & Quota
         guard let activeAccount = NCManageDatabase.shared.getActiveAccount(), height > 0 else {
             commentView.isHidden = true
             return
@@ -161,13 +161,13 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
         guard
             let message = textField.text,
             !message.isEmpty,
-            let metadata = self.metadata else { return }
+            let metadata = self.metadata
+        else { return }
 
         NCCommunication.shared.putComments(fileId: metadata.fileId, message: message) { (account, errorCode, errorDescription) in
             if errorCode == 0 {
                 self.newCommentField.text = ""
-                //TODO:...
-//                self.reloadData()
+                self.loadDataSource()
             } else {
                 NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
@@ -250,7 +250,7 @@ extension NCActivity: UITableViewDelegate {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 13)
         label.textColor = NCBrandColor.shared.label
-        label.text = CCUtility.getTitleSectionDate(sectionDates.sorted()[section])
+        label.text = CCUtility.getTitleSectionDate(sectionDates[section])
         label.textAlignment = .center
         label.layer.cornerRadius = 11
         label.layer.masksToBounds = true
@@ -271,7 +271,7 @@ extension NCActivity: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let date = sectionDates.sorted()[section]
+        let date = sectionDates[section]
         return allItems.filter({ Calendar.current.isDate($0.dateKey, inSameDayAs: date) }).count
 //        getTableActivitiesFromSection(section).count
 //        emptyDataSet?.numberOfItemsInSection(numberItems, section: section)
@@ -279,12 +279,11 @@ extension NCActivity: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let date = sectionDates.sorted()[indexPath.section]
+        let date = sectionDates[indexPath.section]
         let sectionItems = allItems
             .filter({ Calendar.current.isDate($0.dateKey, inSameDayAs: date) })
-            .sorted(by: { $0.dateKey > $1.dateKey })
         let cellData = sectionItems[indexPath.row]
-        
+
         if let activityData = cellData as? tableActivity {
             return makeActivityCell(activityData, for: indexPath)
         } else if let commentData = cellData as? tableComments {
@@ -447,10 +446,10 @@ extension NCActivity: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.height < 100 {
-            //TODO:...
-//            if let activities = allActivities.last {
-//                loadActivity(idActivity: activities.idActivity)
-//            }
+            // comments are always loaded in full..? only load more acitvities
+            if let activity = allItems.compactMap({ $0 as? tableActivity }).last {
+                loadActivity(idActivity: activity.objectId)
+            }
         }
     }
 }
@@ -687,13 +686,16 @@ extension NCActivity {
     func loadDataSource() {
         
         guard let metadata = self.metadata else { return }
+        let reloadDispatch = DispatchGroup()
+        self.allItems = []
+        reloadDispatch.enter()
+        reloadDispatch.enter()
 
         NCCommunication.shared.getComments(fileId: metadata.fileId) { (account, comments, errorCode, errorDescription) in
             if errorCode == 0 && comments != nil {
                 NCManageDatabase.shared.addComments(comments!, account: metadata.account, objectId: metadata.fileId)
-                //FIXME: could cause duplicate comments??
                 self.allItems += self.getComments(account: metadata.account, objectId: metadata.fileId)
-                self.tableView.reloadData()
+                reloadDispatch.leave()
             } else {
                 if errorCode != NCGlobal.shared.errorResourceNotFound {
                     NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
@@ -706,13 +708,17 @@ extension NCActivity {
             filterFileId: metadata.fileId)
 //        self.allActivities = activities.all
 //        self.filterActivities = activities.filter
-        self.allItems = activities.filter
+        self.allItems += activities.filter
+        reloadDispatch.leave()
         
-        tableView.reloadData()
+        reloadDispatch.notify(qos: .userInitiated, flags: .enforceQoS, queue: .main) {
+            self.allItems.sort(by: { $0.dateKey > $1.dateKey })
+            self.tableView.reloadData()
+        }
     }
     
     func getTableActivitiesForSection(_ section: Int) -> [tableActivity] {
-        let startDate = sectionDates.sorted()[section]
+        let startDate = sectionDates[section]
         let endDate: Date = {
             let components = DateComponents(day: 1, second: -1)
             return Calendar.current.date(byAdding: components, to: startDate)!
