@@ -119,7 +119,7 @@ class NCViewerMedia: UIViewController {
             ncplayer.saveCurrentTime()
         }
         
-        disableCommandCenter()
+        clearCommandCenter()
         
         metadatas.removeAll()
         ncplayerLivePhoto = nil
