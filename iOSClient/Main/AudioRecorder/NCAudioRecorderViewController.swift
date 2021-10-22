@@ -192,7 +192,7 @@ open class NCAudioRecorder : NSObject {
         super.init()
         
         do {
-            try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default)
+            try AVAudioSession.sharedInstance().setCategory(.playAndRecord)
             try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {

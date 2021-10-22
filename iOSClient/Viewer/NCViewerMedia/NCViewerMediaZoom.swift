@@ -37,17 +37,29 @@ class NCViewerMediaZoom: UIViewController {
     @IBOutlet weak var detailView: NCViewerMediaDetailView!
     @IBOutlet weak var playerToolBar: NCPlayerToolBar!
     
+    private var _autoPlay: Bool = false
+
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var viewerMedia: NCViewerMedia?
     var ncplayer: NCPlayer?
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
-    var isShowDetail: Bool = false
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
     var imageViewConstraint: CGFloat = 0
     var isDetailViewInitializze: Bool = false
-                
+    
+    var autoPlay: Bool {
+        get {
+            let temp = _autoPlay
+            _autoPlay = false
+            return temp
+        }
+        set(newVal) {
+            _autoPlay = newVal
+        }
+    }
+    
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
@@ -59,6 +71,8 @@ class NCViewerMediaZoom: UIViewController {
     
     deinit {
         print("deinit NCViewerMediaZoom")
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
     
     override func viewDidLoad() {
@@ -99,6 +113,8 @@ class NCViewerMediaZoom: UIViewController {
             statusViewImage.image = nil
             statusLabel.text = ""
         }
+        
+        playerToolBar.viewerMedia = viewerMedia
         
         detailViewTopConstraint.constant = 0
         detailView.hide()
@@ -142,8 +158,14 @@ class NCViewerMediaZoom: UIViewController {
         super.viewDidAppear(animated)
         
         if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
-            if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                self.ncplayer = NCPlayer.init(url: url, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView)
+            
+            if ncplayer == nil, let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
+                self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView)
+            } else {
+                self.ncplayer?.activateObserver(playerToolBar: self.playerToolBar)
+                if detailView.isShow() == false && ncplayer?.isPlay() == false {
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
+                }
             }
         }
         
@@ -155,11 +177,6 @@ class NCViewerMediaZoom: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        
-        self.ncplayer?.videoRemoved()
-        playerToolBar?.disableCommandCenter()
-        
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

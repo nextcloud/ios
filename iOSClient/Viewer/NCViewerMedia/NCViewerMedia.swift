@@ -48,12 +48,21 @@ class NCViewerMedia: UIViewController {
     var metadatas: [tableMetadata] = []
     var currentIndex = 0
     var nextIndex: Int?
+    var IndexInPlay: Int = -1
     var ncplayerLivePhoto: NCPlayer?
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
     
     var textColor: UIColor = NCBrandColor.shared.label
+    
+    var playCommand: Any?
+    var pauseCommand: Any?
+    var skipForwardCommand: Any?
+    var skipBackwardCommand: Any?
+    var nextTrackCommand: Any?
+    var previousTrackCommand: Any?
+    
 
     // MARK: - View Life Cycle
 
@@ -76,16 +85,7 @@ class NCViewerMedia: UIViewController {
         pageViewController.view.addGestureRecognizer(singleTapGestureRecognizer)
         pageViewController.view.addGestureRecognizer(longtapGestureRecognizer)
         
-        let viewerMediaZoom = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMediaZoom") as! NCViewerMediaZoom
-                
-        viewerMediaZoom.index = currentIndex
-        viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex])
-        viewerMediaZoom.metadata = metadatas[currentIndex]
-        viewerMediaZoom.viewerMedia = self
-        viewerMediaZoom.isShowDetail = false
-
-        singleTapGestureRecognizer.require(toFail: viewerMediaZoom.doubleTapGestureRecognizer)
-        
+        let viewerMediaZoom = getViewerMediaZoom(index: currentIndex, image: getImageMetadata(metadatas[currentIndex]), metadata: metadatas[currentIndex], direction: .forward)
         pageViewController.setViewControllers([viewerMediaZoom], direction: .forward, animated: true, completion: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
@@ -94,11 +94,7 @@ class NCViewerMedia: UIViewController {
         progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.trackTintColor = .clear
         progressView.progress = 0
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    
+        
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
@@ -113,14 +109,19 @@ class NCViewerMedia: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(showPlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         
-        // Save time video
+        // Clear
         if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
             ncplayer.playerPause()
             ncplayer.saveCurrentTime()
         }
+        
+        currentViewController.playerToolBar.disableCommandCenter()
+        
+        metadatas.removeAll()
+        ncplayerLivePhoto = nil
         
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
@@ -131,6 +132,9 @@ class NCViewerMedia: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
         
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedThumbnail), object: nil)
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -140,6 +144,21 @@ class NCViewerMedia: UIViewController {
         } else {
             return .lightContent
         }
+    }
+    
+    // MARK: -
+    
+    func getViewerMediaZoom(index: Int, image: UIImage?, metadata: tableMetadata, direction: UIPageViewController.NavigationDirection) -> NCViewerMediaZoom {
+        
+        let viewerMediaZoom = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMediaZoom") as! NCViewerMediaZoom
+        viewerMediaZoom.index = index
+        viewerMediaZoom.image = image
+        viewerMediaZoom.metadata = metadata
+        viewerMediaZoom.viewerMedia = self
+
+        singleTapGestureRecognizer.require(toFail: viewerMediaZoom.doubleTapGestureRecognizer)
+       
+        return viewerMediaZoom
     }
 
     @objc func viewUnload() {
@@ -151,10 +170,6 @@ class NCViewerMedia: UIViewController {
         
         let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(currentViewController.metadata.ocId, etag: currentViewController.metadata.etag))
         NCViewer.shared.toggleMenu(viewController: self, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon)
-    }
-    
-    deinit {
-        print("deinit NCViewerMedia")        
     }
     
     func changeScreenMode(mode: ScreenMode, enableTimerAutoHide: Bool = false) {
@@ -380,58 +395,48 @@ class NCViewerMedia: UIViewController {
 extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
     
     func shiftCurrentPage() -> Bool {
+        
         if metadatas.count == 0 { return false }
         
         var direction: UIPageViewController.NavigationDirection = .forward
+        
         if currentIndex == metadatas.count {
             currentIndex -= 1
             direction = .reverse
         }
         
-        let viewerMediaZoom = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMediaZoom") as! NCViewerMediaZoom
+        currentViewController.ncplayer?.deactivateObserver(livePhoto: currentViewController.metadata.livePhoto)
         
-        viewerMediaZoom.index = currentIndex
-        viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex])
-        viewerMediaZoom.metadata = metadatas[currentIndex]
-        viewerMediaZoom.viewerMedia = self
-        viewerMediaZoom.isShowDetail = false
-
-        singleTapGestureRecognizer.require(toFail: viewerMediaZoom.doubleTapGestureRecognizer)
-        
+        let viewerMediaZoom = getViewerMediaZoom(index: currentIndex, image: getImageMetadata(metadatas[currentIndex]), metadata: metadatas[currentIndex], direction: direction)
         pageViewController.setViewControllers([viewerMediaZoom], direction: direction, animated: true, completion: nil)
         
         return true
     }
     
-    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        if currentIndex == 0 { return nil }
+    func goTo(index: Int, direction: UIPageViewController.NavigationDirection, autoPlay: Bool) {
         
-        let viewerMediaZoom = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMediaZoom") as! NCViewerMediaZoom
-                
-        viewerMediaZoom.index = currentIndex - 1
-        viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex - 1])
-        viewerMediaZoom.metadata = metadatas[currentIndex - 1]
-        viewerMediaZoom.viewerMedia = self
-        viewerMediaZoom.isShowDetail = false
+        currentIndex = index
+        
+        currentViewController.ncplayer?.deactivateObserver(livePhoto: currentViewController.metadata.livePhoto)
 
-        self.singleTapGestureRecognizer.require(toFail: viewerMediaZoom.doubleTapGestureRecognizer)
+        let viewerMediaZoom = getViewerMediaZoom(index: currentIndex, image: getImageMetadata(metadatas[currentIndex]), metadata: metadatas[currentIndex], direction: direction)
+        viewerMediaZoom.autoPlay = autoPlay
+        pageViewController.setViewControllers([viewerMediaZoom], direction: direction, animated: true, completion: nil)
+    }
+    
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         
+        if currentIndex == 0 { return nil }
+
+        let viewerMediaZoom = getViewerMediaZoom(index: currentIndex-1, image: getImageMetadata(metadatas[currentIndex-1]), metadata: metadatas[currentIndex-1], direction: .reverse)
         return viewerMediaZoom
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        if currentIndex == metadatas.count - 1 { return nil }
-                
-        let viewerMediaZoom = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMediaZoom") as! NCViewerMediaZoom
         
-        viewerMediaZoom.index = currentIndex + 1
-        viewerMediaZoom.image = getImageMetadata(metadatas[currentIndex + 1])
-        viewerMediaZoom.metadata = metadatas[currentIndex + 1]
-        viewerMediaZoom.viewerMedia = self
-        viewerMediaZoom.isShowDetail = false
+        if currentIndex == metadatas.count-1 { return nil }
 
-        singleTapGestureRecognizer.require(toFail: viewerMediaZoom.doubleTapGestureRecognizer)
-
+        let viewerMediaZoom = getViewerMediaZoom(index: currentIndex+1, image: getImageMetadata(metadatas[currentIndex+1]), metadata: metadatas[currentIndex+1], direction: .forward)
         return viewerMediaZoom
     }
     
@@ -453,7 +458,7 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
         if (completed && nextIndex != nil) {
             previousViewControllers.forEach { viewController in
                 let viewerMediaZoom = viewController as! NCViewerMediaZoom
-                viewerMediaZoom.scrollView.zoomScale = viewerMediaZoom.scrollView.minimumZoomScale
+                viewerMediaZoom.ncplayer?.deactivateObserver(livePhoto: false)
             }
             currentIndex = nextIndex!
         }
@@ -542,8 +547,7 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
                     AudioServicesPlaySystemSound(1519) // peek feedback
                     
                     if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                        self.ncplayerLivePhoto = NCPlayer.init(url: url, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil)
-                        self.ncplayerLivePhoto?.playerPlay()
+                        self.ncplayerLivePhoto = NCPlayer.init(url: url, autoPlay: true, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil)
                     }
                     
                 } else {
@@ -571,8 +575,7 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
                                 AudioServicesPlaySystemSound(1519) // peek feedback
                                 
                                 if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                                    self.ncplayerLivePhoto = NCPlayer.init(url: url, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil)
-                                    self.ncplayerLivePhoto?.playerPlay()
+                                    self.ncplayerLivePhoto = NCPlayer.init(url: url, autoPlay: true, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil)
                                 }
                             }
                         }
@@ -584,7 +587,7 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
             
             currentViewController.statusViewImage.isHidden = false
             currentViewController.statusLabel.isHidden = false
-            self.ncplayerLivePhoto?.videoRemoved()
+            self.ncplayerLivePhoto?.deactivateObserver(livePhoto: true)
         }
     }
 }
