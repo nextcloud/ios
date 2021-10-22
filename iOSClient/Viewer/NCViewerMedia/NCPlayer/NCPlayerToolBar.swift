@@ -296,7 +296,7 @@ class NCPlayerToolBar: UIView {
         */
         
         nowPlayingInfo[MPMediaItemPropertyTitle] = metadata?.fileNameView
-        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = ncplayer.player?.currentItem?.asset.duration.seconds
+        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = ncplayer.durationTime.seconds
         if let image = self.image {
             nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
                 return image
