@@ -705,7 +705,8 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
             
             currentViewController.statusViewImage.isHidden = false
             currentViewController.statusLabel.isHidden = false
-            currentViewController.ncplayer?.videoLayer?.removeFromSuperlayer()
+//            currentViewController.imageVideoContainer.image = currentViewController.image
+            ncplayerLivePhoto?.videoLayer?.removeFromSuperlayer()
             ncplayerLivePhoto?.deactivateObserver()
         }
     }
