@@ -65,6 +65,9 @@ class NCPlayer: NSObject {
         print("Play URL: \(url)")
         player = AVPlayer(url: url)
         
+        self.durationTime = self.player?.currentItem?.asset.duration ?? .zero
+        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationTime: self.durationTime)
+
         if metadata.livePhoto {
             player?.isMuted = false
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
@@ -110,18 +113,15 @@ class NCPlayer: NSObject {
                             }
                         }
                     }
-                    
-                    self.durationTime = self.player?.currentItem?.asset.duration ?? .zero
-                    NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationTime: self.durationTime)
-                    
-                    if autoPlay {
-                        self.player?.play()
-                    }
-                    
+                                        
                     self.playerToolBar?.setBarPlayer(ncplayer: self, metadata: metadata, image: imageVideoContainer?.image)
                     self.generatorImagePreview()
                     if !(detailView?.isShow() ?? false) {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
+                    }
+
+                    if autoPlay {
+                        self.player?.play()
                     }
                 }
                 break
