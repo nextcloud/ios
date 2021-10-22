@@ -34,7 +34,6 @@ private var activeNCPlayer = Set<NCPlayer>()
 class NCPlayer: NSObject {
    
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    private var imageVideoContainer: imageVideoContainerView?
     private var playerToolBar: NCPlayerToolBar?
     private var detailView: NCViewerMediaDetailView?
     private var observerAVPlayerItemDidPlayToEndTime: Any?
@@ -48,7 +47,7 @@ class NCPlayer: NSObject {
     
     // MARK: - View Life Cycle
 
-    init(url: URL, autoPlay: Bool, imageVideoContainer: imageVideoContainerView?, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?) {
+    init(url: URL, autoPlay: Bool, imageVideoContainer: imageVideoContainerView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?) {
         super.init()
         
         self.metadata = metadata
@@ -88,33 +87,29 @@ class NCPlayer: NSObject {
                     
                     self.activateObserver(playerToolBar: playerToolBar)
                     
-                    if let imageVideoContainer = imageVideoContainer {
-                        
-                        self.imageVideoContainer = imageVideoContainer
-                        self.videoLayer = AVPlayerLayer(player: self.player)
-                        self.videoLayer!.frame = imageVideoContainer.bounds
-                        self.videoLayer!.videoGravity = .resizeAspect
-                        
-                        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-                        
-                            imageVideoContainer.layer.addSublayer(self.videoLayer!)
-                            imageVideoContainer.playerLayer = self.videoLayer
-                            imageVideoContainer.metadata = self.metadata
-                            if !metadata.livePhoto {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    imageVideoContainer.image = imageVideoContainer.image?.image(alpha: 0)
-                                }
-                            }
-                            
-                            // PIP
-                            if let playerLayer = self.videoLayer, CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView), metadata.livePhoto == false {
-                                self.pictureInPictureController = AVPictureInPictureController(playerLayer: playerLayer)
-                                self.pictureInPictureController?.delegate = self
+                    self.videoLayer = AVPlayerLayer(player: self.player)
+                    self.videoLayer!.frame = imageVideoContainer.bounds
+                    self.videoLayer!.videoGravity = .resizeAspect
+                    
+                    if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+                    
+                        imageVideoContainer.layer.addSublayer(self.videoLayer!)
+                        imageVideoContainer.playerLayer = self.videoLayer
+                        imageVideoContainer.metadata = self.metadata
+                        if !metadata.livePhoto {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                imageVideoContainer.image = imageVideoContainer.image?.image(alpha: 0)
                             }
                         }
+                        
+                        // PIP
+                        if let playerLayer = self.videoLayer, CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView), metadata.livePhoto == false {
+                            self.pictureInPictureController = AVPictureInPictureController(playerLayer: playerLayer)
+                            self.pictureInPictureController?.delegate = self
+                        }
                     }
-                                        
-                    self.playerToolBar?.setBarPlayer(ncplayer: self, metadata: metadata, image: imageVideoContainer?.image)
+                    
+                    self.playerToolBar?.setBarPlayer(ncplayer: self, metadata: metadata, image: imageVideoContainer.image)
                     self.generatorImagePreview()
                     if !(detailView?.isShow() ?? false) {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
