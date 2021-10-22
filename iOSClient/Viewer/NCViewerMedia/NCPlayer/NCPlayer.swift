@@ -157,7 +157,7 @@ class NCPlayer: NSObject {
                 if !(self.detailView?.isShow() ?? false) {
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
                 }
-                self.playerToolBar?.updateToolBar(timeSeek: .zero)
+                self.playerToolBar?.updateToolBar()
             }
         }
         

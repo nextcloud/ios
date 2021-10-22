@@ -136,10 +136,9 @@ class NCPlayerToolBar: UIView {
         updateToolBar()
     }
     
-    public func updateToolBar(timeSeek: CMTime? = nil) {
+    public func updateToolBar() {
         guard let metadata = self.metadata else { return }
         guard let ncplayer = self.ncplayer else { return }
-        var time: CMTime = .zero
                 
         // MUTE
         if CCUtility.getAudioMute() {
@@ -167,12 +166,7 @@ class NCPlayerToolBar: UIView {
         }
         
         // SLIDER TIME (START - END)
-        if timeSeek != nil {
-            time = timeSeek!
-        } else {
-            time = (ncplayer.player?.currentTime() ?? .zero).convertScale(1000, method: .default)
-            
-        }
+        let time = (ncplayer.player?.currentTime() ?? .zero).convertScale(1000, method: .default)
         playbackSlider.value = Float(time.seconds)
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = time.seconds
         playbackSlider.isEnabled = true
@@ -347,7 +341,7 @@ class NCPlayerToolBar: UIView {
             ncplayer.videoSeek(time: newTime)
         }
         
-        updateToolBar(timeSeek: newTime)
+        updateToolBar()
         reStartTimerAutoHide()
     }
     
