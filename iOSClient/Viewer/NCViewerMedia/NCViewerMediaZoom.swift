@@ -170,13 +170,12 @@ class NCViewerMediaZoom: UIViewController {
             }
             
             if let ncplayer = self.ncplayer {
-                print("xxxxxxx \(ncplayer.durationTime.seconds)")
                 self.viewerMedia?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
             }
             
         } else {
             
-            viewerMedia?.disableCommandCenter()
+            viewerMedia?.clearCommandCenter()
         }
         
         // DOWNLOAD

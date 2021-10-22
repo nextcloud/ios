@@ -394,6 +394,9 @@ class NCViewerMedia: UIViewController {
 
     func updateCommandCenter(ncplayer: NCPlayer, metadata: tableMetadata) {
 
+        // Clear
+        clearCommandCenter()
+        
         UIApplication.shared.beginReceivingRemoteControlEvents()
         var nowPlayingInfo = [String : Any]()
 
@@ -469,7 +472,7 @@ class NCViewerMedia: UIViewController {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
 
-    func disableCommandCenter() {
+    func clearCommandCenter() {
         
         UIApplication.shared.endReceivingRemoteControlEvents()
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
