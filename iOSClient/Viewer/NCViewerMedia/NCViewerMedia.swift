@@ -24,6 +24,7 @@
 import UIKit
 import SVGKit
 import NCCommunication
+import MediaPlayer
 
 class NCViewerMedia: UIViewController {
 
@@ -118,7 +119,7 @@ class NCViewerMedia: UIViewController {
             ncplayer.saveCurrentTime()
         }
         
-        currentViewController.playerToolBar.disableCommandCenter()
+        disableCommandCenter()
         
         metadatas.removeAll()
         ncplayerLivePhoto = nil
@@ -388,9 +389,126 @@ class NCViewerMedia: UIViewController {
         
         return image
     }
+    
+    // MARK: - Command Center
+
+    func updateCommandCenter(ncplayer: NCPlayer, metadata: tableMetadata) {
+
+        UIApplication.shared.beginReceivingRemoteControlEvents()
+        var nowPlayingInfo = [String : Any]()
+
+        // Add handler for Play Command
+        MPRemoteCommandCenter.shared().playCommand.isEnabled = true
+        playCommand = MPRemoteCommandCenter.shared().playCommand.addTarget { event in
+            
+            if !ncplayer.isPlay() {
+                ncplayer.playerPlay()
+                return .success
+            }
+            return .commandFailed
+        }
+      
+        // Add handler for Pause Command
+        MPRemoteCommandCenter.shared().pauseCommand.isEnabled = true
+        pauseCommand = MPRemoteCommandCenter.shared().pauseCommand.addTarget { event in
+          
+            if ncplayer.isPlay() {
+                ncplayer.playerPause()
+                return .success
+            }
+            return .commandFailed
+        }
+        
+        // VIDEO / AUDIO () ()
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+            
+            MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
+            skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
+                
+                let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
+                self.currentViewController.playerToolBar.skip(seconds: seconds)
+                return.success
+            }
+            
+            MPRemoteCommandCenter.shared().skipBackwardCommand.isEnabled = true
+            skipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
+                
+                let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
+                self.currentViewController.playerToolBar.skip(seconds: -seconds)
+                return.success
+            }
+        }
+                
+        // AUDIO < >
+        /*
+        if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+                        
+            MPRemoteCommandCenter.shared().nextTrackCommand.isEnabled = true
+            appDelegate.nextTrackCommand = MPRemoteCommandCenter.shared().nextTrackCommand.addTarget { event in
+                
+                self.forward()
+                return .success
+            }
+            
+            MPRemoteCommandCenter.shared().previousTrackCommand.isEnabled = true
+            appDelegate.previousTrackCommand = MPRemoteCommandCenter.shared().previousTrackCommand.addTarget { event in
+             
+                self.backward()
+                return .success
+            }
+        }
+        */
+        
+        nowPlayingInfo[MPMediaItemPropertyTitle] = metadata.fileNameView
+        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = ncplayer.durationTime.seconds
+        if let image = currentViewController.image {
+            nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
+                return image
+            }
+        }
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+
+    func disableCommandCenter() {
+        
+        UIApplication.shared.endReceivingRemoteControlEvents()
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
+
+        MPRemoteCommandCenter.shared().playCommand.isEnabled = false
+        MPRemoteCommandCenter.shared().pauseCommand.isEnabled = false
+        MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = false
+        MPRemoteCommandCenter.shared().skipBackwardCommand.isEnabled = false
+        MPRemoteCommandCenter.shared().nextTrackCommand.isEnabled = false
+        MPRemoteCommandCenter.shared().previousTrackCommand.isEnabled = false
+
+        if let playCommand = playCommand {
+            MPRemoteCommandCenter.shared().playCommand.removeTarget(playCommand)
+            self.playCommand = nil
+        }
+        if let pauseCommand = pauseCommand {
+            MPRemoteCommandCenter.shared().pauseCommand.removeTarget(pauseCommand)
+            self.pauseCommand = nil
+        }
+        if let skipForwardCommand = skipForwardCommand {
+            MPRemoteCommandCenter.shared().skipForwardCommand.removeTarget(skipForwardCommand)
+            self.skipForwardCommand = nil
+        }
+        if let skipBackwardCommand = skipBackwardCommand {
+            MPRemoteCommandCenter.shared().skipBackwardCommand.removeTarget(skipBackwardCommand)
+            self.skipBackwardCommand = nil
+        }
+        if let nextTrackCommand = nextTrackCommand {
+            MPRemoteCommandCenter.shared().nextTrackCommand.removeTarget(nextTrackCommand)
+            self.nextTrackCommand = nil
+        }
+        if let previousTrackCommand = previousTrackCommand {
+            MPRemoteCommandCenter.shared().previousTrackCommand.removeTarget(previousTrackCommand)
+            self.previousTrackCommand = nil
+        }
+    }
 }
 
-//MARK: - UIPageViewController Delegate Datasource
+// MARK: - UIPageViewController Delegate Datasource
 
 extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
     
@@ -405,7 +523,7 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
             direction = .reverse
         }
         
-        currentViewController.ncplayer?.deactivateObserver(livePhoto: currentViewController.metadata.livePhoto)
+        currentViewController.ncplayer?.deactivateObserver()
         
         let viewerMediaZoom = getViewerMediaZoom(index: currentIndex, image: getImageMetadata(metadatas[currentIndex]), metadata: metadatas[currentIndex], direction: direction)
         pageViewController.setViewControllers([viewerMediaZoom], direction: direction, animated: true, completion: nil)
@@ -417,7 +535,7 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
         
         currentIndex = index
         
-        currentViewController.ncplayer?.deactivateObserver(livePhoto: currentViewController.metadata.livePhoto)
+        currentViewController.ncplayer?.deactivateObserver()
 
         let viewerMediaZoom = getViewerMediaZoom(index: currentIndex, image: getImageMetadata(metadatas[currentIndex]), metadata: metadatas[currentIndex], direction: direction)
         viewerMediaZoom.autoPlay = autoPlay
@@ -458,7 +576,7 @@ extension NCViewerMedia: UIPageViewControllerDelegate, UIPageViewControllerDataS
         if (completed && nextIndex != nil) {
             previousViewControllers.forEach { viewController in
                 let viewerMediaZoom = viewController as! NCViewerMediaZoom
-                viewerMediaZoom.ncplayer?.deactivateObserver(livePhoto: false)
+                viewerMediaZoom.ncplayer?.deactivateObserver()
             }
             currentIndex = nextIndex!
         }
@@ -587,7 +705,8 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
             
             currentViewController.statusViewImage.isHidden = false
             currentViewController.statusLabel.isHidden = false
-            self.ncplayerLivePhoto?.deactivateObserver(livePhoto: true)
+            currentViewController.ncplayer?.videoLayer?.removeFromSuperlayer()
+            ncplayerLivePhoto?.deactivateObserver()
         }
     }
 }

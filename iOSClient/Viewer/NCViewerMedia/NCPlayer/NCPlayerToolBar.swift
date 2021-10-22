@@ -140,22 +140,7 @@ class NCPlayerToolBar: UIView {
         guard let metadata = self.metadata else { return }
         guard let ncplayer = self.ncplayer else { return }
         var time: CMTime = .zero
-        
-        let imageNameBackward = "gobackward.10"
-        let imageNameForward = "goforward.10"
-        
-        /*
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-            imageNameBackward = "backward"
-            imageNameForward = "forward"
-        }
-        */
-        
-        // COMMAND CENTER
-        if commandCenter && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-            enableCommandCenter()
-        }
-        
+                
         // MUTE
         if CCUtility.getAudioMute() {
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
@@ -196,9 +181,9 @@ class NCPlayerToolBar: UIView {
         
         // BACK
         if #available(iOS 13.0, *) {
-            backButton.setImage(NCUtility.shared.loadImage(named: imageNameBackward, color: .white), for: .normal)
+            backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white), for: .normal)
         } else {
-            backButton.setImage(NCUtility.shared.loadImage(named: imageNameBackward, color: .white, size: 30), for: .normal)
+            backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white, size: 30), for: .normal)
         }
         backButton.isEnabled = true
                  
@@ -218,129 +203,11 @@ class NCPlayerToolBar: UIView {
         
         // FORWARD
         if #available(iOS 13.0, *) {
-            forwardButton.setImage(NCUtility.shared.loadImage(named: imageNameForward, color: .white), for: .normal)
+            forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white), for: .normal)
         } else {
-            forwardButton.setImage(NCUtility.shared.loadImage(named: imageNameForward, color: .white, size: 30), for: .normal)
+            forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white, size: 30), for: .normal)
         }
         forwardButton.isEnabled = true
-    }
-    
-    // MARK: - Command Center
-    
-    func enableCommandCenter() {
-        guard let ncplayer = self.ncplayer else { return }
-        
-        UIApplication.shared.beginReceivingRemoteControlEvents()
-        var nowPlayingInfo = [String : Any]()
-
-        // Add handler for Play Command
-        MPRemoteCommandCenter.shared().playCommand.isEnabled = true
-        viewerMedia?.playCommand = MPRemoteCommandCenter.shared().playCommand.addTarget { event in
-            
-            if !ncplayer.isPlay() {
-                ncplayer.playerPlay()
-                return .success
-            }
-            return .commandFailed
-        }
-      
-        // Add handler for Pause Command
-        MPRemoteCommandCenter.shared().pauseCommand.isEnabled = true
-        viewerMedia?.pauseCommand = MPRemoteCommandCenter.shared().pauseCommand.addTarget { event in
-          
-            if ncplayer.isPlay() {
-                ncplayer.playerPause()
-                return .success
-            }
-            return .commandFailed
-        }
-        
-        // VIDEO / AUDIO () ()
-        if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-            
-            MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
-            viewerMedia?.skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
-                
-                let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
-                self.skip(seconds: seconds)
-                return.success
-            }
-            
-            MPRemoteCommandCenter.shared().skipBackwardCommand.isEnabled = true
-            viewerMedia?.skipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
-                
-                let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
-                self.skip(seconds: -seconds)
-                return.success
-            }
-        }
-                
-        // AUDIO < >
-        /*
-        if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-                        
-            MPRemoteCommandCenter.shared().nextTrackCommand.isEnabled = true
-            appDelegate.nextTrackCommand = MPRemoteCommandCenter.shared().nextTrackCommand.addTarget { event in
-                
-                self.forward()
-                return .success
-            }
-            
-            MPRemoteCommandCenter.shared().previousTrackCommand.isEnabled = true
-            appDelegate.previousTrackCommand = MPRemoteCommandCenter.shared().previousTrackCommand.addTarget { event in
-             
-                self.backward()
-                return .success
-            }
-        }
-        */
-        
-        nowPlayingInfo[MPMediaItemPropertyTitle] = metadata?.fileNameView
-        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = ncplayer.durationTime.seconds
-        if let image = self.image {
-            nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
-                return image
-            }
-        }
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
-    }
-    
-    func disableCommandCenter() {
-        
-        UIApplication.shared.endReceivingRemoteControlEvents()
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
-
-        MPRemoteCommandCenter.shared().playCommand.isEnabled = false
-        MPRemoteCommandCenter.shared().pauseCommand.isEnabled = false
-        MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = false
-        MPRemoteCommandCenter.shared().skipBackwardCommand.isEnabled = false
-        MPRemoteCommandCenter.shared().nextTrackCommand.isEnabled = false
-        MPRemoteCommandCenter.shared().previousTrackCommand.isEnabled = false
-
-        if let playCommand = viewerMedia?.playCommand {
-            MPRemoteCommandCenter.shared().playCommand.removeTarget(playCommand)
-            viewerMedia?.playCommand = nil
-        }
-        if let pauseCommand = viewerMedia?.pauseCommand {
-            MPRemoteCommandCenter.shared().pauseCommand.removeTarget(pauseCommand)
-            viewerMedia?.pauseCommand = nil
-        }
-        if let skipForwardCommand = viewerMedia?.skipForwardCommand {
-            MPRemoteCommandCenter.shared().skipForwardCommand.removeTarget(skipForwardCommand)
-            viewerMedia?.skipForwardCommand = nil
-        }
-        if let skipBackwardCommand = viewerMedia?.skipBackwardCommand {
-            MPRemoteCommandCenter.shared().skipBackwardCommand.removeTarget(skipBackwardCommand)
-            viewerMedia?.skipBackwardCommand = nil
-        }
-        if let nextTrackCommand = viewerMedia?.nextTrackCommand {
-            MPRemoteCommandCenter.shared().nextTrackCommand.removeTarget(nextTrackCommand)
-            viewerMedia?.nextTrackCommand = nil
-        }
-        if let previousTrackCommand = viewerMedia?.previousTrackCommand {
-            MPRemoteCommandCenter.shared().previousTrackCommand.removeTarget(previousTrackCommand)
-            viewerMedia?.previousTrackCommand = nil
-        }
     }
     
     // MARK: Handle Notifications

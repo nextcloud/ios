@@ -168,6 +168,15 @@ class NCViewerMediaZoom: UIViewController {
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
                 }
             }
+            
+            if let ncplayer = self.ncplayer {
+                print("xxxxxxx \(ncplayer.durationTime.seconds)")
+                self.viewerMedia?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
+            }
+            
+        } else {
+            
+            viewerMedia?.disableCommandCenter()
         }
         
         // DOWNLOAD

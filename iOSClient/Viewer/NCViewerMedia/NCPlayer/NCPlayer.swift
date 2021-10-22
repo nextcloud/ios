@@ -142,6 +142,8 @@ class NCPlayer: NSObject {
 
     deinit {
         print("deinit NCPlayer")
+        
+        deactivateObserver()
     }
     
     func activateObserver(playerToolBar: NCPlayerToolBar?) {
@@ -173,19 +175,13 @@ class NCPlayer: NSObject {
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
     
-    func deactivateObserver(livePhoto: Bool) {
+    func deactivateObserver() {
         
         if isPlay() {
             playerPause()
         }
         
-        self.playerToolBar?.disableCommandCenter()
         self.playerToolBar = nil
-        
-        if livePhoto {
-            self.videoLayer?.removeFromSuperlayer()
-            self.videoLayer = nil
-        }
         
         if let observerAVPlayerItemDidPlayToEndTime = self.observerAVPlayerItemDidPlayToEndTime {
             NotificationCenter.default.removeObserver(observerAVPlayerItemDidPlayToEndTime)
