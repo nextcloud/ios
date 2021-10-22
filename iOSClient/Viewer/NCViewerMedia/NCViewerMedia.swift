@@ -146,10 +146,6 @@ class NCViewerMedia: UIViewController {
         }
     }
     
-    deinit {
-        print("deinit NCViewerMedia")
-    }
-
     // MARK: -
     
     func getViewerMediaZoom(index: Int, image: UIImage?, metadata: tableMetadata, direction: UIPageViewController.NavigationDirection) -> NCViewerMediaZoom {
