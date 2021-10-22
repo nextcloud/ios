@@ -133,10 +133,10 @@ class NCPlayerToolBar: UIView {
         labelCurrentTime.text = NCUtility.shared.stringFromTime(.zero)
         labelLeftTime.text = "-" + NCUtility.shared.stringFromTime(ncplayer.durationTime)
         
-        updateToolBar(commandCenter: true)
+        updateToolBar()
     }
     
-    public func updateToolBar(timeSeek: CMTime? = nil, commandCenter: Bool = false) {
+    public func updateToolBar(timeSeek: CMTime? = nil) {
         guard let metadata = self.metadata else { return }
         guard let ncplayer = self.ncplayer else { return }
         var time: CMTime = .zero
@@ -347,6 +347,7 @@ class NCPlayerToolBar: UIView {
             ncplayer.videoSeek(time: newTime)
         }
         
+        updateToolBar(timeSeek: newTime)
         reStartTimerAutoHide()
     }
     

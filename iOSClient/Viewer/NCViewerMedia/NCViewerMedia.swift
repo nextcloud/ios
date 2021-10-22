@@ -394,11 +394,11 @@ class NCViewerMedia: UIViewController {
 
     func updateCommandCenter(ncplayer: NCPlayer, metadata: tableMetadata) {
 
+        var nowPlayingInfo = [String : Any]()
+
         // Clear
         clearCommandCenter()
-        
         UIApplication.shared.beginReceivingRemoteControlEvents()
-        var nowPlayingInfo = [String : Any]()
 
         // Add handler for Play Command
         MPRemoteCommandCenter.shared().playCommand.isEnabled = true
