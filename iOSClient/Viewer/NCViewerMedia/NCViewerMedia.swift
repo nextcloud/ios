@@ -631,10 +631,8 @@ extension NCViewerMedia: UIGestureRecognizerDelegate {
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
                 
-        if let pictureInPictureController = currentViewController.ncplayer?.pictureInPictureController {
-            if pictureInPictureController.isPictureInPictureActive {
-                pictureInPictureController.stopPictureInPicture()
-            }
+        if let ncplayer = currentViewController.ncplayer, ncplayer.isPictureInPictureActive() {
+            ncplayer.pictureInPictureController?.stopPictureInPicture()
         }
         
         if currentScreenMode == .full {

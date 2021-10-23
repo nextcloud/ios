@@ -201,10 +201,9 @@ class NCPlayer: NSObject {
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
         
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-            if let pictureInPictureController = pictureInPictureController, pictureInPictureController.isPictureInPictureActive {
-                return
+            if !isPictureInPictureActive() {
+                playerPause()
             }
-            playerPause()
         }
     }
     
@@ -221,8 +220,9 @@ class NCPlayer: NSObject {
     }
     
     func isPictureInPictureActive() -> Bool {
+        guard let pictureInPictureController = self.pictureInPictureController else { return false }
         
-        if let pictureInPictureController = pictureInPictureController, pictureInPictureController.isPictureInPictureActive {
+        if pictureInPictureController.isPictureInPictureActive {
             return true
         } else {
             return false
@@ -240,8 +240,8 @@ class NCPlayer: NSObject {
         player?.pause()
         self.playerToolBar?.updateToolBar()
         
-        if let pictureInPictureController = pictureInPictureController, pictureInPictureController.isPictureInPictureActive {
-            pictureInPictureController.stopPictureInPicture()
+        if isPictureInPictureActive() {
+            pictureInPictureController?.stopPictureInPicture()
         }
     }
     
