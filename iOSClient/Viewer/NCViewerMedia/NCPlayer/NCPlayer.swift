@@ -101,7 +101,7 @@ class NCPlayer: NSObject {
                         }
                         
                         // PIP
-                        if let playerLayer = self.videoLayer, CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView), metadata.livePhoto == false {
+                        if let playerLayer = self.videoLayer, metadata.livePhoto == false {
                             self.pictureInPictureController = AVPictureInPictureController(playerLayer: playerLayer)
                             self.pictureInPictureController?.delegate = self
                         }
@@ -201,7 +201,9 @@ class NCPlayer: NSObject {
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
         
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-            if let pictureInPictureController = pictureInPictureController, pictureInPictureController.isPictureInPictureActive { return }
+            if let pictureInPictureController = pictureInPictureController, pictureInPictureController.isPictureInPictureActive {
+                return
+            }
             playerPause()
         }
     }

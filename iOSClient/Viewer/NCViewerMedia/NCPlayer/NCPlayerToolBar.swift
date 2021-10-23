@@ -149,7 +149,7 @@ class NCPlayerToolBar: UIView {
         muteButton.isEnabled = true
         
         // PIP
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .white), for: .normal)
             pipButton.isEnabled = true
             if let playerLayer = ncplayer.videoLayer, ncplayer.pictureInPictureController == nil {
