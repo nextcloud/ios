@@ -338,6 +338,9 @@ class NCPlayerToolBar: UIView {
             }
         } else {
             newTime = CMTimeSubtract(currentTime, timeToAdd)
+            if newTime.seconds < 0 {
+                newTime = .zero
+            }
             ncplayer.videoSeek(time: newTime)
         }
         
