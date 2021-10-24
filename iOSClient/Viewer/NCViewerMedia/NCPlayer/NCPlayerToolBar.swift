@@ -353,38 +353,6 @@ class NCPlayerToolBar: UIView {
         }
     }
     
-    func forward() {
-        
-        var index: Int = 0
-        
-        if let currentIndex = self.viewerMedia?.currentIndex, let metadatas = self.viewerMedia?.metadatas, let ncplayer = self.ncplayer {
-        
-            if currentIndex == metadatas.count - 1 {
-                index = 0
-            } else {
-                index = currentIndex + 1
-            }
-            
-            self.viewerMedia?.goTo(index: index, direction: .forward, autoPlay: ncplayer.isPlay())
-        }
-    }
-    
-    func backward() {
-        
-        var index: Int = 0
-
-        if let currentIndex = self.viewerMedia?.currentIndex, let metadatas = self.viewerMedia?.metadatas, let ncplayer = self.ncplayer {
-            
-            if currentIndex == 0 {
-                index = metadatas.count - 1
-            } else {
-                index = currentIndex - 1
-            }
-            
-            self.viewerMedia?.goTo(index: index, direction: .reverse, autoPlay: ncplayer.isPlay())
-        }
-    }
-    
     //MARK: - Event / Gesture
     
     @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
@@ -510,6 +478,38 @@ class NCPlayerToolBar: UIView {
             backward()
         }
         */
+    }
+    
+    func forward() {
+        
+        var index: Int = 0
+        
+        if let currentIndex = self.viewerMedia?.currentIndex, let metadatas = self.viewerMedia?.metadatas, let ncplayer = self.ncplayer {
+        
+            if currentIndex == metadatas.count - 1 {
+                index = 0
+            } else {
+                index = currentIndex + 1
+            }
+            
+            self.viewerMedia?.goTo(index: index, direction: .forward, autoPlay: ncplayer.isPlay())
+        }
+    }
+    
+    func backward() {
+        
+        var index: Int = 0
+
+        if let currentIndex = self.viewerMedia?.currentIndex, let metadatas = self.viewerMedia?.metadatas, let ncplayer = self.ncplayer {
+            
+            if currentIndex == 0 {
+                index = metadatas.count - 1
+            } else {
+                index = currentIndex - 1
+            }
+            
+            self.viewerMedia?.goTo(index: index, direction: .reverse, autoPlay: ncplayer.isPlay())
+        }
     }
 }
 
