@@ -321,7 +321,6 @@ class NCPlayerToolBar: UIView {
 
         if seconds > 0 {
             newTime = CMTimeAdd(currentTime, timeToAdd)
-            
             if newTime < ncplayer.durationTime {
                 ncplayer.videoSeek(time: newTime)
             } else if newTime >= ncplayer.durationTime {
@@ -351,6 +350,11 @@ class NCPlayerToolBar: UIView {
         } else {
             return false
         }
+    }
+    
+    func stopTimerAutoHide() {
+        
+        timerAutoHide?.invalidate()
     }
     
     //MARK: - Event / Gesture
