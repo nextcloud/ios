@@ -118,12 +118,13 @@ class NCViewerMedia: UIViewController {
             ncplayer.playerPause()
             ncplayer.saveCurrentTime()
         }
-        
+        currentViewController.playerToolBar.stopTimerAutoHide()
         clearCommandCenter()
         
         metadatas.removeAll()
         ncplayerLivePhoto = nil
         
+        // Remove Observer
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
