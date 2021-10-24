@@ -91,9 +91,7 @@ class NCPlayer: NSObject {
                         imageVideoContainer.layer.addSublayer(self.videoLayer!)
                         imageVideoContainer.playerLayer = self.videoLayer
                         imageVideoContainer.metadata = self.metadata
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            imageVideoContainer.image = imageVideoContainer.image?.image(alpha: 0)
-                        }
+                        imageVideoContainer.image = imageVideoContainer.image?.image(alpha: 0)
                     }
                     
                     self.playerToolBar?.setBarPlayer(ncplayer: self, metadata: metadata, image: imageVideoContainer.image)
