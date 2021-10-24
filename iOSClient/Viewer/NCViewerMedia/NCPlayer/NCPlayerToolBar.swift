@@ -152,17 +152,11 @@ class NCPlayerToolBar: UIView {
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .white), for: .normal)
             pipButton.isEnabled = true
-            if let playerLayer = ncplayer.videoLayer, ncplayer.pictureInPictureController == nil {
-                ncplayer.pictureInPictureController = AVPictureInPictureController(playerLayer: playerLayer)
-                ncplayer.pictureInPictureController?.delegate = ncplayer
-            }
         } else {
             pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .gray), for: .normal)
             pipButton.isEnabled = false
-            if ncplayer.pictureInPictureController != nil {
-                ncplayer.pictureInPictureController = nil
-                ncplayer.pictureInPictureController?.delegate = nil
-            }
+            ncplayer.pictureInPictureController = nil
+            ncplayer.pictureInPictureController?.delegate = nil
         }
         
         // SLIDER TIME (START - END)
@@ -460,9 +454,17 @@ class NCPlayerToolBar: UIView {
     
     @IBAction func setPip(_ sender: Any) {
         guard let metadata = self.metadata else { return }
-
-        ncplayer?.pictureInPictureController?.startPictureInPicture()
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar, userInfo: ["ocId":metadata.ocId])
+        
+        if let ncplayer = self.ncplayer, let playerLayer = ncplayer.videoLayer {
+            if ncplayer.pictureInPictureController == nil {
+                ncplayer.pictureInPictureController = AVPictureInPictureController(playerLayer: playerLayer)
+                ncplayer.pictureInPictureController?.delegate = ncplayer
+            }
+            if let pictureInPictureController = ncplayer.pictureInPictureController, pictureInPictureController.isPictureInPicturePossible {
+                ncplayer.pictureInPictureController?.startPictureInPicture()
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar, userInfo: ["ocId":metadata.ocId])
+            }
+        }
     }
     
     @IBAction func forwardButtonSec(_ sender: Any) {

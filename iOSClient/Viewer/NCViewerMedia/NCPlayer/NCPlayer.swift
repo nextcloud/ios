@@ -99,12 +99,6 @@ class NCPlayer: NSObject {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             imageVideoContainer.image = imageVideoContainer.image?.image(alpha: 0)
                         }
-                        
-                        // PIP
-                        if let playerLayer = self.videoLayer, metadata.livePhoto == false {
-                            self.pictureInPictureController = AVPictureInPictureController(playerLayer: playerLayer)
-                            self.pictureInPictureController?.delegate = self
-                        }
                     }
                     
                     self.playerToolBar?.setBarPlayer(ncplayer: self, metadata: metadata, image: imageVideoContainer.image)
