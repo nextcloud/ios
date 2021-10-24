@@ -54,6 +54,7 @@ class NCPlayerToolBar: UIView {
     private var metadata: tableMetadata?
     private var image: UIImage?
     
+    var pictureInPictureController: AVPictureInPictureController?
     weak var viewerMedia: NCViewerMedia?
 
     // MARK: - View Life Cycle
@@ -149,14 +150,14 @@ class NCPlayerToolBar: UIView {
         muteButton.isEnabled = true
         
         // PIP
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && AVPictureInPictureController.isPictureInPictureSupported() {
             pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .white), for: .normal)
             pipButton.isEnabled = true
         } else {
             pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .gray), for: .normal)
             pipButton.isEnabled = false
-            ncplayer.pictureInPictureController = nil
-            ncplayer.pictureInPictureController?.delegate = nil
+            pictureInPictureController = nil
+            pictureInPictureController?.delegate = nil
         }
         
         // SLIDER TIME (START - END)
@@ -342,6 +343,16 @@ class NCPlayerToolBar: UIView {
         reStartTimerAutoHide()
     }
     
+    func isPictureInPictureActive() -> Bool {
+        guard let pictureInPictureController = self.pictureInPictureController else { return false }
+        
+        if pictureInPictureController.isPictureInPictureActive {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     func forward() {
         
         var index: Int = 0
@@ -408,12 +419,15 @@ class NCPlayerToolBar: UIView {
     //MARK: - Action
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
+        // nothing
     }
     
     @IBAction func buttonPlayerToolBarTouchInside(_ sender: UIButton) {
+        // nothing
     }
     
     @IBAction func buttonPlayerTopToolBarTouchInside(_ sender: UIButton) {
+        // nothing
     }
     
     @IBAction func playerPause(_ sender: Any) {
@@ -454,16 +468,21 @@ class NCPlayerToolBar: UIView {
     
     @IBAction func setPip(_ sender: Any) {
         guard let metadata = self.metadata else { return }
+        guard let ncplayer = self.ncplayer else { return }
+        guard let videoLayer = ncplayer.videoLayer else { return }
         
-        if let ncplayer = self.ncplayer, let playerLayer = ncplayer.videoLayer {
-            if ncplayer.pictureInPictureController == nil {
-                ncplayer.pictureInPictureController = AVPictureInPictureController(playerLayer: playerLayer)
-                ncplayer.pictureInPictureController?.delegate = ncplayer
-            }
-            if let pictureInPictureController = ncplayer.pictureInPictureController, pictureInPictureController.isPictureInPicturePossible {
-                ncplayer.pictureInPictureController?.startPictureInPicture()
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar, userInfo: ["ocId":metadata.ocId])
-            }
+        if let pictureInPictureController = self.pictureInPictureController, pictureInPictureController.isPictureInPictureActive {
+            pictureInPictureController.stopPictureInPicture()
+        }
+        
+        if pictureInPictureController == nil {
+            pictureInPictureController = AVPictureInPictureController(playerLayer: videoLayer)
+            pictureInPictureController?.delegate = self
+        }
+        
+        if let pictureInPictureController = pictureInPictureController, pictureInPictureController.isPictureInPicturePossible {
+            pictureInPictureController.startPictureInPicture()
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar, userInfo: ["ocId":metadata.ocId])
         }
     }
     
@@ -491,6 +510,18 @@ class NCPlayerToolBar: UIView {
             backward()
         }
         */
+    }
+}
+
+extension NCPlayerToolBar: AVPictureInPictureControllerDelegate {
+    
+    func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        guard let metadata = self.metadata else { return }
+        guard let ncplayer = self.ncplayer else { return }
+
+        if !ncplayer.isPlay() {
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
+        }
     }
 }
 
