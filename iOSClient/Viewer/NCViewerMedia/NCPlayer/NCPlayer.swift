@@ -25,11 +25,7 @@ import Foundation
 import NCCommunication
 import UIKit
 import AVFoundation
-import AVKit
 import MediaPlayer
-
-/// The Set of custom player controllers currently using or transitioning out of PiP
-private var activeNCPlayer = Set<NCPlayer>()
 
 class NCPlayer: NSObject {
    
@@ -43,7 +39,6 @@ class NCPlayer: NSObject {
     public var durationTime: CMTime = .zero
     public var metadata: tableMetadata?
     public var videoLayer: AVPlayerLayer?
-    public var pictureInPictureController: AVPictureInPictureController?
     
     // MARK: - View Life Cycle
 
@@ -193,9 +188,10 @@ class NCPlayer: NSObject {
     //MARK: - NotificationCenter
 
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
+        guard let playerToolBar = self.playerToolBar else { return }
         
         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-            if !isPictureInPictureActive() {
+            if !playerToolBar.isPictureInPictureActive() {
                 playerPause()
             }
         }
@@ -213,16 +209,6 @@ class NCPlayer: NSObject {
         if player?.rate == 1 { return true } else { return false }
     }
     
-    func isPictureInPictureActive() -> Bool {
-        guard let pictureInPictureController = self.pictureInPictureController else { return false }
-        
-        if pictureInPictureController.isPictureInPictureActive {
-            return true
-        } else {
-            return false
-        }
-    }
-    
     func playerPlay() {
                 
         player?.play()
@@ -234,8 +220,8 @@ class NCPlayer: NSObject {
         player?.pause()
         self.playerToolBar?.updateToolBar()
         
-        if isPictureInPictureActive() {
-            pictureInPictureController?.stopPictureInPicture()
+        if let playerToolBar = self.playerToolBar, playerToolBar.isPictureInPictureActive() {
+            playerToolBar.pictureInPictureController?.stopPictureInPicture()
         }
     }
     
@@ -300,27 +286,5 @@ class NCPlayer: NSObject {
     }
 }
 
-extension NCPlayer: AVPictureInPictureControllerDelegate {
-    
-    func pictureInPictureControllerWillStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-        
-        activeNCPlayer.insert(self)
-    }
-    
-    func pictureInPictureControllerDidStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-        // nothing
-    }
-    
-    func pictureInPictureControllerWillStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-        //nothing
-    }
-    
-    func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-        guard let metadata = self.metadata else { return }
 
-        if !isPlay() {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
-        }
-    }
-}
 
