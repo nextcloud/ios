@@ -118,6 +118,9 @@ class NCViewerMediaZoom: UIViewController {
         
         detailViewTopConstraint.constant = 0
         detailView.hide()
+        
+        // DOWNLOAD
+        downloadFile()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -170,13 +173,17 @@ class NCViewerMediaZoom: UIViewController {
                 self.viewerMedia?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
             }
             
-        } else {
+        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+            
+            if let image = image {
+                let imageNoPreview = UIImage.init(named: "noPreview")!.image(color: .gray, size: view.frame.width)
+                if imageNoPreview.isEqualToImage(image: image) {
+                    self.reload(image: nil, metadata: metadata)
+                }
+            }
             
             viewerMedia?.clearCommandCenter()
         }
-        
-        // DOWNLOAD
-        downloadFile()
         
         NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
@@ -200,14 +207,25 @@ class NCViewerMediaZoom: UIViewController {
         }) { (_) in }
     }
     
-    func reload(image: UIImage, metadata: tableMetadata) {
+    func reload(image: UIImage?, metadata: tableMetadata) {
         
-        self.image = image
+        if image == nil {
+            
+            if let image = viewerMedia?.getImageMetadata(metadata) {
+                
+                self.image = image
 
-        imageVideoContainer.image = image
-        imageVideoContainer.sourceImage = image
-        
-        self.metadata = metadata
+                imageVideoContainer.image = image
+                imageVideoContainer.sourceImage = image
+            }
+            
+        } else {
+            
+            self.image = image
+
+            imageVideoContainer.image = image
+            imageVideoContainer.sourceImage = image
+        }
     }
         
     //MARK: - Gesture
@@ -388,7 +406,6 @@ extension NCViewerMediaZoom {
         
         // DOWNLOAD preview for image
         if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) && metadata.hasPreview && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
-            
             NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: false, cell: nil, view: nil)
         }
     }
