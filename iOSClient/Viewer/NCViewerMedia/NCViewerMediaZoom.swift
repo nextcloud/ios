@@ -124,8 +124,6 @@ class NCViewerMediaZoom: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        imageVideoContainer.image = image
-
         viewerMedia?.navigationController?.navigationBar.prefersLargeTitles = false
         viewerMedia?.navigationItem.title = metadata.fileNameView
         

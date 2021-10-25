@@ -453,8 +453,10 @@ class NCPlayerToolBar: UIView {
         }
         
         if let pictureInPictureController = pictureInPictureController, pictureInPictureController.isPictureInPicturePossible {
-            pictureInPictureController.startPictureInPicture()
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar, userInfo: ["ocId":metadata.ocId])
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                pictureInPictureController.startPictureInPicture()
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar, userInfo: ["ocId":metadata.ocId])
+            }
         }
     }
     
