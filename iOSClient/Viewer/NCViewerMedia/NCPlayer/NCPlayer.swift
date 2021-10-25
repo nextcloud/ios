@@ -150,7 +150,7 @@ class NCPlayer: NSObject {
         
         // Evey 1 second update toolbar
         observerAVPlayertTime = player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
-            if self.player?.currentItem?.status == .readyToPlay, let playerToolBar = self.playerToolBar {
+            if self.player?.currentItem?.status == .readyToPlay {
                 self.playerToolBar?.updateToolBar()
             }
         })
