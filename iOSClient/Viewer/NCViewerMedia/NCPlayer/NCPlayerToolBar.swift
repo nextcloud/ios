@@ -156,8 +156,6 @@ class NCPlayerToolBar: UIView {
         } else {
             pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .gray), for: .normal)
             pipButton.isEnabled = false
-            pictureInPictureController = nil
-            pictureInPictureController?.delegate = nil
         }
         
         // SLIDER TIME (START - END)
