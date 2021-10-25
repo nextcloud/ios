@@ -216,11 +216,8 @@ class NCViewerMediaZoom: UIViewController {
     @objc func didDoubleTapWith(gestureRecognizer: UITapGestureRecognizer) {
         
         if detailView.isShow() { return }
-        
-        // NO ZOOM for Audio / Video
-        if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) && playerToolBar.isShow() {
-            return
-        }
+        // NO ZOOM for Audio
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue { return }
         
         let pointInView = gestureRecognizer.location(in: self.imageVideoContainer)
         var newZoomScale = self.scrollView.maximumZoomScale
