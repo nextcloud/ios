@@ -48,11 +48,10 @@ class NCPlayerToolBar: UIView {
         
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var ncplayer: NCPlayer?
+    private var metadata: tableMetadata?
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
     private var timerAutoHide: Timer?
-    private var metadata: tableMetadata?
-    private var image: UIImage?
     
     var pictureInPictureController: AVPictureInPictureController?
     weak var viewerMedia: NCViewerMedia?
@@ -111,6 +110,10 @@ class NCPlayerToolBar: UIView {
         NotificationCenter.default.addObserver(self, selector: #selector(handleRouteChange), name: AVAudioSession.routeChangeNotification, object: nil)
     }
     
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
     deinit {
         print("deinit NCPlayerToolBar")
                 
@@ -120,11 +123,10 @@ class NCPlayerToolBar: UIView {
     
     // MARK: -
 
-    func setBarPlayer(ncplayer: NCPlayer, metadata: tableMetadata, image: UIImage?) {
+    func setBarPlayer(ncplayer: NCPlayer, metadata: tableMetadata) {
                         
         self.ncplayer = ncplayer
         self.metadata = metadata
-        self.image = image
                         
         playbackSlider.value = 0
         playbackSlider.minimumValue = 0

@@ -96,7 +96,7 @@ class NCPlayer: NSObject {
                         imageVideoContainer.image = imageVideoContainer.image?.image(alpha: 0)
                     }
                     
-                    self.playerToolBar?.setBarPlayer(ncplayer: self, metadata: metadata, image: imageVideoContainer.image)
+                    self.playerToolBar?.setBarPlayer(ncplayer: self, metadata: metadata)
                     self.generatorImagePreview()
                     if !(detailView?.isShow() ?? false) {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
