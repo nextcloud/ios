@@ -140,7 +140,7 @@ class NCPlayerToolBar: UIView {
     }
     
     public func updateToolBar() {
-        guard let metadata = self.metadata else { return }
+        
         guard let ncplayer = self.ncplayer else { return }
                 
         // MUTE
@@ -152,7 +152,7 @@ class NCPlayerToolBar: UIView {
         muteButton.isEnabled = true
         
         // PIP
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && AVPictureInPictureController.isPictureInPictureSupported() {
+        if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && AVPictureInPictureController.isPictureInPictureSupported() {
             pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .white), for: .normal)
             pipButton.isEnabled = true
         } else {
@@ -231,6 +231,7 @@ class NCPlayerToolBar: UIView {
     }
     
     @objc func handleInterruption(notification: Notification) {
+        
         guard let userInfo = notification.userInfo, let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt, let type = AVAudioSession.InterruptionType(rawValue: typeValue) else { return }
       
         if type == .began {
@@ -252,10 +253,9 @@ class NCPlayerToolBar: UIView {
     // MARK: -
 
     public func show(enableTimerAutoHide: Bool = false) {
-        guard let metadata = self.metadata else { return }
-        
-        if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
-        if metadata.livePhoto { return }
+                
+        if metadata?.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata?.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
+        if let metadata = self.metadata, metadata.livePhoto { return }
         
         timerAutoHide?.invalidate()
         if enableTimerAutoHide {
@@ -312,6 +312,7 @@ class NCPlayerToolBar: UIView {
     }
     
     func skip(seconds: Float64) {
+        
         guard let ncplayer = ncplayer else { return }
         guard let player = ncplayer.player else { return }
         
@@ -343,9 +344,8 @@ class NCPlayerToolBar: UIView {
     }
     
     func isPictureInPictureActive() -> Bool {
-        guard let pictureInPictureController = self.pictureInPictureController else { return false }
-        
-        if pictureInPictureController.isPictureInPictureActive {
+                
+        if let pictureInPictureController = self.pictureInPictureController, pictureInPictureController.isPictureInPictureActive {
             return true
         } else {
             return false
@@ -439,9 +439,8 @@ class NCPlayerToolBar: UIView {
     }
     
     @IBAction func setPip(_ sender: Any) {
-        guard let metadata = self.metadata else { return }
-        guard let ncplayer = self.ncplayer else { return }
-        guard let videoLayer = ncplayer.videoLayer else { return }
+        
+        guard let videoLayer = ncplayer?.videoLayer else { return }
         
         if let pictureInPictureController = self.pictureInPictureController, pictureInPictureController.isPictureInPictureActive {
             pictureInPictureController.stopPictureInPicture()
@@ -452,7 +451,7 @@ class NCPlayerToolBar: UIView {
             pictureInPictureController?.delegate = self
         }
         
-        if let pictureInPictureController = pictureInPictureController, pictureInPictureController.isPictureInPicturePossible {
+        if let pictureInPictureController = pictureInPictureController, pictureInPictureController.isPictureInPicturePossible, let metadata = self.metadata {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 pictureInPictureController.startPictureInPicture()
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar, userInfo: ["ocId":metadata.ocId])
@@ -522,10 +521,8 @@ class NCPlayerToolBar: UIView {
 extension NCPlayerToolBar: AVPictureInPictureControllerDelegate {
     
     func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-        guard let metadata = self.metadata else { return }
-        guard let ncplayer = self.ncplayer else { return }
 
-        if !ncplayer.isPlay() {
+        if let metadata = self.metadata, let ncplayer = self.ncplayer, !ncplayer.isPlay() {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":metadata.ocId, "enableTimerAutoHide": false])
         }
     }
