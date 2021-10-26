@@ -421,26 +421,28 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
             if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
                 etagResource = metadata.etagResource
             }
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCGlobal.shared.backgroundQueue) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
                 
                 if errorCode == 0 && imageIcon != nil {
                     NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                    if self.metadata.ocId == self.cell?.fileObjectId {
-                        if let filePreviewImageView = self.cell?.filePreviewImageView  {
-                            UIView.transition(with: filePreviewImageView,
-                                duration: 0.75,
-                                options: .transitionCrossDissolve,
-                                animations: { filePreviewImageView.image = imageIcon! },
-                                completion: nil)
+                    DispatchQueue.main.async {
+                        if self.metadata.ocId == self.cell?.fileObjectId {
+                            if let filePreviewImageView = self.cell?.filePreviewImageView  {
+                                UIView.transition(with: filePreviewImageView,
+                                    duration: 0.75,
+                                    options: .transitionCrossDissolve,
+                                    animations: { filePreviewImageView.image = imageIcon! },
+                                    completion: nil)
+                            }
+                        } else {
+                            if self.view is UICollectionView {
+                                (self.view as? UICollectionView)?.reloadData()
+                            } else if self.view is UITableView{
+                                (self.view as? UITableView)?.reloadData()
+                            }
                         }
-                    } else {
-                        if self.view is UICollectionView {
-                            (self.view as? UICollectionView)?.reloadData()
-                        } else if self.view is UITableView{
-                            (self.view as? UITableView)?.reloadData()
-                        }
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedThumbnail, userInfo: ["ocId": self.metadata.ocId])
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedThumbnail, userInfo: ["ocId": self.metadata.ocId])
                 }
                 self.finish()
             }
@@ -474,29 +476,31 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: self.etag) { (account, imageAvatar, imageOriginal, etag, errorCode, errorMessage) in
+            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: self.etag, queue: NCGlobal.shared.backgroundQueue) { (account, imageAvatar, imageOriginal, etag, errorCode, errorMessage) in
                 
                 if errorCode == 0, let imageAvatar = imageAvatar, let etag = etag {
                     
                     NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
-                    
-                    if self.user == self.cell.fileUser {
-                        if let avatarImageView = self.cell?.fileAvatarImageView  {
-                            UIView.transition(with: avatarImageView, duration: 0.75, options: .transitionCrossDissolve) {
-                                avatarImageView.image = imageAvatar
-                            } completion: { _ in
-                                if self.view is UICollectionView {
-                                    (self.view as? UICollectionView)?.reloadData()
-                                } else if self.view is UITableView{
-                                    (self.view as? UITableView)?.reloadData()
+
+                    DispatchQueue.main.async {
+                        if self.user == self.cell.fileUser {
+                            if let avatarImageView = self.cell?.fileAvatarImageView  {
+                                UIView.transition(with: avatarImageView, duration: 0.75, options: .transitionCrossDissolve) {
+                                    avatarImageView.image = imageAvatar
+                                } completion: { _ in
+                                    if self.view is UICollectionView {
+                                        (self.view as? UICollectionView)?.reloadData()
+                                    } else if self.view is UITableView{
+                                        (self.view as? UITableView)?.reloadData()
+                                    }
                                 }
                             }
-                        }
-                    } else {
-                        if self.view is UICollectionView {
-                            (self.view as? UICollectionView)?.reloadData()
-                        } else if self.view is UITableView{
-                            (self.view as? UITableView)?.reloadData()
+                        } else {
+                            if self.view is UICollectionView {
+                                (self.view as? UICollectionView)?.reloadData()
+                            } else if self.view is UITableView{
+                                (self.view as? UITableView)?.reloadData()
+                            }
                         }
                     }
                     

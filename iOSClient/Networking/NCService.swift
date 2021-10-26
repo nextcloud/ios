@@ -111,7 +111,7 @@ class NCService: NSObject {
                     let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                     let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
-                    NCCommunication.shared.downloadAvatar(user: tableAccount.userId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag) { (account, image, imageOriginal, etag, errorCode, errorMessage) in
+                    NCCommunication.shared.downloadAvatar(user: tableAccount.userId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag, queue: NCGlobal.shared.backgroundQueue) { (account, image, imageOriginal, etag, errorCode, errorMessage) in
 
                         if let etag = etag, errorCode == 0, let imageOriginal = imageOriginal {
                             
