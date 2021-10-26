@@ -173,13 +173,6 @@ class NCViewerMediaZoom: UIViewController {
             
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             
-            if let image = image {
-                let imageNoPreview = UIImage.init(named: "noPreview")!.image(color: .gray, size: view.frame.width)
-                if imageNoPreview.isEqualToImage(image: image) {
-                    self.reload(image: nil, metadata: metadata)
-                }
-            }
-            
             viewerMedia?.clearCommandCenter()
         }
         
@@ -205,23 +198,10 @@ class NCViewerMediaZoom: UIViewController {
         }) { (_) in }
     }
     
-    func reload(image: UIImage?, metadata: tableMetadata) {
+    func reload(image: UIImage, metadata: tableMetadata) {
         
-        if image == nil {
-            
-            if let image = viewerMedia?.getImageMetadata(metadata) {
-                
-                self.image = image
-
-                imageVideoContainer.image = image
-            }
-            
-        } else {
-            
-            self.image = image
-
-            imageVideoContainer.image = image
-        }
+        self.image = image
+        imageVideoContainer.image = image
     }
         
     //MARK: - Gesture
