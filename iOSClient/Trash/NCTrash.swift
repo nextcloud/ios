@@ -416,8 +416,7 @@ extension NCTrash {
     
     @objc func loadListingTrash() {
         
-        NCCommunication.shared.listingTrash(showHiddenFiles: false) { (account, items, errorCode, errorDescription) in
-            self.refreshControl.endRefreshing()
+        NCCommunication.shared.listingTrash(showHiddenFiles: false, queue: NCGlobal.shared.backgroundQueue) { (account, items, errorCode, errorDescription) in
          
             if errorCode == 0 && account == self.appDelegate.account {
                 NCManageDatabase.shared.deleteTrash(filePath: self.trashPath, account: self.appDelegate.account)
@@ -428,7 +427,10 @@ extension NCTrash {
                 print("[LOG] It has been changed user during networking process, error.")
             }
             
-            self.reloadDataSource()
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.reloadDataSource()
+            }
         }
     }
     
