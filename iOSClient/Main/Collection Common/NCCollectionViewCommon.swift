@@ -965,13 +965,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             collectionView?.reloadData()
             
             NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch!) { (account, metadatas, errorCode, errorDescription) in
-                if self.searchController?.isActive ?? false && errorCode == 0 {
-                    self.metadatasSource = metadatas!
-                }
                 
-                self.refreshControl.endRefreshing()
-                self.isReloadDataSourceNetworkInProgress = false
-                self.reloadDataSource()
+                DispatchQueue.main.async {
+                    if self.searchController?.isActive ?? false && errorCode == 0 {
+                        self.metadatasSource = metadatas!
+                    }
+                    self.refreshControl.endRefreshing()
+                    self.isReloadDataSourceNetworkInProgress = false
+                    self.reloadDataSource()
+                }
             }
         } else {
             self.refreshControl.endRefreshing()

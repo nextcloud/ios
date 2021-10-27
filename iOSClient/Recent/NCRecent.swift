@@ -141,10 +141,7 @@ class NCRecent: NCCollectionViewCommon  {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
         
-        NCCommunication.shared.searchBodyRequest(serverUrl: appDelegate.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, errorCode, errorDescription) in
-            
-            self.refreshControl.endRefreshing()
-            self.isReloadDataSourceNetworkInProgress = false
+        NCCommunication.shared.searchBodyRequest(serverUrl: appDelegate.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCGlobal.shared.backgroundQueue) { (account, files, errorCode, errorDescription) in
             
             if errorCode == 0 {
                 NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
@@ -160,7 +157,14 @@ class NCRecent: NCCollectionViewCommon  {
                     self.reloadDataSource()
                 }
             } else {
-                self.collectionView?.reloadData()
+                DispatchQueue.main.async {
+                    self.collectionView?.reloadData()
+                }
+            }
+            
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.isReloadDataSourceNetworkInProgress = false
             }
         }
     }

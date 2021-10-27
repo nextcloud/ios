@@ -317,7 +317,7 @@ class NCOperationSynchronization: ConcurrentOperation {
 
                     if (errorCode == 0) && (directory?.etag != files.first?.etag || self.selector == NCGlobal.shared.selectorDownloadAllFile) {
                         
-                        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
+                        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCGlobal.shared.backgroundQueue) { (account, files, responseData, errorCode, errorDescription) in
                             
                             if errorCode == 0 {
                             

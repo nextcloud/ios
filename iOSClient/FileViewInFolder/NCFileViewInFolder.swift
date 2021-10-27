@@ -143,10 +143,12 @@ class NCFileViewInFolder: NCCollectionViewCommon {
                 }
             }
             
-            self.refreshControl.endRefreshing()
-            self.isReloadDataSourceNetworkInProgress = false
-            self.richWorkspaceText = tableDirectory?.richWorkspace
-            self.reloadDataSource()
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.isReloadDataSourceNetworkInProgress = false
+                self.richWorkspaceText = tableDirectory?.richWorkspace
+                self.reloadDataSource()
+            }
         }
     }
 }
