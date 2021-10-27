@@ -180,15 +180,13 @@ class NCService: NSObject {
                 // File Sharing
                 let isFilesSharingEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
                 if isFilesSharingEnabled {
-                    NCCommunication.shared.readShares { (account, shares, errorCode, ErrorDescription) in
+                    NCCommunication.shared.readShares(queue: NCGlobal.shared.backgroundQueue) { (account, shares, errorCode, ErrorDescription) in
                         if errorCode == 0 {
-                            
                             NCManageDatabase.shared.deleteTableShare(account: account)
                             if shares != nil {
                                 NCManageDatabase.shared.addShare(urlBase: self.appDelegate.urlBase, account: account, shares: shares!)
                             }
                             self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: account)
-                           
                         } else {
                             NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
@@ -206,13 +204,9 @@ class NCService: NSObject {
             
                 // Text direct editor detail
                 if serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
-                    NCCommunication.shared.NCTextObtainEditorDetails() { (account, editors, creators, errorCode, errorMessage) in
+                    NCCommunication.shared.NCTextObtainEditorDetails(queue: NCGlobal.shared.backgroundQueue) { (account, editors, creators, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.account {
-                            
-                            DispatchQueue.global().async {
-                            
-                                NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
-                            }
+                            NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
                         }
                     }
                 }
@@ -220,15 +214,11 @@ class NCService: NSObject {
                 // External file Server
                 let isExternalSitesServerEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true)
                 if (isExternalSitesServerEnabled) {
-                    NCCommunication.shared.getExternalSite() { (account, externalSites, errorCode, errorDescription) in
+                    NCCommunication.shared.getExternalSite(queue: NCGlobal.shared.backgroundQueue) { (account, externalSites, errorCode, errorDescription) in
                         if errorCode == 0 && account == self.appDelegate.account {
-                            
-                            DispatchQueue.global().async {
-                            
-                                NCManageDatabase.shared.deleteExternalSites(account: account)
-                                for externalSite in externalSites {
-                                    NCManageDatabase.shared.addExternalSites(externalSite, account: account)
-                                }
+                            NCManageDatabase.shared.deleteExternalSites(account: account)
+                            for externalSite in externalSites {
+                                NCManageDatabase.shared.addExternalSites(externalSite, account: account)
                             }
                         }
                     }
@@ -240,13 +230,9 @@ class NCService: NSObject {
                 // User Status
                 let userStatus = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false)
                 if userStatus {
-                    NCCommunication.shared.getUserStatus { (account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, errorCode, errorDescription) in
+                    NCCommunication.shared.getUserStatus(queue: NCGlobal.shared.backgroundQueue) { (account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, errorCode, errorDescription) in
                         if errorCode == 0 && account == self.appDelegate.account && userId == self.appDelegate.userId {
-                            
-                            DispatchQueue.global().async {
-                            
-                                NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
-                            }
+                            NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
                         }
                     }
                 }
@@ -270,7 +256,6 @@ class NCService: NSObject {
                 //                    if (isHandwerkcloudEnabled) {
                 //                        self.requestHC()
                 //                    }
-                
                 
             } else if errorCode != 0 {
                 
