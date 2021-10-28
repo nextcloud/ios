@@ -181,12 +181,12 @@ extension NCNetworking {
     
     private func createChunkedFolder(chunkFolderPath: String, account: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
-        NCCommunication.shared.readFileOrFolder(serverUrlFileName: chunkFolderPath, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCGlobal.shared.backgroundQueue) { (_, _, _, errorCode, errorDescription) in
+        NCCommunication.shared.readFileOrFolder(serverUrlFileName: chunkFolderPath, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (_, _, _, errorCode, errorDescription) in
         
             if errorCode == 0 {
                 completion(0, "")
             } else if errorCode == NCGlobal.shared.errorResourceNotFound {
-                NCCommunication.shared.createFolder(chunkFolderPath, queue: NCGlobal.shared.backgroundQueue) { (_, _, _, errorCode, errorDescription) in
+                NCCommunication.shared.createFolder(chunkFolderPath, queue: NCCommunicationCommon.shared.backgroundQueue) { (_, _, _, errorCode, errorDescription) in
                     completion(errorCode, errorDescription)
                 }
             } else {
