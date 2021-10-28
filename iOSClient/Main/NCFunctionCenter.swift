@@ -228,47 +228,43 @@ import Queuer
         
         NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
         
-        DispatchQueue.global().async {
-            
-            var error: Int = 0
-            var items: [Any] = []
+        var error: Int = 0
+        var items: [Any] = []
 
-            for ocId in selectOcId {
-                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                    if metadata.directory {
-                        continue
-                    }
-                    if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                        let semaphore = Semaphore()
-                        NCNetworking.shared.download(metadata: metadata, selector: "") { errorCode in
-                            error = errorCode
-                            semaphore.continue()
-                        }
-                        semaphore.wait()
-                    }
-                    if error != 0 {
-                        break
-                    }
-                    let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                    items.append(fileURL)
+        for ocId in selectOcId {
+            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                if metadata.directory {
+                    continue
                 }
-            }
-            if error == 0 && items.count > 0 {
-                DispatchQueue.main.async {
-                    
-                    guard let mainTabBar = self.appDelegate.mainTabBar else { return }
-                            
-                    let activityViewController = UIActivityViewController.init(activityItems: items, applicationActivities: nil)
-
-                    activityViewController.popoverPresentationController?.permittedArrowDirections = .any
-                    activityViewController.popoverPresentationController?.sourceView = mainTabBar
-                    activityViewController.popoverPresentationController?.sourceRect = mainTabBar.menuRect
-                    
-                    self.appDelegate.window?.rootViewController?.present(activityViewController, animated: true)
+                if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                    let semaphore = Semaphore()
+                    NCNetworking.shared.download(metadata: metadata, selector: "") { errorCode in
+                        error = errorCode
+                        semaphore.continue()
+                    }
+                    semaphore.wait()
                 }
+                if error != 0 {
+                    break
+                }
+                let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                items.append(fileURL)
             }
-            NCUtility.shared.stopActivityIndicator()
         }
+        if error == 0 && items.count > 0 {
+              
+            guard let mainTabBar = self.appDelegate.mainTabBar else { return }
+                    
+            let activityViewController = UIActivityViewController.init(activityItems: items, applicationActivities: nil)
+
+            activityViewController.popoverPresentationController?.permittedArrowDirections = .any
+            activityViewController.popoverPresentationController?.sourceView = mainTabBar
+            activityViewController.popoverPresentationController?.sourceRect = mainTabBar.menuRect
+            
+            self.appDelegate.window?.rootViewController?.present(activityViewController, animated: true)
+            
+        }
+        NCUtility.shared.stopActivityIndicator()
     }
         
     // MARK: - Save as scan

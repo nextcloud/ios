@@ -403,7 +403,7 @@ import Queuer
                 
         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierDownload, sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusInDownload)
                     
-        NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (request) in
+        NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, queue: NCCommunicationCommon.shared.backgroundQueue, requestHandler: { (request) in
             
             self.downloadRequest[fileNameLocalPath] = request
             
@@ -482,9 +482,9 @@ import Queuer
             metadata = tableMetadata.init(value: metadata)
            
             if metadata.e2eEncrypted {
-                #if !EXTENSION_FILE_PROVIDER_EXTENSION
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
                 NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: metadata), start: { start() }, completion: completion)
-                #endif
+#endif
             } else if metadata.chunk {
                 uploadChunkedFile(metadata: metadata, start: { start() }, completion: completion)
             } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
