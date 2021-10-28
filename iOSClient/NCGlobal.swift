@@ -100,10 +100,6 @@ class NCGlobal: NSObject {
     let refreshTask                                 = "com.nextcloud.refreshTask"
     let processingTask                              = "com.nextcloud.processingTask"
     
-    // Queue in background for NCCommunication
-    //
-    let backgroundQueue                             = DispatchQueue(label: "com.nextcloud.nccommunication", qos: .background, attributes: .concurrent)
-
     // Nextcloud version
     //
     let nextcloudVersion12: Int                     =  12

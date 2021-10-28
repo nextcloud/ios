@@ -83,7 +83,7 @@ class NCService: NSObject {
         
         if appDelegate.account == "" { return }
         
-        NCCommunication.shared.getUserProfile(queue: NCGlobal.shared.backgroundQueue) { (account, userProfile, errorCode, errorDescription) in
+        NCCommunication.shared.getUserProfile(queue: NCCommunicationCommon.shared.backgroundQueue) { (account, userProfile, errorCode, errorDescription) in
                
             if errorCode == 0 && account == self.appDelegate.account {
                   
@@ -109,7 +109,7 @@ class NCService: NSObject {
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                 let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
-                NCCommunication.shared.downloadAvatar(user: tableAccount.userId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag, queue: NCGlobal.shared.backgroundQueue) { (account, image, imageOriginal, etag, errorCode, errorMessage) in
+                NCCommunication.shared.downloadAvatar(user: tableAccount.userId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, image, imageOriginal, etag, errorCode, errorMessage) in
 
                     if let etag = etag, errorCode == 0, let imageOriginal = imageOriginal {
                         
@@ -143,7 +143,7 @@ class NCService: NSObject {
     
     private func requestServerStatus() {
         
-        NCCommunication.shared.getServerStatus(serverUrl: appDelegate.urlBase, queue: NCGlobal.shared.backgroundQueue) { (serverProductName, serverVersion, versionMajor, versionMinor, versionMicro, extendedSupport, errorCode, errorMessage) in
+        NCCommunication.shared.getServerStatus(serverUrl: appDelegate.urlBase, queue: NCCommunicationCommon.shared.backgroundQueue) { (serverProductName, serverVersion, versionMajor, versionMinor, versionMicro, extendedSupport, errorCode, errorMessage) in
                         
             if errorCode == 0 && extendedSupport == false {
                                 
@@ -160,7 +160,7 @@ class NCService: NSObject {
         
         if appDelegate.account == "" { return }
         
-        NCCommunication.shared.getCapabilities(queue: NCGlobal.shared.backgroundQueue) { (account, data, errorCode, errorDescription) in
+        NCCommunication.shared.getCapabilities(queue: NCCommunicationCommon.shared.backgroundQueue) { (account, data, errorCode, errorDescription) in
             
             if errorCode == 0 && data != nil {
                 
@@ -180,7 +180,7 @@ class NCService: NSObject {
                 // File Sharing
                 let isFilesSharingEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
                 if isFilesSharingEnabled {
-                    NCCommunication.shared.readShares(queue: NCGlobal.shared.backgroundQueue) { (account, shares, errorCode, ErrorDescription) in
+                    NCCommunication.shared.readShares(queue: NCCommunicationCommon.shared.backgroundQueue) { (account, shares, errorCode, ErrorDescription) in
                         if errorCode == 0 {
                             NCManageDatabase.shared.deleteTableShare(account: account)
                             if shares != nil {
@@ -204,7 +204,7 @@ class NCService: NSObject {
             
                 // Text direct editor detail
                 if serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
-                    NCCommunication.shared.NCTextObtainEditorDetails(queue: NCGlobal.shared.backgroundQueue) { (account, editors, creators, errorCode, errorMessage) in
+                    NCCommunication.shared.NCTextObtainEditorDetails(queue: NCCommunicationCommon.shared.backgroundQueue) { (account, editors, creators, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.account {
                             NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
                         }
@@ -214,7 +214,7 @@ class NCService: NSObject {
                 // External file Server
                 let isExternalSitesServerEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true)
                 if (isExternalSitesServerEnabled) {
-                    NCCommunication.shared.getExternalSite(queue: NCGlobal.shared.backgroundQueue) { (account, externalSites, errorCode, errorDescription) in
+                    NCCommunication.shared.getExternalSite(queue: NCCommunicationCommon.shared.backgroundQueue) { (account, externalSites, errorCode, errorDescription) in
                         if errorCode == 0 && account == self.appDelegate.account {
                             NCManageDatabase.shared.deleteExternalSites(account: account)
                             for externalSite in externalSites {
@@ -230,7 +230,7 @@ class NCService: NSObject {
                 // User Status
                 let userStatus = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false)
                 if userStatus {
-                    NCCommunication.shared.getUserStatus(queue: NCGlobal.shared.backgroundQueue) { (account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, errorCode, errorDescription) in
+                    NCCommunication.shared.getUserStatus(queue: NCCommunicationCommon.shared.backgroundQueue) { (account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, errorCode, errorDescription) in
                         if errorCode == 0 && account == self.appDelegate.account && userId == self.appDelegate.userId {
                             NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
                         }

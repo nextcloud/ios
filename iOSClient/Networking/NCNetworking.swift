@@ -843,7 +843,7 @@ import Queuer
     
     @objc func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasLocalUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
         
-        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCGlobal.shared.backgroundQueue) { (account, files, responseData, errorCode, errorDescription) in
+        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, responseData, errorCode, errorDescription) in
             
             if errorCode == 0  {
                               
@@ -877,7 +877,7 @@ import Queuer
     
     @objc func readFile(serverUrlFileName: String, account: String, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ errorCode: Int, _ errorDescription: String)->()) {
         
-        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCGlobal.shared.backgroundQueue) { (account, files, responseData, errorCode, errorDescription) in
+        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, responseData, errorCode, errorDescription) in
 
             if errorCode == 0 && files.count == 1 {
                 
@@ -898,7 +898,7 @@ import Queuer
     
     @objc func searchFiles(urlBase: String, user: String, literal: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
         
-        NCCommunication.shared.searchLiteral(serverUrl: urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCGlobal.shared.backgroundQueue) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.searchLiteral(serverUrl: urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, errorCode, errorDescription) in
             
             if errorCode == 0  {
                 
@@ -1155,7 +1155,7 @@ import Queuer
     }
     
     @objc func listingFavoritescompletion(selector: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
-        NCCommunication.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCGlobal.shared.backgroundQueue) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, errorCode, errorDescription) in
             
             if errorCode == 0 {
                 NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (_, _, metadatas) in

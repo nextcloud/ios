@@ -416,7 +416,7 @@ extension NCTrash {
     
     @objc func loadListingTrash() {
         
-        NCCommunication.shared.listingTrash(showHiddenFiles: false, queue: NCGlobal.shared.backgroundQueue) { (account, items, errorCode, errorDescription) in
+        NCCommunication.shared.listingTrash(showHiddenFiles: false, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, items, errorCode, errorDescription) in
          
             if errorCode == 0 && account == self.appDelegate.account {
                 NCManageDatabase.shared.deleteTrash(filePath: self.trashPath, account: self.appDelegate.account)
