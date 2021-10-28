@@ -702,7 +702,9 @@ extension NCSelect {
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account,serverUrl))
         richWorkspaceText = directory?.richWorkspace
         
-        collectionView.reloadData()
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
     }
     
     func createFolder(with fileName: String) {
