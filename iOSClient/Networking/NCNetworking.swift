@@ -103,7 +103,6 @@ import Queuer
         
         // Notification
         NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(downloadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
@@ -168,15 +167,6 @@ import Queuer
     // MARK: - NotificationCenter
     
     @objc func downloadStartFile(_ notification: NSNotification) {
-    }
-    
-    @objc func downloadedFile(_ notification: NSNotification) {
-        
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String {
-            #if !EXTENSION
-            (UIApplication.shared.delegate as! AppDelegate).listProgress[ocId] = nil
-            #endif
-        }
     }
     
     @objc func downloadCancelFile(_ notification: NSNotification) {
@@ -447,6 +437,10 @@ import Queuer
             }
             
             self.downloadRequest[fileNameLocalPath] = nil
+            #if !EXTENSION
+            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = nil }
+            #endif
+            
             if error?.isExplicitlyCancelledError ?? false {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId":metadata.ocId])
             } else {
