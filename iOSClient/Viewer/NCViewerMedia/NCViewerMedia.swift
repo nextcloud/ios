@@ -108,6 +108,8 @@ class NCViewerMedia: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(hidePlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(showPlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -137,6 +139,8 @@ class NCViewerMedia: UIViewController {
         
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -328,6 +332,11 @@ class NCViewerMedia: UIViewController {
                 changeScreenMode(mode: .normal, enableTimerAutoHide: enableTimerAutoHide)
             }
         }
+    }
+    
+    @objc func applicationDidBecomeActive(_ notification: NSNotification) {
+        
+        progressView.progress = 0
     }
     
     //MARK: - Image
