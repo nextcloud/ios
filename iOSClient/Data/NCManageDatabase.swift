@@ -2214,15 +2214,15 @@ class NCManageDatabase: NSObject {
                         // update
                         if result.status == NCGlobal.shared.metadataStatusNormal && (result.etag != metadata.etag || result.fileNameView != metadata.fileNameView || result.date != metadata.date || result.permissions != metadata.permissions || result.hasPreview != metadata.hasPreview || result.note != metadata.note) {
                             ocIdsUdate.append(metadata.ocId)
-                            realm.add(metadata, update: .all)
+                            realm.add(tableMetadata.init(value: metadata), update: .all)
                         } else if result.status == NCGlobal.shared.metadataStatusNormal && addCompareLivePhoto && result.livePhoto != metadata.livePhoto {
                             ocIdsUdate.append(metadata.ocId)
-                            realm.add(metadata, update: .all)
+                            realm.add(tableMetadata.init(value: metadata), update: .all)
                         }
                     } else {
                         // new
                         ocIdsUdate.append(metadata.ocId)
-                        realm.add(metadata, update: .all)
+                        realm.add(tableMetadata.init(value: metadata), update: .all)
                     }
                     
                     if metadata.directory && !ocIdsUdate.contains(metadata.ocId) {
