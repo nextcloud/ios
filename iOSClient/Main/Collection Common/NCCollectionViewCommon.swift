@@ -1020,7 +1020,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                             // E2EE
                             if let metadataFolder = metadataFolder {
                                 if metadataFolder.e2eEncrypted && CCUtility.isEnd(toEndEnabled: self.appDelegate.account) {
-                                    
+                                                                        
                                     NCCommunication.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { (account, e2eMetadata, errorCode, errorDescription) in
                                         if errorCode == 0 && e2eMetadata != nil {
                                             

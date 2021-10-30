@@ -94,6 +94,7 @@ class NCFavorite: NCCollectionViewCommon  {
             networkReadFolder(forced: forced) { (tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription) in
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
+                        let metadata = tableMetadata.init(value: metadata)
                         if !metadata.directory {
                             if NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
                                 NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
