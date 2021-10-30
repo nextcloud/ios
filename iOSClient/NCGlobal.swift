@@ -363,7 +363,7 @@ class NCGlobal: NSObject {
     let notificationCenterShowPlayerToolBar                     = "showPlayerToolBar"               // userInfo: ocId, enableTimerAutoHide
     
     let notificationCenterOpenMediaDetail                       = "openMediaDetail"                 // userInfo: ocId
-
+    @objc let notificationImagePreviewRotateImage               = "imagePreviewRotateImage"
 }
 
 //let rootView = UIApplication.shared.keyWindow?.rootViewController?.view
