@@ -100,9 +100,6 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object:nil)
-        
         NotificationCenter.default.addObserver(self, selector: #selector(hidePlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(showPlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
         
@@ -128,9 +125,6 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
-        
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
         
@@ -177,7 +171,6 @@ class NCViewerMediaPage: UIViewController {
         if mode == .normal {
             
             navigationController?.setNavigationBarHidden(false, animated: true)
-            progressView.isHidden = false
 
             if !currentViewController.detailView.isShow() {
                 currentViewController.playerToolBar.show(enableTimerAutoHide: enableTimerAutoHide)
@@ -190,7 +183,6 @@ class NCViewerMediaPage: UIViewController {
         } else {
             
             navigationController?.setNavigationBarHidden(true, animated: true)
-            progressView.isHidden = true
             
             currentViewController.playerToolBar.hide()
 
@@ -210,27 +202,6 @@ class NCViewerMediaPage: UIViewController {
     
     //MARK: - NotificationCenter
 
-    @objc func downloadedFile(_ notification: NSNotification) {
-        
-        progressView.progress = 0
-    }
-    
-    @objc func triggerProgressTask(_ notification: NSNotification) {
-        
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let serverUrl = userInfo["serverUrl"] as? String, let fileName = userInfo["fileName"] as? String, let progressNumber = userInfo["progress"] as? NSNumber {
-                if self.metadatas.first(where: { $0.serverUrl == serverUrl && $0.fileName == fileName}) != nil {
-                    let progress = progressNumber.floatValue
-                    if progress == 1 {
-                        self.progressView.progress = 0
-                    } else {
-                        self.progressView.progress = progress
-                    }
-                }
-            }
-        }
-    }
-    
     @objc func deleteFile(_ notification: NSNotification) {
         
         if let userInfo = notification.userInfo as NSDictionary? {
