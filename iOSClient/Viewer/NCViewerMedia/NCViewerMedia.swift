@@ -218,12 +218,17 @@ class NCViewerMedia: UIViewController {
 
     @objc func downloadedFile(_ notification: NSNotification) {
         
+        progressView.progress = 0
+
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
           
-            if errorCode == 0 && currentViewController.metadata.ocId == ocId, let image = getImageMetadata(metadata) {
-                currentViewController.reload(image: image, metadata: metadata)
-                if self.metadatas.first(where: { $0.ocId == metadata.ocId }) != nil {
-                    progressView.progress = 0
+            if errorCode == 0, let viewControllers = self.pageViewController.viewControllers, let image = getImageMetadata(metadata) {
+                for viewController in viewControllers {
+                    let viewerMediaZoom = viewController as! NCViewerMediaZoom
+                    if viewerMediaZoom.metadata.ocId == ocId {
+                        viewerMediaZoom.reload(image: image)
+                        break
+                    }
                 }
             }
         }
@@ -233,8 +238,14 @@ class NCViewerMedia: UIViewController {
         
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             
-            if currentViewController.metadata.ocId == ocId, let image = getImageMetadata(metadata) {
-                currentViewController.reload(image: image, metadata: metadata)
+            if let viewControllers = self.pageViewController.viewControllers, let image = getImageMetadata(metadata) {
+                for viewController in viewControllers {
+                    let viewerMediaZoom = viewController as! NCViewerMediaZoom
+                    if viewerMediaZoom.metadata.ocId == ocId {
+                        viewerMediaZoom.reload(image: image)
+                        break
+                    }
+                }
             }
         }
     }

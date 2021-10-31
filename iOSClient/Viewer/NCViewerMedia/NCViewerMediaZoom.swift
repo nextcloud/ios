@@ -173,6 +173,9 @@ class NCViewerMediaZoom: UIViewController {
             
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             
+            if let image = viewerMedia?.getImageMetadata(metadata) {
+                reload(image: image)
+            }
             viewerMedia?.clearCommandCenter()
         }
         
@@ -198,7 +201,7 @@ class NCViewerMediaZoom: UIViewController {
         }) { (_) in }
     }
     
-    func reload(image: UIImage, metadata: tableMetadata) {
+    func reload(image: UIImage) {
         
         self.image = image
         imageVideoContainer.image = image
