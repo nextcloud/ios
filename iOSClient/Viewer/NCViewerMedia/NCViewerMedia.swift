@@ -116,8 +116,7 @@ class NCViewerMedia: UIViewController {
         detailViewTopConstraint.constant = 0
         detailView.hide()
         
-        // DOWNLOAD
-        downloadFile()
+        downloadPreview()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -150,6 +149,8 @@ class NCViewerMedia: UIViewController {
             viewerMediaPage?.textColor = NCBrandColor.shared.label
             viewerMediaPage?.progressView.isHidden = false
         }
+        
+        downloadFile()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -356,35 +357,39 @@ extension NCViewerMedia {
         }
     }
     
-    func downloadFile() {
+    func downloadPreview() {
         
-        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
-        let ext = CCUtility.getExtension(metadata.fileNameView)
+        if metadata.hasPreview == false || CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) { return }
+        
         var etagResource: String?
-        
-        // DOWNLOAD preview for image
-        if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) && metadata.hasPreview && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+        let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+        let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+        if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
+            etagResource = metadata.etagResource
+        }
             
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
-            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-            if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
-                etagResource = metadata.etagResource
-            }
+        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
             
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
-                
-                if errorCode == 0, let image = self.viewerMediaPage?.getImageMetadata(self.metadata) {
-                    DispatchQueue.main.async {
-                        self.image = image
-                        self.imageVideoContainer.image = image
-                    }
+            if errorCode == 0, let image = self.viewerMediaPage?.getImageMetadata(self.metadata) {
+                DispatchQueue.main.async {
+                    self.image = image
+                    self.imageVideoContainer.image = image
                 }
             }
         }
+    }
+    
+    func downloadFile() {
         
-        // DOWNLOAD FILE
-        if ((metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+        if metadata.classFile != NCCommunicationCommon.typeClassFile.image.rawValue || CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) || metadata.session != "" { return }
+        
+        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        let ext = CCUtility.getExtension(metadata.fileNameView)
+        
+        if CCUtility.getAutomaticDownloadImage() || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted {
+            
+            NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
             
             NCNetworking.shared.download(metadata: metadata, selector: "") { (errorCode) in
                 
@@ -392,6 +397,7 @@ extension NCViewerMedia {
                     DispatchQueue.main.async {
                         self.image = image
                         self.imageVideoContainer.image = image
+                        NCUtility.shared.stopActivityIndicator()
                     }
                 }
             }
