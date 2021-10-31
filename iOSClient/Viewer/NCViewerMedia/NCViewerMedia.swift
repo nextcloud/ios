@@ -370,7 +370,7 @@ extension NCViewerMedia {
             etagResource = metadata.etagResource
         }
         
-        NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+//        NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
             
         NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
             
@@ -378,9 +378,8 @@ extension NCViewerMedia {
                 DispatchQueue.main.async {
                     self.image = image
                     self.imageVideoContainer.image = image
-                    
-                    NCUtility.shared.stopActivityIndicator()
                     self.downloadFile()
+//                    NCUtility.shared.stopActivityIndicator()
                 }
             }
         }
@@ -395,7 +394,7 @@ extension NCViewerMedia {
         
         if CCUtility.getAutomaticDownloadImage() || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted {
             
-            NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+//            NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
             
             NCNetworking.shared.download(metadata: metadata, selector: "") { (errorCode) in
                 
@@ -403,7 +402,7 @@ extension NCViewerMedia {
                     DispatchQueue.main.async {
                         self.image = image
                         self.imageVideoContainer.image = image
-                        NCUtility.shared.stopActivityIndicator()
+//                        NCUtility.shared.stopActivityIndicator()
                     }
                 }
             }
