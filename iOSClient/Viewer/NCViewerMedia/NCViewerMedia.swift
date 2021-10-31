@@ -115,8 +115,6 @@ class NCViewerMedia: UIViewController {
         
         detailViewTopConstraint.constant = 0
         detailView.hide()
-        
-        downloadPreview()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -150,7 +148,7 @@ class NCViewerMedia: UIViewController {
             viewerMediaPage?.progressView.isHidden = false
         }
         
-        downloadFile()
+        downloadPreview()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -359,7 +357,10 @@ extension NCViewerMedia {
     
     func downloadPreview() {
         
-        if metadata.hasPreview == false || CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) { return }
+        if metadata.hasPreview == false || CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+            downloadFile()
+            return
+        }
         
         var etagResource: String?
         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
@@ -368,6 +369,8 @@ extension NCViewerMedia {
         if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
             etagResource = metadata.etagResource
         }
+        
+        NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
             
         NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
             
@@ -375,6 +378,9 @@ extension NCViewerMedia {
                 DispatchQueue.main.async {
                     self.image = image
                     self.imageVideoContainer.image = image
+                    
+                    NCUtility.shared.stopActivityIndicator()
+                    self.downloadFile()
                 }
             }
         }
