@@ -147,8 +147,6 @@ class NCViewerMedia: UIViewController {
             viewerMediaPage?.textColor = NCBrandColor.shared.label
             viewerMediaPage?.progressView.isHidden = false
         }
-        
-        downloadPreview()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -177,6 +175,8 @@ class NCViewerMedia: UIViewController {
             }
             viewerMediaPage?.clearCommandCenter()
         }
+        
+        self.downloadPreview()
         
         NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
