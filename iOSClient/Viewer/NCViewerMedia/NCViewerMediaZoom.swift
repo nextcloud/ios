@@ -173,7 +173,8 @@ class NCViewerMediaZoom: UIViewController {
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             
             if let image = viewerMedia?.getImageMetadata(metadata) {
-                reload(image: image)
+                self.image = image
+                self.imageVideoContainer.image = image
             }
             viewerMedia?.clearCommandCenter()
         }
@@ -200,12 +201,6 @@ class NCViewerMediaZoom: UIViewController {
         }) { (_) in }
     }
     
-    func reload(image: UIImage) {
-        
-        self.image = image
-        imageVideoContainer.image = image
-    }
-        
     //MARK: - Gesture
 
     @objc func didDoubleTapWith(gestureRecognizer: UITapGestureRecognizer) {
@@ -365,26 +360,41 @@ extension NCViewerMediaZoom {
         
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         let ext = CCUtility.getExtension(metadata.fileNameView)
+        var etagResource: String?
         
-        if !NCOperationQueue.shared.downloadExists(metadata: metadata) {
-            viewerMedia?.progressView.progress = 0
+        // DOWNLOAD preview for image
+        if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) && metadata.hasPreview && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+            
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+            if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
+                etagResource = metadata.etagResource
+            }
+            
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
+                
+                if errorCode == 0, let image = self.viewerMedia?.getImageMetadata(self.metadata) {
+                    DispatchQueue.main.async {
+                        self.image = image
+                        self.imageVideoContainer.image = image
+                    }
+                }
+            }
         }
         
         // DOWNLOAD FILE
         if ((metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-            NCOperationQueue.shared.download(metadata: metadata, selector: "")
-        }
-        
-        // DOWNLOAD FILE LIVE PHOTO
-        if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-            if CCUtility.getAutomaticDownloadImage() && !CCUtility.fileProviderStorageExists(metadataLivePhoto.ocId, fileNameView: metadataLivePhoto.fileNameView) {
-                NCOperationQueue.shared.download(metadata: metadataLivePhoto, selector: "")
+            
+            NCNetworking.shared.download(metadata: metadata, selector: "") { (errorCode) in
+                
+                if errorCode == 0, let image = self.viewerMedia?.getImageMetadata(self.metadata) {
+                    DispatchQueue.main.async {
+                        self.image = image
+                        self.imageVideoContainer.image = image
+                    }
+                }
             }
-        }
-        
-        // DOWNLOAD preview for image
-        if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) && metadata.hasPreview && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
-            NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: false, cell: nil, view: nil)
         }
     }
 }

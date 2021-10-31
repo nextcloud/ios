@@ -101,10 +101,7 @@ class NCViewerMedia: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object:nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadedThumbnail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedThumbnail), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(hidePlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(showPlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
@@ -132,10 +129,7 @@ class NCViewerMedia: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
-        
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedThumbnail), object: nil)
         
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
@@ -219,46 +213,6 @@ class NCViewerMedia: UIViewController {
     @objc func downloadedFile(_ notification: NSNotification) {
         
         progressView.progress = 0
-
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
-          
-            if errorCode == 0, let viewControllers = self.pageViewController.viewControllers, let image = getImageMetadata(metadata) {
-                for viewController in viewControllers {
-                    let viewerMediaZoom = viewController as! NCViewerMediaZoom
-                    if viewerMediaZoom.metadata.ocId == ocId {
-                        viewerMediaZoom.reload(image: image)
-                        break
-                    }
-                }
-            }
-        }
-    }
-    
-    @objc func downloadedThumbnail(_ notification: NSNotification) {
-        
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            
-            if let viewControllers = self.pageViewController.viewControllers, let image = getImageMetadata(metadata) {
-                for viewController in viewControllers {
-                    let viewerMediaZoom = viewController as! NCViewerMediaZoom
-                    if viewerMediaZoom.metadata.ocId == ocId {
-                        viewerMediaZoom.reload(image: image)
-                        break
-                    }
-                }
-            }
-        }
-    }
-    
-    @objc func uploadedFile(_ notification: NSNotification) {
-        
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode == 0  && metadata.ocId == currentViewController.metadata.ocId {
-                    //self.reloadCurrentPage()
-                }
-            }
-        }
     }
     
     @objc func triggerProgressTask(_ notification: NSNotification) {
