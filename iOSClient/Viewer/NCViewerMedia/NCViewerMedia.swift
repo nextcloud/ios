@@ -115,6 +115,8 @@ class NCViewerMedia: UIViewController {
         
         detailViewTopConstraint.constant = 0
         detailView.hide()
+        
+        self.downloadPreview()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -175,9 +177,7 @@ class NCViewerMedia: UIViewController {
             }
             viewerMediaPage?.clearCommandCenter()
         }
-        
-        self.downloadPreview()
-        
+                
         NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
     
@@ -370,8 +370,8 @@ extension NCViewerMedia {
             etagResource = metadata.etagResource
         }
         
-//        NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
-            
+        NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+        
         NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
             
             if errorCode == 0, let image = self.viewerMediaPage?.getImageMetadata(self.metadata) {
@@ -379,7 +379,7 @@ extension NCViewerMedia {
                     self.image = image
                     self.imageVideoContainer.image = image
                     self.downloadFile()
-//                    NCUtility.shared.stopActivityIndicator()
+                    NCUtility.shared.stopActivityIndicator()
                 }
             }
         }
@@ -394,7 +394,7 @@ extension NCViewerMedia {
         
         if CCUtility.getAutomaticDownloadImage() || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted {
             
-//            NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+            NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
             
             NCNetworking.shared.download(metadata: metadata, selector: "") { (errorCode) in
                 
@@ -402,7 +402,7 @@ extension NCViewerMedia {
                     DispatchQueue.main.async {
                         self.image = image
                         self.imageVideoContainer.image = image
-//                        NCUtility.shared.stopActivityIndicator()
+                        NCUtility.shared.stopActivityIndicator()
                     }
                 }
             }
