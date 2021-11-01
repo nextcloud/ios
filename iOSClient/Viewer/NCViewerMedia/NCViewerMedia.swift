@@ -101,7 +101,7 @@ class NCViewerMedia: UIViewController {
         loadImage(metadata: metadata) { ocId, image in
             self.image = image
             self.imageVideoContainer.image = image
-x        }
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
