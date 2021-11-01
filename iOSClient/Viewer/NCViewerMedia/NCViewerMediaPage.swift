@@ -86,7 +86,7 @@ class NCViewerMediaPage: UIViewController {
         pageViewController.view.addGestureRecognizer(singleTapGestureRecognizer)
         pageViewController.view.addGestureRecognizer(longtapGestureRecognizer)
         
-        let viewerMedia = getViewerMedia(index: currentIndex, image: getImageMetadata(metadatas[currentIndex]), metadata: metadatas[currentIndex], direction: .forward)
+        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex], direction: .forward)
         pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: true, completion: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
@@ -148,11 +148,10 @@ class NCViewerMediaPage: UIViewController {
     
     // MARK: -
     
-    func getViewerMedia(index: Int, image: UIImage?, metadata: tableMetadata, direction: UIPageViewController.NavigationDirection) -> NCViewerMedia {
+    func getViewerMedia(index: Int, metadata: tableMetadata, direction: UIPageViewController.NavigationDirection) -> NCViewerMedia {
         
         let viewerMedia = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMedia") as! NCViewerMedia
         viewerMedia.index = index
-        viewerMedia.image = image
         viewerMedia.metadata = metadata
         viewerMedia.viewerMediaPage = self
 
@@ -239,9 +238,7 @@ class NCViewerMediaPage: UIViewController {
                 self.metadatas = metadatas
                 
                 if ocId == currentViewController.metadata.ocId {
-                    if !shiftCurrentPage() {
-                        self.viewUnload()
-                    }
+                    shiftCurrentPage()
                 }
             }
         }
@@ -304,63 +301,108 @@ class NCViewerMediaPage: UIViewController {
     
     //MARK: - Image
     
-    func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
-                
-        if let image = getImage(metadata: metadata) {
-            return image
-        }
+    func loadImage(metadata: tableMetadata, completion: @escaping (_ image: UIImage?)->()) {
         
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && !metadata.hasPreview {
-            NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-        }
-        
-        if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-            if let imagePreviewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag) {
-                return UIImage.init(contentsOfFile: imagePreviewPath)
-            } 
-        }
-        
-        return nil
-    }
-    
-    private func getImage(metadata: tableMetadata) -> UIImage? {
-        
-        let ext = CCUtility.getExtension(metadata.fileNameView)
-        var image: UIImage?
-        
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
-           
-            let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-            let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        // Download preview
+        if metadata.hasPreview && !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
             
-            if ext == "GIF" {
-                if !FileManager().fileExists(atPath: previewPath) {
-                    NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+            var etagResource: String?
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+            if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
+                etagResource = metadata.etagResource
+            }
+            
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
+                                
+                downloadFile(metadata: metadata)
+            }
+        } else {
+            downloadFile(metadata: metadata)
+        }
+        
+        func downloadFile(metadata: tableMetadata) {
+            
+            let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+            let ext = CCUtility.getExtension(metadata.fileNameView)
+            
+            if (CCUtility.getAutomaticDownloadImage() || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "") {
+                
+                NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in
+                    let image = getImageMetadata(metadata)
+                    completion(image)
                 }
-                image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
-            } else if ext == "SVG" {
-                if let svgImage = SVGKImage(contentsOfFile: imagePath) {
-                    svgImage.size = CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview)
-                    if let image = svgImage.uiImage {
-                        if !FileManager().fileExists(atPath: previewPath) {
-                            do {
-                                try image.pngData()?.write(to: URL(fileURLWithPath: previewPath), options: .atomic)
-                            } catch { }
+            } else {
+                let image = getImageMetadata(metadata)
+                completion(image)
+            }
+        }
+        
+        func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
+                    
+            if let image = getImage(metadata: metadata) {
+                return image
+            }
+            
+            if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && !metadata.hasPreview {
+                NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+            }
+            
+            if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+                if let imagePreviewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag) {
+                    return UIImage.init(contentsOfFile: imagePreviewPath)
+                }
+            }
+            
+            if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+                return UIImage.init(named: "noPreviewVideo")!.image(color: .gray, size: view.frame.width)
+            } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+                return UIImage.init(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
+            } else {
+                return UIImage.init(named: "noPreview")!.image(color: .gray, size: view.frame.width)
+            }
+        }
+        
+        func getImage(metadata: tableMetadata) -> UIImage? {
+            
+            let ext = CCUtility.getExtension(metadata.fileNameView)
+            var image: UIImage?
+            
+            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+               
+                let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+                let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                
+                if ext == "GIF" {
+                    if !FileManager().fileExists(atPath: previewPath) {
+                        NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+                    }
+                    image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
+                } else if ext == "SVG" {
+                    if let svgImage = SVGKImage(contentsOfFile: imagePath) {
+                        svgImage.size = CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview)
+                        if let image = svgImage.uiImage {
+                            if !FileManager().fileExists(atPath: previewPath) {
+                                do {
+                                    try image.pngData()?.write(to: URL(fileURLWithPath: previewPath), options: .atomic)
+                                } catch { }
+                            }
+                            return image
+                        } else {
+                            return nil
                         }
-                        return image
                     } else {
                         return nil
                     }
                 } else {
-                    return nil
+                    NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+                    image = UIImage.init(contentsOfFile: imagePath)
                 }
-            } else {
-                NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-                image = UIImage.init(contentsOfFile: imagePath)
             }
+            
+            return image
         }
-        
-        return image
     }
     
     // MARK: - Command Center
@@ -488,9 +530,12 @@ class NCViewerMediaPage: UIViewController {
 
 extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
     
-    func shiftCurrentPage() -> Bool {
+    func shiftCurrentPage() {
         
-        if metadatas.count == 0 { return false }
+        if metadatas.count == 0 {
+            self.viewUnload()
+            return
+        }
         
         var direction: UIPageViewController.NavigationDirection = .forward
         
@@ -501,10 +546,8 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
         
         currentViewController.ncplayer?.deactivateObserver()
         
-        let viewerMedia = getViewerMedia(index: currentIndex, image: getImageMetadata(metadatas[currentIndex]), metadata: metadatas[currentIndex], direction: direction)
+        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex], direction: direction)
         pageViewController.setViewControllers([viewerMedia], direction: direction, animated: true, completion: nil)
-        
-        return true
     }
     
     func goTo(index: Int, direction: UIPageViewController.NavigationDirection, autoPlay: Bool) {
@@ -513,7 +556,7 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
         
         currentViewController.ncplayer?.deactivateObserver()
 
-        let viewerMedia = getViewerMedia(index: currentIndex, image: getImageMetadata(metadatas[currentIndex]), metadata: metadatas[currentIndex], direction: direction)
+        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex], direction: direction)
         viewerMedia.autoPlay = autoPlay
         pageViewController.setViewControllers([viewerMedia], direction: direction, animated: true, completion: nil)
     }
@@ -522,7 +565,7 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
         
         if currentIndex == 0 { return nil }
 
-        let viewerMedia = getViewerMedia(index: currentIndex-1, image: getImageMetadata(metadatas[currentIndex-1]), metadata: metadatas[currentIndex-1], direction: .reverse)
+        let viewerMedia = getViewerMedia(index: currentIndex-1, metadata: metadatas[currentIndex-1], direction: .reverse)
         return viewerMedia
     }
     
@@ -530,7 +573,7 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
         
         if currentIndex == metadatas.count-1 { return nil }
 
-        let viewerMedia = getViewerMedia(index: currentIndex+1, image: getImageMetadata(metadatas[currentIndex+1]), metadata: metadatas[currentIndex+1], direction: .forward)
+        let viewerMedia = getViewerMedia(index: currentIndex+1, metadata: metadatas[currentIndex+1], direction: .forward)
         return viewerMedia
     }
     
