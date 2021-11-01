@@ -80,7 +80,7 @@
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" maximumZoomScale="4" translatesAutoresizingMaskIntoConstraints="NO" id="CdQ-LC-Trx">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                                 <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="kPV-JM-UnM" customClass="imageVideoContainerView" customModule="Nextcloud" customModuleProvider="target">
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="networkInProgress" translatesAutoresizingMaskIntoConstraints="NO" id="kPV-JM-UnM" customClass="imageVideoContainerView" customModule="Nextcloud" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                                     </imageView>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="2AU-85-K8y">
@@ -451,7 +451,7 @@
         <image name="audioOn" width="28" height="28"/>
         <image name="gobackward.10" catalog="system" width="121" height="128"/>
         <image name="goforward.10" catalog="system" width="121" height="128"/>
-        <image name="logo" width="256" height="128"/>
+        <image name="networkInProgress" width="300" height="300"/>
         <image name="pip.enter" catalog="system" width="128" height="96"/>
         <image name="play.fill" catalog="system" width="116" height="128"/>
         <systemColor name="systemBackgroundColor">
