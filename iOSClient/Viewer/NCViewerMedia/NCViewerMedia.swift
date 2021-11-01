@@ -196,11 +196,11 @@ class NCViewerMedia: UIViewController {
                 etagResource = metadata.etagResource
             }
                
-            NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+            NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true, bottom: 50)
 
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
                      
-                NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+                NCUtility.shared.stopActivityIndicator()
 
                 if errorCode == 0 && imageIcon != nil {
                     NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
@@ -222,18 +222,20 @@ class NCViewerMedia: UIViewController {
             
             if (CCUtility.getAutomaticDownloadImage() || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "") {
                 
-                NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+                NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true, bottom: 50)
 
                 NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in
                     
-                    NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
-
                     let image = getImageMetadata(metadata)
+                    NCUtility.shared.stopActivityIndicator()
+                    
                     DispatchQueue.main.async { completion(metadata.ocId, image) }
                 }
                 
             } else {
+                
                 let image = getImageMetadata(metadata)
+                
                 DispatchQueue.main.async { completion(metadata.ocId, image) }
             }
         }

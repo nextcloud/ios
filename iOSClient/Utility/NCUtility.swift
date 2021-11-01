@@ -570,11 +570,10 @@ class NCUtility: NSObject {
             stopActivityIndicator()
         }
         
-        self.activityIndicator = UIActivityIndicatorView(style: style)
-        guard let activityIndicator = self.activityIndicator else { return }
-        
         DispatchQueue.main.async {
             
+            self.activityIndicator = UIActivityIndicatorView(style: style)
+            guard let activityIndicator = self.activityIndicator else { return }
             if self.viewBackgroundActivityIndicator != nil { return }
             
             activityIndicator.color = NCBrandColor.shared.label
