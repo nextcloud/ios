@@ -566,46 +566,12 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
             currentViewController.statusLabel.isHidden = true
             
             let fileName = (currentViewController.metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentViewController.metadata.account, currentViewController.metadata.serverUrl, fileName)) {
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentViewController.metadata.account, currentViewController.metadata.serverUrl, fileName)), CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 
-                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                    
-                    AudioServicesPlaySystemSound(1519) // peek feedback
-                    
-                    if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                        self.ncplayerLivePhoto = NCPlayer.init(url: url, autoPlay: true, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil)
-                    }
-                    
-                } else {
-                    
-                    let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileNameView
-                    let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                                    
-                    NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
-                        
-                    }, taskHandler: { (_) in
-                        
-                    }, progressHandler: { (progress) in
-                                        
-                        self.progressView.progress = Float(progress.fractionCompleted)
-                        
-                    }) { (account, etag, date, length, allHeaderFields, error, errorCode, errorDescription) in
-                        
-                        self.progressView.progress = 0
-                        
-                        if errorCode == 0 && account == metadata.account {
-                            
-                            NCManageDatabase.shared.addLocalFile(metadata: metadata)
-                            
-                            if gestureRecognizer.state == .changed || gestureRecognizer.state == .began {
-                                AudioServicesPlaySystemSound(1519) // peek feedback
-                                
-                                if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                                    self.ncplayerLivePhoto = NCPlayer.init(url: url, autoPlay: true, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil)
-                                }
-                            }
-                        }
-                    }
+                AudioServicesPlaySystemSound(1519) // peek feedback
+                
+                if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
+                    self.ncplayerLivePhoto = NCPlayer.init(url: url, autoPlay: true, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil)
                 }
             }
             

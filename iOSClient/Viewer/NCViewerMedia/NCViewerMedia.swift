@@ -208,11 +208,15 @@ class NCViewerMedia: UIViewController {
                                 
                 // Download file max resolution
                 downloadFile(metadata: metadata)
+                // Download file live photo
+                if metadata.livePhoto { downloadFileLivePhoto(metadata: metadata) }
             }
         } else {
             
             // Download file max resolution
             downloadFile(metadata: metadata)
+            // Download file live photo
+            if metadata.livePhoto { downloadFileLivePhoto(metadata: metadata) }
         }
         
         // Download file max resolution
@@ -239,6 +243,21 @@ class NCViewerMedia: UIViewController {
                 let image = getImageMetadata(metadata)
                 
                 DispatchQueue.main.async { completion(metadata.ocId, image) }
+            }
+        }
+        
+        // Download Live Photo
+        func downloadFileLivePhoto(metadata: tableMetadata) {
+            
+            let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
+
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+
+                NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: false, bottom: 50, style: .gray)
+
+                NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in
+                    NCUtility.shared.stopActivityIndicator()
+                }
             }
         }
         
