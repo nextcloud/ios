@@ -61,9 +61,6 @@ class NCPlayer: NSObject {
         print("Play URL: \(url)")
         player = AVPlayer(url: url)
         
-        self.durationTime = self.player?.currentItem?.asset.duration ?? .zero
-        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationTime: self.durationTime)
-
         if metadata.livePhoto {
             player?.isMuted = false
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
@@ -82,6 +79,9 @@ class NCPlayer: NSObject {
             case .loaded:
                 DispatchQueue.main.async {
                     
+                    self.durationTime = self.player?.currentItem?.asset.duration ?? .zero
+                    NCManageDatabase.shared.addVideoTime(metadata: metadata, time: nil, durationTime: self.durationTime)
+
                     self.activateObserver(playerToolBar: playerToolBar)
                     
                     self.videoLayer = AVPlayerLayer(player: self.player)
