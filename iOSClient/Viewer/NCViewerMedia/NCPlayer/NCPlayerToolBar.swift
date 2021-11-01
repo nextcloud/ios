@@ -144,20 +144,24 @@ class NCPlayerToolBar: UIView {
         guard let ncplayer = self.ncplayer else { return }
                 
         // MUTE
-        if CCUtility.getAudioMute() {
-            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
-        } else {
-            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
+        if let muteButton = muteButton {
+            if CCUtility.getAudioMute() {
+                muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
+            } else {
+                muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
+            }
+            muteButton.isEnabled = true
         }
-        muteButton.isEnabled = true
         
         // PIP
-        if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && AVPictureInPictureController.isPictureInPictureSupported() {
-            pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .white), for: .normal)
-            pipButton.isEnabled = true
-        } else {
-            pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .gray), for: .normal)
-            pipButton.isEnabled = false
+        if let pipButton = pipButton {
+            if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && AVPictureInPictureController.isPictureInPictureSupported() {
+                pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .white), for: .normal)
+                pipButton.isEnabled = true
+            } else {
+                pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .gray), for: .normal)
+                pipButton.isEnabled = false
+            }
         }
         
         // SLIDER TIME (START - END)
