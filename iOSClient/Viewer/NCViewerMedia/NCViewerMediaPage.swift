@@ -301,7 +301,7 @@ class NCViewerMediaPage: UIViewController {
     
     //MARK: - Image
     
-    func loadImage(metadata: tableMetadata, completion: @escaping (_ image: UIImage?)->()) {
+    func loadImage(metadata: tableMetadata, completion: @escaping (_ ocId: String, _ image: UIImage?)->()) {
         
         // Download preview
         if metadata.hasPreview && !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
@@ -331,11 +331,11 @@ class NCViewerMediaPage: UIViewController {
                 
                 NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in
                     let image = getImageMetadata(metadata)
-                    completion(image)
+                    completion(metadata.ocId, image)
                 }
             } else {
                 let image = getImageMetadata(metadata)
-                completion(image)
+                completion(metadata.ocId, image)
             }
         }
         
