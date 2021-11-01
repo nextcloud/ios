@@ -215,6 +215,7 @@ class NCViewerMedia: UIViewController {
             downloadFile(metadata: metadata)
         }
         
+        // Download file max resolution
         func downloadFile(metadata: tableMetadata) {
             
             let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
@@ -227,6 +228,7 @@ class NCViewerMedia: UIViewController {
                 NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in
                     
                     let image = getImageMetadata(metadata)
+                    
                     NCUtility.shared.stopActivityIndicator()
                     
                     DispatchQueue.main.async { completion(metadata.ocId, image) }
