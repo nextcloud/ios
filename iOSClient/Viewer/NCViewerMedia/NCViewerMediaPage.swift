@@ -53,9 +53,7 @@ class NCViewerMediaPage: UIViewController {
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
-    
-    var textColor: UIColor = NCBrandColor.shared.label
-    
+    var textColor: UIColor = NCBrandColor.shared.label    
     var playCommand: Any?
     var pauseCommand: Any?
     var skipForwardCommand: Any?
