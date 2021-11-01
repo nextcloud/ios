@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import SVGKit
 import NCCommunication
 
 class NCViewerMedia: UIViewController {
@@ -82,8 +83,6 @@ class NCViewerMedia: UIViewController {
         scrollView.maximumZoomScale = 4
         scrollView.minimumZoomScale = 1
         
-        imageVideoContainer.image = image
-
         view.addGestureRecognizer(doubleTapGestureRecognizer)
         
         if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
@@ -98,6 +97,11 @@ class NCViewerMedia: UIViewController {
         
         detailViewTopConstraint.constant = 0
         detailView.hide()
+        
+        loadImage(metadata: metadata) { ocId, image in
+            self.image = image
+            self.imageVideoContainer.image = image
+x        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -175,6 +179,129 @@ class NCViewerMedia: UIViewController {
                 }
             }
         }) { (_) in }
+    }
+    
+    //MARK: - Image
+    
+    func loadImage(metadata: tableMetadata, completion: @escaping (_ ocId: String, _ image: UIImage?)->()) {
+        
+        // Download preview
+        if metadata.hasPreview && !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+            
+            var etagResource: String?
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+            if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
+                etagResource = metadata.etagResource
+            }
+               
+            NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
+                     
+                NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+
+                if errorCode == 0 && imageIcon != nil {
+                    NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
+                }
+                                
+                // Download file max resolution
+                downloadFile(metadata: metadata)
+            }
+        } else {
+            
+            // Download file max resolution
+            downloadFile(metadata: metadata)
+        }
+        
+        func downloadFile(metadata: tableMetadata) {
+            
+            let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+            let ext = CCUtility.getExtension(metadata.fileNameView)
+            
+            if (CCUtility.getAutomaticDownloadImage() || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "") {
+                
+                NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+
+                NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in
+                    
+                    NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+
+                    let image = getImageMetadata(metadata)
+                    DispatchQueue.main.async { completion(metadata.ocId, image) }
+                }
+                
+            } else {
+                let image = getImageMetadata(metadata)
+                DispatchQueue.main.async { completion(metadata.ocId, image) }
+            }
+        }
+        
+        func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
+                    
+            if let image = getImage(metadata: metadata) {
+                return image
+            }
+            
+            if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && !metadata.hasPreview {
+                NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+            }
+            
+            if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+                if let imagePreviewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag) {
+                    return UIImage.init(contentsOfFile: imagePreviewPath)
+                }
+            }
+            
+            if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+                return UIImage.init(named: "noPreviewVideo")!.image(color: .gray, size: view.frame.width)
+            } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+                return UIImage.init(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
+            } else {
+                return UIImage.init(named: "noPreview")!.image(color: .gray, size: view.frame.width)
+            }
+        }
+        
+        func getImage(metadata: tableMetadata) -> UIImage? {
+            
+            let ext = CCUtility.getExtension(metadata.fileNameView)
+            var image: UIImage?
+            
+            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+               
+                let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+                let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                
+                if ext == "GIF" {
+                    if !FileManager().fileExists(atPath: previewPath) {
+                        NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+                    }
+                    image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
+                } else if ext == "SVG" {
+                    if let svgImage = SVGKImage(contentsOfFile: imagePath) {
+                        svgImage.size = CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview)
+                        if let image = svgImage.uiImage {
+                            if !FileManager().fileExists(atPath: previewPath) {
+                                do {
+                                    try image.pngData()?.write(to: URL(fileURLWithPath: previewPath), options: .atomic)
+                                } catch { }
+                            }
+                            return image
+                        } else {
+                            return nil
+                        }
+                    } else {
+                        return nil
+                    }
+                } else {
+                    NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+                    image = UIImage.init(contentsOfFile: imagePath)
+                }
+            }
+            
+            return image
+        }
     }
     
     //MARK: - Gesture
