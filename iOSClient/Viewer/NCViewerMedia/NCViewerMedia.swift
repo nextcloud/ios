@@ -82,26 +82,9 @@ class NCViewerMedia: UIViewController {
         scrollView.maximumZoomScale = 4
         scrollView.minimumZoomScale = 1
         
-        view.addGestureRecognizer(doubleTapGestureRecognizer)
-        
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-            if image == nil {
-                image = UIImage.init(named: "noPreviewVideo")!.image(color: .gray, size: view.frame.width)
-            }
-            imageVideoContainer.image = image
-            
-        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-            if image == nil {
-                image = UIImage.init(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
-            }
-            imageVideoContainer.image = image
+        imageVideoContainer.image = image
 
-        } else {
-            if image == nil {
-                image = UIImage.init(named: "noPreview")!.image(color: .gray, size: view.frame.width)
-            }
-            imageVideoContainer.image = image
-        }
+        view.addGestureRecognizer(doubleTapGestureRecognizer)
         
         if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
             statusViewImage.image = NCUtility.shared.loadImage(named: "livephoto", color: .gray)
@@ -115,8 +98,6 @@ class NCViewerMedia: UIViewController {
         
         detailViewTopConstraint.constant = 0
         detailView.hide()
-        
-        self.downloadPreview()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -171,10 +152,6 @@ class NCViewerMedia: UIViewController {
             
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             
-            if let image = viewerMediaPage?.getImageMetadata(metadata) {
-                self.image = image
-                self.imageVideoContainer.image = image
-            }
             viewerMediaPage?.clearCommandCenter()
         }
                 
@@ -351,60 +328,6 @@ extension NCViewerMedia {
         if self.detailView.isShow() {
             CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
                 self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMediaPage?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel, delegate: self)
-            }
-        }
-    }
-    
-    func downloadPreview() {
-        
-        if metadata.hasPreview == false || CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-            downloadFile()
-            return
-        }
-        
-        var etagResource: String?
-        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
-        let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-        let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-        if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
-            etagResource = metadata.etagResource
-        }
-        
-        NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
-        
-        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
-            
-            if errorCode == 0, let image = self.viewerMediaPage?.getImageMetadata(self.metadata) {
-                DispatchQueue.main.async {
-                    self.image = image
-                    self.imageVideoContainer.image = image
-                    self.downloadFile()
-                    NCUtility.shared.stopActivityIndicator()
-                }
-            }
-        }
-    }
-    
-    func downloadFile() {
-        
-        if metadata.classFile != NCCommunicationCommon.typeClassFile.image.rawValue || CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) || metadata.session != "" { return }
-        
-        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
-        let ext = CCUtility.getExtension(metadata.fileNameView)
-        
-        if CCUtility.getAutomaticDownloadImage() || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted {
-            
-            NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
-            
-            NCNetworking.shared.download(metadata: metadata, selector: "") { (errorCode) in
-                
-                if errorCode == 0, let image = self.viewerMediaPage?.getImageMetadata(self.metadata) {
-                    DispatchQueue.main.async {
-                        self.image = image
-                        self.imageVideoContainer.image = image
-                        NCUtility.shared.stopActivityIndicator()
-                    }
-                }
             }
         }
     }
