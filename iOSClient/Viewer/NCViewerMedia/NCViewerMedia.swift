@@ -199,11 +199,11 @@ class NCViewerMedia: UIViewController {
                 etagResource = metadata.etagResource
             }
                
-            DispatchQueue.main.async { NCUtility.shared.startActivityIndicator(backgroundView: self.viewerMediaPage?.view, blurEffect: false, bottom: 50, style: .gray) }
+//            DispatchQueue.main.async { NCUtility.shared.startActivityIndicator(backgroundView: self.viewerMediaPage?.view, blurEffect: false, bottom: 50, style: .gray) }
 
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
                      
-                NCUtility.shared.stopActivityIndicator()
+//                NCUtility.shared.stopActivityIndicator()
 
                 if errorCode == 0 && imageIcon != nil {
                     NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
@@ -230,13 +230,13 @@ class NCViewerMedia: UIViewController {
             
             if (CCUtility.getAutomaticDownloadImage() || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "") {
                 
-                DispatchQueue.main.async { NCUtility.shared.startActivityIndicator(backgroundView: self.viewerMediaPage?.view, blurEffect: false, bottom: 50, style: .gray) }
+//                DispatchQueue.main.async { NCUtility.shared.startActivityIndicator(backgroundView: self.viewerMediaPage?.view, blurEffect: false, bottom: 50, style: .gray) }
 
                 NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in
                     
                     let image = getImageMetadata(metadata)
                     
-                    NCUtility.shared.stopActivityIndicator()
+//                    NCUtility.shared.stopActivityIndicator()
                     
                     DispatchQueue.main.async { completion(metadata.ocId, image) }
                 }
@@ -256,10 +256,10 @@ class NCViewerMedia: UIViewController {
 
             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
 
-                DispatchQueue.main.async { NCUtility.shared.startActivityIndicator(backgroundView: self.viewerMediaPage?.view, blurEffect: false, bottom: 50, style: .gray) }
+//                DispatchQueue.main.async { NCUtility.shared.startActivityIndicator(backgroundView: self.viewerMediaPage?.view, blurEffect: false, bottom: 50, style: .gray) }
 
                 NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in
-                    NCUtility.shared.stopActivityIndicator()
+//                    NCUtility.shared.stopActivityIndicator()
                 }
             }
         }
