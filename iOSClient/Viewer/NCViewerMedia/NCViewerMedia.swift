@@ -196,7 +196,7 @@ class NCViewerMedia: UIViewController {
                 etagResource = metadata.etagResource
             }
                
-            NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true, bottom: 50)
+            NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: false, bottom: 50, style: .gray)
 
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
                      
@@ -222,7 +222,7 @@ class NCViewerMedia: UIViewController {
             
             if (CCUtility.getAutomaticDownloadImage() || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "") {
                 
-                NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true, bottom: 50)
+                NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: false, bottom: 50, style: .gray)
 
                 NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in
                     
