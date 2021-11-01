@@ -316,9 +316,12 @@ class NCViewerMediaPage: UIViewController {
             
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
                                 
+                // Download file max resolution
                 downloadFile(metadata: metadata)
             }
         } else {
+            
+            // Download file max resolution
             downloadFile(metadata: metadata)
         }
         
