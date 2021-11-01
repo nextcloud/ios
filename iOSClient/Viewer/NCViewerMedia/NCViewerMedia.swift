@@ -98,8 +98,8 @@ class NCViewerMedia: UIViewController {
         detailViewTopConstraint.constant = 0
         detailView.hide()
         
-        self.image = UIImage.init(named: "networkInProgress")!.image(color: .gray, size: view.frame.width/2)
-        self.imageVideoContainer.image = image
+        self.image = nil
+        self.imageVideoContainer.image = nil
 
         loadImage(metadata: metadata) { ocId, image in
             self.image = image
