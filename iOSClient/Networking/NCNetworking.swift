@@ -164,6 +164,14 @@ import Queuer
         let directoryCertificate = CCUtility.getDirectoryCerificates()!
         let directoryCertificateUrl = URL.init(fileURLWithPath: directoryCertificate)
         let host = challenge.protectionSpace.host
+        let hostPushNotification = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host
+        
+        //
+        // NOT check push notification
+        //
+        if host == hostPushNotification {
+            return true
+        }
         
         if let serverTrust: SecTrust = protectionSpace.serverTrust {
             
@@ -210,8 +218,7 @@ import Queuer
                     if !trusted && !trustedV2 {
                         #if !EXTENSION
                         DispatchQueue.main.async {
-                            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                            CCUtility.setCertificateError(appDelegate.account)
+                            CCUtility.setCertificateError((UIApplication.shared.delegate as! AppDelegate).account)
                         }
                         #endif
                     }
