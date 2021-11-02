@@ -103,7 +103,11 @@ class NCViewerMedia: UIViewController {
 
         loadImage(metadata: metadata) { ocId, image in
             self.image = image
-            self.imageVideoContainer.image = image
+            // do not update if is present the videoLayer
+            let numSublayers = self.imageVideoContainer.layer.sublayers?.count
+            if numSublayers == nil {
+                self.imageVideoContainer.image = image
+            }
         }
     }
     
