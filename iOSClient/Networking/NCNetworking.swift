@@ -100,17 +100,6 @@ import Queuer
         _ = sessionManagerBackground
         _ = sessionManagerBackgroundWWan
         #endif
-        
-        // Notification
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile), object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object:nil)
     }
     
     //MARK: - Communication Delegate
@@ -165,61 +154,6 @@ import Queuer
         #endif
     }
     
-    // MARK: - NotificationCenter
-    
-    @objc func downloadStartFile(_ notification: NSNotification) {
-    }
-    
-    @objc func downloadedFile(_ notification: NSNotification) {
-        
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String {
-            #if !EXTENSION
-            (UIApplication.shared.delegate as! AppDelegate).listProgress[ocId] = nil
-            #endif
-        }
-    }
-    
-    @objc func downloadCancelFile(_ notification: NSNotification) {
-        
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String {
-            #if !EXTENSION
-            (UIApplication.shared.delegate as! AppDelegate).listProgress[ocId] = nil
-            #endif
-        }
-    }
-    
-    @objc func uploadStartFile(_ notification: NSNotification) {
-    }
-    
-    @objc func uploadedFile(_ notification: NSNotification) {
-        
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String {
-            #if !EXTENSION
-            (UIApplication.shared.delegate as! AppDelegate).listProgress[ocId] = nil
-            #endif
-        }
-    }
-    
-    @objc func uploadCancelFile(_ notification: NSNotification) {
-        
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String {
-            #if !EXTENSION
-            (UIApplication.shared.delegate as! AppDelegate).listProgress[ocId] = nil
-            #endif
-        }
-    }
-    
-    @objc func triggerProgressTask(_ notification: NSNotification) {
-
-        if let userInfo = notification.userInfo as NSDictionary?, let progressNumber = userInfo["progress"] as? NSNumber, let totalBytes = userInfo["totalBytes"] as? Int64, let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64, let ocId = userInfo["ocId"] as? String {
-             
-            #if !EXTENSION
-            let progressType = NCGlobal.progressType(progress: progressNumber.floatValue, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected)
-            (UIApplication.shared.delegate as! AppDelegate).listProgress[ocId] = progressType
-            #endif
-        }
-    }
-    
     //MARK: - Pinning check
     
     private func checkTrustedChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge) -> Bool {
@@ -230,6 +164,14 @@ import Queuer
         let directoryCertificate = CCUtility.getDirectoryCerificates()!
         let directoryCertificateUrl = URL.init(fileURLWithPath: directoryCertificate)
         let host = challenge.protectionSpace.host
+        let hostPushNotification = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host
+        
+        //
+        // TRUSTED push notification proxy server
+        //
+        if host == hostPushNotification {
+            return true
+        }
         
         if let serverTrust: SecTrust = protectionSpace.serverTrust {
             
@@ -276,8 +218,7 @@ import Queuer
                     if !trusted && !trustedV2 {
                         #if !EXTENSION
                         DispatchQueue.main.async {
-                            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                            CCUtility.setCertificateError(appDelegate.account)
+                            CCUtility.setCertificateError((UIApplication.shared.delegate as! AppDelegate).account)
                         }
                         #endif
                     }
@@ -377,15 +318,20 @@ import Queuer
     
     @objc func cancelDownload(ocId: String, serverUrl:String, fileNameView: String) {
         
+        #if !EXTENSION
+        // removed progress ocid
+        DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[ocId] = nil }
+        #endif
+        
         guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView) else { return }
         
         if let request = downloadRequest[fileNameLocalPath] {
             request.cancel()
         } else {
             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                
                 NCManageDatabase.shared.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId":metadata.ocId])
-                
             }
         }
     }
@@ -403,7 +349,7 @@ import Queuer
                 
         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierDownload, sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusInDownload)
                     
-        NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (request) in
+        NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, queue: NCCommunicationCommon.shared.backgroundQueue, requestHandler: { (request) in
             
             self.downloadRequest[fileNameLocalPath] = request
             
@@ -413,6 +359,12 @@ import Queuer
         }, taskHandler: { (_) in
             
         }, progressHandler: { (progress) in
+            
+            #if !EXTENSION
+            // add progress ocid
+            let progressType = NCGlobal.progressType(progress: Float(progress.fractionCompleted), totalBytes: progress.totalUnitCount, totalBytesExpected: progress.completedUnitCount)
+            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = progressType }
+            #endif
             
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "fileName":metadata.fileName, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInDownload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
             
@@ -447,6 +399,10 @@ import Queuer
             }
             
             self.downloadRequest[fileNameLocalPath] = nil
+            #if !EXTENSION
+            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = nil }
+            #endif
+            
             if error?.isExplicitlyCancelledError ?? false {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId":metadata.ocId])
             } else {
@@ -482,9 +438,9 @@ import Queuer
             metadata = tableMetadata.init(value: metadata)
            
             if metadata.e2eEncrypted {
-                #if !EXTENSION_FILE_PROVIDER_EXTENSION
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
                 NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: metadata), start: { start() }, completion: completion)
-                #endif
+#endif
             } else if metadata.chunk {
                 uploadChunkedFile(metadata: metadata, start: { start() }, completion: completion)
             } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
@@ -542,6 +498,12 @@ import Queuer
             start()
             
         }, progressHandler: { (progress) in
+            
+            #if !EXTENSION
+            // add progress ocid
+            let progressType = NCGlobal.progressType(progress: Float(progress.fractionCompleted), totalBytes: progress.totalUnitCount, totalBytesExpected: progress.completedUnitCount)
+            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = progressType }
+            #endif
             
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "fileName":metadata.fileName, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
             
@@ -679,6 +641,10 @@ import Queuer
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
             }
             
+            #if !EXTENSION
+            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = nil }
+            #endif
+            
             // Delete
             self.uploadMetadataInBackground[fileName+serverUrl] = nil
         }
@@ -698,6 +664,13 @@ import Queuer
         }
         
         if let metadata = metadata {
+            
+            #if !EXTENSION
+            // add progress ocid
+            let progressType = NCGlobal.progressType(progress: progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected)
+            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = progressType }
+            #endif
+            
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "fileName":metadata.fileName, "serverUrl":serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress":NSNumber(value: progress), "totalBytes":NSNumber(value: totalBytes), "totalBytesExpected":NSNumber(value: totalBytesExpected)])
         }
     }
@@ -725,6 +698,11 @@ import Queuer
         
         let metadata = tableMetadata.init(value: metadata)
 
+        #if !EXTENSION
+        // removed progress ocid
+        DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = nil }
+        #endif
+        
         if metadata.session.count == 0 {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             return completion()
@@ -830,7 +808,7 @@ import Queuer
             }
             
             if metadata.status == NCGlobal.shared.metadataStatusDownloading && metadata.session == NCCommunicationCommon.shared.sessionIdentifierDownload {
-                NCNetworking.shared.cancelDownload(ocId: metadata.ocId, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView)
+                cancelDownload(ocId: metadata.ocId, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView)
             }
         }
         
@@ -843,7 +821,7 @@ import Queuer
     
     @objc func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasLocalUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
         
-        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
+        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, responseData, errorCode, errorDescription) in
             
             if errorCode == 0  {
                               
@@ -877,7 +855,7 @@ import Queuer
     
     @objc func readFile(serverUrlFileName: String, account: String, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ errorCode: Int, _ errorDescription: String)->()) {
         
-        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
+        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, responseData, errorCode, errorDescription) in
 
             if errorCode == 0 && files.count == 1 {
                 
@@ -898,7 +876,7 @@ import Queuer
     
     @objc func searchFiles(urlBase: String, user: String, literal: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
         
-        NCCommunication.shared.searchLiteral(serverUrl: urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.searchLiteral(serverUrl: urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, errorCode, errorDescription) in
             
             if errorCode == 0  {
                 
@@ -1155,7 +1133,8 @@ import Queuer
     }
     
     @objc func listingFavoritescompletion(selector: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
-        NCCommunication.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, errorCode, errorDescription) in
+            
             if errorCode == 0 {
                 NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (_, _, metadatas) in
                     NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)

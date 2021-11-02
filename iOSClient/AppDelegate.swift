@@ -314,9 +314,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // close detail
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuDetailClose)
         
-        // Video proxy
-        NCKTVHTTPCache.shared.restartProxy(user: user, password: password)
-
         // Registeration domain File Provider
         //FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
         //[fileProviderDomain removeAllDomains];

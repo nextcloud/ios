@@ -119,9 +119,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             // Cancel Button
             let navigationItemCancel = UIBarButtonItem.init(barButtonSystemItem: .stop, target: self, action: #selector(self.actionCancel))
             navigationItemCancel.tintColor = textColor
-            navigationItem.leftBarButtonItem = navigationItemCancel
-            
-            NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+            navigationItem.leftBarButtonItem = navigationItemCancel            
         }
         
         self.navigationController?.navigationBar.setValue(true, forKey: "hidesShadow")
@@ -141,13 +139,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         super.viewDidDisappear(animated)
 
         appDelegate.startTimerErrorNetworking()
-    }
-    
-    // MARK: - NotificationCenter
-
-    @objc func applicationDidEnterBackground() {
-        
-        dismiss(animated: false)
     }
     
     // MARK: - TextField

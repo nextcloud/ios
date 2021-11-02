@@ -45,7 +45,16 @@ class NCKTVHTTPCache: NSObject {
         }
     }
     
-    func startProxy(user: String, password: String) {
+    func restartProxy(user: String, password: String) {
+                
+        if KTVHTTPCache.proxyIsRunning() {
+            KTVHTTPCache.proxyStop()
+        }
+        
+        startProxy(user: user, password: password)
+    }
+    
+    private func startProxy(user: String, password: String) {
         
         guard let authData = (user + ":" + password).data(using: .utf8) else { return }
         
@@ -61,20 +70,11 @@ class NCKTVHTTPCache: NSObject {
         }        
     }
     
-    func stopProxy() {
+    private func stopProxy() {
         
         if KTVHTTPCache.proxyIsRunning() {
             KTVHTTPCache.proxyStop()
         }
-    }
-    
-    func restartProxy(user: String, password: String) {
-                
-        if KTVHTTPCache.proxyIsRunning() {
-            KTVHTTPCache.proxyStop()
-        }
-        
-        startProxy(user: user, password: password)
     }
     
     func getProxyURL(stringURL: String) -> URL {

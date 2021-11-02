@@ -537,7 +537,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if let cell = collectionView?.cellForItem(at: IndexPath(row: index, section: 0)) {
                     if cell is NCListCell {
                         let cell = cell as! NCListCell
-                        if progressNumber.floatValue > 0 {
+                        if progressNumber.floatValue == 1 {
+                            cell.progressView?.isHidden = true
+                            cell.progressView?.progress = .zero
+                            cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
+                            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                                cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+                            } else {
+                                cell.labelInfo.text = ""
+                            }
+                        } else if progressNumber.floatValue > 0 {
                             cell.progressView?.isHidden = false
                             cell.progressView?.progress = progressNumber.floatValue
                             cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
@@ -549,7 +558,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         }
                     } else if cell is NCTransferCell {
                         let cell = cell as! NCTransferCell
-                        if progressNumber.floatValue > 0 {
+                        if progressNumber.floatValue == 1 {
+                            cell.progressView?.isHidden = true
+                            cell.progressView?.progress = .zero
+                            cell.buttonMore.isHidden = true
+                            cell.labelInfo.text = ""
+                        } else if progressNumber.floatValue > 0 {
                             cell.progressView?.isHidden = false
                             cell.progressView?.progress = progressNumber.floatValue
                             cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
@@ -561,7 +575,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         }
                     } else if cell is NCGridCell {
                         let cell = cell as! NCGridCell
-                        if progressNumber.floatValue > 0 {
+                        if progressNumber.floatValue == 1 {
+                            cell.progressView.isHidden = true
+                            cell.progressView.progress = .zero
+                            cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
+                        } else if progressNumber.floatValue > 0 {
                             cell.progressView.isHidden = false
                             cell.progressView.progress = progressNumber.floatValue
                             cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
@@ -965,13 +983,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             collectionView?.reloadData()
             
             NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch!) { (account, metadatas, errorCode, errorDescription) in
-                if self.searchController?.isActive ?? false && errorCode == 0 {
-                    self.metadatasSource = metadatas!
-                }
                 
-                self.refreshControl.endRefreshing()
-                self.isReloadDataSourceNetworkInProgress = false
-                self.reloadDataSource()
+                DispatchQueue.main.async {
+                    if self.searchController?.isActive ?? false && errorCode == 0 {
+                        self.metadatasSource = metadatas!
+                    }
+                    self.refreshControl.endRefreshing()
+                    self.isReloadDataSourceNetworkInProgress = false
+                    self.reloadDataSource()
+                }
             }
         } else {
             self.refreshControl.endRefreshing()
@@ -1000,8 +1020,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                             // E2EE
                             if let metadataFolder = metadataFolder {
                                 if metadataFolder.e2eEncrypted && CCUtility.isEnd(toEndEnabled: self.appDelegate.account) {
-                                    
+                                                                        
                                     NCCommunication.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { (account, e2eMetadata, errorCode, errorDescription) in
+                                        
                                         if errorCode == 0 && e2eMetadata != nil {
                                             
                                             if !NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: self.serverUrl, account: account, urlBase: self.appDelegate.urlBase) {
