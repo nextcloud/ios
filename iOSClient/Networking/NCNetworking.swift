@@ -167,7 +167,7 @@ import Queuer
         let hostPushNotification = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host
         
         //
-        // TRUSTED push notification
+        // TRUSTED push notification proxy server
         //
         if host == hostPushNotification {
             return true
