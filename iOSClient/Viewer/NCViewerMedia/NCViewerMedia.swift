@@ -144,6 +144,8 @@ class NCViewerMedia: UIViewController {
         
         if (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
             
+            NCKTVHTTPCache.shared.restartProxy(user: appDelegate.user, password: appDelegate.password)
+            
             if ncplayer == nil, let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
                 self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView)
             } else {
@@ -235,7 +237,6 @@ class NCViewerMedia: UIViewController {
             } else {
                 
                 let image = getImageMetadata(metadata)
-                
                 DispatchQueue.main.async { completion(metadata.ocId, image) }
             }
         }
