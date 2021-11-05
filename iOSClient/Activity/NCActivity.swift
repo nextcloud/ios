@@ -359,15 +359,6 @@ extension NCActivity: UIScrollViewDelegate {
 
 extension NCActivity {
 
-    @objc func getComments(account: String, objectId: String) -> [tableComments] {
-        
-        let realm = try! Realm()
-        
-        let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId).sorted(byKeyPath: "creationDateTime", ascending: false)
-        
-        return Array(results.map(tableComments.init))
-    }
-
     func loadDataSource() {
         
         guard let metadata = self.metadata else { return }
@@ -380,7 +371,7 @@ extension NCActivity {
         NCCommunication.shared.getComments(fileId: metadata.fileId) { (account, comments, errorCode, errorDescription) in
             if errorCode == 0 && comments != nil {
                 NCManageDatabase.shared.addComments(comments!, account: metadata.account, objectId: metadata.fileId)
-                self.allItems += self.getComments(account: metadata.account, objectId: metadata.fileId)
+                self.allItems += NCManageDatabase.shared.getComments(account: metadata.account, objectId: metadata.fileId)
                 reloadDispatch.leave()
             } else {
                 if errorCode != NCGlobal.shared.errorResourceNotFound {
