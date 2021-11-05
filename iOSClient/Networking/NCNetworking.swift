@@ -164,15 +164,7 @@ import Queuer
         let directoryCertificate = CCUtility.getDirectoryCerificates()!
         let directoryCertificateUrl = URL.init(fileURLWithPath: directoryCertificate)
         let host = challenge.protectionSpace.host
-        let hostPushNotification = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host
-        
-        //
-        // TRUSTED push notification proxy server
-        //
-        if host == hostPushNotification {
-            return true
-        }
-        
+    
         if let serverTrust: SecTrust = protectionSpace.serverTrust {
             
             saveX509Certificate(serverTrust, certName: NCGlobal.shared.certificateTmp, directoryCertificate: directoryCertificate)
