@@ -1261,7 +1261,7 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId).sorted(byKeyPath: "creationDateTime", ascending: false)
         
-        return Array(results.map { tableComments.init(value:$0) })
+        return Array(results.map(tableComments.init))
     }
     
     //MARK: -
