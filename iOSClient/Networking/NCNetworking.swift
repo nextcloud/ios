@@ -181,7 +181,7 @@ import Queuer
                 let certificate = NSData(bytes: data, length: size)
                 
                 // write certificate tmp to disk
-                certificate.write(toFile: directoryCertificate + "/" + NCGlobal.shared.certificateTmp, atomically: true)
+                certificate.write(toFile: directoryCertificate + "/" + host + ".tmp", atomically: true)
                 
                 // verify
                 let certificateSavedPath = directoryCertificate + "/" + host + ".der"
@@ -210,7 +210,7 @@ import Queuer
             let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
             if let host = urlComponents?.host {
             
-                let certificateAtPath = directoryCertificate + "/" + NCGlobal.shared.certificateTmp
+                let certificateAtPath = directoryCertificate + "/" + host + ".tmp"
                 let certificateToPath = directoryCertificate + "/" + host + ".der"
             
                 if !NCUtilityFileSystem.shared.moveFile(atPath: certificateAtPath, toPath: certificateToPath) {
