@@ -349,11 +349,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             if NCManageDatabase.shared.getAccounts() == nil {
                 NCUtility.shared.removeAllSettings()
             }
+               
+            // Clear certificate error
+            NCNetworking.shared.certificatesError.removeAll()
             
-            if let host = URL(string: url)?.host {
-                NCNetworking.shared.certificatesError = NCNetworking.shared.certificatesError.filter(){$0 != "host"}
-            }
-                                    
             NCManageDatabase.shared.deleteAccount(account)
             NCManageDatabase.shared.addAccount(account, urlBase: url, user: user, password: password)
             
