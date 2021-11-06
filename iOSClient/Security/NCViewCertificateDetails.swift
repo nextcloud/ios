@@ -42,7 +42,7 @@ class NCViewCertificateDetails: UIViewController  {
     private let directoryCertificate = CCUtility.getDirectoryCerificates()!
 
     public var delegate: NCViewCertificateDetailsDelegate?
-    public var host: String?
+    @objc public var host: String?
 
     // MARK: - View Life Cycle
 

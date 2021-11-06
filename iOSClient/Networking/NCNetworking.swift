@@ -47,6 +47,8 @@ import Queuer
     var downloadRequest: [String: DownloadRequest] = [:]
     var uploadRequest: [String: UploadRequest] = [:]
     var uploadMetadataInBackground: [String: tableMetadata] = [:]
+    
+    var certificatesError: [String] = []
 
     @objc public let sessionMaximumConnectionsPerHost = 5
     @objc public let sessionIdentifierBackground: String = "com.nextcloud.session.upload.background"
@@ -216,11 +218,7 @@ import Queuer
                 }
                 
                 if !trusted && !trustedV2 {
-                    #if !EXTENSION
-                    DispatchQueue.main.async {
-                        CCUtility.setCertificateError((UIApplication.shared.delegate as! AppDelegate).account, host:host)
-                    }
-                    #endif
+                    NCNetworking.shared.certificatesError.append(host)
                 }
             }
         }
