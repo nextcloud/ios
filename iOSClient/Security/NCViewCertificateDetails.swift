@@ -39,6 +39,7 @@ class NCViewCertificateDetails: UIViewController  {
     @IBOutlet weak var textView: UITextView!
 
     public var delegate: NCViewCertificateDetailsDelegate?
+    public var host: String?
 
     // MARK: - View Life Cycle
 
@@ -50,7 +51,10 @@ class NCViewCertificateDetails: UIViewController  {
         buttonCancel.title = NSLocalizedString("_close_", comment: "")
         
         let directoryCertificate = CCUtility.getDirectoryCerificates()!
-        let certificatePath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2 + ".txt"
+        var certificatePath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2 + ".txt"
+        if let host = host {
+            certificatePath = directoryCertificate + "/" + host + ".der"
+        }
         if FileManager.default.fileExists(atPath: certificatePath) {
             do {
                 let text = try String(contentsOfFile: certificatePath, encoding: .utf8)

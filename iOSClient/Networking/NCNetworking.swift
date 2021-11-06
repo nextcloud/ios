@@ -210,7 +210,7 @@ import Queuer
                     if !trusted && !trustedV2 {
                         #if !EXTENSION
                         DispatchQueue.main.async {
-                            CCUtility.setCertificateError((UIApplication.shared.delegate as! AppDelegate).account)
+                            CCUtility.setCertificateError((UIApplication.shared.delegate as! AppDelegate).account, host:host)
                         }
                         #endif
                     }

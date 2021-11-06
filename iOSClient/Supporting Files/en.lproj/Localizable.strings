@@ -736,8 +736,8 @@
 "_unknow_response_server_"              = "Unexpected response from server";
 "_user_authentication_required_"        = "User authentication required";
 "_file_directory_locked_"               = "File or directory locked";
-"_ssl_certificate_untrusted_"           = "The certificate for this server is invalid";
-"_ssl_certificate_changed_"             = "The certificate for this server seems to have changed";
+"_ssl_certificate_untrusted_"           = "The certificate for %@ is invalid";
+"_ssl_certificate_changed_"             = "The certificate for %@ seems to have changed";
 "_internal_server_"                     = "Internal server error";
 "_file_already_exists_"                 = "Could not complete the operation, a file with the same name exists";
 "_file_folder_not_exists_"              = "The source file wasn't found at the specified path";

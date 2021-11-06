@@ -550,19 +550,13 @@
     [UICKeyChainStore setData:data forKey:@"databaseEncryptionKey" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (BOOL)getCertificateError:(NSString *)account
++ (NSString *)getCertificateError:(NSString *)account
 {
     NSString *key = [@"certificateError" stringByAppendingString:account];
-    NSString *error = [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
-    
-    if (error == nil) {
-        return false;
-    }
-    
-    return true;
+    return [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (void)setCertificateError:(NSString *)account
++ (void)setCertificateError:(NSString *)account host:(NSString *)host
 {
     // In background do not write the error
 #if !defined(EXTENSION)
@@ -572,7 +566,7 @@
     }
     NSString *key = [@"certificateError" stringByAppendingString:account];
     
-    [UICKeyChainStore setString:@"true" forKey:key service:NCGlobal.shared.serviceShareKeyChain];
+    [UICKeyChainStore setString:host forKey:key service:NCGlobal.shared.serviceShareKeyChain];
 #else
     return;
 #endif
