@@ -516,6 +516,4 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             }
         }
     }
-    
-
 }
