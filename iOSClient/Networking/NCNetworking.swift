@@ -163,8 +163,10 @@ import Queuer
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
         let directoryCertificate = CCUtility.getDirectoryCerificates()!
         let directoryCertificateUrl = URL.init(fileURLWithPath: directoryCertificate)
+        var certificateTempPath = ""
         let host = challenge.protectionSpace.host
-    
+        let hostPushNotificationServerProxy = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host
+            
         print("SSL host: \(host)")
         
         if let serverTrust: SecTrust = protectionSpace.serverTrust {
@@ -198,7 +200,11 @@ import Queuer
                 let certificate = NSData(bytes: data, length: size)
                 
                 // write certificate tmp to disk
-                let certificateTempPath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2
+                if host == hostPushNotificationServerProxy {
+                    certificateTempPath = directoryCertificate + "/" + NCGlobal.shared.certificatePushNotificationServerProxy
+                } else {
+                    certificateTempPath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2
+                }
                 certificate.write(toFile: certificateTempPath, atomically: true)
                 
                 // verify

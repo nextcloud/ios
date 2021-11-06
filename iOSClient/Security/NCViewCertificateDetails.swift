@@ -50,17 +50,23 @@ class NCViewCertificateDetails: UIViewController  {
         super.viewDidLoad()
         
         var certificatePath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2 + ".txt"
+        let hostPushNotificationServerProxy = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host
 
         self.navigationItem.title = NSLocalizedString("_certificate_details_", comment: "")
         buttonCancel.title = NSLocalizedString("_close_", comment: "")
         
-        if let host = host {
-            certificatePath = directoryCertificate + "/" + host + ".der"
+        if host == hostPushNotificationServerProxy {
+            certificatePath = directoryCertificate + "/" + NCGlobal.shared.certificatePushNotificationServerProxy
         } else {
-            if let host = URL(string: appDelegate.urlBase)?.host {
+            if let host = host {
                 certificatePath = directoryCertificate + "/" + host + ".der"
+            } else {
+                if let host = URL(string: appDelegate.urlBase)?.host {
+                    certificatePath = directoryCertificate + "/" + host + ".der"
+                }
             }
         }
+        
         if FileManager.default.fileExists(atPath: certificatePath) {
             do {
                 let text = try String(contentsOfFile: certificatePath, encoding: .utf8)
