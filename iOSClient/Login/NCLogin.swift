@@ -352,6 +352,41 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
     
+    // MARK: - QRCode
+
+    func dismissQRCode(_ value: String?, metadataType: String?) {
+        
+        guard var value = value else { return }
+        
+        let protocolLogin = NCBrandOptions.shared.webLoginAutenticationProtocol + "login/"
+        
+        if value.hasPrefix(protocolLogin) && value.contains("user:") && value.contains("password:") && value.contains("server:") {
+            
+            value = value.replacingOccurrences(of: protocolLogin, with: "")
+            let valueArray = value.components(separatedBy: "&")
+            if valueArray.count == 3 {
+                
+                let user = valueArray[0].replacingOccurrences(of: "user:", with: "")
+                let password = valueArray[1].replacingOccurrences(of: "password:", with: "")
+                let urlBase = valueArray[2].replacingOccurrences(of: "server:", with: "")
+                let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: appDelegate.account)
+                let serverUrl = urlBase + "/" + webDAV
+                
+                loginButton.isEnabled = false
+                
+                NCCommunication.shared.checkServer(serverUrl: serverUrl) { (errorCode, errorDescription) in
+                
+                    self.checkPushNotificationServerProxy { error in
+                        if !error {
+                            self.loginButton.isEnabled = true
+                            self.standardLogin(url: urlBase, user: user, password: password, errorCode: errorCode, errorDescription: errorDescription)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     func standardLogin(url: String, user: String, password: String, errorCode: Int, errorDescription: String) {
         
         if errorCode == 0 {
@@ -436,40 +471,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
     
-    // MARK: - QRCode
-
-    func dismissQRCode(_ value: String?, metadataType: String?) {
-        
-        guard var value = value else { return }
-        
-        let protocolLogin = NCBrandOptions.shared.webLoginAutenticationProtocol + "login/"
-        
-        if value.hasPrefix(protocolLogin) && value.contains("user:") && value.contains("password:") && value.contains("server:") {
-            
-            value = value.replacingOccurrences(of: protocolLogin, with: "")
-            let valueArray = value.components(separatedBy: "&")
-            if valueArray.count == 3 {
-                
-                let user = valueArray[0].replacingOccurrences(of: "user:", with: "")
-                let password = valueArray[1].replacingOccurrences(of: "password:", with: "")
-                let urlBase = valueArray[2].replacingOccurrences(of: "server:", with: "")
-                let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: appDelegate.account)
-                let serverUrl = urlBase + "/" + webDAV
-                
-                loginButton.isEnabled = false
-                //activity.startAnimating()
-                
-                NCCommunication.shared.checkServer(serverUrl: serverUrl) { (errorCode, errorDescription) in
-                
-                    //self.activity.stopAnimating()
-                    self.loginButton.isEnabled = true
-                    
-                    self.standardLogin(url: urlBase, user: user, password: password, errorCode: errorCode, errorDescription: errorDescription)
-                }
-            }
-        }
-    }
-    
     // MARK: -
     
     func checkPushNotificationServerProxy(completion: @escaping (_ error: Bool)->()) {
@@ -508,6 +509,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 self.present(alertController, animated: true, completion: {
                     self.appDelegate.timerErrorNetworking?.invalidate()
                 })
+                
+            } else {
+                
+                completion(false)
             }
         }
     }
