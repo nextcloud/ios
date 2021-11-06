@@ -569,17 +569,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let alertController = UIAlertController(title: title, message: NSLocalizedString("_server_is_trusted_", comment: ""), preferredStyle: .alert)
             
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
+                
                 if NCNetworking.shared.certificatesError.contains(currentHost) {
                     NCNetworking.shared.writeCertificate(host: currentHost)
                 }
                 if NCNetworking.shared.certificatesError.contains(pushNotificationServerProxyHost) {
                     NCNetworking.shared.writeCertificate(host: pushNotificationServerProxyHost)
                 }
+                
                 NCNetworking.shared.certificatesError.removeAll()
                 self.startTimerErrorNetworking()
             }))
             
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
+                
+                NCNetworking.shared.certificatesError.removeAll()
                 self.startTimerErrorNetworking()
             }))
             
