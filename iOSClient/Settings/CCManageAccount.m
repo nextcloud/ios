@@ -149,6 +149,15 @@
         [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
         row.action.formSelector = @selector(certificateDetails:);
         [section addFormRow:row];
+        
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"certificatePNDetails" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_certificate_pn_details_", nil)];
+        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"lock-question"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
+        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+        [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+        row.action.formSelector = @selector(certificatePNDetails:);
+        [section addFormRow:row];
     }
     
     // Section : USER INFORMATION -------------------------------------------
@@ -501,7 +510,24 @@
     [self deselectFormRow:sender];
     
     UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCViewCertificateDetails" bundle:nil] instantiateInitialViewController];
+    NCViewCertificateDetails *viewController = (NCViewCertificateDetails *)navigationController.topViewController;
+
+    NSURL *url = [NSURL URLWithString:appDelegate.urlBase];
+    viewController.host = [url host];
         
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)certificatePNDetails:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
+    
+    UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCViewCertificateDetails" bundle:nil] instantiateInitialViewController];
+    NCViewCertificateDetails *viewController = (NCViewCertificateDetails *)navigationController.topViewController;
+        
+    NSURL *url = [NSURL URLWithString: NCBrandOptions.shared.pushNotificationServerProxy];
+    viewController.host = [url host];
+
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
