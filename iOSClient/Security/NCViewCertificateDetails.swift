@@ -53,10 +53,10 @@ class NCViewCertificateDetails: UIViewController  {
         self.navigationItem.title = NSLocalizedString("_certificate_details_", comment: "")
         buttonCancel.title = NSLocalizedString("_close_", comment: "")
         
-        let certificatePath = directoryCertificate + "/" + host + ".txt"
-        if FileManager.default.fileExists(atPath: certificatePath) {
+        let certNamePathTXT = directoryCertificate + "/" + host + ".txt"
+        if FileManager.default.fileExists(atPath: certNamePathTXT) {
             do {
-                let text = try String(contentsOfFile: certificatePath, encoding: .utf8)
+                let text = try String(contentsOfFile: certNamePathTXT, encoding: .utf8)
                 let font = UIFont.systemFont(ofSize: 13)
                 let attributes = [NSAttributedString.Key.font: font] as [NSAttributedString.Key : Any]
                 var contentRect = NSString(string: text).boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: 0), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: attributes, context: nil)
