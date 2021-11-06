@@ -160,7 +160,6 @@ import Queuer
     
     private func checkTrustedChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge) -> Bool {
         
-        var trusted = false
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
         let directoryCertificate = CCUtility.getDirectoryCerificates()!
         let host = challenge.protectionSpace.host
@@ -187,7 +186,7 @@ import Queuer
                 let certificateSavedPath = directoryCertificate + "/" + host + ".der"
                 if let certificateSaved = NSData(contentsOfFile: certificateSavedPath) {
                     if certificate.isEqual(to: certificateSaved as Data) {
-                        trusted = true
+                        return true
                     } else {
                         NCNetworking.shared.certificatesError.append(host)
                     }
@@ -195,11 +194,7 @@ import Queuer
             }
         }
         
-        if trusted {
-            return true
-        } else {
-            return false
-        }
+        return false
     }
     
     func writeCertificate(url: String) {
