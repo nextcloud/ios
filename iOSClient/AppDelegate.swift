@@ -559,7 +559,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_changed_", comment: ""), message: NSLocalizedString("_server_is_trusted_", comment: ""), preferredStyle: .alert)
             
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
-                NCNetworking.shared.writeCertificate(url: self.urlBase)
+                if NCNetworking.shared.certificatesError.contains(currentHost) {
+                    NCNetworking.shared.writeCertificate(host: currentHost)
+                }
+                if NCNetworking.shared.certificatesError.contains(pushNotificationServerProxyHost) {
+                    NCNetworking.shared.writeCertificate(host: pushNotificationServerProxyHost)
+                }
                 NCNetworking.shared.certificatesError.removeAll()
                 self.startTimerErrorNetworking()
             }))
