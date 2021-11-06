@@ -205,46 +205,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     
     @IBAction func actionCertificate(_ sender: Any) {
         
-        /*
-        let pathsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let fileNameCertificate = pathsDirectory.appendingPathComponent(NCGlobal.shared.certificate).path
-        let directoryCertificate = CCUtility.getDirectoryCerificates()!
-        
-        var host = "cloud.nextcloud.com"
-        if let url = URL(string: NCBrandOptions.shared.loginBaseUrl) {
-            let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
-            if let hostComponets = urlComponents?.host {
-                host = hostComponets
-            }
-        }
-            
-        if FileManager.default.fileExists(atPath: fileNameCertificate) {
-            
-            let certificateToPath = directoryCertificate + "/" + host + ".der"
-        
-            if NCUtilityFileSystem.shared.moveFile(atPath: fileNameCertificate, toPath: certificateToPath) {
-                
-                let message = String(format: NSLocalizedString("_certificate_installed_", comment: ""), NCGlobal.shared.certificate)
-                let alertController = UIAlertController(title: "", message: message, preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
-                self.present(alertController, animated: true, completion: { })
-                
-            } else {
-                
-                let message = String(format: NSLocalizedString("_copy_failed_", comment: ""), NCGlobal.shared.certificate)
-                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
-                self.present(alertController, animated: true, completion: { })
-            }
-            
-        } else {
-            
-            let message = String(format: NSLocalizedString("_certificate_not_found_", comment: ""), NCGlobal.shared.certificate)
-            let alertController = UIAlertController(title: NSLocalizedString("_file_not_found_", comment: ""), message: message, preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
-            self.present(alertController, animated: true, completion: { })
-        }
-        */
     }
     
     // MARK: - Login
