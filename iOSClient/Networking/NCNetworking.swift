@@ -188,32 +188,30 @@ import Queuer
             // V2
             var secresult = SecTrustResultType.invalid
             let status = SecTrustEvaluate(serverTrust, &secresult)
-            if (errSecSuccess == status) {
-                if let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
+            if errSecSuccess == status, let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
                     
-                    let serverCertificateData = SecCertificateCopyData(serverCertificate)
-                    let data = CFDataGetBytePtr(serverCertificateData);
-                    let size = CFDataGetLength(serverCertificateData);
-                    let certificate = NSData(bytes: data, length: size)
-                    
-                    // write certificate tmp to disk
-                    let certificatePath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2
-                    certificate.write(toFile: certificatePath, atomically: true)
-                    
-                    let certificateSavedPath = directoryCertificate + "/" + host + ".der"
-                    if let certificateSaved = NSData(contentsOfFile: certificateSavedPath) {
-                        if certificate.isEqual(to: certificateSaved as Data) {
-                            trustedV2 = true
-                        }
+                let serverCertificateData = SecCertificateCopyData(serverCertificate)
+                let data = CFDataGetBytePtr(serverCertificateData);
+                let size = CFDataGetLength(serverCertificateData);
+                let certificate = NSData(bytes: data, length: size)
+                
+                // write certificate tmp to disk
+                let certificatePath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2
+                certificate.write(toFile: certificatePath, atomically: true)
+                
+                let certificateSavedPath = directoryCertificate + "/" + host + ".der"
+                if let certificateSaved = NSData(contentsOfFile: certificateSavedPath) {
+                    if certificate.isEqual(to: certificateSaved as Data) {
+                        trustedV2 = true
                     }
-                    
-                    if !trusted && !trustedV2 {
-                        #if !EXTENSION
-                        DispatchQueue.main.async {
-                            CCUtility.setCertificateError((UIApplication.shared.delegate as! AppDelegate).account, host:host)
-                        }
-                        #endif
+                }
+                
+                if !trusted && !trustedV2 {
+                    #if !EXTENSION
+                    DispatchQueue.main.async {
+                        CCUtility.setCertificateError((UIApplication.shared.delegate as! AppDelegate).account, host:host)
                     }
+                    #endif
                 }
             }
         }
