@@ -38,6 +38,9 @@ class NCViewCertificateDetails: UIViewController  {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var textView: UITextView!
 
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private let directoryCertificate = CCUtility.getDirectoryCerificates()!
+
     public var delegate: NCViewCertificateDetailsDelegate?
     public var host: String?
 
@@ -46,14 +49,17 @@ class NCViewCertificateDetails: UIViewController  {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        var certificatePath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2 + ".txt"
+
         self.navigationItem.title = NSLocalizedString("_certificate_details_", comment: "")
-        
         buttonCancel.title = NSLocalizedString("_close_", comment: "")
         
-        let directoryCertificate = CCUtility.getDirectoryCerificates()!
-        var certificatePath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2 + ".txt"
         if let host = host {
             certificatePath = directoryCertificate + "/" + host + ".der"
+        } else {
+            if let host = URL(string: appDelegate.urlBase)?.host {
+                certificatePath = directoryCertificate + "/" + host + ".der"
+            }
         }
         if FileManager.default.fileExists(atPath: certificatePath) {
             do {
