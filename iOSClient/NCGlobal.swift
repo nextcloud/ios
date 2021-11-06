@@ -198,10 +198,7 @@ class NCGlobal: NSObject {
     
     // Certificate pinning
     //
-    let certificate                                 = "certificate.der"
     let certificateTmp                              = "tmp.der"
-    let certificateTmpV2                            = "certificatetmp.der"
-    let certificatePushNotificationServerProxy      = "certificatePushNotificationServerProxytmp.der"
 
     // Extension
     @objc let extensionPreview                      = "ico"
