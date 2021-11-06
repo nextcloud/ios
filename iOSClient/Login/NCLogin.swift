@@ -252,7 +252,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     func isUrlValid(url: String) {
             
         loginButton.isEnabled = false
-        //activity.startAnimating()
         
         NCCommunication.shared.getServerStatus(serverUrl: url) { (serverProductName, serverVersion, versionMajor, versionMinor, versionMicro, extendedSupport, errorCode ,errorDescription) in
             
@@ -265,7 +264,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 NCCommunication.shared.getLoginFlowV2(serverUrl: url) { (token, endpoint, login, errorCode, errorDescription) in
                     
                     self.loginButton.isEnabled = true
-                    //self.activity.stopAnimating()
                                         
                     // Login Flow V2
                     if errorCode == 0 && NCBrandOptions.shared.use_loginflowv2 && token != nil && endpoint != nil && login != nil {
@@ -313,7 +311,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             } else {
                
                 self.loginButton.isEnabled = true
-                //self.activity.stopAnimating()
                 
                 if errorCode == NSURLErrorServerCertificateUntrusted {
                     
