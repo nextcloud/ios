@@ -556,7 +556,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // check certificate untrusted (-1202)        
         if NCNetworking.shared.certificatesError.contains(currentHost) || NCNetworking.shared.certificatesError.contains(pushNotificationServerProxyHost) {
             
-            let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_changed_", comment: ""), message: NSLocalizedString("_server_is_trusted_", comment: ""), preferredStyle: .alert)
+            let directoryCertificate = CCUtility.getDirectoryCerificates()!
+            let certificateHostSavedPath = directoryCertificate + "/" + currentHost + ".der"
+            let certificatePushNotificationServerProxySavedPath = directoryCertificate + "/" + pushNotificationServerProxyHost + ".der"
+            var title = NSLocalizedString("_ssl_certificate_changed_", comment: "")
+            
+            if (NCNetworking.shared.certificatesError.contains(currentHost) && !FileManager.default.fileExists(atPath: certificateHostSavedPath)) || (NCNetworking.shared.certificatesError.contains(pushNotificationServerProxyHost) && !FileManager.default.fileExists(atPath: certificatePushNotificationServerProxySavedPath)) {
+                
+                title = NSLocalizedString("_connect_server_anyway_", comment: "")
+            }
+            
+            let alertController = UIAlertController(title: title, message: NSLocalizedString("_server_is_trusted_", comment: ""), preferredStyle: .alert)
             
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
                 if NCNetworking.shared.certificatesError.contains(currentHost) {
@@ -585,7 +595,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
             
             if NCNetworking.shared.certificatesError.contains(pushNotificationServerProxyHost) {
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_pn_details_", comment: ""), style: .default, handler: { action in
                     if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController {
                         let viewController = navigationController.topViewController as! NCViewCertificateDetails
                         viewController.delegate = self
