@@ -194,22 +194,15 @@ import Queuer
         return false
     }
     
-    func writeCertificate(url: String) {
+    func writeCertificate(host: String) {
         
         let directoryCertificate = CCUtility.getDirectoryCerificates()!
-
-        if let url = URL(string: url) {
-            let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
-            if let host = urlComponents?.host {
-            
-                let certificateAtPath = directoryCertificate + "/" + host + ".tmp"
-                let certificateToPath = directoryCertificate + "/" + host + ".der"
-            
-                if !NCUtilityFileSystem.shared.moveFile(atPath: certificateAtPath, toPath: certificateToPath) {
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorCreationFile, forced: true)
-                }
-            }
-        }
+        let certificateAtPath = directoryCertificate + "/" + host + ".tmp"
+        let certificateToPath = directoryCertificate + "/" + host + ".der"
+    
+        if !NCUtilityFileSystem.shared.moveFile(atPath: certificateAtPath, toPath: certificateToPath) {
+            NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorCreationFile, forced: true)
+        }        
     }
     
     private func saveX509Certificate(_ serverTrust: SecTrust, host: String, directoryCertificate: String) {

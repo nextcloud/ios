@@ -258,7 +258,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             
             if errorCode == 0 {
                 
-                NCNetworking.shared.writeCertificate(url: url)
+                if let host = URL(string: url)?.host {
+                    NCNetworking.shared.writeCertificate(host: host)
+                }
                 
                 NCCommunication.shared.getLoginFlowV2(serverUrl: url) { (token, endpoint, login, errorCode, errorDescription) in
                     
@@ -310,7 +312,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
                                 
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
-                        NCNetworking.shared.writeCertificate(url: url)
+                        if let host = URL(string: url)?.host {
+                            NCNetworking.shared.writeCertificate(host: host)
+                        }
                         self.appDelegate.startTimerErrorNetworking()
                     }))
                     
@@ -344,7 +348,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         
         if errorCode == 0 {
             
-            NCNetworking.shared.writeCertificate(url: url)
+            if let host = URL(string: url)?.host {
+                NCNetworking.shared.writeCertificate(host: host)
+            }
             
             let account = user + " " + url
             
@@ -391,7 +397,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
                         
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
-                NCNetworking.shared.writeCertificate(url: url)
+                if let host = URL(string: url)?.host {
+                    NCNetworking.shared.writeCertificate(host: host)
+                }
                 self.appDelegate.startTimerErrorNetworking()
             }))
             
