@@ -205,6 +205,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     
     @IBAction func actionCertificate(_ sender: Any) {
         
+        /*
         let pathsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fileNameCertificate = pathsDirectory.appendingPathComponent(NCGlobal.shared.certificate).path
         let directoryCertificate = CCUtility.getDirectoryCerificates()!
@@ -243,6 +244,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
             self.present(alertController, animated: true, completion: { })
         }
+        */
     }
     
     // MARK: - Login

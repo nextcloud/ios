@@ -53,7 +53,7 @@ class NCViewCertificateDetails: UIViewController  {
         self.navigationItem.title = NSLocalizedString("_certificate_details_", comment: "")
         buttonCancel.title = NSLocalizedString("_close_", comment: "")
         
-        let certificatePath = directoryCertificate + "/" + host + ".der"
+        let certificatePath = directoryCertificate + "/" + host + ".txt"
         if FileManager.default.fileExists(atPath: certificatePath) {
             do {
                 let text = try String(contentsOfFile: certificatePath, encoding: .utf8)

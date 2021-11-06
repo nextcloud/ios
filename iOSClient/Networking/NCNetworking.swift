@@ -161,37 +161,16 @@ import Queuer
     private func checkTrustedChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge) -> Bool {
         
         var trusted = false
-        var trustedV2 = false
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
         let directoryCertificate = CCUtility.getDirectoryCerificates()!
-        let directoryCertificateUrl = URL.init(fileURLWithPath: directoryCertificate)
-        var certificateTempPath = ""
         let host = challenge.protectionSpace.host
-        let hostPushNotificationServerProxy = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host
             
         print("SSL host: \(host)")
         
         if let serverTrust: SecTrust = protectionSpace.serverTrust {
             
-            saveX509Certificate(serverTrust, certName: NCGlobal.shared.certificateTmp, directoryCertificate: directoryCertificate)
+            saveX509Certificate(serverTrust, host: host, directoryCertificate: directoryCertificate)
             
-            // OLD
-            do {
-                let directoryContents = try FileManager.default.contentsOfDirectory(at: directoryCertificateUrl, includingPropertiesForKeys: nil)
-                let certTmpPath = directoryCertificate + "/" + NCGlobal.shared.certificateTmp
-                for file in directoryContents {
-                    let certPath = file.path
-                    if certPath == certTmpPath { continue }
-                    if FileManager.default.contentsEqual(atPath:certTmpPath, andPath: certPath) {
-                        trusted = true
-                        break
-                    }
-                }
-            } catch {
-                print(error)
-            }
-            
-            // V2
             var secresult = SecTrustResultType.invalid
             let status = SecTrustEvaluate(serverTrust, &secresult)
             if errSecSuccess == status, let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
@@ -202,28 +181,21 @@ import Queuer
                 let certificate = NSData(bytes: data, length: size)
                 
                 // write certificate tmp to disk
-                if host == hostPushNotificationServerProxy {
-                    certificateTempPath = directoryCertificate + "/" + NCGlobal.shared.certificatePushNotificationServerProxy
-                } else {
-                    certificateTempPath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2
-                }
-                certificate.write(toFile: certificateTempPath, atomically: true)
+                certificate.write(toFile: directoryCertificate + "/" + NCGlobal.shared.certificateTmp, atomically: true)
                 
                 // verify
                 let certificateSavedPath = directoryCertificate + "/" + host + ".der"
                 if let certificateSaved = NSData(contentsOfFile: certificateSavedPath) {
                     if certificate.isEqual(to: certificateSaved as Data) {
-                        trustedV2 = true
+                        trusted = true
+                    } else {
+                        NCNetworking.shared.certificatesError.append(host)
                     }
-                }
-                
-                if !trusted && !trustedV2 {
-                    NCNetworking.shared.certificatesError.append(host)
                 }
             }
         }
         
-        if trusted || trustedV2 {
+        if trusted {
             return true
         } else {
             return false
@@ -238,7 +210,7 @@ import Queuer
             let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
             if let host = urlComponents?.host {
             
-                let certificateAtPath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2
+                let certificateAtPath = directoryCertificate + "/" + NCGlobal.shared.certificateTmp
                 let certificateToPath = directoryCertificate + "/" + host + ".der"
             
                 if !NCUtilityFileSystem.shared.moveFile(atPath: certificateAtPath, toPath: certificateToPath) {
@@ -248,12 +220,11 @@ import Queuer
         }
     }
     
-    private func saveX509Certificate(_ serverTrust: SecTrust, certName: String, directoryCertificate: String) {
+    private func saveX509Certificate(_ serverTrust: SecTrust, host: String, directoryCertificate: String) {
         
         if let currentServerCert = SecTrustGetCertificateAtIndex(serverTrust, 0) {
             
-            let certNamePath = directoryCertificate + "/" + certName
-            let certificateDetailsNamePath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2 + ".txt"
+            let certNamePathTXT = directoryCertificate + "/" + host + ".txt"
             let data: CFData = SecCertificateCopyData(currentServerCert)
             let mem = BIO_new_mem_buf(CFDataGetBytePtr(data), Int32(CFDataGetLength(data)))
             let x509cert = d2i_X509_bio(mem, nil)
@@ -263,24 +234,24 @@ import Queuer
             } else {
                 
                 // save certificate
-                if FileManager.default.fileExists(atPath: certNamePath) {
-                    do {
-                        try FileManager.default.removeItem(atPath: certNamePath)
-                    } catch { }
-                }
-                let fileCert = fopen(certNamePath, "w")
-                if fileCert != nil {
-                    PEM_write_X509(fileCert, x509cert)
-                }
-                fclose(fileCert)
+//                if FileManager.default.fileExists(atPath: certNamePath) {
+//                    do {
+//                        try FileManager.default.removeItem(atPath: certNamePath)
+//                    } catch { }
+//                }
+//                let fileCert = fopen(certNamePath, "w")
+//                if fileCert != nil {
+//                    PEM_write_X509(fileCert, x509cert)
+//                }
+//                fclose(fileCert)
                 
                 // save details
-                if FileManager.default.fileExists(atPath: certificateDetailsNamePath) {
+                if FileManager.default.fileExists(atPath: certNamePathTXT) {
                     do {
-                        try FileManager.default.removeItem(atPath: certificateDetailsNamePath)
+                        try FileManager.default.removeItem(atPath: certNamePathTXT)
                     } catch { }
                 }
-                let fileCertInfo = fopen(certificateDetailsNamePath, "w")
+                let fileCertInfo = fopen(certNamePathTXT, "w")
                 if fileCertInfo != nil {
                     let output = BIO_new_fp(fileCertInfo, BIO_NOCLOSE)
                     X509_print_ex(output, x509cert, UInt(XN_FLAG_COMPAT), UInt(X509_FLAG_COMPAT))
