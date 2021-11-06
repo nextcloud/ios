@@ -184,16 +184,13 @@ import Queuer
                 
                 // verify
                 let certificateSavedPath = directoryCertificate + "/" + host + ".der"
-                if let certificateSaved = NSData(contentsOfFile: certificateSavedPath) {
-                    if certificate.isEqual(to: certificateSaved as Data) {
-                        return true
-                    } else {
-                        NCNetworking.shared.certificatesError.append(host)
-                    }
+                if let certificateSaved = NSData(contentsOfFile: certificateSavedPath), certificate.isEqual(to: certificateSaved as Data) {
+                    return true
                 }
             }
         }
         
+        NCNetworking.shared.certificatesError.append(host)
         return false
     }
     
