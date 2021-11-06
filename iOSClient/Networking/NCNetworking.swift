@@ -165,6 +165,8 @@ import Queuer
         let directoryCertificateUrl = URL.init(fileURLWithPath: directoryCertificate)
         let host = challenge.protectionSpace.host
     
+        print("SSL host: \(host)")
+        
         if let serverTrust: SecTrust = protectionSpace.serverTrust {
             
             saveX509Certificate(serverTrust, certName: NCGlobal.shared.certificateTmp, directoryCertificate: directoryCertificate)
@@ -196,9 +198,10 @@ import Queuer
                 let certificate = NSData(bytes: data, length: size)
                 
                 // write certificate tmp to disk
-                let certificatePath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2
-                certificate.write(toFile: certificatePath, atomically: true)
+                let certificateTempPath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2
+                certificate.write(toFile: certificateTempPath, atomically: true)
                 
+                // verify
                 let certificateSavedPath = directoryCertificate + "/" + host + ".der"
                 if let certificateSaved = NSData(contentsOfFile: certificateSavedPath) {
                     if certificate.isEqual(to: certificateSaved as Data) {
