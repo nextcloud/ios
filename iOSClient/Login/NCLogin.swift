@@ -323,12 +323,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         if let host = URL(string: url)?.host {
                             NCNetworking.shared.writeCertificate(host: host)
                         }
-                        self.appDelegate.startTimerErrorNetworking()
                     }))
                     
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
-                        self.appDelegate.startTimerErrorNetworking()
-                    }))
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in }))
                     
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
                         if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() {
@@ -336,9 +333,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         }
                     }))
                     
-                    self.present(alertController, animated: true, completion: {
-                        self.appDelegate.timerErrorNetworking?.invalidate()
-                    })
+                    self.present(alertController, animated: true)
                     
                 } else {
                     
@@ -443,12 +438,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 if let host = URL(string: url)?.host {
                     NCNetworking.shared.writeCertificate(host: host)
                 }
-                self.appDelegate.startTimerErrorNetworking()
             }))
             
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
-                self.appDelegate.startTimerErrorNetworking()
-            }))
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in }))
             
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
                 if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() {
@@ -456,9 +448,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 }
             }))
             
-            self.present(alertController, animated: true, completion: {
-                self.appDelegate.timerErrorNetworking?.invalidate()
-            })
+            self.present(alertController, animated: true)
             
         } else {
             
@@ -494,12 +484,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     if let host = URL(string: url)?.host {
                         NCNetworking.shared.writeCertificate(host: host)
                     }
-                    self.appDelegate.startTimerErrorNetworking()
                     completion(0)
                 }))
                 
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
-                    self.appDelegate.startTimerErrorNetworking()
                     completion(errorCode)
                 }))
                 
@@ -509,9 +497,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     }
                 }))
                 
-                self.present(alertController, animated: true, completion: {
-                    self.appDelegate.timerErrorNetworking?.invalidate()
-                })
+                self.present(alertController, animated: true)
                 
             } else {
                 
