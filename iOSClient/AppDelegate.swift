@@ -552,9 +552,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         // check certificate untrusted (-1202)
-        if CCUtility.getCertificateError(account) {
+        let currentHost = URL(string: self.urlBase)?.host
+        let pushNotificationServerProxyHost = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host
+        if let host = CCUtility.getCertificateError(account), host == currentHost || host == pushNotificationServerProxyHost {
             
-            let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_changed_", comment: ""), message: NSLocalizedString("_server_is_trusted_", comment: ""), preferredStyle: .alert)
+            let title = String.localizedStringWithFormat(NSLocalizedString("_ssl_certificate_changed_", comment: ""), host)
+            let alertController = UIAlertController(title: title, message: NSLocalizedString("_server_is_trusted_", comment: ""), preferredStyle: .alert)
                         
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
                 NCNetworking.shared.writeCertificate(url: self.urlBase)
@@ -570,6 +573,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController {
                     let viewController = navigationController.topViewController as! NCViewCertificateDetails
                     viewController.delegate = self
+                    viewController.host = host
                     self.window?.rootViewController?.present(navigationController, animated: true)
                 }
             }))
