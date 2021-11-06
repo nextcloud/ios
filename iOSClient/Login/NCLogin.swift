@@ -270,8 +270,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     // Login Flow V2
                     if errorCode == 0 && NCBrandOptions.shared.use_loginflowv2 && token != nil && endpoint != nil && login != nil {
                         
-                        self.checkPushNotificationServerProxy { error in
-                            if !error {
+                        self.checkPushNotificationServerProxy { errorCode in
+                            if errorCode == 0 {
                                 if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
                                     
                                     loginWeb.urlBase = url
@@ -288,8 +288,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     // Login Flow
                     } else if versionMajor >= NCGlobal.shared.nextcloudVersion12 {
                         
-                        self.checkPushNotificationServerProxy { error in
-                            if !error {
+                        self.checkPushNotificationServerProxy { errorCode in
+                            if errorCode == 0 {
                                 if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
                                     
                                     loginWeb.urlBase = url
@@ -376,8 +376,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 
                 NCCommunication.shared.checkServer(serverUrl: serverUrl) { (errorCode, errorDescription) in
                 
-                    self.checkPushNotificationServerProxy { error in
-                        if !error {
+                    self.checkPushNotificationServerProxy { errorCode in
+                        if errorCode == 0 {
                             self.loginButton.isEnabled = true
                             self.standardLogin(url: urlBase, user: user, password: password, errorCode: errorCode, errorDescription: errorDescription)
                         }
@@ -473,7 +473,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     
     // MARK: -
     
-    func checkPushNotificationServerProxy(completion: @escaping (_ error: Bool)->()) {
+    func checkPushNotificationServerProxy(completion: @escaping (_ errorCode: Int)->()) {
         
         let url = NCBrandOptions.shared.pushNotificationServerProxy
         
@@ -481,7 +481,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             
             if errorCode == 0 {
                 
-                completion(false)
+                if let host = URL(string: url)?.host {
+                    NCNetworking.shared.writeCertificate(host: host)
+                }
+                completion(errorCode)
                 
             } else if errorCode == NSURLErrorServerCertificateUntrusted {
                 
@@ -492,12 +495,12 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         NCNetworking.shared.writeCertificate(host: host)
                     }
                     self.appDelegate.startTimerErrorNetworking()
-                    completion(false)
+                    completion(0)
                 }))
                 
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
                     self.appDelegate.startTimerErrorNetworking()
-                    completion(true)
+                    completion(errorCode)
                 }))
                 
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
@@ -512,7 +515,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 
             } else {
                 
-                completion(false)
+                completion(0)
             }
         }
     }
