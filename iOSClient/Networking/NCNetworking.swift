@@ -202,7 +202,7 @@ import Queuer
     
         if !NCUtilityFileSystem.shared.moveFile(atPath: certificateAtPath, toPath: certificateToPath) {
             NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorCreationFile, forced: true)
-        }        
+        }
     }
     
     private func saveX509Certificate(_ serverTrust: SecTrust, host: String, directoryCertificate: String) {
@@ -248,6 +248,49 @@ import Queuer
             }
                 
             BIO_free(mem)
+        }
+    }
+    
+    func checkPushNotificationServerProxyCertificateUntrusted(viewController: UIViewController ,completion: @escaping (_ errorCode: Int)->()) {
+        
+        let url = NCBrandOptions.shared.pushNotificationServerProxy
+        
+        NCCommunication.shared.checkServer(serverUrl: url) { (errorCode, errorDescription) in
+            
+            if errorCode == 0 {
+                
+                if let host = URL(string: url)?.host {
+                    NCNetworking.shared.writeCertificate(host: host)
+                }
+                completion(errorCode)
+                
+            } else if errorCode == NSURLErrorServerCertificateUntrusted {
+                
+                let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
+                            
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
+                    if let host = URL(string: url)?.host {
+                        NCNetworking.shared.writeCertificate(host: host)
+                    }
+                    completion(0)
+                }))
+                
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
+                    completion(errorCode)
+                }))
+                
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
+                    if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() {
+                        viewController.present(navigationController, animated: true)
+                    }
+                }))
+                
+                viewController.present(alertController, animated: true)
+                
+            } else {
+                
+                completion(0)
+            }
         }
     }
     
