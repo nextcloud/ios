@@ -228,7 +228,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     // Login Flow V2
                     if errorCode == 0 && NCBrandOptions.shared.use_loginflowv2 && token != nil && endpoint != nil && login != nil {
                         
-                        self.checkPushNotificationServerProxy { errorCode in
+                        NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: self, completion: { errorCode in
                             if errorCode == 0 {
                                 if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
                                     
@@ -241,12 +241,12 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                                     self.navigationController?.pushViewController(loginWeb, animated: true)
                                 }
                             }
-                        }
+                        })
                         
                     // Login Flow
                     } else if versionMajor >= NCGlobal.shared.nextcloudVersion12 {
                         
-                        self.checkPushNotificationServerProxy { errorCode in
+                        NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: self, completion: { errorCode in
                             if errorCode == 0 {
                                 if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
                                     
@@ -255,7 +255,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                                     self.navigationController?.pushViewController(loginWeb, animated: true)
                                 }
                             }
-                        }
+                        })
                         
                     // NO Login flow available
                     } else if versionMajor < NCGlobal.shared.nextcloudVersion12 {
@@ -328,12 +328,12 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 
                 NCCommunication.shared.checkServer(serverUrl: serverUrl) { (errorCode, errorDescription) in
                 
-                    self.checkPushNotificationServerProxy { errorCode in
+                    NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: self, completion: { errorCode in
                         if errorCode == 0 {
                             self.loginButton.isEnabled = true
                             self.standardLogin(url: urlBase, user: user, password: password, errorCode: errorCode, errorDescription: errorDescription)
                         }
-                    }
+                    })
                 }
             }
         }
@@ -415,51 +415,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
 
             self.present(alertController, animated: true, completion: { })
-        }
-    }
-    
-    // MARK: -
-    
-    func checkPushNotificationServerProxy(completion: @escaping (_ errorCode: Int)->()) {
-        
-        let url = NCBrandOptions.shared.pushNotificationServerProxy
-        
-        NCCommunication.shared.checkServer(serverUrl: url) { (errorCode, errorDescription) in
-            
-            if errorCode == 0 {
-                
-                if let host = URL(string: url)?.host {
-                    NCNetworking.shared.writeCertificate(host: host)
-                }
-                completion(errorCode)
-                
-            } else if errorCode == NSURLErrorServerCertificateUntrusted {
-                
-                let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
-                            
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
-                    if let host = URL(string: url)?.host {
-                        NCNetworking.shared.writeCertificate(host: host)
-                    }
-                    completion(0)
-                }))
-                
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
-                    completion(errorCode)
-                }))
-                
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
-                    if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() {
-                        self.present(navigationController, animated: true)
-                    }
-                }))
-                
-                self.present(alertController, animated: true)
-                
-            } else {
-                
-                completion(0)
-            }
         }
     }
 }
