@@ -48,7 +48,7 @@ import Queuer
     var uploadRequest: [String: UploadRequest] = [:]
     var uploadMetadataInBackground: [String: tableMetadata] = [:]
     
-    var certificatesError: [String] = []
+    var certificatesError: String?
 
     @objc public let sessionMaximumConnectionsPerHost = 5
     @objc public let sessionIdentifierBackground: String = "com.nextcloud.session.upload.background"
@@ -163,6 +163,7 @@ import Queuer
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
         let directoryCertificate = CCUtility.getDirectoryCerificates()!
         let host = challenge.protectionSpace.host
+        let pushNotificationServerProxyHost = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host
             
         print("SSL host: \(host)")
         
@@ -190,7 +191,10 @@ import Queuer
             }
         }
         
-        NCNetworking.shared.certificatesError.append(host)
+        if host != pushNotificationServerProxyHost {
+            NCNetworking.shared.certificatesError = host
+        }
+        
         return false
     }
     
