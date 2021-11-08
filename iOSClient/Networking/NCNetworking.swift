@@ -251,17 +251,15 @@ import Queuer
         }
     }
     
-    func checkPushNotificationServerProxyCertificateUntrusted(viewController: UIViewController ,completion: @escaping (_ errorCode: Int)->()) {
+    func checkPushNotificationServerProxyCertificateUntrusted(viewController: UIViewController?, completion: @escaping (_ errorCode: Int)->()) {
+                
+        guard let host = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else { return }
         
-        let url = NCBrandOptions.shared.pushNotificationServerProxy
-        
-        NCCommunication.shared.checkServer(serverUrl: url) { (errorCode, errorDescription) in
+        NCCommunication.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { (errorCode, errorDescription) in
             
             if errorCode == 0 {
                 
-                if let host = URL(string: url)?.host {
-                    NCNetworking.shared.writeCertificate(host: host)
-                }
+                NCNetworking.shared.writeCertificate(host: host)
                 completion(errorCode)
                 
             } else if errorCode == NSURLErrorServerCertificateUntrusted {
@@ -269,9 +267,7 @@ import Queuer
                 let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
                             
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
-                    if let host = URL(string: url)?.host {
-                        NCNetworking.shared.writeCertificate(host: host)
-                    }
+                    NCNetworking.shared.writeCertificate(host: host)
                     completion(0)
                 }))
                 
@@ -280,12 +276,14 @@ import Queuer
                 }))
                 
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
-                    if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() {
-                        viewController.present(navigationController, animated: true)
+                    if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController {
+                        let vcCertificateDetails = navigationController.topViewController as! NCViewCertificateDetails
+                        vcCertificateDetails.host = host
+                        viewController?.present(navigationController, animated: true)
                     }
                 }))
                 
-                viewController.present(alertController, animated: true)
+                viewController?.present(alertController, animated: true)
                 
             } else {
                 

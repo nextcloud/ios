@@ -38,9 +38,7 @@ class NCViewCertificateDetails: UIViewController  {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var textView: UITextView!
 
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private let directoryCertificate = CCUtility.getDirectoryCerificates()!
-
     public var delegate: NCViewCertificateDetailsDelegate?
     @objc public var host: String = ""
 
@@ -48,7 +46,6 @@ class NCViewCertificateDetails: UIViewController  {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
 
         self.navigationItem.title = NSLocalizedString("_certificate_details_", comment: "")
         buttonCancel.title = NSLocalizedString("_close_", comment: "")
