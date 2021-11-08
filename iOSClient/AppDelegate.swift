@@ -433,7 +433,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        NCPushNotification.shared().registerForRemoteNotifications(withDeviceToken: deviceToken)
+        NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: self.window?.rootViewController) { errorCode in
+            if errorCode == 0 {
+                NCPushNotification.shared().registerForRemoteNotifications(withDeviceToken: deviceToken)
+            }
+        }
     }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
