@@ -410,9 +410,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
                 
             if NCUtilityFileSystem.shared.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: filePath) {
-                
-                NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: true)
-                                
+                                                
                 let metadata = NCManageDatabase.shared.createMetadata(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "", contentType: "", livePhoto: false)
                 
                 metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
@@ -433,9 +431,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                 NCNetworking.shared.upload(metadata: metadata) {
                     
                 } completion: { (errorCode, errorDescription) in
-                    
-                    NCUtility.shared.stopActivityIndicator()
-                    
+                                        
                     if errorCode == 0 {
                         
                         IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
