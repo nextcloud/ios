@@ -44,7 +44,8 @@ class NCShareNetworking: NSObject {
     func readShare() {
         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
-        NCCommunication.shared.readShares(path: filenamePath) { (account, shares, errorCode, errorDescription) in
+        let parameter = NCCShareParameter(path: filenamePath)
+        NCCommunication.shared.readShares(parameters: parameter) { (account, shares, errorCode, errorDescription) in
             NCUtility.shared.stopActivityIndicator()
              if errorCode == 0 && shares != nil {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: shares!)
