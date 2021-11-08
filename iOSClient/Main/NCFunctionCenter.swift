@@ -24,6 +24,7 @@
 import UIKit
 import NCCommunication
 import Queuer
+import IHProgressHUD
 
 @objc class NCFunctionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
     @objc public static let shared: NCFunctionCenter = {
@@ -130,7 +131,7 @@ import Queuer
                         }
                             
                         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
-                            saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV, progressView: nil, viewActivity: self.appDelegate.window?.rootViewController?.view)
+                            saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV)
                         }
                     
                     case NCGlobal.shared.selectorSaveAsScan:
@@ -352,34 +353,36 @@ import Queuer
         }
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
-            saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV, progressView: nil, viewActivity: self.appDelegate.window?.rootViewController?.view)
+            saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV)
         }
     }
     
-    func saveLivePhotoToDisk(metadata: tableMetadata, metadataMov: tableMetadata, progressView: UIProgressView?, viewActivity: UIView?) {
+    func saveLivePhotoToDisk(metadata: tableMetadata, metadataMov: tableMetadata) {
         
         let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
         let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
         
-        if let view = viewActivity {
-            NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: true)
-        }
+        IHProgressHUD.set(defaultMaskType: .clear)
         
         NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
-            DispatchQueue.main.async {
-                progressView?.progress = Float(progress)
-            }
+                
+            IHProgressHUD.show(progress: CGFloat(progress))
+            
         }, completion: { livePhoto, resources in
-            NCUtility.shared.stopActivityIndicator()
-            progressView?.progress = 0
+    
             if resources != nil {
                 NCLivePhoto.saveToLibrary(resources!) { (result) in
                     if !result {
                         NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                        IHProgressHUD.dismiss()
+                    } else {
+                        IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
+                        IHProgressHUD.dismissWithDelay(0.5)
                     }
                 }
             } else {
                 NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                IHProgressHUD.dismiss()
             }
         })
     }
