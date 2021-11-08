@@ -23,6 +23,7 @@
 
 import UIKit
 import NCCommunication
+import IHProgressHUD
 
 class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDelegate, NCRenameFileDelegate, NCAccountRequestDelegate {
     
@@ -64,6 +65,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     private let refreshControl = UIRefreshControl()
     private var activeAccount: tableAccount!
     private let chunckSize = CCUtility.getChunkSize() * 1000000
+    private var fileNameInUpload: String?
     
     // MARK: - View Life Cycle
 
@@ -122,6 +124,13 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         } else {
             NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
         }
+        
+        // HUD
+        IHProgressHUD.set(viewForExtension: self.view)
+        IHProgressHUD.set(defaultMaskType: .clear)
+        IHProgressHUD.set(minimumDismiss: 2)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object:nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -182,6 +191,17 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         
         collectionView.reloadData()
         tableView.reloadData()
+    }
+    
+    // MARK: -
+
+    @objc func triggerProgressTask(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary?, let progressNumber = userInfo["progress"] as? NSNumber {
+            
+            let progress = CGFloat(progressNumber.floatValue)
+            IHProgressHUD.show(progress: progress, status: fileNameInUpload)
+        }
     }
     
     // MARK: -
@@ -384,6 +404,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         
         if let fileName = filesName.first {
             
+            self.fileNameInUpload = fileName
             filesName.removeFirst()
             let ocId = NSUUID().uuidString
             let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
@@ -416,9 +437,15 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                     NCUtility.shared.stopActivityIndicator()
                     
                     if errorCode == 0 {
+                        
+                        IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
+                        
                         self.actionUpload()
+                        
                     } else {
                         
+                        IHProgressHUD.dismiss()
+
                         NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
                         NCManageDatabase.shared.deleteChunks(account: self.activeAccount.account, ocId: ocId)
                         
