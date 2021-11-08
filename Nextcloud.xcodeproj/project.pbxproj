@@ -117,6 +117,7 @@
 		F72D7EB7263B1207000B3DFC /* MarkdownKit in Frameworks */ = {isa = PBXBuildFile; productRef = F72D7EB6263B1207000B3DFC /* MarkdownKit */; };
 		F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */ = {isa = PBXBuildFile; productRef = F72DA9B325F53E4E00B87DB1 /* SwiftRichString */; };
 		F733598125C1C188002ABA72 /* NCAskAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = F733598025C1C188002ABA72 /* NCAskAuthorization.swift */; };
+		F73521B527396D2900919197 /* IHProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F73521B427396D2900919197 /* IHProgressHUD */; };
 		F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */; };
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
@@ -832,6 +833,7 @@
 				F70B86992642CF5800ED5349 /* FSCalendar.xcframework in Frameworks */,
 				F70B86762642CF5300ED5349 /* ChromaColorPicker.xcframework in Frameworks */,
 				F75EAED826D2552E00F4320E /* MarqueeLabel in Frameworks */,
+				F73521B527396D2900919197 /* IHProgressHUD in Frameworks */,
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
 				F7F5CE252707089C007ED1CD /* Parchment in Frameworks */,
 				F70B86932642CF5700ED5349 /* OpenSSL.xcframework in Frameworks */,
@@ -1758,6 +1760,7 @@
 				F73ADD1B265546890069EA0D /* SwiftEntryKit */,
 				F75EAED726D2552E00F4320E /* MarqueeLabel */,
 				F7F5CE242707089C007ED1CD /* Parchment */,
+				F73521B427396D2900919197 /* IHProgressHUD */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -1873,6 +1876,7 @@
 				F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */,
 				F75EAED626D2552E00F4320E /* XCRemoteSwiftPackageReference "MarqueeLabel" */,
 				F7F5CE232707089B007ED1CD /* XCRemoteSwiftPackageReference "Parchment" */,
+				F73521B327396D2800919197 /* XCRemoteSwiftPackageReference "IHProgressHUD" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -2905,6 +2909,14 @@
 				minimumVersion = 3.7.2;
 			};
 		};
+		F73521B327396D2800919197 /* XCRemoteSwiftPackageReference "IHProgressHUD" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/marinofaggiana/IHProgressHUD";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/huri000/SwiftEntryKit";
@@ -2994,6 +3006,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F72DA9B225F53E4E00B87DB1 /* XCRemoteSwiftPackageReference "SwiftRichString" */;
 			productName = SwiftRichString;
+		};
+		F73521B427396D2900919197 /* IHProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F73521B327396D2800919197 /* XCRemoteSwiftPackageReference "IHProgressHUD" */;
+			productName = IHProgressHUD;
 		};
 		F73ADD1B265546890069EA0D /* SwiftEntryKit */ = {
 			isa = XCSwiftPackageProductDependency;
