@@ -202,7 +202,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         if let userInfo = notification.userInfo as NSDictionary?, let progressNumber = userInfo["progress"] as? NSNumber {
             
             let progress = CGFloat(progressNumber.floatValue)
-            let status = "\(self.counterUpload) " + NSLocalizedString("_of_", comment: "") + " \(self.numberOfItems)"
+            let numItems = self.numberOfItems + 1
+            let status = "    \(self.counterUpload) " + NSLocalizedString("_of_", comment: "") + " \(numItems)    "
             IHProgressHUD.show(progress: progress, status: status)
         }
     }
