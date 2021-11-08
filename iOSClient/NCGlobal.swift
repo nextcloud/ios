@@ -196,12 +196,6 @@ class NCGlobal: NSObject {
     //
     let fileNameRichWorkspace                       = "Readme.md"
     
-    // Certificate pinning
-    //
-    let certificate                                 = "certificate.der"
-    let certificateTmp                              = "tmp.der"
-    let certificateTmpV2                            = "certificatetmp.der"
-    
     // Extension
     @objc let extensionPreview                      = "ico"
     

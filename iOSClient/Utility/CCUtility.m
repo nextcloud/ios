@@ -550,41 +550,6 @@
     [UICKeyChainStore setData:data forKey:@"databaseEncryptionKey" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (BOOL)getCertificateError:(NSString *)account
-{
-    NSString *key = [@"certificateError" stringByAppendingString:account];
-    NSString *error = [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
-    
-    if (error == nil) {
-        return false;
-    }
-    
-    return true;
-}
-
-+ (void)setCertificateError:(NSString *)account
-{
-    // In background do not write the error
-#if !defined(EXTENSION)
-    UIApplicationState state = [[UIApplication sharedApplication] applicationState];
-    if (state == UIApplicationStateBackground || state == UIApplicationStateInactive) {
-        return;
-    }
-    NSString *key = [@"certificateError" stringByAppendingString:account];
-    
-    [UICKeyChainStore setString:@"true" forKey:key service:NCGlobal.shared.serviceShareKeyChain];
-#else
-    return;
-#endif
-}
-
-+ (void)clearCertificateError:(NSString *)account
-{
-    NSString *key = [@"certificateError" stringByAppendingString:account];
-    
-    [UICKeyChainStore setString:nil forKey:key service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getDisableLocalCacheAfterUpload
 {
     return [[UICKeyChainStore stringForKey:@"disableLocalCacheAfterUpload" service:NCGlobal.shared.serviceShareKeyChain] boolValue];

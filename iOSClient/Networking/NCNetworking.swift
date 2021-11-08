@@ -47,6 +47,8 @@ import Queuer
     var downloadRequest: [String: DownloadRequest] = [:]
     var uploadRequest: [String: UploadRequest] = [:]
     var uploadMetadataInBackground: [String: tableMetadata] = [:]
+    
+    var certificatesError: [String] = []
 
     @objc public let sessionMaximumConnectionsPerHost = 5
     @objc public let sessionIdentifierBackground: String = "com.nextcloud.session.upload.background"
@@ -158,97 +160,56 @@ import Queuer
     
     private func checkTrustedChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge) -> Bool {
         
-        var trusted = false
-        var trustedV2 = false
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
         let directoryCertificate = CCUtility.getDirectoryCerificates()!
-        let directoryCertificateUrl = URL.init(fileURLWithPath: directoryCertificate)
         let host = challenge.protectionSpace.host
-    
+            
+        print("SSL host: \(host)")
+        
         if let serverTrust: SecTrust = protectionSpace.serverTrust {
             
-            saveX509Certificate(serverTrust, certName: NCGlobal.shared.certificateTmp, directoryCertificate: directoryCertificate)
+            saveX509Certificate(serverTrust, host: host, directoryCertificate: directoryCertificate)
             
-            // OLD
-            do {
-                let directoryContents = try FileManager.default.contentsOfDirectory(at: directoryCertificateUrl, includingPropertiesForKeys: nil)
-                let certTmpPath = directoryCertificate + "/" + NCGlobal.shared.certificateTmp
-                for file in directoryContents {
-                    let certPath = file.path
-                    if certPath == certTmpPath { continue }
-                    if FileManager.default.contentsEqual(atPath:certTmpPath, andPath: certPath) {
-                        trusted = true
-                        break
-                    }
-                }
-            } catch {
-                print(error)
-            }
-            
-            // V2
             var secresult = SecTrustResultType.invalid
             let status = SecTrustEvaluate(serverTrust, &secresult)
-            if (errSecSuccess == status) {
-                if let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
+            if errSecSuccess == status, let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
                     
-                    let serverCertificateData = SecCertificateCopyData(serverCertificate)
-                    let data = CFDataGetBytePtr(serverCertificateData);
-                    let size = CFDataGetLength(serverCertificateData);
-                    let certificate = NSData(bytes: data, length: size)
-                    
-                    // write certificate tmp to disk
-                    let certificatePath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2
-                    certificate.write(toFile: certificatePath, atomically: true)
-                    
-                    let certificateSavedPath = directoryCertificate + "/" + host + ".der"
-                    if let certificateSaved = NSData(contentsOfFile: certificateSavedPath) {
-                        if certificate.isEqual(to: certificateSaved as Data) {
-                            trustedV2 = true
-                        }
-                    }
-                    
-                    if !trusted && !trustedV2 {
-                        #if !EXTENSION
-                        DispatchQueue.main.async {
-                            CCUtility.setCertificateError((UIApplication.shared.delegate as! AppDelegate).account)
-                        }
-                        #endif
-                    }
+                let serverCertificateData = SecCertificateCopyData(serverCertificate)
+                let data = CFDataGetBytePtr(serverCertificateData);
+                let size = CFDataGetLength(serverCertificateData);
+                let certificate = NSData(bytes: data, length: size)
+                
+                // write certificate tmp to disk
+                certificate.write(toFile: directoryCertificate + "/" + host + ".tmp", atomically: true)
+                
+                // verify
+                let certificateSavedPath = directoryCertificate + "/" + host + ".der"
+                if let certificateSaved = NSData(contentsOfFile: certificateSavedPath), certificate.isEqual(to: certificateSaved as Data) {
+                    return true
                 }
             }
         }
         
-        if trusted || trustedV2 {
-            return true
-        } else {
-            return false
-        }
+        NCNetworking.shared.certificatesError.append(host)
+        return false
     }
     
-    func writeCertificate(url: String) {
+    func writeCertificate(host: String) {
         
         let directoryCertificate = CCUtility.getDirectoryCerificates()!
-
-        if let url = URL(string: url) {
-            let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
-            if let host = urlComponents?.host {
-            
-                let certificateAtPath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2
-                let certificateToPath = directoryCertificate + "/" + host + ".der"
-            
-                if !NCUtilityFileSystem.shared.moveFile(atPath: certificateAtPath, toPath: certificateToPath) {
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorCreationFile, forced: true)
-                }
-            }
+        let certificateAtPath = directoryCertificate + "/" + host + ".tmp"
+        let certificateToPath = directoryCertificate + "/" + host + ".der"
+    
+        if !NCUtilityFileSystem.shared.moveFile(atPath: certificateAtPath, toPath: certificateToPath) {
+            NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorCreationFile, forced: true)
         }
     }
     
-    private func saveX509Certificate(_ serverTrust: SecTrust, certName: String, directoryCertificate: String) {
+    private func saveX509Certificate(_ serverTrust: SecTrust, host: String, directoryCertificate: String) {
         
         if let currentServerCert = SecTrustGetCertificateAtIndex(serverTrust, 0) {
             
-            let certNamePath = directoryCertificate + "/" + certName
-            let certificateDetailsNamePath = directoryCertificate + "/" + NCGlobal.shared.certificateTmpV2 + ".txt"
+            let certNamePathTXT = directoryCertificate + "/" + host + ".txt"
             let data: CFData = SecCertificateCopyData(currentServerCert)
             let mem = BIO_new_mem_buf(CFDataGetBytePtr(data), Int32(CFDataGetLength(data)))
             let x509cert = d2i_X509_bio(mem, nil)
@@ -258,24 +219,24 @@ import Queuer
             } else {
                 
                 // save certificate
-                if FileManager.default.fileExists(atPath: certNamePath) {
-                    do {
-                        try FileManager.default.removeItem(atPath: certNamePath)
-                    } catch { }
-                }
-                let fileCert = fopen(certNamePath, "w")
-                if fileCert != nil {
-                    PEM_write_X509(fileCert, x509cert)
-                }
-                fclose(fileCert)
+//                if FileManager.default.fileExists(atPath: certNamePath) {
+//                    do {
+//                        try FileManager.default.removeItem(atPath: certNamePath)
+//                    } catch { }
+//                }
+//                let fileCert = fopen(certNamePath, "w")
+//                if fileCert != nil {
+//                    PEM_write_X509(fileCert, x509cert)
+//                }
+//                fclose(fileCert)
                 
                 // save details
-                if FileManager.default.fileExists(atPath: certificateDetailsNamePath) {
+                if FileManager.default.fileExists(atPath: certNamePathTXT) {
                     do {
-                        try FileManager.default.removeItem(atPath: certificateDetailsNamePath)
+                        try FileManager.default.removeItem(atPath: certNamePathTXT)
                     } catch { }
                 }
-                let fileCertInfo = fopen(certificateDetailsNamePath, "w")
+                let fileCertInfo = fopen(certNamePathTXT, "w")
                 if fileCertInfo != nil {
                     let output = BIO_new_fp(fileCertInfo, BIO_NOCLOSE)
                     X509_print_ex(output, x509cert, UInt(XN_FLAG_COMPAT), UInt(X509_FLAG_COMPAT))
@@ -287,6 +248,47 @@ import Queuer
             }
                 
             BIO_free(mem)
+        }
+    }
+    
+    func checkPushNotificationServerProxyCertificateUntrusted(viewController: UIViewController?, completion: @escaping (_ errorCode: Int)->()) {
+                
+        guard let host = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else { return }
+        
+        NCCommunication.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { (errorCode, errorDescription) in
+            
+            if errorCode == 0 {
+                
+                NCNetworking.shared.writeCertificate(host: host)
+                completion(errorCode)
+                
+            } else if errorCode == NSURLErrorServerCertificateUntrusted {
+                
+                let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
+                            
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
+                    NCNetworking.shared.writeCertificate(host: host)
+                    completion(0)
+                }))
+                
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
+                    completion(errorCode)
+                }))
+                
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
+                    if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController {
+                        let vcCertificateDetails = navigationController.topViewController as! NCViewCertificateDetails
+                        vcCertificateDetails.host = host
+                        viewController?.present(navigationController, animated: true)
+                    }
+                }))
+                
+                viewController?.present(alertController, animated: true)
+                
+            } else {
+                
+                completion(0)
+            }
         }
     }
     

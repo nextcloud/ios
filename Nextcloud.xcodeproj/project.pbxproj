@@ -138,6 +138,12 @@
 		F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7434B3820E2400600417916 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F745B252222D88AE00346520 /* NCLoginQRCode.swift */; };
+		F746EC4E273906B80052598D /* NCViewCertificateDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BC287F26663F85004D46C5 /* NCViewCertificateDetails.swift */; };
+		F746EC4F273906B90052598D /* NCViewCertificateDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BC287F26663F85004D46C5 /* NCViewCertificateDetails.swift */; };
+		F746EC50273906BA0052598D /* NCViewCertificateDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BC287F26663F85004D46C5 /* NCViewCertificateDetails.swift */; };
+		F746EC51273906C40052598D /* NCViewCertificateDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7BC287D26663F6C004D46C5 /* NCViewCertificateDetails.storyboard */; };
+		F746EC52273906C40052598D /* NCViewCertificateDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7BC287D26663F6C004D46C5 /* NCViewCertificateDetails.storyboard */; };
+		F746EC53273906C50052598D /* NCViewCertificateDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7BC287D26663F6C004D46C5 /* NCViewCertificateDetails.storyboard */; };
 		F747BA1F22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F747BA1E22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard */; };
 		F749C10B23C4A5340027D966 /* NCIntroCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F749C10723C4A5330027D966 /* NCIntroCollectionViewCell.swift */; };
 		F749C10C23C4A5340027D966 /* NCIntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F749C10823C4A5330027D966 /* NCIntroViewController.swift */; };
@@ -1886,6 +1892,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F746EC53273906C50052598D /* NCViewCertificateDetails.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1900,6 +1907,7 @@
 				F7145A1A1D12E3B700CAFEEC /* Images.xcassets in Resources */,
 				F7148063262ED66200693E51 /* NCEmptyView.xib in Resources */,
 				F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */,
+				F746EC51273906C40052598D /* NCViewCertificateDetails.storyboard in Resources */,
 				F79EC784263161BA004E59D6 /* NCRenameFile.storyboard in Resources */,
 				F714804F262ED4F900693E51 /* NCGridCell.xib in Resources */,
 				F714805E262ED52900693E51 /* NCSectionFooter.xib in Resources */,
@@ -1911,6 +1919,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F746EC52273906C40052598D /* NCViewCertificateDetails.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2024,6 +2033,7 @@
 				F785EEA52461A4CF00B3F945 /* CCUtility.m in Sources */,
 				2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */,
 				F770768A263A8A2500A1BA94 /* NCUtilityFileSystem.swift in Sources */,
+				F746EC50273906BA0052598D /* NCViewCertificateDetails.swift in Sources */,
 				F702F2D225EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
 				F7707689263A896A00A1BA94 /* UIImage+Extensions.swift in Sources */,
 				2C1D5D7523E2DE3300334ABB /* NCDatabase.swift in Sources */,
@@ -2042,6 +2052,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F746EC4E273906B80052598D /* NCViewCertificateDetails.swift in Sources */,
 				F73D5E48246DE09200DF6467 /* NCElementsJSON.swift in Sources */,
 				F7EDE4E5262D7BBE00414FE6 /* NCSectionHeaderFooter.swift in Sources */,
 				F79EC78926316AC4004E59D6 /* NCPopupViewController.swift in Sources */,
@@ -2085,6 +2096,7 @@
 				F702F2D125EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
 				F7434B3820E2400600417916 /* NCBrand.swift in Sources */,
 				F785EE9E2461A09900B3F945 /* NCNetworking.swift in Sources */,
+				F746EC4F273906B90052598D /* NCViewCertificateDetails.swift in Sources */,
 				F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */,
 				F73D5E49246DE09200DF6467 /* NCElementsJSON.swift in Sources */,
 				F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */,
