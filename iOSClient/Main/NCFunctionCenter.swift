@@ -187,7 +187,7 @@ import Queuer
     
     // MARK: -
 
-    func openShare(ViewController: UIViewController, metadata: tableMetadata, indexPage: Int) {
+    func openShare(ViewController: UIViewController, metadata: tableMetadata, indexPage: NCGlobal.NCSharePagingIndex) {
         
         let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as! UINavigationController
         let shareViewController = shareNavigationController.topViewController as! NCSharePaging
@@ -643,7 +643,7 @@ import Queuer
         }
         
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info")) { action in
-            self.openShare(ViewController: viewController, metadata: metadata, indexPage: 0)
+            self.openShare(ViewController: viewController, metadata: metadata, indexPage: .activity)
         }
         
         let offline = UIAction(title: titleOffline, image: UIImage(systemName: "tray.and.arrow.down")) { action in

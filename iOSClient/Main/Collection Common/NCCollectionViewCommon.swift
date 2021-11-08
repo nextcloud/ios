@@ -817,7 +817,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if isEditMode { return }
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
         
-        NCFunctionCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 2)
+        NCFunctionCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: .sharing)
     }
         
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
