@@ -65,7 +65,9 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     private let refreshControl = UIRefreshControl()
     private var activeAccount: tableAccount!
     private let chunckSize = CCUtility.getChunkSize() * 1000000
-    private var fileNameInUpload: String?
+    
+    private var numberOfItems: Int = 0
+    private var counterUpload: Int = 0
     
     // MARK: - View Life Cycle
 
@@ -200,7 +202,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         if let userInfo = notification.userInfo as NSDictionary?, let progressNumber = userInfo["progress"] as? NSNumber {
             
             let progress = CGFloat(progressNumber.floatValue)
-            IHProgressHUD.show(progress: progress, status: fileNameInUpload)
+            let status = "\(self.counterUpload) " + NSLocalizedString("_of_", comment: "") + " \(self.numberOfItems)"
+            IHProgressHUD.show(progress: progress, status: status)
         }
     }
     
@@ -404,7 +407,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         
         if let fileName = filesName.first {
             
-            self.fileNameInUpload = fileName
+            counterUpload += 1
             filesName.removeFirst()
             let ocId = NSUUID().uuidString
             let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
@@ -433,9 +436,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                 } completion: { (errorCode, errorDescription) in
                                         
                     if errorCode == 0 {
-                        
-                        IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
-                        
+                                                
                         self.actionUpload()
                         
                     } else {
@@ -448,15 +449,18 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                         let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
                             self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
-                            return
                         }))
                         self.present(alertController, animated: true)
                     }
                 }
             }
         } else {
-            extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
-            return
+            
+            IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+            }
         }
     }
     
@@ -507,7 +511,7 @@ extension NCShareExtension: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberOfItems = dataSource.numberOfItems()
+        numberOfItems = dataSource.numberOfItems()
         emptyDataSet?.numberOfItemsInSection(numberOfItems, section:section)
         return numberOfItems
     }
