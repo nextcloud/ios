@@ -66,7 +66,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     private var activeAccount: tableAccount!
     private let chunckSize = CCUtility.getChunkSize() * 1000000
     
-    private var numberOfItems: Int = 0
+    private var numberFilesName: Int = 0
     private var counterUpload: Int = 0
     
     // MARK: - View Life Cycle
@@ -202,8 +202,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         if let userInfo = notification.userInfo as NSDictionary?, let progressNumber = userInfo["progress"] as? NSNumber {
             
             let progress = CGFloat(progressNumber.floatValue)
-            let numItems = self.numberOfItems + 1
-            let status = "    \(self.counterUpload) " + NSLocalizedString("_of_", comment: "") + " \(numItems)    "
+            let status =  NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUpload) " + NSLocalizedString("_of_", comment: "") + " \(self.numberFilesName)"
             IHProgressHUD.show(progress: progress, status: status)
         }
     }
@@ -352,7 +351,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                 self.tableView.isScrollEnabled = false
             }
             // Label upload button
-            uploadLabel.text = NSLocalizedString("_upload_", comment: "") + " \(filesName.count) " + NSLocalizedString("_files_", comment: "")
+            numberFilesName = filesName.count
+            uploadLabel.text = NSLocalizedString("_upload_", comment: "") + " \(numberFilesName) " + NSLocalizedString("_files_", comment: "")
             // Empty
             emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -50*counter, delegate: self)
             self.tableView.reloadData()
@@ -512,7 +512,7 @@ extension NCShareExtension: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        numberOfItems = dataSource.numberOfItems()
+        let numberOfItems = dataSource.numberOfItems()
         emptyDataSet?.numberOfItemsInSection(numberOfItems, section:section)
         return numberOfItems
     }
