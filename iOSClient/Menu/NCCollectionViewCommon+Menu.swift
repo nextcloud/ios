@@ -29,54 +29,53 @@ import NCCommunication
 import Queuer
 
 extension UIViewController {
-    func showProfileMenu(account: String, image: UIImage?) {
+    func handleProfileAction(_ action: NCHovercard.Action, for userId: String) {
         
-        let personHeader = NCMenuAction(
-            title: account,
-            icon: image ?? NCUtility.shared.loadImage(named: "person.crop.circle"),
-            action: nil)
-        
-        let profileAction =
-        NCMenuAction(
-            title: NSLocalizedString("_profile_", comment: ""),
-            icon: NCUtility.shared.loadImage(named: "globe"),
-            action: { menuAction in
-                //TODO: Wait for https://github.com/nextcloud/server/pull/28751
+        switch action.appId {
+        case "email":
+            sendEmail(to: action.title)
+        case "spreed":
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            if let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(userId)&withUser=\(appDelegate.userId)"),
+               UIApplication.shared.canOpenURL(talkUrl) {
+                UIApplication.shared.open(talkUrl, options: [.universalLinksOnly: true])
+            } else if let url = action.hyperlinkUrl {
+                UIApplication.shared.open(url, options: [:])
             }
-        )
-        
-        let mailAction = NCMenuAction(
-            title: NSLocalizedString("_mail_", comment: ""),
-            icon: NCUtility.shared.loadImage(named: "envelope"),
-            action: { menuAction in
-                //TODO: get mail
-                self.sendEmail(to: account)
+        default:
+            guard let url = action.hyperlinkUrl else {
+                return
             }
-        )
-        
-        let talkAction = NCMenuAction(
-            title: NSLocalizedString("_talk_", comment: ""),
-            // TODO: Needs talk icon
-            icon: NCUtility.shared.loadImage(named: "talk-icon"),
-            action: { menuAction in
-                //TODO:
-                if let userTalkUrl = URL(string: "nextcloudtalk://login?server=https://nextcloud.server.tld&username=theirname"),
-                   UIApplication.shared.canOpenURL(userTalkUrl) {
-                    UIApplication.shared.open(userTalkUrl)
-                } else {
-                    // TODO: POST /ocs/v2.php/apps/spreed/api/v4/room
-                    // - roomType: 1
-                    // - invite: <account.userId>
-                    // let userToken = result.ocs.data.first(where: { $0.name == account.userId }).token
-                    // let userTalkUrl = URL(string: "\(urlBase)/call/\(token)")
-                    
-                    // UIApplication.shared.open(userTalkUrl)
+            UIApplication.shared.open(url, options: [:])
+        }
+    }
+    
+    func showProfileMenu(userId: String, image: UIImage?) {
+
+        NCCommunication.shared.getHovercard(for: userId) { (card, errCode, err) in
+            guard let card = card else {
+                return
+            }
+            
+            let personHeader = NCMenuAction(
+                title: card.displayName,
+                icon: image ?? NCUtility.shared.loadImage(named: "person.crop.circle"),
+                action: nil)
+            
+            let actions = card.actions.map { action -> NCMenuAction in
+                var image = UIImage()
+                if let url = action.hyperlinkUrl, let loadedImage = try? UIImage(data: Data(contentsOf: url)) {
+                    image = loadedImage
                 }
+                return NCMenuAction(
+                    title: action.title,
+                    icon: image,
+                    action: { _ in self.handleProfileAction(action, for: userId) })
             }
-        )
-        
-        let actions = [personHeader, profileAction, mailAction, talkAction]
-        presentMenu(with: actions)
+            
+            let allActions = [personHeader] + actions
+            self.presentMenu(with: allActions)
+        }
     }
     
     func sendEmail(to email: String) {
