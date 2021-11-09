@@ -181,7 +181,8 @@ extension NCCreateFormUploadConflictDelegate {
             for metadata in self.metadatasUploadInConflict {
                 
                 let fileNameMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-                let newFileName = NCUtilityFileSystem.shared.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
+                var newFileName = NCUtilityFileSystem.shared.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
+                var oldPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
                 
                 metadata.ocId = UUID().uuidString
                 metadata.fileName = newFileName
@@ -190,23 +191,13 @@ extension NCCreateFormUploadConflictDelegate {
                 self.metadatasNOConflict.append(metadata)
                 
                 // MOV
-                for metadataMOV in self.metadatasMOV {
-                    
-                    if metadataMOV.fileName == fileNameMOV {
-                        
-                        let oldPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView)
-                        let newFileNameMOV = (newFileName as NSString).deletingPathExtension + ".mov"
-                        
-                        metadataMOV.ocId = UUID().uuidString
-                        metadataMOV.fileName = newFileNameMOV
-                        metadataMOV.fileNameView = newFileNameMOV
-                        
-                        let newPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: newFileNameMOV)
-                        CCUtility.moveFile(atPath: oldPath, toPath: newPath)
-                        
-                        break
-                    }
+                if let metadataMOV = self.metadatasMOV.first(where: { $0.ocId == fileNameMOV }) {
+                    oldPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView)
+                    newFileName = (newFileName as NSString).deletingPathExtension + ".mov"
                 }
+
+                let newPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: newFileName)
+                CCUtility.moveFile(atPath: oldPath, toPath: newPath)
             }
             
             if self.delegate != nil {
