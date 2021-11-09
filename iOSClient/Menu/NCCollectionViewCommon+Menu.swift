@@ -50,21 +50,21 @@ extension UIViewController {
         }
     }
     
-    func showProfileMenu(userId: String, image: UIImage?) {
+    func showProfileMenu(userId: String) {
 
         NCCommunication.shared.getHovercard(for: userId) { (card, errCode, err) in
             guard let card = card else {
                 return
             }
-            
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
             let personHeader = NCMenuAction(
                 title: card.displayName,
-                icon: image ?? NCUtility.shared.loadImage(named: "person.crop.circle"),
+                icon: NCUtility.shared.loadUserImage(for: userId, displayName: card.displayName, urlBase: appDelegate.urlBase),
                 action: nil)
             
             let actions = card.actions.map { action -> NCMenuAction in
                 var image = UIImage()
-                if let url = action.hyperlinkUrl, let loadedImage = try? UIImage(data: Data(contentsOf: url)) {
+                if let url = URL(string: action.icon), let loadedImage = try? UIImage(data: Data(contentsOf: url)) {
                     image = loadedImage
                 }
                 return NCMenuAction(
