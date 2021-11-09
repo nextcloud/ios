@@ -66,7 +66,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     private var activeAccount: tableAccount!
     private let chunckSize = CCUtility.getChunkSize() * 1000000
     
-    private var numberFilesName: Int = 0
+    private var numberFilesName: Int { filesName.count }
     private var counterUpload: Int = 0
     
     // MARK: - View Life Cycle
