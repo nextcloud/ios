@@ -477,6 +477,13 @@ extension NCActivity {
 }
 
 extension NCActivity: NCShareCommentsCellDelegate {
+    func showProfile(with tableComment: tableComments?, sender: Any) {
+        guard let tableComment = tableComment else {
+            return
+        }
+        self.showProfileMenu(userId: tableComment.actorId)
+    }
+
     func tapMenu(with tableComments: tableComments?, sender: Any) {
         toggleMenu(with: tableComments)
     }
