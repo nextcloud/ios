@@ -180,14 +180,33 @@ extension NCCreateFormUploadConflictDelegate {
             
             for metadata in self.metadatasUploadInConflict {
                 
+                let fileNameMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
                 let newFileName = NCUtilityFileSystem.shared.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
-                let oldPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+                
                 metadata.ocId = UUID().uuidString
                 metadata.fileName = newFileName
                 metadata.fileNameView = newFileName
-                let newPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-                CCUtility.moveFile(atPath: oldPath, toPath: newPath)
+                
                 self.metadatasNOConflict.append(metadata)
+                
+                // MOV
+                for metadataMOV in self.metadatasMOV {
+                    
+                    if metadataMOV.fileName == fileNameMOV {
+                        
+                        let oldPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView)
+                        let newFileNameMOV = (newFileName as NSString).deletingPathExtension + ".mov"
+                        
+                        metadataMOV.ocId = UUID().uuidString
+                        metadataMOV.fileName = newFileNameMOV
+                        metadataMOV.fileNameView = newFileNameMOV
+                        
+                        let newPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: newFileNameMOV)
+                        CCUtility.moveFile(atPath: oldPath, toPath: newPath)
+                        
+                        break
+                    }
+                }
             }
             
             if self.delegate != nil {
