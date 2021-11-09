@@ -177,6 +177,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
         case .activity:
             let viewController = UIStoryboard(name: "NCActivity", bundle: nil).instantiateInitialViewController() as! NCActivity
             viewController.height = height
+            viewController.showCommetns = true
             viewController.didSelectItemEnable = false
             viewController.metadata = metadata
             viewController.objectType = "files"
