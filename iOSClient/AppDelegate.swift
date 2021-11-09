@@ -186,6 +186,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione entrerà in primo piano (attivo sempre)
     func applicationDidBecomeActive(_ application: UIApplication) {
+        hidePrivacyProtectionWindow()
         
         NCSettingsBundleHelper.setVersionAndBuildNumber()
         
@@ -235,6 +236,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione si dimetterà dallo stato di attivo
     func applicationWillResignActive(_ application: UIApplication) {
+        showPrivacyProtectionWindow()
         
         if account == "" { return }
         
@@ -286,6 +288,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         NCNetworking.shared.cancelAllDownloadTransfer()
         NCCommunicationCommon.shared.writeLog("bye bye")
+    }
+    
+    // MARK: Privacy Protection
+       
+    private var privacyProtectionWindow: UIWindow?
+
+    private func showPrivacyProtectionWindow() {
+           privacyProtectionWindow = UIWindow(frame: UIScreen.main.bounds)
+           //privacyProtectionWindow?.rootViewController = PrivacyProtectionViewController()
+          
+        let storyboard = UIStoryboard(name: "LaunchScreen", bundle: nil)
+
+        let initialViewController = storyboard.instantiateViewController(withIdentifier: "splashScreenVC")
+
+        self.privacyProtectionWindow?.rootViewController = initialViewController
+
+        
+        privacyProtectionWindow?.windowLevel = .alert + 1
+        privacyProtectionWindow?.makeKeyAndVisible()
+        //UIApplication.shared.keyWindow?.subviews.last?.addSubview(imageView)
+    }
+
+    private func hidePrivacyProtectionWindow() {
+           privacyProtectionWindow?.isHidden = true
+        
+           privacyProtectionWindow = nil
     }
     
     // MARK: -
