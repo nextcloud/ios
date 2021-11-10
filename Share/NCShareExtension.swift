@@ -66,7 +66,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     private var activeAccount: tableAccount!
     private let chunckSize = CCUtility.getChunkSize() * 1000000
     
-    private var numberFilesName: Int { filesName.count }
+    private var numberFilesName: Int = 0
     private var counterUpload: Int = 0
     
     // MARK: - View Life Cycle
@@ -351,6 +351,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                 self.tableView.isScrollEnabled = false
             }
             // Label upload button
+            numberFilesName = filesName.count
             uploadLabel.text = NSLocalizedString("_upload_", comment: "") + " \(numberFilesName) " + NSLocalizedString("_files_", comment: "")
             // Empty
             emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -50*counter, delegate: self)
