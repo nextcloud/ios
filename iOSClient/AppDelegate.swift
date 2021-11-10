@@ -27,6 +27,7 @@ import NCCommunication
 import TOPasscodeViewController
 import LocalAuthentication
 import Firebase
+import IHProgressHUD
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, TOPasscodeViewControllerDelegate, NCAccountRequestDelegate, NCViewCertificateDetailsDelegate {
@@ -201,6 +202,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if account == "" { return }
         guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
+        
+        // close HUD
+        IHProgressHUD.dismiss()
         
         // Account changed ??
         if activeAccount.account != account {
