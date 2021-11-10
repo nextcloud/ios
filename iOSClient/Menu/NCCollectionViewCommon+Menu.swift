@@ -27,6 +27,7 @@ import UIKit
 import FloatingPanel
 import NCCommunication
 import Queuer
+import SVGKit
 
 extension UIViewController {
     func handleProfileAction(_ action: NCHovercard.Action, for userId: String) {
@@ -64,8 +65,8 @@ extension UIViewController {
             
             let actions = card.actions.map { action -> NCMenuAction in
                 var image = UIImage()
-                if let url = URL(string: action.icon), let loadedImage = try? UIImage(data: Data(contentsOf: url)) {
-                    image = loadedImage
+                if let url = URL(string: action.icon), let svg = SVGKImage(contentsOf: url) {
+                    image = svg.uiImage
                 }
                 return NCMenuAction(
                     title: action.title,
