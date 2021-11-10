@@ -60,14 +60,17 @@ class NCContentPresenter: NSObject {
         case info
     }
     
-    @objc private var lastErrorCode: Int = 0
-
     //MARK: - Message
     
     @objc func messageNotification(_ title: String, description: String?, delay: TimeInterval, type: messageType, errorCode: Int, forced: Bool = false) {
+        
+        messageNotification(title, description: description, delay: delay, type: type, errorCode: errorCode, errorCodeCheck: forced, priority: .normal, dropEnqueuedEntries: false)
+    }
+    
+    func messageNotification(_ title: String, description: String?, delay: TimeInterval, type: messageType, errorCode: Int, errorCodeCheck: Bool = true, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
                        
-        // No notification message
-        if forced == false {
+        // No notification message for:
+        if errorCodeCheck == false {
             
             if errorCode == -999 { return }         // Cancelled transfer
             else if errorCode == 200 { return }     // Transfer stopped
@@ -76,20 +79,13 @@ class NCContentPresenter: NSObject {
             else if errorCode == -1001 { return }   // Time out
             else if errorCode == -1005 { return }   // Connection lost
             else if errorCode == 0 && type == messageType.error { return }
-            
-            // No repeat message for:
-            if errorCode == lastErrorCode {
-                if errorCode ==  Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue) { return }
-            } else {
-                lastErrorCode = errorCode
-            }
         }
         
         DispatchQueue.main.async {
             switch errorCode {
             case Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue):
                 let image = UIImage(named: "networkInProgress")!.image(color: .white, size: 20)
-                self.noteTop(text: NSLocalizedString(title, comment: ""), image: image, color: .lightGray, delay: delay, name: "\(errorCode)")
+                self.noteTop(text: NSLocalizedString(title, comment: ""), image: image, color: .lightGray, delay: delay, name: "\(errorCode)", priority: .max)
             //case Int(kOCErrorServerUnauthorized), Int(kOCErrorServerForbidden):
             //    break
             default:
@@ -103,9 +99,9 @@ class NCContentPresenter: NSObject {
     
     //MARK: - Flat message
     
-    @objc func flatTop(title: String, description: String, delay: TimeInterval, imageName: String?, type: messageType, name: String?) {
+    private func flatTop(title: String, description: String, delay: TimeInterval, imageName: String?, type: messageType, name: String, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
      
-        if name != nil && SwiftEntryKit.isCurrentlyDisplaying(entryNamed: name) { return }
+        if SwiftEntryKit.isCurrentlyDisplaying(entryNamed: name) { return }
         
         var attributes = EKAttributes.topFloat
         var image: UIImage?
@@ -117,6 +113,7 @@ class NCContentPresenter: NSObject {
         attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 0.3), scale: .init(from: 1, to: 0.7, duration: 0.7)))
         attributes.shadow = .active(with: .init(color: .black, opacity: 0.5, radius: 10, offset: .zero))
         attributes.scroll = .enabled(swipeable: true, pullbackAnimation: .jolt)
+        attributes.precedence = .override(priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
 
         let title = EKProperty.LabelContent(text: title, style: .init(font:  MainFont.bold.with(size: 16), color: .white))
         let description = EKProperty.LabelContent(text: description, style: .init(font:  MainFont.medium.with(size: 13), color: .white))
@@ -135,38 +132,9 @@ class NCContentPresenter: NSObject {
         DispatchQueue.main.async { SwiftEntryKit.display(entry: contentView, using: attributes) }
     }
    
-    @objc func flatBottom(title: String, description: String, delay: TimeInterval, image: UIImage, type: messageType, name: String?, verticalOffset: CGFloat) {
-        
-        if name != nil && SwiftEntryKit.isCurrentlyDisplaying(entryNamed: name) { return }
-           
-        var attributes = EKAttributes.bottomFloat
-           
-        attributes.windowLevel = .normal
-        attributes.displayDuration = delay
-        attributes.name = name
-        attributes.entryBackground = .color(color: EKColor(getBackgroundColorFromType(type)))
-        attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 0.3), scale: .init(from: 1, to: 0.7, duration: 0.7)))
-        attributes.shadow = .active(with: .init(color: .black, opacity: 0.5, radius: 10, offset: .zero))
-        attributes.scroll = .enabled(swipeable: true, pullbackAnimation: .jolt)
-        attributes.positionConstraints.verticalOffset = verticalOffset
-        
-        let title = EKProperty.LabelContent(text: title, style: .init(font:  MainFont.bold.with(size: 16), color: .white))
-        let description = EKProperty.LabelContent(text: description, style: .init(font:  MainFont.medium.with(size: 13), color: .white))
-        let imageMessage = EKProperty.ImageContent(image: image, size: CGSize(width: 35, height: 35))
-        let simpleMessage = EKSimpleMessage(image: imageMessage, title: title, description: description)
-        let notificationMessage = EKNotificationMessage(simpleMessage: simpleMessage)
-           
-        let contentView = EKNotificationMessageView(with: notificationMessage)
-        
-        DispatchQueue.main.async {
-            SwiftEntryKit.dismiss(.displayed)
-            SwiftEntryKit.display(entry: contentView, using: attributes)
-        }
-    }
-    
     //MARK: - Note Message
     
-    func noteTop(text: String, image: UIImage?, color: UIColor? = nil, type: messageType? = nil, delay: TimeInterval, name: String?) {
+    func noteTop(text: String, image: UIImage?, color: UIColor? = nil, type: messageType? = nil, delay: TimeInterval, name: String, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
         
         var attributes = EKAttributes.topNote
         
@@ -179,7 +147,8 @@ class NCContentPresenter: NSObject {
         if let type = type {
             attributes.entryBackground = .color(color: EKColor(getBackgroundColorFromType(type)))
         }
-        
+        attributes.precedence = .override(priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
+
         let style = EKProperty.LabelStyle(font: MainFont.light.with(size: 14), color: .white, alignment: .center)
         let labelContent = EKProperty.LabelContent(text: text, style: style)
         
@@ -191,43 +160,6 @@ class NCContentPresenter: NSObject {
             let contentView = EKNoteMessageView(with: labelContent)
             DispatchQueue.main.async { SwiftEntryKit.display(entry: contentView, using: attributes) }
         }
-    }
-    
-    func noteBottom(text: String, image: UIImage?, color: UIColor? = nil, type: messageType? = nil, delay: TimeInterval, name: String?) {
-        
-        var attributes = EKAttributes.bottomNote
-        
-        attributes.windowLevel = .normal
-        attributes.displayDuration = delay
-        attributes.name = name
-        if let color = color {
-            attributes.entryBackground = .color(color: EKColor(color))
-        }
-        if let type = type {
-            attributes.entryBackground = .color(color: EKColor(getBackgroundColorFromType(type)))
-        }
-        
-        let style = EKProperty.LabelStyle(font: MainFont.light.with(size: 14), color: .white, alignment: .center)
-        let labelContent = EKProperty.LabelContent(text: text, style: style)
-        
-        if let image = image {
-            let imageContent = EKProperty.ImageContent(image: image, size: CGSize(width: 17, height: 17))
-            let contentView = EKImageNoteMessageView(with: labelContent, imageContent: imageContent)
-            DispatchQueue.main.async { SwiftEntryKit.display(entry: contentView, using: attributes) }
-        } else {
-            let contentView = EKNoteMessageView(with: labelContent)
-            DispatchQueue.main.async { SwiftEntryKit.display(entry: contentView, using: attributes) }
-        }
-    }
-    
-    //MARK: - Dismiss
-    
-    @objc func dismissAll() {
-        DispatchQueue.main.async { SwiftEntryKit.dismiss(.all) }
-    }
-    
-    @objc func dismissDisplayed() {
-        DispatchQueue.main.async { SwiftEntryKit.dismiss(.displayed) }
     }
     
     //MARK: - Private
