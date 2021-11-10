@@ -251,8 +251,13 @@ extension NCCreateFormUploadConflictDelegate {
             if metadatasConflictNewFiles.contains(metadata.ocId) && metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
             
                 let fileNameMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-                
-                let newFileName = NCUtilityFileSystem.shared.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
+                var fileName = metadata.fileNameView
+                let fileNameExtension = (fileName as NSString).pathExtension.lowercased()
+                let fileNameWithoutExtension = (fileName as NSString).deletingPathExtension
+                if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
+                    fileName = fileNameWithoutExtension + ".jpg"
+                }
+                let newFileName = NCUtilityFileSystem.shared.createFileName(fileName, serverUrl: metadata.serverUrl, account: metadata.account)
                 
                 metadata.ocId = UUID().uuidString
                 metadata.fileName = newFileName
