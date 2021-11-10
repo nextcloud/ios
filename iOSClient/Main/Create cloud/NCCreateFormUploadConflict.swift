@@ -171,8 +171,6 @@ extension NCCreateFormUploadConflictDelegate {
             
             for metadata in self.metadatasUploadInConflict {
                 self.metadatasConflictNewFiles.append(metadata.ocId)
-            }
-            for metadata in self.metadatasUploadInConflict {
                 self.metadatasConflictAlreadyExistingFiles.append(metadata.ocId)
             }
             
