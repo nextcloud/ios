@@ -435,7 +435,7 @@
 "_insert_password_"             = "Enter password";
 "_update_in_progress_"          = "Version upgrade, please wait…";
 "_forbidden_characters_"        = "The file or folder name contains invalid characters";
-"_mail_not_can_send_mail_"      = "No account set up, or wrong email address entered";
+"_cannot_send_mail_error_"      = "No account set up, or wrong email address entered";
 "_photo_camera_"                = "Photos";
 "_media_"                       = "Media";
 "_unzip_in_progress_"           = "Extraction in progress on local storage…";

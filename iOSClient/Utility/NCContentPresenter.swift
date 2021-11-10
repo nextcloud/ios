@@ -64,11 +64,21 @@ class NCContentPresenter: NSObject {
 
     //MARK: - Message
     
+    @objc func showGenericError(description: String) {
+        messageNotification(
+            "_error_", description: description,
+            delay: NCGlobal.shared.dismissAfterSecond,
+            type: .error,
+            errorCode: NCGlobal.shared.errorGeneric,
+            forced: true)
+    }
+    
     @objc func messageNotification(_ title: String, description: String?, delay: TimeInterval, type: messageType, errorCode: Int, forced: Bool = false) {
                        
         // No notification message
         if forced == false {
-            
+            let internetError = Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue)
+
             if errorCode == -999 { return }         // Cancelled transfer
             else if errorCode == 200 { return }     // Transfer stopped
             else if errorCode == 207 { return }     // WebDAV multistatus
@@ -77,10 +87,9 @@ class NCContentPresenter: NSObject {
             else if errorCode == -1005 { return }   // Connection lost
             else if errorCode == 0 && type == messageType.error { return }
             
+            else if errorCode == internetError && errorCode == lastErrorCode { return }
             // No repeat message for:
-            if errorCode == lastErrorCode {
-                if errorCode ==  Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue) { return }
-            } else {
+            else if errorCode != lastErrorCode {
                 lastErrorCode = errorCode
             }
         }
