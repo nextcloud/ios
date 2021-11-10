@@ -157,24 +157,24 @@ extension NCCreateFormUploadConflictDelegate {
         let conflictAlert = UIAlertController(title: tile, message: "", preferredStyle: .alert)
 
         // REPLACE
-        conflictAlert.addAction(UIAlertAction(title: titleReplace, style: .default, handler: { (_) in
+        conflictAlert.addAction(UIAlertAction(title: titleReplace, style: .default, handler: { action in
                         
             for metadata in self.metadatasUploadInConflict {
                 self.metadatasNOConflict.append(metadata)
             }
             
-            self.buttonContinueTouch(self)
+            self.buttonContinueTouch(action)
         }))
         
         // KEEP BOTH
-        conflictAlert.addAction(UIAlertAction(title: titleKeep, style: .default, handler: { (_) in
+        conflictAlert.addAction(UIAlertAction(title: titleKeep, style: .default, handler: { action in
             
             for metadata in self.metadatasUploadInConflict {
                 self.metadatasConflictNewFiles.append(metadata.ocId)
                 self.metadatasConflictAlreadyExistingFiles.append(metadata.ocId)
             }
             
-            self.buttonContinueTouch(self)
+            self.buttonContinueTouch(action)
         }))
         
         conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_keep_existing_action_title_", comment: ""), style: .cancel, handler: { (_) in
