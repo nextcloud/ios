@@ -29,7 +29,6 @@ extension NCTrash {
 
     func toggleMenuMoreHeader() {
         
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions: [NCMenuAction] = []
                 
         if isEditMode {
@@ -71,20 +70,11 @@ extension NCTrash {
             )
         }
         
-        menuViewController.actions = actions
-        
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-
-        self.present(menuPanelController, animated: true, completion: nil)
+        presentMenu(with: actions)
     }
     
     func toggleMenuMoreList(with objectId: String, image: UIImage?) {
         
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions: [NCMenuAction] = []
 
         guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: appDelegate.account) else {
@@ -132,8 +122,7 @@ extension NCTrash {
     }
     
     func toggleMenuMoreGrid(with objectId: String, namedButtonMore: String, image: UIImage?) {
-        
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+
         var actions: [NCMenuAction] = []
 
         guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: appDelegate.account) else {
@@ -179,15 +168,7 @@ extension NCTrash {
             )
         )
 
-        menuViewController.actions = actions
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-
-        self.present(menuPanelController, animated: true, completion: nil)
+        presentMenu(with: actions)
     }
 }
 

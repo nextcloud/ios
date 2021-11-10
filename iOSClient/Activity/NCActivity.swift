@@ -446,7 +446,6 @@ extension NCActivity: NCShareCommentsCellDelegate {
     
     func toggleMenu(with tableComments: tableComments?) {
         
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
 
         actions.append(
@@ -504,15 +503,8 @@ extension NCActivity: NCShareCommentsCellDelegate {
                 icon: UIImage(named: "cancel")!.image(color: NCBrandColor.shared.gray, size: 50),
                 action: nil)
         )
-        
-        menuViewController.actions = actions
 
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-        self.present(menuPanelController, animated: true, completion: nil)
+        presentMenu(with: actions)
     }
 }
 
