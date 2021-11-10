@@ -62,53 +62,49 @@ class NCContentPresenter: NSObject {
     
     //MARK: - Message
     
-    @objc func messageNotification(_ title: String, description: String?, delay: TimeInterval, type: messageType, errorCode: Int, forced: Bool = false) {
-        
-        messageNotification(title, description: description, delay: delay, type: type, errorCode: errorCode, errorCodeCheck: forced, priority: .normal, dropEnqueuedEntries: false)
+    @objc func messageNotification(_ title: String, description: String?, delay: TimeInterval, type: messageType, errorCode: Int) {
+        messageNotification(title, description: description, delay: delay, type: type, errorCode: errorCode, priority: .normal, dropEnqueuedEntries: false)
     }
     
-    func messageNotification(_ title: String, description: String?, delay: TimeInterval, type: messageType, errorCode: Int, errorCodeCheck: Bool = true, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
+    func messageNotification(_ title: String, description: String?, delay: TimeInterval, type: messageType, errorCode: Int, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
                        
         // No notification message for:
-        if errorCodeCheck == false {
-            
-            if errorCode == -999 { return }         // Cancelled transfer
-            else if errorCode == 200 { return }     // Transfer stopped
-            else if errorCode == 207 { return }     // WebDAV multistatus
-            else if errorCode == 423 { return }     // WebDAV locked
-            else if errorCode == -1001 { return }   // Time out
-            else if errorCode == -1005 { return }   // Connection lost
-            else if errorCode == 0 && type == messageType.error { return }
-        }
+        if errorCode == -999 { return }         // Cancelled transfer
+        else if errorCode == 200 { return }     // Transfer stopped
+        else if errorCode == 207 { return }     // WebDAV multistatus
+        //else if errorCode == 423 { return }     // WebDAV locked
+        //else if errorCode == -1001 { return }   // Time out
+        //else if errorCode == -1005 { return }   // Connection lost
+        else if errorCode == NCGlobal.shared.errorNoError && type == messageType.error { return }
         
         DispatchQueue.main.async {
             switch errorCode {
             case Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue):
                 let image = UIImage(named: "networkInProgress")!.image(color: .white, size: 20)
-                self.noteTop(text: NSLocalizedString(title, comment: ""), image: image, color: .lightGray, delay: delay, name: "\(errorCode)", priority: .max)
+                self.noteTop(text: NSLocalizedString(title, comment: ""), image: image, color: .lightGray, delay: delay, priority: .max)
             //case Int(kOCErrorServerUnauthorized), Int(kOCErrorServerForbidden):
             //    break
             default:
                 guard var description = description else { return }
                 if description.trimmingCharacters(in: .whitespacesAndNewlines) == "" { return }
                 description = NSLocalizedString(description, comment: "")
-                self.flatTop(title: NSLocalizedString(title, comment: ""), description: description, delay: delay, imageName: nil, type: type, name: "\(errorCode)")
+                self.flatTop(title: NSLocalizedString(title, comment: ""), description: description, delay: delay, imageName: nil, type: type)
             }
         }
     }
     
     //MARK: - Flat message
     
-    private func flatTop(title: String, description: String, delay: TimeInterval, imageName: String?, type: messageType, name: String, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
+    private func flatTop(title: String, description: String, delay: TimeInterval, imageName: String?, type: messageType, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
      
-        if SwiftEntryKit.isCurrentlyDisplaying(entryNamed: name) { return }
+        if SwiftEntryKit.isCurrentlyDisplaying(entryNamed: title+description) { return }
         
         var attributes = EKAttributes.topFloat
         var image: UIImage?
         
         attributes.windowLevel = .normal
         attributes.displayDuration = delay
-        attributes.name = name
+        attributes.name = title+description
         attributes.entryBackground = .color(color: EKColor(getBackgroundColorFromType(type)))
         attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 0.3), scale: .init(from: 1, to: 0.7, duration: 0.7)))
         attributes.shadow = .active(with: .init(color: .black, opacity: 0.5, radius: 10, offset: .zero))
@@ -134,13 +130,15 @@ class NCContentPresenter: NSObject {
    
     //MARK: - Note Message
     
-    func noteTop(text: String, image: UIImage?, color: UIColor? = nil, type: messageType? = nil, delay: TimeInterval, name: String, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
+    func noteTop(text: String, image: UIImage?, color: UIColor? = nil, type: messageType? = nil, delay: TimeInterval, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
         
+        if SwiftEntryKit.isCurrentlyDisplaying(entryNamed: text) { return }
+
         var attributes = EKAttributes.topNote
         
         attributes.windowLevel = .normal
         attributes.displayDuration = delay
-        attributes.name = name
+        attributes.name = text
         if let color = color {
             attributes.entryBackground = .color(color: EKColor(color))
         }
