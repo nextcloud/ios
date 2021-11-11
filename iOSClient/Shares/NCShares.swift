@@ -49,7 +49,9 @@ class NCShares: NCCollectionViewCommon  {
             let sharess = NCManageDatabase.shared.getTableShares(account: self.appDelegate.account)
             for share in sharess {
                 if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, share.serverUrl, share.fileName)) {
-                    self.metadatasSource.append(metadata)
+                    if !(self.metadatasSource.contains { $0.ocId == metadata.ocId }) {
+                        self.metadatasSource.append(metadata)
+                    }
                 }
             }
             

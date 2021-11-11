@@ -6,6 +6,7 @@
 //  Copyright © 2019 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -149,12 +150,12 @@ class NCSharePaging: UIViewController {
 extension NCSharePaging: PagingViewControllerDelegate {
     
     func pagingViewController(_ pagingViewController: PagingViewController, willScrollToItem pagingItem: PagingItem, startingViewController: UIViewController, destinationViewController: UIViewController) {
-        
+
         guard
             let item = pagingItem as? PagingIndexItem,
             let itemIndex = NCGlobal.NCSharePagingIndex(rawValue: item.index)
         else { return }
-         
+
         if itemIndex == .activity && !activityEnabled {
             pagingViewController.contentInteraction = .none
         } else if itemIndex == .sharing && !sharingEnabled {
