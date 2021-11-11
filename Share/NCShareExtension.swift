@@ -23,6 +23,7 @@
 
 import UIKit
 import NCCommunication
+import IHProgressHUD
 
 class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDelegate, NCRenameFileDelegate, NCAccountRequestDelegate {
     
@@ -64,6 +65,9 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     private let refreshControl = UIRefreshControl()
     private var activeAccount: tableAccount!
     private let chunckSize = CCUtility.getChunkSize() * 1000000
+    
+    private var numberFilesName: Int = 0
+    private var counterUpload: Int = 0
     
     // MARK: - View Life Cycle
 
@@ -122,6 +126,13 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         } else {
             NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
         }
+        
+        // HUD
+        IHProgressHUD.set(viewForExtension: self.view)
+        IHProgressHUD.set(defaultMaskType: .clear)
+        IHProgressHUD.set(minimumDismiss: 2)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object:nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -182,6 +193,18 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         
         collectionView.reloadData()
         tableView.reloadData()
+    }
+    
+    // MARK: -
+
+    @objc func triggerProgressTask(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary?, let progressNumber = userInfo["progress"] as? NSNumber {
+            
+            let progress = CGFloat(progressNumber.floatValue)
+            let status =  NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUpload) " + NSLocalizedString("_of_", comment: "") + " \(self.numberFilesName)"
+            IHProgressHUD.show(progress: progress, status: status)
+        }
     }
     
     // MARK: -
@@ -328,7 +351,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                 self.tableView.isScrollEnabled = false
             }
             // Label upload button
-            uploadLabel.text = NSLocalizedString("_upload_", comment: "") + " \(filesName.count) " + NSLocalizedString("_files_", comment: "")
+            numberFilesName = filesName.count
+            uploadLabel.text = NSLocalizedString("_upload_", comment: "") + " \(numberFilesName) " + NSLocalizedString("_files_", comment: "")
             // Empty
             emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -50*counter, delegate: self)
             self.tableView.reloadData()
@@ -384,14 +408,13 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         
         if let fileName = filesName.first {
             
+            counterUpload += 1
             filesName.removeFirst()
             let ocId = NSUUID().uuidString
             let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
                 
             if NCUtilityFileSystem.shared.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: filePath) {
-                
-                NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: true)
-                                
+                                                
                 let metadata = NCManageDatabase.shared.createMetadata(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "", contentType: "", livePhoto: false)
                 
                 metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
@@ -412,28 +435,33 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                 NCNetworking.shared.upload(metadata: metadata) {
                     
                 } completion: { (errorCode, errorDescription) in
-                    
-                    NCUtility.shared.stopActivityIndicator()
-                    
+                                        
                     if errorCode == 0 {
+                                                
                         self.actionUpload()
+                        
                     } else {
                         
+                        IHProgressHUD.dismiss()
+
                         NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
                         NCManageDatabase.shared.deleteChunks(account: self.activeAccount.account, ocId: ocId)
                         
                         let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
                             self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
-                            return
                         }))
                         self.present(alertController, animated: true)
                     }
                 }
             }
         } else {
-            extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
-            return
+            
+            IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+            }
         }
     }
     

@@ -24,6 +24,7 @@
 import UIKit
 import NCCommunication
 import Queuer
+import IHProgressHUD
 
 @objc class NCFunctionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
     @objc public static let shared: NCFunctionCenter = {
@@ -130,7 +131,7 @@ import Queuer
                         }
                             
                         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
-                            saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV, progressView: nil, viewActivity: self.appDelegate.window?.rootViewController?.view)
+                            saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV)
                         }
                     
                     case NCGlobal.shared.selectorSaveAsScan:
@@ -352,34 +353,34 @@ import Queuer
         }
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
-            saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV, progressView: nil, viewActivity: self.appDelegate.window?.rootViewController?.view)
+            saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV)
         }
     }
     
-    func saveLivePhotoToDisk(metadata: tableMetadata, metadataMov: tableMetadata, progressView: UIProgressView?, viewActivity: UIView?) {
+    func saveLivePhotoToDisk(metadata: tableMetadata, metadataMov: tableMetadata) {
         
         let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
         let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
         
-        if let view = viewActivity {
-            NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: true)
-        }
+        IHProgressHUD.set(defaultMaskType: .clear)
+        IHProgressHUD.set(minimumDismiss: 2)
         
         NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
-            DispatchQueue.main.async {
-                progressView?.progress = Float(progress)
-            }
+                
+            IHProgressHUD.show(progress: CGFloat(progress))
+            
         }, completion: { livePhoto, resources in
-            NCUtility.shared.stopActivityIndicator()
-            progressView?.progress = 0
+    
             if resources != nil {
                 NCLivePhoto.saveToLibrary(resources!) { (result) in
                     if !result {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                        IHProgressHUD.showError(withStatus: NSLocalizedString("_livephoto_save_error_", comment: ""))
+                    } else {
+                        IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
                     }
                 }
             } else {
-                NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                IHProgressHUD.showError(withStatus: NSLocalizedString("_livephoto_save_error_", comment: ""))
             }
         })
     }
@@ -457,17 +458,24 @@ import Queuer
                 let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
                 try data.write(to: URL(fileURLWithPath: fileNameLocalPath))
                
-                NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
-                NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { account, ocId, etag, date, size, allHeaderFields, errorCode, errorDescription in
+                IHProgressHUD.set(defaultMaskType: .clear)
+                IHProgressHUD.set(minimumDismiss: 2)
+
+                NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { task in
+                } progressHandler: { progress in
+                    
+                    IHProgressHUD.show(progress: CGFloat(progress.fractionCompleted), status: fileName)
+                    
+                } completionHandler: { account, ocId, etag, date, size, allHeaderFields, errorCode, errorDescription in
                     if errorCode == 0 && etag != nil && ocId != nil {
                         let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
                         NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
                         NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
+                        IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
                     } else {
-                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: false)
+                        IHProgressHUD.showError(withStatus: NSLocalizedString(errorDescription, comment: ""))
                     }
-                    NCUtility.shared.stopActivityIndicator()
                 }
             } catch {
                 return false
