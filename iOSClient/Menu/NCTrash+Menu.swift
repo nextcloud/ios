@@ -28,9 +28,9 @@ import NCCommunication
 extension NCTrash {
 
     func toggleMenuMoreHeader() {
-        
+
         var actions: [NCMenuAction] = []
-                
+
         if isEditMode {
             actions.append(
                 NCMenuAction(
@@ -69,12 +69,12 @@ extension NCTrash {
                 )
             )
         }
-        
+
         presentMenu(with: actions)
     }
-    
+
     func toggleMenuMoreList(with objectId: String, image: UIImage?) {
-        
+
         var actions: [NCMenuAction] = []
 
         guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: appDelegate.account) else {
@@ -110,15 +110,7 @@ extension NCTrash {
             )
         )
 
-        menuViewController.actions = actions
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-
-        self.present(menuPanelController, animated: true, completion: nil)
+        self.presentMenu(with: actions)
     }
     
     func toggleMenuMoreGrid(with objectId: String, namedButtonMore: String, image: UIImage?) {
