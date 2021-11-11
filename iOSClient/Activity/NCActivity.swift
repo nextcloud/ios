@@ -40,7 +40,7 @@ class NCActivity: UIViewController {
     var height: CGFloat = 0
 
     var metadata: tableMetadata?
-    var showCommetns: Bool = false
+    var showComments: Bool = false
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -73,7 +73,7 @@ class NCActivity: UIViewController {
         
         changeTheming()
 
-        if showCommetns {
+        if showComments {
             setupComments()
         } else {
             commentView.isHidden = true
@@ -370,7 +370,7 @@ extension NCActivity {
         let reloadDispatch = DispatchGroup()
         self.allItems = []
         reloadDispatch.enter()
-        if showCommetns, let metadata = metadata {
+        if showComments, let metadata = metadata {
             reloadDispatch.enter()
             
             NCCommunication.shared.getComments(fileId: metadata.fileId) { (account, comments, errorCode, errorDescription) in
