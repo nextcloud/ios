@@ -156,66 +156,25 @@ extension NCCreateFormUploadConflictDelegate {
         
         let conflictAlert = UIAlertController(title: tile, message: "", preferredStyle: .alert)
 
-        conflictAlert.addAction(UIAlertAction(title: titleReplace, style: .default, handler: { (_) in
-            
+        // REPLACE
+        conflictAlert.addAction(UIAlertAction(title: titleReplace, style: .default, handler: { action in
+                        
             for metadata in self.metadatasUploadInConflict {
                 self.metadatasNOConflict.append(metadata)
             }
             
-            self.metadatasNOConflict.append(contentsOf: self.metadatasMOV)
-            
-            if self.delegate != nil {
-                
-                self.delegate?.dismissCreateFormUploadConflict(metadatas: self.metadatasNOConflict)
-                
-            } else {
-                
-                self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: self.metadatasNOConflict)
-            }
-            
-            self.dismiss(animated: true, completion: nil)
+            self.buttonContinueTouch(action)
         }))
         
-        conflictAlert.addAction(UIAlertAction(title: titleKeep, style: .default, handler: { (_) in
+        // KEEP BOTH
+        conflictAlert.addAction(UIAlertAction(title: titleKeep, style: .default, handler: { action in
             
             for metadata in self.metadatasUploadInConflict {
-                
-                let fileNameMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-                let newFileName = NCUtilityFileSystem.shared.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
-                
-                metadata.ocId = UUID().uuidString
-                metadata.fileName = newFileName
-                metadata.fileNameView = newFileName
-                
-                self.metadatasNOConflict.append(metadata)
-                
-                // MOV
-                for metadataMOV in self.metadatasMOV {
-                    
-                    if metadataMOV.fileName == fileNameMOV {
-                        
-                        let oldPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView)
-                        let newFileNameMOV = (newFileName as NSString).deletingPathExtension + ".mov"
-                        
-                        metadataMOV.ocId = UUID().uuidString
-                        metadataMOV.fileName = newFileNameMOV
-                        metadataMOV.fileNameView = newFileNameMOV
-                        
-                        let newPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: newFileNameMOV)
-                        CCUtility.moveFile(atPath: oldPath, toPath: newPath)
-                        
-                        break
-                    }
-                }
+                self.metadatasConflictNewFiles.append(metadata.ocId)
+                self.metadatasConflictAlreadyExistingFiles.append(metadata.ocId)
             }
             
-            if self.delegate != nil {
-                self.delegate?.dismissCreateFormUploadConflict(metadatas: self.metadatasNOConflict)
-            } else {
-                self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: self.metadatasNOConflict)
-            }
-            
-            self.dismiss(animated: true, completion: nil)
+            self.buttonContinueTouch(action)
         }))
         
         conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_keep_existing_action_title_", comment: ""), style: .cancel, handler: { (_) in
@@ -286,34 +245,43 @@ extension NCCreateFormUploadConflictDelegate {
         
         for metadata in metadatasUploadInConflict {
             
-            // new filename + num
+            // keep both
             if metadatasConflictNewFiles.contains(metadata.ocId) && metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
             
                 let fileNameMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
+                var fileName = metadata.fileNameView
+                let fileNameExtension = (fileName as NSString).pathExtension.lowercased()
+                let fileNameWithoutExtension = (fileName as NSString).deletingPathExtension
+                if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
+                    fileName = fileNameWithoutExtension + ".jpg"
+                }
+                let oldPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+                let newFileName = NCUtilityFileSystem.shared.createFileName(fileName, serverUrl: metadata.serverUrl, account: metadata.account)
                 
-                let newFileName = NCUtilityFileSystem.shared.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
                 metadata.ocId = UUID().uuidString
                 metadata.fileName = newFileName
                 metadata.fileNameView = newFileName
                 
+                // This is not an asset - [file]
+                if metadata.assetLocalIdentifier == "" {
+                    let newPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: newFileName)
+                    CCUtility.moveFile(atPath: oldPath, toPath: newPath)
+                }
+                
                 metadatasNOConflict.append(metadata)
                 
-                // MOV
-                for metadataMOV in metadatasMOV {
-                    if metadataMOV.fileName == fileNameMOV {
-                        
-                        let oldPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView)
-                        let newFileNameMOV = (newFileName as NSString).deletingPathExtension + ".mov"
-                        
-                        metadataMOV.ocId = UUID().uuidString
-                        metadataMOV.fileName = newFileNameMOV
-                        metadataMOV.fileNameView = newFileNameMOV
-                        
-                        let newPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: newFileNameMOV)
-                        CCUtility.moveFile(atPath: oldPath, toPath: newPath)
-                        
-                        break
-                    }
+                // MOV (Live Photo)
+                if let metadataMOV = self.metadatasMOV.first(where: { $0.fileName == fileNameMOV }) {
+                    
+                    let oldPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView)
+                    let newFileNameMOV = (newFileName as NSString).deletingPathExtension + ".mov"
+                    
+                    metadataMOV.ocId = UUID().uuidString
+                    metadataMOV.fileName = newFileNameMOV
+                    metadataMOV.fileNameView = newFileNameMOV
+                    
+                    let newPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: newFileNameMOV)
+                    CCUtility.moveFile(atPath: oldPath, toPath: newPath)
                 }
                 
             // overwrite
@@ -343,11 +311,8 @@ extension NCCreateFormUploadConflictDelegate {
         metadatasNOConflict.append(contentsOf: metadatasMOV)
         
         if delegate != nil {
-            
             delegate?.dismissCreateFormUploadConflict(metadatas: metadatasNOConflict)
-            
         } else {
-            
             appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadatasNOConflict)
         }
                 
