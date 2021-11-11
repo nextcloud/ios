@@ -245,7 +245,7 @@ extension NCCreateFormUploadConflictDelegate {
         
         for metadata in metadatasUploadInConflict {
             
-            // new filename + num
+            // keep both
             if metadatasConflictNewFiles.contains(metadata.ocId) && metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
             
                 let fileNameMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
@@ -255,11 +255,18 @@ extension NCCreateFormUploadConflictDelegate {
                 if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
                     fileName = fileNameWithoutExtension + ".jpg"
                 }
+                let oldPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
                 let newFileName = NCUtilityFileSystem.shared.createFileName(fileName, serverUrl: metadata.serverUrl, account: metadata.account)
                 
                 metadata.ocId = UUID().uuidString
                 metadata.fileName = newFileName
                 metadata.fileNameView = newFileName
+                
+                // This is not an asset - [file]
+                if metadata.assetLocalIdentifier == "" {
+                    let newPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: newFileName)
+                    CCUtility.moveFile(atPath: oldPath, toPath: newPath)
+                }
                 
                 metadatasNOConflict.append(metadata)
                 
