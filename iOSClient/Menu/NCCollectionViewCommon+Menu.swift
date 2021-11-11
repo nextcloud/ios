@@ -29,11 +29,11 @@ import NCCommunication
 import Queuer
 
 extension NCCollectionViewCommon {
-    
+
     func toggleMenu(metadata: tableMetadata, imageIcon: UIImage?) {
-        
+
         var actions = [NCMenuAction]()
-        
+
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
