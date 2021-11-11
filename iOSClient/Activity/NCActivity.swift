@@ -40,6 +40,7 @@ class NCActivity: UIViewController {
     var height: CGFloat = 0
 
     var metadata: tableMetadata?
+    var showCommetns: Bool = false
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -71,8 +72,12 @@ class NCActivity: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         
         changeTheming()
-        
-        setupComments()
+
+        if showCommetns {
+            setupComments()
+        } else {
+            commentView.isHidden = true
+        }
     }
     
     func setupComments() {
@@ -360,29 +365,30 @@ extension NCActivity: UIScrollViewDelegate {
 extension NCActivity {
 
     func loadDataSource() {
-        
-        guard let metadata = self.metadata else { return }
+
         NCUtility.shared.startActivityIndicator(backgroundView: tableView, blurEffect: false)
         let reloadDispatch = DispatchGroup()
         self.allItems = []
         reloadDispatch.enter()
-        reloadDispatch.enter()
-
-        NCCommunication.shared.getComments(fileId: metadata.fileId) { (account, comments, errorCode, errorDescription) in
-            if errorCode == 0 && comments != nil {
-                NCManageDatabase.shared.addComments(comments!, account: metadata.account, objectId: metadata.fileId)
-                self.allItems += NCManageDatabase.shared.getComments(account: metadata.account, objectId: metadata.fileId)
-                reloadDispatch.leave()
-            } else {
-                if errorCode != NCGlobal.shared.errorResourceNotFound {
-                    NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+        if showCommetns, let metadata = metadata {
+            reloadDispatch.enter()
+            
+            NCCommunication.shared.getComments(fileId: metadata.fileId) { (account, comments, errorCode, errorDescription) in
+                if errorCode == 0 && comments != nil {
+                    NCManageDatabase.shared.addComments(comments!, account: metadata.account, objectId: metadata.fileId)
+                    self.allItems += NCManageDatabase.shared.getComments(account: metadata.account, objectId: metadata.fileId)
+                    reloadDispatch.leave()
+                } else {
+                    if errorCode != NCGlobal.shared.errorResourceNotFound {
+                        NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    }
                 }
             }
         }
         
         let activities = NCManageDatabase.shared.getActivity(
             predicate: NSPredicate(format: "account == %@", appDelegate.account),
-            filterFileId: metadata.fileId)
+            filterFileId: metadata?.fileId)
         self.allItems += activities.filter
         reloadDispatch.leave()
         
