@@ -34,6 +34,8 @@ import UIKit
     
     @objc public let capabilitiesFileSharingApiEnabled:         Array = ["ocs","data","capabilities","files_sharing","api_enabled"]
     @objc public let capabilitiesFileSharingPubPasswdEnforced:  Array = ["ocs","data","capabilities","files_sharing","public","password","enforced"]
+    // NC >= 23
+    @objc public let capabilitiesFileSharingSendPasswordMail:  Array = ["ocs","data","capabilities","files_sharing","sharebymail","send_password_by_mail"]
 
     @objc public let capabilitiesThemingColor:                  Array = ["ocs","data","capabilities","theming","color"]
     @objc public let capabilitiesThemingColorElement:           Array = ["ocs","data","capabilities","theming","color-element"]
