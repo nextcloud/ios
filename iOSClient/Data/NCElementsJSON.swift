@@ -34,6 +34,7 @@ import UIKit
     
     @objc public let capabilitiesFileSharingApiEnabled:         Array = ["ocs","data","capabilities","files_sharing","api_enabled"]
     @objc public let capabilitiesFileSharingPubPasswdEnforced:  Array = ["ocs","data","capabilities","files_sharing","public","password","enforced"]
+    @objc public let capabilitiesFileSharingDefaultPermissions: Array = ["ocs","data","capabilities","files_sharing","default_permissions"]
     // NC >= 23
     @objc public let capabilitiesFileSharingSendPasswordMail:  Array = ["ocs","data","capabilities","files_sharing","sharebymail","send_password_by_mail"]
 
