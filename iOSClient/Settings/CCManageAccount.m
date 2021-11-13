@@ -87,23 +87,6 @@
     row.value = activeAccount.alias;
     [section addFormRow:row];
     
-    // Section : REQUEST ACCOUNT -------------------------------------------
-    
-    if (NCBrandOptions.shared.disable_request_account == NO) {
-    
-        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_account_request_", nil)];
-        [form addFormSection:section];
-        
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"accountRequest" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_settings_account_request_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
-        [row.cellConfig setObject:[[UIImage imageNamed:@"users"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
-        if ([CCUtility getAccountRequest]) row.value = @1;
-        else row.value = @0;
-        [section addFormRow:row];
-    }
-    
     // Section : MANAGE ACCOUNT -------------------------------------------
     
     if ([NCBrandOptions shared].disable_manage_account == NO) {
@@ -111,7 +94,6 @@
         section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_manage_account_", nil)];
         [form addFormSection:section];
         
-        // Brand
         if ([NCBrandOptions shared].disable_multiaccount == NO) {
             
             // New Account nextcloud
@@ -141,24 +123,41 @@
             }
         }
         
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"certificateDetails" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_certificate_details_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"lock-question"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
-        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-        [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
-        row.action.formSelector = @selector(certificateDetails:);
-        [section addFormRow:row];
-        
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"certificatePNDetails" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_certificate_pn_details_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"lock-question"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
-        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-        [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
-        row.action.formSelector = @selector(certificatePNDetails:);
-        [section addFormRow:row];
+        if ([NCBrandOptions shared].disable_multiaccount == NO) {
+            
+            row = [XLFormRowDescriptor formRowDescriptorWithTag:@"accountRequest" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_settings_account_request_", nil)];
+            row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
+            [row.cellConfig setObject:[[UIImage imageNamed:@"users"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
+            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+            [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+            if ([CCUtility getAccountRequest]) row.value = @1;
+            else row.value = @0;
+            [section addFormRow:row];
+        }
     }
+    
+    // Section : CERIFICATES -------------------------------------------
+
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_certificates_", nil)];
+    [form addFormSection:section];
+
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"certificateDetails" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_certificate_details_", nil)];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
+    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    row.action.formSelector = @selector(certificateDetails:);
+    [section addFormRow:row];
+        
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"certificatePNDetails" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_certificate_pn_details_", nil)];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
+    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    row.action.formSelector = @selector(certificatePNDetails:);
+    [section addFormRow:row];
     
     // Section : USER INFORMATION -------------------------------------------
     
