@@ -104,7 +104,7 @@ class NCContentPresenter: NSObject {
         
         attributes.windowLevel = .normal
         attributes.displayDuration = delay
-        attributes.name = title+description
+        attributes.name = title + description
         attributes.entryBackground = .color(color: EKColor(getBackgroundColorFromType(type)))
         attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 0.3), scale: .init(from: 1, to: 0.7, duration: 0.7)))
         attributes.shadow = .active(with: .init(color: .black, opacity: 0.5, radius: 10, offset: .zero))
