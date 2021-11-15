@@ -132,8 +132,8 @@ class NCActivity: UIViewController {
     // MARK: - NotificationCenter
 
     @objc func initialize() {
-        loadDataSource()
         loadActivity(idActivity: 0)
+        loadComments()
     }
     
     @objc func changeTheming() {
@@ -150,7 +150,7 @@ class NCActivity: UIViewController {
         NCCommunication.shared.putComments(fileId: metadata.fileId, message: message) { (account, errorCode, errorDescription) in
             if errorCode == 0 {
                 self.newCommentField.text = ""
-                self.loadDataSource()
+                self.loadComments()
             } else {
                 NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
@@ -351,11 +351,9 @@ extension NCActivity: UITableViewDataSource {
 
 extension NCActivity: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.height < 100 {
-            // comments are always loaded in full, only partially load more acitvities
-            if let activity = allItems.compactMap({ $0 as? tableActivity }).last {
-                loadActivity(idActivity: activity.objectId)
-            }
+        if scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.height < 100,
+           let activity = allItems.compactMap({ $0 as? tableActivity }).last {
+            loadActivity(idActivity: activity.objectId)
         }
     }
 }
@@ -367,49 +365,46 @@ extension NCActivity {
     func loadDataSource() {
 
         NCUtility.shared.startActivityIndicator(backgroundView: tableView, blurEffect: false)
-        let reloadDispatch = DispatchGroup()
-        self.allItems = []
-        reloadDispatch.enter()
-        if showComments, let metadata = metadata {
-            reloadDispatch.enter()
-            
-            NCCommunication.shared.getComments(fileId: metadata.fileId) { (account, comments, errorCode, errorDescription) in
-                if errorCode == 0 && comments != nil {
-                    NCManageDatabase.shared.addComments(comments!, account: metadata.account, objectId: metadata.fileId)
-                    self.allItems += NCManageDatabase.shared.getComments(account: metadata.account, objectId: metadata.fileId)
-                    reloadDispatch.leave()
-                } else {
-                    if errorCode != NCGlobal.shared.errorResourceNotFound {
-                        NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                    }
-                }
-            }
+        var newItems = [DateCompareable]()
+        if showComments, let metadata = metadata, let account = NCManageDatabase.shared.getActiveAccount() {
+            let comments = NCManageDatabase.shared.getComments(account: account.account, objectId: metadata.fileId)
+            newItems += comments
         }
-        
+
         let activities = NCManageDatabase.shared.getActivity(
             predicate: NSPredicate(format: "account == %@", appDelegate.account),
             filterFileId: metadata?.fileId)
-        self.allItems += activities.filter
-        reloadDispatch.leave()
-        
-        reloadDispatch.notify(qos: .userInitiated, flags: .enforceQoS, queue: .main) {
-            self.allItems.sort(by: { $0.dateKey > $1.dateKey })
-            self.sectionDates = self.allItems.reduce(into: Set<Date>()) { partialResult, next in
-                   let newDay = Calendar.current.startOfDay(for: next.dateKey)
-                   partialResult.insert(newDay)
-            }.sorted(by: >)
-            self.tableView.reloadData()
-            NCUtility.shared.stopActivityIndicator()
+        newItems += activities.filter
+
+        self.allItems = newItems.sorted(by: { $0.dateKey > $1.dateKey })
+        self.sectionDates = self.allItems.reduce(into: Set<Date>()) { partialResult, next in
+            let newDay = Calendar.current.startOfDay(for: next.dateKey)
+            partialResult.insert(newDay)
+        }.sorted(by: >)
+        self.tableView.reloadData()
+        NCUtility.shared.stopActivityIndicator()
+    }
+    
+    func loadComments() {
+        guard let metadata = metadata else { return }
+        NCCommunication.shared.getComments(fileId: metadata.fileId) { (account, comments, errorCode, errorDescription) in
+            if errorCode == 0, let comments = comments {
+                NCManageDatabase.shared.addComments(comments, account: metadata.account, objectId: metadata.fileId)
+                self.loadDataSource()
+            } else {
+                if errorCode != NCGlobal.shared.errorResourceNotFound {
+                    NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                }
+            }
         }
     }
     
-    @objc func loadActivity(idActivity: Int) {
-        
-        if !canFetchActivity { return }
+    func loadActivity(idActivity: Int) {
+
+        guard canFetchActivity else { return }
         canFetchActivity = false
         
         if idActivity > 0 {
-            
             let height = self.tabBarController?.tabBar.frame.size.height ?? 0
             NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: height + 50, style: .gray)
         }
@@ -467,7 +462,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
 
                         NCCommunication.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message) { (account, errorCode, errorDescription) in
                             if errorCode == 0 {
-                                self.loadDataSource()
+                                self.loadComments()
                             } else {
                                 NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                             }
@@ -488,7 +483,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
 
                     NCCommunication.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId) { (account, errorCode, errorDescription) in
                         if errorCode == 0 {
-                            self.loadDataSource()
+                            self.loadComments()
                         } else {
                             NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
