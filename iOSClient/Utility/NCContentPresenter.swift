@@ -79,8 +79,6 @@ class NCContentPresenter: NSObject {
             case Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue):
                 let image = UIImage(named: "networkInProgress")!.image(color: .white, size: 20)
                 self.noteTop(text: NSLocalizedString(title, comment: ""), image: image, color: .lightGray, delay: delay, priority: .max)
-            //case Int(kOCErrorServerUnauthorized), Int(kOCErrorServerForbidden):
-            //    break
             default:
                 guard var description = description else { return }
                 if description.trimmingCharacters(in: .whitespacesAndNewlines) == "" { return }
