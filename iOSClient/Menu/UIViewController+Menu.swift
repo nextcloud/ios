@@ -39,11 +39,11 @@ extension UIViewController {
             sendEmail(to: components.path)
         case "spreed":
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            if let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(userId)&withUser=\(appDelegate.userId)"),
+            if let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(appDelegate.userId)&withUser=\(userId)"),
                UIApplication.shared.canOpenURL(talkUrl) {
-                UIApplication.shared.open(talkUrl, options: [.universalLinksOnly: true])
+                UIApplication.shared.open(talkUrl)
             } else if let url = action.hyperlinkUrl {
-                UIApplication.shared.open(url, options: [:])
+                UIApplication.shared.open(url)
             }
         default:
             guard let url = action.hyperlinkUrl, UIApplication.shared.canOpenURL(url) else {
