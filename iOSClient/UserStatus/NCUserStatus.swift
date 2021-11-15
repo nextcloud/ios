@@ -189,7 +189,7 @@ class NCUserStatus: UIViewController {
         if errorCode != 0 && errorCode != NCGlobal.shared.errorResourceNotFound {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.dismiss(animated: true) {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
         }
@@ -326,7 +326,7 @@ class NCUserStatus: UIViewController {
         NCCommunication.shared.clearMessage { account, errorCode, errorDescription in
             
             if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
              
             self.dismiss(animated: true)
@@ -340,7 +340,7 @@ class NCUserStatus: UIViewController {
         NCCommunication.shared.setCustomMessageUserDefined(statusIcon: statusMessageEmojiTextField.text, message: message, clearAt: clearAtTimestamp) { account, errorCode, errorDescription in
             
             if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, forced: true)
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
              
             self.dismiss(animated: true)

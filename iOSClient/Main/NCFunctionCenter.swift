@@ -161,7 +161,7 @@ import IHProgressHUD
                         
                     } else {
                         
-                        NCContentPresenter.shared.messageNotification("_download_file_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        NCContentPresenter.shared.messageNotification("_download_file_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, priority: .max)
                     }
                 }
             }
@@ -178,7 +178,7 @@ import IHProgressHUD
                 if metadata.account == appDelegate.account {
                     if errorCode != 0 {
                         if errorCode != -999 && errorDescription != "" {
-                            NCContentPresenter.shared.messageNotification("_upload_file_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("_upload_file_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, priority: .max)
                         }
                     }
                 }
@@ -647,7 +647,7 @@ import IHProgressHUD
         let copyPath = UIAction(title: NSLocalizedString("_copy_path_", comment: ""), image: UIImage(systemName: "doc.on.clipboard")) { action in
             let board = UIPasteboard.general
             board.string = NCUtilityFileSystem.shared.getPath(metadata: metadata)
-            NCContentPresenter.shared.messageNotification("", description: "_copied_path_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorNoError, forced: false)
+            NCContentPresenter.shared.messageNotification("", description: "_copied_path_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorNoError)
         }
         
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info")) { action in
