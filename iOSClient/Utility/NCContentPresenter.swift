@@ -97,7 +97,7 @@ class NCContentPresenter: NSObject {
     
     private func flatTop(title: String, description: String, delay: TimeInterval, imageName: String?, type: messageType, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
      
-        if SwiftEntryKit.isCurrentlyDisplaying(entryNamed: title+description) { return }
+        if SwiftEntryKit.isCurrentlyDisplaying(entryNamed: title + description) { return }
         
         var attributes = EKAttributes.topFloat
         var image: UIImage?
