@@ -75,12 +75,19 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
             user = newValue ?? ""
         }
     }
-    
+
+    @objc func tapAvatarImage() {
+        guard let fileUser = fileUser else { return }
+        viewController?.showProfileMenu(userId: fileUser)
+    }
+
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+
         collectionView.delegate = self
         collectionView.dataSource = self
+        let avatarRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage))
+        avatar.addGestureRecognizer(avatarRecognizer)
     }
 }
 
