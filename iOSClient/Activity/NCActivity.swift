@@ -132,8 +132,7 @@ class NCActivity: UIViewController {
     // MARK: - NotificationCenter
 
     @objc func initialize() {
-        loadActivity(idActivity: 0)
-        loadComments()
+        fetchAll(initial: true)
     }
     
     @objc func changeTheming() {
@@ -353,10 +352,9 @@ extension NCActivity: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard
             scrollView.contentOffset.y > 50,
-            scrollView.contentSize.height - scrollView.frame.height - scrollView.contentOffset.y < -50,
-            let activity = allItems.compactMap({ $0 as? tableActivity }).last
+            scrollView.contentSize.height - scrollView.frame.height - scrollView.contentOffset.y < -50
         else { return }
-        loadActivity(idActivity: activity.objectId)
+        fetchAll(initial: false)
     }
 }
 
@@ -364,6 +362,31 @@ extension NCActivity: UIScrollViewDelegate {
 
 extension NCActivity {
 
+    func fetchAll(initial: Bool) {
+        guard canFetchActivity else { return }
+        self.canFetchActivity = false
+
+        let height = self.tabBarController?.tabBar.frame.size.height ?? 0
+        NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: height + 50, style: .gray)
+
+        let dispatchGroup = DispatchGroup()
+        loadComments(disptachGroup: dispatchGroup)
+        if initial {
+            loadActivity(idActivity: 0, disptachGroup: dispatchGroup)
+        } else if let activity = allItems.compactMap({ $0 as? tableActivity }).last {
+            loadActivity(idActivity: activity.objectId, disptachGroup: dispatchGroup)
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            self.loadDataSource()
+            NCUtility.shared.stopActivityIndicator()
+            // otherwise is triggered again
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.canFetchActivity = true
+            }
+        }
+    }
+    
     func loadDataSource() {
 
         var newItems = [DateCompareable]()
@@ -385,29 +408,27 @@ extension NCActivity {
         self.tableView.reloadData()
     }
     
-    func loadComments() {
-        guard let metadata = metadata else { return }
+    func loadComments(disptachGroup: DispatchGroup? = nil) {
+        guard showComments, let metadata = metadata else { return }
+        disptachGroup?.enter()
+
         NCCommunication.shared.getComments(fileId: metadata.fileId) { (account, comments, errorCode, errorDescription) in
             if errorCode == 0, let comments = comments {
                 NCManageDatabase.shared.addComments(comments, account: metadata.account, objectId: metadata.fileId)
-                self.loadDataSource()
+            } else if errorCode != NCGlobal.shared.errorResourceNotFound {
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            }
+
+            if let disptachGroup = disptachGroup {
+                disptachGroup.leave()
             } else {
-                if errorCode != NCGlobal.shared.errorResourceNotFound {
-                    NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                }
+                self.loadDataSource()
             }
         }
     }
     
-    func loadActivity(idActivity: Int) {
-
-        guard canFetchActivity else { return }
-        canFetchActivity = false
-
-        if idActivity > 0 {
-            let height = self.tabBarController?.tabBar.frame.size.height ?? 0
-            NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: height + 50, style: .gray)
-        }
+    func loadActivity(idActivity: Int, disptachGroup: DispatchGroup? = nil) {
+        disptachGroup?.enter()
 
         NCCommunication.shared.getActivity(
             since: idActivity,
@@ -418,13 +439,12 @@ extension NCActivity {
                 
                 if errorCode == 0 && account == self.appDelegate.account {
                     NCManageDatabase.shared.addActivity(activities, account: account)
-                    self.loadDataSource()
                 }
                 
-                NCUtility.shared.stopActivityIndicator()
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    self.canFetchActivity = errorCode != NCGlobal.shared.errorNotModified
+                if let disptachGroup = disptachGroup {
+                    disptachGroup.leave()
+                } else {
+                    self.loadDataSource()
                 }
             }
     }
