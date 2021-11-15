@@ -42,6 +42,17 @@ class NCManageDatabase: NSObject {
         let bundlePathExtension: String = bundleUrl.pathExtension
         let isAppex: Bool = bundlePathExtension == "appex"
         
+        // Disable file protection for this directory
+        // https://docs.mongodb.com/realm/sdk/ios/examples/configure-and-open-a-realm/#std-label-ios-open-a-local-realm
+        if let folderPathURL = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud) {
+            let folderPath = folderPathURL.path
+            do {
+                try FileManager.default.setAttributes([FileAttributeKey.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], ofItemAtPath: folderPath)
+            } catch {
+                print("Dangerous error")
+            }
+        }
+      
         if isAppex {
             
             // App Extension config
