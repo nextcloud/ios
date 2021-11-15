@@ -508,14 +508,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                 }
             )
         )
-        
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_cancel_", comment: ""),
-                icon: UIImage(named: "cancel")!.image(color: NCBrandColor.shared.gray, size: 50),
-                action: nil)
-        )
-        
+
         menuViewController.actions = actions
 
         let menuPanelController = NCMenuPanelController()
