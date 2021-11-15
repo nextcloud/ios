@@ -83,7 +83,7 @@ class NCContentPresenter: NSObject {
                 guard var description = description else { return }
                 if description.trimmingCharacters(in: .whitespacesAndNewlines) == "" { return }
                 description = NSLocalizedString(description, comment: "")
-                self.flatTop(title: NSLocalizedString(title, comment: ""), description: description, delay: delay, imageName: nil, type: type)
+                self.flatTop(title: NSLocalizedString(title, comment: ""), description: description, delay: delay, imageName: nil, type: type, priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
             }
         }
     }
