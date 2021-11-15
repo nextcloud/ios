@@ -351,10 +351,12 @@ extension NCActivity: UITableViewDataSource {
 
 extension NCActivity: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.height < 100,
-           let activity = allItems.compactMap({ $0 as? tableActivity }).last {
-            loadActivity(idActivity: activity.objectId)
-        }
+        guard
+            scrollView.contentOffset.y > 50,
+            scrollView.contentSize.height - scrollView.frame.height - scrollView.contentOffset.y < -50,
+            let activity = allItems.compactMap({ $0 as? tableActivity }).last
+        else { return }
+        loadActivity(idActivity: activity.objectId)
     }
 }
 
@@ -364,7 +366,6 @@ extension NCActivity {
 
     func loadDataSource() {
 
-        NCUtility.shared.startActivityIndicator(backgroundView: tableView, blurEffect: false)
         var newItems = [DateCompareable]()
         if showComments, let metadata = metadata, let account = NCManageDatabase.shared.getActiveAccount() {
             let comments = NCManageDatabase.shared.getComments(account: account.account, objectId: metadata.fileId)
@@ -382,7 +383,6 @@ extension NCActivity {
             partialResult.insert(newDay)
         }.sorted(by: >)
         self.tableView.reloadData()
-        NCUtility.shared.stopActivityIndicator()
     }
     
     func loadComments() {
@@ -403,12 +403,12 @@ extension NCActivity {
 
         guard canFetchActivity else { return }
         canFetchActivity = false
-        
+
         if idActivity > 0 {
             let height = self.tabBarController?.tabBar.frame.size.height ?? 0
             NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: height + 50, style: .gray)
         }
-        
+
         NCCommunication.shared.getActivity(
             since: idActivity,
             limit: 200,
@@ -418,17 +418,14 @@ extension NCActivity {
                 
                 if errorCode == 0 && account == self.appDelegate.account {
                     NCManageDatabase.shared.addActivity(activities, account: account)
+                    self.loadDataSource()
                 }
                 
                 NCUtility.shared.stopActivityIndicator()
                 
-                if errorCode == NCGlobal.shared.errorNotModified {
-                    self.canFetchActivity = false
-                } else {
-                    self.canFetchActivity = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.canFetchActivity = errorCode != NCGlobal.shared.errorNotModified
                 }
-                
-                self.loadDataSource()
             }
     }
 }
