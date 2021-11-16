@@ -375,7 +375,7 @@ extension NCActivity {
         if !isInitial, let activity = allItems.compactMap({ $0 as? tableActivity }).last {
             loadActivity(idActivity: activity.idActivity, disptachGroup: dispatchGroup)
         } else {
-            loadActivity(idActivity: 0, disptachGroup: dispatchGroup)
+            checkRecentActivity(disptachGroup: dispatchGroup)
         }
 
         dispatchGroup.notify(queue: .main) {
@@ -428,21 +428,55 @@ extension NCActivity {
             }
         }
     }
-    
-    func loadActivity(idActivity: Int, disptachGroup: DispatchGroup) {
+
+    /// Check if most recent activivities are loaded, if not trigger reload
+    func checkRecentActivity(disptachGroup: DispatchGroup) {
+        let recentActivityId = NCManageDatabase.shared.getLatestActivityId(account: appDelegate.account)
+
+        guard recentActivityId > 0 else {
+            return self.loadActivity(idActivity: 0, disptachGroup: disptachGroup)
+        }
+
+        disptachGroup.enter()
+
+        NCCommunication.shared.getActivity(
+            since: 0,
+            limit: 1,
+            objectId: metadata?.fileId,
+            objectType: objectType,
+            previews: true) { (account, activities, errorCode, errorDescription) in
+                defer { disptachGroup.leave() }
+
+                guard errorCode == 0,
+                      account == self.appDelegate.account,
+                      let activity = activities.first,
+                      activity.idActivity > recentActivityId
+                else { return }
+
+                self.loadActivity(idActivity: 0, limit: activity.idActivity - recentActivityId, disptachGroup: disptachGroup)
+            }
+    }
+
+    func loadActivity(idActivity: Int, limit: Int = 200, disptachGroup: DispatchGroup) {
         disptachGroup.enter()
 
         NCCommunication.shared.getActivity(
             since: idActivity,
-            limit: 200,
+            limit: min(limit, 200),
             objectId: metadata?.fileId,
             objectType: objectType,
             previews: true) { (account, activities, errorCode, errorDescription) in
-                
-                if errorCode == 0 && account == self.appDelegate.account {
-                    NCManageDatabase.shared.addActivity(activities, account: account)
+                defer { disptachGroup.leave() }
+                guard errorCode == 0,
+                      account == self.appDelegate.account,
+                      !activities.isEmpty
+                else { return }
+                NCManageDatabase.shared.addActivity(activities, account: account)
+
+                // update most recently loaded activity only when all activities are loaded (not filtered)
+                if self.metadata == nil {
+                    NCManageDatabase.shared.updateLatestActivityId(activities, account: account)
                 }
-                disptachGroup.leave()
             }
     }
 }
