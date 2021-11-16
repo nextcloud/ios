@@ -132,7 +132,7 @@ class NCActivity: UIViewController {
     // MARK: - NotificationCenter
 
     @objc func initialize() {
-        fetchAll(initial: true)
+        fetchAll(isInitial: true)
     }
     
     @objc func changeTheming() {
@@ -354,7 +354,7 @@ extension NCActivity: UIScrollViewDelegate {
             scrollView.contentOffset.y > 50,
             scrollView.contentSize.height - scrollView.frame.height - scrollView.contentOffset.y < -50
         else { return }
-        fetchAll(initial: false)
+        fetchAll(isInitial: false)
     }
 }
 
@@ -362,7 +362,7 @@ extension NCActivity: UIScrollViewDelegate {
 
 extension NCActivity {
 
-    func fetchAll(initial: Bool) {
+    func fetchAll(isInitial: Bool) {
         guard canFetchActivity else { return }
         self.canFetchActivity = false
 
@@ -371,15 +371,16 @@ extension NCActivity {
 
         let dispatchGroup = DispatchGroup()
         loadComments(disptachGroup: dispatchGroup)
-        if initial {
-            loadActivity(idActivity: 0, disptachGroup: dispatchGroup)
-        } else if let activity = allItems.compactMap({ $0 as? tableActivity }).last {
+        if !isInitial, let activity = allItems.compactMap({ $0 as? tableActivity }).last {
             loadActivity(idActivity: activity.objectId, disptachGroup: dispatchGroup)
+        } else {
+            loadActivity(idActivity: 0, disptachGroup: dispatchGroup)
         }
-        
+
         dispatchGroup.notify(queue: .main) {
             self.loadDataSource()
             NCUtility.shared.stopActivityIndicator()
+
             // otherwise is triggered again
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.canFetchActivity = true
@@ -427,8 +428,8 @@ extension NCActivity {
         }
     }
     
-    func loadActivity(idActivity: Int, disptachGroup: DispatchGroup? = nil) {
-        disptachGroup?.enter()
+    func loadActivity(idActivity: Int, disptachGroup: DispatchGroup) {
+        disptachGroup.enter()
 
         NCCommunication.shared.getActivity(
             since: idActivity,
@@ -440,12 +441,7 @@ extension NCActivity {
                 if errorCode == 0 && account == self.appDelegate.account {
                     NCManageDatabase.shared.addActivity(activities, account: account)
                 }
-                
-                if let disptachGroup = disptachGroup {
-                    disptachGroup.leave()
-                } else {
-                    self.loadDataSource()
-                }
+                disptachGroup.leave()
             }
     }
 }
