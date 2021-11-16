@@ -6,6 +6,7 @@
 //  Copyright © 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -102,6 +103,14 @@ class tableAccount: Object {
     @objc dynamic var hcNextGroupExpirationExpiresTime: NSDate? = nil
     @objc dynamic var hcNextGroupExpirationExpires = ""
     
+    override static func primaryKey() -> String {
+        return "account"
+    }
+}
+
+class tableActivityLatestId: Object {
+    @objc dynamic var account = ""
+    @objc dynamic var mostRecentlyLoadedActivityId: Int = 0
     override static func primaryKey() -> String {
         return "account"
     }
