@@ -132,6 +132,7 @@ class NCActivity: UIViewController {
     // MARK: - NotificationCenter
 
     @objc func initialize() {
+        loadDataSource()
         fetchAll(isInitial: true)
     }
     
@@ -372,7 +373,7 @@ extension NCActivity {
         let dispatchGroup = DispatchGroup()
         loadComments(disptachGroup: dispatchGroup)
         if !isInitial, let activity = allItems.compactMap({ $0 as? tableActivity }).last {
-            loadActivity(idActivity: activity.objectId, disptachGroup: dispatchGroup)
+            loadActivity(idActivity: activity.idActivity, disptachGroup: dispatchGroup)
         } else {
             loadActivity(idActivity: 0, disptachGroup: dispatchGroup)
         }
