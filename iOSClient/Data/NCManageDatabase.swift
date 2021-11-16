@@ -1089,10 +1089,8 @@ class NCManageDatabase: NSObject {
 
         let realm = try! Realm()
         
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return 0
-        }
-        guard let jsondata = result.jsondata else {
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first,
+              let jsondata = result.jsondata else {
             return 0
         }
         
