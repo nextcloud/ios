@@ -72,7 +72,9 @@ extension UIViewController {
             
             let actions = card.actions.map { action -> NCMenuAction in
                 var image = UIImage()
-                if let url = URL(string: action.icon), let svg = SVGKImage(contentsOf: url) {
+                if let url = URL(string: action.icon),
+                   let svgSource = SVGKSourceURL.source(from: url),
+                   let svg = SVGKImage(source: svgSource) {
                     image = svg.uiImage
                 }
                 return NCMenuAction(
