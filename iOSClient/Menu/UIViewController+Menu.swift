@@ -29,22 +29,24 @@ extension UIViewController {
     fileprivate func handleProfileAction(_ action: NCHovercard.Action, for userId: String) {
         switch action.appId {
         case "email":
-            guard let url = action.hyperlinkUrl,
-                  url.scheme == "mailto",
-                  let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            guard
+                let url = action.hyperlinkUrl,
+                url.scheme == "mailto",
+                let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            else {
                 NCContentPresenter.shared.showGenericError(description: "_cannot_send_mail_error_")
                 return
             }
-
             sendEmail(to: components.path)
+
         case "spreed":
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            if let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(appDelegate.userId)&withUser=\(userId)"),
-               UIApplication.shared.canOpenURL(talkUrl) {
-                UIApplication.shared.open(talkUrl)
-            } else if let url = action.hyperlinkUrl {
-                UIApplication.shared.open(url)
-            } else { fallthrough }
+            guard
+                let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+                let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(appDelegate.userId)&withUser=\(userId)"),
+                UIApplication.shared.canOpenURL(talkUrl)
+            else { fallthrough /* default: open web link in browser */ }
+            UIApplication.shared.open(talkUrl)
+
         default:
             guard let url = action.hyperlinkUrl, UIApplication.shared.canOpenURL(url) else {
                 NCContentPresenter.shared.showGenericError(description: "_open_url_error_")
@@ -53,7 +55,7 @@ extension UIViewController {
             UIApplication.shared.open(url, options: [:])
         }
     }
-    
+
     func showProfileMenu(userId: String) {
 
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
@@ -61,15 +63,13 @@ extension UIViewController {
         guard serverVersionMajor >= NCGlobal.shared.nextcloudVersion23 else { return }
 
         NCCommunication.shared.getHovercard(for: userId) { (card, errCode, err) in
-            guard let card = card else {
-                return
-            }
-            
+            guard let card = card else { return }
+
             let personHeader = NCMenuAction(
                 title: card.displayName,
                 icon: NCUtility.shared.loadUserImage(for: userId, displayName: card.displayName, urlBase: appDelegate.urlBase),
                 action: nil)
-            
+
             let actions = card.actions.map { action -> NCMenuAction in
                 var image = UIImage()
                 if let url = URL(string: action.icon),
