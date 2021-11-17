@@ -101,6 +101,15 @@
         }
       },
       {
+        "package": "IHProgressHUD",
+        "repositoryURL": "https://github.com/marinofaggiana/IHProgressHUD",
+        "state": {
+          "branch": "master",
+          "revision": "a3d94dfb869ff9b2f9e5a4d0359a73a625072853",
+          "version": null
+        }
+      },
+      {
         "package": "NCCommunication",
         "repositoryURL": "https://github.com/nextcloud/ios-communication-library/",
         "state": {
