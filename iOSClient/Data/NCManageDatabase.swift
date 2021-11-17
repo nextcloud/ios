@@ -226,6 +226,7 @@ class NCManageDatabase: NSObject {
     @objc func clearDatabase(account: String?, removeAccount: Bool) {
         
         self.clearTable(tableActivity.self, account: account)
+        self.clearTable(tableActivityLatestId.self, account: account)
         self.clearTable(tableActivityPreview.self, account: account)
         self.clearTable(tableActivitySubjectRich.self, account: account)
         self.clearTable(tableAvatar.self)
