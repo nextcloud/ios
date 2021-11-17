@@ -238,7 +238,7 @@ class NCGlobal: NSObject {
     @objc let permissionCanMove                     = "V"
     
     //Share permission
-    //permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
+    //permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all
     //
     @objc let permissionReadShare: Int              = 1
     @objc let permissionUpdateShare: Int            = 2
