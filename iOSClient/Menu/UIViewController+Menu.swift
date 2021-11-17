@@ -72,7 +72,7 @@ extension UIViewController {
                 action: nil)
 
             let actions = card.actions.map { action -> NCMenuAction in
-                var image = UIImage(named: "user") ?? UIImage()
+                var image = NCUtility.shared.loadImage(named: "user", color: NCBrandColor.shared.label)
                 if let url = URL(string: action.icon),
                    let svgSource = SVGKSourceURL.source(from: url),
                    let svg = SVGKImage(source: svgSource) {
