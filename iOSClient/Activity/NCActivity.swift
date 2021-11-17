@@ -25,7 +25,6 @@
 import UIKit
 import SwiftRichString
 import NCCommunication
-import RealmSwift
 
 class NCActivity: UIViewController {
 
@@ -133,7 +132,7 @@ class NCActivity: UIViewController {
 
     @objc func initialize() {
         loadDataSource()
-        loadActivity(idActivity: 0)
+        fetchAll(isInitial: true)
     }
     
     @objc func changeTheming() {
@@ -150,7 +149,7 @@ class NCActivity: UIViewController {
         NCCommunication.shared.putComments(fileId: metadata.fileId, message: message) { (account, errorCode, errorDescription) in
             if errorCode == 0 {
                 self.newCommentField.text = ""
-                self.loadDataSource()
+                self.loadComments()
             } else {
                 NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
@@ -351,12 +350,11 @@ extension NCActivity: UITableViewDataSource {
 
 extension NCActivity: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.height < 100 {
-            // comments are always loaded in full, only partially load more acitvities
-            if let activity = allItems.compactMap({ $0 as? tableActivity }).last {
-                loadActivity(idActivity: activity.objectId)
-            }
-        }
+        guard
+            scrollView.contentOffset.y > 50,
+            scrollView.contentSize.height - scrollView.frame.height - scrollView.contentOffset.y < -50
+        else { return }
+        fetchAll(isInitial: false)
     }
 }
 
@@ -364,76 +362,120 @@ extension NCActivity: UIScrollViewDelegate {
 
 extension NCActivity {
 
-    func loadDataSource() {
+    func fetchAll(isInitial: Bool) {
+        guard canFetchActivity else { return }
+        self.canFetchActivity = false
 
-        NCUtility.shared.startActivityIndicator(backgroundView: tableView, blurEffect: false)
-        let reloadDispatch = DispatchGroup()
-        self.allItems = []
-        reloadDispatch.enter()
-        if showComments, let metadata = metadata {
-            reloadDispatch.enter()
-            
-            NCCommunication.shared.getComments(fileId: metadata.fileId) { (account, comments, errorCode, errorDescription) in
-                if errorCode == 0 && comments != nil {
-                    NCManageDatabase.shared.addComments(comments!, account: metadata.account, objectId: metadata.fileId)
-                    self.allItems += NCManageDatabase.shared.getComments(account: metadata.account, objectId: metadata.fileId)
-                    reloadDispatch.leave()
-                } else {
-                    if errorCode != NCGlobal.shared.errorResourceNotFound {
-                        NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                    }
-                }
-            }
+        let height = self.tabBarController?.tabBar.frame.size.height ?? 0
+        NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: height + 50, style: .gray)
+
+        let dispatchGroup = DispatchGroup()
+        loadComments(disptachGroup: dispatchGroup)
+        if !isInitial, let activity = allItems.compactMap({ $0 as? tableActivity }).last {
+            loadActivity(idActivity: activity.idActivity, disptachGroup: dispatchGroup)
+        } else {
+            checkRecentActivity(disptachGroup: dispatchGroup)
         }
-        
-        let activities = NCManageDatabase.shared.getActivity(
-            predicate: NSPredicate(format: "account == %@", appDelegate.account),
-            filterFileId: metadata?.fileId)
-        self.allItems += activities.filter
-        reloadDispatch.leave()
-        
-        reloadDispatch.notify(qos: .userInitiated, flags: .enforceQoS, queue: .main) {
-            self.allItems.sort(by: { $0.dateKey > $1.dateKey })
-            self.sectionDates = self.allItems.reduce(into: Set<Date>()) { partialResult, next in
-                   let newDay = Calendar.current.startOfDay(for: next.dateKey)
-                   partialResult.insert(newDay)
-            }.sorted(by: >)
-            self.tableView.reloadData()
+
+        dispatchGroup.notify(queue: .main) {
+            self.loadDataSource()
             NCUtility.shared.stopActivityIndicator()
+
+            // otherwise is triggered again
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.canFetchActivity = true
+            }
         }
     }
     
-    @objc func loadActivity(idActivity: Int) {
-        
-        if !canFetchActivity { return }
-        canFetchActivity = false
-        
-        if idActivity > 0 {
-            
-            let height = self.tabBarController?.tabBar.frame.size.height ?? 0
-            NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: height + 50, style: .gray)
+    func loadDataSource() {
+
+        var newItems = [DateCompareable]()
+        if showComments, let metadata = metadata, let account = NCManageDatabase.shared.getActiveAccount() {
+            let comments = NCManageDatabase.shared.getComments(account: account.account, objectId: metadata.fileId)
+            newItems += comments
         }
-        
+
+        let activities = NCManageDatabase.shared.getActivity(
+            predicate: NSPredicate(format: "account == %@", appDelegate.account),
+            filterFileId: metadata?.fileId)
+        newItems += activities.filter
+
+        self.allItems = newItems.sorted(by: { $0.dateKey > $1.dateKey })
+        self.sectionDates = self.allItems.reduce(into: Set<Date>()) { partialResult, next in
+            let newDay = Calendar.current.startOfDay(for: next.dateKey)
+            partialResult.insert(newDay)
+        }.sorted(by: >)
+        self.tableView.reloadData()
+    }
+    
+    func loadComments(disptachGroup: DispatchGroup? = nil) {
+        guard showComments, let metadata = metadata else { return }
+        disptachGroup?.enter()
+
+        NCCommunication.shared.getComments(fileId: metadata.fileId) { (account, comments, errorCode, errorDescription) in
+            if errorCode == 0, let comments = comments {
+                NCManageDatabase.shared.addComments(comments, account: metadata.account, objectId: metadata.fileId)
+            } else if errorCode != NCGlobal.shared.errorResourceNotFound {
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            }
+
+            if let disptachGroup = disptachGroup {
+                disptachGroup.leave()
+            } else {
+                self.loadDataSource()
+            }
+        }
+    }
+
+    /// Check if most recent activivities are loaded, if not trigger reload
+    func checkRecentActivity(disptachGroup: DispatchGroup) {
+        let recentActivityId = NCManageDatabase.shared.getLatestActivityId(account: appDelegate.account)
+
+        guard recentActivityId > 0, metadata == nil else {
+            return self.loadActivity(idActivity: 0, disptachGroup: disptachGroup)
+        }
+
+        disptachGroup.enter()
+
+        NCCommunication.shared.getActivity(
+            since: 0,
+            limit: 1,
+            objectId: nil,
+            objectType: objectType,
+            previews: true) { (account, activities, errorCode, errorDescription) in
+                defer { disptachGroup.leave() }
+
+                guard errorCode == 0,
+                      account == self.appDelegate.account,
+                      let activity = activities.first,
+                      activity.idActivity > recentActivityId
+                else { return }
+
+                self.loadActivity(idActivity: 0, limit: activity.idActivity - recentActivityId, disptachGroup: disptachGroup)
+            }
+    }
+
+    func loadActivity(idActivity: Int, limit: Int = 200, disptachGroup: DispatchGroup) {
+        disptachGroup.enter()
+
         NCCommunication.shared.getActivity(
             since: idActivity,
-            limit: 200,
+            limit: min(limit, 200),
             objectId: metadata?.fileId,
             objectType: objectType,
             previews: true) { (account, activities, errorCode, errorDescription) in
-                
-                if errorCode == 0 && account == self.appDelegate.account {
-                    NCManageDatabase.shared.addActivity(activities, account: account)
+                defer { disptachGroup.leave() }
+                guard errorCode == 0,
+                      account == self.appDelegate.account,
+                      !activities.isEmpty
+                else { return }
+                NCManageDatabase.shared.addActivity(activities, account: account)
+
+                // update most recently loaded activity only when all activities are loaded (not filtered)
+                if self.metadata == nil {
+                    NCManageDatabase.shared.updateLatestActivityId(activities, account: account)
                 }
-                
-                NCUtility.shared.stopActivityIndicator()
-                
-                if errorCode == NCGlobal.shared.errorNotModified {
-                    self.canFetchActivity = false
-                } else {
-                    self.canFetchActivity = true
-                }
-                
-                self.loadDataSource()
             }
     }
 }
@@ -449,9 +491,8 @@ extension NCActivity: NCShareCommentsCellDelegate {
     func tapMenu(with tableComments: tableComments?, sender: Any) {
         toggleMenu(with: tableComments)
     }
-    
+
     func toggleMenu(with tableComments: tableComments?) {
-        
         var actions = [NCMenuAction]()
 
         actions.append(
@@ -473,7 +514,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
 
                         NCCommunication.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message) { (account, errorCode, errorDescription) in
                             if errorCode == 0 {
-                                self.loadDataSource()
+                                self.loadComments()
                             } else {
                                 NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                             }
@@ -494,20 +535,13 @@ extension NCActivity: NCShareCommentsCellDelegate {
 
                     NCCommunication.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId) { (account, errorCode, errorDescription) in
                         if errorCode == 0 {
-                            self.loadDataSource()
+                            self.loadComments()
                         } else {
                             NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
                     }
                 }
             )
-        )
-        
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_cancel_", comment: ""),
-                icon: UIImage(named: "cancel")!.image(color: NCBrandColor.shared.gray, size: 50),
-                action: nil)
         )
 
         presentMenu(with: actions)
