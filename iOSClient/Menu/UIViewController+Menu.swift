@@ -24,6 +24,7 @@
 import Foundation
 import SVGKit
 import NCCommunication
+import UIKit
 
 extension UIViewController {
     fileprivate func handleProfileAction(_ action: NCHovercard.Action, for userId: String) {
@@ -71,7 +72,7 @@ extension UIViewController {
                 action: nil)
 
             let actions = card.actions.map { action -> NCMenuAction in
-                var image = UIImage()
+                var image = UIImage(named: "user") ?? UIImage()
                 if let url = URL(string: action.icon),
                    let svgSource = SVGKSourceURL.source(from: url),
                    let svg = SVGKImage(source: svgSource) {
