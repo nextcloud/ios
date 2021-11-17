@@ -108,14 +108,6 @@ class tableAccount: Object {
     }
 }
 
-class tableActivityLatestId: Object {
-    @objc dynamic var account = ""
-    @objc dynamic var mostRecentlyLoadedActivityId: Int = 0
-    override static func primaryKey() -> String {
-        return "account"
-    }
-}
-
 class tableActivity: Object, DateCompareable {
     var dateKey: Date { date as Date }
 
@@ -139,9 +131,17 @@ class tableActivity: Object, DateCompareable {
     @objc dynamic var note = ""
     @objc dynamic var selector = ""
     @objc dynamic var verbose: Bool = false
-    
+
     override static func primaryKey() -> String {
         return "idPrimaryKey"
+    }
+}
+
+class tableActivityLatestId: Object {
+    @objc dynamic var account = ""
+    @objc dynamic var mostRecentlyLoadedActivityId: Int = 0
+    override static func primaryKey() -> String {
+        return "account"
     }
 }
 
@@ -157,7 +157,7 @@ class tableActivityPreview: Object {
     @objc dynamic var fileId: Int = 0
     @objc dynamic var view = ""
     @objc dynamic var isMimeTypeIcon: Bool = false
-    
+
     override static func primaryKey() -> String {
         return "idPrimaryKey"
     }
