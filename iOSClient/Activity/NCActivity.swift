@@ -432,7 +432,7 @@ extension NCActivity {
     func checkRecentActivity(disptachGroup: DispatchGroup) {
         let recentActivityId = NCManageDatabase.shared.getLatestActivityId(account: appDelegate.account)
 
-        guard recentActivityId > 0 else {
+        guard recentActivityId > 0, metadata == nil else {
             return self.loadActivity(idActivity: 0, disptachGroup: disptachGroup)
         }
 
@@ -441,7 +441,7 @@ extension NCActivity {
         NCCommunication.shared.getActivity(
             since: 0,
             limit: 1,
-            objectId: metadata?.fileId,
+            objectId: nil,
             objectType: objectType,
             previews: true) { (account, activities, errorCode, errorDescription) in
                 defer { disptachGroup.leave() }
