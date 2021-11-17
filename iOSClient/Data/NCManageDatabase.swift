@@ -907,10 +907,15 @@ class NCManageDatabase: NSObject {
 
     @objc func updateLatestActivityId(_ activities: [NCCommunicationActivity], account: String) {
         let realm = try! Realm()
+        let previousRecentId = getLatestActivityId(account: account)
 
         do {
             try realm.write {
-                guard let mostRecentActivityId = activities.map({ $0.idActivity }).max() else { return }
+                guard
+                    let mostRecentActivityId = activities.map({ $0.idActivity }).max(),
+                    mostRecentActivityId > previousRecentId
+                else { return }
+
                 let newRecentActivity = tableActivityLatestId()
                 newRecentActivity.mostRecentlyLoadedActivityId = mostRecentActivityId
                 newRecentActivity.account = account
@@ -924,7 +929,9 @@ class NCManageDatabase: NSObject {
     @objc func getLatestActivityId(account: String) -> Int {
 
         let realm = try! Realm()
-        guard let maxId = realm.objects(tableActivityLatestId.self).filter("account == %@", account).map({ $0.mostRecentlyLoadedActivityId }).max()
+        guard let maxId = realm.objects(tableActivityLatestId.self)
+                .filter("account == %@", account)
+                .map({ $0.mostRecentlyLoadedActivityId }).max()
         else { return 0 }
 
         return maxId

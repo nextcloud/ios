@@ -25,7 +25,6 @@
 import UIKit
 import SwiftRichString
 import NCCommunication
-import RealmSwift
 
 class NCActivity: UIViewController {
 
@@ -485,9 +484,9 @@ extension NCActivity: NCShareCommentsCellDelegate {
     func tapMenu(with tableComments: tableComments?, sender: Any) {
         toggleMenu(with: tableComments)
     }
-    
+
     func toggleMenu(with tableComments: tableComments?) {
-        
+
         let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
 
