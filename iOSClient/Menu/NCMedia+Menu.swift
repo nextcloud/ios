@@ -28,8 +28,7 @@ import NCCommunication
 extension NCMedia {
 
     func toggleMenu() {
-        
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+
         var actions: [NCMenuAction] = []
 
         if !isEditMode {
@@ -261,14 +260,7 @@ extension NCMedia {
             )
         }
 
-        menuViewController.actions = actions
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-
-        self.present(menuPanelController, animated: true, completion: nil)
+        presentMenu(with: actions)
     }
 }
 

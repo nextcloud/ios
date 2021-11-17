@@ -31,12 +31,11 @@ import Queuer
 extension NCCollectionViewCommon {
 
     func toggleMenu(metadata: tableMetadata, imageIcon: UIImage?) {
-        
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+
         var actions = [NCMenuAction]()
-        
+
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
-        let serverUrl = metadata.serverUrl+"/"+metadata.fileName
+        let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
         var isOffline = false
@@ -448,22 +447,13 @@ extension NCCollectionViewCommon {
             )
         }
         
-        menuViewController.actions = actions
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-
-        present(menuPanelController, animated: true, completion: nil)
+        presentMenu(with: actions)
     }
     
     func toggleMenuSelect() {
-        
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+
         var actions = [NCMenuAction]()
-       
+
         //
         // SELECT ALL
         //
@@ -589,16 +579,7 @@ extension NCCollectionViewCommon {
                 }
             )
         )
-        
-        menuViewController.actions = actions
 
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-
-        present(menuPanelController, animated: true, completion: nil)
+        presentMenu(with: actions)
     }
 }
-

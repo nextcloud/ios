@@ -62,8 +62,14 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
         super.awakeFromNib()
         
         buttonMenu.setImage(UIImage.init(named: "shareMenu")!.image(color: .lightGray, size: 50), for: .normal)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage))
+        imageItem?.addGestureRecognizer(tapGesture)
     }
     
+    @objc func tapAvatarImage(_ sender: UITapGestureRecognizer) {
+        self.delegate?.showProfile(with: tableComments, sender: sender)
+    }
+
     @IBAction func touchUpInsideMenu(_ sender: Any) {
         delegate?.tapMenu(with: tableComments, sender: sender)
     }
@@ -71,4 +77,5 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
 
 protocol NCShareCommentsCellDelegate {
     func tapMenu(with tableComments: tableComments?, sender: Any)
+    func showProfile(with tableComment: tableComments?, sender: Any)
 }

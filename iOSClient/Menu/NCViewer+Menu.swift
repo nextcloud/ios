@@ -29,7 +29,6 @@ extension NCViewer {
 
     func toggleMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool, imageIcon: UIImage?) {
         
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
         
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
@@ -372,15 +371,7 @@ extension NCViewer {
                 )
             )
         }
-        
-        menuViewController.actions = actions
-        
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = viewController
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
 
-        viewController.present(menuPanelController, animated: true, completion: nil)
+        viewController.presentMenu(with: actions)
     }
 }

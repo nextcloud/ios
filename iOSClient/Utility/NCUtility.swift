@@ -111,17 +111,15 @@ class NCUtility: NSObject {
         
         var fileNamePNG = ""
         
-        guard let svgUrlString = svgUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            return closure(nil)
-        }
-        guard let iconURL = URL(string: svgUrlString) else {
+        guard let svgUrlString = svgUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let iconURL = URL(string: svgUrlString) else {
             return closure(nil)
         }
         
-        if fileName == nil {
-            fileNamePNG = iconURL.deletingPathExtension().lastPathComponent + ".png"
+        if let fileName = fileName {
+            fileNamePNG = fileName
         } else {
-            fileNamePNG = fileName!
+            fileNamePNG = iconURL.deletingPathExtension().lastPathComponent + ".png"
         }
         
         let imageNamePath = CCUtility.getDirectoryUserData() + "/" + fileNamePNG

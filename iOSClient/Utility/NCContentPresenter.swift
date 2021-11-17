@@ -61,19 +61,27 @@ class NCContentPresenter: NSObject {
     }
     
     //MARK: - Message
-    
+
+    @objc func showGenericError(description: String) {
+        messageNotification(
+            "_error_", description: description,
+            delay: NCGlobal.shared.dismissAfterSecond,
+            type: .error,
+            errorCode: NCGlobal.shared.errorGeneric)
+    }
+
     @objc func messageNotification(_ title: String, description: String?, delay: TimeInterval, type: messageType, errorCode: Int) {
         messageNotification(title, description: description, delay: delay, type: type, errorCode: errorCode, priority: .normal, dropEnqueuedEntries: false)
     }
-    
+
     func messageNotification(_ title: String, description: String?, delay: TimeInterval, type: messageType, errorCode: Int, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
-                       
+
         // No notification message for:
         if errorCode == -999 { return }         // Cancelled transfer
         else if errorCode == 200 { return }     // Transfer stopped
         else if errorCode == 207 { return }     // WebDAV multistatus
         else if errorCode == NCGlobal.shared.errorNoError && type == messageType.error { return }
-        
+
         DispatchQueue.main.async {
             switch errorCode {
             case Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue):

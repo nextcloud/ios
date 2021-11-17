@@ -6,6 +6,7 @@
 //  Copyright © 2019 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -27,8 +28,8 @@ import DropDown
 import NCCommunication
 import MarqueeLabel
 
-class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDelegate, NCShareUserCellDelegate, NCShareNetworkingDelegate {
-   
+class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingDelegate {
+
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var sharedWithYouByView: UIView!
     @IBOutlet weak var sharedWithYouByImage: UIImageView!
@@ -98,6 +99,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             sharedWithYouByView.isHidden = false
             sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata!.ownerDisplayName
             sharedWithYouByImage.image = UIImage(named: "avatar")?.imageColor(NCBrandColor.shared.label)
+            let shareAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
+            sharedWithYouByView.addGestureRecognizer(shareAction)
             
             if metadata?.note.count ?? 0 > 0 {
                 searchFieldTopConstraint.constant = 95
@@ -136,7 +139,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                     }
                 }
             }
-        } 
+        }
         
         reloadData()
         
@@ -153,6 +156,11 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     // MARK: - Notification Center
+    
+    @objc func openShareProfile() {
+        guard let metadata = metadata else { return }
+        self.showProfileMenu(userId: metadata.ownerId)
+    }
     
     @objc func changeTheming() {
         tableView.reloadData()
@@ -255,50 +263,9 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         shareUserMenuView?.unLoad()
         shareUserMenuView = nil
     }
-    
+
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         return gestureRecognizer.view == touch.view
-    }
-    
-    func tapCopy(with tableShare: tableShare?, sender: Any) {
-        
-        if let link = tableShare?.url {
-            NCShareCommon.shared.copyLink(link: link, viewController: self, sender: sender)
-        }
-    }
-    
-    func tapMenu(with tableShare: tableShare?, sender: Any) {
-        
-        guard let tableShare = tableShare else { return }
-
-        if tableShare.shareType == 3 {
-            let views = NCShareCommon.shared.openViewMenuShareLink(shareViewController: self, tableShare: tableShare, metadata: metadata!)
-            shareLinkMenuView = views.shareLinkMenuView
-            shareMenuViewWindow = views.viewWindow
-            
-            let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
-            tap.delegate = self
-            shareMenuViewWindow?.addGestureRecognizer(tap)
-        } else {
-            let views = NCShareCommon.shared.openViewMenuUser(shareViewController: self, tableShare: tableShare, metadata: metadata!)
-            shareUserMenuView = views.shareUserMenuView
-            shareMenuViewWindow = views.viewWindow
-            
-            let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
-            tap.delegate = self
-            shareMenuViewWindow?.addGestureRecognizer(tap)
-        }
-    }
-
-    func quickStatus(with tableShare: tableShare?, sender: Any) {
-
-        guard let tableShare = tableShare else { return }
-
-        if tableShare.shareType != NCGlobal.shared.permissionDefaultFileRemoteShareNoSupportShareOption {
-            //self.quickStatusTableShare = tableShare
-            let quickStatusMenu = NCShareQuickStatusMenu()
-            quickStatusMenu.toggleMenu(viewController: self, directory: metadata!.directory, tableShare: tableShare)
-        }
     }
 
     // MARK: - NCShareNetworkingDelegate
@@ -494,134 +461,52 @@ extension NCShare: UITableViewDataSource {
     }
 }
 
-// MARK: - NCShareLinkCell
+// MARK: - NCCell Delegates
+extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
 
-class NCShareLinkCell: UITableViewCell {
-    
-    @IBOutlet weak var imageItem: UIImageView!
-    @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var buttonCopy: UIButton!
-    @IBOutlet weak var buttonMenu: UIButton!
-    
-    private let iconShare: CGFloat = 200
-    
-    var tableShare: tableShare?
-    var delegate: NCShareLinkCellDelegate?
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
+    func tapCopy(with tableShare: tableShare?, sender: Any) {
         
-        imageItem.image = NCShareCommon.shared.createLinkAvatar(imageName: "sharebylink", colorCircle: NCBrandColor.shared.brandElement)
-        buttonCopy.setImage(UIImage.init(named: "shareCopy")!.image(color: .gray, size: 50), for: .normal)
-        buttonMenu.setImage(UIImage.init(named: "shareMenu")!.image(color: .gray, size: 50), for: .normal)
+        if let link = tableShare?.url {
+            NCShareCommon.shared.copyLink(link: link, viewController: self, sender: sender)
+        }
     }
-    
-    @IBAction func touchUpInsideCopy(_ sender: Any) {
-        delegate?.tapCopy(with: tableShare, sender: sender)
-    }
-    
-    @IBAction func touchUpInsideMenu(_ sender: Any) {
-        delegate?.tapMenu(with: tableShare, sender: sender)
-    }
-}
 
-protocol NCShareLinkCellDelegate {
-    func tapCopy(with tableShare: tableShare?, sender: Any)
-    func tapMenu(with tableShare: tableShare?, sender: Any)
-}
-
-// MARK: - NCShareUserCell
-
-class NCShareUserCell: UITableViewCell, NCCellProtocol {
-    
-    @IBOutlet weak var imageItem: UIImageView!
-    @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var buttonMenu: UIButton!
-    @IBOutlet weak var imageStatus: UIImageView!
-    @IBOutlet weak var status: UILabel!
-    @IBOutlet weak var btnQuickStatus: UIButton!
-    @IBOutlet weak var labelQuickStatus: UILabel!
-    @IBOutlet weak var imageDownArrow: UIImageView!
-    
-    var tableShare: tableShare?
-    var delegate: NCShareUserCellDelegate?
-    
-    var fileAvatarImageView: UIImageView? {
-        get{
-            return imageItem
-        }
-    }
-    var fileObjectId: String? {
-        get {
-            return nil
-        }
-    }
-    var filePreviewImageView : UIImageView? {
-        get{
-            return nil
-        }
-    }
-    var fileUser: String? {
-        get{
-            return tableShare?.shareWith
-        }
-    }
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
+    func tapMenu(with tableShare: tableShare?, sender: Any) {
         
-        buttonMenu.setImage(UIImage.init(named: "shareMenu")!.image(color: .gray, size: 50), for: .normal)
-        labelQuickStatus.textColor = NCBrandColor.shared.customer
-        imageDownArrow.image = NCUtility.shared.loadImage(named: "arrowtriangle.down.fill", color: NCBrandColor.shared.customer)
-    }
-    
-    @IBAction func touchUpInsideMenu(_ sender: Any) {
-        delegate?.tapMenu(with: tableShare, sender: sender)
-    }
-    
-    @IBAction func quickStatusClicked(_ sender: Any) {
-        delegate?.quickStatus(with: tableShare, sender: sender)
-    }
-}
+        guard let tableShare = tableShare else { return }
 
-protocol NCShareUserCellDelegate {
-    func tapMenu(with tableShare: tableShare?, sender: Any)
-    func quickStatus(with tableShare: tableShare?, sender: Any)
-}
+        if tableShare.shareType == 3 {
+            let views = NCShareCommon.shared.openViewMenuShareLink(shareViewController: self, tableShare: tableShare, metadata: metadata!)
+            shareLinkMenuView = views.shareLinkMenuView
+            shareMenuViewWindow = views.viewWindow
+            
+            let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
+            tap.delegate = self
+            shareMenuViewWindow?.addGestureRecognizer(tap)
+        } else {
+            let views = NCShareCommon.shared.openViewMenuUser(shareViewController: self, tableShare: tableShare, metadata: metadata!)
+            shareUserMenuView = views.shareUserMenuView
+            shareMenuViewWindow = views.viewWindow
+            
+            let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
+            tap.delegate = self
+            shareMenuViewWindow?.addGestureRecognizer(tap)
+        }
+    }
 
-// MARK: - NCShareUserDropDownCell
+    func showProfile(with tableShare: tableShare?, sender: Any) {
+        guard let tableShare = tableShare else { return }
+        showProfileMenu(userId: tableShare.shareWith)
+    }
 
-class NCShareUserDropDownCell: DropDownCell, NCCellProtocol {
-    
-    @IBOutlet weak var imageItem: UIImageView!
-    @IBOutlet weak var imageStatus: UIImageView!
-    @IBOutlet weak var status: UILabel!
-    @IBOutlet weak var imageShareeType: UIImageView!
-    @IBOutlet weak var centerTitle: NSLayoutConstraint!
-    
-    private var user: String = ""
-    
-    var fileAvatarImageView: UIImageView? {
-        get {
-            return imageItem
-        }
-    }
-    var fileObjectId: String? {
-        get {
-            return nil
-        }
-    }
-    var filePreviewImageView: UIImageView? {
-        get {
-            return nil
-        }
-    }
-    var fileUser: String? {
-        get {
-            return user
-        }
-        set {
-            user = newValue ?? ""
+    func quickStatus(with tableShare: tableShare?, sender: Any) {
+
+        guard let tableShare = tableShare else { return }
+
+        if tableShare.shareType != NCGlobal.shared.permissionDefaultFileRemoteShareNoSupportShareOption {
+
+            let quickStatusMenu = NCShareQuickStatusMenu()
+            quickStatusMenu.toggleMenu(viewController: self, directory: metadata!.directory, tableShare: tableShare)
         }
     }
 }

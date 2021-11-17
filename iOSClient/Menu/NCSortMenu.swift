@@ -41,7 +41,6 @@ class NCSortMenu: NSObject {
         self.hideDirectoryOnTop = hideDirectoryOnTop
         
         var layoutForView = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
         var title = ""
         var icon = UIImage()
@@ -127,15 +126,7 @@ class NCSortMenu: NSObject {
             )
         }
         
-        menuViewController.actions = actions
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = viewController
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-
-        viewController.present(menuPanelController, animated: true, completion: nil)
+        viewController.presentMenu(with: actions)
     }
     
     func actionMenu(layoutForView: NCGlobal.layoutForViewType) {
