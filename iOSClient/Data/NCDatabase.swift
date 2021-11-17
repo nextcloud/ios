@@ -6,6 +6,7 @@
 //  Copyright © 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -130,9 +131,17 @@ class tableActivity: Object, DateCompareable {
     @objc dynamic var note = ""
     @objc dynamic var selector = ""
     @objc dynamic var verbose: Bool = false
-    
+
     override static func primaryKey() -> String {
         return "idPrimaryKey"
+    }
+}
+
+class tableActivityLatestId: Object {
+    @objc dynamic var account = ""
+    @objc dynamic var mostRecentlyLoadedActivityId: Int = 0
+    override static func primaryKey() -> String {
+        return "account"
     }
 }
 
@@ -148,7 +157,7 @@ class tableActivityPreview: Object {
     @objc dynamic var fileId: Int = 0
     @objc dynamic var view = ""
     @objc dynamic var isMimeTypeIcon: Bool = false
-    
+
     override static func primaryKey() -> String {
         return "idPrimaryKey"
     }

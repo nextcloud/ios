@@ -6,6 +6,7 @@
 //  Copyright © 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -225,6 +226,7 @@ class NCManageDatabase: NSObject {
     @objc func clearDatabase(account: String?, removeAccount: Bool) {
         
         self.clearTable(tableActivity.self, account: account)
+        self.clearTable(tableActivityLatestId.self, account: account)
         self.clearTable(tableActivityPreview.self, account: account)
         self.clearTable(tableActivitySubjectRich.self, account: account)
         self.clearTable(tableAvatar.self)
@@ -767,7 +769,7 @@ class NCManageDatabase: NSObject {
     //MARK: Table Activity
 
     @objc func addActivity(_ activities: [NCCommunicationActivity], account: String) {
-    
+
         let realm = try! Realm()
 
         do {
@@ -865,22 +867,10 @@ class NCManageDatabase: NSObject {
         guard let filterFileId = filterFileId else {
             return (all: allActivity, filter: allActivity)
         }
-        // comments are loaded seperately
+
+        // comments are loaded seperately, see NCManageDatabase.getComments
         let filtered = allActivity.filter({ String($0.objectId) == filterFileId && $0.type != "comments" })
         return (all: allActivity, filter: filtered)
-        
-        //HELP: What is this? What is it used for? Why not just use `.filter()` on the array
-        var resultsFilter: [tableActivity] = []
-        for result in results {
-            let resultsActivitySubjectRich = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d", result.account, result.idActivity)
-            for resultActivitySubjectRich in resultsActivitySubjectRich {
-                if filterFileId.contains(resultActivitySubjectRich.id) && resultActivitySubjectRich.key == "file" {
-                    resultsFilter.append(result)
-                    break
-                }
-            }
-        }
-        return(all: allActivity, filter: Array(resultsFilter.map(tableActivity.init)))
     }
     
     @objc func getActivitySubjectRich(account: String, idActivity: Int, key: String) -> tableActivitySubjectRich? {
@@ -915,16 +905,37 @@ class NCManageDatabase: NSObject {
         
         return results
     }
-    
-    @objc func getActivityLastIdActivity(account: String) -> Int {
-        
+
+    @objc func updateLatestActivityId(_ activities: [NCCommunicationActivity], account: String) {
         let realm = try! Realm()
-        
-        if let entities = realm.objects(tableActivity.self).filter("account == %@", account).max(by: { $0.idActivity < $1.idActivity }) {
-            return entities.idActivity
+        let previousRecentId = getLatestActivityId(account: account)
+
+        do {
+            try realm.write {
+                guard
+                    let mostRecentActivityId = activities.map({ $0.idActivity }).max(),
+                    mostRecentActivityId > previousRecentId
+                else { return }
+
+                let newRecentActivity = tableActivityLatestId()
+                newRecentActivity.mostRecentlyLoadedActivityId = mostRecentActivityId
+                newRecentActivity.account = account
+                realm.add(newRecentActivity, update: .all)
+            }
+        } catch {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
-        
-        return 0
+    }
+
+    @objc func getLatestActivityId(account: String) -> Int {
+
+        let realm = try! Realm()
+        guard let maxId = realm.objects(tableActivityLatestId.self)
+                .filter("account == %@", account)
+                .map({ $0.mostRecentlyLoadedActivityId }).max()
+        else { return 0 }
+
+        return maxId
     }
     
     //MARK: -
