@@ -56,11 +56,15 @@ extension UIViewController {
     
     func showProfileMenu(userId: String) {
 
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+        guard serverVersionMajor >= NCGlobal.shared.nextcloudVersion23 else { return }
+
         NCCommunication.shared.getHovercard(for: userId) { (card, errCode, err) in
             guard let card = card else {
                 return
             }
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            
             let personHeader = NCMenuAction(
                 title: card.displayName,
                 icon: NCUtility.shared.loadUserImage(for: userId, displayName: card.displayName, urlBase: appDelegate.urlBase),
