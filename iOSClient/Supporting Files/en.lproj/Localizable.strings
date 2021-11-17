@@ -440,6 +440,7 @@
 "_update_in_progress_"          = "Version upgrade, please wait…";
 "_forbidden_characters_"        = "The file or folder name contains invalid characters";
 "_cannot_send_mail_error_"      = "No account set up, or wrong email address entered";
+"_open_url_error_"              = "Cannot open the URL for this action";
 "_photo_camera_"                = "Photos";
 "_media_"                       = "Media";
 "_unzip_in_progress_"           = "Extraction in progress on local storage…";

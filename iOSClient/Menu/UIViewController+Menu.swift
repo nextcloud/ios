@@ -44,10 +44,10 @@ extension UIViewController {
                 UIApplication.shared.open(talkUrl)
             } else if let url = action.hyperlinkUrl {
                 UIApplication.shared.open(url)
-            }
+            } else { fallthrough }
         default:
             guard let url = action.hyperlinkUrl, UIApplication.shared.canOpenURL(url) else {
-                NCContentPresenter.shared.showGenericError(description: "_open_url_error")
+                NCContentPresenter.shared.showGenericError(description: "_open_url_error_")
                 return
             }
             UIApplication.shared.open(url, options: [:])
