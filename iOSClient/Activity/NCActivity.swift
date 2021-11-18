@@ -49,27 +49,29 @@ class NCActivity: UIViewController {
     var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     var didSelectItemEnable: Bool = true
     var objectType: String?
-    
-    var canFetchActivity = true
+
+    var isFetchingActivity = false
+    var hasActivityToLoad = true {
+        didSet { tableView.tableFooterView?.isHidden = hasActivityToLoad }
+    }
     var dateAutomaticFetch : Date?
-    
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+
         self.navigationController?.navigationBar.prefersLargeTitles = true
         view.backgroundColor = NCBrandColor.shared.systemBackground
         self.title = NSLocalizedString("_activity_", comment: "")
 
         tableView.allowsSelection = false
         tableView.separatorColor = UIColor.clear
-        tableView.tableFooterView = UIView()
         tableView.contentInset = insets
         tableView.backgroundColor = NCBrandColor.shared.systemBackground
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        
+
         changeTheming()
 
         if showComments {
@@ -78,10 +80,9 @@ class NCActivity: UIViewController {
             commentView.isHidden = true
         }
     }
-    
+
     func setupComments() {
         tableView.register(UINib.init(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
-
 
         newCommentField.placeholder = NSLocalizedString("_new_comment_", comment: "")
         viewContainerConstraint.constant = height
@@ -117,20 +118,24 @@ class NCActivity: UIViewController {
         
         initialize()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
     }
-    
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        tableView.tableFooterView = makeTableFooterView()
+    }
+
     // MARK: - NotificationCenter
 
     @objc func initialize() {
         loadDataSource()
         fetchAll(isInitial: true)
     }
-    
+
     @objc func changeTheming() {
         tableView.reloadData()
     }
@@ -151,6 +156,22 @@ class NCActivity: UIViewController {
             }
         }
     }
+
+    func makeTableFooterView() -> UIView {
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 100))
+        view.backgroundColor = .clear
+        view.isHidden = self.hasActivityToLoad
+
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 15)
+        label.textColor = NCBrandColor.shared.gray
+        label.textAlignment = .center
+        label.text = NSLocalizedString("_no_activity_footer_", comment: "")
+        label.frame = CGRect(x: 0, y: 10, width: tableView.frame.width, height: 60)
+
+        view.addSubview(label)
+        return view
+    }
 }
 
 // MARK: - Table View
@@ -170,10 +191,10 @@ extension NCActivity: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        
+
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 60))
         view.backgroundColor = .clear
-        
+
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 13)
         label.textColor = NCBrandColor.shared.label
@@ -185,23 +206,23 @@ extension NCActivity: UITableViewDelegate {
         let widthFrame = label.intrinsicContentSize.width + 30
         let xFrame = tableView.bounds.width / 2 - widthFrame / 2
         label.frame = CGRect(x: xFrame, y: 10, width: widthFrame, height: 22)
-        
+
         view.addSubview(label)
         return view
     }
 }
 
 extension NCActivity: UITableViewDataSource {
-    
+
     func numberOfSections(in tableView: UITableView) -> Int {
         return sectionDates.count
     }
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let date = sectionDates[section]
         return allItems.filter({ Calendar.current.isDate($0.dateKey, inSameDayAs: date) }).count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let date = sectionDates[indexPath.section]
         let sectionItems = allItems
@@ -271,7 +292,8 @@ extension NCActivity: UITableViewDataSource {
             let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + fileNameIcon
             
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.icon.image = image }
+                let image = NCUtility.shared.loadImage(named: fileNameIcon, color: NCBrandColor.shared.gray)
+                cell.icon.image = image
             } else {
                 NCCommunication.shared.downloadContent(serverUrl: activity.icon) { (account, data, errorCode, errorMessage) in
                     if errorCode == 0 {
@@ -359,14 +381,15 @@ extension NCActivity: UIScrollViewDelegate {
 extension NCActivity {
 
     func fetchAll(isInitial: Bool) {
-        guard canFetchActivity else { return }
-        self.canFetchActivity = false
+        guard !isFetchingActivity else { return }
+        self.isFetchingActivity = true
 
         let height = self.tabBarController?.tabBar.frame.size.height ?? 0
         NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: height + 50, style: .gray)
 
         let dispatchGroup = DispatchGroup()
         loadComments(disptachGroup: dispatchGroup)
+
         if !isInitial, let activity = allItems.compactMap({ $0 as? tableActivity }).last {
             loadActivity(idActivity: activity.idActivity, disptachGroup: dispatchGroup)
         } else {
@@ -379,7 +402,7 @@ extension NCActivity {
 
             // otherwise is triggered again
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.canFetchActivity = true
+                self.isFetchingActivity = false
             }
         }
     }
@@ -428,7 +451,7 @@ extension NCActivity {
     func checkRecentActivity(disptachGroup: DispatchGroup) {
         let recentActivityId = NCManageDatabase.shared.getLatestActivityId(account: appDelegate.account)
 
-        guard recentActivityId > 0, metadata == nil else {
+        guard recentActivityId > 0, metadata == nil, hasActivityToLoad else {
             return self.loadActivity(idActivity: 0, disptachGroup: disptachGroup)
         }
 
@@ -446,13 +469,18 @@ extension NCActivity {
                       account == self.appDelegate.account,
                       let activity = activities.first,
                       activity.idActivity > recentActivityId
-                else { return }
+                else {
+                    self.hasActivityToLoad = errorCode == 304 ? false : self.hasActivityToLoad
+                    return
+                }
 
                 self.loadActivity(idActivity: 0, limit: activity.idActivity - recentActivityId, disptachGroup: disptachGroup)
             }
     }
 
     func loadActivity(idActivity: Int, limit: Int = 200, disptachGroup: DispatchGroup) {
+        guard hasActivityToLoad else { return }
+
         disptachGroup.enter()
 
         NCCommunication.shared.getActivity(
@@ -465,7 +493,10 @@ extension NCActivity {
                 guard errorCode == 0,
                       account == self.appDelegate.account,
                       !activities.isEmpty
-                else { return }
+                else {
+                    self.hasActivityToLoad = errorCode == 304 ? false : self.hasActivityToLoad
+                    return
+                }
                 NCManageDatabase.shared.addActivity(activities, account: account)
 
                 // update most recently loaded activity only when all activities are loaded (not filtered)
