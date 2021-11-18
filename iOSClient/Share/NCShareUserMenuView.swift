@@ -105,8 +105,8 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, UITextFieldDeleg
         
         fieldNoteToRecipient.delegate = self
         
-        imageNoteToRecipient.image = UIImage.init(named: "file_txt")!.image(color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
-        imageUnshare.image = NCUtility.shared.loadImage(named: "trash", color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
+        imageNoteToRecipient.image = UIImage.init(named: "file_txt")!.image(color: NCBrandColor.shared.gray, size: 50)
+        imageUnshare.image = NCUtility.shared.loadImage(named: "trash", color: NCBrandColor.shared.gray, size: 50)
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -393,10 +393,6 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, UITextFieldDeleg
     }
     
     func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, titleDefaultColorFor date: Date) -> UIColor? {
-        if date > Date() {
-            return UIColor(red: 60/255, green: 60/255, blue: 60/255, alpha: 1)
-        } else {
-            return UIColor(red: 190/255, green: 190/255, blue: 190/255, alpha: 1)
-        }
+        return date > Date() ? NCBrandColor.shared.label : NCBrandColor.shared.systemGray3
     }
 }
