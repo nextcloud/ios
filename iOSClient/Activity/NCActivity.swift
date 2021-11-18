@@ -271,7 +271,8 @@ extension NCActivity: UITableViewDataSource {
             let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + fileNameIcon
             
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.icon.image = image }
+                let image = NCUtility.shared.loadImage(named: fileNameIcon, color: NCBrandColor.shared.gray)
+                cell.icon.image = image
             } else {
                 NCCommunication.shared.downloadContent(serverUrl: activity.icon) { (account, data, errorCode, errorMessage) in
                     if errorCode == 0 {
