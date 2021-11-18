@@ -61,11 +61,7 @@ class NCShareCommon: NSObject {
         var shareLinkMenuView: NCShareLinkMenuView
         let window = UIApplication.shared.keyWindow!
         let viewWindow = UIView(frame: window.bounds)
-//        let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
-//        let constantTrailingAnchor = window.bounds.width - shareViewController.view.bounds.width - globalPoint!.x + 40
-//        var constantBottomAnchor: CGFloat = 10
-//        constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
-        
+
         window.addSubview(viewWindow)
         viewWindow.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
@@ -105,11 +101,7 @@ class NCShareCommon: NSObject {
         var shareUserMenuView: NCShareUserMenuView
         let window = UIApplication.shared.keyWindow!
         let viewWindow = UIView(frame: window.bounds)
-//        let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
-//        let constantTrailingAnchor = window.bounds.width - shareViewController.view.bounds.width - globalPoint!.x + 40
-//        var constantBottomAnchor: CGFloat = 10
-//        constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
-        
+
         window.addSubview(viewWindow)
         viewWindow.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
@@ -174,10 +166,10 @@ class NCShareCommon: NSObject {
         calendar.appearance.headerTitleFont = UIFont.systemFont(ofSize: 13)
         
         calendar.appearance.weekdayTextColor = UIColor(red: 100/255, green: 100/255, blue: 100/255, alpha: 1)
-        calendar.appearance.weekdayFont = UIFont.systemFont(ofSize: 12)
+        calendar.appearance.weekdayFont = UIFont.systemFont(ofSize: 13)
         
         calendar.appearance.todayColor = NCBrandColor.shared.brandElement
-        calendar.appearance.titleFont = UIFont.systemFont(ofSize: 12)
+        calendar.appearance.titleFont = UIFont.systemFont(ofSize: 13)
         
         viewWindow.addSubview(calendar)
         
@@ -185,22 +177,18 @@ class NCShareCommon: NSObject {
     }
     
     func copyLink(link: String, viewController: UIViewController, sender: Any) {
-        //guard let tableShare = tableShare else { return }
-        
-        //if let name = URL(string: tableShare.url), !name.absoluteString.isEmpty {
-            let objectsToShare = [link]
-            
-            let activityViewController = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
-            
-            if UIDevice.current.userInterfaceIdiom == .pad {
-                if activityViewController.responds(to: #selector(getter: UIViewController.popoverPresentationController)) {
-                    activityViewController.popoverPresentationController?.sourceView = sender as? UIView
-                    activityViewController.popoverPresentationController?.sourceRect = (sender as AnyObject).bounds
-                }
+        let objectsToShare = [link]
+
+        let activityViewController = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
+
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            if activityViewController.responds(to: #selector(getter: UIViewController.popoverPresentationController)) {
+                activityViewController.popoverPresentationController?.sourceView = sender as? UIView
+                activityViewController.popoverPresentationController?.sourceRect = (sender as AnyObject).bounds
             }
-            
-            viewController.present(activityViewController, animated: true, completion: nil)
-        //}
+        }
+
+        viewController.present(activityViewController, animated: true, completion: nil)
     }
     
     func getImageShareType(shareType: Int) -> UIImage? {
