@@ -51,26 +51,27 @@ class NCActivity: UIViewController {
     var objectType: String?
 
     var isFetchingActivity = false
-    var hasActivityToLoad = true
+    var hasActivityToLoad = true {
+        didSet { tableView.tableFooterView?.isHidden = hasActivityToLoad }
+    }
     var dateAutomaticFetch : Date?
 
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+
         self.navigationController?.navigationBar.prefersLargeTitles = true
         view.backgroundColor = NCBrandColor.shared.systemBackground
         self.title = NSLocalizedString("_activity_", comment: "")
 
         tableView.allowsSelection = false
         tableView.separatorColor = UIColor.clear
-        tableView.tableFooterView = UIView()
         tableView.contentInset = insets
         tableView.backgroundColor = NCBrandColor.shared.systemBackground
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        
+
         changeTheming()
 
         if showComments {
@@ -79,10 +80,9 @@ class NCActivity: UIViewController {
             commentView.isHidden = true
         }
     }
-    
+
     func setupComments() {
         tableView.register(UINib.init(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
-
 
         newCommentField.placeholder = NSLocalizedString("_new_comment_", comment: "")
         viewContainerConstraint.constant = height
@@ -118,20 +118,24 @@ class NCActivity: UIViewController {
         
         initialize()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
     }
-    
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        tableView.tableFooterView = makeTableFooterView()
+    }
+
     // MARK: - NotificationCenter
 
     @objc func initialize() {
         loadDataSource()
         fetchAll(isInitial: true)
     }
-    
+
     @objc func changeTheming() {
         tableView.reloadData()
     }
@@ -152,6 +156,22 @@ class NCActivity: UIViewController {
             }
         }
     }
+
+    func makeTableFooterView() -> UIView {
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 100))
+        view.backgroundColor = .clear
+        view.isHidden = self.hasActivityToLoad
+
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 15)
+        label.textColor = NCBrandColor.shared.gray
+        label.textAlignment = .center
+        label.text = NSLocalizedString("_no_activity_footer_", comment: "")
+        label.frame = CGRect(x: 0, y: 10, width: tableView.frame.width, height: 60)
+
+        view.addSubview(label)
+        return view
+    }
 }
 
 // MARK: - Table View
@@ -171,10 +191,10 @@ extension NCActivity: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        
+
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 60))
         view.backgroundColor = .clear
-        
+
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 13)
         label.textColor = NCBrandColor.shared.label
@@ -186,23 +206,23 @@ extension NCActivity: UITableViewDelegate {
         let widthFrame = label.intrinsicContentSize.width + 30
         let xFrame = tableView.bounds.width / 2 - widthFrame / 2
         label.frame = CGRect(x: xFrame, y: 10, width: widthFrame, height: 22)
-        
+
         view.addSubview(label)
         return view
     }
 }
 
 extension NCActivity: UITableViewDataSource {
-    
+
     func numberOfSections(in tableView: UITableView) -> Int {
         return sectionDates.count
     }
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let date = sectionDates[section]
         return allItems.filter({ Calendar.current.isDate($0.dateKey, inSameDayAs: date) }).count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let date = sectionDates[indexPath.section]
         let sectionItems = allItems
