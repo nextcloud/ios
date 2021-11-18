@@ -165,7 +165,7 @@ class NCShareCommon: NSObject {
         
         calendar.appearance.headerTitleFont = UIFont.systemFont(ofSize: 13)
         
-        calendar.appearance.weekdayTextColor = UIColor(red: 100/255, green: 100/255, blue: 100/255, alpha: 1)
+        calendar.appearance.weekdayTextColor = NCBrandColor.shared.gray
         calendar.appearance.weekdayFont = UIFont.systemFont(ofSize: 13)
         
         calendar.appearance.todayColor = NCBrandColor.shared.brandElement
