@@ -49,10 +49,11 @@ class NCActivity: UIViewController {
     var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     var didSelectItemEnable: Bool = true
     var objectType: String?
-    
-    var canFetchActivity = true
+
+    var isFetchingActivity = false
+    var hasActivityToLoad = true
     var dateAutomaticFetch : Date?
-    
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -360,14 +361,15 @@ extension NCActivity: UIScrollViewDelegate {
 extension NCActivity {
 
     func fetchAll(isInitial: Bool) {
-        guard canFetchActivity else { return }
-        self.canFetchActivity = false
+        guard !isFetchingActivity else { return }
+        self.isFetchingActivity = true
 
         let height = self.tabBarController?.tabBar.frame.size.height ?? 0
         NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: height + 50, style: .gray)
 
         let dispatchGroup = DispatchGroup()
         loadComments(disptachGroup: dispatchGroup)
+
         if !isInitial, let activity = allItems.compactMap({ $0 as? tableActivity }).last {
             loadActivity(idActivity: activity.idActivity, disptachGroup: dispatchGroup)
         } else {
@@ -380,7 +382,7 @@ extension NCActivity {
 
             // otherwise is triggered again
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.canFetchActivity = true
+                self.isFetchingActivity = false
             }
         }
     }
@@ -429,7 +431,7 @@ extension NCActivity {
     func checkRecentActivity(disptachGroup: DispatchGroup) {
         let recentActivityId = NCManageDatabase.shared.getLatestActivityId(account: appDelegate.account)
 
-        guard recentActivityId > 0, metadata == nil else {
+        guard recentActivityId > 0, metadata == nil, hasActivityToLoad else {
             return self.loadActivity(idActivity: 0, disptachGroup: disptachGroup)
         }
 
@@ -447,13 +449,18 @@ extension NCActivity {
                       account == self.appDelegate.account,
                       let activity = activities.first,
                       activity.idActivity > recentActivityId
-                else { return }
+                else {
+                    self.hasActivityToLoad = errorCode == 304 ? false : self.hasActivityToLoad
+                    return
+                }
 
                 self.loadActivity(idActivity: 0, limit: activity.idActivity - recentActivityId, disptachGroup: disptachGroup)
             }
     }
 
     func loadActivity(idActivity: Int, limit: Int = 200, disptachGroup: DispatchGroup) {
+        guard hasActivityToLoad else { return }
+
         disptachGroup.enter()
 
         NCCommunication.shared.getActivity(
@@ -466,7 +473,10 @@ extension NCActivity {
                 guard errorCode == 0,
                       account == self.appDelegate.account,
                       !activities.isEmpty
-                else { return }
+                else {
+                    self.hasActivityToLoad = errorCode == 304 ? false : self.hasActivityToLoad
+                    return
+                }
                 NCManageDatabase.shared.addActivity(activities, account: account)
 
                 // update most recently loaded activity only when all activities are loaded (not filtered)
