@@ -6,6 +6,7 @@
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Henrik Storch <henrik.storch@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -110,7 +111,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    
+
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! NCNotificationCell
         cell.delegate = self
         
@@ -163,20 +164,20 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.subject.textColor = NCBrandColor.shared.label
         cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
         cell.message.textColor = .gray
-        
+
         cell.remove.setImage(UIImage(named: "xmark")!.image(color: .gray, size: 20), for: .normal)
-        
+
         cell.primary.isEnabled = false
         cell.primary.isHidden = true
-        cell.primary.titleLabel?.font = .systemFont(ofSize: 14)
+        cell.primary.titleLabel?.font = .systemFont(ofSize: 15)
         cell.primary.setTitleColor(.white, for: .normal)
         cell.primary.layer.cornerRadius = 15
         cell.primary.layer.masksToBounds = true
         cell.primary.layer.backgroundColor = NCBrandColor.shared.brandElement.cgColor
-        
+
         cell.secondary.isEnabled = false
         cell.secondary.isHidden = true
-        cell.secondary.titleLabel?.font = .systemFont(ofSize: 14)
+        cell.secondary.titleLabel?.font = .systemFont(ofSize: 15)
         cell.secondary.setTitleColor(.gray, for: .normal)
         cell.secondary.layer.cornerRadius = 15
         cell.secondary.layer.masksToBounds = true
@@ -184,52 +185,41 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.secondary.layer.borderWidth = 0.3
         cell.secondary.layer.borderColor = UIColor.gray.cgColor
         
-        cell.messageBottomMargin.constant = 10
-        
         // Action
-        if let actions = notification.actions {
-            if let jsonActions = JSON(actions).array {
-                if jsonActions.count == 1 {
-                    let action = jsonActions[0]
+        if let actions = notification.actions,
+           let jsonActions = JSON(actions).array {
+            if jsonActions.count == 1 {
+                let action = jsonActions[0]
+                
+                cell.primary.isEnabled = true
+                cell.primary.isHidden = false
+                cell.primary.setTitle(action["label"].stringValue, for: .normal)
+                
+            } else if jsonActions.count == 2 {
+                
+                cell.primary.isEnabled = true
+                cell.primary.isHidden = false
+                
+                cell.secondary.isEnabled = true
+                cell.secondary.isHidden = false
+                
+                for action in jsonActions {
                     
-                    cell.primary.isEnabled = true
-                    cell.primary.isHidden = false
-                    cell.primary.setTitle(action["label"].stringValue, for: .normal)
+                    let label =  action["label"].stringValue
+                    let primary = action["primary"].boolValue
                     
-                } else if jsonActions.count == 2 {
-                    
-                    cell.primary.isEnabled = true
-                    cell.primary.isHidden = false
-                        
-                    cell.secondary.isEnabled = true
-                    cell.secondary.isHidden = false
-                    
-                    for action in jsonActions {
-                            
-                        let label =  action["label"].stringValue
-                        let primary = action["primary"].boolValue
-                            
-                        if primary {
-                            cell.primary.setTitle(label, for: .normal)
-                        } else {
-                            cell.secondary.setTitle(label, for: .normal)
-                        }
+                    if primary {
+                        cell.primary.setTitle(label, for: .normal)
+                    } else {
+                        cell.secondary.setTitle(label, for: .normal)
                     }
                 }
-                
-                let widthPrimary = cell.primary.intrinsicContentSize.width + 30;
-                let widthSecondary = cell.secondary.intrinsicContentSize.width + 30;
-                
-                if widthPrimary > widthSecondary {
-                    cell.primaryWidth.constant = widthPrimary
-                    cell.secondaryWidth.constant = widthPrimary
-                } else {
-                    cell.primaryWidth.constant = widthSecondary
-                    cell.secondaryWidth.constant = widthSecondary
-                }
-                
-                cell.messageBottomMargin.constant = 40
             }
+
+            var buttonWidth = max(cell.primary.intrinsicContentSize.width, cell.secondary.intrinsicContentSize.width)
+            buttonWidth += 30
+            cell.primaryWidth.constant = buttonWidth
+            cell.secondaryWidth.constant = buttonWidth
         }
         
         return cell
@@ -241,8 +231,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
            
         NCCommunication.shared.setNotification(serverUrl:nil, idNotification: notification!.idNotification , method: "DELETE") { (account, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.account {
-                                
-                if let index = self.notifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
+
+                if let index = self.notifications
+                    .firstIndex(where: { $0.idNotification == notification!.idNotification })  {
                     self.notifications.remove(at: index)
                 }
                 
@@ -264,17 +255,18 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                     if action["label"].string == label {
                         let serverUrl = action["link"].stringValue
                         let method = action["type"].stringValue
-                            
+
                         if method == "WEB", let url = action["link"].url {
                             UIApplication.shared.open(url, options: [:], completionHandler: nil)
                             return
                         }
-                        
+
                         NCCommunication.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { (account, errorCode, errorDescription) in
                             
                             if errorCode == 0 && account == self.appDelegate.account {
-                                                        
-                                if let index = self.notifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
+
+                                if let index = self.notifications
+                                    .firstIndex(where: { $0.idNotification == notification!.idNotification })  {
                                     self.notifications.remove(at: index)
                                 }
                                 
@@ -333,7 +325,7 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var primary: UIButton!
     @IBOutlet weak var secondary: UIButton!
     @IBOutlet weak var avatarLeadingMargin: NSLayoutConstraint!
-    @IBOutlet weak var messageBottomMargin: NSLayoutConstraint!
+//    @IBOutlet weak var messageBottomMargin: NSLayoutConstraint!
     @IBOutlet weak var primaryWidth: NSLayoutConstraint!
     @IBOutlet weak var secondaryWidth: NSLayoutConstraint!
     

@@ -43,19 +43,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
     internal var header: UIView?
-        
+
     internal var layoutForView: NCGlobal.layoutForViewType?
 
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
-        
+
     internal var listLayout: NCListLayout!
     internal var gridLayout: NCGridLayout!
-            
+
     private let headerHeight: CGFloat = 50
     private var headerRichWorkspaceHeight: CGFloat = 0
     private let footerHeight: CGFloat = 100
-    
+
     private var timerInputSearch: Timer?
     internal var literalSearch: String?
     internal var isSearching: Bool = false
@@ -350,12 +350,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     @objc func changeStatusFolderE2EE(_ notification: NSNotification) {
-        
         reloadDataSource()
     }
     
     @objc func closeRichWorkspaceWebView() {
-        
         reloadDataSourceNetwork()
     }
     
@@ -425,16 +423,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
                 pushMetadata(metadata)
-                /*
-                if let row = dataSource.addMetadata(metadata) {
-                    let indexPath = IndexPath(row: row, section: 0)
-                    collectionView?.performBatchUpdates({
-                        collectionView?.insertItems(at: [indexPath])
-                    }, completion: { (_) in
-                        self.collectionView?.reloadData()
-                    })
-                }
-                */
             }
         } else {
             reloadDataSourceNetwork()
@@ -1259,10 +1247,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     }
     
     func collectionViewSelectAll() {
-        selectOcId.removeAll()
-        for metadata in metadatasSource {
-            selectOcId.append(metadata.ocId)
-        }
+        selectOcId = metadatasSource.map({ $0.ocId })
+        navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(dataSource.metadatas.count)"
         collectionView.reloadData()
     }
     

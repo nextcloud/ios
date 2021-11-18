@@ -106,7 +106,8 @@ extension NCCreateFormUploadConflictDelegate {
         buttonContinue.layer.masksToBounds = true
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
-        
+        buttonContinue.setTitleColor(NCBrandColor.shared.gray, for: .normal)
+
         let blurEffect = UIBlurEffect(style: .light)
         blurView = UIVisualEffectView(effect: blurEffect)
         blurView.frame = view.bounds
@@ -546,10 +547,10 @@ extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
         
         if result {
             buttonContinue.isEnabled = true
-            buttonContinue.setTitleColor(.black, for: .normal)
+            buttonContinue.setTitleColor(NCBrandColor.shared.label, for: .normal)
         } else {
             buttonContinue.isEnabled = false
-            buttonContinue.setTitleColor(.lightGray, for: .normal)
+            buttonContinue.setTitleColor(NCBrandColor.shared.gray, for: .normal)
         }
     }
 }
