@@ -98,9 +98,14 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
             searchFieldTopConstraint.constant = 65
             sharedWithYouByView.isHidden = false
             sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName
-            sharedWithYouByImage.image = UIImage(named: "avatar")?.imageColor(NCBrandColor.shared.label)
+            sharedWithYouByImage.image = NCUtility.shared.loadUserImage(
+                for: metadata.ownerId,
+                   displayName: metadata.ownerDisplayName,
+                   userUrlBase: String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)))
             let shareAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
-            sharedWithYouByView.addGestureRecognizer(shareAction)
+            sharedWithYouByImage.addGestureRecognizer(shareAction)
+            let shareLabelAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
+            sharedWithYouByLabel.addGestureRecognizer(shareLabelAction)
 
             if metadata.note.count > 0 {
                 searchFieldTopConstraint.constant = 95
@@ -115,10 +120,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
                 sharedWithYouByNote.isHidden = true
             }
             
-            sharedWithYouByImage.image = NCUtility.shared.loadUserImage(
-                for: metadata.ownerId,
-                   displayName: metadata.ownerDisplayName,
-                   userUrlBase: String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)))
 
             let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + metadata.ownerId + ".png"
 
@@ -328,15 +329,14 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
             } else {
                 cell.centerTitle.constant = 0
             }
-            
+
+            cell.imageItem.image = NCUtility.shared.loadUserImage(
+                for: sharee.shareWith,
+                   displayName: nil,
+                   userUrlBase: String(CCUtility.getUserUrlBase(self.appDelegate.user, urlBase: self.appDelegate.urlBase)))
+
             let fileName = String(CCUtility.getUserUrlBase(self.appDelegate.user, urlBase: self.appDelegate.urlBase)) + "-" + sharee.shareWith + ".png"
-            
-            if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
-                
-                cell.imageItem.image = image
-                
-            } else {
-                
+            if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                 let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
