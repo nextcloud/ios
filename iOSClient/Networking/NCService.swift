@@ -92,20 +92,17 @@ class NCService: NSObject {
                     NCContentPresenter.shared.messageNotification("Account", description: "Internal error : account not found on DB",  delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
                     return
                 }
-            
-                let user = tableAccount.user
-                let url = tableAccount.urlBase
-                
+
                 self.appDelegate.settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId, password: CCUtility.getPassword(tableAccount.account))
-                   
+
                 // Synchronize favorite
                 NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { (_, _, _, _) in }
-            
+
                 // Synchronize Offline
                 self.synchronizeOffline(account: tableAccount.account)
-                
+
                 // Get Avatar
-                let fileName = String(CCUtility.getUserUrlBase(user, urlBase: url)) + "-" + self.appDelegate.user + ".png"
+                let fileName = tableAccount.userUrlBase + "-" + self.appDelegate.user + ".png"
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                 let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 

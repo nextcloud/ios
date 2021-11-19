@@ -266,7 +266,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         let image = NCUtility.shared.loadUserImage(
             for: activeAccount.user,
                displayName: activeAccount.displayName,
-               userUrlBase: String(CCUtility.getUserUrlBase(activeAccount.user, urlBase: activeAccount.urlBase)))
+               userUrlBase: activeAccount)
 
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)

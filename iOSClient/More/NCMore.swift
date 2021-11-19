@@ -327,7 +327,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 cell.avatar.image = NCUtility.shared.loadUserImage(
                     for: account.user,
                        displayName: account.displayName,
-                       userUrlBase: String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)))
+                       userUrlBase: appDelegate)
 
                 if account.alias == "" {
                     cell.displayName?.text = account.displayName

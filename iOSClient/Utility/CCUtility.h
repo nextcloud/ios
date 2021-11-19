@@ -202,7 +202,6 @@
 + (void)createDirectoryStandard;
 
 + (NSURL *)getDirectoryGroup;
-+ (NSString *)getUserUrlBase:(NSString *)user urlBase:(NSString *)urlBase;
 + (NSString *)getDirectoryDocuments;
 + (NSString *)getDirectoryReaderMetadata;
 + (NSString *)getDirectoryAudio;

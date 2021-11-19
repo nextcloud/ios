@@ -29,6 +29,22 @@ import PDFKit
 import Accelerate
 import CoreMedia
 
+
+// MARK: NCUserBaseUrl
+
+@objc public protocol NCUserBaseUrl {
+    var user: String { get }
+    var urlBase: String { get }
+}
+
+public extension NCUserBaseUrl {
+    var userUrlBase: String {
+        user + "-" + (URL(string: urlBase)?.host ?? "")
+    }
+}
+
+// MARK: - NCUtility
+
 class NCUtility: NSObject {
     @objc static let shared: NCUtility = {
         let instance = NCUtility()
@@ -496,13 +512,13 @@ class NCUtility: NSObject {
         return  UIImage(named: "file")!.image(color: color, size: size)
     }
     
-    @objc func loadUserImage(for user: String, displayName: String?, userUrlBase: String, original: Bool = false) -> UIImage {
+    @objc func loadUserImage(for user: String, displayName: String?, userUrlBase: NCUserBaseUrl) -> UIImage {
 
-        let fileName = userUrlBase + "-" + user + ".png"
+        let fileName = userUrlBase.userUrlBase + "-" + user + ".png"
         let localFilePath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
 
         if let localImage = UIImage(contentsOfFile: localFilePath) {
-            return NCUtility.shared.createAvatar(image: localImage, size: 30)
+            return createAvatar(image: localImage, size: 30)
         } else if let loadedAvatar = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
             return loadedAvatar
         } else if let displayName = displayName, !displayName.isEmpty, let avatarImg = createAvatar(displayName: displayName, size: 30) {

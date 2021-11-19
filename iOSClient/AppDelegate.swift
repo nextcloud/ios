@@ -30,7 +30,7 @@ import Firebase
 import IHProgressHUD
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, TOPasscodeViewControllerDelegate, NCAccountRequestDelegate, NCViewCertificateDetailsDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, TOPasscodeViewControllerDelegate, NCAccountRequestDelegate, NCViewCertificateDetailsDelegate, NCUserBaseUrl {
 
     var backgroundSessionCompletionHandler: (() -> Void)?
     var window: UIWindow?
@@ -40,7 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc var user: String = ""
     @objc var userId: String = ""
     @objc var password: String = ""
-    
+
     var activeAppConfigView: NCAppConfigView?
     var activeFiles: NCFiles?
     var activeFileViewInFolder: NCFileViewInFolder?

@@ -239,7 +239,7 @@ extension NCAccountRequest: UITableViewDataSource {
             avatarImage?.image = NCUtility.shared.loadUserImage(
                 for: account.user,
                    displayName: account.displayName,
-                   userUrlBase: String(CCUtility.getUserUrlBase(account.user, urlBase: account.urlBase)))
+                   userUrlBase: account)
 
             if account.alias != "" {
                 userLabel?.text = account.alias.uppercased()
