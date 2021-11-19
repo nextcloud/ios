@@ -498,19 +498,18 @@ class NCUtility: NSObject {
     
     @objc func loadUserImage(for user: String, displayName: String?, userUrlBase: String, original: Bool = false) -> UIImage {
 
-        //@marino: I'm not even sure the original is needed.. seems to work just fine with the 'normal' one
-        let fileName = userUrlBase + "-" + user + (original ? "-original.png" : ".png")
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-        
-        if let localImage = UIImage(contentsOfFile: fileNameLocalPath) {
-            return NCUtility.shared.createAvatar(image: localImage, size: 30)
+        let fileName = userUrlBase + "-" + user + ".png"
+        let originalFilePath = userUrlBase + "-" + user + "-original.png"
+        let locaFilelPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+
+        if let localImage = UIImage(contentsOfFile: locaFilelPath) { return localImage }
+        else if let originalImage = UIImage(contentsOfFile: originalFilePath) {
+            return NCUtility.shared.createAvatar(image: originalImage, size: 30)
         } else if let loadedAvatar = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
             return loadedAvatar
         } else if let displayName = displayName, !displayName.isEmpty, let avatarImg = createAvatar(displayName: displayName, size: 30) {
             return avatarImg
-        } else {
-            return getDefaultUserIcon()
-        }
+        } else { return getDefaultUserIcon() }
     }
     
     func getDefaultUserIcon() -> UIImage {
