@@ -93,7 +93,7 @@ class NCActivity: UIViewController {
             return
         }
         
-        let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + appDelegate.user + ".png"
+        let fileName = appDelegate.userUrlBase + "-" + appDelegate.user + ".png"
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
             imageItem.image = image
@@ -248,7 +248,7 @@ extension NCActivity: UITableViewDataSource {
         cell.sizeToFit()
         
         // Image
-        let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + comment.actorId + ".png"
+        let fileName = appDelegate.userUrlBase + "-" + comment.actorId + ".png"
         NCOperationQueue.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView)
         // Username
         cell.labelUser.text = comment.actorDisplayName
@@ -313,7 +313,7 @@ extension NCActivity: UITableViewDataSource {
             cell.avatar.isHidden = false
             cell.fileUser = activity.user
             
-            let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + activity.user + ".png"
+            let fileName = appDelegate.userUrlBase + "-" + activity.user + ".png"
             
             NCOperationQueue.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView)
         }

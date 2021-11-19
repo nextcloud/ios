@@ -602,7 +602,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 let image = NCUtility.shared.loadUserImage(
                     for: appDelegate.user,
                        displayName: activeAccount?.displayName,
-                       userUrlBase: String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)))
+                       userUrlBase: appDelegate)
 
                 let button = UIButton(type: .custom)
                 button.setImage(image, for: .normal)
@@ -1341,7 +1341,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
            metadata.ownerId != appDelegate.userId,
            appDelegate.account == metadata.account,
            let cell = cell as? NCCellProtocol {
-            let fileName = String(CCUtility.getUserUrlBase(metadata.user, urlBase: metadata.urlBase)) + "-" + metadata.ownerId + ".png"
+            let fileName = metadata.userUrlBase + "-" + metadata.ownerId + ".png"
             NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, dispalyName: metadata.ownerDisplayName, fileName: fileName, cell: cell, view: collectionView)
         }
     }

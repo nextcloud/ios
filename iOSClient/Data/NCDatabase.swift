@@ -29,8 +29,12 @@ protocol DateCompareable {
     var dateKey: Date { get }
 }
 
-class tableAccount: Object {
+class tableAccount: Object, NCUserBaseUrl {
 
+//    @objc var userUrlBase: String {
+//        user + "-" + (URL(string: urlBase)?.host ?? "")
+//    }
+    
     @objc dynamic var account = ""
     @objc dynamic var active: Bool = false
     @objc dynamic var address = ""
@@ -351,7 +355,7 @@ class tableLocalFile: Object {
     }
 }
 
-class tableMetadata: Object {
+class tableMetadata: Object, NCUserBaseUrl {
     
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""

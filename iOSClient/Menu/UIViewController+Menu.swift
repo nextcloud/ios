@@ -71,7 +71,7 @@ extension UIViewController {
                 icon: NCUtility.shared.loadUserImage(
                     for: userId,
                        displayName: card.displayName,
-                       userUrlBase: String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase))),
+                       userUrlBase: appDelegate),
                 action: nil)
 
             let actions = card.actions.map { action -> NCMenuAction in
