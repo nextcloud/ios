@@ -161,9 +161,8 @@ import NCCommunication
     
     // Download Avatar
     
-    func downloadAvatar(user: String, fileName: String, placeholder: UIImage?, cell: UIView, view: UIView?) {
+    func downloadAvatar(user: String, fileName: String, cell: NCCellProtocol, view: UIView?) {
 
-        let cell: NCCellProtocol = cell as! NCCellProtocol
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
         
         if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
