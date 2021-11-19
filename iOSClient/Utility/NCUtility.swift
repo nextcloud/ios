@@ -499,12 +499,10 @@ class NCUtility: NSObject {
     @objc func loadUserImage(for user: String, displayName: String?, userUrlBase: String, original: Bool = false) -> UIImage {
 
         let fileName = userUrlBase + "-" + user + ".png"
-        let originalFilePath = userUrlBase + "-" + user + "-original.png"
-        let locaFilelPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        let localFilePath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
 
-        if let localImage = UIImage(contentsOfFile: locaFilelPath) { return localImage }
-        else if let originalImage = UIImage(contentsOfFile: originalFilePath) {
-            return NCUtility.shared.createAvatar(image: originalImage, size: 30)
+        if let localImage = UIImage(contentsOfFile: localFilePath) {
+            return NCUtility.shared.createAvatar(image: localImage, size: 30)
         } else if let loadedAvatar = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
             return loadedAvatar
         } else if let displayName = displayName, !displayName.isEmpty, let avatarImg = createAvatar(displayName: displayName, size: 30) {

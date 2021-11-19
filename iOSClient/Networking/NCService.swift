@@ -111,20 +111,9 @@ class NCService: NSObject {
 
                 NCCommunication.shared.downloadAvatar(user: tableAccount.userId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, image, imageOriginal, etag, errorCode, errorMessage) in
 
-                    if let etag = etag, errorCode == 0, let imageOriginal = imageOriginal {
-                        
-                        do {
-                            if let pngData = imageOriginal.pngData() {
-                                let fileName = String(CCUtility.getUserUrlBase(user, urlBase: url)) + "-" + self.appDelegate.user + "-original.png"
-                                let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-                                let url = URL.init(fileURLWithPath: fileNameLocalPath)
-                                try pngData.write(to: url)
-                            }
-                        } catch {}
-                        
+                    if let etag = etag, errorCode == 0 {
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
-                        
                     } else if errorCode == NCGlobal.shared.errorNotModified {
                         
                         NCManageDatabase.shared.setAvatarLoaded(fileName: fileName)

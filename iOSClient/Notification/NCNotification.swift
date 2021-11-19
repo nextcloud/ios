@@ -150,7 +150,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                         cell.avatar.isHidden = false
                         cell.avatarLeadingMargin.constant = 50
                         cell.fileUser = user
-                        NCOperationQueue.shared.downloadAvatar(user: user, fileName: fileName, cell: cell, view: tableView)
+                        NCOperationQueue.shared.downloadAvatar(user: user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView)
                     }
                 }
             }
