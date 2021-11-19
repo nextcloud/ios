@@ -496,7 +496,7 @@ class NCUtility: NSObject {
         return  UIImage(named: "file")!.image(color: color, size: size)
     }
     
-    func loadUserImage(for user: String, displayName: String?, userUrlBase: String, original: Bool = false) -> UIImage {
+    @objc func loadUserImage(for user: String, displayName: String?, userUrlBase: String, original: Bool = false) -> UIImage {
 
         //@marino: I'm not even sure the original is needed.. seems to work just fine with the 'normal' one
         let fileName = userUrlBase + "-" + user + (original ? "-original.png" : ".png")

@@ -56,13 +56,8 @@
         row = [XLFormRowDescriptor formRowDescriptorWithTag:account.account rowType:XLFormRowDescriptorTypeBooleanCheck title:title];
         
         // Avatar
-        NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-%@-original.png", [CCUtility getDirectoryUserData], [CCUtility getUserUrlBase:account.user urlBase:account.urlBase], account.user];
-        UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
-        if (avatar) {
-            avatar = [NCUtility.shared createAvatarWithImage:avatar size:40];
-        } else {
-            avatar = [[UIImage imageNamed:@"avatar"] imageWithColor:NCBrandColor.shared.gray size:40];
-        }
+        NSString* userUrlBase = [CCUtility getUserUrlBase:account.user urlBase:account.urlBase];
+        UIImage *avatar = [NCUtility.shared loadUserImageFor:account.user displayName:account.displayName userUrlBase:userUrlBase original:YES];
         
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
         [row.cellConfig setObject:[UIFont systemFontOfSize:13.0] forKey:@"textLabel.font"];
