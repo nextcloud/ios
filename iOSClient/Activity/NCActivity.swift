@@ -249,7 +249,7 @@ extension NCActivity: UITableViewDataSource {
         
         // Image
         let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + comment.actorId + ".png"
-        NCOperationQueue.shared.downloadAvatar(user: comment.actorId, fileName: fileName, cell: cell, view: tableView)
+        NCOperationQueue.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView)
         // Username
         cell.labelUser.text = comment.actorDisplayName
         cell.labelUser.textColor = NCBrandColor.shared.label
@@ -277,7 +277,7 @@ extension NCActivity: UITableViewDataSource {
         var orderKeysId: [String] = []
         
         cell.idActivity = activity.idActivity
-        cell.account = activity.account
+        
         cell.avatar.image = nil
         cell.avatar.isHidden = true
         cell.subjectTrailingConstraint.constant = 10
@@ -315,7 +315,7 @@ extension NCActivity: UITableViewDataSource {
             
             let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + activity.user + ".png"
             
-            NCOperationQueue.shared.downloadAvatar(user: activity.user, fileName: fileName, cell: cell, view: tableView)
+            NCOperationQueue.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView)
         }
         
         // subject

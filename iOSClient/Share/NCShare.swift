@@ -430,7 +430,7 @@ extension NCShare: UITableViewDataSource {
                 
                 let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + tableShare.shareWith + ".png"
                
-                NCOperationQueue.shared.downloadAvatar(user: tableShare.shareWith, fileName: fileName, cell: cell, view: tableView)
+                NCOperationQueue.shared.downloadAvatar(user: tableShare.shareWith, dispalyName: tableShare.shareWithDisplayname, fileName: fileName, cell: cell, view: tableView)
                 
                 // If the initiator or the recipient is not the current user, show the list of sharees without any options to edit it.
                 if tableShare.uidOwner != self.appDelegate.userId && tableShare.uidFileOwner != self.appDelegate.userId {
