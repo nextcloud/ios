@@ -171,12 +171,13 @@ import NCCommunication
             return
         }
 
-        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-            cell.fileAvatarImageView?.image = image
-        } else {
-            cell.fileAvatarImageView?.image = placeholder
+        if let account = NCManageDatabase.shared.getActiveAccount() {
+            cell.fileAvatarImageView?.image = NCUtility.shared.loadUserImage(
+                for: user,
+                   displayName: nil,
+                   userUrlBase: String(CCUtility.getUserUrlBase(account.user, urlBase: account.urlBase)))
         }
-        
+
         for operation in downloadAvatarQueue.operations as! [NCOperationDownloadAvatar] {
             if operation.fileName == fileName {
                 return

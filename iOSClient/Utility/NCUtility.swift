@@ -496,19 +496,21 @@ class NCUtility: NSObject {
         return  UIImage(named: "file")!.image(color: color, size: size)
     }
     
-    func loadUserImage(for user: String, displayName: String?, urlBase: String) -> UIImage {
-        var image: UIImage?
-        
-        let fileName = String(CCUtility.getUserUrlBase(user, urlBase: urlBase)) + "-" + user + "-original.png"
+    func loadUserImage(for user: String, displayName: String?, userUrlBase: String, original: Bool = false) -> UIImage {
+
+        //@marino: I'm not even sure the original is needed.. seems to work just fine with the 'normal' one
+        let fileName = userUrlBase + "-" + user + (original ? "-original.png" : ".png")
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-        if let imageUser = UIImage(contentsOfFile: fileNameLocalPath) {
-            image = NCUtility.shared.createAvatar(image: imageUser, size: 30)
-        } else if let displayName = displayName, !displayName.isEmpty {
-            image = createAvatar(displayName: displayName, size: 30)
+        
+        if let localImage = UIImage(contentsOfFile: fileNameLocalPath) {
+            return NCUtility.shared.createAvatar(image: localImage, size: 30)
+        } else if let loadedAvatar = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
+            return loadedAvatar
+        } else if let displayName = displayName, !displayName.isEmpty, let avatarImg = createAvatar(displayName: displayName, size: 30) {
+            return avatarImg
         } else {
-            // fallback to default icon
+            return getDefaultUserIcon()
         }
-        return image ?? getDefaultUserIcon()
     }
     
     func getDefaultUserIcon() -> UIImage {
