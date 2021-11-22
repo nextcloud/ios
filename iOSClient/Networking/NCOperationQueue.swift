@@ -174,7 +174,7 @@ import NCCommunication
             cell.fileAvatarImageView?.image = NCUtility.shared.loadUserImage(
                 for: user,
                    displayName: dispalyName,
-                   userUrlBase: account)
+                   userBaseUrl: account)
         }
 
         for operation in downloadAvatarQueue.operations as! [NCOperationDownloadAvatar] {

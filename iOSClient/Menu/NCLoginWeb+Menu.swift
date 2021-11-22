@@ -40,7 +40,7 @@ extension NCLoginWeb {
             avatar = NCUtility.shared.loadUserImage(
                 for: account.user,
                    displayName: account.displayName,
-                   userUrlBase: account)
+                   userBaseUrl: account)
 
             actions.append(
                 NCMenuAction(

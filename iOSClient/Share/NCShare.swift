@@ -101,7 +101,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
             sharedWithYouByImage.image = NCUtility.shared.loadUserImage(
                 for: metadata.ownerId,
                    displayName: metadata.ownerDisplayName,
-                   userUrlBase: appDelegate)
+                   userBaseUrl: appDelegate)
             let shareAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
             sharedWithYouByImage.addGestureRecognizer(shareAction)
             let shareLabelAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
@@ -121,7 +121,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
             }
             
 
-            let fileName = appDelegate.userUrlBase + "-" + metadata.ownerId + ".png"
+            let fileName = appDelegate.userBaseUrl + "-" + metadata.ownerId + ".png"
 
             if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
@@ -333,9 +333,9 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
             cell.imageItem.image = NCUtility.shared.loadUserImage(
                 for: sharee.shareWith,
                    displayName: nil,
-                   userUrlBase: self.appDelegate)
+                   userBaseUrl: self.appDelegate)
 
-            let fileName = self.appDelegate.userUrlBase + "-" + sharee.shareWith + ".png"
+            let fileName = self.appDelegate.userBaseUrl + "-" + sharee.shareWith + ".png"
             if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                 let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
@@ -428,7 +428,7 @@ extension NCShare: UITableViewDataSource {
                 cell.imageStatus.image = status.onlineStatus
                 cell.status.text = status.statusMessage
                 
-                let fileName = appDelegate.userUrlBase + "-" + tableShare.shareWith + ".png"
+                let fileName = appDelegate.userBaseUrl + "-" + tableShare.shareWith + ".png"
                
                 NCOperationQueue.shared.downloadAvatar(user: tableShare.shareWith, dispalyName: tableShare.shareWithDisplayname, fileName: fileName, cell: cell, view: tableView)
                 
