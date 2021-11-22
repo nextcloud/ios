@@ -31,10 +31,6 @@ protocol DateCompareable {
 
 class tableAccount: Object, NCUserBaseUrl {
 
-//    @objc var userUrlBase: String {
-//        user + "-" + (URL(string: urlBase)?.host ?? "")
-//    }
-    
     @objc dynamic var account = ""
     @objc dynamic var active: Bool = false
     @objc dynamic var address = ""
