@@ -161,9 +161,8 @@ import NCCommunication
     
     // Download Avatar
     
-    func downloadAvatar(user: String, fileName: String, placeholder: UIImage?, cell: UIView, view: UIView?) {
+    func downloadAvatar(user: String, dispalyName: String?, fileName: String, cell: NCCellProtocol, view: UIView?) {
 
-        let cell: NCCellProtocol = cell as! NCCellProtocol
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
         
         if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
@@ -171,12 +170,13 @@ import NCCommunication
             return
         }
 
-        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-            cell.fileAvatarImageView?.image = image
-        } else {
-            cell.fileAvatarImageView?.image = placeholder
+        if let account = NCManageDatabase.shared.getActiveAccount() {
+            cell.fileAvatarImageView?.image = NCUtility.shared.loadUserImage(
+                for: user,
+                   displayName: dispalyName,
+                   userBaseUrl: account)
         }
-        
+
         for operation in downloadAvatarQueue.operations as! [NCOperationDownloadAvatar] {
             if operation.fileName == fileName {
                 return

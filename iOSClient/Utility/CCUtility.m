@@ -1041,23 +1041,6 @@
     return path;
 }
 
-+ (NSString *)getUserUrlBase:(NSString *)user urlBase:(NSString *)urlBase
-{
-    NSString *baseUrl = [urlBase lowercaseString];
-    NSString *dirUserBaseUrl = @"";
-
-    if ([user length] && [baseUrl length]) {
-        
-        if ([baseUrl hasPrefix:@"https://"]) baseUrl = [baseUrl substringFromIndex:8];
-        if ([baseUrl hasPrefix:@"http://"]) baseUrl = [baseUrl substringFromIndex:7];
-        
-        dirUserBaseUrl = [NSString stringWithFormat:@"%@-%@", user, baseUrl];
-        dirUserBaseUrl = [[self removeForbiddenCharactersFileSystem:dirUserBaseUrl] lowercaseString];
-    }
-    
-    return dirUserBaseUrl;
-}
-
 // Return the path of directory Documents -> NSDocumentDirectory
 + (NSString *)getDirectoryDocuments
 {

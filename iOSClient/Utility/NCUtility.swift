@@ -29,6 +29,9 @@ import PDFKit
 import Accelerate
 import CoreMedia
 
+
+// MARK: - NCUtility
+
 class NCUtility: NSObject {
     @objc static let shared: NCUtility = {
         let instance = NCUtility()
@@ -496,19 +499,18 @@ class NCUtility: NSObject {
         return  UIImage(named: "file")!.image(color: color, size: size)
     }
     
-    func loadUserImage(for user: String, displayName: String?, urlBase: String) -> UIImage {
-        var image: UIImage?
-        
-        let fileName = String(CCUtility.getUserUrlBase(user, urlBase: urlBase)) + "-" + user + "-original.png"
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-        if let imageUser = UIImage(contentsOfFile: fileNameLocalPath) {
-            image = NCUtility.shared.createAvatar(image: imageUser, size: 30)
-        } else if let displayName = displayName, !displayName.isEmpty {
-            image = createAvatar(displayName: displayName, size: 30)
-        } else {
-            // fallback to default icon
-        }
-        return image ?? getDefaultUserIcon()
+    @objc func loadUserImage(for user: String, displayName: String?, userBaseUrl: NCUserBaseUrl) -> UIImage {
+
+        let fileName = userBaseUrl.userBaseUrl + "-" + user + ".png"
+        let localFilePath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+
+        if let localImage = UIImage(contentsOfFile: localFilePath) {
+            return createAvatar(image: localImage, size: 30)
+        } else if let loadedAvatar = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
+            return loadedAvatar
+        } else if let displayName = displayName, !displayName.isEmpty, let avatarImg = createAvatar(displayName: displayName, size: 30) {
+            return avatarImg
+        } else { return getDefaultUserIcon() }
     }
     
     func getDefaultUserIcon() -> UIImage {

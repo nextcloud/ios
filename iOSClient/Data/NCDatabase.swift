@@ -29,7 +29,7 @@ protocol DateCompareable {
     var dateKey: Date { get }
 }
 
-class tableAccount: Object {
+class tableAccount: Object, NCUserBaseUrl {
 
     @objc dynamic var account = ""
     @objc dynamic var active: Bool = false
@@ -351,7 +351,7 @@ class tableLocalFile: Object {
     }
 }
 
-class tableMetadata: Object {
+class tableMetadata: Object, NCUserBaseUrl {
     
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""

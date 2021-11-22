@@ -599,7 +599,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if layoutKey == NCGlobal.shared.layoutViewFiles {
                 let activeAccount = NCManageDatabase.shared.getActiveAccount()
 
-                let image = NCUtility.shared.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, urlBase: appDelegate.urlBase)
+                let image = NCUtility.shared.loadUserImage(
+                    for: appDelegate.user,
+                       displayName: activeAccount?.displayName,
+                       userBaseUrl: appDelegate)
 
                 let button = UIButton(type: .custom)
                 button.setImage(image, for: .normal)
@@ -1334,9 +1337,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
         
         // Avatar
-        if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userId && appDelegate.account == metadata.account {
-            let fileName = String(CCUtility.getUserUrlBase(metadata.user, urlBase: metadata.urlBase)) + "-" + metadata.ownerId + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, fileName: fileName, placeholder: NCBrandColor.cacheImages.shared, cell: cell, view: collectionView)
+        if metadata.ownerId.count > 0,
+           metadata.ownerId != appDelegate.userId,
+           appDelegate.account == metadata.account,
+           let cell = cell as? NCCellProtocol {
+            let fileName = metadata.userBaseUrl + "-" + metadata.ownerId + ".png"
+            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, dispalyName: metadata.ownerDisplayName, fileName: fileName, cell: cell, view: collectionView)
         }
     }
     

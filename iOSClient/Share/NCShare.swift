@@ -93,21 +93,26 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataNCShare), object: nil)
         
         // Shared with you by ...
-        if metadata!.ownerId != "" && metadata!.ownerId != self.appDelegate.userId {
-            
+        if let metadata = metadata, !metadata.ownerId.isEmpty, metadata.ownerId != self.appDelegate.userId {
+
             searchFieldTopConstraint.constant = 65
             sharedWithYouByView.isHidden = false
-            sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata!.ownerDisplayName
-            sharedWithYouByImage.image = UIImage(named: "avatar")?.imageColor(NCBrandColor.shared.label)
+            sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName
+            sharedWithYouByImage.image = NCUtility.shared.loadUserImage(
+                for: metadata.ownerId,
+                   displayName: metadata.ownerDisplayName,
+                   userBaseUrl: appDelegate)
             let shareAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
-            sharedWithYouByView.addGestureRecognizer(shareAction)
-            
-            if metadata?.note.count ?? 0 > 0 {
+            sharedWithYouByImage.addGestureRecognizer(shareAction)
+            let shareLabelAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
+            sharedWithYouByLabel.addGestureRecognizer(shareLabelAction)
+
+            if metadata.note.count > 0 {
                 searchFieldTopConstraint.constant = 95
                 sharedWithYouByNoteImage.isHidden = false
                 sharedWithYouByNoteImage.image = NCUtility.shared.loadImage(named: "note.text", color: .gray)
                 sharedWithYouByNote.isHidden = false
-                sharedWithYouByNote.text = metadata?.note
+                sharedWithYouByNote.text = metadata.note
                 sharedWithYouByNote.textColor = NCBrandColor.shared.label
                 sharedWithYouByNote.trailingBuffer = sharedWithYouByNote.frame.width
             } else {
@@ -115,18 +120,14 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
                 sharedWithYouByNote.isHidden = true
             }
             
-            let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + metadata!.ownerId + ".png"
-            
-            if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
-                
-                sharedWithYouByImage.image = image
-                
-            } else {
-                
+
+            let fileName = appDelegate.userBaseUrl + "-" + metadata.ownerId + ".png"
+
+            if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                 let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
-                
-                NCCommunication.shared.downloadAvatar(user: metadata!.ownerId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag) { (account, imageAvatar, imageOriginal, etag, errorCode, errorMessage) in
+
+                NCCommunication.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag) { (account, imageAvatar, imageOriginal, etag, errorCode, errorMessage) in
                     
                     if errorCode == 0, let etag = etag, let imageAvatar = imageAvatar {
                         
@@ -143,9 +144,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
         
         reloadData()
         
-        networking = NCShareNetworking.init(metadata: metadata!, urlBase: appDelegate.urlBase, view: self.view, delegate: self)
+        networking = NCShareNetworking(metadata: metadata!, urlBase: appDelegate.urlBase, view: self.view, delegate: self)
         if sharingEnabled {
-            networking?.readShare()
+            let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.indexPage == .sharing
+            networking?.readShare(showLoadingIndicator: isVisible)
         }
         
         // changeTheming
@@ -327,15 +329,14 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
             } else {
                 cell.centerTitle.constant = 0
             }
-            
-            let fileName = String(CCUtility.getUserUrlBase(self.appDelegate.user, urlBase: self.appDelegate.urlBase)) + "-" + sharee.shareWith + ".png"
-            
-            if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
-                
-                cell.imageItem.image = image
-                
-            } else {
-                
+
+            cell.imageItem.image = NCUtility.shared.loadUserImage(
+                for: sharee.shareWith,
+                   displayName: nil,
+                   userBaseUrl: self.appDelegate)
+
+            let fileName = self.appDelegate.userBaseUrl + "-" + sharee.shareWith + ".png"
+            if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                 let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
@@ -427,9 +428,9 @@ extension NCShare: UITableViewDataSource {
                 cell.imageStatus.image = status.onlineStatus
                 cell.status.text = status.statusMessage
                 
-                let fileName = String(CCUtility.getUserUrlBase(appDelegate.user, urlBase: appDelegate.urlBase)) + "-" + tableShare.shareWith + ".png"
+                let fileName = appDelegate.userBaseUrl + "-" + tableShare.shareWith + ".png"
                
-                NCOperationQueue.shared.downloadAvatar(user: tableShare.shareWith, fileName: fileName, placeholder: UIImage(named: "avatar"), cell: cell, view: tableView)
+                NCOperationQueue.shared.downloadAvatar(user: tableShare.shareWith, dispalyName: tableShare.shareWithDisplayname, fileName: fileName, cell: cell, view: tableView)
                 
                 // If the initiator or the recipient is not the current user, show the list of sharees without any options to edit it.
                 if tableShare.uidOwner != self.appDelegate.userId && tableShare.uidFileOwner != self.appDelegate.userId {
