@@ -91,12 +91,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         if NCBrandOptions.shared.disable_log {
-
             NCUtilityFileSystem.shared.deleteFile(filePath: NCCommunicationCommon.shared.filenamePathLog)
             NCUtilityFileSystem.shared.deleteFile(filePath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NCCommunicationCommon.shared.filenameLog)
-
         } else {
-
             levelLog = CCUtility.getLogLevel()
             NCCommunicationCommon.shared.levelLog = levelLog
             NCCommunicationCommon.shared.copyLogToDocumentDirectory = true
@@ -325,6 +322,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     fileprivate func setupQuickActions() {
+        guard NCManageDatabase.shared.getActiveAccount() != nil else {
+            UIApplication.shared.shortcutItems?.removeAll()
+            return
+        }
+
         let shortcutItmes = UIApplication.shared.shortcutItems
         if shortcutItmes == nil || shortcutItmes?.isEmpty == true {
             let uploadFileItem = UIApplicationShortcutItem(
