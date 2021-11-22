@@ -6,6 +6,7 @@
 //  Copyright © 2021 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -92,6 +93,13 @@ class NCGlobal: NSObject {
     @objc let appScan                               = "Library/Application Support/Scan"
     @objc let appBackground                         = "Library/Application Support/Background"
     @objc let directoryProviderStorage              = "File Provider Storage"
+
+    // Quick Action Identifiers
+    enum QuickAction: String {
+        case favorites                              = "FavoritesQuickAction"
+        case scan                                   = "ScanQuickAction"
+        case uploadFile                             = "UploadFileQuickAction"
+    }
 
     // Service
     //

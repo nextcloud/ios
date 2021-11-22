@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -174,6 +175,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
+        setupQuickActions()
+
         // Passcode
         DispatchQueue.main.async {
             self.presentPasscode {
@@ -321,6 +324,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // [fileProviderDomain registerDomains];
     }
 
+    fileprivate func setupQuickActions() {
+        let shortcutItmes = UIApplication.shared.shortcutItems
+        if shortcutItmes == nil || shortcutItmes?.isEmpty == true {
+            let uploadFileItem = UIApplicationShortcutItem(
+                type: NCGlobal.QuickAction.uploadFile.rawValue,
+                localizedTitle: NSLocalizedString("_upload_file_", comment: ""),
+                localizedSubtitle: nil,
+                icon: UIApplicationShortcutIcon(templateImageName: "file"))
+            let favoritesItem = UIApplicationShortcutItem(
+                type: NCGlobal.QuickAction.uploadFile.rawValue,
+                localizedTitle: NSLocalizedString("_favorites_", comment: ""),
+                localizedSubtitle: nil,
+                icon: UIApplicationShortcutIcon(type: .favorite))
+            UIApplication.shared.shortcutItems = [uploadFileItem, favoritesItem]
+        if #available(iOS 13.0, *){
+
+         let scanItem = UIApplicationShortcutItem(
+                type: NCGlobal.QuickAction.scan.rawValue,
+                localizedTitle: NSLocalizedString("_scans_document_", comment: ""),
+                localizedSubtitle: nil,
+                icon: UIApplicationShortcutIcon(systemImageName: "doc.text.viewfinder"))
+            UIApplication.shared.shortcutItems?.insert(scanItem, at: 1)
+        }
+    }
+
     // MARK: - Background Task
 
     @available(iOS 13.0, *)
@@ -393,7 +421,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    // MARK: - Fetch
+    // MARK: - Fetch & Actions
 
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
 
@@ -412,6 +440,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             } else {
                 completionHandler(UIBackgroundFetchResult.newData)
             }
+        }
+    }
+
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
+        guard let tabBarCtrl = window?.rootViewController as? UITabBarController else { return }
+        let quickAction = NCGlobal.QuickAction(rawValue: shortcutItem.type)
+        switch quickAction {
+        case .favorites:
+            tabBarCtrl.selectedIndex = 1
+        case .scan:
+            if #available(iOS 13.0, *) {
+                NCCreateScanDocument.shared.openScannerDocument(viewController: tabBarCtrl)
+            }
+        case .uploadFile:
+            NCDocumentPickerViewController(tabBarController: tabBarCtrl)
+        default:
+            NCCommunicationCommon.shared.writeLog("Unknown shortcut item action: \(shortcutItem.type)")
         }
     }
 
