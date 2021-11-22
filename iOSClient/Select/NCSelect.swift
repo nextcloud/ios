@@ -419,7 +419,7 @@ extension NCSelect: UICollectionViewDataSource {
            metadata.ownerId != activeAccount.userId,
            activeAccount.account == metadata.account,
            let cell = cell as? NCCellProtocol {
-            let fileName = metadata.userUrlBase + "-" + metadata.ownerId + ".png"
+            let fileName = metadata.userBaseUrl + "-" + metadata.ownerId + ".png"
             NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, dispalyName: metadata.ownerDisplayName, fileName: fileName, cell: cell, view: collectionView)
         }
     }

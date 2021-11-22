@@ -102,7 +102,7 @@ class NCService: NSObject {
                 self.synchronizeOffline(account: tableAccount.account)
 
                 // Get Avatar
-                let fileName = tableAccount.userUrlBase + "-" + self.appDelegate.user + ".png"
+                let fileName = tableAccount.userBaseUrl + "-" + self.appDelegate.user + ".png"
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                 let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 

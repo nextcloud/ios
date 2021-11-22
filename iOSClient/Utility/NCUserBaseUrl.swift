@@ -29,7 +29,7 @@ import Foundation
 }
 
 public extension NCUserBaseUrl {
-    var userUrlBase: String {
+    var userBaseUrl: String {
         user + "-" + (URL(string: urlBase)?.host ?? "")
     }
 }

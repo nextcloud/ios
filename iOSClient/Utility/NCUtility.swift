@@ -499,9 +499,9 @@ class NCUtility: NSObject {
         return  UIImage(named: "file")!.image(color: color, size: size)
     }
     
-    @objc func loadUserImage(for user: String, displayName: String?, userUrlBase: NCUserBaseUrl) -> UIImage {
+    @objc func loadUserImage(for user: String, displayName: String?, userBaseUrl: NCUserBaseUrl) -> UIImage {
 
-        let fileName = userUrlBase.userUrlBase + "-" + user + ".png"
+        let fileName = userBaseUrl.userBaseUrl + "-" + user + ".png"
         let localFilePath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
 
         if let localImage = UIImage(contentsOfFile: localFilePath) {
