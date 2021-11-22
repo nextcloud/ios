@@ -234,14 +234,18 @@ class NCViewerMedia: UIViewController {
                 
                 NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in
                     
-                    let image = getImageMetadata(metadata)
-                    DispatchQueue.main.async { completion(metadata.ocId, image) }
+                    DispatchQueue.main.async {
+                        let image = getImageMetadata(metadata)
+                        completion(metadata.ocId, image)
+                    }
                 }
                 
             } else {
                 
-                let image = getImageMetadata(metadata)
-                DispatchQueue.main.async { completion(metadata.ocId, image) }
+                DispatchQueue.main.async {
+                    let image = getImageMetadata(metadata)
+                    completion(metadata.ocId, image)
+                }
             }
         }
         
