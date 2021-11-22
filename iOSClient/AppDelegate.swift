@@ -452,6 +452,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
         guard let tabBarCtrl = window?.rootViewController as? UITabBarController else { return }
+        let currentMain = tabBarCtrl.selectedViewController as? NCMainNavigationController
+        currentMain?.topViewController?.presentedViewController?.dismiss(animated: false, completion: nil)
+
         let quickAction = NCGlobal.QuickAction(rawValue: shortcutItem.type)
         switch quickAction {
         case .favorites:
@@ -467,7 +470,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             guard let ncNav = tabBarCtrl.viewControllers?.last as? NCMainNavigationController,
                   let ncMore = ncNav.topViewController as? NCMore else { return }
             let indexPath = IndexPath(row: 3, section: 1)
-            DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                 //delay needed else `tableView` is nil
                 ncMore.tableView.delegate?.tableView?(ncMore.tableView, didSelectRowAt: indexPath)
             }
