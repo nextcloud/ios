@@ -30,19 +30,6 @@ import Accelerate
 import CoreMedia
 
 
-// MARK: NCUserBaseUrl
-
-@objc public protocol NCUserBaseUrl {
-    var user: String { get }
-    var urlBase: String { get }
-}
-
-public extension NCUserBaseUrl {
-    var userUrlBase: String {
-        user + "-" + (URL(string: urlBase)?.host ?? "")
-    }
-}
-
 // MARK: - NCUtility
 
 class NCUtility: NSObject {
