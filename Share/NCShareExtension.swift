@@ -130,7 +130,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         // HUD
         IHProgressHUD.set(viewForExtension: self.view)
         IHProgressHUD.set(defaultMaskType: .clear)
-        IHProgressHUD.set(minimumDismiss: 2)
+        IHProgressHUD.set(minimumDismiss: 0)
         
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object:nil)
     }
