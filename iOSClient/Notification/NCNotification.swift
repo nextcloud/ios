@@ -133,26 +133,20 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         // Avatar
         cell.avatar.isHidden = true
         cell.avatarLeadingMargin.constant = 10
-        if let subjectRichParameters = notification.subjectRichParameters {
-            if let json = JSON(subjectRichParameters).dictionary {
-                if let user = json["user"]?["id"].stringValue {
-                    
-                    let fileName = appDelegate.userBaseUrl + "-" + user + ".png"
-                    let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-                    
-                    if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                            cell.avatar.isHidden = false
-                            cell.avatarLeadingMargin.constant = 50
-                            cell.avatar.image = image
-                        }
-                    } else {
-                        cell.avatar.isHidden = false
-                        cell.avatarLeadingMargin.constant = 50
-                        cell.fileUser = user
-                        NCOperationQueue.shared.downloadAvatar(user: user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView)
-                    }
-                }
+        if let subjectRichParameters = notification.subjectRichParameters,
+           let json = JSON(subjectRichParameters).dictionary,
+           let user = json["user"]?["id"].stringValue {
+            cell.avatar.isHidden = false
+            cell.avatarLeadingMargin.constant = 50
+            
+            let fileName = appDelegate.userBaseUrl + "-" + user + ".png"
+            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+            
+            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                cell.avatar.image = image
+            } else if !FileManager.default.fileExists(atPath: fileNameLocalPath) {
+                cell.fileUser = user
+                NCOperationQueue.shared.downloadAvatar(user: user, dispalyName: json["user"]?["name"].string, fileName: fileName, cell: cell, view: tableView)
             }
         }
         
@@ -178,13 +172,11 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.secondary.isEnabled = false
         cell.secondary.isHidden = true
         cell.secondary.titleLabel?.font = .systemFont(ofSize: 15)
-        cell.secondary.setTitleColor(.gray, for: .normal)
+        cell.secondary.setTitleColor(NCBrandColor.shared.label, for: .normal)
         cell.secondary.layer.cornerRadius = 15
         cell.secondary.layer.masksToBounds = true
-        cell.secondary.layer.backgroundColor = NCBrandColor.shared.systemGray5.cgColor
-        cell.secondary.layer.borderWidth = 0.3
-        cell.secondary.layer.borderColor = UIColor.gray.cgColor
-        
+        cell.secondary.layer.backgroundColor = NCBrandColor.shared.systemFill.cgColor
+
         // Action
         if let actions = notification.actions,
            let jsonActions = JSON(actions).array {
@@ -224,16 +216,16 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         
         return cell
     }
-    
+
     // MARK: - tap Action
-    
-    func tapRemove(with notification: NCCommunicationNotifications?) {
-           
-        NCCommunication.shared.setNotification(serverUrl:nil, idNotification: notification!.idNotification , method: "DELETE") { (account, errorCode, errorDescription) in
+
+    func tapRemove(with notification: NCCommunicationNotifications) {
+
+        NCCommunication.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification , method: "DELETE") { (account, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.account {
 
                 if let index = self.notifications
-                    .firstIndex(where: { $0.idNotification == notification!.idNotification })  {
+                    .firstIndex(where: { $0.idNotification == notification.idNotification })  {
                     self.notifications.remove(at: index)
                 }
                 
@@ -242,50 +234,43 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
             } else if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
-                print("[LOG] It has been changed user during networking process, error.")
+                print("[Error] The user has been changed during networking process.")
             }
         }
     }
 
-    func tapAction(with notification: NCCommunicationNotifications?, label: String) {
-        if notification?.app == "spreed" {
-            guard let accountId = notification?.objectId,
-                    notification?.objectType == "chat",
-                    let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(appDelegate.userId)&withRoomToken=\(accountId)"),
-                  UIApplication.shared.canOpenURL(talkUrl)
-            else { return }
+    func tapAction(with notification: NCCommunicationNotifications, label: String) {
+        if notification.app == "spreed",
+           let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(appDelegate.userId)&withRoomToken=\(notification.objectId)"),
+           UIApplication.shared.canOpenURL(talkUrl) {
             UIApplication.shared.open(talkUrl)
-        }
-        if let actions = notification!.actions, let jsonActions = JSON(actions).array {
-            for action in jsonActions {
-                if action["label"].string == label {
-                    let serverUrl = action["link"].stringValue
-                    let method = action["type"].stringValue
-                    
-                    if method == "WEB", let url = action["link"].url {
-                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                        return
+        } else if let actions = notification.actions,
+                  let jsonActions = JSON(actions).array,
+                  let action = jsonActions.first(where: { $0["label"].string == label }) {
+                      let serverUrl = action["link"].stringValue
+            let method = action["type"].stringValue
+
+            if method == "WEB", let url = action["link"].url {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                return
+            }
+
+            NCCommunication.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { (account, errorCode, errorDescription) in
+
+                if errorCode == 0 && account == self.appDelegate.account {
+                    if let index = self.notifications.firstIndex(where: { $0.idNotification == notification.idNotification }) {
+                        self.notifications.remove(at: index)
                     }
-                    
-                    NCCommunication.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { (account, errorCode, errorDescription) in
-                        
-                        if errorCode == 0 && account == self.appDelegate.account {
-                            
-                            if let index = self.notifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
-                                self.notifications.remove(at: index)
-                            }
-                            
-                            self.reloadDatasource()
-                            
-                        } else if errorCode != 0 {
-                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                        } else {
-                            print("[LOG] It has been changed user during networking process, error.")
-                        }
-                    }
+
+                    self.reloadDatasource()
+
+                } else if errorCode != 0 {
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                } else {
+                    print("[Error] The user has been changed during networking process.")
                 }
             }
-        }
+        } // else: Action not found
     }
     
     // MARK: - Load notification networking
@@ -329,7 +314,6 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var primary: UIButton!
     @IBOutlet weak var secondary: UIButton!
     @IBOutlet weak var avatarLeadingMargin: NSLayoutConstraint!
-//    @IBOutlet weak var messageBottomMargin: NSLayoutConstraint!
     @IBOutlet weak var primaryWidth: NSLayoutConstraint!
     @IBOutlet weak var secondaryWidth: NSLayoutConstraint!
     
@@ -367,21 +351,28 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     }
     
     @IBAction func touchUpInsideRemove(_ sender: Any) {
+        guard let notification = notification else { return }
         delegate?.tapRemove(with: notification)
     }
     
     @IBAction func touchUpInsidePrimary(_ sender: Any) {
-        let button = sender as! UIButton
-        delegate?.tapAction(with: notification, label: button.titleLabel!.text!)
+        guard let notification = notification,
+                let button = sender as? UIButton,
+                let label = button.titleLabel?.text
+        else { return }
+        delegate?.tapAction(with: notification, label: label)
     }
     
     @IBAction func touchUpInsideSecondary(_ sender: Any) {
-        let button = sender as! UIButton
-        delegate?.tapAction(with: notification, label: button.titleLabel!.text!)
+        guard let notification = notification,
+                let button = sender as? UIButton,
+                let label = button.titleLabel?.text
+        else { return }
+        delegate?.tapAction(with: notification, label: label)
     }
 }
 
 protocol NCNotificationCellDelegate {
-    func tapRemove(with notification: NCCommunicationNotifications?)
-    func tapAction(with notification: NCCommunicationNotifications?, label: String)
+    func tapRemove(with notification: NCCommunicationNotifications)
+    func tapAction(with notification: NCCommunicationNotifications, label: String)
 }
