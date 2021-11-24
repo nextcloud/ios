@@ -6,7 +6,7 @@
 //  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//  Henrik Storch <henrik.storch@nextcloud.com>
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -248,35 +248,39 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     }
 
     func tapAction(with notification: NCCommunicationNotifications?, label: String) {
-        
-        if let actions = notification!.actions {
-            if let jsonActions = JSON(actions).array {
-                for action in jsonActions {
-                    if action["label"].string == label {
-                        let serverUrl = action["link"].stringValue
-                        let method = action["type"].stringValue
-
-                        if method == "WEB", let url = action["link"].url {
-                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                            return
-                        }
-
-                        NCCommunication.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { (account, errorCode, errorDescription) in
+        if notification?.app == "spreed" {
+            guard let accountId = notification?.objectId,
+                    notification?.objectType == "chat",
+                    let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(appDelegate.userId)&withRoomToken=\(accountId)"),
+                  UIApplication.shared.canOpenURL(talkUrl)
+            else { return }
+            UIApplication.shared.open(talkUrl)
+        }
+        if let actions = notification!.actions, let jsonActions = JSON(actions).array {
+            for action in jsonActions {
+                if action["label"].string == label {
+                    let serverUrl = action["link"].stringValue
+                    let method = action["type"].stringValue
+                    
+                    if method == "WEB", let url = action["link"].url {
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                        return
+                    }
+                    
+                    NCCommunication.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { (account, errorCode, errorDescription) in
+                        
+                        if errorCode == 0 && account == self.appDelegate.account {
                             
-                            if errorCode == 0 && account == self.appDelegate.account {
-
-                                if let index = self.notifications
-                                    .firstIndex(where: { $0.idNotification == notification!.idNotification })  {
-                                    self.notifications.remove(at: index)
-                                }
-                                
-                                self.reloadDatasource()
-                                
-                            } else if errorCode != 0 {
-                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                            } else {
-                                print("[LOG] It has been changed user during networking process, error.")
+                            if let index = self.notifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
+                                self.notifications.remove(at: index)
                             }
+                            
+                            self.reloadDatasource()
+                            
+                        } else if errorCode != 0 {
+                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        } else {
+                            print("[LOG] It has been changed user during networking process, error.")
                         }
                     }
                 }
