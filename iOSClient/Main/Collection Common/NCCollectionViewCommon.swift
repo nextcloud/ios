@@ -939,27 +939,25 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func reloadDataSourceNetwork(forced: Bool = false) { }
 
     @objc func networkSearch() {
-
-        if appDelegate.account == "" { return }
-
-        if literalSearch?.count ?? 0 > 1 {
-
-            isReloadDataSourceNetworkInProgress = true
-            collectionView?.reloadData()
-
-            NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch!) { _, metadatas, errorCode, _ in
-
-                DispatchQueue.main.async {
-                    if self.searchController?.isActive ?? false && errorCode == 0 {
-                        self.metadatasSource = metadatas!
-                    }
-                    self.refreshControl.endRefreshing()
-                    self.isReloadDataSourceNetworkInProgress = false
-                    self.reloadDataSource()
-                }
-            }
-        } else {
+        guard !appDelegate.account.isEmpty, let literalSearch = literalSearch, !literalSearch.isEmpty
+        else {
             self.refreshControl.endRefreshing()
+            return
+        }
+
+        isReloadDataSourceNetworkInProgress = true
+        collectionView?.reloadData()
+
+        NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch) { (account, metadatas, errorCode, errorDescription) in
+
+            DispatchQueue.main.async {
+                if self.searchController?.isActive == true, errorCode == 0, let metadatas = metadatas {
+                    self.metadatasSource = metadatas
+                }
+                self.refreshControl.endRefreshing()
+                self.isReloadDataSourceNetworkInProgress = false
+                self.reloadDataSource()
+            }
         }
     }
 

@@ -898,34 +898,30 @@ import Queuer
             }
         }
     }
+    
+    //MARK: - WebDav Search
+    
+    @objc func searchFiles(urlBase: String, user: String, literal: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
 
-    // MARK: - WebDav Search
+        NCCommunication.shared.searchLiteral(serverUrl: urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, errorCode, errorDescription) in
+            guard errorCode != 0 else {
+                return completion(account, nil, errorCode, errorDescription)
+            }
 
-    @objc func searchFiles(urlBase: String, user: String, literal: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> Void) {
+            NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
 
-        NCCommunication.shared.searchLiteral(serverUrl: urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { account, files, errorCode, errorDescription in
-
-            if errorCode == 0 {
-
-                NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, metadatasFolder, metadatas in
-
-                    // Update sub directories
-                    for metadata in metadatasFolder {
-                        let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                        NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, account: account)
-                    }
-
-                    NCManageDatabase.shared.addMetadatas(metadatas)
-
-                    let metadatas = Array(metadatas.map { tableMetadata.init(value: $0) })
-
-                    completion(account, metadatas, errorCode, errorDescription)
+                // Update sub directories
+                for folder in metadatasFolder {
+                    let serverUrl = folder.serverUrl + "/" + folder.fileName
+                    NCManageDatabase.shared.addDirectory(encrypted: folder.e2eEncrypted, favorite: folder.favorite, ocId: folder.ocId, fileId: folder.fileId, etag: nil, permissions: folder.permissions, serverUrl: serverUrl, account: account)
                 }
 
-            } else {
+                NCManageDatabase.shared.addMetadatas(metadatas)
+                let metadatas = Array(metadatas.map(tableMetadata.init))
 
-                completion(account, nil, errorCode, errorDescription)
+                completion(account, metadatas, errorCode, errorDescription)
             }
+            
         }
     }
 
