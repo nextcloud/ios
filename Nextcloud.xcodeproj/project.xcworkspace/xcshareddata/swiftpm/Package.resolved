@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/firebase/firebase-ios-sdk",
         "state": {
           "branch": null,
-          "revision": "08686f04881483d2bc098b2696e674c0ba135e47",
-          "version": "8.10.0"
+          "revision": "839cc6b0cd80b0b8bf81fe9bd82b743b25dc6446",
+          "version": "8.9.1"
         }
       },
       {
@@ -168,8 +168,8 @@
         "repositoryURL": "https://github.com/google/promises.git",
         "state": {
           "branch": null,
-          "revision": "611337c330350c9c1823ad6d671e7f936af5ee13",
-          "version": "2.0.0"
+          "revision": "afa9a1ace74e116848d4f743599ab83e584ff8cb",
+          "version": "1.2.12"
         }
       },
       {
@@ -195,8 +195,8 @@
         "repositoryURL": "https://github.com/realm/realm-cocoa",
         "state": {
           "branch": null,
-          "revision": "f483fa0a52f6d49897d133a827510a35e21183c1",
-          "version": "10.20.1"
+          "revision": "e83cc9f28e8bccd477b6b81cee521c02239d2773",
+          "version": "10.20.2"
         }
       },
       {
@@ -267,8 +267,8 @@
         "repositoryURL": "https://github.com/yahoojapan/SwiftyXMLParser",
         "state": {
           "branch": null,
-          "revision": "d7a1d23f04c86c1cd2e8f19247dd15d74e0ea8be",
-          "version": "5.6.0"
+          "revision": "ad5eeeaf7797f69e26943aaa53c81c6a9fdaa516",
+          "version": "5.5.0"
         }
       }
     ]

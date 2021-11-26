@@ -97,10 +97,10 @@ class NCSharePaging: UIViewController {
         // Contrain the paging view to all edges.
         pagingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            pagingViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
-            pagingViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            pagingViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            pagingViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            pagingViewController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            pagingViewController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            pagingViewController.view.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            pagingViewController.view.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
 
         pagingViewController.dataSource = self
@@ -241,8 +241,8 @@ class NCShareHeaderViewController: PagingViewController {
 }
 
 class NCSharePagingView: PagingView {
-
-    static let HeaderHeight: CGFloat = 250
+    
+    static let HeaderHeight: CGFloat = 100
     var metadata = tableMetadata()
 
     var headerHeightConstraint: NSLayoutConstraint?
