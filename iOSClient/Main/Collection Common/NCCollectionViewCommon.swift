@@ -1250,7 +1250,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     }
     
     func collectionViewSelectAll() {
-        selectOcId = metadatasSource.map({ $0.ocId })
+        selectOcId = dataSource.metadatas.map({ $0.ocId })
         navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(dataSource.metadatas.count)"
         collectionView.reloadData()
     }
