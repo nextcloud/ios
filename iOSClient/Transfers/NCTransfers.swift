@@ -45,18 +45,15 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         super.viewDidLoad()
         
         listLayout.itemHeight = 105
+        collectionView?.collectionViewLayout = listLayout
+        self.navigationItem.title = titleCurrentFolder
+        serverUrl = appDelegate.activeServerUrl
     }
     
     override func viewWillAppear(_ animated: Bool) {
-
-        appDelegate.activeViewController = self
+        super.viewWillAppear(animated)
         
         collectionView?.collectionViewLayout = listLayout
-        
-        self.navigationItem.title = titleCurrentFolder
-        
-        setNavigationItem()
-        reloadDataSource()
     }
     
     override func setNavigationItem() {
@@ -174,7 +171,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as! NCTransferCell
         cell.delegate = self
             
-        cell.objectId = metadata.ocId
+        cell.fileObjectId = metadata.ocId
+        cell.fileUser = metadata.ownerId
         cell.indexPath = indexPath
         
         cell.imageItem.image = nil
@@ -183,7 +181,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.label
         
-        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: metadata.urlBase, account: metadata.account)
+        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(account: metadata.account)
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
         if pathText == "" { pathText = "/" }
         cell.labelPath.text = pathText
@@ -194,7 +192,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
                 
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-        } else if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
+        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
             cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
         }
         
@@ -212,13 +210,13 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
             totalBytes = progressType.totalBytes
         }
         
-        if metadata.status == NCGlobal.shared.metadataStatusInDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading ||  metadata.status >= NCGlobal.shared.metadataStatusTypeUpload {
+        if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
             cell.progressView.isHidden = false
+            cell.progressView.progress = progress
         } else {
             cell.progressView.isHidden = true
-            cell.progressView.progress = progress
         }
-
+        
         // Write status on Label Info
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitDownload:
@@ -245,6 +243,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
             cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
             break
+        case NCGlobal.shared.metadataStatusUploadError:
+            cell.labelStatus.text = NSLocalizedString("_status_upload_error_", comment: "")
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
+            break
         default:
             cell.labelStatus.text = ""
             cell.labelInfo.text = ""
@@ -266,7 +268,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
     override func reloadDataSource() {
         super.reloadDataSource()
                 
-        metadatasSource = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "(session CONTAINS 'upload') OR (session CONTAINS 'download')"), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
+        metadatasSource = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
         self.dataSource = NCDataSource.init(metadatasSource: metadatasSource)
         
         refreshControl.endRefreshing()

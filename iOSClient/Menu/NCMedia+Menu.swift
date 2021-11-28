@@ -23,12 +23,12 @@
 
 import UIKit
 import FloatingPanel
+import NCCommunication
 
 extension NCMedia {
 
     func toggleMenu() {
-        
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+
         var actions: [NCMenuAction] = []
 
         if !isEditMode {
@@ -46,28 +46,28 @@ extension NCMedia {
 
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString(filterTypeFileImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""),
+                    title: NSLocalizedString(filterClassTypeImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "photo"),
-                    selected: filterTypeFileImage,
+                    selected: filterClassTypeImage,
                     on: true,
                     action: { menuAction in
-                        self.filterTypeFileImage = !self.filterTypeFileImage
-                        self.filterTypeFileVideo = false
-                        self.reloadDataSource()
+                        self.filterClassTypeImage = !self.filterClassTypeImage
+                        self.filterClassTypeVideo = false
+                        self.reloadDataSourceWithCompletion { (_) in }
                     }
                 )
             )
 
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString(filterTypeFileVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""),
+                    title: NSLocalizedString(filterClassTypeVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "video"),
-                    selected: filterTypeFileVideo,
+                    selected: filterClassTypeVideo,
                     on: true,
                     action: { menuAction in
-                        self.filterTypeFileVideo = !self.filterTypeFileVideo
-                        self.filterTypeFileImage = false
-                        self.reloadDataSource()
+                        self.filterClassTypeVideo = !self.filterClassTypeVideo
+                        self.filterClassTypeImage = false
+                        self.reloadDataSourceWithCompletion { (_) in }
                     }
                 )
             )
@@ -97,7 +97,7 @@ extension NCMedia {
                     on: true,
                     action: { menuAction in
                         CCUtility.setMediaSortDate("date")
-                        self.reloadDataSource()
+                        self.reloadDataSourceWithCompletion { (_) in }
                     }
                 )
             )
@@ -110,7 +110,7 @@ extension NCMedia {
                     on: true,
                     action: { menuAction in
                         CCUtility.setMediaSortDate("creationDate")
-                        self.reloadDataSource()
+                        self.reloadDataSourceWithCompletion { (_) in }
                     }
                 )
             )
@@ -123,7 +123,7 @@ extension NCMedia {
                     on: true,
                     action: { menuAction in
                         CCUtility.setMediaSortDate("uploadDate")
-                        self.reloadDataSource()
+                        self.reloadDataSourceWithCompletion { (_) in }
                     }
                 )
             )
@@ -172,7 +172,7 @@ extension NCMedia {
                         self.isEditMode = false
                         for ocId in self.selectOcId {
                             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
+                                if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
                                     if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                                         NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
                                     } else {
@@ -246,7 +246,7 @@ extension NCMedia {
                         self.isEditMode = false
                         for ocId in self.selectOcId {
                             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
+                                NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { (errorCode, errorDescription) in
                                     if errorCode != 0 {
                                         NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                     }
@@ -260,14 +260,7 @@ extension NCMedia {
             )
         }
 
-        menuViewController.actions = actions
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-
-        self.present(menuPanelController, animated: true, completion: nil)
+        presentMenu(with: actions)
     }
 }
 

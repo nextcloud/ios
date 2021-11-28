@@ -27,6 +27,10 @@ import KTVHTTPCache
 import NCCommunication
 import PDFKit
 import Accelerate
+import CoreMedia
+
+
+// MARK: - NCUtility
 
 class NCUtility: NSObject {
     @objc static let shared: NCUtility = {
@@ -110,17 +114,15 @@ class NCUtility: NSObject {
         
         var fileNamePNG = ""
         
-        guard let svgUrlString = svgUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            return closure(nil)
-        }
-        guard let iconURL = URL(string: svgUrlString) else {
+        guard let svgUrlString = svgUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let iconURL = URL(string: svgUrlString) else {
             return closure(nil)
         }
         
-        if fileName == nil {
-            fileNamePNG = iconURL.deletingPathExtension().lastPathComponent + ".png"
+        if let fileName = fileName {
+            fileNamePNG = fileName
         } else {
-            fileNamePNG = fileName!
+            fileNamePNG = iconURL.deletingPathExtension().lastPathComponent + ".png"
         }
         
         let imageNamePath = CCUtility.getDirectoryUserData() + "/" + fileNamePNG
@@ -383,7 +385,9 @@ class NCUtility: NSObject {
                 
         return(onlineStatus, statusMessage, descriptionMessage)
     }
-    
+
+    // MARK: -
+
     func imageFromVideo(url: URL, at time: TimeInterval) -> UIImage? {
         
         let asset = AVURLAsset(url: url)
@@ -428,7 +432,7 @@ class NCUtility: NSObject {
         }
     }
     
-    func createImageFrom(fileName: String, ocId: String, etag: String, typeFile: String) {
+    func createImageFrom(fileName: String, ocId: String, etag: String, classFile: String) {
         
         var originalImage, scaleImagePreview, scaleImageIcon: UIImage?
         
@@ -438,9 +442,9 @@ class NCUtility: NSObject {
         
         if FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
         if !CCUtility.fileProviderStorageExists(ocId, fileNameView: fileName) { return }
-        if typeFile != NCGlobal.shared.metadataTypeFileImage && typeFile != NCGlobal.shared.metadataTypeFileVideo { return }
+        if classFile != NCCommunicationCommon.typeClassFile.image.rawValue && classFile != NCCommunicationCommon.typeClassFile.video.rawValue { return }
         
-        if typeFile == NCGlobal.shared.metadataTypeFileImage {
+        if classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             
             originalImage = UIImage.init(contentsOfFile: fileNamePath)
             
@@ -450,7 +454,7 @@ class NCUtility: NSObject {
             try? scaleImagePreview?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
             try? scaleImageIcon?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
             
-        } else if typeFile == NCGlobal.shared.metadataTypeFileVideo {
+        } else if classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             
             let videoPath = NSTemporaryDirectory()+"tempvideo.mp4"
             NCUtilityFileSystem.shared.linkItem(atPath: fileNamePath, toPath: videoPath)
@@ -495,6 +499,29 @@ class NCUtility: NSObject {
         return  UIImage(named: "file")!.image(color: color, size: size)
     }
     
+    @objc func loadUserImage(for user: String, displayName: String?, userBaseUrl: NCUserBaseUrl) -> UIImage {
+
+        let fileName = userBaseUrl.userBaseUrl + "-" + user + ".png"
+        let localFilePath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+
+        if let localImage = UIImage(contentsOfFile: localFilePath) {
+            return createAvatar(image: localImage, size: 30)
+        } else if let loadedAvatar = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
+            return loadedAvatar
+        } else if let displayName = displayName, !displayName.isEmpty, let avatarImg = createAvatar(displayName: displayName, size: 30) {
+            return avatarImg
+        } else { return getDefaultUserIcon() }
+    }
+    
+    func getDefaultUserIcon() -> UIImage {
+        if #available(iOS 13.0, *) {
+            let config = UIImage.SymbolConfiguration(pointSize: 30)
+            return NCUtility.shared.loadImage(named: "person.crop.circle", symbolConfiguration: config)
+        } else {
+            return NCUtility.shared.loadImage(named: "person.crop.circle", size: 30)
+        }
+    }
+    
     @objc func createAvatar(image: UIImage, size: CGFloat) -> UIImage {
         
         var avatarImage = image
@@ -509,6 +536,32 @@ class NCUtility: NSObject {
         return avatarImage
     }
     
+    func createAvatar(displayName: String, size: CGFloat) -> UIImage? {
+        guard let initials = displayName.uppercaseInitials else {
+            return nil
+        }
+        let userColor = NCGlobal.shared.usernameToColor(displayName)
+        let rect = CGRect(x: 0, y: 0, width: size, height: size)
+        var avatarImage: UIImage?
+        
+        UIGraphicsBeginImageContextWithOptions(rect.size, false, 3.0)
+        let context = UIGraphicsGetCurrentContext()
+        UIBezierPath.init(roundedRect: rect, cornerRadius: rect.size.height).addClip()
+        context?.setFillColor(userColor)
+        context?.fill(rect)
+        let textStyle = NSMutableParagraphStyle()
+        textStyle.alignment = NSTextAlignment.center
+        let lineHeight = UIFont.systemFont(ofSize: UIFont.systemFontSize).pointSize
+        NSString(string: initials)
+            .draw(
+                in: CGRect(x: 0, y: (size - lineHeight) / 2, width: size, height: lineHeight),
+                withAttributes: [NSAttributedString.Key.paragraphStyle: textStyle])
+        avatarImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        return avatarImage
+    }
+
     // MARK: -
 
     @objc func startActivityIndicator(backgroundView: UIView?, blurEffect: Bool, bottom: CGFloat = 0, style: UIActivityIndicatorView.Style = .whiteLarge) {
@@ -517,11 +570,10 @@ class NCUtility: NSObject {
             stopActivityIndicator()
         }
         
-        self.activityIndicator = UIActivityIndicatorView(style: style)
-        guard let activityIndicator = self.activityIndicator else { return }
-        
         DispatchQueue.main.async {
             
+            self.activityIndicator = UIActivityIndicatorView(style: style)
+            guard let activityIndicator = self.activityIndicator else { return }
             if self.viewBackgroundActivityIndicator != nil { return }
             
             activityIndicator.color = NCBrandColor.shared.label
@@ -605,6 +657,147 @@ class NCUtility: NSObject {
                 self.viewBackgroundActivityIndicator?.removeFromSuperview()
             }
             self.viewBackgroundActivityIndicator = nil
+        }
+    }
+    
+    /*
+    Facebook's comparison algorithm:
+    */
+    
+    func compare(tolerance: Float, expected: Data, observed: Data) throws -> Bool {
+        
+        enum customError: Error {
+            case unableToGetUIImageFromData
+            case unableToGetCGImageFromData
+            case unableToGetColorSpaceFromCGImage
+            case imagesHasDifferentSizes
+            case unableToInitializeContext
+        }
+        
+        guard let expectedUIImage = UIImage(data: expected), let observedUIImage = UIImage(data: observed) else {
+            throw customError.unableToGetUIImageFromData
+        }
+        guard let expectedCGImage = expectedUIImage.cgImage, let observedCGImage = observedUIImage.cgImage else {
+            throw customError.unableToGetCGImageFromData
+        }
+        guard let expectedColorSpace = expectedCGImage.colorSpace, let observedColorSpace = observedCGImage.colorSpace else {
+            throw customError.unableToGetColorSpaceFromCGImage
+        }
+        if expectedCGImage.width != observedCGImage.width || expectedCGImage.height != observedCGImage.height {
+            throw customError.imagesHasDifferentSizes
+        }
+        let imageSize = CGSize(width: expectedCGImage.width, height: expectedCGImage.height)
+        let numberOfPixels = Int(imageSize.width * imageSize.height)
+
+        // Checking that our `UInt32` buffer has same number of bytes as image has.
+        let bytesPerRow = min(expectedCGImage.bytesPerRow, observedCGImage.bytesPerRow)
+        assert(MemoryLayout<UInt32>.stride == bytesPerRow / Int(imageSize.width))
+
+        let expectedPixels = UnsafeMutablePointer<UInt32>.allocate(capacity: numberOfPixels)
+        let observedPixels = UnsafeMutablePointer<UInt32>.allocate(capacity: numberOfPixels)
+
+        let expectedPixelsRaw = UnsafeMutableRawPointer(expectedPixels)
+        let observedPixelsRaw = UnsafeMutableRawPointer(observedPixels)
+
+        let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
+        guard let expectedContext = CGContext(data: expectedPixelsRaw, width: Int(imageSize.width), height: Int(imageSize.height),
+                                              bitsPerComponent: expectedCGImage.bitsPerComponent, bytesPerRow: bytesPerRow,
+                                              space: expectedColorSpace, bitmapInfo: bitmapInfo.rawValue) else {
+            expectedPixels.deallocate()
+            observedPixels.deallocate()
+            throw customError.unableToInitializeContext
+        }
+        guard let observedContext = CGContext(data: observedPixelsRaw, width: Int(imageSize.width), height: Int(imageSize.height),
+                                              bitsPerComponent: observedCGImage.bitsPerComponent, bytesPerRow: bytesPerRow,
+                                              space: observedColorSpace, bitmapInfo: bitmapInfo.rawValue) else {
+            expectedPixels.deallocate()
+            observedPixels.deallocate()
+            throw customError.unableToInitializeContext
+        }
+
+        expectedContext.draw(expectedCGImage, in: CGRect(origin: .zero, size: imageSize))
+        observedContext.draw(observedCGImage, in: CGRect(origin: .zero, size: imageSize))
+
+        let expectedBuffer = UnsafeBufferPointer(start: expectedPixels, count: numberOfPixels)
+        let observedBuffer = UnsafeBufferPointer(start: observedPixels, count: numberOfPixels)
+
+        var isEqual = true
+        if tolerance == 0 {
+            isEqual = expectedBuffer.elementsEqual(observedBuffer)
+        } else {
+            // Go through each pixel in turn and see if it is different
+            var numDiffPixels = 0
+            for pixel in 0 ..< numberOfPixels where expectedBuffer[pixel] != observedBuffer[pixel] {
+                // If this pixel is different, increment the pixel diff count and see if we have hit our limit.
+                numDiffPixels += 1
+                let percentage = 100 * Float(numDiffPixels) / Float(numberOfPixels)
+                if percentage > tolerance {
+                    isEqual = false
+                    break
+                }
+            }
+        }
+
+        expectedPixels.deallocate()
+        observedPixels.deallocate()
+
+        return isEqual
+    }
+    
+    func stringFromTime(_ time: CMTime) -> String {
+    
+        let interval = Int(CMTimeGetSeconds(time))
+        
+        let seconds = interval % 60
+        let minutes = (interval / 60) % 60
+        let hours = (interval / 3600)
+        
+        if hours > 0 {
+            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            return String(format: "%02d:%02d", minutes, seconds)
+        }
+    }
+    
+    func colorNavigationController(_ navigationController: UINavigationController?, backgroundColor: UIColor, titleColor: UIColor, tintColor: UIColor?, withoutShadow: Bool) {
+        
+        if #available(iOS 13.0, *) {
+            
+            // iOS 14, 15
+            let appearance = UINavigationBarAppearance()
+            appearance.titleTextAttributes = [.foregroundColor: titleColor]
+            appearance.largeTitleTextAttributes = [.foregroundColor: titleColor]
+            
+            if withoutShadow {
+                appearance.shadowColor = .clear
+                appearance.shadowImage = UIImage()
+            }
+            
+            if let tintColor = tintColor {
+                navigationController?.navigationBar.tintColor = tintColor
+            }
+
+            navigationController?.view.backgroundColor = backgroundColor
+            navigationController?.navigationBar.barTintColor = titleColor
+            navigationController?.navigationBar.standardAppearance = appearance
+            navigationController?.navigationBar.compactAppearance = appearance
+            navigationController?.navigationBar.scrollEdgeAppearance = appearance
+            
+        } else {
+            
+            navigationController?.navigationBar.isTranslucent = true
+            navigationController?.navigationBar.barTintColor = backgroundColor
+            
+            if withoutShadow {
+                navigationController?.navigationBar.shadowImage = UIImage()
+                navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+            }
+            
+            let titleDict: NSDictionary = [NSAttributedString.Key.foregroundColor: titleColor]
+            navigationController?.navigationBar.titleTextAttributes = titleDict as? [NSAttributedString.Key : Any]
+            if let tintColor = tintColor {
+                navigationController?.navigationBar.tintColor = tintColor
+            }
         }
     }
 }

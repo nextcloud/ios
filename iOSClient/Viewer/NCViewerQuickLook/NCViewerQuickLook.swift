@@ -23,6 +23,7 @@
 
 import UIKit
 import QuickLook
+import NCCommunication
 
 @objc class NCViewerQuickLook: QLPreviewController {
     
@@ -66,7 +67,7 @@ import QuickLook
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if editingMode && metadata?.typeFile == NCGlobal.shared.metadataTypeFileImage {
+        if editingMode && metadata?.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { (t) in
                 if self.navigationItem.rightBarButtonItems?.count ?? 0 > 1 || !(self.navigationController?.isToolbarHidden ?? false) {
                     if #available(iOS 14.0, *) {
@@ -90,7 +91,7 @@ import QuickLook
         }
         
         if editingMode && metadata?.livePhoto == true {
-            NCContentPresenter.shared.messageNotification("", description: "_message_disable_overwrite_livephoto_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCharactersForbidden, forced: true)
+            NCContentPresenter.shared.messageNotification("", description: "_message_disable_overwrite_livephoto_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCharactersForbidden)
         }
     }
     
@@ -168,7 +169,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
             
             if NCUtilityFileSystem.shared.copyFile(atPath: modifiedContentsURL.path, toPath: fileNamePath) {
             
-                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: metadata.account, fileName: metadata.fileName, fileNameView: metadata.fileNameView, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: modifiedContentsURL.path, contentType: "", livePhoto: false)
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: metadata.account, user: metadata.user, userId: metadata.userId, fileName: metadata.fileName, fileNameView: metadata.fileNameView, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: modifiedContentsURL.path, contentType: "", livePhoto: false)
                                                                                
                 metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile

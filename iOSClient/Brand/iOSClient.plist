@@ -46,6 +46,10 @@
 	<true/>
 	<key>ITSEncryptionExportComplianceCode</key>
 	<string>3b2bb0b1-fa12-43cb-a78f-0f7e1afd33df</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>nextcloudtalk</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>

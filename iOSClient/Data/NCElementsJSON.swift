@@ -34,6 +34,9 @@ import UIKit
     
     @objc public let capabilitiesFileSharingApiEnabled:         Array = ["ocs","data","capabilities","files_sharing","api_enabled"]
     @objc public let capabilitiesFileSharingPubPasswdEnforced:  Array = ["ocs","data","capabilities","files_sharing","public","password","enforced"]
+    @objc public let capabilitiesFileSharingDefaultPermissions: Array = ["ocs","data","capabilities","files_sharing","default_permissions"]
+    // NC >= 23
+    @objc public let capabilitiesFileSharingSendPasswordMail:  Array = ["ocs","data","capabilities","files_sharing","sharebymail","send_password_by_mail"]
 
     @objc public let capabilitiesThemingColor:                  Array = ["ocs","data","capabilities","theming","color"]
     @objc public let capabilitiesThemingColorElement:           Array = ["ocs","data","capabilities","theming","color-element"]
@@ -56,7 +59,6 @@ import UIKit
 
     @objc public let capabilitiesFilesUndelete:                 Array = ["ocs","data","capabilities","files","undelete"]
     @objc public let capabilitiesFilesComments:                 Array = ["ocs","data","capabilities","files","comments"]                                            // NC 20
-    @objc public let capabilitiesPaginationEndpoint:            Array = ["ocs","data","capabilities","files","pagination","endpoint"]
 
     @objc public let capabilitiesHWCEnabled:                    Array = ["ocs","data","capabilities","handwerkcloud","enabled"]
     

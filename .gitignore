@@ -40,3 +40,7 @@ Carthage/
 Package.resolved
 Cartfile.resolved
 
+### SwiftPackageManager ###
+.swiftpm
+Package.resolved
+

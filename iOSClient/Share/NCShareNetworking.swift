@@ -41,16 +41,23 @@ class NCShareNetworking: NSObject {
         super.init()
     }
     
-    func readShare() {
-        NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
+    func readShare(showLoadingIndicator: Bool) {
+        if showLoadingIndicator {
+            NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
+        }
+    
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
-        NCCommunication.shared.readShares(path: filenamePath) { (account, shares, errorCode, errorDescription) in
-            NCUtility.shared.stopActivityIndicator()
+        let parameter = NCCShareParameter(path: filenamePath)
+        NCCommunication.shared.readShares(parameters: parameter) { (account, shares, errorCode, errorDescription) in
+            if showLoadingIndicator {
+                NCUtility.shared.stopActivityIndicator()
+            }
+
              if errorCode == 0 && shares != nil {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: shares!)
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             }
             self.delegate?.readShareCompleted()
         }
@@ -65,7 +72,7 @@ class NCShareNetworking: NSObject {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share!])
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
             } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             }
             self.delegate?.shareCompleted()
         }
@@ -74,15 +81,18 @@ class NCShareNetworking: NSObject {
     func createShare(shareWith: String, shareType: Int, metadata: tableMetadata) {
         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
-        var permission: Int = 1
-        if metadata.directory { permission = NCGlobal.shared.permissionMaxFolderShare } else { permission = NCGlobal.shared.permissionMaxFileShare }
+        var permission: Int = NCManageDatabase.shared.getCapabilitiesServerInt(account: metadata.account, elements: ["ocs","data","capabilities","files_sharing","default_permissions"])
+        if permission <= 0 {
+            permission = metadata.directory ? NCGlobal.shared.permissionMaxFolderShare : NCGlobal.shared.permissionMaxFileShare
+        }
+
         NCCommunication.shared.createShare(path: filenamePath, shareType: shareType, shareWith: shareWith, permissions: permission) { (account, share, errorCode, errorDescription) in
             NCUtility.shared.stopActivityIndicator()
             if errorCode == 0 && share != nil {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share!])
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             }
             self.delegate?.shareCompleted()
         }
@@ -96,21 +106,21 @@ class NCShareNetworking: NSObject {
                 NCManageDatabase.shared.deleteTableShare(account: account, idShare: idShare)
                 self.delegate?.unShareCompleted()
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             }
         }
     }
     
-    func updateShare(idShare: Int, password: String?, permission: Int, note: String?, label: String?, expirationDate: String?, hideDownload: Bool) {
+    func updateShare(idShare: Int, password: String?, permissions: Int, note: String?, label: String?, expirationDate: String?, hideDownload: Bool) {
         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
-        NCCommunication.shared.updateShare(idShare: idShare, password: password, expireDate: expirationDate, permissions: permission, note: note, label: label, hideDownload: hideDownload) { (account, share, errorCode, errorDescription) in
+        NCCommunication.shared.updateShare(idShare: idShare, password: password, expireDate: expirationDate, permissions: permissions, note: note, label: label, hideDownload: hideDownload) { (account, share, errorCode, errorDescription) in
             NCUtility.shared.stopActivityIndicator()
             if errorCode == 0 && share != nil {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share!])
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
                 self.delegate?.readShareCompleted()
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
                 self.delegate?.updateShareWithError(idShare: idShare)
             }
         }
@@ -123,7 +133,7 @@ class NCShareNetworking: NSObject {
             if errorCode == 0 {
                 self.delegate?.getSharees(sharees: sharees)
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
                 self.delegate?.getSharees(sharees: nil)
             }
         }

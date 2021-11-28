@@ -63,10 +63,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     
     @IBOutlet weak var homeImage: UIImageView!
     @IBOutlet weak var homeServer: UILabel!
-   
-    @IBOutlet weak var davImage: UIImageView!
-    @IBOutlet weak var davFiles: UILabel!
-    
+       
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var documentController: UIDocumentInteractionController?
     private var account: String = ""
@@ -161,7 +158,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             capabilitiesText = text
             updateCapabilities()
         } else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "_no_capabilities_found_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, forced: true)
+            NCContentPresenter.shared.messageNotification("_error_", description: "_no_capabilities_found_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.dismiss(animated: true, completion: nil)
@@ -169,10 +166,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         }
         
         homeImage.image = UIImage.init(named: "home")!.image(color: NCBrandColor.shared.gray, size: 50)
-        homeServer.text = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) + "/"
-        
-        davImage.image = UIImage.init(named: "dav")!.image(color: NCBrandColor.shared.gray, size: 50)
-        davFiles.text = appDelegate.urlBase + "/" + NCUtilityFileSystem.shared.getDAV() + "/files/" + appDelegate.user + "/"
+        homeServer.text = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) + "/"
     }
 
     @objc func updateCapabilities() {

@@ -23,31 +23,50 @@
 
 import UIKit
 
-class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCellProtocol {
+class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
     
     @IBOutlet weak var imageItem: UIImageView!
-    
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
-
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
-
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var progressView: UIProgressView!
 
-    var filePreviewImageView : UIImageView {
-        get{
-         return imageItem
+    private var objectId = ""
+    private var user = ""
+
+    var delegate: NCGridCellDelegate?
+    var namedButtonMore = ""
+
+    var fileAvatarImageView: UIImageView? {
+        get {
+            return nil
         }
     }
-    
-    var delegate: NCGridCellDelegate?
-    var objectId = ""
-    var indexPath = IndexPath()
-    var namedButtonMore = ""
+    var fileObjectId: String? {
+        get {
+            return objectId
+        }
+        set {
+            objectId = newValue ?? ""
+        }
+    }
+    var filePreviewImageView: UIImageView? {
+        get {
+            return imageItem
+        }
+    }
+    var fileUser: String? {
+        get {
+            return user
+        }
+        set {
+            user = newValue ?? ""
+        }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -57,7 +76,8 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
         
         imageVisualEffect.layer.cornerRadius = 6
         imageVisualEffect.clipsToBounds = true
-        
+        imageVisualEffect.alpha = 0.5
+
         progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.transform = CGAffineTransform(scaleX: 1.0, y: 0.5)
         progressView.trackTintColor = .clear
@@ -112,9 +132,15 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
     
     func selected(_ status: Bool) {
         if status {
+            if traitCollection.userInterfaceStyle == .dark {
+                imageVisualEffect.effect = UIBlurEffect(style: .dark)
+                imageVisualEffect.backgroundColor = .black
+            } else {
+                imageVisualEffect.effect = UIBlurEffect(style: .extraLight)
+                imageVisualEffect.backgroundColor = .lightGray
+            }
             imageSelect.image = NCBrandColor.cacheImages.checkedYes
             imageVisualEffect.isHidden = false
-            imageVisualEffect.alpha = 0.4
         } else {
             imageSelect.isHidden = true
             imageVisualEffect.isHidden = true

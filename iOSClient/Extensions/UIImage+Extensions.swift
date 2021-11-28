@@ -151,4 +151,26 @@ extension UIImage {
             }
         }
     }
+    
+    func isEqualToImage(image: UIImage?) -> Bool {
+        if image == nil { return false }
+        let data1: NSData = self.pngData()! as NSData
+        let data2: NSData = image!.pngData()! as NSData
+        return data1.isEqual(data2)
+    }
+    
+    class func imageWithView(_ view: UIView) -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(view.bounds.size, view.isOpaque, 0)
+        defer { UIGraphicsEndImageContext() }
+        view.drawHierarchy(in: view.bounds, afterScreenUpdates: true)
+        return UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
+    }
+    
+    func image(alpha: CGFloat) -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        draw(at: .zero, blendMode: .normal, alpha: alpha)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage
+    }
 }

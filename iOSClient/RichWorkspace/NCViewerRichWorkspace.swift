@@ -68,7 +68,9 @@ import MarkdownKit
                 if self.richWorkspaceText != metadata.richWorkspace && metadata.richWorkspace != nil {
                     self.appDelegate.activeFiles?.richWorkspaceText = self.richWorkspaceText
                     self.richWorkspaceText = metadata.richWorkspace!
-                    self.textView.attributedText = self.markdownParser.parse(metadata.richWorkspace!)
+                    DispatchQueue.main.async {
+                        self.textView.attributedText = self.markdownParser.parse(metadata.richWorkspace!)
+                    }
                 }
             }
         }

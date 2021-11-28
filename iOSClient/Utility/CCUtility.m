@@ -550,41 +550,6 @@
     [UICKeyChainStore setData:data forKey:@"databaseEncryptionKey" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (BOOL)getCertificateError:(NSString *)account
-{
-    NSString *key = [@"certificateError" stringByAppendingString:account];
-    NSString *error = [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
-    
-    if (error == nil) {
-        return false;
-    }
-    
-    return true;
-}
-
-+ (void)setCertificateError:(NSString *)account
-{
-    // In background do not write the error
-#if !defined(EXTENSION)
-    UIApplicationState state = [[UIApplication sharedApplication] applicationState];
-    if (state == UIApplicationStateBackground || state == UIApplicationStateInactive) {
-        return;
-    }
-    NSString *key = [@"certificateError" stringByAppendingString:account];
-    
-    [UICKeyChainStore setString:@"true" forKey:key service:NCGlobal.shared.serviceShareKeyChain];
-#else
-    return;
-#endif
-}
-
-+ (void)clearCertificateError:(NSString *)account
-{
-    NSString *key = [@"certificateError" stringByAppendingString:account];
-    
-    [UICKeyChainStore setString:nil forKey:key service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getDisableLocalCacheAfterUpload
 {
     return [[UICKeyChainStore stringForKey:@"disableLocalCacheAfterUpload" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
@@ -744,6 +709,23 @@
     [UICKeyChainStore setString:daysString forKey:@"cleanUpDay" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
++ (PDFDisplayDirection)getPDFDisplayDirection
+{
+    NSString *direction = [UICKeyChainStore stringForKey:@"PDFDisplayDirection" service:NCGlobal.shared.serviceShareKeyChain];
+    
+    if (direction == nil) {
+        return kPDFDisplayDirectionVertical;
+    } else {
+        return [direction integerValue];
+    }
+}
+
++ (void)setPDFDisplayDirection:(PDFDisplayDirection)direction
+{
+    NSString *directionString = [@(direction) stringValue];
+    [UICKeyChainStore setString:directionString forKey:@"PDFDisplayDirection" service:NCGlobal.shared.serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------
@@ -775,20 +757,28 @@
     double ti = [convertedDate timeIntervalSinceDate:todayDate];
     ti = ti * -1;
     if (ti < 60) {
-        // This minute
         return NSLocalizedString(@"_less_a_minute_", nil);
     } else if (ti < 3600) {
-        // This hour
         int diff = round(ti / 60);
-        return [NSString stringWithFormat:NSLocalizedString(@"_minutes_ago_", nil), diff];
+        if (diff == 1) {
+            return NSLocalizedString(@"_a_minute_ago_", nil);
+        } else {
+            return [NSString stringWithFormat:NSLocalizedString(@"_minutes_ago_", nil), diff];
+        }
     } else if (ti < 86400) {
-        // This day
         int diff = round(ti / 60 / 60);
-        return[NSString stringWithFormat:NSLocalizedString(@"_hours_ago_", nil), diff];
+        if (diff == 1) {
+            return NSLocalizedString(@"_an_hour_ago_", nil);
+        } else {
+            return[NSString stringWithFormat:NSLocalizedString(@"_hours_ago_", nil), diff];
+        }
     } else if (ti < 86400 * 30) {
-        // This month
         int diff = round(ti / 60 / 60 / 24);
-        return[NSString stringWithFormat:NSLocalizedString(@"_days_ago_", nil), diff];
+        if (diff == 1) {
+            return NSLocalizedString(@"_a_day_ago_", nil);
+        } else {
+            return[NSString stringWithFormat:NSLocalizedString(@"_days_ago_", nil), diff];
+        }
     } else {
         // Older than one month
         NSDateFormatter *df = [[NSDateFormatter alloc] init];
@@ -1005,7 +995,6 @@
     path = [[dirGroup URLByAppendingPathComponent:[[NCGlobal shared] appDatabaseNextcloud]] path];
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:path error:nil];
     
     // create Directory User Data
     path = [[dirGroup URLByAppendingPathComponent:NCGlobal.shared.appUserData] path];
@@ -1050,23 +1039,6 @@
 {
     NSURL *path = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions shared].capabilitiesGroups];
     return path;
-}
-
-+ (NSString *)getStringUser:(NSString *)user urlBase:(NSString *)urlBase
-{
-    NSString *baseUrl = [urlBase lowercaseString];
-    NSString *dirUserBaseUrl = @"";
-
-    if ([user length] && [baseUrl length]) {
-        
-        if ([baseUrl hasPrefix:@"https://"]) baseUrl = [baseUrl substringFromIndex:8];
-        if ([baseUrl hasPrefix:@"http://"]) baseUrl = [baseUrl substringFromIndex:7];
-        
-        dirUserBaseUrl = [NSString stringWithFormat:@"%@-%@", user, baseUrl];
-        dirUserBaseUrl = [[self removeForbiddenCharactersFileSystem:dirUserBaseUrl] lowercaseString];
-    }
-    
-    return dirUserBaseUrl;
 }
 
 // Return the path of directory Documents -> NSDocumentDirectory
@@ -1272,7 +1244,7 @@
 
 + (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase account:(NSString *)account
 {
-    NSString *homeServer = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase account:account];
+    NSString *homeServer = [[NCUtilityFileSystem shared] getHomeServerWithAccount:account];
     NSString *path = [serverUrl stringByReplacingOccurrencesOfString:homeServer withString:@""];
     return path;
 }
@@ -1283,7 +1255,7 @@
         return @"";
     }
     
-    NSString *homeServer = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase account:account];
+    NSString *homeServer = [[NCUtilityFileSystem shared] getHomeServerWithAccount:account];
     NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:homeServer withString:@""], metadataFileName];
     
     if ([fileName hasPrefix:@"/"]) fileName = [fileName substringFromIndex:1];
@@ -1531,7 +1503,7 @@
 
 + (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account urlBase:(NSString *)urlBase
 {
-    NSString *home = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase account:account];
+    NSString *home = [[NCUtilityFileSystem shared] getHomeServerWithAccount:account];
         
     if (e2eEncrypted) {
     
@@ -1549,7 +1521,7 @@
             if (directory.e2eEncrypted == true) {
                 return true;
             }
-            serverUrl = [[NCUtilityFileSystem shared] deletingLastPathComponentWithServerUrl:serverUrl urlBase:urlBase account:account];
+            serverUrl = [[NCUtilityFileSystem shared]  deletingLastPathComponentWithAccount:account serverUrl:serverUrl];
             directory = [[NCManageDatabase shared] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
         }
         
@@ -1651,13 +1623,13 @@
     double latitude = 0;
     double longitude = 0;
     
-    NSDate *date = [NSDate new];
+    NSDate *date = nil;
     long fileSize = 0;
     int pixelY = 0;
     int pixelX = 0;
     NSString *lensModel;
 
-    if (![metadata.typeFile isEqualToString:NCGlobal.shared.metadataTypeFileImage] || ![CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
+    if (![metadata.classFile isEqualToString:@"image"] || ![CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
         completition(latitude, longitude, location, date, lensModel);
         return;
     }
@@ -1672,7 +1644,7 @@
     CFDictionaryRef fileProperties = CGImageSourceCopyProperties(originalSource, nil);
     if (!fileProperties) {
         CFRelease(originalSource);
-        completition(latitude, longitude, location,date, lensModel);
+        completition(latitude, longitude, location, date, lensModel);
         return;
     }
     
@@ -1680,12 +1652,11 @@
     NSNumber *fileSizeNumber = CFDictionaryGetValue(fileProperties, kCGImagePropertyFileSize);
     fileSize = [fileSizeNumber longValue];
     
-    
     CFDictionaryRef imageProperties = CGImageSourceCopyPropertiesAtIndex(originalSource, 0, NULL);
     if (!imageProperties) {
         CFRelease(originalSource);
         CFRelease(fileProperties);
-        completition(latitude, longitude, location,date, lensModel);
+        completition(latitude, longitude, location, date, lensModel);
         return;
     }
 
@@ -1700,6 +1671,10 @@
         NSString *sPixelY = (NSString *)CFDictionaryGetValue(exif, kCGImagePropertyExifPixelYDimension);
         pixelY = [sPixelY intValue];
         lensModel = (NSString *)CFDictionaryGetValue(exif, kCGImagePropertyExifLensModel);
+        dateTime = (NSString *)CFDictionaryGetValue(exif, kCGImagePropertyExifDateTimeOriginal);
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss"];
+        date = [dateFormatter dateFromString:dateTime];
     }
  
     if (tiff) {
@@ -1708,7 +1683,6 @@
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss"];
         date = [dateFormatter dateFromString:dateTime];
-        if (!date) date = metadata.date;
     }
     
     if (gps) {

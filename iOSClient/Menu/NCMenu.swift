@@ -30,6 +30,12 @@ class NCMenu: UITableViewController {
 
     var actions = [NCMenuAction]()
 
+    static func makeNCMenu(with actions: [NCMenuAction]) -> NCMenu {
+        let menuViewController = UIStoryboard(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+        menuViewController.actions = actions
+        return menuViewController
+    }
+    
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -89,7 +95,8 @@ class NCMenu: UITableViewController {
 extension NCMenu: FloatingPanelControllerDelegate {
 
     func floatingPanel(_ vc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout? {
-        return NCMenuFloatingPanelLayout(height: self.actions.count * 60 + Int((UIApplication.shared.keyWindow?.rootViewController!.view.safeAreaInsets.bottom)!))
+        let safeAreaInsetsBottom = Int(UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0)
+        return NCMenuFloatingPanelLayout(height: self.actions.count * 60 + safeAreaInsetsBottom)
     }
     
     func floatingPanel(_ vc: FloatingPanelController, behaviorFor newCollection: UITraitCollection) -> FloatingPanelBehavior? {

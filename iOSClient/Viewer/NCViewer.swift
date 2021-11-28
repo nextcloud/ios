@@ -41,30 +41,31 @@ class NCViewer: NSObject {
         self.metadatas = metadatas
     
         var editor = editor
+        var xxxxxxx = NCCommunicationCommon.shared.getInternalTypeIdentifier(typeIdentifier: metadata.contentType)
         
         // IMAGE AUDIO VIDEO
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             
             if let navigationController = viewController.navigationController {
                             
-                let viewerImagePageContainer:NCViewerImage = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateInitialViewController() as! NCViewerImage
+                let viewerMediaPageContainer:NCViewerMediaPage = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as! NCViewerMediaPage
                 var index = 0
                 for medatasImage in metadatas {
                     if medatasImage.ocId == metadata.ocId {
-                        viewerImagePageContainer.currentIndex = index
+                        viewerMediaPageContainer.currentIndex = index
                         break
                     }
                     index += 1
                 }
-                viewerImagePageContainer.metadatas = metadatas
-                navigationController.pushViewController(viewerImagePageContainer, animated: true)
+                viewerMediaPageContainer.metadatas = metadatas
+                navigationController.pushViewController(viewerMediaPageContainer, animated: true)
             }
     
             return
         }
         
         // DOCUMENTS
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileDocument {
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.document.rawValue {
                 
             // PDF
             if metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {

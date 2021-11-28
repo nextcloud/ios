@@ -31,14 +31,13 @@ import Queuer
 extension NCCollectionViewCommon {
 
     func toggleMenu(metadata: tableMetadata, imageIcon: UIImage?) {
-        
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+
         var actions = [NCMenuAction]()
-        
+
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
-        let serverUrl = metadata.serverUrl+"/"+metadata.fileName
+        let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
-        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
         var isOffline = false
         
         var titleDelete = NSLocalizedString("_delete_", comment: "")
@@ -99,7 +98,7 @@ extension NCCollectionViewCommon {
                 title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
                 action: { menuAction in
-                    NCNetworking.shared.favoriteMetadata(metadata, urlBase: self.appDelegate.urlBase) { (errorCode, errorDescription) in
+                    NCNetworking.shared.favoriteMetadata(metadata) { (errorCode, errorDescription) in
                         if errorCode != 0 {
                             NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
@@ -117,7 +116,7 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_details_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "info"),
                     action: { menuAction in
-                        NCFunctionCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
+                        NCFunctionCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: .activity)
                     }
                 )
             )
@@ -158,7 +157,7 @@ extension NCCollectionViewCommon {
         //
         // OPEN with external editor
         //
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileDocument && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument))  {
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument))  {
             
             var editor = ""
             var title = ""
@@ -205,7 +204,7 @@ extension NCCollectionViewCommon {
         //
         // PRINT
         //
-        if (metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && metadata.contentType != "image/svg+xml") || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
+        if (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && metadata.contentType != "image/svg+xml") || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_print_", comment: ""),
@@ -220,7 +219,7 @@ extension NCCollectionViewCommon {
         //
         // SAVE
         //
-        if (metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && metadata.contentType != "image/svg+xml") || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
+        if (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && metadata.contentType != "image/svg+xml") || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             var title: String = NSLocalizedString("_save_selected_files_", comment: "")
             var icon = NCUtility.shared.loadImage(named: "square.and.arrow.down")
             let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
@@ -252,7 +251,7 @@ extension NCCollectionViewCommon {
         // SAVE AS SCAN
         //
         if #available(iOS 13.0, *) {
-            if (metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && metadata.contentType != "image/svg+xml") {
+            if (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && metadata.contentType != "image/svg+xml") {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_save_as_scan_", comment: ""),
@@ -340,7 +339,7 @@ extension NCCollectionViewCommon {
         // USE AS BACKGROUND
         //
         if #available(iOS 13.0, *) {
-            if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && self.layoutKey == NCGlobal.shared.layoutViewFiles && !NCBrandOptions.shared.disable_background_image {
+            if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && self.layoutKey == NCGlobal.shared.layoutViewFiles && !NCBrandOptions.shared.disable_background_image {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_use_as_background_", comment: ""),
@@ -362,7 +361,7 @@ extension NCCollectionViewCommon {
         // MODIFY
         //
         if #available(iOS 13.0, *) {
-            if !isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage) {
+            if !isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_modify_", comment: ""),
@@ -385,10 +384,10 @@ extension NCCollectionViewCommon {
                 action: { menuAction in
                     let alertController = UIAlertController(title: "", message: metadata.fileNameView + "\n\n" + NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
-                        NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: false)
+                        NCOperationQueue.shared.delete(metadata: metadata, onlyLocalCache: false)
                     })
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (action:UIAlertAction) in
-                        NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: true)
+                        NCOperationQueue.shared.delete(metadata: metadata, onlyLocalCache: true)
                     })
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })
                     self.present(alertController, animated: true, completion:nil)
@@ -448,22 +447,13 @@ extension NCCollectionViewCommon {
             )
         }
         
-        menuViewController.actions = actions
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-
-        present(menuPanelController, animated: true, completion: nil)
+        presentMenu(with: actions)
     }
     
     func toggleMenuSelect() {
-        
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+
         var actions = [NCMenuAction]()
-       
+
         //
         // SELECT ALL
         //
@@ -501,7 +491,7 @@ extension NCCollectionViewCommon {
                 action: { menuAction in
                     for ocId in self.selectOcId {
                         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                            if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage || metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
+                            if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
                                 if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                                     NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
                                 } else {
@@ -571,7 +561,7 @@ extension NCCollectionViewCommon {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
                         for ocId in self.selectOcId {
                             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: false)
+                                NCOperationQueue.shared.delete(metadata: metadata, onlyLocalCache: false)
                             }
                         }
                         self.tapSelect(sender: self)
@@ -579,7 +569,7 @@ extension NCCollectionViewCommon {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (action:UIAlertAction) in
                         for ocId in self.selectOcId {
                             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: true)
+                                NCOperationQueue.shared.delete(metadata: metadata, onlyLocalCache: true)
                             }
                         }
                         self.tapSelect(sender: self)
@@ -589,16 +579,7 @@ extension NCCollectionViewCommon {
                 }
             )
         )
-        
-        menuViewController.actions = actions
 
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-
-        present(menuPanelController, animated: true, completion: nil)
+        presentMenu(with: actions)
     }
 }
-

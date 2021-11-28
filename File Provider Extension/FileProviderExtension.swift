@@ -119,7 +119,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             metadata.fileName = "root"
             metadata.fileNameView = "root"
             metadata.serverUrl = fileProviderData.shared.homeServerUrl
-            metadata.typeFile = NCGlobal.shared.metadataTypeFileDirectory
+            metadata.classFile = NCCommunicationCommon.typeClassFile.directory.rawValue
             
             return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
             
@@ -347,7 +347,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 
                 fileURL.stopAccessingSecurityScopedResource()
                                 
-                let metadata = NCManageDatabase.shared.createMetadata(account: fileProviderData.shared.account, fileName: fileName, fileNameView: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, urlBase: fileProviderData.shared.accountUrlBase, url: "", contentType: "", livePhoto: false)
+                let metadata = NCManageDatabase.shared.createMetadata(account: fileProviderData.shared.account, user: fileProviderData.shared.user, userId: fileProviderData.shared.userId, fileName: fileName, fileNameView: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, urlBase: fileProviderData.shared.accountUrlBase, url: "", contentType: "", livePhoto: false)
                 metadata.session = NCNetworking.shared.sessionIdentifierBackgroundExtension
                 metadata.size = size
                 metadata.status = NCGlobal.shared.metadataStatusUploading

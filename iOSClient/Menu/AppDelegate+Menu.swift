@@ -31,7 +31,6 @@ extension AppDelegate {
     
     func toggleMenu(viewController: UIViewController) {
         
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions: [NCMenuAction] = []
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -295,15 +294,7 @@ extension AppDelegate {
                 )
             }
         }
-
-        menuViewController.actions = actions
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = viewController
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-
-        viewController.present(menuPanelController, animated: true, completion: nil)
+        
+        viewController.presentMenu(with: actions)
     }
 }

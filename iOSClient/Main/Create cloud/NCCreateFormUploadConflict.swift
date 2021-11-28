@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import NCCommunication
 
 @objc protocol NCCreateFormUploadConflictDelegate {
     @objc func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?)
@@ -48,9 +49,7 @@ extension NCCreateFormUploadConflictDelegate {
     @IBOutlet weak var viewButton: UIView!
     @IBOutlet weak var buttonCancel: UIButton!
     @IBOutlet weak var buttonContinue: UIButton!
-    
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
+        
     @objc var metadatasNOConflict: [tableMetadata]
     @objc var metadatasUploadInConflict: [tableMetadata]
     @objc var metadatasMOV: [tableMetadata]
@@ -59,10 +58,12 @@ extension NCCreateFormUploadConflictDelegate {
     @objc var alwaysNewFileNameNumber: Bool = false
     @objc var textLabelDetailNewFile: String?
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadatasConflictNewFiles: [String] = []
     var metadatasConflictAlreadyExistingFiles: [String] = []
     var fileNamesPath: [String: String] = [:]
-    
+    var blurView: UIVisualEffectView!
+
     // MARK: - View Life Cycle
 
     @objc required init?(coder aDecoder: NSCoder) {
@@ -105,8 +106,19 @@ extension NCCreateFormUploadConflictDelegate {
         buttonContinue.layer.masksToBounds = true
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
+        buttonContinue.setTitleColor(NCBrandColor.shared.gray, for: .normal)
+
+        let blurEffect = UIBlurEffect(style: .light)
+        blurView = UIVisualEffectView(effect: blurEffect)
+        blurView.frame = view.bounds
+        blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(blurView)
         
         changeTheming()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.conflictDialog(fileCount: self.metadatasUploadInConflict.count)
+        }
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -123,6 +135,58 @@ extension NCCreateFormUploadConflictDelegate {
         tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         viewSwitch.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         viewButton.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+    }
+    
+    // MARK: - ConflictDialog
+    
+    func conflictDialog(fileCount: Int) {
+        
+        var tile = ""
+        var titleReplace = ""
+        var titleKeep = ""
+
+        if fileCount == 1 {
+            tile = NSLocalizedString("_single_file_conflict_title_", comment: "")
+            titleReplace = NSLocalizedString("_replace_action_title_", comment: "")
+            titleKeep = NSLocalizedString("_keep_both_action_title_", comment: "")
+        } else {
+            tile = String.localizedStringWithFormat(NSLocalizedString("_multi_file_conflict_title_", comment: ""), String(fileCount))
+            titleReplace = NSLocalizedString("_replace_all_action_title_", comment: "")
+            titleKeep = NSLocalizedString("_keep_both_for_all_action_title_", comment: "")
+        }
+        
+        let conflictAlert = UIAlertController(title: tile, message: "", preferredStyle: .alert)
+
+        // REPLACE
+        conflictAlert.addAction(UIAlertAction(title: titleReplace, style: .default, handler: { action in
+                        
+            for metadata in self.metadatasUploadInConflict {
+                self.metadatasNOConflict.append(metadata)
+            }
+            
+            self.buttonContinueTouch(action)
+        }))
+        
+        // KEEP BOTH
+        conflictAlert.addAction(UIAlertAction(title: titleKeep, style: .default, handler: { action in
+            
+            for metadata in self.metadatasUploadInConflict {
+                self.metadatasConflictNewFiles.append(metadata.ocId)
+                self.metadatasConflictAlreadyExistingFiles.append(metadata.ocId)
+            }
+            
+            self.buttonContinueTouch(action)
+        }))
+        
+        conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_keep_existing_action_title_", comment: ""), style: .cancel, handler: { (_) in
+            self.dismiss(animated: true, completion: nil)
+        }))
+        
+        conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_more_action_title_", comment: ""), style: .default, handler: { (_) in
+            self.blurView.removeFromSuperview()
+        }))
+        
+        self.present(conflictAlert, animated: true, completion: nil)
     }
     
     // MARK: - Action
@@ -165,7 +229,7 @@ extension NCCreateFormUploadConflictDelegate {
             }
             
             switchAlreadyExistingFiles.isOn = true
-            NCContentPresenter.shared.messageNotification("_info_", description: "_file_not_rewite_doc_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, forced: true)
+            NCContentPresenter.shared.messageNotification("_info_", description: "_file_not_rewite_doc_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
         }
         
         tableView.reloadData()
@@ -182,34 +246,43 @@ extension NCCreateFormUploadConflictDelegate {
         
         for metadata in metadatasUploadInConflict {
             
-            // new filename + num
+            // keep both
             if metadatasConflictNewFiles.contains(metadata.ocId) && metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
             
                 let fileNameMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
+                var fileName = metadata.fileNameView
+                let fileNameExtension = (fileName as NSString).pathExtension.lowercased()
+                let fileNameWithoutExtension = (fileName as NSString).deletingPathExtension
+                if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
+                    fileName = fileNameWithoutExtension + ".jpg"
+                }
+                let oldPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+                let newFileName = NCUtilityFileSystem.shared.createFileName(fileName, serverUrl: metadata.serverUrl, account: metadata.account)
                 
-                let newFileName = NCUtilityFileSystem.shared.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
                 metadata.ocId = UUID().uuidString
                 metadata.fileName = newFileName
                 metadata.fileNameView = newFileName
                 
+                // This is not an asset - [file]
+                if metadata.assetLocalIdentifier == "" {
+                    let newPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: newFileName)
+                    CCUtility.moveFile(atPath: oldPath, toPath: newPath)
+                }
+                
                 metadatasNOConflict.append(metadata)
                 
-                // MOV
-                for metadataMOV in metadatasMOV {
-                    if metadataMOV.fileName == fileNameMOV {
-                        
-                        let oldPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView)
-                        let newFileNameMOV = (newFileName as NSString).deletingPathExtension + ".mov"
-                        
-                        metadataMOV.ocId = UUID().uuidString
-                        metadataMOV.fileName = newFileNameMOV
-                        metadataMOV.fileNameView = newFileNameMOV
-                        
-                        let newPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: newFileNameMOV)
-                        CCUtility.moveFile(atPath: oldPath, toPath: newPath)
-                        
-                        break
-                    }
+                // MOV (Live Photo)
+                if let metadataMOV = self.metadatasMOV.first(where: { $0.fileName == fileNameMOV }) {
+                    
+                    let oldPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView)
+                    let newFileNameMOV = (newFileName as NSString).deletingPathExtension + ".mov"
+                    
+                    metadataMOV.ocId = UUID().uuidString
+                    metadataMOV.fileName = newFileNameMOV
+                    metadataMOV.fileNameView = newFileNameMOV
+                    
+                    let newPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: newFileNameMOV)
+                    CCUtility.moveFile(atPath: oldPath, toPath: newPath)
                 }
                 
             // overwrite
@@ -239,11 +312,8 @@ extension NCCreateFormUploadConflictDelegate {
         metadatasNOConflict.append(contentsOf: metadatasMOV)
         
         if delegate != nil {
-            
             delegate?.dismissCreateFormUploadConflict(metadatas: metadatasNOConflict)
-            
         } else {
-            
             appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadatasNOConflict)
         }
                 
@@ -387,7 +457,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             } else if FileManager().fileExists(atPath: filePathNewFile) {
                 
                 do {
-                    if metadataNewFile.typeFile == NCGlobal.shared.metadataTypeFileImage {
+                    if metadataNewFile.classFile ==  NCCommunicationCommon.typeClassFile.image.rawValue {
                         let data = try Data(contentsOf: URL(fileURLWithPath: filePathNewFile))
                         if let image = UIImage(data: data) {
                             cell.imageNewFile.image = image
@@ -477,10 +547,10 @@ extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
         
         if result {
             buttonContinue.isEnabled = true
-            buttonContinue.setTitleColor(.black, for: .normal)
+            buttonContinue.setTitleColor(NCBrandColor.shared.label, for: .normal)
         } else {
             buttonContinue.isEnabled = false
-            buttonContinue.setTitleColor(.lightGray, for: .normal)
+            buttonContinue.setTitleColor(NCBrandColor.shared.gray, for: .normal)
         }
     }
 }

@@ -80,7 +80,7 @@ class NCViewerProviderContextMenu: UIViewController  {
             }
              
             // VIEW IMAGE
-            if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 
                 viewImage(metadata: metadata)
             }
@@ -92,18 +92,18 @@ class NCViewerProviderContextMenu: UIViewController  {
             }
             
             // VIEW VIDEO
-            if metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 viewVideo(metadata: metadata)
             }
             
             // PLAY SOUND
-            if metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 playSound(metadata: metadata)
             }
             
             // AUTO DOWNLOAD VIDEO / AUDIO
-            // if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio || metadata.contentType == "application/pdf") {
-            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio) {
+            // if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || metadata.contentType == "application/pdf") {
+            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
                 
                 var maxDownload: UInt64 = 0
                 
@@ -142,16 +142,16 @@ class NCViewerProviderContextMenu: UIViewController  {
         imageView.contentMode = .scaleAspectFill
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
      
         NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(downloadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
@@ -189,11 +189,11 @@ class NCViewerProviderContextMenu: UIViewController  {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
                 if errorCode == 0 && metadata.ocId == self.metadata?.ocId {
-                    if metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
+                    if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
                         viewImage(metadata: metadata)
-                    } else if metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo {
+                    } else if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
                         viewVideo(metadata: metadata)
-                    } else if metadata.typeFile == NCGlobal.shared.metadataTypeFileAudio {
+                    } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
                         playSound(metadata: metadata)
                     }
                 }

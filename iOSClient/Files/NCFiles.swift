@@ -45,7 +45,7 @@ class NCFiles: NCCollectionViewCommon  {
     override func viewWillAppear(_ animated: Bool) {
         
         if isRoot {
-            serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+            serverUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
             titleCurrentFolder = getNavigationTitle()
         }
         
@@ -57,7 +57,7 @@ class NCFiles: NCCollectionViewCommon  {
     override func initialize() {
         
         if isRoot {
-            serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+            serverUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
             titleCurrentFolder = getNavigationTitle()
             reloadDataSourceNetwork(forced: true)
         }
@@ -110,13 +110,15 @@ class NCFiles: NCCollectionViewCommon  {
                 }
             }
             
-            self.refreshControl.endRefreshing()
-            self.isReloadDataSourceNetworkInProgress = false
-            self.richWorkspaceText = tableDirectory?.richWorkspace
-            if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
-                self.reloadDataSource()
-            } else {
-                self.collectionView?.reloadData()
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.isReloadDataSourceNetworkInProgress = false
+                self.richWorkspaceText = tableDirectory?.richWorkspace
+                if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
+                    self.reloadDataSource()
+                } else {
+                    self.collectionView?.reloadData()
+                }
             }
         }
     }

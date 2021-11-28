@@ -6,6 +6,7 @@
 //  Copyright © 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -24,7 +25,11 @@
 import UIKit
 import RealmSwift
 
-class tableAccount: Object {
+protocol DateCompareable {
+    var dateKey: Date { get }
+}
+
+class tableAccount: Object, NCUserBaseUrl {
 
     @objc dynamic var account = ""
     @objc dynamic var active: Bool = false
@@ -103,8 +108,9 @@ class tableAccount: Object {
     }
 }
 
-class tableActivity: Object {
-    
+class tableActivity: Object, DateCompareable {
+    var dateKey: Date { date as Date }
+
     @objc dynamic var account = ""
     @objc dynamic var idPrimaryKey = ""
     @objc dynamic var action = "Activity"
@@ -125,9 +131,17 @@ class tableActivity: Object {
     @objc dynamic var note = ""
     @objc dynamic var selector = ""
     @objc dynamic var verbose: Bool = false
-    
+
     override static func primaryKey() -> String {
         return "idPrimaryKey"
+    }
+}
+
+class tableActivityLatestId: Object {
+    @objc dynamic var account = ""
+    @objc dynamic var mostRecentlyLoadedActivityId: Int = 0
+    override static func primaryKey() -> String {
+        return "account"
     }
 }
 
@@ -143,7 +157,7 @@ class tableActivityPreview: Object {
     @objc dynamic var fileId: Int = 0
     @objc dynamic var view = ""
     @objc dynamic var isMimeTypeIcon: Bool = false
-    
+
     override static func primaryKey() -> String {
         return "idPrimaryKey"
     }
@@ -166,6 +180,18 @@ class tableActivitySubjectRich: Object {
     }
 }
 
+class tableAvatar: Object {
+    
+    @objc dynamic var date = NSDate()
+    @objc dynamic var etag = ""
+    @objc dynamic var fileName = ""
+    @objc dynamic var loaded: Bool = false
+
+    override static func primaryKey() -> String {
+        return "fileName"
+    }
+}
+
 class tableCapabilities: Object {
     
     @objc dynamic var account = ""
@@ -183,13 +209,16 @@ class tableChunk: Object {
     @objc dynamic var fileName = ""
     @objc dynamic var index = ""
     @objc dynamic var ocId = ""
+    @objc dynamic var size: Int64 = 0
 
     override static func primaryKey() -> String {
         return "index"
     }
 }
 
-class tableComments: Object {
+class tableComments: Object, DateCompareable {
+    var dateKey: Date { creationDateTime as Date }
+    
     
     @objc dynamic var account = ""
     @objc dynamic var actorDisplayName = ""
@@ -322,12 +351,13 @@ class tableLocalFile: Object {
     }
 }
 
-class tableMetadata: Object {
+class tableMetadata: Object, NCUserBaseUrl {
     
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
     @objc dynamic var checksums = ""
     @objc dynamic var chunk: Bool = false
+    @objc dynamic var classFile = ""
     @objc dynamic var commentsUnread: Bool = false
     @objc dynamic var contentType = ""
     @objc dynamic var creationDate = NSDate()
@@ -339,6 +369,7 @@ class tableMetadata: Object {
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var edited: Bool = false
     @objc dynamic var etag = ""
+    @objc dynamic var etagResource = ""
     @objc dynamic var ext = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileId = ""
@@ -353,6 +384,7 @@ class tableMetadata: Object {
     @objc dynamic var ocId = ""
     @objc dynamic var ownerId = ""
     @objc dynamic var ownerDisplayName = ""
+    @objc dynamic var path = ""
     @objc dynamic var permissions = ""
     @objc dynamic var quotaUsedBytes: Int64 = 0
     @objc dynamic var quotaAvailableBytes: Int64 = 0
@@ -363,16 +395,19 @@ class tableMetadata: Object {
     @objc dynamic var sessionError = ""
     @objc dynamic var sessionSelector = ""
     @objc dynamic var sessionTaskIdentifier: Int = 0
-    @objc dynamic var sharePermissions = ""
+    @objc dynamic var sharePermissionsCollaborationServices: Int = 0
+    let sharePermissionsCloudMesh = List<String>()
+    let shareType = List<Int>()
     @objc dynamic var size: Int64 = 0
     @objc dynamic var status: Int = 0
     @objc dynamic var trashbinFileName = ""
     @objc dynamic var trashbinOriginalLocation = ""
     @objc dynamic var trashbinDeletionTime = NSDate()
-    @objc dynamic var typeFile = ""
     @objc dynamic var uploadDate = NSDate()
     @objc dynamic var url = ""
     @objc dynamic var urlBase = ""
+    @objc dynamic var user = ""
+    @objc dynamic var userId = ""
 
     override static func primaryKey() -> String {
         return "ocId"
@@ -453,6 +488,7 @@ class tableTag: Object {
 class tableTrash: Object {
     
     @objc dynamic var account = ""
+    @objc dynamic var classFile = ""
     @objc dynamic var contentType = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
@@ -462,7 +498,6 @@ class tableTrash: Object {
     @objc dynamic var hasPreview: Bool = false
     @objc dynamic var iconName = ""
     @objc dynamic var size: Int64 = 0
-    @objc dynamic var typeFile = ""
     @objc dynamic var trashbinFileName = ""
     @objc dynamic var trashbinOriginalLocation = ""
     @objc dynamic var trashbinDeletionTime = NSDate()
@@ -489,6 +524,7 @@ class tableUserStatus: Object {
 class tableVideo: Object {
     
     @objc dynamic var account = ""
+    @objc dynamic var duration: Int64 = 0
     @objc dynamic var ocId = ""
     @objc dynamic var time: Int64 = 0
     

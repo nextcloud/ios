@@ -6,6 +6,7 @@
 //  Copyright © 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -25,6 +26,7 @@ import UIKit
 import RealmSwift
 import NCCommunication
 import SwiftyJSON
+import CoreMedia
 
 class NCManageDatabase: NSObject {
     @objc static let shared: NCManageDatabase = {
@@ -41,6 +43,17 @@ class NCManageDatabase: NSObject {
         let bundlePathExtension: String = bundleUrl.pathExtension
         let isAppex: Bool = bundlePathExtension == "appex"
         
+        // Disable file protection for directory DB
+        // https://docs.mongodb.com/realm/sdk/ios/examples/configure-and-open-a-realm/#std-label-ios-open-a-local-realm
+        if let folderPathURL = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud) {
+            let folderPath = folderPathURL.path
+            do {
+                try FileManager.default.setAttributes([FileAttributeKey.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], ofItemAtPath: folderPath)
+            } catch {
+                print("Dangerous error")
+            }
+        }
+      
         if isAppex {
             
             // App Extension config
@@ -48,7 +61,7 @@ class NCManageDatabase: NSObject {
             let config = Realm.Configuration(
                 fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + NCGlobal.shared.databaseDefault),
                 schemaVersion: NCGlobal.shared.databaseSchemaVersion,
-                objectTypes: [tableMetadata.self, tableLocalFile.self, tableDirectory.self, tableTag.self, tableAccount.self, tableCapabilities.self, tableE2eEncryption.self, tableE2eEncryptionLock.self, tableShare.self, tableChunk.self]
+                objectTypes: [tableMetadata.self, tableLocalFile.self, tableDirectory.self, tableTag.self, tableAccount.self, tableCapabilities.self, tableE2eEncryption.self, tableE2eEncryptionLock.self, tableShare.self, tableChunk.self, tableAvatar.self]
             )
             
             Realm.Configuration.defaultConfiguration = config
@@ -87,31 +100,20 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableActivity.className())
                         migration.deleteData(forType: tableActivityPreview.className())
                         migration.deleteData(forType: tableActivitySubjectRich.className())
-                        migration.deleteData(forType: tableDirectEditingCreators.className())
-                        migration.deleteData(forType: tableDirectEditingEditors.className())
                         migration.deleteData(forType: tableExternalSites.className())
                         migration.deleteData(forType: tableGPS.className())
-                        migration.deleteData(forType: tableShare.className())
                         migration.deleteData(forType: tableTag.className())
-                        migration.deleteData(forType: tableTrash.className())
                     }
                     
                     if oldSchemaVersion < 120 {
-                        migration.deleteData(forType: tableE2eEncryptionLock.className())
                         migration.deleteData(forType: tableCapabilities.className())
                         migration.deleteData(forType: tableComments.className())
-                        migration.deleteData(forType: tableDirectory.className())
                     }
                     
                     if oldSchemaVersion < 134 {
-                        migration.deleteData(forType: tableShare.className())
                         migration.deleteData(forType: tableDirectEditingCreators.className())
                         migration.deleteData(forType: tableDirectEditingEditors.className())
                         migration.deleteData(forType: tableExternalSites.className())
-                    }
-                    
-                    if oldSchemaVersion < 139 {
-                        migration.deleteData(forType: tableMetadata.className())
                     }
                     
                     if oldSchemaVersion < 141 {
@@ -127,9 +129,24 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if oldSchemaVersion < 183 {
+                    if oldSchemaVersion < 212 {
                         migration.deleteData(forType: tableDirectory.className())
+                        migration.deleteData(forType: tableE2eEncryption.className())
+                        migration.deleteData(forType: tableE2eEncryptionLock.className())
                         migration.deleteData(forType: tableMetadata.className())
+                        migration.deleteData(forType: tableShare.className())
+                        migration.deleteData(forType: tableTrash.className())
+                        migration.deleteData(forType: tableVideo.className())
+                        // Delete OLD avatar image
+                        if var pathUrl = CCUtility.getDirectoryGroup() {
+                            pathUrl.appendPathComponent(NCGlobal.shared.appUserData)
+                            do {
+                                let fileURLs = try FileManager.default.contentsOfDirectory(at: pathUrl, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
+                                for fileURL in fileURLs {
+                                    try FileManager.default.removeItem(at: fileURL)
+                                }
+                            } catch { }
+                        }
                     }
                     
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
@@ -149,7 +166,7 @@ class NCManageDatabase: NSObject {
                 if let databaseFilePath = databaseFilePath {
                     do {
                         #if !EXTENSION
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, forced: true)
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
                         #endif
                         try FileManager.default.removeItem(at: databaseFilePath)
                     } catch {}
@@ -171,7 +188,7 @@ class NCManageDatabase: NSObject {
             if let databaseFilePath = databaseFilePath {
                 do {
                     #if !EXTENSION
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, forced: true)
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
                     #endif
                     try FileManager.default.removeItem(at: databaseFilePath)
                 } catch {}
@@ -185,7 +202,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Utility Database
 
-    @objc func clearTable(_ table : Object.Type, account: String?) {
+    @objc func clearTable(_ table : Object.Type, account: String? = nil) {
         
         let realm = try! Realm()
 
@@ -209,8 +226,10 @@ class NCManageDatabase: NSObject {
     @objc func clearDatabase(account: String?, removeAccount: Bool) {
         
         self.clearTable(tableActivity.self, account: account)
+        self.clearTable(tableActivityLatestId.self, account: account)
         self.clearTable(tableActivityPreview.self, account: account)
         self.clearTable(tableActivitySubjectRich.self, account: account)
+        self.clearTable(tableAvatar.self)
         self.clearTable(tableCapabilities.self, account: account)
         self.clearTable(tableChunk.self, account: account)
         self.clearTable(tableComments.self, account: account)
@@ -418,9 +437,14 @@ class NCManageDatabase: NSObject {
         }
         
         if result.autoUploadDirectory.count > 0 {
-            return result.autoUploadDirectory
+            // FIX change webdav -> /dav/files/
+            if result.autoUploadDirectory.contains("/webdav") {
+                return NCUtilityFileSystem.shared.getHomeServer(account: account)
+            } else {
+                return result.autoUploadDirectory
+            }
         } else {
-            return NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, account: account)
+            return NCUtilityFileSystem.shared.getHomeServer(account: account)
         }
     }
 
@@ -745,7 +769,7 @@ class NCManageDatabase: NSObject {
     //MARK: Table Activity
 
     @objc func addActivity(_ activities: [NCCommunicationActivity], account: String) {
-    
+
         let realm = try! Realm()
 
         do {
@@ -764,56 +788,61 @@ class NCManageDatabase: NSObject {
                     addObjectActivity.user = activity.user
                     addObjectActivity.subject = activity.subject
                     
-                    if let subject_rich = activity.subject_rich {
-                        if let json = JSON(subject_rich).array {
-                            addObjectActivity.subjectRich = json[0].stringValue
-                            if json.count > 1 {
-                                if let dict = json[1].dictionary {
-                                    for (key, value) in dict {
-                                        let addObjectActivitySubjectRich = tableActivitySubjectRich()
-                                        let dict = value as JSON
-                                        addObjectActivitySubjectRich.account = account
-                                        if dict["id"].intValue > 0 {
-                                            addObjectActivitySubjectRich.id = String(dict["id"].intValue)
-                                        } else {
-                                            addObjectActivitySubjectRich.id = dict["id"].stringValue
-                                        }
-                                        addObjectActivitySubjectRich.name = dict["name"].stringValue
-                                        addObjectActivitySubjectRich.idPrimaryKey = account + String(activity.idActivity) + addObjectActivitySubjectRich.id + addObjectActivitySubjectRich.name
-                                        addObjectActivitySubjectRich.key = key
-                                        addObjectActivitySubjectRich.idActivity = activity.idActivity
-                                        addObjectActivitySubjectRich.link = dict["link"].stringValue
-                                        addObjectActivitySubjectRich.path = dict["path"].stringValue
-                                        addObjectActivitySubjectRich.type = dict["type"].stringValue
-
-                                        realm.add(addObjectActivitySubjectRich, update: .all)
-                                    }
+                    if let subject_rich = activity.subject_rich,
+                       let json = JSON(subject_rich).array {
+                        
+                        addObjectActivity.subjectRich = json[0].stringValue
+                        if json.count > 1,
+                           let dict = json[1].dictionary {
+                            
+                            for (key, value) in dict {
+                                let addObjectActivitySubjectRich = tableActivitySubjectRich()
+                                let dict = value as JSON
+                                addObjectActivitySubjectRich.account = account
+                                
+                                if dict["id"].intValue > 0 {
+                                    addObjectActivitySubjectRich.id = String(dict["id"].intValue)
+                                } else {
+                                    addObjectActivitySubjectRich.id = dict["id"].stringValue
                                 }
+                                
+                                addObjectActivitySubjectRich.name = dict["name"].stringValue
+                                addObjectActivitySubjectRich.idPrimaryKey = account
+                                + String(activity.idActivity)
+                                + addObjectActivitySubjectRich.id
+                                + addObjectActivitySubjectRich.name
+                                
+                                addObjectActivitySubjectRich.key = key
+                                addObjectActivitySubjectRich.idActivity = activity.idActivity
+                                addObjectActivitySubjectRich.link = dict["link"].stringValue
+                                addObjectActivitySubjectRich.path = dict["path"].stringValue
+                                addObjectActivitySubjectRich.type = dict["type"].stringValue
+                                
+                                realm.add(addObjectActivitySubjectRich, update: .all)
                             }
                         }
                     }
                     
-                    if let previews = activity.previews {
-                        if let json = JSON(previews).array {
-                            for preview in json {
-                                let addObjectActivityPreview = tableActivityPreview()
-                                
-                                addObjectActivityPreview.account = account
-                                addObjectActivityPreview.idActivity = activity.idActivity
-                                addObjectActivityPreview.fileId = preview["fileId"].intValue
-                                addObjectActivityPreview.filename = preview["filename"].stringValue
-                                addObjectActivityPreview.idPrimaryKey = account + String(activity.idActivity) + String(addObjectActivityPreview.fileId)
-                                addObjectActivityPreview.source = preview["source"].stringValue
-                                addObjectActivityPreview.link = preview["link"].stringValue
-                                addObjectActivityPreview.mimeType = preview["mimeType"].stringValue
-                                addObjectActivityPreview.view = preview["view"].stringValue
-                                addObjectActivityPreview.isMimeTypeIcon = preview["isMimeTypeIcon"].boolValue
-                                
-                                realm.add(addObjectActivityPreview, update: .all)
-                            }
+                    if let previews = activity.previews,
+                       let json = JSON(previews).array {
+                        for preview in json {
+                            let addObjectActivityPreview = tableActivityPreview()
+                            
+                            addObjectActivityPreview.account = account
+                            addObjectActivityPreview.idActivity = activity.idActivity
+                            addObjectActivityPreview.fileId = preview["fileId"].intValue
+                            addObjectActivityPreview.filename = preview["filename"].stringValue
+                            addObjectActivityPreview.idPrimaryKey = account + String(activity.idActivity) + String(addObjectActivityPreview.fileId)
+                            addObjectActivityPreview.source = preview["source"].stringValue
+                            addObjectActivityPreview.link = preview["link"].stringValue
+                            addObjectActivityPreview.mimeType = preview["mimeType"].stringValue
+                            addObjectActivityPreview.view = preview["view"].stringValue
+                            addObjectActivityPreview.isMimeTypeIcon = preview["isMimeTypeIcon"].boolValue
+
+                            realm.add(addObjectActivityPreview, update: .all)
                         }
                     }
-                    
+
                     addObjectActivity.icon = activity.icon
                     addObjectActivity.link = activity.link
                     addObjectActivity.message = activity.message
@@ -834,22 +863,14 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         
         let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "idActivity", ascending: false)
-        let allActivity = Array(results.map { tableActivity.init(value:$0) })
-        if filterFileId != nil {
-            var resultsFilter: [tableActivity] = []
-            for result in results {
-                let resultsActivitySubjectRich = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d", result.account, result.idActivity)
-                for resultActivitySubjectRich in resultsActivitySubjectRich {
-                    if filterFileId!.contains(resultActivitySubjectRich.id) && resultActivitySubjectRich.key == "file" {
-                        resultsFilter.append(result)
-                        break
-                    }
-                }
-            }
-            return(all: allActivity, filter: Array(resultsFilter.map { tableActivity.init(value:$0) }))
-        } else {
-            return(all: allActivity, filter: allActivity)
+        let allActivity = Array(results.map(tableActivity.init))
+        guard let filterFileId = filterFileId else {
+            return (all: allActivity, filter: allActivity)
         }
+
+        // comments are loaded seperately, see NCManageDatabase.getComments
+        let filtered = allActivity.filter({ String($0.objectId) == filterFileId && $0.type != "comments" })
+        return (all: allActivity, filter: filtered)
     }
     
     @objc func getActivitySubjectRich(account: String, idActivity: Int, key: String) -> tableActivitySubjectRich? {
@@ -884,16 +905,132 @@ class NCManageDatabase: NSObject {
         
         return results
     }
+
+    @objc func updateLatestActivityId(_ activities: [NCCommunicationActivity], account: String) {
+        let realm = try! Realm()
+        let previousRecentId = getLatestActivityId(account: account)
+
+        do {
+            try realm.write {
+                guard
+                    let mostRecentActivityId = activities.map({ $0.idActivity }).max(),
+                    mostRecentActivityId > previousRecentId
+                else { return }
+
+                let newRecentActivity = tableActivityLatestId()
+                newRecentActivity.mostRecentlyLoadedActivityId = mostRecentActivityId
+                newRecentActivity.account = account
+                realm.add(newRecentActivity, update: .all)
+            }
+        } catch {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+
+    @objc func getLatestActivityId(account: String) -> Int {
+
+        let realm = try! Realm()
+        guard let maxId = realm.objects(tableActivityLatestId.self)
+                .filter("account == %@", account)
+                .map({ $0.mostRecentlyLoadedActivityId }).max()
+        else { return 0 }
+
+        return maxId
+    }
     
-    @objc func getActivityLastIdActivity(account: String) -> Int {
+    //MARK: -
+    //MARK: Table Avatar
+    
+    @objc func addAvatar(fileName: String, etag: String) {
         
         let realm = try! Realm()
         
-        if let entities = realm.objects(tableActivity.self).filter("account == %@", account).max(by: { $0.idActivity < $1.idActivity }) {
-            return entities.idActivity
+        do {
+            try realm.safeWrite {
+                
+                // Add new
+                let addObject = tableAvatar()
+                    
+                addObject.date = NSDate()
+                addObject.etag = etag
+                addObject.fileName = fileName
+                addObject.loaded = true
+
+                realm.add(addObject, update: .all)
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    func getTableAvatar(fileName: String) -> tableAvatar? {
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first else {
+            return nil
         }
         
-        return 0
+        return tableAvatar.init(value: result)
+    }
+
+    func clearAllAvatarLoaded() {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.safeWrite {
+                
+                let results = realm.objects(tableAvatar.self)
+                for result in results {
+                    result.loaded = false
+                    realm.add(result, update: .all)
+                }
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    @discardableResult
+    func setAvatarLoaded(fileName: String) -> UIImage? {
+     
+        let realm = try! Realm()
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        var image: UIImage?
+        
+        do {
+            try realm.safeWrite {
+                if let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first {
+                    if let imageAvatar = UIImage(contentsOfFile: fileNameLocalPath) {
+                        result.loaded = true
+                        image = imageAvatar
+                    } else {
+                        realm.delete(result)
+                    }
+                }
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+        
+        return image
+    }
+    
+    func getImageAvatarLoaded(fileName: String) -> UIImage? {
+        
+        let realm = try! Realm()
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+
+        let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first
+        if result == nil {
+            NCUtilityFileSystem.shared.deleteFile(filePath: fileNameLocalPath)
+            return nil
+        } else if result?.loaded == false {
+            return nil
+        }
+        
+        return UIImage(contentsOfFile: fileNameLocalPath)
     }
     
     //MARK: -
@@ -952,10 +1089,8 @@ class NCManageDatabase: NSObject {
 
         let realm = try! Realm()
         
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return 0
-        }
-        guard let jsondata = result.jsondata else {
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first,
+              let jsondata = result.jsondata else {
             return 0
         }
         
@@ -1036,6 +1171,7 @@ class NCManageDatabase: NSObject {
     func addChunks(account: String, ocId: String, chunkFolder: String, fileNames: [String]) {
         
         let realm = try! Realm()
+        var size: Int64 = 0
         
         do {
             try realm.safeWrite {
@@ -1043,18 +1179,31 @@ class NCManageDatabase: NSObject {
                 for fileName in fileNames {
                     
                     let object = tableChunk()
+                    size = size + NCUtilityFileSystem.shared.getFileSize(filePath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!)
                     
                     object.account = account
                     object.chunkFolder = chunkFolder
                     object.fileName = fileName
                     object.index = ocId + fileName
                     object.ocId = ocId
-
+                    object.size = size
+                                        
                     realm.add(object, update: .all)
                 }
             }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    func getChunk(account: String, fileName: String) -> tableChunk? {
+        
+        let realm = try! Realm()
+
+        if let result = realm.objects(tableChunk.self).filter("account == %@ AND fileName == %@", account, fileName).first {
+            return tableChunk.init(value: result)
+        } else {
+            return nil
         }
     }
     
@@ -1132,7 +1281,7 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId).sorted(byKeyPath: "creationDateTime", ascending: false)
         
-        return Array(results.map { tableComments.init(value:$0) })
+        return Array(results.map(tableComments.init))
     }
     
     //MARK: -
@@ -1843,21 +1992,30 @@ class NCManageDatabase: NSObject {
         metadata.ocId = file.ocId
         metadata.ownerId = file.ownerId
         metadata.ownerDisplayName = file.ownerDisplayName
+        metadata.path = file.path
         metadata.permissions = file.permissions
         metadata.quotaUsedBytes = file.quotaUsedBytes
         metadata.quotaAvailableBytes = file.quotaAvailableBytes
         metadata.richWorkspace = file.richWorkspace
         metadata.resourceType = file.resourceType
         metadata.serverUrl = file.serverUrl
-        metadata.sharePermissions = file.sharePermissions
+        metadata.sharePermissionsCollaborationServices = file.sharePermissionsCollaborationServices
+        for element in file.sharePermissionsCloudMesh {
+            metadata.sharePermissionsCloudMesh.append(element)
+        }
+        for element in file.shareType {
+            metadata.shareType.append(element)
+        }
         metadata.size = file.size
-        metadata.typeFile = file.typeFile
+        metadata.classFile = file.classFile
         if let date = file.uploadDate {
             metadata.uploadDate = date
         } else {
             metadata.uploadDate = file.date
         }
         metadata.urlBase = file.urlBase
+        metadata.user = file.user
+        metadata.userId = file.userId
         
         // E2EE find the fileName for fileNameView
         if isEncrypted || metadata.e2eEncrypted {
@@ -1866,19 +2024,19 @@ class NCManageDatabase: NSObject {
                 let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory)
                 metadata.contentType = results.mimeType
                 metadata.iconName = results.iconName
-                metadata.typeFile = results.typeFile
+                metadata.classFile = results.classFile
             }
         }
         
         // Live Photo "DETECT"
-        if !metadata.directory && !metadata.livePhoto && (metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo || metadata.typeFile == NCGlobal.shared.metadataTypeFileImage) {
-            var typeFile = metadata.typeFile
-            if typeFile == NCGlobal.shared.metadataTypeFileImage {
-                typeFile = NCGlobal.shared.metadataTypeFileVideo
+        if !metadata.directory && !metadata.livePhoto && (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue) {
+            var classFile = metadata.classFile
+            if classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+                classFile = NCCommunicationCommon.typeClassFile.video.rawValue
             } else {
-                typeFile = NCGlobal.shared.metadataTypeFileImage
+                classFile = NCCommunicationCommon.typeClassFile.image.rawValue
             }
-            if getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@ AND typeFile == %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId, typeFile)) != nil {
+            if getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId, classFile)) != nil {
                 metadata.livePhoto = true
             }
         }
@@ -1922,7 +2080,7 @@ class NCManageDatabase: NSObject {
         completion(metadataFolder, metadataFolders, metadatas)
     }
     
-    @objc func createMetadata(account: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, livePhoto: Bool) -> tableMetadata {
+    @objc func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, livePhoto: Bool) -> tableMetadata {
         
         let metadata = tableMetadata()
         let resultInternalType = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
@@ -1943,10 +2101,12 @@ class NCManageDatabase: NSObject {
         metadata.ocId = ocId
         metadata.permissions = "RGDNVW"
         metadata.serverUrl = serverUrl
-        metadata.typeFile = resultInternalType.typeFile
+        metadata.classFile = resultInternalType.classFile
         metadata.uploadDate = Date() as NSDate
         metadata.url = url
         metadata.urlBase = urlBase
+        metadata.user = user
+        metadata.userId = userId
         
         return metadata
     }
@@ -2043,7 +2203,7 @@ class NCManageDatabase: NSObject {
                     }
                     result.iconName = resultsType.iconName
                     result.contentType = resultsType.mimeType
-                    result.typeFile = resultsType.typeFile
+                    result.classFile = resultsType.classFile
                 }
             }
         } catch let error {
@@ -2081,17 +2241,17 @@ class NCManageDatabase: NSObject {
                     
                     if let result = metadatasResult.first(where: { $0.ocId == metadata.ocId }) {
                         // update
-                        if result.status == NCGlobal.shared.metadataStatusNormal && (result.etag != metadata.etag || result.fileNameView != metadata.fileNameView || result.date != metadata.date || result.permissions != metadata.permissions || result.hasPreview != metadata.hasPreview) {
+                        if result.status == NCGlobal.shared.metadataStatusNormal && (result.etag != metadata.etag || result.fileNameView != metadata.fileNameView || result.date != metadata.date || result.permissions != metadata.permissions || result.hasPreview != metadata.hasPreview || result.note != metadata.note) {
                             ocIdsUdate.append(metadata.ocId)
-                            realm.add(metadata, update: .all)
+                            realm.add(tableMetadata.init(value: metadata), update: .all)
                         } else if result.status == NCGlobal.shared.metadataStatusNormal && addCompareLivePhoto && result.livePhoto != metadata.livePhoto {
                             ocIdsUdate.append(metadata.ocId)
-                            realm.add(metadata, update: .all)
+                            realm.add(tableMetadata.init(value: metadata), update: .all)
                         }
                     } else {
                         // new
                         ocIdsUdate.append(metadata.ocId)
-                        realm.add(metadata, update: .all)
+                        realm.add(tableMetadata.init(value: metadata), update: .all)
                     }
                     
                     if metadata.directory && !ocIdsUdate.contains(metadata.ocId) {
@@ -2183,6 +2343,22 @@ class NCManageDatabase: NSObject {
             return tableMetadata.init(value: result)
         } else {
             return nil
+        }
+    }
+    
+    func setMetadataEtagResource(ocId: String, etagResource: String?) {
+        
+        let realm = try! Realm()
+        var result: tableMetadata?
+        guard let etagResource = etagResource else { return }
+        
+        do {
+            try realm.safeWrite {
+                result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
+                result?.etagResource = etagResource
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -2287,7 +2463,7 @@ class NCManageDatabase: NSObject {
         
         // For Live Photo
         var fileNameImages: [String] = []
-        let filtered = results.filter{ $0.typeFile.contains(NCGlobal.shared.metadataTypeFileImage) }
+        let filtered = results.filter{ $0.classFile.contains(NCCommunicationCommon.typeClassFile.image.rawValue) }
         filtered.forEach { print($0)
             let fileName = ($0.fileNameView as NSString).deletingPathExtension
             fileNameImages.append(fileName)
@@ -2379,13 +2555,13 @@ class NCManageDatabase: NSObject {
         var serverUrl = serverUrl
         var fileName = ""
         
-        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, account: account)
+        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(account: account)
         if serverUrlHome == serverUrl {
             fileName = "."
             serverUrl = ".."
         } else {
             fileName = (serverUrl as NSString).lastPathComponent
-            serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: urlBase, account: account)
+            serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(account: account, serverUrl: serverUrl)
         }
         
         guard let result = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).first else { return nil }
@@ -2476,7 +2652,7 @@ class NCManageDatabase: NSObject {
     @objc func getMetadataLivePhoto(metadata: tableMetadata) -> tableMetadata? {
            
         let realm = try! Realm()
-        var typeFile = metadata.typeFile
+        var classFile = metadata.classFile
 
         realm.refresh()
         
@@ -2484,13 +2660,13 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        if typeFile == NCGlobal.shared.metadataTypeFileImage {
-            typeFile = NCGlobal.shared.metadataTypeFileVideo
+        if classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+            classFile = NCCommunicationCommon.typeClassFile.video.rawValue
         } else {
-            typeFile = NCGlobal.shared.metadataTypeFileImage
+            classFile = NCCommunicationCommon.typeClassFile.image.rawValue
         }
         
-        guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@ AND typeFile == %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId, typeFile)).first else {
+        guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId, classFile)).first else {
             return nil
         }
         
@@ -2635,8 +2811,8 @@ class NCManageDatabase: NSObject {
         for share in shares {
             
             let addObject = tableShare()
-            let fullPath = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, account: account) + share.path
-            let serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(serverUrl:fullPath, urlBase: urlBase, account: account)
+            let fullPath = NCUtilityFileSystem.shared.getHomeServer(account: account) + share.path
+            let serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(account: account, serverUrl:fullPath)
             let fileName = NSString(string: fullPath).lastPathComponent
                         
             addObject.account = account
@@ -2867,7 +3043,7 @@ class NCManageDatabase: NSObject {
                     object.trashbinDeletionTime = trash.trashbinDeletionTime
                     object.trashbinFileName = trash.trashbinFileName
                     object.trashbinOriginalLocation = trash.trashbinOriginalLocation
-                    object.typeFile = trash.typeFile
+                    object.classFile = trash.classFile
                     
                     realm.add(object, update: .all)
                 }
@@ -2981,41 +3157,73 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Video
     
-    func addVideoTime(metadata: tableMetadata, time: CMTime?) {
+    func addVideoTime(metadata: tableMetadata, time: CMTime?, durationTime: CMTime?) {
         
         if metadata.livePhoto { return }
-        guard let time = time else { return }
         let realm = try! Realm()
         
         do {
             try realm.safeWrite {
-                let addObject = tableVideo()
-               
-                addObject.account = metadata.account
-                addObject.ocId = metadata.ocId
-                addObject.time = Int64(CMTimeGetSeconds(time) * 1000)
-              
-                realm.add(addObject, update: .all)
+                if let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first {
+                    
+                    if let durationTime = durationTime {
+                        result.duration = durationTime.convertScale(1000, method: .default).value
+                    }
+                    if let time = time {
+                        result.time = time.convertScale(1000, method: .default).value
+                    }
+                    realm.add(result, update: .all)
+
+                } else {
+                    
+                    let addObject = tableVideo()
+                   
+                    addObject.account = metadata.account
+                    if let durationTime = durationTime {
+                        addObject.duration = durationTime.convertScale(1000, method: .default).value
+                    }
+                    addObject.ocId = metadata.ocId
+                    if let time = time {
+                        addObject.time = time.convertScale(1000, method: .default).value
+                    }
+                    realm.add(addObject, update: .all)
+                }
             }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
-    func getVideoTime(metadata: tableMetadata) -> CMTime? {
-        
-        if metadata.livePhoto { return CMTime.zero }
+    func getVideoDurationTime(metadata: tableMetadata?) -> CMTime? {
+        guard let metadata = metadata else { return nil }
+
+        if metadata.livePhoto { return nil }
         let realm = try! Realm()
         
         guard let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first else {
             return nil
         }
         
+        if result.duration == 0 { return nil }
+        let duration = CMTimeMake(value: result.duration, timescale: 1000)
+        return duration
+    }
+    
+    func getVideoTime(metadata: tableMetadata) -> CMTime? {
+        
+        if metadata.livePhoto { return nil }
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first else {
+            return nil
+        }
+        
+        if result.time == 0 { return nil }
         let time = CMTimeMake(value: result.time, timescale: 1000)
         return time
     }
     
-    func deleteVideoTime(metadata: tableMetadata) {
+    func deleteVideo(metadata: tableMetadata) {
         
         let realm = try! Realm()
 
@@ -3028,9 +3236,9 @@ class NCManageDatabase: NSObject {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
-    
-    //MARK: -
 }
+
+//MARK: -
 
 extension Realm {
     public func safeWrite(_ block: (() throws -> Void)) throws {

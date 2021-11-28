@@ -23,42 +23,57 @@
 
 import UIKit
 
-class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCellProtocol {
+class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
     
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
-    
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
-
     @IBOutlet weak var labelTitle: UILabel!
-
     @IBOutlet weak var labelInfo: UILabel!
-
     @IBOutlet weak var imageShared: UIImageView!
     @IBOutlet weak var buttonShared: UIButton!
-
     @IBOutlet weak var imageMore: UIImageView!
     @IBOutlet weak var buttonMore: UIButton!
-    
     @IBOutlet weak var progressView: UIProgressView!
-    
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
-    var filePreviewImageView : UIImageView {
-        get{
-         return imageItem
-        }
-    }
+    private var objectId = ""
+    private var user = ""
 
     var delegate: NCListCellDelegate?
-    var objectId = ""
-    var indexPath = IndexPath()
     var namedButtonMore = ""
 
+    var fileAvatarImageView: UIImageView? {
+        get {
+            return imageShared
+        }
+    }
+    var fileObjectId: String? {
+        get {
+            return objectId
+        }
+        set {
+            objectId = newValue ?? ""
+        }
+    }
+    var filePreviewImageView : UIImageView? {
+        get {
+            return imageItem
+        }
+    }
+    var fileUser: String? {
+        get {
+            return user
+        }
+        set {
+            user = newValue ?? ""
+        }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
                
@@ -134,12 +149,20 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
     
     func selected(_ status: Bool) {
         if status {
+            var blurEffect: UIVisualEffect?
+            var blurEffectView: UIView?
             imageSelect.image = NCBrandColor.cacheImages.checkedYes
-            let blurEffect = UIBlurEffect(style: .extraLight)
-            let blurEffectView = UIVisualEffectView(effect: blurEffect)
-            blurEffectView.frame = self.bounds
-            blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            blurEffectView.backgroundColor = .lightGray
+            if traitCollection.userInterfaceStyle == .dark {
+                blurEffect = UIBlurEffect(style: .dark)
+                blurEffectView = UIVisualEffectView(effect: blurEffect)
+                blurEffectView?.backgroundColor = .black
+            } else {
+                blurEffect = UIBlurEffect(style: .extraLight)
+                blurEffectView = UIVisualEffectView(effect: blurEffect)
+                blurEffectView?.backgroundColor = .lightGray
+            }
+            blurEffectView?.frame = self.bounds
+            blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             backgroundView = blurEffectView
             separator.isHidden = true
         } else {

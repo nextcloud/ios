@@ -37,7 +37,8 @@ import NCCommunication
     private let copyMoveQueue = Queuer(name: "copyMoveQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let synchronizationQueue = Queuer(name: "synchronizationQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-   
+    private let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+
     private var timerReadFileForMediaQueue: Timer?
 
     @objc func cancelAllQueue() {
@@ -46,6 +47,7 @@ import NCCommunication
         copyMoveCancelAll()
         synchronizationCancelAll()
         downloadThumbnailCancelAll()
+        downloadAvatarCancelAll()
     }
     
     // Download file
@@ -75,13 +77,13 @@ import NCCommunication
     
     // Delete file
     
-    @objc func delete(metadata: tableMetadata, onlyLocal: Bool) {
+    @objc func delete(metadata: tableMetadata, onlyLocalCache: Bool) {
         for operation in deleteQueue.operations as! [NCOperationDelete]  {
             if operation.metadata.ocId == metadata.ocId {
                 return
             }
         }
-        deleteQueue.addOperation(NCOperationDelete.init(metadata: metadata, onlyLocal: onlyLocal))
+        deleteQueue.addOperation(NCOperationDelete.init(metadata: metadata, onlyLocalCache: onlyLocalCache))
     }
     @objc func deleteCancelAll() {
         deleteQueue.cancelAll()
@@ -123,14 +125,25 @@ import NCCommunication
     
     // Download Thumbnail
     
-    @objc func downloadThumbnail(metadata: tableMetadata, urlBase: String, view: Any, indexPath: IndexPath) {
+    @objc func downloadThumbnail(metadata: tableMetadata, placeholder: Bool, cell: UIView?, view: UIView?) {
+        
+        let cell: NCCellProtocol? = cell as? NCCellProtocol
+        
+        if placeholder {
+            if metadata.iconName.count > 0 {
+                cell?.filePreviewImageView?.image = UIImage.init(named: metadata.iconName)
+            } else {
+                cell?.filePreviewImageView?.image = NCBrandColor.cacheImages.file
+            }
+        }
+        
         if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
             for operation in downloadThumbnailQueue.operations as! [NCOperationDownloadThumbnail] {
                 if operation.metadata.ocId == metadata.ocId {
                     return
                 }
             }
-            downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, urlBase: urlBase, view: view, indexPath: indexPath))
+            downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, cell: cell, view: view))
         }
     }
     
@@ -144,6 +157,44 @@ import NCCommunication
     
     @objc func downloadThumbnailCancelAll() {
         downloadThumbnailQueue.cancelAll()
+    }
+    
+    // Download Avatar
+    
+    func downloadAvatar(user: String, dispalyName: String?, fileName: String, cell: NCCellProtocol, view: UIView?) {
+
+        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+        
+        if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
+            cell.fileAvatarImageView?.image = image
+            return
+        }
+
+        if let account = NCManageDatabase.shared.getActiveAccount() {
+            cell.fileAvatarImageView?.image = NCUtility.shared.loadUserImage(
+                for: user,
+                   displayName: dispalyName,
+                   userBaseUrl: account)
+        }
+
+        for operation in downloadAvatarQueue.operations as! [NCOperationDownloadAvatar] {
+            if operation.fileName == fileName {
+                return
+            }
+        }
+        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view))
+    }
+    
+    func cancelDownloadAvatar(user: String) {
+        for operation in  downloadAvatarQueue.operations as! [NCOperationDownloadAvatar] {
+            if operation.user == user {
+                operation.cancel()
+            }
+        }
+    }
+    
+    @objc func downloadAvatarCancelAll() {
+        downloadAvatarQueue.cancelAll()
     }
 }
 
@@ -175,18 +226,18 @@ class NCOperationDownload: ConcurrentOperation {
 class NCOperationDelete: ConcurrentOperation {
    
     var metadata: tableMetadata
-    var onlyLocal: Bool
+    var onlyLocalCache: Bool
     
-    init(metadata: tableMetadata, onlyLocal: Bool) {
+    init(metadata: tableMetadata, onlyLocalCache: Bool) {
         self.metadata = tableMetadata.init(value: metadata)
-        self.onlyLocal = onlyLocal
+        self.onlyLocalCache = onlyLocalCache
     }
     
     override func start() {
         if isCancelled {
             self.finish()
         } else {
-            NCNetworking.shared.deleteMetadata(metadata, account: metadata.account, urlBase: metadata.urlBase, onlyLocal: onlyLocal) { (errorCode, errorDescription) in
+            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: onlyLocalCache) { (errorCode, errorDescription) in
                 if errorCode != 0 {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
@@ -266,7 +317,7 @@ class NCOperationSynchronization: ConcurrentOperation {
 
                     if (errorCode == 0) && (directory?.etag != files.first?.etag || self.selector == NCGlobal.shared.selectorDownloadAllFile) {
                         
-                        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
+                        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, responseData, errorCode, errorDescription) in
                             
                             if errorCode == 0 {
                             
@@ -346,19 +397,17 @@ class NCOperationSynchronization: ConcurrentOperation {
 class NCOperationDownloadThumbnail: ConcurrentOperation {
    
     var metadata: tableMetadata
-    var urlBase: String
-    var view: Any
-    var indexPath: IndexPath
+    var cell: NCCellProtocol?
+    var view: UIView?
     var fileNamePath: String = ""
     var fileNamePreviewLocalPath: String = ""
     var fileNameIconLocalPath: String = ""
     
-    init(metadata: tableMetadata, urlBase: String, view: Any, indexPath: IndexPath) {
+    init(metadata: tableMetadata, cell: NCCellProtocol?, view: UIView?) {
         self.metadata = tableMetadata.init(value: metadata)
-        self.urlBase = urlBase
+        self.cell = cell
         self.view = view
-        self.indexPath = indexPath
-        self.fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
+        self.fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
         self.fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
         self.fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
     }
@@ -368,38 +417,98 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon) { (account, imagePreview, imageIcon,  errorCode, errorDescription) in
+            var etagResource: String?
+            if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
+                etagResource = metadata.etagResource
+            }
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, imagePreview, imageIcon, imageOriginal, etag, errorCode, errorDescription) in
                 
-                var cell: NCImageCellProtocol?
-                
-                if self.view is UICollectionView {
-                    if self.indexPath.section < (self.view as! UICollectionView).numberOfSections && self.indexPath.row < (self.view as! UICollectionView).numberOfItems(inSection: self.indexPath.section) {
-                        cell = (self.view as! UICollectionView).cellForItem(at: self.indexPath) as? NCImageCellProtocol
-                    }
-                } else {
-                    if self.indexPath.section < (self.view as! UITableView).numberOfSections && self.indexPath.row < (self.view as! UITableView).numberOfRows(inSection: self.indexPath.section) {
-                        cell = (self.view as! UITableView).cellForRow(at: self.indexPath) as? NCImageCellProtocol
+                if errorCode == 0 && imageIcon != nil {
+                    NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
+                    DispatchQueue.main.async {
+                        if self.metadata.ocId == self.cell?.fileObjectId {
+                            if let filePreviewImageView = self.cell?.filePreviewImageView  {
+                                UIView.transition(with: filePreviewImageView,
+                                    duration: 0.75,
+                                    options: .transitionCrossDissolve,
+                                    animations: { filePreviewImageView.image = imageIcon! },
+                                    completion: nil)
+                            }
+                        } else {
+                            if self.view is UICollectionView {
+                                (self.view as? UICollectionView)?.reloadData()
+                            } else if self.view is UITableView{
+                                (self.view as? UITableView)?.reloadData()
+                            }
+                        }
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedThumbnail, userInfo: ["ocId": self.metadata.ocId])
                     }
                 }
+                self.finish()
+            }
+        }
+    }
+}
+
+//MARK: -
+
+class NCOperationDownloadAvatar: ConcurrentOperation {
+
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var user: String
+    var fileName: String
+    var etag: String?
+    var fileNameLocalPath: String
+    var cell: NCCellProtocol!
+    var view: UIView?
+
+    init(user: String, fileName: String, fileNameLocalPath: String, cell: NCCellProtocol, view: UIView?) {
+        self.user = user
+        self.fileName = fileName
+        self.fileNameLocalPath = fileNameLocalPath
+        self.cell = cell
+        self.view = view
+        self.etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
+    }
+    
+    override func start() {
+
+        if isCancelled {
+            self.finish()
+        } else {
+            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: self.etag, queue: NCCommunicationCommon.shared.backgroundQueue) { (account, imageAvatar, imageOriginal, etag, errorCode, errorMessage) in
                 
-                if (cell != nil) {
-                    var previewImage: UIImage!
-                    if errorCode == 0 && imageIcon != nil {
-                        previewImage = imageIcon
-                    } else {
-                        if self.metadata.iconName.count > 0 {
-                            previewImage = UIImage(named: self.metadata.iconName)
+                if errorCode == 0, let imageAvatar = imageAvatar, let etag = etag {
+                    
+                    NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
+
+                    DispatchQueue.main.async {
+                        if self.user == self.cell.fileUser {
+                            if let avatarImageView = self.cell?.fileAvatarImageView  {
+                                UIView.transition(with: avatarImageView, duration: 0.75, options: .transitionCrossDissolve) {
+                                    avatarImageView.image = imageAvatar
+                                } completion: { _ in
+                                    if self.view is UICollectionView {
+                                        (self.view as? UICollectionView)?.reloadData()
+                                    } else if self.view is UITableView{
+                                        (self.view as? UITableView)?.reloadData()
+                                    }
+                                }
+                            }
                         } else {
-                            previewImage = UIImage(named: "file")
+                            if self.view is UICollectionView {
+                                (self.view as? UICollectionView)?.reloadData()
+                            } else if self.view is UITableView{
+                                (self.view as? UITableView)?.reloadData()
+                            }
                         }
                     }
-                    cell!.filePreviewImageView.backgroundColor = nil
-                    UIView.transition(with: cell!.filePreviewImageView,
-                        duration: 0.75,
-                        options: .transitionCrossDissolve,
-                        animations: { cell!.filePreviewImageView.image = previewImage! },
-                        completion: nil)
+                    
+                } else if errorCode == NCGlobal.shared.errorNotModified {
+                    
+                    NCManageDatabase.shared.setAvatarLoaded(fileName: self.fileName)
                 }
+                
                 self.finish()
             }
         }

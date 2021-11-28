@@ -84,7 +84,7 @@ class NCLoginWeb: UIViewController {
         if let url = URL(string: urlBase) {
             loadWebPage(webView: webView!, url: url)
         } else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "_login_url_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, forced: true)
+            NCContentPresenter.shared.messageNotification("_error_", description: "_login_url_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
         }
     }
     
@@ -106,11 +106,13 @@ class NCLoginWeb: UIViewController {
         
         let language = NSLocale.preferredLanguages[0] as String
         var request = URLRequest(url: url)
+        let deviceName = UIDevice.current.name
+        let userAgent = deviceName + " " + "(iOS Files)"
         
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
-        webView.customUserAgent = CCUtility.getUserAgent()
         
+        webView.customUserAgent = userAgent
         webView.load(request)
     }
     
@@ -130,6 +132,16 @@ extension NCLoginWeb: WKNavigationDelegate {
         guard let url = webView.url else { return }
         
         let urlString: String = url.absoluteString.lowercased()
+        
+        // prevent http redirection
+        if urlBase.lowercased().hasPrefix("https://") && urlString.lowercased().hasPrefix("http://") {
+            let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_prevent_http_redirection_", comment: ""), preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
+                _ = self.navigationController?.popViewController(animated: true)
+            }))
+            self.present(alertController, animated: true)
+            return
+        }
         
         if (urlString.hasPrefix(NCBrandOptions.shared.webLoginAutenticationProtocol) == true && urlString.contains("login") == true) {
             
@@ -258,8 +270,8 @@ extension NCLoginWeb: WKNavigationDelegate {
             NCUtility.shared.removeAllSettings()
         }
         
-        // Clear certificate error 
-        CCUtility.clearCertificateError(account)
+        // Clear certificate error
+        NCNetworking.shared.certificatesError = nil
 
         // Add new account
         NCManageDatabase.shared.deleteAccount(account)

@@ -190,26 +190,22 @@ class NCMainTabBar: UITabBar {
         centerButton.layer.shadowOffset = CGSize(width: 0, height: 0)
         centerButton.layer.shadowRadius = 3.0
         centerButton.layer.shadowOpacity = 0.5
-        
-        centerButton.addTarget(self, action: #selector(self.centerButtonAction), for: .touchUpInside)
-        
-        self.addSubview(centerButton)
-    }
-    
-    // Menu Button Touch Action
-    @objc func centerButtonAction(sender: UIButton) {
-        
-        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, appDelegate.activeServerUrl)) {
+        centerButton.action(for: .touchUpInside) { _ in
             
-            if !directory.permissions.contains("CK") {
-                NCContentPresenter.shared.messageNotification("_warning_", description: "_no_permission_add_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
-                return
+            if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.appDelegate.activeServerUrl)) {
+                
+                if !directory.permissions.contains("CK") {
+                    NCContentPresenter.shared.messageNotification("_warning_", description: "_no_permission_add_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
+                    return
+                }
+            }
+            
+            if let viewController = self.window?.rootViewController {
+                self.appDelegate.toggleMenu(viewController: viewController)
             }
         }
         
-        if let viewController = self.window?.rootViewController {
-            appDelegate.toggleMenu(viewController: viewController)
-        }
+        self.addSubview(centerButton)
     }
     
     @objc func updateBadgeNumber() {

@@ -66,11 +66,11 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                 titleLabel.text = NSLocalizedString("_rename_file_", comment: "")
             }
             
-            fileNameWithoutExt.text = metadata.fileNameWithoutExt
+            fileNameWithoutExt.text = (metadata.fileNameView as NSString).deletingPathExtension
             fileNameWithoutExt.delegate = self
             fileNameWithoutExt.becomeFirstResponder()
             
-            ext.text = metadata.ext
+            ext.text = (metadata.fileNameView as NSString).pathExtension
             ext.delegate = self
             if disableChangeExt {
                 ext.isEnabled = false
@@ -162,7 +162,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
         if let metadata = self.metadata {
         
             if fileNameWithoutExt.text == nil || fileNameWithoutExt.text?.count == 0 {
-                self.fileNameWithoutExt.text = metadata.fileNameWithoutExt
+                self.fileNameWithoutExt.text = (metadata.fileNameView as NSString).deletingPathExtension
                 return
             } else {
                 fileNameWithoutExtNew = fileNameWithoutExt.text!
@@ -176,7 +176,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             } else {
                 
                 if ext.text == nil || ext.text?.count == 0 {
-                    self.ext.text = metadata.ext
+                    self.ext.text = (metadata.fileNameView as NSString).pathExtension
                     return
                 } else {
                     extNew = ext.text!
@@ -196,7 +196,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                     
                     title = NSLocalizedString("_keep_", comment: "") + " ." + metadata.ext
                     alertController.addAction(UIAlertAction(title: title, style: .default, handler: { action in
-                        self.ext.text = metadata.ext
+                        self.ext.text = (metadata.fileNameView as NSString).pathExtension
                     }))
                     
                     self.present(alertController, animated: true)
@@ -230,7 +230,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
         
         NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
         
-        NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, urlBase: metadata.urlBase, viewController: self) { (errorCode, errorDescription) in
+        NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, viewController: self) { (errorCode, errorDescription) in
             
             NCUtility.shared.stopActivityIndicator()
             

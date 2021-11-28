@@ -217,12 +217,13 @@ class NCEndToEndMetadata : NSObject  {
                         
                         // Update metadata on tableMetadata
                         metadata.fileNameView = encryptedFileAttributes.filename
+                        metadata.fileNameWithoutExt = (encryptedFileAttributes.filename as NSString).deletingPathExtension
                         
                         let results = NCCommunicationCommon.shared.getInternalType(fileName: encryptedFileAttributes.filename, mimeType: metadata.contentType, directory: metadata.directory)
                         
                         metadata.contentType = results.mimeType
                         metadata.iconName = results.iconName
-                        metadata.typeFile = results.typeFile
+                        metadata.classFile = results.classFile
                                                 
                         NCManageDatabase.shared.addMetadata(metadata)
                     }

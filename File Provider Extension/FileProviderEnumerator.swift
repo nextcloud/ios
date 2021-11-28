@@ -96,8 +96,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         
         /*** ServerUrl ***/
                 
-            let paginationEndpoint = NCManageDatabase.shared.getCapabilitiesServerString(account: fileProviderData.shared.account, elements: NCElementsJSON.shared.capabilitiesPaginationEndpoint)
-            
             guard let serverUrl = serverUrl else {
                 observer.finishEnumerating(upTo: nil)
                 return
@@ -105,33 +103,14 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             
             if (page == NSFileProviderPage.initialPageSortedByDate as NSFileProviderPage || page == NSFileProviderPage.initialPageSortedByName as NSFileProviderPage) {
                 
-                if paginationEndpoint != nil {
-                                    
-                    self.getPagination(endpoint: paginationEndpoint!, serverUrl: serverUrl, page: 1, limit: fileProviderData.shared.itemForPage) { (metadatas) in
-                        self.completeObserver(observer, numPage: 1, metadatas: metadatas)
-                    }
-                    
-                } else {
-                    
-                    self.readFileOrFolder(serverUrl: serverUrl) { (metadatas) in
-                        self.completeObserver(observer, numPage: 1, metadatas: metadatas)
-                    }                    
+                self.readFileOrFolder(serverUrl: serverUrl) { (metadatas) in
+                    self.completeObserver(observer, numPage: 1, metadatas: metadatas)
                 }
                 
             } else {
                 
                 let numPage = Int(String(data: page.rawValue, encoding: .utf8)!)!
-
-                if paginationEndpoint != nil {
-
-                    self.getPagination(endpoint: paginationEndpoint!, serverUrl: serverUrl, page: numPage, limit: fileProviderData.shared.itemForPage) { (metadatas) in
-                        self.completeObserver(observer, numPage: numPage, metadatas: metadatas)
-                    }
-                    
-                } else {
-
-                    completeObserver(observer, numPage: numPage, metadatas: nil)
-                }
+                completeObserver(observer, numPage: numPage, metadatas: nil)
             }
         }
     }
@@ -245,58 +224,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                         }
                     } else {
                         let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), sorted: "fileName", ascending: true)
-                        completionHandler(metadatas)
-                    }
-                }
-            } else {
-                let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), sorted: "fileName", ascending: true)
-                completionHandler(metadatas)
-            }
-        }
-    }
-    
-    func getPagination(endpoint:String, serverUrl: String, page: Int, limit: Int, completionHandler: @escaping (_ metadatas: [tableMetadata]?) -> Void) {
-        
-        let offset = (page - 1) * limit
-        var fileNamePath = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: fileProviderData.shared.accountUrlBase, account: fileProviderData.shared.account)!
-        if fileNamePath == "" {
-            fileNamePath = "/"
-        }
-        var directoryEtag: String?
-        
-        if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl)) {
-            if page == 1 {
-                directoryEtag = tableDirectory.etag
-            }
-        }
-        
-        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
-        
-            if errorCode == 0 && files.count == 1 && directoryEtag != files.first?.etag {
-                
-                if page == 1 {
-                    let metadataFolder = NCManageDatabase.shared.convertNCFileToMetadata(files[0], isEncrypted: false, account: account)
-                    NCManageDatabase.shared.addMetadata(metadataFolder)
-                    NCManageDatabase.shared.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, account: metadataFolder.account)
-                }
-                                
-                NCCommunication.shared.iosHelper(fileNamePath: fileNamePath, serverUrl: serverUrl, offset: offset, limit: limit) { (account, files, errorCode, errorDescription) in
-                     
-                    if errorCode == 0 {
-                        DispatchQueue.global().async {
-                            NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
-                                let metadatasResult = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", fileProviderData.shared.account, serverUrl, NCGlobal.shared.metadataStatusNormal), page: page, limit: fileProviderData.shared.itemForPage, sorted: "fileName", ascending: true)
-                                NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
-                                for metadata in metadatasFolder {
-                                    let serverUrl = metadata.serverUrl + "/" + metadata.fileNameView
-                                    NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, account: metadata.account)
-                                }
-                                let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), page: page, limit: fileProviderData.shared.itemForPage, sorted: "fileName", ascending: true)
-                                completionHandler(metadatas)
-                            }
-                        }
-                    } else {
-                        let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), page: page, limit: fileProviderData.shared.itemForPage, sorted: "fileName", ascending: true)
                         completionHandler(metadatas)
                     }
                 }

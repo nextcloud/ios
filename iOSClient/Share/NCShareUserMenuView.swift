@@ -24,7 +24,7 @@ import UIKit
 import FSCalendar
 import NCCommunication
 
-class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkingDelegate, FSCalendarDelegate, FSCalendarDelegateAppearance {
+class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, UITextFieldDelegate, NCShareNetworkingDelegate, FSCalendarDelegate, FSCalendarDelegateAppearance {
     
     @IBOutlet weak var switchCanReshare: UISwitch!
     @IBOutlet weak var labelCanReshare: UILabel!
@@ -63,6 +63,8 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     var viewWindow: UIView?
     var viewWindowCalendar: UIView?
     private var calendar: FSCalendar?
+    private var activeTextfieldDiff : CGFloat = 0
+    private var activeTextField = UITextField()
 
     override func awakeFromNib() {
         
@@ -101,8 +103,13 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         
         fieldSetExpirationDate.inputView = UIView()
         
-        imageNoteToRecipient.image = UIImage.init(named: "file_txt")!.image(color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
-        imageUnshare.image = NCUtility.shared.loadImage(named: "trash", color: UIColor(red: 76/255, green: 76/255, blue: 76/255, alpha: 1), size: 50)
+        fieldNoteToRecipient.delegate = self
+        
+        imageNoteToRecipient.image = UIImage.init(named: "file_txt")!.image(color: NCBrandColor.shared.gray, size: 50)
+        imageUnshare.image = NCUtility.shared.loadImage(named: "trash", color: NCBrandColor.shared.gray, size: 50)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     override func willMove(toWindow newWindow: UIWindow?) {
@@ -168,7 +175,36 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         fieldNoteToRecipient.text = tableShare.note
     }
     
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+   
+        self.activeTextField = textField
+    }
+    
+    // MARK: - Keyboard notification
+    
+    @objc internal func keyboardWillShow(_ notification : Notification?) {
+                
+        activeTextfieldDiff = 0
+        
+        if let info = notification?.userInfo, let centerObject = self.activeTextField.superview?.convert(self.activeTextField.center, to: nil) {
+
+            let frameEndUserInfoKey = UIResponder.keyboardFrameEndUserInfoKey
+            if let keyboardFrame = info[frameEndUserInfoKey] as? CGRect {
+                let diff = keyboardFrame.origin.y - centerObject.y - self.activeTextField.frame.height
+                if diff < 0 {
+                    activeTextfieldDiff = diff
+                    self.frame.origin.y += diff
+                }
+            }
+        }
+    }
+    
+    @objc func keyboardWillHide(_ notification: Notification) {
+        self.frame.origin.y -= activeTextfieldDiff
+    }
+    
     // MARK: - Tap viewWindowCalendar
+    
     @objc func tapViewWindowCalendar(gesture: UITapGestureRecognizer) {
         calendar?.removeFromSuperview()
         viewWindowCalendar?.removeFromSuperview()
@@ -196,27 +232,27 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         let canChange = CCUtility.isPermission(toCanChange: tableShare.permissions)
         let canDelete = CCUtility.isPermission(toCanDelete: tableShare.permissions)
         
-        var permission: Int = 0
+        var permissions: Int = 0
         
         if metadata.directory {
-            permission = CCUtility.getPermissionsValue(byCanEdit: canEdit, andCanCreate: canCreate, andCanChange: canChange, andCanDelete: canDelete, andCanShare: sender.isOn, andIsFolder: metadata.directory)
+            permissions = CCUtility.getPermissionsValue(byCanEdit: canEdit, andCanCreate: canCreate, andCanChange: canChange, andCanDelete: canDelete, andCanShare: sender.isOn, andIsFolder: metadata.directory)
         } else {
             if sender.isOn {
                 if canEdit {
-                    permission = CCUtility.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: sender.isOn, andIsFolder: metadata.directory)
+                    permissions = CCUtility.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: sender.isOn, andIsFolder: metadata.directory)
                 } else {
-                    permission = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: sender.isOn, andIsFolder: metadata.directory)
+                    permissions = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: sender.isOn, andIsFolder: metadata.directory)
                 }
             } else {
                 if canEdit {
-                    permission = CCUtility.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: sender.isOn, andIsFolder: metadata.directory)
+                    permissions = CCUtility.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: sender.isOn, andIsFolder: metadata.directory)
                 } else {
-                    permission = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: sender.isOn, andIsFolder: metadata.directory)
+                    permissions = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: sender.isOn, andIsFolder: metadata.directory)
                 }
             }
         }
         
-        networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, label: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
+        networking?.updateShare(idShare: tableShare.idShare, password: nil, permissions: permissions, note: nil, label: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
     }
     
     @IBAction func switchCanCreate(sender: UISwitch) {
@@ -229,9 +265,9 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         let canDelete = CCUtility.isPermission(toCanDelete: tableShare.permissions)
         let canShare = CCUtility.isPermission(toCanShare: tableShare.permissions)
 
-        let permission = CCUtility.getPermissionsValue(byCanEdit: canEdit, andCanCreate: sender.isOn, andCanChange: canChange, andCanDelete: canDelete, andCanShare: canShare, andIsFolder: metadata.directory)
+        let permissions = CCUtility.getPermissionsValue(byCanEdit: canEdit, andCanCreate: sender.isOn, andCanChange: canChange, andCanDelete: canDelete, andCanShare: canShare, andIsFolder: metadata.directory)
 
-        networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, label: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
+        networking?.updateShare(idShare: tableShare.idShare, password: nil, permissions: permissions, note: nil, label: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
     }
     
     @IBAction func switchCanChange(sender: UISwitch) {
@@ -244,9 +280,9 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         let canDelete = CCUtility.isPermission(toCanDelete: tableShare.permissions)
         let canShare = CCUtility.isPermission(toCanShare: tableShare.permissions)
         
-        let permission = CCUtility.getPermissionsValue(byCanEdit: canEdit, andCanCreate: canCreate, andCanChange: sender.isOn, andCanDelete: canDelete, andCanShare: canShare, andIsFolder: metadata.directory)
+        let permissions = CCUtility.getPermissionsValue(byCanEdit: canEdit, andCanCreate: canCreate, andCanChange: sender.isOn, andCanDelete: canDelete, andCanShare: canShare, andIsFolder: metadata.directory)
 
-        networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, label: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
+        networking?.updateShare(idShare: tableShare.idShare, password: nil, permissions: permissions, note: nil, label: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
     }
     
     @IBAction func switchCanDelete(sender: UISwitch) {
@@ -259,9 +295,9 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         let canChange = CCUtility.isPermission(toCanChange: tableShare.permissions)
         let canShare = CCUtility.isPermission(toCanShare: tableShare.permissions)
         
-        let permission = CCUtility.getPermissionsValue(byCanEdit: canEdit, andCanCreate: canCreate, andCanChange: canChange, andCanDelete: sender.isOn, andCanShare: canShare, andIsFolder: metadata.directory)
+        let permissions = CCUtility.getPermissionsValue(byCanEdit: canEdit, andCanCreate: canCreate, andCanChange: canChange, andCanDelete: sender.isOn, andCanShare: canShare, andIsFolder: metadata.directory)
 
-        networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, label: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
+        networking?.updateShare(idShare: tableShare.idShare, password: nil, permissions: permissions, note: nil, label: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
     }
     
     // Set expiration date
@@ -273,7 +309,7 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
             fieldSetExpirationDate.isEnabled = true
             fieldSetExpirationDate(sender: fieldSetExpirationDate)
         } else {
-            networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: tableShare.permissions, note: nil, label: nil, expirationDate: "", hideDownload: tableShare.hideDownload)
+            networking?.updateShare(idShare: tableShare.idShare, password: nil, permissions: tableShare.permissions, note: nil, label: nil, expirationDate: "", hideDownload: tableShare.hideDownload)
         }
     }
     
@@ -295,7 +331,7 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         guard let tableShare = self.tableShare else { return }
         if fieldNoteToRecipient.text == nil { return }
         
-        networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: tableShare.permissions, note: fieldNoteToRecipient.text, label: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
+        networking?.updateShare(idShare: tableShare.idShare, password: nil, permissions: tableShare.permissions, note: fieldNoteToRecipient.text, label: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
     }
     
     // Unshare
@@ -348,7 +384,7 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
             dateFormatter.dateFormat = "YYYY-MM-dd HH:mm:ss"
             let expirationDate = dateFormatter.string(from: date)
             
-            networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: tableShare.permissions, note: nil, label: nil, expirationDate: expirationDate, hideDownload: tableShare.hideDownload)
+            networking?.updateShare(idShare: tableShare.idShare, password: nil, permissions: tableShare.permissions, note: nil, label: nil, expirationDate: expirationDate, hideDownload: tableShare.hideDownload)
         }
     }
     
@@ -357,10 +393,6 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     }
     
     func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, titleDefaultColorFor date: Date) -> UIColor? {
-        if date > Date() {
-            return UIColor(red: 60/255, green: 60/255, blue: 60/255, alpha: 1)
-        } else {
-            return UIColor(red: 190/255, green: 190/255, blue: 190/255, alpha: 1)
-        }
+        return date > Date() ? NCBrandColor.shared.label : NCBrandColor.shared.systemGray3
     }
 }

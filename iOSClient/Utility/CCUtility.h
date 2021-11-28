@@ -29,6 +29,7 @@
 #import <MessageUI/MessageUI.h>
 #import <UICKeyChainStore/UICKeyChainStore.h>
 #import <Photos/Photos.h>
+#import <PDFKit/PDFKit.h>
 
 @class tableMetadata;
 
@@ -145,10 +146,6 @@
 
 + (NSData *)getDatabaseEncryptionKey;
 
-+ (BOOL)getCertificateError:(NSString *)account;
-+ (void)setCertificateError:(NSString *)account;
-+ (void)clearCertificateError:(NSString *)account;
-
 + (BOOL)getDisableLocalCacheAfterUpload;
 + (void)setDisableLocalCacheAfterUpload:(BOOL)disable;
 
@@ -181,6 +178,9 @@
 + (NSInteger)getCleanUpDay;
 + (void)setCleanUpDay:(NSInteger)days;
 
++ (PDFDisplayDirection)getPDFDisplayDirection;
++ (void)setPDFDisplayDirection:(PDFDisplayDirection)direction;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
@@ -202,7 +202,6 @@
 + (void)createDirectoryStandard;
 
 + (NSURL *)getDirectoryGroup;
-+ (NSString *)getStringUser:(NSString *)user urlBase:(NSString *)urlBase;
 + (NSString *)getDirectoryDocuments;
 + (NSString *)getDirectoryReaderMetadata;
 + (NSString *)getDirectoryAudio;

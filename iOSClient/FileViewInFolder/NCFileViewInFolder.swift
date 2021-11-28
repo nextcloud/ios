@@ -24,7 +24,7 @@
 import UIKit
 import NCCommunication
 
-class NCFileViewInFolder: NCCollectionViewCommon  {
+class NCFileViewInFolder: NCCollectionViewCommon {
     
     internal var fileName: String?
 
@@ -43,10 +43,11 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-
+        super.viewWillAppear(animated)
+        
         appDelegate.activeViewController = self
         
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) {
             self.navigationItem.title = NCBrandOptions.shared.brand
         } else {
             self.navigationItem.title = (serverUrl as NSString).lastPathComponent
@@ -142,10 +143,12 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
                 }
             }
             
-            self.refreshControl.endRefreshing()
-            self.isReloadDataSourceNetworkInProgress = false
-            self.richWorkspaceText = tableDirectory?.richWorkspace
-            self.reloadDataSource()
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.isReloadDataSourceNetworkInProgress = false
+                self.richWorkspaceText = tableDirectory?.richWorkspace
+                self.reloadDataSource()
+            }
         }
     }
 }
