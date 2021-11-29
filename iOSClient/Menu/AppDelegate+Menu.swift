@@ -44,9 +44,7 @@ extension AppDelegate {
                 title: NSLocalizedString("_upload_photos_videos_", comment: ""), icon: UIImage(named: "file_photo")!.image(color: NCBrandColor.shared.gray, size: 50), action: { menuAction in
                     NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { (hasPermission) in
                         if hasPermission {
-                            if let viewController = appDelegate.window?.rootViewController {
-                                NCPhotosPickerViewController.init(viewController: viewController, maxSelectedAssets: 0, singleSelectedMode: false)
-                            }
+                            NCPhotosPickerViewController.init(viewController: viewController, maxSelectedAssets: 0, singleSelectedMode: false)
                         }
                     }
                 }

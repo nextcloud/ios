@@ -195,7 +195,13 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_open_in_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
                     action: { menuAction in
-                        NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
+                        if self is NCFileViewInFolder {
+                            self.dismiss(animated: true) {
+                                NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
+                            }
+                        } else {
+                            NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
+                        }                        
                     }
                 )
             )
@@ -319,21 +325,6 @@ extension NCCollectionViewCommon {
             )
         }
         
-        //
-        // VIEW IN FOLDER
-        //
-        if layoutKey == NCGlobal.shared.layoutViewRecent && appDelegate.activeFileViewInFolder == nil {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_view_in_folder_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "arrow.forward.square"),
-                    action: { menuAction in
-                        NCFunctionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-                    }
-                )
-            )
-        }
-        
         /*
         //
         // USE AS BACKGROUND
@@ -367,7 +358,13 @@ extension NCCollectionViewCommon {
                         title: NSLocalizedString("_modify_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
                         action: { menuAction in
-                            NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
+                            if self is NCFileViewInFolder {
+                                self.dismiss(animated: true) {
+                                    NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
+                                }
+                            } else {
+                                NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
+                            }
                         }
                     )
                 )

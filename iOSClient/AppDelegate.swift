@@ -243,11 +243,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if account == "" { return }
         
         // Dismiss FileViewInFolder
-        if activeFileViewInFolder != nil {
-            activeFileViewInFolder?.dismiss(animated: false, completion: {
-                self.activeFileViewInFolder = nil
-            })
-        }
+        //activeFileViewInFolder?.dismiss(animated: false)
         
         // Clear operation queue
         NCOperationQueue.shared.cancelAllQueue()
@@ -719,8 +715,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             requestAccount(startTimer: false)
             return
         }
-        
-        if passcodeViewController == nil {
+                
+        if passcodeViewController?.view.window == nil {
             passcodeViewController = TOPasscodeViewController.init(passcodeType: .sixDigits, allowCancel: false)
             passcodeViewController?.delegate = self
             passcodeViewController?.keypadButtonShowLettering = false
