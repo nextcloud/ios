@@ -246,17 +246,15 @@ extension NCViewer {
         // VIEW IN FOLDER
         //
         if !webView {
-            if appDelegate.activeFileViewInFolder == nil {
-                actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString("_view_in_folder_", comment: ""),
-                        icon: NCUtility.shared.loadImage(named: "arrow.forward.square"),
-                        action: { menuAction in
-                            NCFunctionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-                        }
-                    )
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_view_in_folder_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "arrow.forward.square"),
+                    action: { menuAction in
+                        NCFunctionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+                    }
                 )
-            }
+            )
         }
         
         //

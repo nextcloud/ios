@@ -218,10 +218,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let viewController = presentationController.presentedViewController
         if viewController is NCViewerRichWorkspaceWebView {
             closeRichWorkspaceWebView()
-        } else if viewController is UINavigationController {
-            if (viewController as! UINavigationController).topViewController is NCFileViewInFolder {
-                appDelegate.activeFileViewInFolder = nil
-            }
         }
     }
     
@@ -1217,7 +1213,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             pushMetadata(metadata)
             
-        } else {
+        } else if !(self is NCFileViewInFolder) {
             
             let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
             
