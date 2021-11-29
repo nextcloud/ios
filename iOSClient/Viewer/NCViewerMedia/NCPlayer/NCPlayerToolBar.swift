@@ -46,7 +46,6 @@ class NCPlayerToolBar: UIView {
         case moved
     }
 
-    private weak var appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var ncplayer: NCPlayer?
     private var metadata: tableMetadata?
     private var wasInPlay: Bool = false

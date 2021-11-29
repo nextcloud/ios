@@ -453,7 +453,6 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
 
 class NCOperationDownloadAvatar: ConcurrentOperation {
 
-    weak var appDelegate = UIApplication.shared.delegate as! AppDelegate
     var user: String
     var fileName: String
     var etag: String?

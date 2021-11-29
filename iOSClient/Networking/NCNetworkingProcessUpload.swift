@@ -23,6 +23,7 @@
 
 import UIKit
 import NCCommunication
+import Photos
 
 class NCNetworkingProcessUpload: NSObject {
 
@@ -179,12 +180,12 @@ class NCNetworkingProcessUpload: NSObject {
             return
         }
         let metadatasSessionUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload"))
-        if metadatasSessionUpload.count > 0 {
+        if !metadatasSessionUpload.isEmpty {
             completition()
             return
         }
         let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account, sessionSelector: sessionSelector)
-        if localIdentifiers.count == 0 {
+        if localIdentifiers.isEmpty {
             completition()
             return
         }

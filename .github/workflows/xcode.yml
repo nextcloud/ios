@@ -12,11 +12,14 @@ on:
 
 jobs:
   XCBuild:
-    runs-on: macos-latest
+    runs-on: macOS-11
     env:
       PROJECT: Nextcloud.xcodeproj
-      DEVELOPER_DIR: /Applications/Xcode_13.0.app/Contents/Developer
     steps:
+    - name: Set var
+      run: echo "DEVELOPER_DIR=$(xcode-select --print-path)" >> $GITHUB_ENV
+    - name: Check env
+      run: echo $DEVELOPER_DIR
     - uses: actions/checkout@v2
     - name: Restore Carhage Cache
       uses: actions/cache@v2

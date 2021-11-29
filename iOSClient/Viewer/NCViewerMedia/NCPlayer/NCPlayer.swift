@@ -29,7 +29,6 @@ import MediaPlayer
 
 class NCPlayer: NSObject {
 
-    private weak var appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var playerToolBar: NCPlayerToolBar?
     private var detailView: NCViewerMediaDetailView?
     private var observerAVPlayerItemDidPlayToEndTime: Any?

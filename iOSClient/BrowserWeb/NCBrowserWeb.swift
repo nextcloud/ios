@@ -31,7 +31,6 @@ import WebKit
 class NCBrowserWeb: UIViewController {
 
     var webView: WKWebView?
-    weak var appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     @objc var urlBase = ""
     @objc var isHiddenButtonExit = false

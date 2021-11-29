@@ -321,8 +321,6 @@ class NCShareHeaderView: UIView {
     @IBOutlet weak var path: MarqueeLabel!
     @IBOutlet weak var info: UILabel!
     @IBOutlet weak var favorite: UIButton!
-
-    private weak var appDelegate = UIApplication.shared.delegate as! AppDelegate
     var ocId = ""
 
     override func awakeFromNib() {

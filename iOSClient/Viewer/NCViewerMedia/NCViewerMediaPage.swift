@@ -43,7 +43,6 @@ class NCViewerMediaPage: UIViewController {
         return self.pageViewController.viewControllers![0] as! NCViewerMedia
     }
 
-    weak var appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     var metadatas: [tableMetadata] = []
     var currentIndex = 0

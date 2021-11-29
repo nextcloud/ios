@@ -39,7 +39,6 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
     var recording: NCAudioRecorder!
     var recordDuration: TimeInterval = 0
     var fileName: String = ""
-    weak var appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     @IBOutlet weak var contentContainerView: UIView!
     @IBOutlet weak var durationLabel: UILabel!
