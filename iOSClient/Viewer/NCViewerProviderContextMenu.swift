@@ -26,7 +26,7 @@ import AVFoundation
 import NCCommunication
 import SVGKit
 
-class NCViewerProviderContextMenu: UIViewController  {
+class NCViewerProviderContextMenu: UIViewController {
 
     private let imageView = UIImageView()
     private var videoLayer: AVPlayerLayer?
@@ -34,100 +34,100 @@ class NCViewerProviderContextMenu: UIViewController  {
     private var metadata: tableMetadata?
     private var metadataLivePhoto: tableMetadata?
     private var image: UIImage?
-    
+
     private let sizeIcon: CGFloat = 150
-        
+
     // MARK: - View Life Cycle
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     init(metadata: tableMetadata, image: UIImage?) {
         super.init(nibName: nil, bundle: nil)
-        
+
         self.metadata = metadata
         self.metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         self.image = image
-        
+
         if metadata.directory {
-            
+
             var imageFolder = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: sizeIcon*2)
-            
+
             if let image = self.image {
                 imageFolder =  image.image(color: NCBrandColor.shared.brandElement, size: sizeIcon*2)
             }
-            
+
             imageView.image = imageFolder
             imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
 
         } else {
-                         
+
             // ICON
             if let image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: sizeIcon*2, height: sizeIcon*2), isAspectRation: true) {
-                
+
                 imageView.image = image
                 imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
             }
-            
+
             // PREVIEW
             if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-                
+
                 if let image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
                     imageView.image = image
                     imageView.frame = resize(image.size)
                 }
             }
-             
+
             // VIEW IMAGE
             if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                
+
                 viewImage(metadata: metadata)
             }
 
             // VIEW LIVE PHOTO
             if metadataLivePhoto != nil && CCUtility.fileProviderStorageExists(metadataLivePhoto!.ocId, fileNameView: metadataLivePhoto!.fileNameView) {
-                
+
                 viewVideo(metadata: metadataLivePhoto!)
             }
-            
+
             // VIEW VIDEO
             if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 viewVideo(metadata: metadata)
             }
-            
+
             // PLAY SOUND
             if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 playSound(metadata: metadata)
             }
-            
+
             // AUTO DOWNLOAD VIDEO / AUDIO
             // if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || metadata.contentType == "application/pdf") {
             if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) {
-                
+
                 var maxDownload: UInt64 = 0
-                
+
                 if NCNetworking.shared.networkReachability == NCCommunicationCommon.typeReachability.reachableCellular {
                     maxDownload = NCGlobal.shared.maxAutoDownloadCellular
                 } else {
                     maxDownload = NCGlobal.shared.maxAutoDownload
                 }
-                
+
                 if metadata.size <= maxDownload {
                     NCOperationQueue.shared.download(metadata: metadata, selector: "")
                 }
             }
-            
+
             // AUTO DOWNLOAD IMAGE GIF
             if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.contentType == "image/gif" {
                 NCOperationQueue.shared.download(metadata: metadata, selector: "")
             }
-            
+
             // AUTO DOWNLOAD IMAGE SVG
             if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.contentType == "image/svg+xml" {
                 NCOperationQueue.shared.download(metadata: metadata, selector: "")
             }
-            
+
             // AUTO DOWNLOAD LIVE PHOTO
             if let metadataLivePhoto = self.metadataLivePhoto {
                 if !CCUtility.fileProviderStorageExists(metadataLivePhoto.ocId, fileNameView: metadataLivePhoto.fileNameView) {
@@ -136,31 +136,31 @@ class NCViewerProviderContextMenu: UIViewController  {
             }
         }
     }
-    
+
     override func loadView() {
         view = imageView
         imageView.contentMode = .scaleAspectFill
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-     
+
         NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(downloadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
+
         if let videoLayer = self.videoLayer {
             if videoLayer.frame == CGRect.zero {
                 videoLayer.frame = imageView.frame
@@ -170,11 +170,11 @@ class NCViewerProviderContextMenu: UIViewController  {
         }
         preferredContentSize = imageView.frame.size
     }
-    
+
     // MARK: - NotificationCenter
 
     @objc func downloadStartFile(_ notification: NSNotification) {
-        
+
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String {
                 if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
@@ -183,9 +183,9 @@ class NCViewerProviderContextMenu: UIViewController  {
             }
         }
     }
-    
+
     @objc func downloadedFile(_ notification: NSNotification) {
-        
+
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
                 if errorCode == 0 && metadata.ocId == self.metadata?.ocId {
@@ -206,9 +206,9 @@ class NCViewerProviderContextMenu: UIViewController  {
             }
         }
     }
-    
+
     @objc func downloadCancelFile(_ notification: NSNotification) {
-        
+
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String {
                 if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
@@ -217,15 +217,15 @@ class NCViewerProviderContextMenu: UIViewController  {
             }
         }
     }
-    
+
     // MARK: - Viewer
-    
+
     private func viewImage(metadata: tableMetadata) {
-        
+
         var image: UIImage?
 
         let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-        
+
         if metadata.contentType == "image/gif" {
             image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: filePath))
         } else if metadata.contentType == "image/svg+xml" {
@@ -241,9 +241,9 @@ class NCViewerProviderContextMenu: UIViewController  {
         imageView.image = image
         imageView.frame = resize(image?.size)
     }
-    
+
     func playSound(metadata: tableMetadata) {
-        
+
         let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
 
         do {
@@ -256,18 +256,18 @@ class NCViewerProviderContextMenu: UIViewController  {
         } catch let error {
             print(error.localizedDescription)
         }
-        
+
         preferredContentSize = imageView.frame.size
     }
-    
+
     private func viewVideo(metadata: tableMetadata) {
-        
+
         let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
 
         if let resolutionVideo = resolutionForLocalVideo(url: URL(fileURLWithPath: filePath)) {
-                               
+
             let player = AVPlayer(url: URL(fileURLWithPath: filePath))
-            
+
             self.videoLayer = AVPlayerLayer(player: player)
             if let videoLayer = self.videoLayer {
                 videoLayer.videoGravity = .resizeAspectFill
@@ -275,37 +275,37 @@ class NCViewerProviderContextMenu: UIViewController  {
                 imageView.frame = resize(resolutionVideo)
                 imageView.layer.addSublayer(videoLayer)
             }
-        
+
             player.isMuted = true
             player.play()
         }
     }
-    
+
     private func resolutionForLocalVideo(url: URL) -> CGSize? {
         guard let track = AVURLAsset(url: url).tracks(withMediaType: AVMediaType.video).first else { return nil }
         let size = track.naturalSize.applying(track.preferredTransform)
         return CGSize(width: abs(size.width), height: abs(size.height))
     }
-    
+
     private func resize(_ size: CGSize?) -> CGRect {
-        
+
         var frame = CGRect.zero
-        
+
         guard let size = size else {
             preferredContentSize = frame.size
             return frame
         }
-        
+
         if size.width <= UIScreen.main.bounds.width {
             frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
             preferredContentSize = frame.size
             return frame
         }
-        
+
         let originRatio = size.width / size.height
         let newRatio = UIScreen.main.bounds.width / UIScreen.main.bounds.height
         var newSize = CGSize.zero
-        
+
         if originRatio < newRatio {
             newSize.height = UIScreen.main.bounds.height
             newSize.width = UIScreen.main.bounds.height * originRatio
@@ -313,7 +313,7 @@ class NCViewerProviderContextMenu: UIViewController  {
             newSize.width = UIScreen.main.bounds.width
             newSize.height = UIScreen.main.bounds.width / originRatio
         }
-        
+
         frame = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
         preferredContentSize = frame.size
         return frame

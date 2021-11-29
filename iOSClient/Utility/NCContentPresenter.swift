@@ -30,7 +30,7 @@ class NCContentPresenter: NSObject {
         let instance = NCContentPresenter()
         return instance
     }()
-        
+
     typealias MainFont = Font.HelveticaNeue
     enum Font {
         enum HelveticaNeue: String {
@@ -47,20 +47,20 @@ class NCContentPresenter: NSObject {
             case condensedBlack = "CondensedBlack"
             case condensedBold = "CondensedBold"
             case boldItalic = "BoldItalic"
-            
+
             func with(size: CGFloat) -> UIFont {
                 return UIFont(name: "HelveticaNeue-\(rawValue)", size: size)!
             }
         }
     }
-    
+
     @objc enum messageType: Int {
         case error
         case success
         case info
     }
-    
-    //MARK: - Message
+
+    // MARK: - Message
 
     @objc func showGenericError(description: String) {
         messageNotification(
@@ -95,16 +95,16 @@ class NCContentPresenter: NSObject {
             }
         }
     }
-    
-    //MARK: - Flat message
-    
+
+    // MARK: - Flat message
+
     private func flatTop(title: String, description: String, delay: TimeInterval, imageName: String?, type: messageType, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
-     
+
         if SwiftEntryKit.isCurrentlyDisplaying(entryNamed: title + description) { return }
-        
+
         var attributes = EKAttributes.topFloat
         var image: UIImage?
-        
+
         attributes.windowLevel = .normal
         attributes.displayDuration = delay
         attributes.name = title + description
@@ -114,9 +114,9 @@ class NCContentPresenter: NSObject {
         attributes.scroll = .enabled(swipeable: true, pullbackAnimation: .jolt)
         attributes.precedence = .override(priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
 
-        let title = EKProperty.LabelContent(text: title, style: .init(font:  MainFont.bold.with(size: 16), color: .white))
-        let description = EKProperty.LabelContent(text: description, style: .init(font:  MainFont.medium.with(size: 13), color: .white))
-        
+        let title = EKProperty.LabelContent(text: title, style: .init(font: MainFont.bold.with(size: 16), color: .white))
+        let description = EKProperty.LabelContent(text: description, style: .init(font: MainFont.medium.with(size: 13), color: .white))
+
         if imageName == nil {
             image = getImageFromType(type)
         } else {
@@ -126,19 +126,19 @@ class NCContentPresenter: NSObject {
 
         let simpleMessage = EKSimpleMessage(image: imageMessage, title: title, description: description)
         let notificationMessage = EKNotificationMessage(simpleMessage: simpleMessage)
-        
+
         let contentView = EKNotificationMessageView(with: notificationMessage)
         DispatchQueue.main.async { SwiftEntryKit.display(entry: contentView, using: attributes) }
     }
-   
-    //MARK: - Note Message
-    
+
+    // MARK: - Note Message
+
     func noteTop(text: String, image: UIImage?, color: UIColor? = nil, type: messageType? = nil, delay: TimeInterval, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
-        
+
         if SwiftEntryKit.isCurrentlyDisplaying(entryNamed: text) { return }
 
         var attributes = EKAttributes.topNote
-        
+
         attributes.windowLevel = .normal
         attributes.displayDuration = delay
         attributes.name = text
@@ -152,7 +152,7 @@ class NCContentPresenter: NSObject {
 
         let style = EKProperty.LabelStyle(font: MainFont.light.with(size: 14), color: .white, alignment: .center)
         let labelContent = EKProperty.LabelContent(text: text, style: style)
-        
+
         if let image = image {
             let imageContent = EKProperty.ImageContent(image: image, size: CGSize(width: 17, height: 17))
             let contentView = EKImageNoteMessageView(with: labelContent, imageContent: imageContent)
@@ -162,8 +162,8 @@ class NCContentPresenter: NSObject {
             DispatchQueue.main.async { SwiftEntryKit.display(entry: contentView, using: attributes) }
         }
     }
-    
-    //MARK: - Private
+
+    // MARK: - Private
 
     private func getBackgroundColorFromType(_ type: messageType) -> UIColor {
         switch type {
@@ -177,7 +177,7 @@ class NCContentPresenter: NSObject {
             return .white
         }
     }
-    
+
     private func getImageFromType(_ type: messageType) -> UIImage? {
         switch type {
         case .info:
@@ -190,5 +190,5 @@ class NCContentPresenter: NSObject {
             return nil
         }
     }
-    
+
 }

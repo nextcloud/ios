@@ -28,20 +28,20 @@ class NCAskAuthorization: NSObject {
         let instance = NCAskAuthorization()
         return instance
     }()
-    
-    func askAuthorizationAudioRecord(viewController: UIViewController?, completion: @escaping (_ hasPermission: Bool)->()) {
-        
+
+    func askAuthorizationAudioRecord(viewController: UIViewController?, completion: @escaping (_ hasPermission: Bool)->Void) {
+
         switch AVAudioSession.sharedInstance().recordPermission {
         case AVAudioSession.RecordPermission.granted:
             completion(true)
             break
         case AVAudioSession.RecordPermission.denied:
             let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_err_permission_microphone_", comment: ""), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_open_settings_", comment: ""), style: .default, handler: { action in
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_open_settings_", comment: ""), style: .default, handler: { _ in
                 UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
                 completion(false)
             }))
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { action in
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in
                 completion(false)
             }))
             DispatchQueue.main.async {
@@ -64,20 +64,20 @@ class NCAskAuthorization: NSObject {
             break
         }
     }
-    
-    func askAuthorizationPhotoLibrary(viewController: UIViewController?, completion: @escaping (_ hasPermission: Bool)->()) {
-     
+
+    func askAuthorizationPhotoLibrary(viewController: UIViewController?, completion: @escaping (_ hasPermission: Bool)->Void) {
+
         switch PHPhotoLibrary.authorizationStatus() {
         case PHAuthorizationStatus.authorized:
             completion(true)
             break
         case PHAuthorizationStatus.denied, PHAuthorizationStatus.limited, PHAuthorizationStatus.restricted:
             let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_err_permission_photolibrary_", comment: ""), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_open_settings_", comment: ""), style: .default, handler: { action in
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_open_settings_", comment: ""), style: .default, handler: { _ in
                 UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
                 completion(false)
             }))
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { action in
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in
                 completion(false)
             }))
             DispatchQueue.main.async {
@@ -100,9 +100,9 @@ class NCAskAuthorization: NSObject {
             break
         }
     }
-    
-    @objc func askAuthorizationLocationManager(completion: @escaping (_ hasFullPermissions: Bool)->()) {
-        
+
+    @objc func askAuthorizationLocationManager(completion: @escaping (_ hasFullPermissions: Bool)->Void) {
+
         switch CLLocationManager.authorizationStatus() {
         case CLAuthorizationStatus.authorizedAlways:
             completion(true)

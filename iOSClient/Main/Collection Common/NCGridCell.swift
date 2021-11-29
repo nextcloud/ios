@@ -24,7 +24,7 @@
 import UIKit
 
 class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
-    
+
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
@@ -38,7 +38,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     private var objectId = ""
     private var user = ""
 
-    var delegate: NCGridCellDelegate?
+    weak var delegate: NCGridCellDelegate?
     var namedButtonMore = ""
 
     var fileAvatarImageView: UIImageView? {
@@ -67,13 +67,13 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             user = newValue ?? ""
         }
     }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
-        
+
         imageVisualEffect.layer.cornerRadius = 6
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
@@ -81,46 +81,46 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.transform = CGAffineTransform(scaleX: 1.0, y: 0.5)
         progressView.trackTintColor = .clear
-        
+
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
         longPressedGesture.delegate = self
         longPressedGesture.delaysTouchesBegan = true
         self.addGestureRecognizer(longPressedGesture)
-        
+
         let longPressedGestureMore = UILongPressGestureRecognizer(target: self, action: #selector(longPressInsideMore(gestureRecognizer:)))
         longPressedGestureMore.minimumPressDuration = 0.5
         longPressedGestureMore.delegate = self
         longPressedGestureMore.delaysTouchesBegan = true
-        buttonMore.addGestureRecognizer(longPressedGestureMore)        
+        buttonMore.addGestureRecognizer(longPressedGestureMore)
     }
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
         imageItem.backgroundColor = nil
     }
-    
+
     @IBAction func touchUpInsideMore(_ sender: Any) {
         delegate?.tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, sender: sender)
     }
-    
+
     @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
         delegate?.longPressMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, gestureRecognizer: gestureRecognizer)
     }
-    
+
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
         delegate?.longPressGridItem(with: objectId, gestureRecognizer: gestureRecognizer)
     }
-    
+
     func setButtonMore(named: String, image: UIImage) {
         namedButtonMore = named
         buttonMore.setImage(image, for: .normal)
     }
-    
+
     func hideButtonMore(_ status: Bool) {
         buttonMore.isHidden = status
     }
-    
+
     func selectMode(_ status: Bool) {
         if status {
             imageSelect.isHidden = false
@@ -129,7 +129,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             imageVisualEffect.isHidden = true
         }
     }
-    
+
     func selected(_ status: Bool) {
         if status {
             if traitCollection.userInterfaceStyle == .dark {
@@ -148,7 +148,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 }
 
-protocol NCGridCellDelegate {
+protocol NCGridCellDelegate: AnyObject {
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any)
     func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer)
     func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer)
@@ -164,7 +164,7 @@ extension NCGridCellDelegate {
 // MARK: - Grid Layout
 
 class NCGridLayout: UICollectionViewFlowLayout {
-    
+
     var heightLabelPlusButton: CGFloat = 45
     var marginLeftRight: CGFloat = 6
     var itemForLine: CGFloat = 3
@@ -174,36 +174,36 @@ class NCGridLayout: UICollectionViewFlowLayout {
 
     override init() {
         super.init()
-        
+
         sectionHeadersPinToVisibleBounds = false
-        
+
         minimumInteritemSpacing = 1
         minimumLineSpacing = marginLeftRight
-        
+
         self.scrollDirection = .vertical
-        self.sectionInset = UIEdgeInsets(top: 10, left: marginLeftRight, bottom: 0, right:  marginLeftRight)
+        self.sectionInset = UIEdgeInsets(top: 10, left: marginLeftRight, bottom: 0, right: marginLeftRight)
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override var itemSize: CGSize {
         get {
             if let collectionView = collectionView {
-                
+
                 if collectionView.frame.width < 400 {
                     itemForLine = 3
                 } else {
                     itemForLine = collectionView.frame.width / itemWidthDefault
                 }
-                
+
                 let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
                 let itemHeight: CGFloat = itemWidth + heightLabelPlusButton
-                
+
                 return CGSize(width: itemWidth, height: itemHeight)
             }
-            
+
             // Default fallback
             return CGSize(width: itemWidthDefault, height: itemWidthDefault)
         }
@@ -211,7 +211,7 @@ class NCGridLayout: UICollectionViewFlowLayout {
             super.itemSize = newValue
         }
     }
-    
+
     override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
         return proposedContentOffset
     }

@@ -24,19 +24,19 @@
 import UIKit
 
 class FileProviderDomain: NSObject {
-    
+
     func registerDomains() {
-        
+
         NSFileProviderManager.getDomainsWithCompletionHandler { (fileProviderDomain, error) in
-            
-            var domains:[String] = []
+
+            var domains: [String] = []
             let pathRelativeToDocumentStorage = NSFileProviderManager.default.documentStorageURL.absoluteString
             let accounts = NCManageDatabase.shared.getAllAccount()
-            
+
             for domain in fileProviderDomain {
                 domains.append(domain.identifier.rawValue)
             }
-            
+
             // Delete
             for domain in domains {
                 var domainFound = false
@@ -58,7 +58,7 @@ class FileProviderDomain: NSObject {
                     })
                 }
             }
-            
+
             // Add
             for account in accounts {
                 var domainFound = false
@@ -82,9 +82,9 @@ class FileProviderDomain: NSObject {
             }
         }
     }
-    
+
     func removeAllDomains() {
-        
+
         NSFileProviderManager.removeAllDomains { (_) in }
     }
 }

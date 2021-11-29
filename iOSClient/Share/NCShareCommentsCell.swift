@@ -27,23 +27,23 @@ import NCCommunication
 // MARK: - NCShareCommentsCell
 
 class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
-    
+
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelUser: UILabel!
     @IBOutlet weak var buttonMenu: UIButton!
     @IBOutlet weak var labelDate: UILabel!
     @IBOutlet weak var labelMessage: UILabel!
-    
+
     var tableComments: tableComments?
-    var delegate: NCShareCommentsCellDelegate?
-    
-    var filePreviewImageView : UIImageView? {
-        get{
+    weak var delegate: NCShareCommentsCellDelegate?
+
+    var filePreviewImageView: UIImageView? {
+        get {
             return nil
         }
     }
     var fileAvatarImageView: UIImageView? {
-        get{
+        get {
             return imageItem
         }
     }
@@ -53,19 +53,19 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
         }
     }
     var fileUser: String? {
-        get{
+        get {
             return tableComments?.actorId
         }
     }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+
         buttonMenu.setImage(UIImage.init(named: "shareMenu")!.image(color: .lightGray, size: 50), for: .normal)
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage))
         imageItem?.addGestureRecognizer(tapGesture)
     }
-    
+
     @objc func tapAvatarImage(_ sender: UITapGestureRecognizer) {
         self.delegate?.showProfile(with: tableComments, sender: sender)
     }
@@ -75,7 +75,7 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
     }
 }
 
-protocol NCShareCommentsCellDelegate {
+protocol NCShareCommentsCellDelegate: AnyObject {
     func tapMenu(with tableComments: tableComments?, sender: Any)
     func showProfile(with tableComment: tableComments?, sender: Any)
 }

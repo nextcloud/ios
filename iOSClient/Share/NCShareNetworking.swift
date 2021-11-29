@@ -24,28 +24,28 @@ import UIKit
 import NCCommunication
 
 class NCShareNetworking: NSObject {
-    
+
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
+
     var urlBase: String
-    var delegate: NCShareNetworkingDelegate?
+    weak var delegate: NCShareNetworkingDelegate?
     var view: UIView
     var metadata: tableMetadata
-    
+
     init(metadata: tableMetadata, urlBase: String, view: UIView, delegate: NCShareNetworkingDelegate?) {
         self.metadata = metadata
         self.urlBase = urlBase
         self.view = view
         self.delegate = delegate
-        
+
         super.init()
     }
-    
+
     func readShare(showLoadingIndicator: Bool) {
         if showLoadingIndicator {
             NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
         }
-    
+
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
         let parameter = NCCShareParameter(path: filenamePath)
         NCCommunication.shared.readShares(parameters: parameter) { (account, shares, errorCode, errorDescription) in
@@ -62,7 +62,7 @@ class NCShareNetworking: NSObject {
             self.delegate?.readShareCompleted()
         }
     }
-    
+
     func createShareLink(password: String?) {
         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
@@ -81,7 +81,7 @@ class NCShareNetworking: NSObject {
     func createShare(shareWith: String, shareType: Int, password: String?, metadata: tableMetadata) {
         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
-        var permission: Int = NCManageDatabase.shared.getCapabilitiesServerInt(account: metadata.account, elements: ["ocs","data","capabilities","files_sharing","default_permissions"])
+        var permission: Int = NCManageDatabase.shared.getCapabilitiesServerInt(account: metadata.account, elements: ["ocs", "data", "capabilities", "files_sharing", "default_permissions"])
         if permission <= 0 {
             permission = metadata.directory ? NCGlobal.shared.permissionMaxFolderShare : NCGlobal.shared.permissionMaxFileShare
         }
@@ -97,7 +97,7 @@ class NCShareNetworking: NSObject {
             self.delegate?.shareCompleted()
         }
     }
-    
+
     func unShare(idShare: Int) {
         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
         NCCommunication.shared.deleteShare(idShare: idShare) { (account, errorCode, errorDescription) in
@@ -110,7 +110,7 @@ class NCShareNetworking: NSObject {
             }
         }
     }
-    
+
     func updateShare(idShare: Int, password: String?, permissions: Int, note: String?, label: String?, expirationDate: String?, hideDownload: Bool) {
         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
         NCCommunication.shared.updateShare(idShare: idShare, password: password, expireDate: expirationDate, permissions: permissions, note: note, label: label, hideDownload: hideDownload) { (account, share, errorCode, errorDescription) in
@@ -125,10 +125,10 @@ class NCShareNetworking: NSObject {
             }
         }
     }
-    
+
     func getSharees(searchString: String) {
         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
-        NCCommunication.shared.searchSharees(search: searchString) { (account, sharees, errorCode, errorDescription) in
+        NCCommunication.shared.searchSharees(search: searchString) { (_, sharees, errorCode, errorDescription) in
             NCUtility.shared.stopActivityIndicator()
             if errorCode == 0 {
                 self.delegate?.getSharees(sharees: sharees)
@@ -140,7 +140,7 @@ class NCShareNetworking: NSObject {
     }
 }
 
-protocol NCShareNetworkingDelegate {
+protocol NCShareNetworkingDelegate: AnyObject {
     func readShareCompleted()
     func shareCompleted()
     func unShareCompleted()

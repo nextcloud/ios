@@ -37,7 +37,7 @@ extension NCMedia {
                     NCMenuAction(
                         title: NSLocalizedString("_select_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "checkmark.circle.fill"),
-                        action: { menuAction in
+                        action: { _ in
                             self.isEditMode = true
                         }
                     )
@@ -50,7 +50,7 @@ extension NCMedia {
                     icon: NCUtility.shared.loadImage(named: "photo"),
                     selected: filterClassTypeImage,
                     on: true,
-                    action: { menuAction in
+                    action: { _ in
                         self.filterClassTypeImage = !self.filterClassTypeImage
                         self.filterClassTypeVideo = false
                         self.reloadDataSourceWithCompletion { (_) in }
@@ -64,72 +64,72 @@ extension NCMedia {
                     icon: NCUtility.shared.loadImage(named: "video"),
                     selected: filterClassTypeVideo,
                     on: true,
-                    action: { menuAction in
+                    action: { _ in
                         self.filterClassTypeVideo = !self.filterClassTypeVideo
                         self.filterClassTypeImage = false
                         self.reloadDataSourceWithCompletion { (_) in }
                     }
                 )
             )
-            
+
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_select_media_folder_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "folder"),
-                    action: { menuAction in
+                    action: { _ in
                         let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
                         let viewController = navigationController.topViewController as! NCSelect
-                        
+
                         viewController.delegate = self
                         viewController.typeOfCommandView = .select
                         viewController.type = "mediaFolder"
-                        
+
                         self.present(navigationController, animated: true, completion: nil)
                     }
                 )
             )
-            
+
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_modified_date_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "circle.grid.cross.up.fill"),
                     selected: CCUtility.getMediaSortDate() == "date",
                     on: true,
-                    action: { menuAction in
+                    action: { _ in
                         CCUtility.setMediaSortDate("date")
                         self.reloadDataSourceWithCompletion { (_) in }
                     }
                 )
             )
-            
+
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_created_date_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "circle.grid.cross.down.fill"),
                     selected: CCUtility.getMediaSortDate() == "creationDate",
                     on: true,
-                    action: { menuAction in
+                    action: { _ in
                         CCUtility.setMediaSortDate("creationDate")
                         self.reloadDataSourceWithCompletion { (_) in }
                     }
                 )
             )
-            
+
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_upload_date_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "circle.grid.cross.right.fill"),
                     selected: CCUtility.getMediaSortDate() == "uploadDate",
                     on: true,
-                    action: { menuAction in
+                    action: { _ in
                         CCUtility.setMediaSortDate("uploadDate")
                         self.reloadDataSourceWithCompletion { (_) in }
                     }
                 )
             )
-            
+
         } else {
-           
+
             //
             // CANCEL
             //
@@ -137,14 +137,14 @@ extension NCMedia {
                 NCMenuAction(
                     title: NSLocalizedString("_cancel_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "xmark"),
-                    action: { menuAction in
+                    action: { _ in
                         self.isEditMode = false
                         self.selectOcId.removeAll()
                         self.reloadDataThenPerform { }
                     }
                 )
             )
-            
+
             //
             // OPEN IN
             //
@@ -152,7 +152,7 @@ extension NCMedia {
                 NCMenuAction(
                     title: NSLocalizedString("_open_in_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
-                    action: { menuAction in
+                    action: { _ in
                         self.isEditMode = false
                         NCFunctionCenter.shared.openActivityViewController(selectOcId: self.selectOcId)
                         self.selectOcId.removeAll()
@@ -160,7 +160,7 @@ extension NCMedia {
                     }
                 )
             )
-            
+
             //
             // SAVE TO PHOTO GALLERY
             //
@@ -168,7 +168,7 @@ extension NCMedia {
                 NCMenuAction(
                     title: NSLocalizedString("_save_selected_files_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
-                    action: { menuAction in
+                    action: { _ in
                         self.isEditMode = false
                         for ocId in self.selectOcId {
                             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
@@ -190,7 +190,7 @@ extension NCMedia {
                     }
                 )
             )
-            
+
             //
             // COPY - MOVE
             //
@@ -198,7 +198,7 @@ extension NCMedia {
                 NCMenuAction(
                     title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "arrow.up.right.square"),
-                    action: { menuAction in
+                    action: { _ in
                         self.isEditMode = false
                         var meradatasSelect = [tableMetadata]()
                         for ocId in self.selectOcId {
@@ -214,7 +214,7 @@ extension NCMedia {
                     }
                 )
             )
-            
+
             //
             // COPY
             //
@@ -222,7 +222,7 @@ extension NCMedia {
                 NCMenuAction(
                     title: NSLocalizedString("_copy_file_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
-                    action: { menuAction in
+                    action: { _ in
                         self.isEditMode = false
                         self.appDelegate.pasteboardOcIds.removeAll()
                         for ocId in self.selectOcId {
@@ -234,7 +234,7 @@ extension NCMedia {
                     }
                 )
             )
-            
+
             //
             // DELETE
             //
@@ -242,7 +242,7 @@ extension NCMedia {
                 NCMenuAction(
                     title: NSLocalizedString("_delete_selected_files_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "trash"),
-                    action: { menuAction in
+                    action: { _ in
                         self.isEditMode = false
                         for ocId in self.selectOcId {
                             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
@@ -263,4 +263,3 @@ extension NCMedia {
         presentMenu(with: actions)
     }
 }
-

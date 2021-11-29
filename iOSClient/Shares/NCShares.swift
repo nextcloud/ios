@@ -24,26 +24,26 @@
 import UIKit
 import NCCommunication
 
-class NCShares: NCCollectionViewCommon  {
-    
+class NCShares: NCCollectionViewCommon {
+
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        
+
         titleCurrentFolder = NSLocalizedString("_list_shares_", comment: "")
-        layoutKey = NCGlobal.shared.layoutViewShares 
+        layoutKey = NCGlobal.shared.layoutViewShares
         enableSearchBar = false
         emptyImage = UIImage.init(named: "share")?.image(color: .gray, size: UIScreen.main.bounds.width)
         emptyTitle = "_list_shares_no_files_"
         emptyDescription = "_tutorial_list_shares_view_"
     }
-    
+
     // MARK: - DataSource + NC Endpoint
-    
+
     override func reloadDataSource() {
         super.reloadDataSource()
-        
+
         DispatchQueue.global().async {
             self.metadatasSource.removeAll()
             let sharess = NCManageDatabase.shared.getTableShares(account: self.appDelegate.account)
@@ -54,46 +54,46 @@ class NCShares: NCCollectionViewCommon  {
                     }
                 }
             }
-            
+
             self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
-            
+
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
             }
         }
     }
-    
+
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
-        
+
         if isSearching {
             networkSearch()
             return
         }
-                
+
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
-                    
+
         // Shares network
         NCCommunication.shared.readShares(parameters: NCCShareParameter(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, shares, errorCode, ErrorDescription) in
-                
+
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
             }
-            
+
             if errorCode == 0 {
-                    
+
                 NCManageDatabase.shared.deleteTableShare(account: account)
                 if shares != nil {
                     NCManageDatabase.shared.addShare(urlBase: self.appDelegate.urlBase, account: account, shares: shares!)
                 }
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: account)
                 self.reloadDataSource()
-                    
+
             } else {
-                    
+
                 DispatchQueue.main.async {
                     self.collectionView?.reloadData()
                     NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
@@ -102,4 +102,3 @@ class NCShares: NCCollectionViewCommon  {
         }
     }
 }
-

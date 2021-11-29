@@ -26,7 +26,7 @@ import UIKit
 
 extension NotificationCenter {
 
-    func postOnMainThread(name: String, object anObject: Any? = nil, userInfo aUserInfo: [AnyHashable : Any]? = nil, second: Double = 0) {
+    func postOnMainThread(name: String, object anObject: Any? = nil, userInfo aUserInfo: [AnyHashable: Any]? = nil, second: Double = 0) {
 //        if UIApplication.shared.applicationState == .background {
 //            return
 //        }
@@ -35,4 +35,3 @@ extension NotificationCenter {
         }
     }
 }
-

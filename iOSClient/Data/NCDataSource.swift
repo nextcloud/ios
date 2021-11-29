@@ -24,9 +24,9 @@
 import UIKit
 
 class NCDataSource: NSObject {
-    
+
     public var metadatas: [tableMetadata] = []
-    public var metadataShare: [String:tableShare] = [:]
+    public var metadataShare: [String: tableShare] = [:]
     public var metadataOffLine: [String] = []
 
     private var ascending: Bool = true
@@ -34,39 +34,39 @@ class NCDataSource: NSObject {
     private var directoryOnTop: Bool = true
     private var favoriteOnTop: Bool = true
     private var filterLivePhoto: Bool = true
-    
+
     override init() {
         super.init()
     }
-    
+
     init(metadatasSource: [tableMetadata], sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, filterLivePhoto: Bool? = true) {
         super.init()
-        
+
         self.sort = sort ?? "none"
         self.ascending = ascending ?? false
         self.directoryOnTop = directoryOnTop ?? true
         self.favoriteOnTop = favoriteOnTop ?? true
         self.filterLivePhoto = filterLivePhoto ?? true
-        
+
         createMetadatas(metadatasSource: metadatasSource)
     }
-    
+
     // MARK: -
-    
+
     private func createMetadatas(metadatasSource: [tableMetadata]) {
-                
+
         var metadatasSourceSorted: [tableMetadata] = []
         var metadataFavoriteDirectory: [tableMetadata] = []
         var metadataFavoriteFile: [tableMetadata] = []
         var metadataDirectory: [tableMetadata] = []
         var metadataFile: [tableMetadata] = []
-        
+
         /*
         Metadata order
         */
-        
+
         if sort != "none" && sort != "" {
-            metadatasSourceSorted = metadatasSource.sorted { (obj1:tableMetadata, obj2:tableMetadata) -> Bool in
+            metadatasSourceSorted = metadatasSource.sorted { (obj1: tableMetadata, obj2: tableMetadata) -> Bool in
                 if sort == "date" {
                     if ascending {
                         return obj1.date.compare(obj2.date as Date) == ComparisonResult.orderedAscending
@@ -90,29 +90,29 @@ class NCDataSource: NSObject {
         } else {
             metadatasSourceSorted = metadatasSource
         }
-        
+
         /*
         Initialize datasource
         */
-        
+
         for metadata in metadatasSourceSorted {
-            
+
             // skipped the root file
             if metadata.fileName == "." || metadata.serverUrl == ".." {
                 continue
             }
-            
+
             // skipped livePhoto
             if metadata.ext == "mov" && metadata.livePhoto && filterLivePhoto {
                 continue
             }
-            
+
             // share
             let shares = NCManageDatabase.shared.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
             if shares.count > 0 {
                 metadataShare[metadata.ocId] = shares.first
             }
-            
+
             // is Local / offline
             if !metadata.directory {
                 let size = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
@@ -126,7 +126,7 @@ class NCDataSource: NSObject {
                     }
                 }
             }
-               
+
             // Organized the metadata
             if metadata.favorite && favoriteOnTop {
                 if metadata.directory {
@@ -140,17 +140,17 @@ class NCDataSource: NSObject {
                 metadataFile.append(metadata)
             }
         }
-        
+
         metadatas.removeAll()
         metadatas += metadataFavoriteDirectory
         metadatas += metadataFavoriteFile
         metadatas += metadataDirectory
         metadatas += metadataFile
     }
-        
+
     // MARK: -
 
-    func getFilesInformation() -> (directories: Int,  files: Int, size: Int64) {
+    func getFilesInformation() -> (directories: Int, files: Int, size: Int64) {
 
         var directories: Int = 0
         var files: Int = 0
@@ -164,45 +164,45 @@ class NCDataSource: NSObject {
             }
             size = size + metadata.size
         }
-        
+
         return (directories, files, size)
     }
-    
+
     func deleteMetadata(ocId: String) -> Int? {
-        
+
         if let index = self.getIndexMetadata(ocId: ocId) {
             metadatas.remove(at: index)
             return index
         }
-        
+
         return nil
     }
-    
+
     @discardableResult
     func reloadMetadata(ocId: String, ocIdTemp: String? = nil) -> Int? {
-        
+
         var index: Int?
-        
+
         if ocIdTemp != nil {
             index = self.getIndexMetadata(ocId: ocIdTemp!)
         } else {
             index = self.getIndexMetadata(ocId: ocId)
         }
-        
+
         if index != nil {
             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 metadatas[index!] = metadata
-            } 
+            }
         }
-        
+
         return index
     }
-    
+
     @discardableResult
     func addMetadata(_ metadata: tableMetadata) -> Int? {
-        
+
         var index: Int = 0
-        
+
         // Already exists
         for metadataCount in metadatas {
             if metadataCount.fileNameView == metadata.fileNameView || metadataCount.ocId == metadata.ocId {
@@ -211,16 +211,16 @@ class NCDataSource: NSObject {
             }
             index += 1
         }
-        
+
         // Append & rebuild
         metadatas.append(metadata)
         createMetadatas(metadatasSource: metadatas)
-        
+
         return getIndexMetadata(ocId: metadata.ocId)
     }
-    
+
     func getIndexMetadata(ocId: String) -> Int? {
-        
+
         var index: Int = 0
 
         for metadataCount in metadatas {
@@ -229,19 +229,19 @@ class NCDataSource: NSObject {
             }
             index += 1
         }
-        
+
         return nil
     }
-    
+
     func numberOfItems() -> Int {
-        
+
         return metadatas.count
     }
-    
+
     func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
-        
+
         let row = indexPath.row
-        
+
         if row > metadatas.count - 1 {
             return nil
         } else {

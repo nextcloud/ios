@@ -25,14 +25,14 @@ import UIKit
 import NCCommunication
 
 class NCFileViewInFolder: NCCollectionViewCommon {
-    
+
     internal var fileName: String?
 
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        
+
         appDelegate.activeFileViewInFolder = self
         titleCurrentFolder = NCBrandOptions.shared.brand
         layoutKey = NCGlobal.shared.layoutViewViewInFolder
@@ -41,23 +41,23 @@ class NCFileViewInFolder: NCCollectionViewCommon {
         emptyTitle = "_files_no_files_"
         emptyDescription = "_no_file_pull_down_"
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         appDelegate.activeViewController = self
-        
+
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) {
             self.navigationItem.title = NCBrandOptions.shared.brand
         } else {
             self.navigationItem.title = (serverUrl as NSString).lastPathComponent
         }
-        
+
         presentationController?.delegate = self
-        
+
         layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
-        
+
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView?.collectionViewLayout = listLayout
         } else {
@@ -65,7 +65,7 @@ class NCFileViewInFolder: NCCollectionViewCommon {
         }
 
         self.navigationItem.leftBarButtonItem = nil
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain, target: self, action: #selector(tapClose(sender:)))       
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain, target: self, action: #selector(tapClose(sender:)))
     }
 
     // MARK: - TAP EVENT
@@ -73,28 +73,28 @@ class NCFileViewInFolder: NCCollectionViewCommon {
     @objc func tapClose(sender: Any) {
         dismiss(animated: true)
     }
-    
+
     // MARK: - DataSource + NC Endpoint
-    
+
     override func reloadDataSource() {
         super.reloadDataSource()
-        
+
         DispatchQueue.global().async {
-            
+
             if !self.isSearching {
                 self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
                 if self.metadataFolder == nil {
-                    self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl:  self.serverUrl)
+                    self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl: self.serverUrl)
                 }
             }
-            
+
             self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
-            
+
             DispatchQueue.main.async {
-            
+
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
-                
+
                 // Blink file
                 if self.fileName != nil {
                     if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, self.serverUrl, self.fileName!)) {
@@ -118,19 +118,19 @@ class NCFileViewInFolder: NCCollectionViewCommon {
             }
         }
     }
-    
+
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
-        
+
         if isSearching {
             networkSearch()
             return
         }
-        
+
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
-               
-        networkReadFolder(forced: forced) { (tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription) in
+
+        networkReadFolder(forced: forced) { (tableDirectory, metadatas, _, _, errorCode, _) in
             if errorCode == 0 {
                 for metadata in metadatas ?? [] {
                     if !metadata.directory {
@@ -140,7 +140,7 @@ class NCFileViewInFolder: NCCollectionViewCommon {
                     }
                 }
             }
-            
+
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
@@ -150,4 +150,3 @@ class NCFileViewInFolder: NCCollectionViewCommon {
         }
     }
 }
-

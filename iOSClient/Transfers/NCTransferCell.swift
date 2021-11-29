@@ -24,7 +24,7 @@
 import UIKit
 
 class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
-    
+
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelPath: UILabel!
@@ -35,14 +35,14 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
-    
+
     private var objectId = ""
     private var user = ""
-    
+
     var delegate: NCTransferCellDelegate?
     var indexPath = IndexPath()
     var namedButtonMore = ""
-    
+
     var fileAvatarImageView: UIImageView? {
         get {
             return nil
@@ -56,7 +56,7 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
             objectId = newValue ?? ""
         }
     }
-    var filePreviewImageView : UIImageView? {
+    var filePreviewImageView: UIImageView? {
         get {
             return imageItem
         }
@@ -69,13 +69,13 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
             user = newValue ?? ""
         }
     }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
-               
+
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
-        
+
         progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.transform = CGAffineTransform(scaleX: 1.0, y: 0.5)
         progressView.trackTintColor = .clear
@@ -85,38 +85,38 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
         longPressedGesture.delegate = self
         longPressedGesture.delaysTouchesBegan = true
         self.addGestureRecognizer(longPressedGesture)
-        
+
         let longPressedGestureMore = UILongPressGestureRecognizer(target: self, action: #selector(longPressInsideMore(gestureRecognizer:)))
         longPressedGestureMore.minimumPressDuration = 0.5
         longPressedGestureMore.delegate = self
         longPressedGestureMore.delaysTouchesBegan = true
         buttonMore.addGestureRecognizer(longPressedGestureMore)
-        
+
         separator.backgroundColor = NCBrandColor.shared.separator
         separatorHeightConstraint.constant = 0.5
     }
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
         imageItem.backgroundColor = nil
     }
-    
+
     @IBAction func touchUpInsideShare(_ sender: Any) {
         delegate?.tapShareListItem(with: objectId, sender: sender)
     }
-    
+
     @IBAction func touchUpInsideMore(_ sender: Any) {
         delegate?.tapMoreListItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, sender: sender)
     }
-    
+
     @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
         delegate?.longPressMoreListItem(with: objectId, namedButtonMore: namedButtonMore, gestureRecognizer: gestureRecognizer)
     }
-    
+
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
         delegate?.longPressListItem(with: objectId, gestureRecognizer: gestureRecognizer)
     }
-    
+
     func setButtonMore(named: String, image: UIImage) {
         namedButtonMore = named
         imageMore.image = image

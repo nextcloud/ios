@@ -76,7 +76,7 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var urlBase = ""
     @objc dynamic var user = ""
     @objc dynamic var userId = ""
-    @objc dynamic var userStatusClearAt: NSDate? = nil
+    @objc dynamic var userStatusClearAt: NSDate?
     @objc dynamic var userStatusIcon: String?
     @objc dynamic var userStatusMessage: String?
     @objc dynamic var userStatusMessageId: String?
@@ -85,7 +85,7 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var userStatusStatusIsUserDefined: Bool = false
     @objc dynamic var webpage = ""
     @objc dynamic var zip = ""
-    
+
     // COLOR Files
     @objc dynamic var darkColorBackground = ""
     @objc dynamic var lightColorBackground = ""
@@ -94,15 +94,15 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var hcIsTrial: Bool = false
     @objc dynamic var hcTrialExpired: Bool = false
     @objc dynamic var hcTrialRemainingSec: Int64 = 0
-    @objc dynamic var hcTrialEndTime: NSDate? = nil
+    @objc dynamic var hcTrialEndTime: NSDate?
     @objc dynamic var hcAccountRemoveExpired: Bool = false
     @objc dynamic var hcAccountRemoveRemainingSec: Int64 = 0
-    @objc dynamic var hcAccountRemoveTime: NSDate? = nil
+    @objc dynamic var hcAccountRemoveTime: NSDate?
     @objc dynamic var hcNextGroupExpirationGroup = ""
     @objc dynamic var hcNextGroupExpirationGroupExpired: Bool = false
-    @objc dynamic var hcNextGroupExpirationExpiresTime: NSDate? = nil
+    @objc dynamic var hcNextGroupExpirationExpiresTime: NSDate?
     @objc dynamic var hcNextGroupExpirationExpires = ""
-    
+
     override static func primaryKey() -> String {
         return "account"
     }
@@ -146,7 +146,7 @@ class tableActivityLatestId: Object {
 }
 
 class tableActivityPreview: Object {
-    
+
     @objc dynamic var account = ""
     @objc dynamic var filename = ""
     @objc dynamic var idPrimaryKey = ""
@@ -164,7 +164,7 @@ class tableActivityPreview: Object {
 }
 
 class tableActivitySubjectRich: Object {
-    
+
     @objc dynamic var account = ""
     @objc dynamic var idActivity: Int = 0
     @objc dynamic var idPrimaryKey = ""
@@ -174,14 +174,14 @@ class tableActivitySubjectRich: Object {
     @objc dynamic var name = ""
     @objc dynamic var path = ""
     @objc dynamic var type = ""
-    
+
     override static func primaryKey() -> String {
         return "idPrimaryKey"
     }
 }
 
 class tableAvatar: Object {
-    
+
     @objc dynamic var date = NSDate()
     @objc dynamic var etag = ""
     @objc dynamic var fileName = ""
@@ -193,17 +193,17 @@ class tableAvatar: Object {
 }
 
 class tableCapabilities: Object {
-    
+
     @objc dynamic var account = ""
-    @objc dynamic var jsondata: Data? = nil
-    
+    @objc dynamic var jsondata: Data?
+
     override static func primaryKey() -> String {
         return "account"
     }
 }
 
 class tableChunk: Object {
-    
+
     @objc dynamic var account = ""
     @objc dynamic var chunkFolder = ""
     @objc dynamic var fileName = ""
@@ -218,8 +218,7 @@ class tableChunk: Object {
 
 class tableComments: Object, DateCompareable {
     var dateKey: Date { creationDateTime as Date }
-    
-    
+
     @objc dynamic var account = ""
     @objc dynamic var actorDisplayName = ""
     @objc dynamic var actorId = ""
@@ -232,14 +231,14 @@ class tableComments: Object, DateCompareable {
     @objc dynamic var objectType = ""
     @objc dynamic var path = ""
     @objc dynamic var verb = ""
-    
+
     override static func primaryKey() -> String {
         return "messageId"
     }
 }
 
 class tableDirectEditingCreators: Object {
-    
+
     @objc dynamic var account = ""
     @objc dynamic var editor = ""
     @objc dynamic var ext = ""
@@ -250,7 +249,7 @@ class tableDirectEditingCreators: Object {
 }
 
 class tableDirectEditingEditors: Object {
-    
+
     @objc dynamic var account = ""
     @objc dynamic var editor = ""
     let mimetypes = List<String>()
@@ -260,7 +259,7 @@ class tableDirectEditingEditors: Object {
 }
 
 class tableDirectory: Object {
-    
+
     @objc dynamic var account = ""
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
@@ -278,9 +277,9 @@ class tableDirectory: Object {
 }
 
 class tableE2eEncryption: Object {
-    
+
     @objc dynamic var account = ""
-    @objc dynamic var authenticationTag: String? = nil
+    @objc dynamic var authenticationTag: String?
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameIdentifier = ""
     @objc dynamic var fileNamePath = ""
@@ -291,7 +290,7 @@ class tableE2eEncryption: Object {
     @objc dynamic var mimeType = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var version: Int = 1
-    
+
     override static func primaryKey() -> String {
         return "fileNamePath"
     }
@@ -304,14 +303,14 @@ class tableE2eEncryptionLock: Object {
     @objc dynamic var fileId = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var e2eToken = ""
-    
+
     override static func primaryKey() -> String {
         return "fileId"
     }
 }
 
 class tableExternalSites: Object {
-    
+
     @objc dynamic var account = ""
     @objc dynamic var icon = ""
     @objc dynamic var idExternalSite: Int = 0
@@ -322,7 +321,7 @@ class tableExternalSites: Object {
 }
 
 class tableGPS: Object {
-    
+
     @objc dynamic var latitude = ""
     @objc dynamic var location = ""
     @objc dynamic var longitude = ""
@@ -334,25 +333,25 @@ class tableGPS: Object {
 }
 
 class tableLocalFile: Object {
-    
+
     @objc dynamic var account = ""
     @objc dynamic var etag = ""
-    @objc dynamic var exifDate: NSDate? = nil
+    @objc dynamic var exifDate: NSDate?
     @objc dynamic var exifLatitude = ""
     @objc dynamic var exifLongitude = ""
-    @objc dynamic var exifLensModel: String? = nil
+    @objc dynamic var exifLensModel: String?
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileName = ""
     @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
-    
+
     override static func primaryKey() -> String {
         return "ocId"
     }
 }
 
 class tableMetadata: Object, NCUserBaseUrl {
-    
+
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
     @objc dynamic var checksums = ""
@@ -415,12 +414,12 @@ class tableMetadata: Object, NCUserBaseUrl {
 }
 
 class tablePhotoLibrary: Object {
-    
+
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
-    @objc dynamic var creationDate: NSDate? = nil
+    @objc dynamic var creationDate: NSDate?
     @objc dynamic var idAsset = ""
-    @objc dynamic var modificationDate: NSDate? = nil
+    @objc dynamic var modificationDate: NSDate?
     @objc dynamic var mediaType: Int = 0
 
     override static func primaryKey() -> String {
@@ -429,14 +428,14 @@ class tablePhotoLibrary: Object {
 }
 
 class tableShare: Object {
-    
+
     @objc dynamic var account = ""
     @objc dynamic var canEdit: Bool = false
     @objc dynamic var canDelete: Bool = false
-    @objc dynamic var date: NSDate? = nil
+    @objc dynamic var date: NSDate?
     @objc dynamic var displaynameFileOwner = ""
     @objc dynamic var displaynameOwner = ""
-    @objc dynamic var expirationDate: NSDate? = nil
+    @objc dynamic var expirationDate: NSDate?
     @objc dynamic var fileName = ""
     @objc dynamic var fileParent: Int = 0
     @objc dynamic var fileSource: Int = 0
@@ -464,7 +463,7 @@ class tableShare: Object {
     @objc dynamic var uidFileOwner = ""
     @objc dynamic var uidOwner = ""
     @objc dynamic var url = ""
-    @objc dynamic var userClearAt: NSDate? = nil
+    @objc dynamic var userClearAt: NSDate?
     @objc dynamic var userIcon = ""
     @objc dynamic var userMessage = ""
     @objc dynamic var userStatus = ""
@@ -475,18 +474,18 @@ class tableShare: Object {
 }
 
 class tableTag: Object {
-    
+
     @objc dynamic var account = ""
     @objc dynamic var ocId = ""
-    @objc dynamic var tagIOS: Data? = nil
-    
+    @objc dynamic var tagIOS: Data?
+
     override static func primaryKey() -> String {
         return "ocId"
     }
 }
 
 class tableTrash: Object {
-    
+
     @objc dynamic var account = ""
     @objc dynamic var classFile = ""
     @objc dynamic var contentType = ""
@@ -508,7 +507,7 @@ class tableTrash: Object {
 }
 
 class tableUserStatus: Object {
-    
+
     @objc dynamic var account = ""
     @objc dynamic var clearAt: NSDate?
     @objc dynamic var clearAtTime: String?
@@ -522,14 +521,13 @@ class tableUserStatus: Object {
 }
 
 class tableVideo: Object {
-    
+
     @objc dynamic var account = ""
     @objc dynamic var duration: Int64 = 0
     @objc dynamic var ocId = ""
     @objc dynamic var time: Int64 = 0
-    
+
     override static func primaryKey() -> String {
         return "ocId"
     }
 }
-

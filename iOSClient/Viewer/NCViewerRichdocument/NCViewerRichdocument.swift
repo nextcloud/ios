@@ -26,51 +26,51 @@ import WebKit
 import NCCommunication
 
 class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
-    
+
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var webView = WKWebView()
-    var bottomConstraint : NSLayoutConstraint?
+    var bottomConstraint: NSLayoutConstraint?
     var documentController: UIDocumentInteractionController?
-    
+
     var link: String = ""
     var metadata: tableMetadata = tableMetadata()
     var imageIcon: UIImage?
-    
+
     // MARK: - View Life Cycle
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-             
+
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
         let contentController = config.userContentController
         contentController.add(self, name: "RichDocumentsMobileInterface")
-        
+
         webView = WKWebView(frame: CGRect.zero, configuration: config)
         webView.navigationDelegate = self
         view.addSubview(webView)
-        
+
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         webView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
         webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
         bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
         bottomConstraint?.isActive = true
-                
+
         var request = URLRequest(url: URL(string: link)!)
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
         let language = NSLocale.preferredLanguages[0] as String
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
-                
+
         webView.customUserAgent = CCUtility.getUserAgent()
-        
+
         webView.load(request)
     }
-   
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -84,131 +84,131 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
+
         //
         navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
-        
+
         navigationItem.hidesBackButton = true
         navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.title = metadata.fileNameView
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         if let navigationController = self.navigationController {
             if !navigationController.viewControllers.contains(self) {
                 let functionJS = "OCA.RichDocuments.documentsMain.onClose()"
-                webView.evaluateJavaScript(functionJS) { (result, error) in
+                webView.evaluateJavaScript(functionJS) { (_, _) in
                     print("close")
                 }
             }
         }
-  
+
         //
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRichdocumentGrabFocus), object: nil)
-        
+
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
-    
+
     @objc func viewUnload() {
-        
+
         navigationController?.popViewController(animated: true)
     }
-    
-    //MARK: - NotificationCenter
-   
+
+    // MARK: - NotificationCenter
+
     @objc func favoriteFile(_ notification: NSNotification) {
-        
+
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                
+
                 if metadata.ocId == self.metadata.ocId {
                     self.metadata = metadata
                 }
             }
         }
     }
-    
+
     @objc func keyboardDidShow(notification: Notification) {
-        
+
         guard let info = notification.userInfo else { return }
         guard let frameInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         let keyboardFrame = frameInfo.cgRectValue
         let height = keyboardFrame.size.height
         bottomConstraint?.constant = -height
     }
-    
+
     @objc func keyboardWillHide(notification: Notification) {
-        
+
         bottomConstraint?.constant = 0
     }
-    
-    //MARK: - Action
-    
+
+    // MARK: - Action
+
     @objc func openMenuMore() {
         if imageIcon == nil { imageIcon = UIImage.init(named: "file_txt") }
         NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: true, imageIcon: imageIcon)
     }
-   
-    //MARK: -
+
+    // MARK: -
 
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        
-        if (message.name == "RichDocumentsMobileInterface") {
-            
+
+        if message.name == "RichDocumentsMobileInterface" {
+
             if message.body as? String == "close" {
                 viewUnload()
             }
-            
+
             if message.body as? String == "insertGraphic" {
-                
+
                 let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
                 let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
                 let viewController = navigationController.topViewController as! NCSelect
-                
+
                 viewController.delegate = self
                 viewController.typeOfCommandView = .select
                 viewController.enableSelectFile = true
                 viewController.includeImages = true
                 viewController.type = ""
-                
+
                 self.present(navigationController, animated: true, completion: nil)
             }
-            
+
             if message.body as? String == "share" {
                 NCFunctionCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: .sharing)
             }
-            
-            if let param = message.body as? Dictionary<AnyHashable,Any> {
-                
+
+            if let param = message.body as? [AnyHashable: Any] {
+
                 if param["MessageName"] as? String == "downloadAs" {
-                    if let values = param["Values"] as? Dictionary<AnyHashable,Any> {
+                    if let values = param["Values"] as? [AnyHashable: Any] {
                         guard let type = values["Type"] as? String else { return }
                         guard let urlString = values["URL"] as? String else { return }
                         guard let url = URL(string: urlString) else { return }
                         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + metadata.fileNameWithoutExt
-                    
+
                         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: true)
-                        
+
                         NCCommunication.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
-                            
+
                         }, taskHandler: { (_) in
-                            
+
                         }, progressHandler: { (_) in
-                            
-                        }, completionHandler: { (account, etag, date, lenght, allHeaderFields, error, errorCode, errorDescription) in
-                            
+
+                        }, completionHandler: { (account, _, _, _, allHeaderFields, error, errorCode, errorDescription) in
+
                             NCUtility.shared.stopActivityIndicator()
-                            
+
                             if errorCode == 0 && account == self.metadata.account {
-                                
+
                                 var item = fileNameLocalPath
-                                
+
                                 if let allHeaderFields = allHeaderFields {
                                     if let disposition = allHeaderFields["Content-Disposition"] as? String {
                                         let components = disposition.components(separatedBy: "filename=")
@@ -218,7 +218,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                         }
                                     }
                                 }
-                                
+
                                 if type == "print" {
                                     let pic = UIPrintInteractionController.shared
                                     let printInfo = UIPrintInfo.printInfo()
@@ -227,20 +227,20 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                     printInfo.jobName = "Document"
                                     pic.printInfo = printInfo
                                     pic.printingItem = URL(fileURLWithPath: item)
-                                    pic.present(from: CGRect.zero, in: self.view, animated: true, completionHandler: { (pci, completed, error) in })
+                                    pic.present(from: CGRect.zero, in: self.view, animated: true, completionHandler: { (_, _, _) in })
                                 } else {
                                     self.documentController = UIDocumentInteractionController()
                                     self.documentController?.url = URL(fileURLWithPath: item)
                                     self.documentController?.presentOptionsMenu(from: CGRect.zero, in: self.view, animated: true)
                                 }
                             } else {
-                                
+
                                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                             }
                         })
                     }
                 } else if param["MessageName"] as? String == "fileRename" {
-                    if let values = param["Values"] as? Dictionary<AnyHashable,Any> {
+                    if let values = param["Values"] as? [AnyHashable: Any] {
                         guard let newName = values["NewName"] as? String else {
                             return
                         }
@@ -248,7 +248,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                         metadata.fileNameView = newName
                     }
                 } else if param["MessageName"] as? String == "hyperlink" {
-                    if let values = param["Values"] as? Dictionary<AnyHashable,Any> {
+                    if let values = param["Values"] as? [AnyHashable: Any] {
                         guard let urlString = values["Url"] as? String else {
                             return
                         }
@@ -258,37 +258,37 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                     }
                 }
             }
-            
+
             if message.body as? String == "documentLoaded" {
                 print("documentLoaded")
             }
-            
+
             if message.body as? String == "paste" {
                 // ?
             }
         }
     }
-    
-    //MARK: -
+
+    // MARK: -
 
     @objc func grabFocus() {
-    
+
         let functionJS = "OCA.RichDocuments.documentsMain.postGrabFocus()"
-        webView.evaluateJavaScript(functionJS) { (result, error) in }
+        webView.evaluateJavaScript(functionJS) { (_, _) in }
     }
-    
-    //MARK: -
-    
+
+    // MARK: -
+
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
-        
+
         if serverUrl != nil && metadata != nil {
-            
+
             let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, account: metadata!.account)!
-            
+
             NCCommunication.shared.createAssetRichdocuments(path: path) { (account, url, errorCode, errorDescription) in
                 if errorCode == 0 && account == self.appDelegate.account {
                     let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
-                    self.webView.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
+                    self.webView.evaluateJavaScript(functionJS, completionHandler: { (_, _) in })
                 } else if errorCode != 0 {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
                 } else {
@@ -297,15 +297,15 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
             }
         }
     }
-    
+
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
-        
+
         let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, account: metadata!.account)!
-        
+
         NCCommunication.shared.createAssetRichdocuments(path: path) { (account, url, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.account {
                 let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
-                self.webView.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
+                self.webView.evaluateJavaScript(functionJS, completionHandler: { (_, _) in })
             } else if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             } else {
@@ -313,37 +313,37 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
             }
         }
     }
-    
-    //MARK: -
+
+    // MARK: -
 
     public func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         if let serverTrust = challenge.protectionSpace.serverTrust {
             completionHandler(Foundation.URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: serverTrust))
         } else {
-            completionHandler(URLSession.AuthChallengeDisposition.useCredential, nil);
+            completionHandler(URLSession.AuthChallengeDisposition.useCredential, nil)
         }
     }
-    
+
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        print("didStartProvisionalNavigation");
+        print("didStartProvisionalNavigation")
     }
-    
+
     public func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
-        print("didReceiveServerRedirectForProvisionalNavigation");
+        print("didReceiveServerRedirectForProvisionalNavigation")
     }
-    
+
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         NCUtility.shared.stopActivityIndicator()
     }
 }
 
-extension NCViewerRichdocument : UINavigationControllerDelegate {
+extension NCViewerRichdocument: UINavigationControllerDelegate {
 
     override func didMove(toParent parent: UIViewController?) {
         super.didMove(toParent: parent)
-        
+
         if parent == nil {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl":self.metadata.serverUrl])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": self.metadata.serverUrl])
         }
     }
 }

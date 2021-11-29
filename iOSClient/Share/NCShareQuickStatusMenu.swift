@@ -9,9 +9,9 @@
 import UIKit
 
 class NCShareQuickStatusMenu: NSObject {
-        
+
     func toggleMenu(viewController: UIViewController, directory: Bool, tableShare: tableShare) {
-        
+
         print(tableShare.permissions)
         let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
@@ -22,7 +22,7 @@ class NCShareQuickStatusMenu: NSObject {
                 icon: UIImage(),
                 selected: tableShare.permissions == (NCGlobal.shared.permissionReadShare + NCGlobal.shared.permissionShareShare) || tableShare.permissions == NCGlobal.shared.permissionReadShare,
                 on: false,
-                action: { menuAction in
+                action: { _ in
                     let canShare = CCUtility.isPermission(toCanShare: tableShare.permissions)
                     let permissions = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: canShare, andIsFolder: directory)
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShareChangePermissions, userInfo: ["idShare": tableShare.idShare, "permissions": permissions, "hideDownload": tableShare.hideDownload])
@@ -36,7 +36,7 @@ class NCShareQuickStatusMenu: NSObject {
                 icon: UIImage(),
                 selected: hasUploadPermission(tableShare: tableShare),
                 on: false,
-                action: { menuAction in
+                action: { _ in
                     let canShare = CCUtility.isPermission(toCanShare: tableShare.permissions)
                     let permissions = CCUtility.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: canShare, andIsFolder: directory)
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShareChangePermissions, userInfo: ["idShare": tableShare.idShare, "permissions": permissions, "hideDownload": tableShare.hideDownload])
@@ -64,4 +64,3 @@ class NCShareQuickStatusMenu: NSObject {
         return uploadPermissions.contains(tableShare.permissions)
     }
 }
-

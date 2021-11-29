@@ -28,81 +28,81 @@ import NCCommunication
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    @objc func createViewerNextcloudText(serverUrl: String,viewController: UIViewController) {
-        
+    @objc func createViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
+
         if !NCCommunication.shared.isNetworkReachable() {
             NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
-            return;
+            return
         }
-        
+
         guard let directEditingCreator = NCManageDatabase.shared.getDirectEditingCreators(predicate: NSPredicate(format: "account == %@ AND editor == 'text'", appDelegate.account))?.first else { return }
-        
+
         NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
-        
+
         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)!
-        NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier ,templateId: "") { (account, url, errorCode, errorMessage) in
-            
+        NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "") { (account, url, errorCode, errorMessage) in
+
             NCUtility.shared.stopActivityIndicator()
-            
+
             if errorCode == 0 && account == self.appDelegate.account {
-                
+
                 if let viewerRichWorkspaceWebView = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
-                    
+
                     viewerRichWorkspaceWebView.url = url!
                     viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
-                    
+
                     viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                 }
-                
+
             } else if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: errorCode)
             }
         }
     }
-    
+
     @objc func openViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
-        
+
         if !NCCommunication.shared.isNetworkReachable() {
-            
+
             NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
-            return;
+            return
         }
-        
+
         if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) {
-            
+
             if metadata.url == "" {
-                
+
                 NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
-                
+
                 let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)!
                 NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { (account, url, errorCode, errorMessage) in
-                    
+
                     NCUtility.shared.stopActivityIndicator()
-                    
+
                     if errorCode == 0 && account == self.appDelegate.account {
-                        
+
                         if let viewerRichWorkspaceWebView = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
-                            
+
                             viewerRichWorkspaceWebView.url = url!
                             viewerRichWorkspaceWebView.metadata = metadata
                             viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
-                            
+
                             viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                         }
-                        
+
                     } else if errorCode != 0 {
                         NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: errorCode)
                     }
                 }
-                
+
             } else {
-                
+
                 if let viewerRichWorkspaceWebView = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
-                    
+
                     viewerRichWorkspaceWebView.url = metadata.url
                     viewerRichWorkspaceWebView.metadata = metadata
                     viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
-                    
+
                     viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                 }
             }

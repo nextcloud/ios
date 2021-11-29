@@ -54,7 +54,7 @@ class NCActivity: UIViewController {
     var hasActivityToLoad = true {
         didSet { tableView.tableFooterView?.isHidden = hasActivityToLoad }
     }
-    var dateAutomaticFetch : Date?
+    var dateAutomaticFetch: Date?
 
     // MARK: - View Life Cycle
 
@@ -92,7 +92,7 @@ class NCActivity: UIViewController {
             commentView.isHidden = true
             return
         }
-        
+
         let fileName = appDelegate.userBaseUrl + "-" + appDelegate.user + ".png"
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
@@ -100,7 +100,7 @@ class NCActivity: UIViewController {
         } else {
             imageItem.image = UIImage(named: "avatar")
         }
-        
+
         if activeAccount.displayName.isEmpty {
             labelUser.text = activeAccount.user
         } else {
@@ -108,14 +108,14 @@ class NCActivity: UIViewController {
         }
         labelUser.textColor = NCBrandColor.shared.label
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         appDelegate.activeViewController = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-        
+
         initialize()
     }
 
@@ -139,7 +139,7 @@ class NCActivity: UIViewController {
     @objc func changeTheming() {
         tableView.reloadData()
     }
-    
+
     @IBAction func newCommentFieldDidEndOnExit(textField: UITextField) {
         guard
             let message = textField.text,
@@ -147,7 +147,7 @@ class NCActivity: UIViewController {
             let metadata = self.metadata
         else { return }
 
-        NCCommunication.shared.putComments(fileId: metadata.fileId, message: message) { (account, errorCode, errorDescription) in
+        NCCommunication.shared.putComments(fileId: metadata.fileId, message: message) { (_, errorCode, errorDescription) in
             if errorCode == 0 {
                 self.newCommentField.text = ""
                 self.loadComments()
@@ -177,19 +177,19 @@ class NCActivity: UIViewController {
 // MARK: - Table View
 
 extension NCActivity: UITableViewDelegate {
-    
+
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return 120
     }
-    
+
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 60
     }
-    
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
-    
+
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 60))
@@ -237,16 +237,16 @@ extension NCActivity: UITableViewDataSource {
             return UITableViewCell()
         }
     }
-    
+
     func makeCommentCell(_ comment: tableComments, for indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NCShareCommentsCell else {
             return UITableViewCell()
         }
-        
+
         cell.tableComments = comment
         cell.delegate = self
         cell.sizeToFit()
-        
+
         // Image
         let fileName = appDelegate.userBaseUrl + "-" + comment.actorId + ".png"
         NCOperationQueue.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView)
@@ -265,37 +265,37 @@ extension NCActivity: UITableViewDataSource {
         } else {
             cell.buttonMenu.isHidden = true
         }
-        
+
         return cell
     }
-    
+
     func makeActivityCell(_ activity: tableActivity, for indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "tableCell", for: indexPath) as? NCActivityTableViewCell else {
             return UITableViewCell()
         }
-        
+
         var orderKeysId: [String] = []
-        
+
         cell.idActivity = activity.idActivity
-        
+
         cell.avatar.image = nil
         cell.avatar.isHidden = true
         cell.subjectTrailingConstraint.constant = 10
         cell.didSelectItemEnable = self.didSelectItemEnable
         cell.subject.textColor = NCBrandColor.shared.label
         cell.viewController = self
-        
+
         // icon
         if activity.icon.count > 0 {
-            
+
             let fileNameIcon = (activity.icon as NSString).lastPathComponent
             let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + fileNameIcon
-            
+
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 let image = NCUtility.shared.loadImage(named: fileNameIcon, color: NCBrandColor.shared.gray)
                 cell.icon.image = image
             } else {
-                NCCommunication.shared.downloadContent(serverUrl: activity.icon) { (account, data, errorCode, errorMessage) in
+                NCCommunication.shared.downloadContent(serverUrl: activity.icon) { (_, data, errorCode, _) in
                     if errorCode == 0 {
                         do {
                             try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
@@ -305,39 +305,39 @@ extension NCActivity: UITableViewDataSource {
                 }
             }
         }
-        
+
         // avatar
         if activity.user.count > 0 && activity.user != appDelegate.userId {
-            
+
             cell.subjectTrailingConstraint.constant = 50
             cell.avatar.isHidden = false
             cell.fileUser = activity.user
-            
+
             let fileName = appDelegate.userBaseUrl + "-" + activity.user + ".png"
-            
+
             NCOperationQueue.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView)
         }
-        
+
         // subject
         if activity.subjectRich.count > 0 {
-            
+
             var subject = activity.subjectRich
             var keys: [String] = []
-            
+
             if let regex = try? NSRegularExpression(pattern: "\\{[a-z0-9]+\\}", options: .caseInsensitive) {
                 let string = subject as NSString
                 keys = regex.matches(in: subject, options: [], range: NSRange(location: 0, length: string.length)).map {
                     string.substring(with: $0.range).replacingOccurrences(of: "[\\{\\}]", with: "", options: .regularExpression)
                 }
             }
-            
+
             for key in keys {
                 if let result = NCManageDatabase.shared.getActivitySubjectRich(account: appDelegate.account, idActivity: activity.idActivity, key: key) {
                     orderKeysId.append(result.id)
                     subject = subject.replacingOccurrences(of: "{\(key)}", with: "<bold>" + result.name + "</bold>")
                 }
             }
-            
+
             let normal = Style {
                 $0.font = UIFont.systemFont(ofSize: cell.subject.font.pointSize)
                 $0.lineSpacing = 1.5
@@ -346,11 +346,11 @@ extension NCActivity: UITableViewDataSource {
             let date = Style { $0.font = UIFont.systemFont(ofSize: cell.subject.font.pointSize - 3)
                 $0.color = UIColor.lightGray
             }
-            
+
             subject = subject + "\n" + "<date>" + CCUtility.dateDiff(activity.date as Date) + "</date>"
             cell.subject.attributedText = subject.set(style: StyleGroup(base: normal, ["bold": bold, "date": date]))
         }
-        
+
         // CollectionView
         cell.activityPreviews = NCManageDatabase.shared.getActivityPreview(account: activity.account, idActivity: activity.idActivity, orderKeysId: orderKeysId)
         if cell.activityPreviews.count == 0 {
@@ -359,7 +359,7 @@ extension NCActivity: UITableViewDataSource {
             cell.collectionViewHeightConstraint.constant = 60
         }
         cell.collectionView.reloadData()
-        
+
         return cell
     }
 }
@@ -406,7 +406,7 @@ extension NCActivity {
             }
         }
     }
-    
+
     func loadDataSource() {
 
         var newItems = [DateCompareable]()
@@ -427,7 +427,7 @@ extension NCActivity {
         }.sorted(by: >)
         self.tableView.reloadData()
     }
-    
+
     func loadComments(disptachGroup: DispatchGroup? = nil) {
         guard showComments, let metadata = metadata else { return }
         disptachGroup?.enter()
@@ -462,7 +462,7 @@ extension NCActivity {
             limit: 1,
             objectId: nil,
             objectType: objectType,
-            previews: true) { (account, activities, errorCode, errorDescription) in
+            previews: true) { (account, activities, errorCode, _) in
                 defer { disptachGroup.leave() }
 
                 guard errorCode == 0,
@@ -488,7 +488,7 @@ extension NCActivity {
             limit: min(limit, 200),
             objectId: metadata?.fileId,
             objectType: objectType,
-            previews: true) { (account, activities, errorCode, errorDescription) in
+            previews: true) { (account, activities, errorCode, _) in
                 defer { disptachGroup.leave() }
                 guard errorCode == 0,
                       account == self.appDelegate.account,
@@ -526,20 +526,20 @@ extension NCActivity: NCShareCommentsCellDelegate {
             NCMenuAction(
                 title: NSLocalizedString("_edit_comment_", comment: ""),
                 icon: UIImage(named: "edit")!.image(color: NCBrandColor.shared.gray, size: 50),
-                action: { menuAction in
+                action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
-                    
+
                     let alert = UIAlertController(title: NSLocalizedString("_edit_comment_", comment: ""), message: nil, preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
-                    
+
                     alert.addTextField(configurationHandler: { textField in
                         textField.placeholder = NSLocalizedString("_new_comment_", comment: "")
                     })
-                    
-                    alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
+
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
                         guard let message = alert.textFields?.first?.text, message != "" else { return }
 
-                        NCCommunication.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message) { (account, errorCode, errorDescription) in
+                        NCCommunication.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message) { (_, errorCode, errorDescription) in
                             if errorCode == 0 {
                                 self.loadComments()
                             } else {
@@ -552,15 +552,15 @@ extension NCActivity: NCShareCommentsCellDelegate {
                 }
             )
         )
-        
+
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_comment_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "trash"),
-                action: { menuAction in
+                action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 
-                    NCCommunication.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId) { (account, errorCode, errorDescription) in
+                    NCCommunication.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId) { (_, errorCode, errorDescription) in
                         if errorCode == 0 {
                             self.loadComments()
                         } else {
@@ -574,4 +574,3 @@ extension NCActivity: NCShareCommentsCellDelegate {
         presentMenu(with: actions)
     }
 }
-

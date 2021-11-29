@@ -24,55 +24,55 @@
 import UIKit
 
 class NCMainNavigationController: UINavigationController {
-    
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
+    private weak var appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     // MARK: - View Life Cycle
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        
+
         changeTheming()
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
     }
-    
+
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        
+
         changeTheming()
     }
-    
+
     // MARK: - Theming
-    
+
     @objc func changeTheming() {
-        
+
         if #available(iOS 13.0, *) {
-            
+
             let appearance = UINavigationBarAppearance()
-            
+
             appearance.configureWithOpaqueBackground()
-            appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.shared.label]
+            appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.label]
             appearance.backgroundColor = NCBrandColor.shared.systemBackground
             appearance.configureWithOpaqueBackground()
-            appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.shared.label]
+            appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.label]
             appearance.backgroundColor = NCBrandColor.shared.systemBackground
 
             navigationBar.scrollEdgeAppearance = appearance
             navigationBar.standardAppearance = appearance
-            
+
         } else {
-            
+
             navigationBar.barStyle = .default
             navigationBar.barTintColor = NCBrandColor.shared.systemBackground
-            navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor:NCBrandColor.shared.label]
-            navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor:NCBrandColor.shared.label]
+            navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.label]
+            navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.label]
         }
-        
+
         navigationBar.tintColor = .systemBlue
         navigationBar.setNeedsLayout()
     }
