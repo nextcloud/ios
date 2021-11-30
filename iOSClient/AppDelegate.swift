@@ -701,6 +701,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let laContext = LAContext()
         var error: NSError?
         
+        defer {
+            self.requestAccount()
+        }
+        
         if account == "" { return }
         guard let passcode = CCUtility.getPasscode() else { return }
         if passcode.count == 0 || CCUtility.getNotPasscodeAtStart() { return }
@@ -724,7 +728,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if CCUtility.getEnableTouchFaceID() && automaticallyPromptForBiometricValidation {
                 LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
                     if success {
-                        passcodeViewController.dismiss(animated: true)
+                        passcodeViewController.dismiss(animated: true) {
+                            self.requestAccount()
+                        }
                     }
                 }
             }
@@ -736,7 +742,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func didInputCorrectPasscode(in passcodeViewController: TOPasscodeViewController) {
-        passcodeViewController.dismiss(animated: true)
+        passcodeViewController.dismiss(animated: true) {
+            self.requestAccount()
+        }
     }
     
     func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
@@ -746,7 +754,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
         LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
             if success {
-                passcodeViewController.dismiss(animated: true)
+                passcodeViewController.dismiss(animated: true) {
+                    self.requestAccount()
+                }
             }
         }
     }
