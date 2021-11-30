@@ -81,7 +81,7 @@ extension NCCreateFormUploadConflictDelegate {
         tableView.allowsSelection = false
         tableView.tableFooterView = UIView()
 
-        tableView.register(UINib.init(nibName: "NCCreateFormUploadConflictCell", bundle: nil), forCellReuseIdentifier: "Cell")
+        tableView.register(UINib(nibName: "NCCreateFormUploadConflictCell", bundle: nil), forCellReuseIdentifier: "Cell")
 
         if metadatasUploadInConflict.count == 1 {
             labelTitle.text = String(metadatasUploadInConflict.count) + " " + NSLocalizedString("_file_conflict_num_", comment: "")
@@ -178,11 +178,11 @@ extension NCCreateFormUploadConflictDelegate {
             self.buttonContinueTouch(action)
         }))
 
-        conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_keep_existing_action_title_", comment: ""), style: .cancel, handler: { (_) in
+        conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_keep_existing_action_title_", comment: ""), style: .cancel, handler: { _ in
             self.dismiss(animated: true, completion: nil)
         }))
 
-        conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_more_action_title_", comment: ""), style: .default, handler: { (_) in
+        conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_more_action_title_", comment: ""), style: .default, handler: { _ in
             self.blurView.removeFromSuperview()
         }))
 
@@ -371,14 +371,14 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 if let image = NCUtility.shared.pdfThumbnail(url: url) {
                     cell.imageAlreadyExistingFile.image = image
                 } else {
-                    cell.imageAlreadyExistingFile.image = UIImage.init(named: metadataAlreadyExists.iconName)
+                    cell.imageAlreadyExistingFile.image = UIImage(named: metadataAlreadyExists.iconName)
                 }
 
             } else {
                 if metadataAlreadyExists.iconName.count > 0 {
-                    cell.imageAlreadyExistingFile.image = UIImage.init(named: metadataAlreadyExists.iconName)
+                    cell.imageAlreadyExistingFile.image = UIImage(named: metadataAlreadyExists.iconName)
                 } else {
-                    cell.imageAlreadyExistingFile.image = UIImage.init(named: "file")
+                    cell.imageAlreadyExistingFile.image = UIImage(named: "file")
                 }
             }
             cell.labelDetailAlreadyExistingFile.text = CCUtility.dateDiff(metadataAlreadyExists.date as Date) + "\n" + CCUtility.transformedSize(metadataAlreadyExists.size)
@@ -392,9 +392,9 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             // -----> New File
 
             if metadataNewFile.iconName.count > 0 {
-                cell.imageNewFile.image = UIImage.init(named: metadataNewFile.iconName)
+                cell.imageNewFile.image = UIImage(named: metadataNewFile.iconName)
             } else {
-                cell.imageNewFile.image = UIImage.init(named: "file")
+                cell.imageNewFile.image = UIImage(named: "file")
             }
             let filePathNewFile = CCUtility.getDirectoryProviderStorageOcId(metadataNewFile.ocId, fileNameView: metadataNewFile.fileNameView)!
             if metadataNewFile.assetLocalIdentifier.count > 0 {
@@ -426,7 +426,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
                 } else {
 
-                    CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadataNewFile, notification: false) { (metadataNew, fileNamePath) in
+                    CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadataNewFile, notification: false) { metadataNew, fileNamePath in
 
                         if metadataNew != nil {
                             self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!

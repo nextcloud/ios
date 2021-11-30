@@ -266,15 +266,15 @@ class NCSharePagingView: PagingView {
         headerView.ocId = metadata.ocId
 
         if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            headerView.imageView.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+            headerView.imageView.image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
         } else {
             if metadata.directory {
-                let image = UIImage.init(named: "folder")!
+                let image = UIImage(named: "folder")!
                 headerView.imageView.image = image.image(color: NCBrandColor.shared.brandElement, size: image.size.width)
             } else if metadata.iconName.count > 0 {
-                headerView.imageView.image = UIImage.init(named: metadata.iconName)
+                headerView.imageView.image = UIImage(named: metadata.iconName)
             } else {
-                headerView.imageView.image = UIImage.init(named: "file")
+                headerView.imageView.image = UIImage(named: "file")
             }
         }
         headerView.path.text = NCUtilityFileSystem.shared.getPath(metadata: metadata)
@@ -332,7 +332,7 @@ class NCShareHeaderView: UIView {
 
     @IBAction func touchUpInsideFavorite(_ sender: UIButton) {
         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            NCNetworking.shared.favoriteMetadata(metadata) { (errorCode, errorDescription) in
+            NCNetworking.shared.favoriteMetadata(metadata) { errorCode, errorDescription in
                 if errorCode == 0 {
                     if !metadata.favorite {
                         self.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)

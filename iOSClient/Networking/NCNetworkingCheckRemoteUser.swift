@@ -56,13 +56,13 @@ import NCCommunication
                     return
                 }
 
-                NCCommunication.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token) { (account, wipe, errorCode, _) in
+                NCCommunication.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token) { account, wipe, errorCode, _ in
 
                     if wipe {
 
                         self.appDelegate.deleteAccount(account, wipe: true)
                         NCContentPresenter.shared.messageNotification(tableAccount.user, description: "_wipe_account_", delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
-                        NCCommunication.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token) { (_, _, _) in print("wipe") }
+                        NCCommunication.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token) { _, _, _ in print("wipe") }
 
                     } else {
 

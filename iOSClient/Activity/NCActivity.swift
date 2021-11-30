@@ -82,7 +82,7 @@ class NCActivity: UIViewController {
     }
 
     func setupComments() {
-        tableView.register(UINib.init(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
+        tableView.register(UINib(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
 
         newCommentField.placeholder = NSLocalizedString("_new_comment_", comment: "")
         viewContainerConstraint.constant = height
@@ -147,7 +147,7 @@ class NCActivity: UIViewController {
             let metadata = self.metadata
         else { return }
 
-        NCCommunication.shared.putComments(fileId: metadata.fileId, message: message) { (_, errorCode, errorDescription) in
+        NCCommunication.shared.putComments(fileId: metadata.fileId, message: message) { _, errorCode, errorDescription in
             if errorCode == 0 {
                 self.newCommentField.text = ""
                 self.loadComments()
@@ -295,7 +295,7 @@ extension NCActivity: UITableViewDataSource {
                 let image = NCUtility.shared.loadImage(named: fileNameIcon, color: NCBrandColor.shared.gray)
                 cell.icon.image = image
             } else {
-                NCCommunication.shared.downloadContent(serverUrl: activity.icon) { (_, data, errorCode, _) in
+                NCCommunication.shared.downloadContent(serverUrl: activity.icon) { _, data, errorCode, _ in
                     if errorCode == 0 {
                         do {
                             try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
@@ -432,7 +432,7 @@ extension NCActivity {
         guard showComments, let metadata = metadata else { return }
         disptachGroup?.enter()
 
-        NCCommunication.shared.getComments(fileId: metadata.fileId) { (account, comments, errorCode, errorDescription) in
+        NCCommunication.shared.getComments(fileId: metadata.fileId) { account, comments, errorCode, errorDescription in
             if errorCode == 0, let comments = comments {
                 NCManageDatabase.shared.addComments(comments, account: metadata.account, objectId: metadata.fileId)
             } else if errorCode != NCGlobal.shared.errorResourceNotFound {
@@ -462,7 +462,7 @@ extension NCActivity {
             limit: 1,
             objectId: nil,
             objectType: objectType,
-            previews: true) { (account, activities, errorCode, _) in
+            previews: true) { account, activities, errorCode, _ in
                 defer { disptachGroup.leave() }
 
                 guard errorCode == 0,
@@ -488,7 +488,7 @@ extension NCActivity {
             limit: min(limit, 200),
             objectId: metadata?.fileId,
             objectType: objectType,
-            previews: true) { (account, activities, errorCode, _) in
+            previews: true) { account, activities, errorCode, _ in
                 defer { disptachGroup.leave() }
                 guard errorCode == 0,
                       account == self.appDelegate.account,
@@ -539,7 +539,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
                         guard let message = alert.textFields?.first?.text, message != "" else { return }
 
-                        NCCommunication.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message) { (_, errorCode, errorDescription) in
+                        NCCommunication.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message) { _, errorCode, errorDescription in
                             if errorCode == 0 {
                                 self.loadComments()
                             } else {
@@ -560,7 +560,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 
-                    NCCommunication.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId) { (_, errorCode, errorDescription) in
+                    NCCommunication.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId) { _, errorCode, errorDescription in
                         if errorCode == 0 {
                             self.loadComments()
                         } else {

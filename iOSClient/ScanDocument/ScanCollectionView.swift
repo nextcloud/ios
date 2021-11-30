@@ -127,7 +127,7 @@ class DragDropViewController: UIViewController {
 //                serverUrl = directory
 //            }
 
-            let formViewController = NCCreateFormUploadScanDocument.init(serverUrl: serverUrl, arrayImages: images)
+            let formViewController = NCCreateFormUploadScanDocument(serverUrl: serverUrl, arrayImages: images)
             self.navigationController?.pushViewController(formViewController, animated: true)
         }
     }
@@ -228,9 +228,9 @@ class DragDropViewController: UIViewController {
         let ciImage = CIImage(image: image)!
         let imageFilter = ciImage.applyingFilter("CIColorControls", parameters: ["inputSaturation": 0, "inputContrast": inputContrast])
 
-        let context: CIContext = CIContext.init(options: nil)
+        let context: CIContext = CIContext(options: nil)
         let cgImage: CGImage = context.createCGImage(imageFilter, from: imageFilter.extent)!
-        let image: UIImage = UIImage.init(cgImage: cgImage)
+        let image: UIImage = UIImage(cgImage: cgImage)
         return image
     }
 

@@ -305,8 +305,8 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     // MARK: Player - Timer
 
     func updateTimerUI() {
-        labelTimer.text =  String.init().formatSecondsToString(counterSecondPlayer)
-        labelDuration.text = String.init().formatSecondsToString(durationPlayer)
+        labelTimer.text =  String().formatSecondsToString(counterSecondPlayer)
+        labelDuration.text = String().formatSecondsToString(durationPlayer)
         progressView.progress = Float(counterSecondPlayer / durationPlayer)
     }
 

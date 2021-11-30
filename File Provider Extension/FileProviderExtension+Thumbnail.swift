@@ -45,10 +45,10 @@ extension FileProviderExtension {
                 let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
                 let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
 
-                NCCommunication.shared.getPreview(fileNamePath: fileNamePath, widthPreview: NCGlobal.shared.sizeIcon, heightPreview: NCGlobal.shared.sizeIcon) { (_, data, errorCode, _) in
+                NCCommunication.shared.getPreview(fileNamePath: fileNamePath, widthPreview: NCGlobal.shared.sizeIcon, heightPreview: NCGlobal.shared.sizeIcon) { _, data, errorCode, _ in
                     if errorCode == 0 && data != nil {
                         do {
-                            try data!.write(to: URL.init(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
+                            try data!.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
                         } catch { }
                         perThumbnailCompletionHandler(itemIdentifier, data, nil)
                     } else {

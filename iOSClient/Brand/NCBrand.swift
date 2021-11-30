@@ -319,7 +319,7 @@ class NCBrandColor: NSObject {
 
         let gray: UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
 
-        cacheImages.file = UIImage.init(named: "file")!
+        cacheImages.file = UIImage(named: "file")!
 
         cacheImages.shared = UIImage(named: "share")!.image(color: gray, size: 50)
         cacheImages.canShare = UIImage(named: "share")!.image(color: gray, size: 50)
@@ -328,8 +328,8 @@ class NCBrandColor: NSObject {
         cacheImages.favorite = NCUtility.shared.loadImage(named: "star.fill", color: yellowFavorite)
         cacheImages.comment = UIImage(named: "comment")!.image(color: gray, size: 50)
         cacheImages.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: label)
-        cacheImages.offlineFlag = UIImage.init(named: "offlineFlag")!
-        cacheImages.local = UIImage.init(named: "local")!
+        cacheImages.offlineFlag = UIImage(named: "offlineFlag")!
+        cacheImages.local = UIImage(named: "local")!
 
         let folderWidth: CGFloat = UIScreen.main.bounds.width / 3
         cacheImages.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement, size: folderWidth)

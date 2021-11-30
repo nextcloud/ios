@@ -123,12 +123,12 @@ class NCKTVHTTPCache: NSObject {
             print("Proxy Start error : \(error)")
         }
 
-        KTVHTTPCache.encodeSetURLConverter { (url) -> URL? in
+        KTVHTTPCache.encodeSetURLConverter { url -> URL? in
             print("URL Filter received URL : " + String(describing: url))
             return url
         }
 
-        KTVHTTPCache.downloadSetUnacceptableContentTypeDisposer { (url, contentType) -> Bool in
+        KTVHTTPCache.downloadSetUnacceptableContentTypeDisposer { url, contentType -> Bool in
             print("Unsupport Content-Type Filter received URL : " + String(describing: url) + " " + String(describing: contentType))
             return false
         }

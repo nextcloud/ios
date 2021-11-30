@@ -98,7 +98,7 @@ extension NCCollectionViewCommon {
                 title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
                 action: { _ in
-                    NCNetworking.shared.favoriteMetadata(metadata) { (errorCode, errorDescription) in
+                    NCNetworking.shared.favoriteMetadata(metadata) { errorCode, errorDescription in
                         if errorCode != 0 {
                             NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
@@ -142,9 +142,9 @@ extension NCCollectionViewCommon {
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: self.appDelegate.account)
                                 NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCGlobal.shared.selectorDownloadAllFile)
                             } else {
-                                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { (_) in }
+                                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { _ in }
                                 if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                                    NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCGlobal.shared.selectorLoadOffline) { (_) in }
+                                    NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCGlobal.shared.selectorLoadOffline) { _ in }
                                 }
                             }
                         }
@@ -401,7 +401,7 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "lock"),
                     action: { _ in
-                        NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: false) { (account, errorCode, errorDescription) in
+                        NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: false) { account, errorCode, errorDescription in
                             if errorCode == 0 {
                                 NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: true, richWorkspace: nil, account: metadata.account)
@@ -426,7 +426,7 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "lock"),
                     action: { _ in
-                        NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { (account, errorCode, errorDescription) in
+                        NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { account, errorCode, errorDescription in
                             if errorCode == 0 {
                                 NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: false, richWorkspace: nil, account: metadata.account)

@@ -43,33 +43,33 @@ class NCCreateMenuAdd: NSObject {
         ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
 
-        items.append(MenuItem(title: NSLocalizedString("_upload_photos_videos_", comment: ""), value: 10, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_photo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+        items.append(MenuItem(title: NSLocalizedString("_upload_photos_videos_", comment: ""), value: 10, image: CCGraphics.changeThemingColorImage(UIImage(named: "file_photo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
 
-        items.append(MenuItem(title: NSLocalizedString("_upload_file_", comment: ""), value: 20, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+        items.append(MenuItem(title: NSLocalizedString("_upload_file_", comment: ""), value: 20, image: CCGraphics.changeThemingColorImage(UIImage(named: "file"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
 
         if NCBrandOptions.sharedInstance.use_imi_viewer {
-            items.append(MenuItem(title: NSLocalizedString("_im_create_new_file", tableName: "IMLocalizable", bundle: Bundle.main, value: "", comment: ""), value: 21, image: CCGraphics.scale(UIImage.init(named: "imagemeter"), to: CGSize(width: 25, height: 25), isAspectRation: true)))
+            items.append(MenuItem(title: NSLocalizedString("_im_create_new_file", tableName: "IMLocalizable", bundle: Bundle.main, value: "", comment: ""), value: 21, image: CCGraphics.scale(UIImage(named: "imagemeter"), to: CGSize(width: 25, height: 25), isAspectRation: true)))
         }
 
         if isNextcloudTextAvailable {
-            items.append(MenuItem(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""), value: 31, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+            items.append(MenuItem(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""), value: 31, image: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         } else {
-            items.append(MenuItem(title: NSLocalizedString("_upload_file_text_", comment: ""), value: 30, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+            items.append(MenuItem(title: NSLocalizedString("_upload_file_text_", comment: ""), value: 30, image: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         }
 
 #if !targetEnvironment(simulator)
         if #available(iOS 11.0, *) {
-            items.append(MenuItem(title: NSLocalizedString("_scans_document_", comment: ""), value: 40, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "scan"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+            items.append(MenuItem(title: NSLocalizedString("_scans_document_", comment: ""), value: 40, image: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
         }
 #endif
 
-        items.append(MenuItem(title: NSLocalizedString("_create_voice_memo_", comment: ""), value: 50, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "microphone"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
+        items.append(MenuItem(title: NSLocalizedString("_create_voice_memo_", comment: ""), value: 50, image: CCGraphics.changeThemingColorImage(UIImage(named: "microphone"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
 
-        items.append(MenuItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 60, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement)))
+        items.append(MenuItem(title: NSLocalizedString("_create_folder_", comment: ""), value: 60, image: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement)))
 
         if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: appDelegate.activeAccount) {
             if richdocumentsMimetypes.count > 0 {
-                items.append(MenuItem(title: NSLocalizedString("_create_new_document_", comment: ""), value: 70, image: UIImage.init(named: "create_file_document")))
+                items.append(MenuItem(title: NSLocalizedString("_create_new_document_", comment: ""), value: 70, image: UIImage(named: "create_file_document")))
                 items.append(MenuItem(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), value: 80, image: UIImage(named: "create_file_xls")))
                 items.append(MenuItem(title: NSLocalizedString("_create_new_presentation_", comment: ""), value: 90, image: UIImage(named: "create_file_ppt")))
             }
@@ -77,12 +77,12 @@ class NCCreateMenuAdd: NSObject {
 
         items.append(CancelButton(title: NSLocalizedString("_cancel_", comment: "")))
 
-        let actionSheet = ActionSheet(menu: Menu(items: items), action: { (_, item) in
+        let actionSheet = ActionSheet(menu: Menu(items: items), action: { _, item in
 
             if item.value as? Int == 10 { self.appDelegate.activeMain.openAssetsPickerController() }
             if item.value as? Int == 20 { self.appDelegate.activeMain.openImportDocumentPicker() }
             if item.value as? Int == 21 {
-                _ = IMCreate.init(serverUrl: self.appDelegate.activeMain.serverUrl)
+                _ = IMCreate(serverUrl: self.appDelegate.activeMain.serverUrl)
             }
             if item.value as? Int == 30 {
                 let storyboard = UIStoryboard(name: "NCText", bundle: nil)

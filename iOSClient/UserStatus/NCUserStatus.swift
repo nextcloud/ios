@@ -63,8 +63,6 @@ class NCUserStatus: UIViewController {
     @IBOutlet weak var clearStatusMessageButton: UIButton!
     @IBOutlet weak var setStatusMessageButton: UIButton!
 
-    private weak var appDelegate = UIApplication.shared.delegate as! AppDelegate
-
     private var statusPredefinedStatuses: [NCCommunicationUserStatus] = []
 
     private var clearAtTimestamp: Double = 0     // Unix Timestamp representing the time to clear the status
@@ -176,7 +174,7 @@ class NCUserStatus: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        NCCommunication.shared.getUserStatus { (account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, errorCode, _) in
+        NCCommunication.shared.getUserStatus { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, errorCode, _ in
 
             if errorCode == 0 {
 
@@ -306,7 +304,7 @@ class NCUserStatus: UIViewController {
         dropDown.width = clearStatusMessageAfterText.bounds.width
         dropDown.direction = .top
 
-        dropDown.selectionAction = { (_, item) in
+        dropDown.selectionAction = { _, item in
 
             self.clearAtTimestamp = self.getClearAt(item)
             self.clearStatusMessageAfterText.text = " " + item
@@ -351,7 +349,7 @@ class NCUserStatus: UIViewController {
 
     func getStatus() {
 
-        NCCommunication.shared.getUserStatus { account, clearAt, icon, message, _, _, status, _, _, errorCode, errorDescription in
+        NCCommunication.shared.getUserStatus { _, clearAt, icon, message, _, _, status, _, _, errorCode, errorDescription in
 
             if errorCode == 0 || errorCode == NCGlobal.shared.errorResourceNotFound {
 

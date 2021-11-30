@@ -209,16 +209,16 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusDownloading)
         fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
 
-        NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
+        NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
 
-        }, taskHandler: { (task) in
+        }, taskHandler: { task in
 
             self.outstandingSessionTasks[url] = task
-            fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (_) in }
+            fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { _ in }
 
-        }, progressHandler: { (_) in
+        }, progressHandler: { _ in
 
-        }) { (_, etag, date, _, _, _, errorCode, errorDescription) in
+        }) { _, etag, date, _, _, _, errorCode, errorDescription in
 
             self.outstandingSessionTasks.removeValue(forKey: url)
             guard var metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(identifier) else {
@@ -279,7 +279,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
 
         if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: metadata.ocId, session: NCNetworking.shared.sessionManagerBackgroundExtension) {
 
-            fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.fileId)) { (_) in }
+            fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.fileId)) { _ in }
         }
     }
 
@@ -341,7 +341,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 let fileName = NCUtilityFileSystem.shared.createFileName(fileURL.lastPathComponent, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.account)
                 let ocIdTemp = NSUUID().uuidString.lowercased()
 
-                NSFileCoordinator().coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { (url) in
+                NSFileCoordinator().coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { url in
                     _ = fileProviderUtility.shared.copyFile(url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
                 }
 
@@ -361,7 +361,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
 
                     self.outstandingSessionTasks[URL(fileURLWithPath: fileNameLocalPath)] = task as URLSessionTask
 
-                    fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTemp)) { (_) in }
+                    fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTemp)) { _ in }
                 }
 
                 let item = FileProviderItem(metadata: tableMetadata.init(value: metadata), parentItemIdentifier: parentItemIdentifier)
@@ -426,4 +426,3 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
     }
 
 }
-

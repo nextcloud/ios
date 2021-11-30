@@ -32,17 +32,17 @@ class NCTrashSectionHeaderMenu: UICollectionReusableView {
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
-    var delegate: NCTrashSectionHeaderMenuDelegate?
+    weak var delegate: NCTrashSectionHeaderMenuDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
+        buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
 
         buttonOrder.setTitle("", for: .normal)
         buttonOrder.setTitleColor(NCBrandColor.shared.brandElement, for: .normal)
 
-        buttonMore.setImage(UIImage.init(named: "more")!.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
+        buttonMore.setImage(UIImage(named: "more")!.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
 
         separator.backgroundColor = NCBrandColor.shared.separator
         separatorHeightConstraint.constant = 0.5

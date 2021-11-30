@@ -29,7 +29,6 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
     @IBOutlet weak var webView: WKWebView!
     @IBOutlet weak var webViewBottomConstraint: NSLayoutConstraint!
 
-    weak var appDelegate = UIApplication.shared.delegate as! AppDelegate
     @objc var metadata: tableMetadata?
     @objc var url: String = ""
 

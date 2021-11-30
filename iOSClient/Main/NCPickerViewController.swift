@@ -42,12 +42,12 @@ class NCPhotosPickerViewController: NSObject {
         self.maxSelectedAssets = maxSelectedAssets
         self.singleSelectedMode = singleSelectedMode
 
-        self.openPhotosPickerViewController { (assets) in
+        self.openPhotosPickerViewController { assets in
             guard let assets = assets else { return }
             if assets.count > 0 {
 
-                let form = NCCreateFormUploadAssets.init(serverUrl: self.appDelegate.activeServerUrl, assets: assets, cryptated: false, session: NCNetworking.shared.sessionIdentifierBackground, delegate: nil)
-                let navigationController = UINavigationController.init(rootViewController: form)
+                let form = NCCreateFormUploadAssets(serverUrl: self.appDelegate.activeServerUrl, assets: assets, cryptated: false, session: NCNetworking.shared.sessionIdentifierBackground, delegate: nil)
+                let navigationController = UINavigationController(rootViewController: form)
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                     viewController.present(navigationController, animated: true, completion: nil)
@@ -73,7 +73,7 @@ class NCPhotosPickerViewController: NSObject {
         configure.singleSelectedMode = singleSelectedMode
         configure.allowedAlbumCloudShared = true
 
-        let viewController = customPhotoPickerViewController(withTLPHAssets: { (assets) in
+        let viewController = customPhotoPickerViewController(withTLPHAssets: { assets in
 
             for asset: TLPHAsset in assets {
                 if asset.phAsset != nil {
@@ -85,15 +85,15 @@ class NCPhotosPickerViewController: NSObject {
 
         }, didCancel: nil)
 
-        viewController.didExceedMaximumNumberOfSelection = { (_) in
+        viewController.didExceedMaximumNumberOfSelection = { _ in
             NCContentPresenter.shared.messageNotification("_info_", description: "_limited_dimension_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
         }
 
-        viewController.handleNoAlbumPermissions = { (_) in
+        viewController.handleNoAlbumPermissions = { _ in
             NCContentPresenter.shared.messageNotification("_info_", description: "_denied_album_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
         }
 
-        viewController.handleNoCameraPermissions = { (_) in
+        viewController.handleNoCameraPermissions = { _ in
             NCContentPresenter.shared.messageNotification("_info_", description: "_denied_camera_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
         }
 
@@ -159,7 +159,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
                 if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {
 
-                    if let conflict = UIStoryboard.init(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
+                    if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
 
                         conflict.serverUrl = serverUrl
                         conflict.metadatasUploadInConflict = [metadataForUpload]

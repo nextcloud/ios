@@ -116,7 +116,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                 }
             }
             if (responder as? UIViewController)!.navigationController != nil {
-                if let viewController = UIStoryboard.init(name: "NCTrash", bundle: nil).instantiateInitialViewController() as? NCTrash {
+                if let viewController = UIStoryboard(name: "NCTrash", bundle: nil).instantiateInitialViewController() as? NCTrash {
                     if let result = NCManageDatabase.shared.getTrashItem(fileId: String(activityPreview.fileId), account: activityPreview.account) {
                         viewController.blinkFileId = result.fileId
                         viewController.trashPath = result.filePath
@@ -162,13 +162,13 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
 
             NCUtility.shared.startActivityIndicator(backgroundView: (appDelegate.window?.rootViewController?.view)!, blurEffect: true)
 
-            NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
+            NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
 
-            }, taskHandler: { (_) in
+            }, taskHandler: { _ in
 
-            }, progressHandler: { (_) in
+            }, progressHandler: { _ in
 
-            }) { (account, _, _, _, _, _, errorCode, errorDescription) in
+            }) { account, _, _, _, _, _, errorCode, _ in
 
                 if account == self.appDelegate.account && errorCode == 0 {
 
@@ -176,7 +176,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                     let fileName = (serverUrlFileName as NSString).lastPathComponent
                     let serverUrlFileName = serverUrl + "/" + fileName
 
-                    NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: activityPreview.account) { (account, metadata, errorCode, _) in
+                    NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: activityPreview.account) { account, metadata, errorCode, _ in
 
                         NCUtility.shared.stopActivityIndicator()
 
@@ -228,13 +228,13 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
             let source = activityPreview.source
 
-            NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false, account: appDelegate.account) { (imageNamePath) in
+            NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false, account: appDelegate.account) { imageNamePath in
                 if imageNamePath != nil {
                     if let image = UIImage(contentsOfFile: imageNamePath!) {
                         cell.imageView.image = image
                     }
                 } else {
-                     cell.imageView.image = UIImage.init(named: "file")
+                     cell.imageView.image = UIImage(named: "file")
                 }
             }
 
@@ -244,13 +244,13 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
                 let source = activityPreview.source
 
-                NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false, account: appDelegate.account) { (imageNamePath) in
+                NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false, account: appDelegate.account) { imageNamePath in
                     if imageNamePath != nil {
                         if let image = UIImage(contentsOfFile: imageNamePath!) {
                             cell.imageView.image = image
                         }
                     } else {
-                        cell.imageView.image = UIImage.init(named: "file")
+                        cell.imageView.image = UIImage(named: "file")
                     }
                 }
 
@@ -268,7 +268,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
                     } else {
 
-                        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, widthPreview: 0, heightPreview: 0, etag: nil, useInternalEndpoint: false) { (_, imagePreview, _, _, _, errorCode, _) in
+                        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, widthPreview: 0, heightPreview: 0, etag: nil, useInternalEndpoint: false) { _, imagePreview, _, _, _, errorCode, _ in
                             if errorCode == 0 && imagePreview != nil {
                                 self.collectionView.reloadData()
                             }

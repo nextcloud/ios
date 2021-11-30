@@ -42,9 +42,11 @@ extension AppDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_upload_photos_videos_", comment: ""), icon: UIImage(named: "file_photo")!.image(color: NCBrandColor.shared.gray, size: 50), action: { _ in
-                    NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { (hasPermission) in
+                    NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
                         if hasPermission {
-                            NCPhotosPickerViewController.init(viewController: viewController, maxSelectedAssets: 0, singleSelectedMode: false)
+                            if let viewController = appDelegate.window?.rootViewController {
+                                NCPhotosPickerViewController(viewController: viewController, maxSelectedAssets: 0, singleSelectedMode: false)
+                            }
                         }
                     }
                 }
@@ -55,7 +57,7 @@ extension AppDelegate {
             NCMenuAction(
                 title: NSLocalizedString("_upload_file_", comment: ""), icon: UIImage(named: "file")!.image(color: NCBrandColor.shared.gray, size: 50), action: { _ in
                     if let tabBarController = self.window?.rootViewController as? UITabBarController {
-                        self.documentPickerViewController = NCDocumentPickerViewController.init(tabBarController: tabBarController)
+                        self.documentPickerViewController = NCDocumentPickerViewController(tabBarController: tabBarController)
                     }
                 }
             )
@@ -98,7 +100,7 @@ extension AppDelegate {
             NCMenuAction(
                 title: NSLocalizedString("_create_voice_memo_", comment: ""), icon: UIImage(named: "microphone")!.image(color: NCBrandColor.shared.gray, size: 50), action: { _ in
 
-                    NCAskAuthorization.shared.askAuthorizationAudioRecord(viewController: viewController) { (hasPermission) in
+                    NCAskAuthorization.shared.askAuthorizationAudioRecord(viewController: viewController) { hasPermission in
                         if hasPermission {
                             let fileName = CCUtility.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), extension: "m4a")!
                             let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as! NCAudioRecorderViewController
@@ -123,14 +125,14 @@ extension AppDelegate {
 
                     let alertController = UIAlertController(title: NSLocalizedString("_create_folder_on_", comment: ""), message: nil, preferredStyle: .alert)
 
-                    alertController.addTextField { (textField) in
+                    alertController.addTextField { textField in
                         textField.autocapitalizationType = UITextAutocapitalizationType.sentences
                     }
 
                     let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
                     let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
                         if let fileNameFolder = alertController.textFields?.first?.text {
-                            NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: appDelegate.activeServerUrl, account: appDelegate.account, urlBase: appDelegate.urlBase, overwrite: false) { (errorCode, errorDescription) in
+                            NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: appDelegate.activeServerUrl, account: appDelegate.account, urlBase: appDelegate.urlBase, overwrite: false) { errorCode, errorDescription in
                                 if errorCode != 0 {
                                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                 }

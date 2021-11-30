@@ -77,7 +77,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
 
         self.title = NSLocalizedString("_capabilities_", comment: "")
 
-        let shareImage = UIImage.init(named: "shareFill")!.image(color: .gray, size: 25)
+        let shareImage = UIImage(named: "shareFill")!.image(color: .gray, size: 25)
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: shareImage, style: UIBarButtonItem.Style.plain, target: self, action: #selector(share))
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(close))
 
@@ -139,17 +139,17 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         statusComments.layer.borderColor = UIColor.gray.cgColor
         statusComments.layer.masksToBounds = true
 
-        imageFileSharing.image = UIImage.init(named: "share")!.image(color: NCBrandColor.shared.gray, size: 50)
+        imageFileSharing.image = UIImage(named: "share")!.image(color: NCBrandColor.shared.gray, size: 50)
         imageExternalSite.image = NCUtility.shared.loadImage(named: "network", color: NCBrandColor.shared.gray)
         imageEndToEndEncryption.image = NCUtility.shared.loadImage(named: "lock", color: NCBrandColor.shared.gray)
-        imageActivity.image = UIImage.init(named: "bolt")!.image(color: NCBrandColor.shared.gray, size: 50)
+        imageActivity.image = UIImage(named: "bolt")!.image(color: NCBrandColor.shared.gray, size: 50)
         imageNotification.image = NCUtility.shared.loadImage(named: "bell", color: NCBrandColor.shared.gray)
         imageDeletedFiles.image = NCUtility.shared.loadImage(named: "trash", color: NCBrandColor.shared.gray)
-        imageText.image = UIImage.init(named: "text")!.image(color: NCBrandColor.shared.gray, size: 50)
-        imageCollabora.image = UIImage.init(named: "collabora")!.image(color: NCBrandColor.shared.gray, size: 50)
-        imageOnlyOffice.image = UIImage.init(named: "onlyoffice")!.image(color: NCBrandColor.shared.gray, size: 50)
-        imageUserStatus.image = UIImage.init(named: "userStatusAway")!.image(color: NCBrandColor.shared.gray, size: 50)
-        imageComments.image = UIImage.init(named: "comments")!.image(color: NCBrandColor.shared.gray, size: 50)
+        imageText.image = UIImage(named: "text")!.image(color: NCBrandColor.shared.gray, size: 50)
+        imageCollabora.image = UIImage(named: "collabora")!.image(color: NCBrandColor.shared.gray, size: 50)
+        imageOnlyOffice.image = UIImage(named: "onlyoffice")!.image(color: NCBrandColor.shared.gray, size: 50)
+        imageUserStatus.image = UIImage(named: "userStatusAway")!.image(color: NCBrandColor.shared.gray, size: 50)
+        imageComments.image = UIImage(named: "comments")!.image(color: NCBrandColor.shared.gray, size: 50)
 
         guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
         self.account = activeAccount.account
@@ -165,20 +165,20 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             }
         }
 
-        homeImage.image = UIImage.init(named: "home")!.image(color: NCBrandColor.shared.gray, size: 50)
+        homeImage.image = UIImage(named: "home")!.image(color: NCBrandColor.shared.gray, size: 50)
         homeServer.text = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) + "/"
     }
 
     @objc func updateCapabilities() {
 
-        NCCommunication.shared.getCapabilities { (account, data, errorCode, _) in
+        NCCommunication.shared.getCapabilities { account, data, errorCode, _ in
             if errorCode == 0 && data != nil {
                 NCManageDatabase.shared.addCapabilitiesJSon(data!, account: account)
 
                 // EDITORS
                 let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
                 if serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
-                    NCCommunication.shared.NCTextObtainEditorDetails { (account, editors, creators, errorCode, _) in
+                    NCCommunication.shared.NCTextObtainEditorDetails { account, editors, creators, errorCode, _ in
                         if errorCode == 0 && account == self.appDelegate.account {
                             NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
                             self.readCapabilities()

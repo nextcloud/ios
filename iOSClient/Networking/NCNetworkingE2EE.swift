@@ -33,7 +33,7 @@ import Alamofire
 
     // MARK: - WebDav Create Folder
 
-    func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->Void) {
+    func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
 
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
         var fileNameFolderUrl = ""
@@ -48,19 +48,19 @@ import Alamofire
         fileNameIdentifier = CCUtility.generateRandomIdentifier()
         fileNameFolderUrl = serverUrl + "/" + fileNameIdentifier
 
-        self.lock(account: account, serverUrl: serverUrl) { (directory, e2eToken, errorCode, errorDescription) in
+        self.lock(account: account, serverUrl: serverUrl) { directory, e2eToken, errorCode, errorDescription in
             if errorCode == 0 && e2eToken != nil && directory != nil {
 
-                NCCommunication.shared.createFolder(fileNameFolderUrl, addCustomHeaders: ["e2e-token": e2eToken!]) { (account, ocId, _, errorCode, errorDescription) in
+                NCCommunication.shared.createFolder(fileNameFolderUrl, addCustomHeaders: ["e2e-token": e2eToken!]) { account, ocId, _, errorCode, errorDescription in
                     if errorCode == 0 {
                         guard let fileId = NCUtility.shared.ocIdToFileId(ocId: ocId) else {
                             // unlock
                             if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
-                                NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
+                                NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _, _ in }
                             }
                             return completion(NCGlobal.shared.errorInternalError, "Error convert ocId")
                         }
-                        NCCommunication.shared.markE2EEFolder(fileId: fileId, delete: false) { (account, errorCode, errorDescription) in
+                        NCCommunication.shared.markE2EEFolder(fileId: fileId, delete: false) { account, errorCode, errorDescription in
                             if errorCode == 0 {
 
                                 let object = tableE2eEncryption()
@@ -88,10 +88,10 @@ import Alamofire
 
                                 _ = NCManageDatabase.shared.addE2eEncryption(object)
 
-                                self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: urlBase) { (e2eToken, errorCode, errorDescription) in
+                                self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: urlBase) { e2eToken, errorCode, errorDescription in
                                     // unlock
                                     if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
-                                        NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
+                                        NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _, _ in }
                                     }
                                     if errorCode == 0 {
                                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: nil)
@@ -102,7 +102,7 @@ import Alamofire
                             } else {
                                 // unlock
                                 if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
-                                    NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
+                                    NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _, _ in }
                                 }
                                 completion(errorCode, errorDescription)
                             }
@@ -111,7 +111,7 @@ import Alamofire
                     } else {
                         // unlock
                         if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
-                            NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
+                            NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _, _ in }
                         }
                         completion(errorCode, errorDescription)
                     }
@@ -124,26 +124,26 @@ import Alamofire
 
     // MARK: - WebDav Delete
 
-    func deleteMetadata(_ metadata: tableMetadata, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->Void) {
+    func deleteMetadata(_ metadata: tableMetadata, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
 
-        self.lock(account: metadata.account, serverUrl: metadata.serverUrl) { (directory, e2eToken, errorCode, errorDescription) in
+        self.lock(account: metadata.account, serverUrl: metadata.serverUrl) { directory, e2eToken, errorCode, errorDescription in
             if errorCode == 0 && e2eToken != nil && directory != nil {
                 let deleteE2eEncryption = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, metadata.serverUrl, metadata.fileName)
-                NCNetworking.shared.deleteMetadataPlain(metadata, addCustomHeaders: ["e2e-token": e2eToken!]) { (errorCode, errorDescription) in
+                NCNetworking.shared.deleteMetadataPlain(metadata, addCustomHeaders: ["e2e-token": e2eToken!]) { errorCode, errorDescription in
 
                     let home = NCUtilityFileSystem.shared.getHomeServer(account: metadata.account)
                     if metadata.serverUrl != home {
-                        self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, urlBase: metadata.urlBase) { (e2eToken, errorCode, errorDescription) in
+                        self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, urlBase: metadata.urlBase) { e2eToken, errorCode, errorDescription in
                             // unlock
                             if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
-                                NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
+                                NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _, _ in }
                             }
                             completion(errorCode, errorDescription)
                         }
                     } else {
                         // unlock
                         if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
-                            NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
+                            NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _, _ in }
                         }
                         completion(errorCode, errorDescription)
                     }
@@ -156,7 +156,7 @@ import Alamofire
 
     // MARK: - WebDav Rename
 
-    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->Void) {
+    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?) -> Void) {
 
         // verify if exists the new fileName
         if NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
@@ -165,7 +165,7 @@ import Alamofire
 
         } else {
 
-            self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, deleteE2eEncryption: nil, urlBase: metadata.urlBase) { (e2eToken, errorCode, errorDescription) in
+            self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, deleteE2eEncryption: nil, urlBase: metadata.urlBase) { e2eToken, errorCode, errorDescription in
 
                 if errorCode == 0 {
                     NCManageDatabase.shared.setMetadataFileNameView(serverUrl: metadata.serverUrl, fileName: metadata.fileName, newFileNameView: fileNameNew, account: metadata.account)
@@ -182,7 +182,7 @@ import Alamofire
 
                 // unlock
                 if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
-                    NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
+                    NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _, _ in }
                 }
 
                 completion(errorCode, errorDescription)
@@ -192,7 +192,7 @@ import Alamofire
 
     // MARK: - Upload
 
-    func upload(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->Void) {
+    func upload(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
 
         let objectE2eEncryption = tableE2eEncryption()
         var key: NSString?, initializationVector: NSString?, authenticationTag: NSString?
@@ -261,26 +261,26 @@ import Alamofire
 
         NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_e2ee_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: NCGlobal.shared.dismissAfterSecond, priority: .max)
 
-        NCNetworkingE2EE.shared.sendE2EMetadata(account: metadata.account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: metadata.urlBase, upload: true) { (e2eToken, errorCode, errorDescription) in
+        NCNetworkingE2EE.shared.sendE2EMetadata(account: metadata.account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: metadata.urlBase, upload: true) { e2eToken, errorCode, errorDescription in
 
             start()
 
             if errorCode == 0 && e2eToken != nil {
 
-                NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.date as Date, dateModificationFile: metadata.date as Date, addCustomHeaders: ["e2e-token": e2eToken!], requestHandler: { (request) in
+                NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.date as Date, dateModificationFile: metadata.date as Date, addCustomHeaders: ["e2e-token": e2eToken!], requestHandler: { request in
 
                     NCNetworking.shared.uploadRequest[fileNameLocalPathRequest] = request
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: nil, sessionSelector: nil, sessionTaskIdentifier: nil, status: NCGlobal.shared.metadataStatusUploading)
 
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId])
 
-                }, taskHandler: { (_) in
+                }, taskHandler: { _ in
 
-                }, progressHandler: { (progress) in
+                }, progressHandler: { progress in
 
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, userInfo: ["account": metadata.account, "ocId": metadata.ocId, "fileName": metadata.fileName, "serverUrl": serverUrl, "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress": NSNumber(value: progress.fractionCompleted), "totalBytes": NSNumber(value: progress.totalUnitCount), "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
 
-                }) { (account, ocId, etag, date, _, _, error, errorCode, errorDescription) in
+                }) { account, ocId, etag, date, _, _, error, errorCode, errorDescription in
 
                     NCNetworking.shared.uploadRequest[fileNameLocalPath] = nil
 
@@ -334,7 +334,7 @@ import Alamofire
                         }
                     }
 
-                    NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: serverUrl) { (_, _, _, _) in
+                    NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: serverUrl) { _, _, _, _ in
                         completion(errorCode, errorDescription)
                     }
                 }
@@ -353,7 +353,7 @@ import Alamofire
 
     // MARK: - E2EE
 
-    @objc func lock(account: String, serverUrl: String, completion: @escaping (_ direcrtory: tableDirectory?, _ e2eToken: String?, _ errorCode: Int, _ errorDescription: String?)->Void) {
+    @objc func lock(account: String, serverUrl: String, completion: @escaping (_ direcrtory: tableDirectory?, _ e2eToken: String?, _ errorCode: Int, _ errorDescription: String?) -> Void) {
 
         var e2eToken: String?
 
@@ -365,7 +365,7 @@ import Alamofire
             e2eToken = tableLock.e2eToken
         }
 
-        NCCommunication.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, method: "POST") { (account, e2eToken, errorCode, errorDescription) in
+        NCCommunication.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, method: "POST") { account, e2eToken, errorCode, errorDescription in
             if errorCode == 0 && e2eToken != nil {
                 NCManageDatabase.shared.setE2ETokenLock(account: account, serverUrl: serverUrl, fileId: directory.fileId, e2eToken: e2eToken!)
             }
@@ -373,7 +373,7 @@ import Alamofire
         }
     }
 
-    @objc func unlock(account: String, serverUrl: String, completion: @escaping (_ direcrtory: tableDirectory?, _ e2eToken: String?, _ errorCode: Int, _ errorDescription: String?)->Void) {
+    @objc func unlock(account: String, serverUrl: String, completion: @escaping (_ direcrtory: tableDirectory?, _ e2eToken: String?, _ errorCode: Int, _ errorDescription: String?) -> Void) {
 
         var e2eToken: String?
 
@@ -385,7 +385,7 @@ import Alamofire
             e2eToken = tableLock.e2eToken
         }
 
-        NCCommunication.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, method: "DELETE") { (account, e2eToken, errorCode, errorDescription) in
+        NCCommunication.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, method: "DELETE") { account, e2eToken, errorCode, errorDescription in
             if errorCode == 0 {
                 NCManageDatabase.shared.deteleE2ETokenLock(account: account, serverUrl: serverUrl)
             }
@@ -393,12 +393,12 @@ import Alamofire
         }
     }
 
-    @objc func sendE2EMetadata(account: String, serverUrl: String, fileNameRename: String?, fileNameNewRename: String?, deleteE2eEncryption: NSPredicate?, urlBase: String, upload: Bool = false, completion: @escaping (_ e2eToken: String?, _ errorCode: Int, _ errorDescription: String)->Void) {
+    @objc func sendE2EMetadata(account: String, serverUrl: String, fileNameRename: String?, fileNameNewRename: String?, deleteE2eEncryption: NSPredicate?, urlBase: String, upload: Bool = false, completion: @escaping (_ e2eToken: String?, _ errorCode: Int, _ errorDescription: String) -> Void) {
 
-        self.lock(account: account, serverUrl: serverUrl) { (directory, e2eToken, errorCode, errorDescription) in
+        self.lock(account: account, serverUrl: serverUrl) { directory, e2eToken, errorCode, errorDescription in
             if errorCode == 0 && e2eToken != nil && directory != nil {
 
-                NCCommunication.shared.getE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken) { (account, e2eMetadata, errorCode, errorDescription) in
+                NCCommunication.shared.getE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken) { account, e2eMetadata, errorCode, errorDescription in
                     var method = "POST"
                     var e2eMetadataNew: String?
 
@@ -427,12 +427,12 @@ import Alamofire
                         method = "DELETE"
                     }
 
-                    NCCommunication.shared.putE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken!, e2eMetadata: e2eMetadataNew, method: method) { (account, _, errorCode, errorDescription) in
+                    NCCommunication.shared.putE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken!, e2eMetadata: e2eMetadataNew, method: method) { account, _, errorCode, errorDescription in
 
                         if upload {
                             completion(e2eToken, errorCode, errorDescription)
                         } else {
-                            self.unlock(account: account, serverUrl: serverUrl) { (_, e2eToken, _, _) in
+                            self.unlock(account: account, serverUrl: serverUrl) { _, e2eToken, _, _ in
                                 completion(e2eToken, errorCode, errorDescription)
                             }
                         }

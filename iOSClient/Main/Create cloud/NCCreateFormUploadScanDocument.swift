@@ -468,7 +468,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
                 let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
 
-                let request = VNRecognizeTextRequest { (request, _) in
+                let request = VNRecognizeTextRequest { request, _ in
                     guard let observations = request.results as? [VNRecognizedTextObservation] else {
                         NCUtility.shared.stopActivityIndicator()
                         return
@@ -525,7 +525,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
                     let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
 
-                    let request = VNRecognizeTextRequest { (request, _) in
+                    let request = VNRecognizeTextRequest { request, _ in
                         guard let observations = request.results as? [VNRecognizedTextObservation] else {
                             NCUtility.shared.stopActivityIndicator()
                             return
@@ -736,7 +736,6 @@ class NCCreateScanDocument: NSObject, VNDocumentCameraViewControllerDelegate {
         return instance
     }()
 
-    weak var appDelegate = UIApplication.shared.delegate as! AppDelegate
     var viewController: UIViewController?
 
     func openScannerDocument(viewController: UIViewController) {

@@ -85,7 +85,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
         if assets.count == 1 && assets[0].mediaType == PHAssetMediaType.image {
-            PHImageManager.default().requestImage(for: assets[0], targetSize: targetSizeImagePreview, contentMode: PHImageContentMode.aspectFill, options: requestOptions, resultHandler: { (image, _) in
+            PHImageManager.default().requestImage(for: assets[0], targetSize: targetSizeImagePreview, contentMode: PHImageContentMode.aspectFill, options: requestOptions, resultHandler: { image, _ in
                 self.imagePreview = image
             })
         }
@@ -425,7 +425,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                     let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameMove)!
 
                     let semaphore = Semaphore()
-                    CCUtility.extractLivePhotoAsset(asset, filePath: filePath) { (url) in
+                    CCUtility.extractLivePhotoAsset(asset, filePath: filePath) { url in
                         if let url = url {
                             let fileSize = NCUtilityFileSystem.shared.getFileSize(filePath: url.path)
                             let metadataMOVForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileNameMove, fileNameView: fileNameMove, ocId: ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", livePhoto: livePhoto)
@@ -457,7 +457,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             if metadatasUploadInConflict.count > 0 {
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                    if let conflict = UIStoryboard.init(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
+                    if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
 
                         conflict.serverUrl = self.serverUrl
                         conflict.metadatasNOConflict = metadatasNOConflict

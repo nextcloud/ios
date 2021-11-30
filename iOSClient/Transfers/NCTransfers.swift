@@ -36,7 +36,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         titleCurrentFolder = NSLocalizedString("_transfers_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewTransfers
         enableSearchBar = false
-        emptyImage = UIImage.init(named: "arrow.left.arrow.right")?.image(color: .gray, size: UIScreen.main.bounds.width)
+        emptyImage = UIImage(named: "arrow.left.arrow.right")?.image(color: .gray, size: UIScreen.main.bounds.width)
         emptyTitle = "_no_transfer_"
         emptyDescription = "_no_transfer_sub_"
     }
@@ -119,7 +119,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             metadataTemp = metadata
             let touchPoint = gestureRecognizer.location(in: collectionView)
             becomeFirstResponder()
-            let startTaskItem = UIMenuItem.init(title: NSLocalizedString("_force_start_", comment: ""), action: #selector(startTask(_:)))
+            let startTaskItem = UIMenuItem(title: NSLocalizedString("_force_start_", comment: ""), action: #selector(startTask(_:)))
             UIMenuController.shared.menuItems = [startTaskItem]
             UIMenuController.shared.setTargetRect(CGRect(x: touchPoint.x, y: touchPoint.y, width: 0, height: 0), in: collectionView)
             UIMenuController.shared.setMenuVisible(true, animated: true)
@@ -136,7 +136,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
 
         NCManageDatabase.shared.addMetadata(metadata)
-        NCNetworking.shared.upload(metadata: metadata) { } completion: { (_, _) in }
+        NCNetworking.shared.upload(metadata: metadata) { } completion: { _, _ in }
     }
 
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
@@ -269,7 +269,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.reloadDataSource()
 
         metadatasSource = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
-        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource)
+        self.dataSource = NCDataSource(metadatasSource: metadatasSource)
 
         refreshControl.endRefreshing()
         collectionView.reloadData()

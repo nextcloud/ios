@@ -49,7 +49,7 @@ class NCViewerPDFSearch: UITableViewController, UISearchBarDelegate, PDFDocument
 
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(UINib.init(nibName: "NCViewerPDFSearchCell", bundle: nil), forCellReuseIdentifier: "Cell")
+        tableView.register(UINib(nibName: "NCViewerPDFSearchCell", bundle: nil), forCellReuseIdentifier: "Cell")
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -90,8 +90,8 @@ class NCViewerPDFSearch: UITableViewController, UISearchBarDelegate, PDFDocument
 
         let nsRange = NSString(string: extendSelection.string!).range(of: pdfSelection.string!, options: String.CompareOptions.caseInsensitive)
         if nsRange.location != NSNotFound {
-            let attributedSubString = NSAttributedString.init(string: NSString(string: extendSelection.string!).substring(with: nsRange), attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 17)])
-            let attributedString = NSMutableAttributedString.init(string: extendSelection.string!)
+            let attributedSubString = NSAttributedString(string: NSString(string: extendSelection.string!).substring(with: nsRange), attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 17)])
+            let attributedString = NSMutableAttributedString(string: extendSelection.string!)
             attributedString.replaceCharacters(in: nsRange, with: attributedSubString)
             cell.searchResultTextLabel.attributedText = attributedString
         }
@@ -143,7 +143,7 @@ class NCViewerPDFSearch: UITableViewController, UISearchBarDelegate, PDFDocument
 
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
 
-        let cancelBarButtonItem = UIBarButtonItem.init(title: NSLocalizedString("_cancel_", comment: ""), style: .plain, target: self, action: #selector(cancelBarButtonItemClicked))
+        let cancelBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain, target: self, action: #selector(cancelBarButtonItemClicked))
         navigationItem.setRightBarButton(cancelBarButtonItem, animated: true)
         return true
     }

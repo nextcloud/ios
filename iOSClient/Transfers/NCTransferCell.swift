@@ -39,7 +39,7 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     private var objectId = ""
     private var user = ""
 
-    var delegate: NCTransferCellDelegate?
+    weak var delegate: NCTransferCellDelegate?
     var indexPath = IndexPath()
     var namedButtonMore = ""
 
@@ -123,7 +123,7 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     }
 }
 
-protocol NCTransferCellDelegate {
+protocol NCTransferCellDelegate: AnyObject {
     func tapShareListItem(with objectId: String, sender: Any)
     func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any)
     func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer)

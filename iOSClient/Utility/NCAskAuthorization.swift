@@ -29,7 +29,7 @@ class NCAskAuthorization: NSObject {
         return instance
     }()
 
-    func askAuthorizationAudioRecord(viewController: UIViewController?, completion: @escaping (_ hasPermission: Bool)->Void) {
+    func askAuthorizationAudioRecord(viewController: UIViewController?, completion: @escaping (_ hasPermission: Bool) -> Void) {
 
         switch AVAudioSession.sharedInstance().recordPermission {
         case AVAudioSession.RecordPermission.granted:
@@ -49,7 +49,7 @@ class NCAskAuthorization: NSObject {
             }
             break
         case AVAudioSession.RecordPermission.undetermined:
-            AVAudioSession.sharedInstance().requestRecordPermission { (allowed) in
+            AVAudioSession.sharedInstance().requestRecordPermission { allowed in
                 DispatchQueue.main.async {
                     if allowed {
                         completion(true)
@@ -65,7 +65,7 @@ class NCAskAuthorization: NSObject {
         }
     }
 
-    func askAuthorizationPhotoLibrary(viewController: UIViewController?, completion: @escaping (_ hasPermission: Bool)->Void) {
+    func askAuthorizationPhotoLibrary(viewController: UIViewController?, completion: @escaping (_ hasPermission: Bool) -> Void) {
 
         switch PHPhotoLibrary.authorizationStatus() {
         case PHAuthorizationStatus.authorized:
@@ -85,7 +85,7 @@ class NCAskAuthorization: NSObject {
             }
             break
         case PHAuthorizationStatus.notDetermined:
-            PHPhotoLibrary.requestAuthorization { (allowed) in
+            PHPhotoLibrary.requestAuthorization { allowed in
                 DispatchQueue.main.async {
                     if allowed == PHAuthorizationStatus.authorized {
                         completion(true)
@@ -101,7 +101,7 @@ class NCAskAuthorization: NSObject {
         }
     }
 
-    @objc func askAuthorizationLocationManager(completion: @escaping (_ hasFullPermissions: Bool)->Void) {
+    @objc func askAuthorizationLocationManager(completion: @escaping (_ hasFullPermissions: Bool) -> Void) {
 
         switch CLLocationManager.authorizationStatus() {
         case CLAuthorizationStatus.authorizedAlways:

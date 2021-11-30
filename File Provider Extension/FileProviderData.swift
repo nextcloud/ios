@@ -70,7 +70,7 @@ class fileProviderData: NSObject {
 
         self.domain = domain
         if domain != nil {
-            if let fileProviderManager = NSFileProviderManager.init(for: domain!) {
+            if let fileProviderManager = NSFileProviderManager(for: domain!) {
                 self.fileProviderManager = fileProviderManager
             }
         }

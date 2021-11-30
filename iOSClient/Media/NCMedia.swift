@@ -75,7 +75,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
         view.backgroundColor = NCBrandColor.shared.systemBackground
 
-        collectionView.register(UINib.init(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
+        collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
 
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
@@ -88,7 +88,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         collectionView.collectionViewLayout = gridLayout
 
         // Empty
-        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 0, delegate: self)
+        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: 0, delegate: self)
 
         // Notification
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
@@ -127,7 +127,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.setNavigationBarHidden(true, animated: false)
 
-        self.reloadDataSourceWithCompletion { (_) in
+        self.reloadDataSourceWithCompletion { _ in
             self.timerSearchNewMedia?.invalidate()
             self.timerSearchNewMedia = Timer.scheduledTimer(timeInterval: self.timeIntervalSearchNewMedia, target: self, selector: #selector(self.searchNewMediaTimer), userInfo: nil, repeats: false)
         }
@@ -158,7 +158,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
     @objc func initialize() {
 
-        self.reloadDataSourceWithCompletion { (_) in
+        self.reloadDataSourceWithCompletion { _ in
             self.timerSearchNewMedia?.invalidate()
             self.timerSearchNewMedia = Timer.scheduledTimer(timeInterval: self.timeIntervalSearchNewMedia, target: self, selector: #selector(self.searchNewMediaTimer), userInfo: nil, repeats: false)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -218,7 +218,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
 
                 if metadata.account == appDelegate.account {
-                    self.reloadDataSourceWithCompletion { (_) in }
+                    self.reloadDataSourceWithCompletion { _ in }
                 }
             }
         }
@@ -229,7 +229,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
                 if errorCode == 0 && metadata.account == appDelegate.account {
-                    self.reloadDataSourceWithCompletion { (_) in }
+                    self.reloadDataSourceWithCompletion { _ in }
                 }
             }
         }
@@ -290,7 +290,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         if serverUrl != nil {
             let path = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account) ?? ""
             NCManageDatabase.shared.setAccountMediaPath(path, account: appDelegate.account)
-            reloadDataSourceWithCompletion { (_) in
+            reloadDataSourceWithCompletion { _ in
                 self.searchNewMedia()
             }
         }
@@ -300,7 +300,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
     func emptyDataSetView(_ view: NCEmptyView) {
 
-        view.emptyImage.image = UIImage.init(named: "media")?.image(color: .gray, size: UIScreen.main.bounds.width)
+        view.emptyImage.image = UIImage(named: "media")?.image(color: .gray, size: UIScreen.main.bounds.width)
         if oldInProgress || newInProgress {
             view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
         } else {
@@ -396,7 +396,7 @@ extension NCMedia: UICollectionViewDataSource {
 
             if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                 (cell as! NCGridMediaCell).imageItem.backgroundColor = nil
-                (cell as! NCGridMediaCell).imageItem.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+                (cell as! NCGridMediaCell).imageItem.image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
             } else {
                 NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: false, cell: cell, view: collectionView)
             }
@@ -495,7 +495,7 @@ extension NCMedia {
 
         if livePhoto {
             let predicateLivePhoto = NSPredicate(format: "!(ext == 'mov' AND livePhoto == true)")
-            predicateForGetMetadatasMedia = NSCompoundPredicate.init(andPredicateWithSubpredicates: [predicateForGetMetadatasMedia, predicateLivePhoto])
+            predicateForGetMetadatasMedia = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateForGetMetadatasMedia, predicateLivePhoto])
         }
 
         DispatchQueue.global().async {
@@ -549,7 +549,7 @@ extension NCMedia {
         let height = self.tabBarController?.tabBar.frame.size.height ?? 0
         NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: height + 50, style: .gray)
 
-        NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 120) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 120) { account, files, errorCode, errorDescription in
 
             self.oldInProgress = false
             NCUtility.shared.stopActivityIndicator()
@@ -557,15 +557,15 @@ extension NCMedia {
 
             if errorCode == 0 && account == self.appDelegate.account {
                 if files.count > 0 {
-                    NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: self.appDelegate.account) { (_, _, metadatas) in
+                    NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: self.appDelegate.account) { _, _, metadatas in
                         let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let predicateResult = NSCompoundPredicate.init(andPredicateWithSubpredicates: [predicateDate, self.predicateDefault!])
+                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, self.predicateDefault!])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
                         let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
                         if metadatasChanged.metadatasUpdate.count == 0 {
                             self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
                         } else {
-                            self.reloadDataSourceWithCompletion { (_) in }
+                            self.reloadDataSourceWithCompletion { _ in }
                         }
                     }
                 } else {
@@ -589,7 +589,7 @@ extension NCMedia {
             searchOldMedia(value: -999, limit: 0)
         } else {
             if withElseReloadDataSource {
-                self.reloadDataSourceWithCompletion { (_) in }
+                self.reloadDataSourceWithCompletion { _ in }
             }
         }
     }
@@ -627,19 +627,19 @@ extension NCMedia {
 
         reloadDataThenPerform {
 
-            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 120) { (account, files, errorCode, errorDescription) in
+            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 120) { account, files, errorCode, errorDescription in
 
                 self.newInProgress = false
                 self.mediaCommandView?.activityIndicator.stopAnimating()
 
                 if errorCode == 0 && account == self.appDelegate.account && files.count > 0 {
-                    NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (_, _, metadatas) in
+                    NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, _, metadatas in
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let predicateResult = NSCompoundPredicate.init(andPredicateWithSubpredicates: [predicate, self.predicate!])
+                        let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.predicate!])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
                         let updateMetadatas = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false)
                         if updateMetadatas.metadatasUpdate.count > 0 || updateMetadatas.metadatasDelete.count > 0 {
-                            self.reloadDataSourceWithCompletion { (_) in }
+                            self.reloadDataSourceWithCompletion { _ in }
                         }
                     }
                 } else if errorCode == 0 && files.count == 0 && self.metadatas.count == 0 {
@@ -724,7 +724,7 @@ class NCMediaCommandView: UIView {
         gradient.endPoint = CGPoint(x: 0, y: 0.9)
         gradient.colors = [UIColor.black.withAlphaComponent(0.4).cgColor, UIColor.clear.cgColor]
         layer.insertSublayer(gradient, at: 0)
-        moreButton.setImage(UIImage.init(named: "more")!.image(color: .white, size: 25), for: .normal)
+        moreButton.setImage(UIImage(named: "more")!.image(color: .white, size: 25), for: .normal)
         title.text = ""
     }
 

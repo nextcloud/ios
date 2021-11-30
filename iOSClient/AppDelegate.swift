@@ -134,12 +134,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
 
         // Process upload
-        networkingProcessUpload = NCNetworkingProcessUpload.init()
+        networkingProcessUpload = NCNetworkingProcessUpload()
 
         // Push Notification & display notification
         application.registerForRemoteNotifications()
         UNUserNotificationCenter.current().delegate = self
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { (_, _) in }
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
 
         // Store review
         if !NCUtility.shared.isSimulatorOrTestFlight() {
@@ -227,7 +227,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         // Initialize Auto upload
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { (_) in }
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in }
 
         // Required unsubscribing / subscribing
         NCPushNotification.shared().pushNotification()
@@ -305,7 +305,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCBrandColor.shared.settingThemingColor(account: account)
 
         // Start Auto Upload
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { (_) in }
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in }
 
         // Start services
         NCService.shared.startRequestServicesServer()
@@ -324,7 +324,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @available(iOS 13.0, *)
     func scheduleAppRefresh() {
 
-        let request = BGAppRefreshTaskRequest.init(identifier: NCGlobal.shared.refreshTask)
+        let request = BGAppRefreshTaskRequest(identifier: NCGlobal.shared.refreshTask)
         request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
         do {
             try BGTaskScheduler.shared.submit(request)
@@ -337,7 +337,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @available(iOS 13.0, *)
     func scheduleBackgroundProcessing() {
 
-        let request = BGProcessingTaskRequest.init(identifier: NCGlobal.shared.processingTask)
+        let request = BGProcessingTaskRequest(identifier: NCGlobal.shared.processingTask)
         request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
         request.requiresNetworkConnectivity = true
         request.requiresExternalPower = false
@@ -359,7 +359,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCCommunicationCommon.shared.writeLog("Start handler refresh task [Auto upload]")
 
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { (_) in
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
                 NCCommunicationCommon.shared.writeLog("Completition handler refresh task with %lu uploads [Auto upload]")
@@ -378,7 +378,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCCommunicationCommon.shared.writeLog("Start handler processing task [Synchronize Favorite & Offline]")
 
-        NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { (_, _, errorCode, _) in
+        NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { _, _, errorCode, _ in
             NCCommunicationCommon.shared.writeLog("Completition listing favorite with error: \(errorCode)")
         }
 
@@ -402,7 +402,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCCommunicationCommon.shared.writeLog("Start perform Fetch [Auto upload]")
 
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { (items) in
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
             NCCommunicationCommon.shared.writeLog("Completition perform Fetch with \(items) uploads [Auto upload]")
             if items == 0 {
@@ -440,7 +440,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        NCPushNotification.shared().applicationdidReceiveRemoteNotification(userInfo) { (result) in
+        NCPushNotification.shared().applicationdidReceiveRemoteNotification(userInfo) { result in
             completionHandler(result)
         }
     }
@@ -806,7 +806,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if scheme == "nextcloud" && action == "open-file" {
 
-            if let urlComponents = URLComponents.init(url: url, resolvingAgainstBaseURL: false) {
+            if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
                 let queryItems = urlComponents.queryItems
                 guard let userScheme = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }

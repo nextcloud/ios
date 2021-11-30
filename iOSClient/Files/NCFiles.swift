@@ -37,7 +37,7 @@ class NCFiles: NCCollectionViewCommon {
         titleCurrentFolder = NCBrandOptions.shared.brand
         layoutKey = NCGlobal.shared.layoutViewFiles
         enableSearchBar = true
-        emptyImage = UIImage.init(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
+        emptyImage = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = "_no_file_pull_down_"
     }
@@ -79,7 +79,7 @@ class NCFiles: NCCollectionViewCommon {
                 }
             }
 
-            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            self.dataSource = NCDataSource(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
 
             DispatchQueue.main.async { [weak self] in
                 self?.refreshControl.endRefreshing()
@@ -99,7 +99,7 @@ class NCFiles: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        networkReadFolder(forced: forced) { (tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, _) in
+        networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, _ in
             if errorCode == 0 {
                 for metadata in metadatas ?? [] {
                     if !metadata.directory {

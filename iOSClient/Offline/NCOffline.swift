@@ -34,7 +34,7 @@ class NCOffline: NCCollectionViewCommon {
         titleCurrentFolder = NSLocalizedString("_manage_file_offline_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewOffline
         enableSearchBar = true
-        emptyImage = UIImage.init(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
+        emptyImage = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = "_tutorial_offline_view_"
     }
@@ -71,7 +71,7 @@ class NCOffline: NCCollectionViewCommon {
                 }
             }
 
-            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            self.dataSource = NCDataSource(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
 
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
@@ -97,7 +97,7 @@ class NCOffline: NCCollectionViewCommon {
             isReloadDataSourceNetworkInProgress = true
             collectionView?.reloadData()
 
-            networkReadFolder(forced: forced) { (tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, _) in
+            networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, _ in
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory {

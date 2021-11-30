@@ -100,14 +100,14 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         activeAccount = NCManageDatabase.shared.getActiveAccount()
 
         // Cell
-        collectionView.register(UINib.init(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
-        collectionView.register(UINib.init(nibName: "NCGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
+        collectionView.register(UINib(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
+        collectionView.register(UINib(nibName: "NCGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
 
         // Header
-        collectionView.register(UINib.init(nibName: "NCSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
+        collectionView.register(UINib(nibName: "NCSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
 
         // Footer
-        collectionView.register(UINib.init(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
+        collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         collectionView.alwaysBounceVertical = true
         collectionView.backgroundColor = NCBrandColor.shared.systemBackground
 
@@ -117,7 +117,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
 
         // Empty
-        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: headerHeight, delegate: self)
+        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: headerHeight, delegate: self)
 
         // Type of command view
         if typeOfCommandView == .select || typeOfCommandView == .selectCreateFolder {
@@ -219,11 +219,11 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     func emptyDataSetView(_ view: NCEmptyView) {
 
         if networkInProgress {
-            view.emptyImage.image = UIImage.init(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
+            view.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
             view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
             view.emptyDescription.text = ""
         } else {
-            view.emptyImage.image = UIImage.init(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
+            view.emptyImage.image = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
             if includeImages {
                 view.emptyTitle.text = NSLocalizedString("_files_no_files_", comment: "")
             } else {
@@ -258,7 +258,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: "", preferredStyle: .alert)
 
-        alertController.addTextField { (textField) in
+        alertController.addTextField { textField in
             textField.autocapitalizationType = UITextAutocapitalizationType.words
         }
 
@@ -290,7 +290,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             // list layout
             UIView.animate(withDuration: 0.0, animations: {
                 self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { (_) in
+                self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { _ in
                     self.collectionView.reloadData()
                 })
             })
@@ -299,7 +299,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
                 self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { (_) in
+                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { _ in
                     self.collectionView.reloadData()
                 })
             })
@@ -377,9 +377,9 @@ extension NCSelect: UICollectionViewDataSource {
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
 
             if collectionView.collectionViewLayout == gridLayout {
-                header.buttonSwitch.setImage(UIImage.init(named: "switchList")?.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
+                header.buttonSwitch.setImage(UIImage(named: "switchList")?.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
             } else {
-                header.buttonSwitch.setImage(UIImage.init(named: "switchGrid")?.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
+                header.buttonSwitch.setImage(UIImage(named: "switchGrid")?.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
             }
 
             header.delegate = self
@@ -696,7 +696,7 @@ extension NCSelect {
         }
 
         let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: predicate!)
-        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: layoutForView?.sort, ascending: layoutForView?.ascending, directoryOnTop: layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+        self.dataSource = NCDataSource(metadatasSource: metadatasSource, sort: layoutForView?.sort, ascending: layoutForView?.ascending, directoryOnTop: layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
 
         if withLoadFolder {
             loadFolder()
@@ -712,7 +712,7 @@ extension NCSelect {
 
     func createFolder(with fileName: String) {
 
-        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: activeAccount.account, urlBase: activeAccount.urlBase) { (errorCode, errorDescription) in
+        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: activeAccount.account, urlBase: activeAccount.urlBase) { errorCode, errorDescription in
 
             if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
@@ -725,7 +725,7 @@ extension NCSelect {
         networkInProgress = true
         collectionView.reloadData()
 
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { (_, _, _, _, _, _, errorCode, errorDescription) in
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { _, _, _, _, _, _, errorCode, errorDescription in
             if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }

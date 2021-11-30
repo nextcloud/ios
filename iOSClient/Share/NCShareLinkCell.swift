@@ -38,8 +38,8 @@ class NCShareLinkCell: UITableViewCell {
         super.awakeFromNib()
 
         imageItem.image = NCShareCommon.shared.createLinkAvatar(imageName: "sharebylink", colorCircle: NCBrandColor.shared.brandElement)
-        buttonCopy.setImage(UIImage.init(named: "shareCopy")!.image(color: .gray, size: 50), for: .normal)
-        buttonMenu.setImage(UIImage.init(named: "shareMenu")!.image(color: .gray, size: 50), for: .normal)
+        buttonCopy.setImage(UIImage(named: "shareCopy")!.image(color: .gray, size: 50), for: .normal)
+        buttonMenu.setImage(UIImage(named: "shareMenu")!.image(color: .gray, size: 50), for: .normal)
     }
 
     @IBAction func touchUpInsideCopy(_ sender: Any) {

@@ -44,7 +44,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
 
         navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.title = metadata.fileNameView
@@ -144,7 +144,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     // MARK: - Action
 
     @objc func openMenuMore() {
-        if imageIcon == nil { imageIcon = UIImage.init(named: "file_txt") }
+        if imageIcon == nil { imageIcon = UIImage(named: "file_txt") }
         NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: true, imageIcon: imageIcon)
     }
 

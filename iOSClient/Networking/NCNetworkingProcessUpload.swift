@@ -66,7 +66,7 @@ class NCNetworkingProcessUpload: NSObject {
 
         print("[LOG] PROCESS-UPLOAD \(counterUpload)")
 
-        NCNetworking.shared.getOcIdInBackgroundSession { (listOcId) in
+        NCNetworking.shared.getOcIdInBackgroundSession { listOcId in
 
             for sessionSelector in sessionSelectors {
                 if counterUpload < self.maxConcurrentOperationUpload {
@@ -109,7 +109,7 @@ class NCNetworkingProcessUpload: NSObject {
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata) {
                                     // start
-                                } completion: { (_, _) in
+                                } completion: { _, _ in
                                     DispatchQueue.main.async {
                                         self.startTimer()
                                     }
@@ -125,7 +125,7 @@ class NCNetworkingProcessUpload: NSObject {
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata) {
                                     // start
-                                } completion: { (_, _) in
+                                } completion: { _, _ in
                                     DispatchQueue.main.async {
                                         self.startTimer()
                                     }
@@ -140,7 +140,7 @@ class NCNetworkingProcessUpload: NSObject {
                         if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                             NCNetworking.shared.upload(metadata: metadata) {
                                 // start
-                            } completion: { (_, _) in
+                            } completion: { _, _ in
                                 // completion
                             }
                         }
@@ -264,7 +264,7 @@ class NCNetworkingProcessUpload: NSObject {
 
             var taskUpload: URLSessionTask?
 
-            session?.getAllTasks(completionHandler: { (tasks) in
+            session?.getAllTasks(completionHandler: { tasks in
                 for task in tasks {
                     if task.taskIdentifier == metadata.sessionTaskIdentifier {
                         taskUpload = task

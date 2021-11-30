@@ -47,11 +47,11 @@ class NCLoginWeb: UIViewController {
         let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
 
         if NCBrandOptions.shared.use_login_web_personalized  && accountCount > 0 {
-            navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
+            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
         }
 
         if accountCount > 0 {
-            navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "users")!.image(color: NCBrandColor.shared.label, size: 35), style: .plain, target: self, action: #selector(self.changeUser(sender:)))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "users")!.image(color: NCBrandColor.shared.label, size: 35), style: .plain, target: self, action: #selector(self.changeUser(sender:)))
         }
 
         let config = WKWebViewConfiguration()
@@ -246,7 +246,7 @@ extension NCLoginWeb: WKNavigationDelegate {
 
         if loginFlowV2Available {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                NCCommunication.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { (server, loginName, appPassword, errorCode, _) in
+                NCCommunication.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, errorCode, _ in
                     if errorCode == 0 && server != nil && loginName != nil && appPassword != nil {
                         self.createAccount(server: server!, username: loginName!, password: appPassword!)
                     }

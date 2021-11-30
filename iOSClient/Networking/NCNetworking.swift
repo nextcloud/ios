@@ -129,7 +129,7 @@ import Queuer
     func authenticationChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
 
         if checkTrustedChallenge(session, didReceive: challenge) {
-            completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential.init(trust: challenge.protectionSpace.serverTrust!))
+            completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
         } else {
             completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
         }
@@ -248,11 +248,11 @@ import Queuer
         BIO_free(mem)
     }
 
-    func checkPushNotificationServerProxyCertificateUntrusted(viewController: UIViewController?, completion: @escaping (_ errorCode: Int)->Void) {
+    func checkPushNotificationServerProxyCertificateUntrusted(viewController: UIViewController?, completion: @escaping (_ errorCode: Int) -> Void) {
 
         guard let host = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else { return }
 
-        NCCommunication.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { (errorCode, _) in
+        NCCommunication.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { errorCode, _ in
 
             if errorCode == 0 {
 
@@ -327,7 +327,7 @@ import Queuer
         }
     }
 
-    @objc func download(metadata: tableMetadata, selector: String, completion: @escaping (_ errorCode: Int)->Void) {
+    @objc func download(metadata: tableMetadata, selector: String, completion: @escaping (_ errorCode: Int) -> Void) {
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
@@ -340,16 +340,16 @@ import Queuer
 
         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierDownload, sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusInDownload)
 
-        NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, queue: NCCommunicationCommon.shared.backgroundQueue, requestHandler: { (request) in
+        NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, queue: NCCommunicationCommon.shared.backgroundQueue, requestHandler: { request in
 
             self.downloadRequest[fileNameLocalPath] = request
 
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusDownloading)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadStartFile, userInfo: ["ocId": metadata.ocId])
 
-        }, taskHandler: { (_) in
+        }, taskHandler: { _ in
 
-        }, progressHandler: { (progress) in
+        }, progressHandler: { progress in
 
             #if !EXTENSION
             // add progress ocid
@@ -359,7 +359,7 @@ import Queuer
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, object: nil, userInfo: ["account": metadata.account, "ocId": metadata.ocId, "fileName": metadata.fileName, "serverUrl": metadata.serverUrl, "status": NSNumber(value: NCGlobal.shared.metadataStatusInDownload), "progress": NSNumber(value: progress.fractionCompleted), "totalBytes": NSNumber(value: progress.totalUnitCount), "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
 
-        }) { (account, etag, date, _, _, error, errorCode, errorDescription) in
+        }) { account, etag, _, _, _, error, errorCode, errorDescription in
 
             if error?.isExplicitlyCancelledError ?? false {
 
@@ -375,7 +375,7 @@ import Queuer
 
                     NCEndToEndEncryption.sharedManager()?.decryptFileName(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                 }
-                CCUtility.setExif(metadata) { (_, _, _, _, _) in }
+                CCUtility.setExif(metadata) { _, _, _, _, _ in }
                 #endif
 
             } else {
@@ -406,7 +406,7 @@ import Queuer
 
     // MARK: - Upload
 
-    @objc func upload(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->Void) {
+    @objc func upload(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
 
         var metadata = tableMetadata.init(value: metadata)
         var fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -442,7 +442,7 @@ import Queuer
 
         } else {
 
-            CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadata, notification: true) { (extractMetadata, fileNamePath) in
+            CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadata, notification: true) { extractMetadata, fileNamePath in
 
                 guard let extractMetadata = extractMetadata else {
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -470,25 +470,25 @@ import Queuer
         }
     }
 
-    private func uploadFile(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->Void) {
+    private func uploadFile(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         var uploadTask: URLSessionTask?
         let description = metadata.ocId
 
-        NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, customUserAgent: nil, addCustomHeaders: nil, requestHandler: { (request) in
+        NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, customUserAgent: nil, addCustomHeaders: nil, requestHandler: { request in
 
             self.uploadRequest[fileNameLocalPath] = request
 
-        }, taskHandler: { (task) in
+        }, taskHandler: { task in
 
             uploadTask = task
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId])
             start()
 
-        }, progressHandler: { (progress) in
+        }, progressHandler: { progress in
 
             #if !EXTENSION
             // add progress ocid
@@ -498,7 +498,7 @@ import Queuer
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, userInfo: ["account": metadata.account, "ocId": metadata.ocId, "fileName": metadata.fileName, "serverUrl": metadata.serverUrl, "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress": NSNumber(value: progress.fractionCompleted), "totalBytes": NSNumber(value: progress.totalUnitCount), "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
 
-        }) { (_, ocId, etag, date, size, _, _, errorCode, errorDescription) in
+        }) { _, ocId, etag, date, size, _, _, errorCode, errorDescription in
 
             self.uploadRequest[fileNameLocalPath] = nil
             self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: uploadTask!, errorCode: errorCode, errorDescription: errorDescription)
@@ -507,7 +507,7 @@ import Queuer
         }
     }
 
-    private func uploadFileInBackground(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->Void) {
+    private func uploadFileInBackground(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
 
         var session: URLSession?
         let metadata = tableMetadata.init(value: metadata)
@@ -590,13 +590,13 @@ import Queuer
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
 
                 #if !EXTENSION
-                self.getOcIdInBackgroundSession { (listOcId) in
+                self.getOcIdInBackgroundSession { listOcId in
                     if listOcId.count == 0 && self.uploadRequest.count == 0 {
                         let appDelegate = UIApplication.shared.delegate as! AppDelegate
                         appDelegate.networkingProcessUpload?.startProcess()
                     }
                 }
-                CCUtility.setExif(metadata) { (_, _, _, _, _) in }
+                CCUtility.setExif(metadata) { _, _, _, _, _ in }
                 #endif
 
                 NCCommunicationCommon.shared.writeLog("Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
@@ -666,15 +666,15 @@ import Queuer
         }
     }
 
-    func getOcIdInBackgroundSession(completion: @escaping (_ listOcId: [String])->Void) {
+    func getOcIdInBackgroundSession(completion: @escaping (_ listOcId: [String]) -> Void) {
 
         var listOcId: [String] = []
 
-        sessionManagerBackground.getAllTasks(completionHandler: { (tasks) in
+        sessionManagerBackground.getAllTasks(completionHandler: { tasks in
             for task in tasks {
                 listOcId.append(task.description)
             }
-            self.sessionManagerBackgroundWWan.getAllTasks(completionHandler: { (tasks) in
+            self.sessionManagerBackgroundWWan.getAllTasks(completionHandler: { tasks in
                 for task in tasks {
                     listOcId.append(task.description)
                 }
@@ -685,7 +685,7 @@ import Queuer
 
     // MARK: - Transfer (Download Upload)
 
-    @objc func cancelTransferMetadata(_ metadata: tableMetadata, completion: @escaping ()->Void) {
+    @objc func cancelTransferMetadata(_ metadata: tableMetadata, completion: @escaping () -> Void) {
 
         let metadata = tableMetadata.init(value: metadata)
 
@@ -732,7 +732,7 @@ import Queuer
             return completion()
         }
 
-        session?.getTasksWithCompletionHandler { (_, uploadTasks, _) in
+        session?.getTasksWithCompletionHandler { _, uploadTasks, _ in
 
             var cancel = false
             if metadata.session.count > 0 && metadata.session.contains("upload") {
@@ -754,7 +754,7 @@ import Queuer
         }
     }
 
-    @objc func cancelAllTransfer(account: String, completion: @escaping ()->Void) {
+    @objc func cancelAllTransfer(account: String, completion: @escaping () -> Void) {
 
         NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "status == %d OR status == %d", account, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploadError))
 
@@ -809,13 +809,13 @@ import Queuer
 
     // MARK: - WebDav Read file, folder
 
-    @objc func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasLocalUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->Void) {
+    @objc func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasLocalUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> Void) {
 
-        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, _, errorCode, errorDescription) in
+        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { account, files, _, errorCode, errorDescription in
 
             if errorCode == 0 {
 
-                NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { metadataFolder, metadatasFolder, metadatas in
 
                     // Add metadata folder
                     NCManageDatabase.shared.addMetadata(tableMetadata.init(value: metadataFolder))
@@ -843,9 +843,9 @@ import Queuer
         }
     }
 
-    @objc func readFile(serverUrlFileName: String, account: String, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ errorCode: Int, _ errorDescription: String)->Void) {
+    @objc func readFile(serverUrlFileName: String, account: String, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ errorCode: Int, _ errorDescription: String) -> Void) {
 
-        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, _, errorCode, errorDescription) in
+        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { account, files, _, errorCode, errorDescription in
 
             if errorCode == 0 && files.count == 1 {
 
@@ -864,13 +864,13 @@ import Queuer
 
     // MARK: - WebDav Search
 
-    @objc func searchFiles(urlBase: String, user: String, literal: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->Void) {
+    @objc func searchFiles(urlBase: String, user: String, literal: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> Void) {
 
-        NCCommunication.shared.searchLiteral(serverUrl: urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.searchLiteral(serverUrl: urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { account, files, errorCode, errorDescription in
 
             if errorCode == 0 {
 
-                NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (_, metadatasFolder, metadatas) in
+                NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, metadatasFolder, metadatas in
 
                     // Update sub directories
                     for metadata in metadatasFolder {
@@ -894,7 +894,7 @@ import Queuer
 
     // MARK: - WebDav Create Folder
 
-    @objc func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool = false, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->Void) {
+    @objc func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool = false, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
 
         let isDirectoryEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: account, urlBase: urlBase)
 
@@ -907,7 +907,7 @@ import Queuer
         }
     }
 
-    private func createFolderPlain(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->Void) {
+    private func createFolderPlain(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
 
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
 
@@ -919,11 +919,11 @@ import Queuer
         }
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
 
-        NCCommunication.shared.createFolder(fileNameFolderUrl) { (account, ocId, _, errorCode, errorDescription) in
+        NCCommunication.shared.createFolder(fileNameFolderUrl) { account, ocId, _, errorCode, errorDescription in
 
             if errorCode == 0 {
 
-                self.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { (account, metadataFolder, errorCode, errorDescription) in
+                self.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { account, metadataFolder, errorCode, errorDescription in
 
                     if errorCode == 0 {
 
@@ -976,7 +976,7 @@ import Queuer
         var result: Bool = false
         let semaphore = Semaphore()
 
-        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: true) { (errorCode, _) in
+        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: true) { errorCode, _ in
             if errorCode == 0 { result = true }
             semaphore.continue()
         }
@@ -987,7 +987,7 @@ import Queuer
 
     // MARK: - WebDav Delete
 
-    @objc func deleteMetadata(_ metadata: tableMetadata, onlyLocalCache: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->Void) {
+    @objc func deleteMetadata(_ metadata: tableMetadata, onlyLocalCache: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
 
         if onlyLocalCache {
 
@@ -1022,7 +1022,7 @@ import Queuer
             if metadataLive == nil {
                 NCNetworkingE2EE.shared.deleteMetadata(metadata, completion: completion)
             } else {
-                NCNetworkingE2EE.shared.deleteMetadata(metadataLive!) { (errorCode, errorDescription) in
+                NCNetworkingE2EE.shared.deleteMetadata(metadataLive!) { errorCode, errorDescription in
                     if errorCode == 0 {
                         NCNetworkingE2EE.shared.deleteMetadata(metadata, completion: completion)
                     } else {
@@ -1035,7 +1035,7 @@ import Queuer
             if metadataLive == nil {
                 self.deleteMetadataPlain(metadata, addCustomHeaders: nil, completion: completion)
             } else {
-                self.deleteMetadataPlain(metadataLive!, addCustomHeaders: nil) { (errorCode, errorDescription) in
+                self.deleteMetadataPlain(metadataLive!, addCustomHeaders: nil) { errorCode, errorDescription in
                     if errorCode == 0 {
                         self.deleteMetadataPlain(metadata, addCustomHeaders: nil, completion: completion)
                     } else {
@@ -1046,7 +1046,7 @@ import Queuer
         }
     }
 
-    func deleteMetadataPlain(_ metadata: tableMetadata, addCustomHeaders: [String: String]?, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->Void) {
+    func deleteMetadataPlain(_ metadata: tableMetadata, addCustomHeaders: [String: String]?, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
 
         // verify permission
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanDelete)
@@ -1055,7 +1055,7 @@ import Queuer
         }
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        NCCommunication.shared.deleteFileOrFolder(serverUrlFileName, customUserAgent: nil, addCustomHeaders: addCustomHeaders) { (account, errorCode, errorDescription) in
+        NCCommunication.shared.deleteFileOrFolder(serverUrlFileName, customUserAgent: nil, addCustomHeaders: addCustomHeaders) { account, errorCode, errorDescription in
 
             if errorCode == 0 || errorCode == NCGlobal.shared.errorResourceNotFound {
 
@@ -1080,10 +1080,10 @@ import Queuer
 
     // MARK: - WebDav Favorite
 
-    @objc func favoriteMetadata(_ metadata: tableMetadata, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->Void) {
+    @objc func favoriteMetadata(_ metadata: tableMetadata, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
 
         if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-            favoriteMetadataPlain(metadataLive) { (errorCode, errorDescription) in
+            favoriteMetadataPlain(metadataLive) { errorCode, errorDescription in
                 if errorCode == 0 {
                     self.favoriteMetadataPlain(metadata, completion: completion)
                 } else {
@@ -1095,13 +1095,13 @@ import Queuer
         }
     }
 
-    private func favoriteMetadataPlain(_ metadata: tableMetadata, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->Void) {
+    private func favoriteMetadataPlain(_ metadata: tableMetadata, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
 
         let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
         let favorite = !metadata.favorite
         let ocId = metadata.ocId
 
-        NCCommunication.shared.setFavorite(fileName: fileName, favorite: favorite) { (account, errorCode, errorDescription) in
+        NCCommunication.shared.setFavorite(fileName: fileName, favorite: favorite) { account, errorCode, errorDescription in
 
             if errorCode == 0 && metadata.account == account {
 
@@ -1122,11 +1122,11 @@ import Queuer
         }
     }
 
-    @objc func listingFavoritescompletion(selector: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->Void) {
-        NCCommunication.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, errorCode, errorDescription) in
+    @objc func listingFavoritescompletion(selector: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> Void) {
+        NCCommunication.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { account, files, errorCode, errorDescription in
 
             if errorCode == 0 {
-                NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (_, _, metadatas) in
+                NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, _, metadatas in
                     NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
                     if selector != NCGlobal.shared.selectorListingFavorite {
                         #if !EXTENSION
@@ -1145,7 +1145,7 @@ import Queuer
 
     // MARK: - WebDav Rename
 
-    @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->Void) {
+    @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?) -> Void) {
 
         let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
@@ -1156,7 +1156,7 @@ import Queuer
             if metadataLive == nil {
                 NCNetworkingE2EE.shared.renameMetadata(metadata, fileNameNew: fileNameNew, completion: completion)
             } else {
-                NCNetworkingE2EE.shared.renameMetadata(metadataLive!, fileNameNew: fileNameNewLive) { (errorCode, errorDescription) in
+                NCNetworkingE2EE.shared.renameMetadata(metadataLive!, fileNameNew: fileNameNewLive) { errorCode, errorDescription in
                     if errorCode == 0 {
                         NCNetworkingE2EE.shared.renameMetadata(metadata, fileNameNew: fileNameNew, completion: completion)
                     } else {
@@ -1169,7 +1169,7 @@ import Queuer
             if metadataLive == nil {
                 renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)
             } else {
-                renameMetadataPlain(metadataLive!, fileNameNew: fileNameNewLive) { (errorCode, errorDescription) in
+                renameMetadataPlain(metadataLive!, fileNameNew: fileNameNewLive) { errorCode, errorDescription in
                     if errorCode == 0 {
                         self.renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)
                     } else {
@@ -1180,7 +1180,7 @@ import Queuer
         }
     }
 
-    private func renameMetadataPlain(_ metadata: tableMetadata, fileNameNew: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->Void) {
+    private func renameMetadataPlain(_ metadata: tableMetadata, fileNameNew: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?) -> Void) {
 
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {
@@ -1197,7 +1197,7 @@ import Queuer
         let fileNameToPath = metadata.serverUrl + "/" + fileNameNew
         let ocId = metadata.ocId
 
-        NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePath, serverUrlFileNameDestination: fileNameToPath, overwrite: false) { (account, errorCode, errorDescription) in
+        NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePath, serverUrlFileNameDestination: fileNameToPath, overwrite: false) { account, errorCode, errorDescription in
 
             if errorCode == 0 {
 
@@ -1247,10 +1247,10 @@ import Queuer
 
     // MARK: - WebDav Move
 
-    @objc func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->Void) {
+    @objc func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?) -> Void) {
 
         if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-            moveMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite) { (errorCode, errorDescription) in
+            moveMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite) { errorCode, errorDescription in
                 if errorCode == 0 {
                     self.moveMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite, completion: completion)
                 } else {
@@ -1262,7 +1262,7 @@ import Queuer
         }
     }
 
-    private func moveMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->Void) {
+    private func moveMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?) -> Void) {
 
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {
@@ -1273,7 +1273,7 @@ import Queuer
         let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
         let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
 
-        NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite) { (account, errorCode, errorDescription) in
+        NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite) { account, errorCode, errorDescription in
 
             if errorCode == 0 {
 
@@ -1292,10 +1292,10 @@ import Queuer
 
     // MARK: - WebDav Copy
 
-    @objc func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->Void) {
+    @objc func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?) -> Void) {
 
         if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-            copyMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite) { (errorCode, errorDescription) in
+            copyMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite) { errorCode, errorDescription in
                 if errorCode == 0 {
                     self.copyMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite, completion: completion)
                 } else {
@@ -1307,7 +1307,7 @@ import Queuer
         }
     }
 
-    private func copyMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->Void) {
+    private func copyMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?) -> Void) {
 
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {
@@ -1317,7 +1317,7 @@ import Queuer
         let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
         let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
 
-        NCCommunication.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite) { (_, errorCode, errorDescription) in
+        NCCommunication.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite) { _, errorCode, errorDescription in
 
             if errorCode == 0 {
 
@@ -1330,7 +1330,7 @@ import Queuer
 
     // MARK: - Direct Download
 
-    func getVideoUrl(metadata: tableMetadata, completition: @escaping (_ url: URL?)->Void) {
+    func getVideoUrl(metadata: tableMetadata, completition: @escaping (_ url: URL?) -> Void) {
 
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
 

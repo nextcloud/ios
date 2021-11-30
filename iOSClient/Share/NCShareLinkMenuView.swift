@@ -132,7 +132,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, UITextFieldDeleg
         fieldPasswordProtect.delegate = self
         fieldNoteToRecipient.delegate = self
 
-        imageNoteToRecipient.image = UIImage.init(named: "file_txt")!.image(color: NCBrandColor.shared.gray, size: 50)
+        imageNoteToRecipient.image = UIImage(named: "file_txt")!.image(color: NCBrandColor.shared.gray, size: 50)
         imageDeleteShareLink.image = NCUtility.shared.loadImage(named: "trash", color: NCBrandColor.shared.gray, size: 50)
         imageAddAnotherLink.image =  NCUtility.shared.loadImage(named: "plus", color: NCBrandColor.shared.gray, size: 50)
 
@@ -148,7 +148,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, UITextFieldDeleg
             shareViewController?.reloadData()
         } else {
             // UIView appear
-            networking = NCShareNetworking.init(metadata: metadata!, urlBase: appDelegate.urlBase, view: self, delegate: self)
+            networking = NCShareNetworking(metadata: metadata!, urlBase: appDelegate.urlBase, view: self, delegate: self)
         }
     }
 

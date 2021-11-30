@@ -53,7 +53,7 @@ class NCEndToEndInitialize: NSObject {
 
     func getPublicKey() {
 
-        NCCommunication.shared.getE2EECertificate { (account, certificate, errorCode, errorDescription) in
+        NCCommunication.shared.getE2EECertificate { account, certificate, errorCode, errorDescription in
 
             if errorCode == 0 && account == self.appDelegate.account {
 
@@ -79,7 +79,7 @@ class NCEndToEndInitialize: NSObject {
                         return
                     }
 
-                    NCCommunication.shared.signE2EECertificate(certificate: csr) { (account, certificate, errorCode, errorDescription) in
+                    NCCommunication.shared.signE2EECertificate(certificate: csr) { account, certificate, errorCode, errorDescription in
 
                         if errorCode == 0 && account == self.appDelegate.account {
 
@@ -126,7 +126,7 @@ class NCEndToEndInitialize: NSObject {
     func getPrivateKeyCipher() {
 
         // Request PrivateKey chiper to Server
-        NCCommunication.shared.getE2EEPrivateKey { (account, privateKeyChiper, errorCode, errorDescription) in
+        NCCommunication.shared.getE2EEPrivateKey { account, privateKeyChiper, errorCode, errorDescription in
 
             if errorCode == 0 && account == self.appDelegate.account {
 
@@ -136,7 +136,7 @@ class NCEndToEndInitialize: NSObject {
 
                 let alertController = UIAlertController(title: NSLocalizedString("_e2e_passphrase_request_title_", comment: ""), message: NSLocalizedString("_e2e_passphrase_request_message_", comment: ""), preferredStyle: .alert)
 
-                let ok = UIAlertAction(title: "OK", style: .default, handler: { (_) -> Void in
+                let ok = UIAlertAction(title: "OK", style: .default, handler: { _ -> Void in
 
                     let passphrase = passphraseTextField?.text
 
@@ -157,7 +157,7 @@ class NCEndToEndInitialize: NSObject {
                     CCUtility.setEndToEndPassphrase(self.appDelegate.account, passphrase: passphrase)
 
                     // request server publicKey
-                    NCCommunication.shared.getE2EEPublicKey { (account, publicKey, errorCode, errorDescription) in
+                    NCCommunication.shared.getE2EEPublicKey { account, publicKey, errorCode, errorDescription in
 
                         if errorCode == 0 && account == self.appDelegate.account {
 
@@ -189,12 +189,12 @@ class NCEndToEndInitialize: NSObject {
                     }
                 })
 
-                let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (_) -> Void in
+                let cancel = UIAlertAction(title: "Cancel", style: .cancel) { _ -> Void in
                 }
 
                 alertController.addAction(ok)
                 alertController.addAction(cancel)
-                alertController.addTextField { (textField) -> Void in
+                alertController.addTextField { textField -> Void in
                     passphraseTextField = textField
                     passphraseTextField?.placeholder = "Enter passphrase (12 words)"
                 }
@@ -229,7 +229,7 @@ class NCEndToEndInitialize: NSObject {
                         // privateKeyChiper
                         print(privateKeyChiper)
 
-                        NCCommunication.shared.storeE2EEPrivateKey(privateKey: privateKeyChiper) { (account, privateKey, errorCode, errorDescription) in
+                        NCCommunication.shared.storeE2EEPrivateKey(privateKey: privateKeyChiper) { account, privateKey, errorCode, errorDescription in
 
                             if errorCode == 0 && account == self.appDelegate.account {
 
@@ -237,7 +237,7 @@ class NCEndToEndInitialize: NSObject {
                                 CCUtility.setEndToEndPassphrase(account, passphrase: e2ePassphrase)
 
                                 // request server publicKey
-                                NCCommunication.shared.getE2EEPublicKey { (account, publicKey, errorCode, errorDescription) in
+                                NCCommunication.shared.getE2EEPublicKey { account, publicKey, errorCode, errorDescription in
 
                                     if errorCode == 0 && account == self.appDelegate.account {
 

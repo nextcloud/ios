@@ -96,15 +96,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         // Cell
-        collectionView.register(UINib.init(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
-        collectionView.register(UINib.init(nibName: "NCGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
-        collectionView.register(UINib.init(nibName: "NCTransferCell", bundle: nil), forCellWithReuseIdentifier: "transferCell")
+        collectionView.register(UINib(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
+        collectionView.register(UINib(nibName: "NCGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
+        collectionView.register(UINib(nibName: "NCTransferCell", bundle: nil), forCellWithReuseIdentifier: "transferCell")
 
         // Header
-        collectionView.register(UINib.init(nibName: "NCSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
+        collectionView.register(UINib(nibName: "NCSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
 
         // Footer
-        collectionView.register(UINib.init(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
+        collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
 
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
@@ -116,7 +116,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         // Empty
-        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: headerHeight, delegate: self)
+        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: headerHeight, delegate: self)
 
         // Long Press on CollectionView
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(_:)))
@@ -296,8 +296,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if layoutForView?.imageBackgroud != "" {
             let imagePath = CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appBackground).path + "/" + layoutForView!.imageBackgroud
             do {
-                let data = try Data.init(contentsOf: URL(fileURLWithPath: imagePath))
-                if let image = UIImage.init(data: data) {
+                let data = try Data(contentsOf: URL(fileURLWithPath: imagePath))
+                if let image = UIImage(data: data) {
                     backgroundImageView.image = image
                     backgroundImageView.contentMode = .scaleToFill
                     collectionView.backgroundView = backgroundImageView
@@ -312,13 +312,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
         if traitCollection.userInterfaceStyle == .dark {
             if activeAccount?.darkColorBackground != "" {
-                collectionView.backgroundColor = UIColor.init(hex: activeAccount?.darkColorBackground ?? "")
+                collectionView.backgroundColor = UIColor(hex: activeAccount?.darkColorBackground ?? "")
             } else {
                 collectionView.backgroundColor = NCBrandColor.shared.systemBackground
             }
         } else {
            if activeAccount?.lightColorBackground != "" {
-                collectionView.backgroundColor = UIColor.init(hex: activeAccount?.lightColorBackground ?? "")
+                collectionView.backgroundColor = UIColor(hex: activeAccount?.lightColorBackground ?? "")
             } else {
                 collectionView.backgroundColor = NCBrandColor.shared.systemBackground
             }
@@ -365,7 +365,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     let indexPath = IndexPath(row: row, section: 0)
                     collectionView?.performBatchUpdates({
                         collectionView?.deleteItems(at: [indexPath])
-                    }, completion: { (_) in
+                    }, completion: { _ in
                         self.collectionView?.reloadData()
                     })
                 }
@@ -382,7 +382,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     let indexPath = IndexPath(row: row, section: 0)
                     collectionView?.performBatchUpdates({
                         collectionView?.deleteItems(at: [indexPath])
-                    }, completion: { (_) in
+                    }, completion: { _ in
                         self.collectionView?.reloadData()
                     })
                 }
@@ -392,7 +392,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     let indexPath = IndexPath(row: row, section: 0)
                     collectionView?.performBatchUpdates({
                         collectionView?.insertItems(at: [indexPath])
-                    }, completion: { (_) in
+                    }, completion: { _ in
                         self.collectionView?.reloadData()
                     })
                 }
@@ -501,7 +501,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         if indexPath.section < (collectionView?.numberOfSections ?? 0) && indexPath.row < (collectionView?.numberOfItems(inSection: indexPath.section) ?? 0) {
                             collectionView?.deleteItems(at: [indexPath])
                         }
-                    }, completion: { (_) in
+                    }, completion: { _ in
                         self.collectionView?.reloadData()
                     })
                 } else {
@@ -580,7 +580,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if isEditMode {
 
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "navigationMore"), style: .plain, target: self, action: #selector(tapSelectMenu(sender:)))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "navigationMore"), style: .plain, target: self, action: #selector(tapSelectMenu(sender:)))
             navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain, target: self, action: #selector(tapSelect(sender:)))
             navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(dataSource.metadatas.count)"
 
@@ -679,7 +679,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func emptyDataSetView(_ view: NCEmptyView) {
 
         if searchController?.isActive ?? false {
-            view.emptyImage.image = UIImage.init(named: "search")?.image(color: .gray, size: UIScreen.main.bounds.width)
+            view.emptyImage.image = UIImage(named: "search")?.image(color: .gray, size: UIScreen.main.bounds.width)
             if isReloadDataSourceNetworkInProgress {
                 view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
             } else {
@@ -687,7 +687,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
             view.emptyDescription.text = NSLocalizedString("_search_instruction_", comment: "")
         } else if isReloadDataSourceNetworkInProgress {
-            view.emptyImage.image = UIImage.init(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
+            view.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
             view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
             view.emptyDescription.text = ""
         } else {
@@ -696,7 +696,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 view.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
                 view.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
             } else {
-                view.emptyImage.image = UIImage.init(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
+                view.emptyImage.image = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
                 view.emptyTitle.text = NSLocalizedString("_files_no_files_", comment: "")
                 view.emptyDescription.text = NSLocalizedString("_no_file_pull_down_", comment: "")
             }
@@ -762,7 +762,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             // list layout
             UIView.animate(withDuration: 0.0, animations: {
                 self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { (_) in
+                self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { _ in
                     self.collectionView.reloadData()
                 })
             })
@@ -772,7 +772,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
                 self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { (_) in
+                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { _ in
                     self.collectionView.reloadData()
                 })
             })
@@ -883,11 +883,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         becomeFirstResponder()
 
         if serverUrl != "" {
-            listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu)))
+            listMenuItems.append(UIMenuItem(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu)))
         }
         if #available(iOS 13.0, *) {
             if !NCBrandOptions.shared.disable_background_color {
-                listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_background_", comment: ""), action: #selector(backgroundFilesMenu)))
+                listMenuItems.append(UIMenuItem(title: NSLocalizedString("_background_", comment: ""), action: #selector(backgroundFilesMenu)))
             }
         }
 
@@ -969,7 +969,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             isReloadDataSourceNetworkInProgress = true
             collectionView?.reloadData()
 
-            NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch!) { (_, metadatas, errorCode, _) in
+            NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch!) { _, metadatas, errorCode, _ in
 
                 DispatchQueue.main.async {
                     if self.searchController?.isActive ?? false && errorCode == 0 {
@@ -985,11 +985,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    @objc func networkReadFolder(forced: Bool, completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->Void) {
+    @objc func networkReadFolder(forced: Bool, completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> Void) {
 
         var tableDirectory: tableDirectory?
 
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.account) { (account, metadataFolder, errorCode, errorDescription) in
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.account) { account, metadataFolder, errorCode, errorDescription in
 
             if errorCode == 0 {
 
@@ -999,7 +999,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
                 if forced || tableDirectory?.etag != metadataFolder?.etag || metadataFolder?.e2eEncrypted ?? false {
 
-                    NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, _, metadatasDelete, errorCode, errorDescription) in
+                    NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { account, metadataFolder, metadatas, metadatasUpdate, _, metadatasDelete, errorCode, errorDescription in
 
                         if errorCode == 0 {
                             self.metadataFolder = metadataFolder
@@ -1008,7 +1008,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                             if let metadataFolder = metadataFolder {
                                 if metadataFolder.e2eEncrypted && CCUtility.isEnd(toEndEnabled: self.appDelegate.account) {
 
-                                    NCCommunication.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { (account, e2eMetadata, errorCode, errorDescription) in
+                                    NCCommunication.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { account, e2eMetadata, errorCode, errorDescription in
 
                                         if errorCode == 0 && e2eMetadata != nil {
 
@@ -1231,7 +1231,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 NCViewer.shared.view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
             } else if NCCommunication.shared.isNetworkReachable() {
-                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileView) { (_) in }
+                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileView) { _ in }
             } else {
                 NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorOffline)
             }
@@ -1296,9 +1296,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             self.header = header
 
             if collectionView.collectionViewLayout == gridLayout {
-                header.buttonSwitch.setImage(UIImage.init(named: "switchList")!.image(color: NCBrandColor.shared.gray, size: 50), for: .normal)
+                header.buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: NCBrandColor.shared.gray, size: 50), for: .normal)
             } else {
-                header.buttonSwitch.setImage(UIImage.init(named: "switchGrid")!.image(color: NCBrandColor.shared.gray, size: 50), for: .normal)
+                header.buttonSwitch.setImage(UIImage(named: "switchGrid")!.image(color: NCBrandColor.shared.gray, size: 50), for: .normal)
             }
 
             header.delegate = self

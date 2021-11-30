@@ -35,7 +35,7 @@ import IHProgressHUD
 
         return instance
     }()
-    
+
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var viewerQuickLook: NCViewerQuickLook?
     var documentController: UIDocumentInteractionController?
@@ -210,7 +210,7 @@ import IHProgressHUD
 
         } else {
 
-            NCNetworking.shared.download(metadata: metadata, selector: selector) { (_) in }
+            NCNetworking.shared.download(metadata: metadata, selector: selector) { _ in }
         }
     }
 
@@ -256,7 +256,7 @@ import IHProgressHUD
 
             guard let mainTabBar = self.appDelegate.mainTabBar else { return }
 
-            let activityViewController = UIActivityViewController.init(activityItems: items, applicationActivities: nil)
+            let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
 
             activityViewController.popoverPresentationController?.permittedArrowDirections = .any
             activityViewController.popoverPresentationController?.sourceView = mainTabBar
@@ -315,7 +315,7 @@ import IHProgressHUD
 
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && status == PHAuthorizationStatus.authorized {
 
-            if let image = UIImage.init(contentsOfFile: fileNamePath) {
+            if let image = UIImage(contentsOfFile: fileNamePath) {
                 UIImageWriteToSavedPhotosAlbum(image, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
             } else {
                 NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorFileNotSaved)
@@ -372,7 +372,7 @@ import IHProgressHUD
         }, completion: { _, resources in
 
             if resources != nil {
-                NCLivePhoto.saveToLibrary(resources!) { (result) in
+                NCLivePhoto.saveToLibrary(resources!) { result in
                     if !result {
                         IHProgressHUD.showError(withStatus: NSLocalizedString("_livephoto_save_error_", comment: ""))
                     } else {
@@ -422,7 +422,7 @@ import IHProgressHUD
             if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 do {
                     // Get Data
-                    let data = try Data.init(contentsOf: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
+                    let data = try Data(contentsOf: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
                     // Pasteboard item
                     if let unmanagedFileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (metadata.fileNameView as NSString).pathExtension as CFString, nil) {
                         let fileUTI = unmanagedFileUTI.takeRetainedValue() as String
@@ -432,7 +432,7 @@ import IHProgressHUD
                     print("error")
                 }
             } else {
-                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadCopy) { (_) in }
+                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadCopy) { _ in }
             }
         }
 
@@ -501,7 +501,7 @@ import IHProgressHUD
     func openFileViewInFolder(serverUrl: String, fileName: String) {
 
         let viewController = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as! NCFileViewInFolder
-        let navigationController = UINavigationController.init(rootViewController: viewController)
+        let navigationController = UINavigationController(rootViewController: viewController)
 
         let topViewController = viewController
         var listViewController = [NCFileViewInFolder]()
@@ -559,7 +559,7 @@ import IHProgressHUD
 
     func openSelectView(items: [Any], viewController: UIViewController) {
 
-        let navigationController = UIStoryboard.init(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
+        let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
         let topViewController = navigationController.topViewController as! NCSelect
         var listViewController = [NCSelect]()
 
@@ -666,9 +666,9 @@ import IHProgressHUD
                     NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: self.appDelegate.account)
                     NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCGlobal.shared.selectorDownloadAllFile)
                 } else {
-                    NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { (_) in }
+                    NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { _ in }
                     if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                        NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCGlobal.shared.selectorLoadOffline) { (_) in }
+                        NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCGlobal.shared.selectorLoadOffline) { _ in }
                     }
                 }
             }
@@ -739,7 +739,7 @@ import IHProgressHUD
 
         let favorite = UIAction(title: titleFavorite, image: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite)) { _ in
 
-            NCNetworking.shared.favoriteMetadata(metadata) { (errorCode, errorDescription) in
+            NCNetworking.shared.favoriteMetadata(metadata) { errorCode, errorDescription in
                 if errorCode != 0 {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
@@ -747,7 +747,7 @@ import IHProgressHUD
         }
 
         let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile, image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { (errorCode, errorDescription) in
+            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { errorCode, errorDescription in
                 if errorCode != 0 {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
@@ -755,7 +755,7 @@ import IHProgressHUD
         }
 
         let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true) { (_, _) in
+            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true) { _, _ in
             }
         }
 

@@ -327,7 +327,7 @@ import XLForm
                 customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
             }
 
-            NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, customUserAgent: customUserAgent) { (account, url, errorCode, errorMessage) in
+            NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, customUserAgent: customUserAgent) { account, url, errorCode, errorMessage in
 
                 if errorCode == 0 && account == self.appDelegate.account {
 
@@ -353,7 +353,7 @@ import XLForm
 
         if self.editorId == NCGlobal.shared.editorCollabora {
 
-            NCCommunication.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { (account, url, errorCode, errorDescription) in
+            NCCommunication.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { account, url, errorCode, errorDescription in
 
                 if errorCode == 0 && account == self.appDelegate.account && url != nil {
 
@@ -394,7 +394,7 @@ import XLForm
             if self.editorId == NCGlobal.shared.editorOnlyoffice {
                 customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
             }
-            NCCommunication.shared.NCTextGetListOfTemplates(customUserAgent: customUserAgent) { (account, templates, errorCode, _) in
+            NCCommunication.shared.NCTextGetListOfTemplates(customUserAgent: customUserAgent) { account, templates, errorCode, _ in
 
                 self.indicator.stopAnimating()
 
@@ -451,7 +451,7 @@ import XLForm
 
         if self.editorId == NCGlobal.shared.editorCollabora {
 
-            NCCommunication.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate) { (account, templates, errorCode, _) in
+            NCCommunication.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate) { account, templates, errorCode, _ in
 
                 self.indicator.stopAnimating()
 
@@ -510,13 +510,13 @@ import XLForm
 
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + name + ".png"
 
-        NCCommunication.shared.download(serverUrlFileName: preview, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
+        NCCommunication.shared.download(serverUrlFileName: preview, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
 
-        }, taskHandler: { (_) in
+        }, taskHandler: { _ in
 
-        }, progressHandler: { (_) in
+        }, progressHandler: { _ in
 
-        }) { (account, _, _, _, _, _, errorCode, _) in
+        }) { account, _, _, _, _, _, errorCode, _ in
 
             if errorCode == 0 && account == self.appDelegate.account {
                 self.collectionView.reloadItems(at: [indexPath])

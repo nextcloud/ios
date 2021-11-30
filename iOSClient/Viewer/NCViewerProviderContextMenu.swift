@@ -64,7 +64,7 @@ class NCViewerProviderContextMenu: UIViewController {
         } else {
 
             // ICON
-            if let image = UIImage.init(named: metadata.iconName)?.resizeImage(size: CGSize(width: sizeIcon*2, height: sizeIcon*2), isAspectRation: true) {
+            if let image = UIImage(named: metadata.iconName)?.resizeImage(size: CGSize(width: sizeIcon*2, height: sizeIcon*2), isAspectRation: true) {
 
                 imageView.image = image
                 imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
@@ -73,7 +73,7 @@ class NCViewerProviderContextMenu: UIViewController {
             // PREVIEW
             if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
 
-                if let image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
+                if let image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
                     imageView.image = image
                     imageView.frame = resize(image.size)
                 }
@@ -235,7 +235,7 @@ class NCViewerProviderContextMenu: UIViewController {
                 image = svgImage.uiImage
             }
         } else {
-            image = UIImage.init(contentsOfFile: filePath)
+            image = UIImage(contentsOfFile: filePath)
         }
 
         imageView.image = image

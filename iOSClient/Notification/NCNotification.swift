@@ -48,7 +48,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
         // Empty
         let offset = (self.navigationController?.navigationBar.bounds.height ?? 0) - 20
-        emptyDataSet = NCEmptyDataSet.init(view: tableView, offset: -offset, delegate: self)
+        emptyDataSet = NCEmptyDataSet(view: tableView, offset: -offset, delegate: self)
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
 
@@ -94,7 +94,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     func emptyDataSetView(_ view: NCEmptyView) {
 
-        view.emptyImage.image = UIImage.init(named: "bell")?.image(color: .gray, size: UIScreen.main.bounds.width)
+        view.emptyImage.image = UIImage(named: "bell")?.image(color: .gray, size: UIScreen.main.bounds.width)
         view.emptyTitle.text = NSLocalizedString("_no_notification_", comment: "")
         view.emptyDescription.text = ""
     }
@@ -280,7 +280,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
         NCUtility.shared.startActivityIndicator(backgroundView: self.navigationController?.view, blurEffect: true)
 
-        NCCommunication.shared.getNotifications { (account, notifications, errorCode, _) in
+        NCCommunication.shared.getNotifications { account, notifications, errorCode, _ in
 
             if errorCode == 0 && account == self.appDelegate.account {
 
@@ -289,7 +289,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
                 for notification in sortedListOfNotifications {
                     if let icon = (notification as! NCCommunicationNotifications).icon {
-                        NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.account, closure: { (_) in })
+                        NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.account, closure: { _ in })
                     }
                     self.notifications.append(notification as! NCCommunicationNotifications)
                 }

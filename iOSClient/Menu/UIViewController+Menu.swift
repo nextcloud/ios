@@ -63,7 +63,7 @@ extension UIViewController {
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         guard serverVersionMajor >= NCGlobal.shared.nextcloudVersion23 else { return }
 
-        NCCommunication.shared.getHovercard(for: userId) { (card, _, _) in
+        NCCommunication.shared.getHovercard(for: userId) { card, _, _ in
             guard let card = card else { return }
 
             let personHeader = NCMenuAction(

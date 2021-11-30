@@ -9,20 +9,34 @@ opt_in_rules: # some rules are turned off by default, so you need to opt-in
 # FIX
 force_cast: warning
 force_try: warning
+empty_count:
+  severity: warning
 
+type_name: 
+# validates_start_with_lowercase: true
+  validates_start_with_lowercase: false
+  
+cyclomatic_complexity:
+  # error: 20
+  error: 30
 
 file_length:
   error: 2000
   # error: 1000
 
 line_length:
-  error: 300
+  error: 400
   # error: 200
 
 function_parameter_count:
   warning: 5
-  error: 8
+  # error: 8
+  error: 12
   ignores_default_parameters: true
+
+function_body_length:
+  # error: 100
+  error: 200
 
 identifier_name:
   min_length:

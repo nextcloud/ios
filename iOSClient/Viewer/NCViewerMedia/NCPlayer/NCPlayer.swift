@@ -137,7 +137,7 @@ class NCPlayer: NSObject {
         self.playerToolBar = playerToolBar
 
         // At end go back to start & show toolbar
-        observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
+        observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { notification in
             if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
                 NCKTVHTTPCache.shared.saveCache(metadata: self.metadata)
                 self.videoSeek(time: .zero)
@@ -149,7 +149,7 @@ class NCPlayer: NSObject {
         }
 
         // Evey 1 second update toolbar
-        observerAVPlayertTime = player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (_) in
+        observerAVPlayertTime = player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { _ in
             if self.player?.currentItem?.status == .readyToPlay {
                 self.playerToolBar?.updateToolBar()
             }
@@ -271,11 +271,11 @@ class NCPlayer: NSObject {
                 }
                 // Preview
                 if let data = image?.jpegData(compressionQuality: 0.5) {
-                    try data.write(to: URL.init(fileURLWithPath: fileNamePreviewLocalPath), options: .atomic)
+                    try data.write(to: URL(fileURLWithPath: fileNamePreviewLocalPath), options: .atomic)
                 }
                 // Icon
                 if let data = image?.jpegData(compressionQuality: 0.5) {
-                    try data.write(to: URL.init(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
+                    try data.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
                 }
             } catch let error as NSError {
                 print(error.localizedDescription)

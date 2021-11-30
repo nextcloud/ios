@@ -34,7 +34,7 @@ class NCLivePhoto {
             let options = PHAssetResourceCreationOptions()
             creationRequest.addResource(with: PHAssetResourceType.pairedVideo, fileURL: resources.pairedVideo, options: options)
             creationRequest.addResource(with: PHAssetResourceType.photo, fileURL: resources.pairedImage, options: options)
-        }, completionHandler: { (success, error) in
+        }, completionHandler: { success, error in
             if error != nil {
                 print(error as Any)
             }
@@ -95,7 +95,7 @@ class NCLivePhoto {
             }
             return
         }
-        addAssetID(assetIdentifier, toVideo: videoURL, saveTo: cacheDirectory.appendingPathComponent(assetIdentifier).appendingPathExtension("mov"), progress: progress) { (_videoURL) in
+        addAssetID(assetIdentifier, toVideo: videoURL, saveTo: cacheDirectory.appendingPathComponent(assetIdentifier).appendingPathExtension("mov"), progress: progress) { _videoURL in
             if let pairedVideoURL = _videoURL {
                 _ = PHLivePhoto.request(withResourceFileURLs: [pairedVideoURL, pairedImageURL], placeholderImage: nil, targetSize: CGSize.zero, contentMode: PHImageContentMode.aspectFit, resultHandler: { (livePhoto: PHLivePhoto?, info: [AnyHashable: Any]) -> Void in
                     if let isDegraded = info[PHLivePhotoInfoIsDegradedKey] as? Bool, isDegraded {
@@ -123,9 +123,9 @@ class NCLivePhoto {
             let options = PHAssetResourceRequestOptions()
             options.isNetworkAccessAllowed = true
             group.enter()
-            PHAssetResourceManager.default().requestData(for: resource, options: options, dataReceivedHandler: { (data) in
+            PHAssetResourceManager.default().requestData(for: resource, options: options, dataReceivedHandler: { data in
                 buffer.append(data)
-            }) { (error) in
+            }) { error in
                 if error == nil {
                     if resource.type == .pairedVideo {
                         videoURL = self.saveAssetResource(resource, to: directoryURL, resourceData: buffer as Data)

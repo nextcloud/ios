@@ -13,7 +13,7 @@ class NCShareQuickStatusMenu: NSObject {
     func toggleMenu(viewController: UIViewController, directory: Bool, tableShare: tableShare) {
 
         print(tableShare.permissions)
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+        let menuViewController = UIStoryboard(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
 
         actions.append(

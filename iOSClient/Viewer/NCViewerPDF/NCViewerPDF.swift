@@ -49,7 +49,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
 
-        pdfView = PDFView.init(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height))
+        pdfView = PDFView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height))
         pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
 
         pdfView.document = pdfDocument
@@ -133,7 +133,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
 
         //
-        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
 
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.title = metadata.fileNameView
@@ -226,11 +226,11 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     @objc func searchText() {
 
-        let viewerPDFSearch = UIStoryboard.init(name: "NCViewerPDF", bundle: nil).instantiateViewController(withIdentifier: "NCViewerPDFSearch") as! NCViewerPDFSearch
+        let viewerPDFSearch = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateViewController(withIdentifier: "NCViewerPDFSearch") as! NCViewerPDFSearch
         viewerPDFSearch.delegate = self
         viewerPDFSearch.pdfDocument = pdfDocument
 
-        let navigaionController = UINavigationController.init(rootViewController: viewerPDFSearch)
+        let navigaionController = UINavigationController(rootViewController: viewerPDFSearch)
         self.present(navigaionController, animated: true)
     }
 
@@ -270,7 +270,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     // MARK: - Action
 
     @objc func openMenuMore() {
-        if imageIcon == nil { imageIcon = UIImage.init(named: "file_pdf") }
+        if imageIcon == nil { imageIcon = UIImage(named: "file_pdf") }
         NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: false, imageIcon: imageIcon)
     }
 

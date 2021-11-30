@@ -105,7 +105,7 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, UITextFieldDeleg
 
         fieldNoteToRecipient.delegate = self
 
-        imageNoteToRecipient.image = UIImage.init(named: "file_txt")!.image(color: NCBrandColor.shared.gray, size: 50)
+        imageNoteToRecipient.image = UIImage(named: "file_txt")!.image(color: NCBrandColor.shared.gray, size: 50)
         imageUnshare.image = NCUtility.shared.loadImage(named: "trash", color: NCBrandColor.shared.gray, size: 50)
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -120,7 +120,7 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, UITextFieldDeleg
             shareViewController?.reloadData()
         } else {
             // UIView appear
-            networking = NCShareNetworking.init(metadata: metadata!, urlBase: appDelegate.urlBase, view: self, delegate: self)
+            networking = NCShareNetworking(metadata: metadata!, urlBase: appDelegate.urlBase, view: self, delegate: self)
         }
     }
 

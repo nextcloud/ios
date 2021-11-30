@@ -37,7 +37,7 @@ class NCFileViewInFolder: NCCollectionViewCommon {
         titleCurrentFolder = NCBrandOptions.shared.brand
         layoutKey = NCGlobal.shared.layoutViewViewInFolder
         enableSearchBar = false
-        emptyImage = UIImage.init(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
+        emptyImage = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = "_no_file_pull_down_"
     }
@@ -88,7 +88,7 @@ class NCFileViewInFolder: NCCollectionViewCommon {
                 }
             }
 
-            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            self.dataSource = NCDataSource(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
 
             DispatchQueue.main.async {
 
@@ -102,7 +102,7 @@ class NCFileViewInFolder: NCCollectionViewCommon {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                 UIView.animate(withDuration: 0.3) {
                                     self.collectionView.scrollToItem(at: IndexPath(row: row, section: 0), at: .centeredVertically, animated: false)
-                                } completion: { (_) in
+                                } completion: { _ in
                                     if let cell = self.collectionView.cellForItem(at: IndexPath(row: row, section: 0)) {
                                         cell.backgroundColor = .darkGray
                                         UIView.animate(withDuration: 2) {
@@ -130,7 +130,7 @@ class NCFileViewInFolder: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        networkReadFolder(forced: forced) { (tableDirectory, metadatas, _, _, errorCode, _) in
+        networkReadFolder(forced: forced) { tableDirectory, metadatas, _, _, errorCode, _ in
             if errorCode == 0 {
                 for metadata in metadatas ?? [] {
                     if !metadata.directory {

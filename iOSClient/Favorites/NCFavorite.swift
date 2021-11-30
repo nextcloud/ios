@@ -34,7 +34,7 @@ class NCFavorite: NCCollectionViewCommon {
         titleCurrentFolder = NSLocalizedString("_favorites_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewFavorite
         enableSearchBar = true
-        emptyImage = UIImage.init(named: "star.fill")?.image(color: NCBrandColor.shared.yellowFavorite, size: UIScreen.main.bounds.width)
+        emptyImage = UIImage(named: "star.fill")?.image(color: NCBrandColor.shared.yellowFavorite, size: UIScreen.main.bounds.width)
         emptyTitle = "_favorite_no_files_"
         emptyDescription = "_tutorial_favorite_view_"
     }
@@ -55,7 +55,7 @@ class NCFavorite: NCCollectionViewCommon {
                 }
             }
 
-            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            self.dataSource = NCDataSource(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
 
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
@@ -77,7 +77,7 @@ class NCFavorite: NCCollectionViewCommon {
 
         if serverUrl == "" {
 
-            NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorListingFavorite) { (_, _, errorCode, errorDescription) in
+            NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorListingFavorite) { _, _, errorCode, errorDescription in
                 if errorCode != 0 {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
@@ -91,7 +91,7 @@ class NCFavorite: NCCollectionViewCommon {
 
         } else {
 
-            networkReadFolder(forced: forced) { (tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, _) in
+            networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, _ in
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory {

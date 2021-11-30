@@ -24,7 +24,7 @@
 import UIKit
 import ChromaColorPicker
 
-public protocol NCBackgroundImageColorDelegate {
+public protocol NCBackgroundImageColorDelegate: AnyObject {
     func colorPickerCancel()
     func colorPickerWillChange(color: UIColor)
     func colorPickerDidChange(lightColor: String, darkColor: String)
@@ -61,7 +61,7 @@ class NCBackgroundImageColor: UIViewController {
     private let defaultColorPickerSize = CGSize(width: 200, height: 200)
     private let brightnessSliderWidthHeightRatio: CGFloat = 0.1
 
-    var delegate: NCBackgroundImageColorDelegate?
+    weak var delegate: NCBackgroundImageColorDelegate?
     var setupColor: UIColor?
     var darkColor = "#000000"
     var lightColor = "#FFFFFF"
@@ -143,13 +143,13 @@ class NCBackgroundImageColor: UIViewController {
 
         // set color
         if darkmodeSwitch.isOn {
-            if let color = UIColor.init(hex: darkColor) {
+            if let color = UIColor(hex: darkColor) {
                 changeColor(color)
             } else {
                 changeColor(.black)
             }
         } else {
-            if let color = UIColor.init(hex: lightColor) {
+            if let color = UIColor(hex: lightColor) {
                 changeColor(color)
             } else {
                 changeColor(.white)
@@ -185,7 +185,7 @@ class NCBackgroundImageColor: UIViewController {
             if darkColor == "" {
                 changeColor(.black)
             } else {
-                if let color = UIColor.init(hex: darkColor) {
+                if let color = UIColor(hex: darkColor) {
                     changeColor(color)
                 }
             }
@@ -193,7 +193,7 @@ class NCBackgroundImageColor: UIViewController {
             if lightColor == "" {
                 changeColor(.white)
             } else {
-                if let color = UIColor.init(hex: lightColor) {
+                if let color = UIColor(hex: lightColor) {
                     changeColor(color)
                 }
             }

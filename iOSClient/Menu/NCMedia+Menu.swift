@@ -53,7 +53,7 @@ extension NCMedia {
                     action: { _ in
                         self.filterClassTypeImage = !self.filterClassTypeImage
                         self.filterClassTypeVideo = false
-                        self.reloadDataSourceWithCompletion { (_) in }
+                        self.reloadDataSourceWithCompletion { _ in }
                     }
                 )
             )
@@ -67,7 +67,7 @@ extension NCMedia {
                     action: { _ in
                         self.filterClassTypeVideo = !self.filterClassTypeVideo
                         self.filterClassTypeImage = false
-                        self.reloadDataSourceWithCompletion { (_) in }
+                        self.reloadDataSourceWithCompletion { _ in }
                     }
                 )
             )
@@ -97,7 +97,7 @@ extension NCMedia {
                     on: true,
                     action: { _ in
                         CCUtility.setMediaSortDate("date")
-                        self.reloadDataSourceWithCompletion { (_) in }
+                        self.reloadDataSourceWithCompletion { _ in }
                     }
                 )
             )
@@ -110,7 +110,7 @@ extension NCMedia {
                     on: true,
                     action: { _ in
                         CCUtility.setMediaSortDate("creationDate")
-                        self.reloadDataSourceWithCompletion { (_) in }
+                        self.reloadDataSourceWithCompletion { _ in }
                     }
                 )
             )
@@ -123,7 +123,7 @@ extension NCMedia {
                     on: true,
                     action: { _ in
                         CCUtility.setMediaSortDate("uploadDate")
-                        self.reloadDataSourceWithCompletion { (_) in }
+                        self.reloadDataSourceWithCompletion { _ in }
                     }
                 )
             )
@@ -246,7 +246,7 @@ extension NCMedia {
                         self.isEditMode = false
                         for ocId in self.selectOcId {
                             if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { (errorCode, errorDescription) in
+                                NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { errorCode, errorDescription in
                                     if errorCode != 0 {
                                         NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                     }

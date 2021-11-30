@@ -112,7 +112,7 @@ extension UIImage {
         }
 
         guard let newCGImage = ctx.makeImage() else { return nil }
-        return UIImage.init(cgImage: newCGImage, scale: 1, orientation: .up)
+        return UIImage(cgImage: newCGImage, scale: 1, orientation: .up)
     }
 
     @objc func image(color: UIColor, size: CGFloat) -> UIImage {

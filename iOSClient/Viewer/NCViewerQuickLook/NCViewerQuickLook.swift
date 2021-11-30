@@ -68,7 +68,7 @@ import NCCommunication
         super.viewDidLoad()
 
         if editingMode && metadata?.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
-            Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { (t) in
+            Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { t in
                 if self.navigationItem.rightBarButtonItems?.count ?? 0 > 1 || !(self.navigationController?.isToolbarHidden ?? false) {
                     if #available(iOS 14.0, *) {
                         if self.navigationItem.rightBarButtonItems?.count ?? 0 > 1 {

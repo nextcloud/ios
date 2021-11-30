@@ -151,7 +151,7 @@ class NCViewerMedia: UIViewController {
             NCKTVHTTPCache.shared.restartProxy(user: appDelegate.user, password: appDelegate.password)
 
             if ncplayer == nil, let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView)
+                self.ncplayer = NCPlayer(url: url, autoPlay: self.autoPlay, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView)
             } else {
                 self.ncplayer?.activateObserver(playerToolBar: self.playerToolBar)
                 if detailView.isShow() == false && ncplayer?.isPlay() == false {
@@ -178,7 +178,7 @@ class NCViewerMedia: UIViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        coordinator.animate(alongsideTransition: { (context) in
+        coordinator.animate(alongsideTransition: { context in
             // back to the original size
             self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
             self.view.layoutIfNeeded()
@@ -187,12 +187,12 @@ class NCViewerMedia: UIViewController {
                     self.openDetail()
                 }
             }
-        }) { (_) in }
+        }) { _ in }
     }
 
     // MARK: - Image
 
-    func loadImage(metadata: tableMetadata, completion: @escaping (_ ocId: String, _ image: UIImage?)->Void) {
+    func loadImage(metadata: tableMetadata, completion: @escaping (_ ocId: String, _ image: UIImage?) -> Void) {
 
         // Download preview
         if metadata.hasPreview && !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
@@ -205,7 +205,7 @@ class NCViewerMedia: UIViewController {
                 etagResource = metadata.etagResource
             }
 
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { (_, _, imageIcon, _, etag, errorCode, _) in
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, errorCode, _ in
 
                 if errorCode == 0 && imageIcon != nil {
                     NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
@@ -232,7 +232,7 @@ class NCViewerMedia: UIViewController {
 
             if (CCUtility.getAutomaticDownloadImage() || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "") {
 
-                NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in
+                NCNetworking.shared.download(metadata: metadata, selector: "") { _ in
 
                     DispatchQueue.main.async {
                         let image = getImageMetadata(metadata)
@@ -256,7 +256,7 @@ class NCViewerMedia: UIViewController {
 
             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
 
-                NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
+                NCNetworking.shared.download(metadata: metadata, selector: "") { _ in }
             }
         }
 
@@ -272,16 +272,16 @@ class NCViewerMedia: UIViewController {
 
             if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
                 if let imagePreviewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag) {
-                    return UIImage.init(contentsOfFile: imagePreviewPath)
+                    return UIImage(contentsOfFile: imagePreviewPath)
                 }
             }
 
             if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-                return UIImage.init(named: "noPreviewVideo")!.image(color: .gray, size: view.frame.width)
+                return UIImage(named: "noPreviewVideo")!.image(color: .gray, size: view.frame.width)
             } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-                return UIImage.init(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
+                return UIImage(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
             } else {
-                return UIImage.init(named: "noPreview")!.image(color: .gray, size: view.frame.width)
+                return UIImage(named: "noPreview")!.image(color: .gray, size: view.frame.width)
             }
         }
 
@@ -318,7 +318,7 @@ class NCViewerMedia: UIViewController {
                     }
                 } else {
                     NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-                    image = UIImage.init(contentsOfFile: imagePath)
+                    image = UIImage(contentsOfFile: imagePath)
                 }
             }
 
@@ -420,7 +420,7 @@ extension NCViewerMedia {
 
     private func openDetail() {
 
-        CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
+        CCUtility.setExif(metadata) { latitude, longitude, location, date, lensModel in
 
             if latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0 {
                 self.detailViewHeighConstraint.constant = self.view.bounds.height / 2
@@ -445,7 +445,7 @@ extension NCViewerMedia {
                 self.imageViewBottomConstraint.constant = self.imageViewConstraint
                 self.detailViewTopConstraint.constant = self.detailViewHeighConstraint.constant
                 self.view.layoutIfNeeded()
-            } completion: { (_) in
+            } completion: { _ in
             }
 
             self.scrollView.pinchGestureRecognizer?.isEnabled = false
@@ -463,7 +463,7 @@ extension NCViewerMedia {
             self.imageViewBottomConstraint.constant = 0
             self.detailViewTopConstraint.constant = 0
             self.view.layoutIfNeeded()
-        } completion: { (_) in
+        } completion: { _ in
         }
 
         scrollView.pinchGestureRecognizer?.isEnabled = true
@@ -475,7 +475,7 @@ extension NCViewerMedia {
     func reloadDetail() {
 
         if self.detailView.isShow() {
-            CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
+            CCUtility.setExif(metadata) { latitude, longitude, location, date, lensModel in
                 self.detailView.show(metadata: self.metadata, image: self.image, textColor: self.viewerMediaPage?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel, delegate: self)
             }
         }
@@ -521,7 +521,7 @@ extension NCViewerMedia: NCViewerMediaDetailViewDelegate {
 
     func downloadFullResolution() {
         closeDetail()
-        NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenDetail) { (_) in }
+        NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenDetail) { _ in }
     }
 }
 

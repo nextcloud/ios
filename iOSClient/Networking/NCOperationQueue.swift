@@ -57,7 +57,7 @@ import NCCommunication
                 return
             }
         }
-        downloadQueue.addOperation(NCOperationDownload.init(metadata: metadata, selector: selector))
+        downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: selector))
     }
     @objc func downloadCancelAll() {
         downloadQueue.cancelAll()
@@ -82,7 +82,7 @@ import NCCommunication
                 return
             }
         }
-        deleteQueue.addOperation(NCOperationDelete.init(metadata: metadata, onlyLocalCache: onlyLocalCache))
+        deleteQueue.addOperation(NCOperationDelete(metadata: metadata, onlyLocalCache: onlyLocalCache))
     }
     @objc func deleteCancelAll() {
         deleteQueue.cancelAll()
@@ -99,7 +99,7 @@ import NCCommunication
                 return
             }
         }
-        copyMoveQueue.addOperation(NCOperationCopyMove.init(metadata: metadata, serverUrlTo: serverUrl, overwrite: overwrite, move: move))
+        copyMoveQueue.addOperation(NCOperationCopyMove(metadata: metadata, serverUrlTo: serverUrl, overwrite: overwrite, move: move))
     }
     @objc func copyMoveCancelAll() {
         copyMoveQueue.cancelAll()
@@ -116,7 +116,7 @@ import NCCommunication
                 return
             }
         }
-        synchronizationQueue.addOperation(NCOperationSynchronization.init(metadata: metadata, selector: selector))
+        synchronizationQueue.addOperation(NCOperationSynchronization(metadata: metadata, selector: selector))
     }
     @objc func synchronizationCancelAll() {
         synchronizationQueue.cancelAll()
@@ -130,7 +130,7 @@ import NCCommunication
 
         if placeholder {
             if metadata.iconName.count > 0 {
-                cell?.filePreviewImageView?.image = UIImage.init(named: metadata.iconName)
+                cell?.filePreviewImageView?.image = UIImage(named: metadata.iconName)
             } else {
                 cell?.filePreviewImageView?.image = NCBrandColor.cacheImages.file
             }
@@ -142,7 +142,7 @@ import NCCommunication
                     return
                 }
             }
-            downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, cell: cell, view: view))
+            downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail(metadata: metadata, cell: cell, view: view))
         }
     }
 
@@ -181,7 +181,7 @@ import NCCommunication
                 return
             }
         }
-        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar.init(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view))
+        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view))
     }
 
     func cancelDownloadAvatar(user: String) {
@@ -213,7 +213,7 @@ class NCOperationDownload: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCNetworking.shared.download(metadata: metadata, selector: self.selector) { (_) in
+            NCNetworking.shared.download(metadata: metadata, selector: self.selector) { _ in
                 self.finish()
             }
         }
@@ -236,7 +236,7 @@ class NCOperationDelete: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: onlyLocalCache) { (errorCode, errorDescription) in
+            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: onlyLocalCache) { errorCode, errorDescription in
                 if errorCode != 0 {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
@@ -267,14 +267,14 @@ class NCOperationCopyMove: ConcurrentOperation {
             self.finish()
         } else {
             if move {
-                NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite) { (errorCode, errorDescription) in
+                NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite) { errorCode, errorDescription in
                     if errorCode != 0 {
                         NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     }
                     self.finish()
                 }
             } else {
-                NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite) { (errorCode, errorDescription) in
+                NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite) { errorCode, errorDescription in
                     if errorCode != 0 {
                         NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     }
@@ -312,15 +312,15 @@ class NCOperationSynchronization: ConcurrentOperation {
                 let serverUrl = metadata.serverUrl + "/" + metadata.fileName
                 let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
 
-                NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
+                NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { account, files, _, errorCode, _ in
 
                     if (errorCode == 0) && (directory?.etag != files.first?.etag || self.selector == NCGlobal.shared.selectorDownloadAllFile) {
 
-                        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, _, errorCode, _) in
+                        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { account, files, _, errorCode, _ in
 
                             if errorCode == 0 {
 
-                                NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, _, metadatas) in
+                                NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { metadataFolder, _, metadatas in
 
                                     let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal))
 
@@ -420,7 +420,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
             if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
                 etagResource = metadata.etagResource
             }
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { (_, _, imageIcon, _, etag, errorCode, _) in
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, errorCode, _ in
 
                 if errorCode == 0 && imageIcon != nil {
                     NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
@@ -474,7 +474,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: self.etag, queue: NCCommunicationCommon.shared.backgroundQueue) { (_, imageAvatar, _, etag, errorCode, _) in
+            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: self.etag, queue: NCCommunicationCommon.shared.backgroundQueue) { _, imageAvatar, _, etag, errorCode, _ in
 
                 if errorCode == 0, let imageAvatar = imageAvatar, let etag = etag {
 

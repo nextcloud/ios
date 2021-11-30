@@ -75,20 +75,20 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
         shareLinkImage.image = NCShareCommon.shared.createLinkAvatar(imageName: "sharebylink", colorCircle: NCBrandColor.shared.brandElement)
         shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
         shareLinkLabel.textColor = NCBrandColor.shared.label
-        buttonCopy.setImage(UIImage.init(named: "shareCopy")?.image(color: .gray, size: 50), for: .normal)
+        buttonCopy.setImage(UIImage(named: "shareCopy")?.image(color: .gray, size: 50), for: .normal)
 
         shareInternalLinkImage.image = NCShareCommon.shared.createLinkAvatar(imageName: "shareInternalLink", colorCircle: .gray)
         shareInternalLinkLabel.text = NSLocalizedString("_share_internal_link_", comment: "")
         shareInternalLinkDescription.text = NSLocalizedString("_share_internal_link_des_", comment: "")
-        buttonInternalCopy.setImage(UIImage.init(named: "shareCopy")?.image(color: .gray, size: 50), for: .normal)
+        buttonInternalCopy.setImage(UIImage(named: "shareCopy")?.image(color: .gray, size: 50), for: .normal)
 
         tableView.dataSource = self
         tableView.delegate = self
         tableView.allowsSelection = false
         tableView.backgroundColor = NCBrandColor.shared.systemBackground
 
-        tableView.register(UINib.init(nibName: "NCShareLinkCell", bundle: nil), forCellReuseIdentifier: "cellLink")
-        tableView.register(UINib.init(nibName: "NCShareUserCell", bundle: nil), forCellReuseIdentifier: "cellUser")
+        tableView.register(UINib(nibName: "NCShareLinkCell", bundle: nil), forCellReuseIdentifier: "cellLink")
+        tableView.register(UINib(nibName: "NCShareUserCell", bundle: nil), forCellReuseIdentifier: "cellUser")
 
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataNCShare), object: nil)
 
@@ -126,7 +126,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                 let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
-                NCCommunication.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag) { (_, imageAvatar, _, etag, errorCode, _) in
+                NCCommunication.shared.downloadAvatar(user: metadata.ownerId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag) { _, imageAvatar, _, etag, errorCode, _ in
 
                     if errorCode == 0, let etag = etag, let imageAvatar = imageAvatar {
 
@@ -181,10 +181,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
     @objc func reloadData() {
         let shares = NCManageDatabase.shared.getTableShares(metadata: metadata!)
         if shares.firstShareLink == nil {
-            buttonMenu.setImage(UIImage.init(named: "shareAdd")?.image(color: .gray, size: 50), for: .normal)
+            buttonMenu.setImage(UIImage(named: "shareAdd")?.image(color: .gray, size: 50), for: .normal)
             buttonCopy.isHidden = true
         } else {
-            buttonMenu.setImage(UIImage.init(named: "shareMenu")?.image(color: .gray, size: 50), for: .normal)
+            buttonMenu.setImage(UIImage(named: "shareMenu")?.image(color: .gray, size: 50), for: .normal)
             buttonCopy.isHidden = false
 
             shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
@@ -221,7 +221,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
         guard let metadata = self.metadata else { return }
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account) { (_, metadata, errorCode, errorDescription) in
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account) { _, metadata, errorCode, errorDescription in
             if errorCode == 0 && metadata != nil {
                 let internalLink = self.appDelegate.urlBase + "/index.php/f/" + metadata!.fileId
                 NCShareCommon.shared.copyLink(link: internalLink, viewController: self, sender: sender)
@@ -346,7 +346,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                 let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
-                NCCommunication.shared.downloadAvatar(user: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag) { (_, imageAvatar, _, etag, errorCode, _) in
+                NCCommunication.shared.downloadAvatar(user: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag) { _, imageAvatar, _, etag, errorCode, _ in
 
                     if errorCode == 0, let etag = etag, let imageAvatar = imageAvatar {
 

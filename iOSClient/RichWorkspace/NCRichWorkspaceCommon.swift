@@ -40,13 +40,13 @@ import NCCommunication
         NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
 
         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)!
-        NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "") { (account, url, errorCode, errorMessage) in
+        NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "") { account, url, errorCode, errorMessage in
 
             NCUtility.shared.stopActivityIndicator()
 
             if errorCode == 0 && account == self.appDelegate.account {
 
-                if let viewerRichWorkspaceWebView = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
+                if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
 
                     viewerRichWorkspaceWebView.url = url!
                     viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
@@ -75,13 +75,13 @@ import NCCommunication
                 NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
 
                 let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)!
-                NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { (account, url, errorCode, errorMessage) in
+                NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { account, url, errorCode, errorMessage in
 
                     NCUtility.shared.stopActivityIndicator()
 
                     if errorCode == 0 && account == self.appDelegate.account {
 
-                        if let viewerRichWorkspaceWebView = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
+                        if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
 
                             viewerRichWorkspaceWebView.url = url!
                             viewerRichWorkspaceWebView.metadata = metadata
@@ -97,7 +97,7 @@ import NCCommunication
 
             } else {
 
-                if let viewerRichWorkspaceWebView = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
+                if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
 
                     viewerRichWorkspaceWebView.url = metadata.url
                     viewerRichWorkspaceWebView.metadata = metadata

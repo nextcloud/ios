@@ -79,7 +79,7 @@ class NCLoginQRCode: NSObject, QRCodeReaderViewControllerDelegate {
             case -11852:
                 alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_qrcode_not_authorized_", comment: ""), preferredStyle: .alert)
 
-                alert.addAction(UIAlertAction(title: NSLocalizedString("_settings_", comment: ""), style: .default, handler: { (_) in
+                alert.addAction(UIAlertAction(title: NSLocalizedString("_settings_", comment: ""), style: .default, handler: { _ in
                     DispatchQueue.main.async {
                         if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                             UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)

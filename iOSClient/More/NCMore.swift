@@ -55,7 +55,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         tableView.separatorColor = NCBrandColor.shared.separator
 
-        tableView.register(UINib.init(nibName: "NCMoreUserCell", bundle: nil), forCellReuseIdentifier: "userCell")
+        tableView.register(UINib(nibName: "NCMoreUserCell", bundle: nil), forCellReuseIdentifier: "userCell")
 
         // create tap gesture recognizer
         let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
@@ -251,7 +251,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @objc func tapImageLogoManageAccount() {
 
-        let controller = CCManageAccount.init()
+        let controller = CCManageAccount()
 
         self.navigationController?.pushViewController(controller, animated: true)
     }

@@ -117,7 +117,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         } else {
 
             // Cancel Button
-            let navigationItemCancel = UIBarButtonItem.init(barButtonSystemItem: .stop, target: self, action: #selector(self.actionCancel))
+            let navigationItemCancel = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.actionCancel))
             navigationItemCancel.tintColor = textColor
             navigationItem.leftBarButtonItem = navigationItemCancel
         }
@@ -199,7 +199,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     @IBAction func actionQRCode(_ sender: Any) {
 
-        let qrCode = NCLoginQRCode.init(delegate: self)
+        let qrCode = NCLoginQRCode(delegate: self)
         qrCode.scan()
     }
 
@@ -213,7 +213,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         loginButton.isEnabled = false
 
-        NCCommunication.shared.getServerStatus(serverUrl: url) { (_, _, versionMajor, _, _, _, errorCode, errorDescription) in
+        NCCommunication.shared.getServerStatus(serverUrl: url) { _, _, versionMajor, _, _, _, errorCode, errorDescription in
 
             if errorCode == 0 {
 
@@ -221,7 +221,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     NCNetworking.shared.writeCertificate(host: host)
                 }
 
-                NCCommunication.shared.getLoginFlowV2(serverUrl: url) { (token, endpoint, login, errorCode, _) in
+                NCCommunication.shared.getLoginFlowV2(serverUrl: url) { token, endpoint, login, errorCode, _ in
 
                     self.loginButton.isEnabled = true
 
@@ -322,7 +322,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                 loginButton.isEnabled = false
 
-                NCCommunication.shared.checkServer(serverUrl: serverUrl) { (errorCode, errorDescription) in
+                NCCommunication.shared.checkServer(serverUrl: serverUrl) { errorCode, errorDescription in
 
                     self.loginButton.isEnabled = true
                     self.standardLogin(url: urlBase, user: user, password: password, errorCode: errorCode, errorDescription: errorDescription)

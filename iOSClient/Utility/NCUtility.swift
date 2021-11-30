@@ -128,11 +128,11 @@ class NCUtility: NSObject {
 
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
 
-            NCCommunication.shared.downloadContent(serverUrl: iconURL.absoluteString) { (_, data, errorCode, _) in
+            NCCommunication.shared.downloadContent(serverUrl: iconURL.absoluteString) { _, data, errorCode, _ in
 
                 if errorCode == 0 && data != nil {
 
-                    if let image = UIImage.init(data: data!) {
+                    if let image = UIImage(data: data!) {
 
                         var newImage: UIImage = image
 
@@ -145,7 +145,7 @@ class NCUtility: NSObject {
                             renderFormat.opaque = false
                             let renderer = UIGraphicsImageRenderer(size: CGSize(width: newSize.width, height: newSize.height), format: renderFormat)
                             newImage = renderer.image {
-                                (_) in
+                                _ in
                                 image.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
                             }
                         }
@@ -353,20 +353,20 @@ class NCUtility: NSObject {
         var messageUserDefined: String = ""
 
         if userStatus?.lowercased() == "online" {
-            onlineStatus = UIImage.init(named: "userStatusOnline")!.image(color: UIColor(red: 103.0/255.0, green: 176.0/255.0, blue: 134.0/255.0, alpha: 1.0), size: 50)
+            onlineStatus = UIImage(named: "userStatusOnline")!.image(color: UIColor(red: 103.0/255.0, green: 176.0/255.0, blue: 134.0/255.0, alpha: 1.0), size: 50)
             messageUserDefined = NSLocalizedString("_online_", comment: "")
         }
         if userStatus?.lowercased() == "away" {
-            onlineStatus = UIImage.init(named: "userStatusAway")!.image(color: UIColor(red: 233.0/255.0, green: 166.0/255.0, blue: 75.0/255.0, alpha: 1.0), size: 50)
+            onlineStatus = UIImage(named: "userStatusAway")!.image(color: UIColor(red: 233.0/255.0, green: 166.0/255.0, blue: 75.0/255.0, alpha: 1.0), size: 50)
             messageUserDefined = NSLocalizedString("_away_", comment: "")
         }
         if userStatus?.lowercased() == "dnd" {
-            onlineStatus = UIImage.init(named: "userStatusDnd")?.resizeImage(size: CGSize(width: 100, height: 100), isAspectRation: false)
+            onlineStatus = UIImage(named: "userStatusDnd")?.resizeImage(size: CGSize(width: 100, height: 100), isAspectRation: false)
             messageUserDefined = NSLocalizedString("_dnd_", comment: "")
             descriptionMessage = NSLocalizedString("_dnd_description_", comment: "")
         }
         if userStatus?.lowercased() == "offline" || userStatus?.lowercased() == "invisible" {
-            onlineStatus = UIImage.init(named: "userStatusOffline")!.image(color: .black, size: 50)
+            onlineStatus = UIImage(named: "userStatusOffline")!.image(color: .black, size: 50)
             messageUserDefined = NSLocalizedString("_invisible_", comment: "")
             descriptionMessage = NSLocalizedString("_invisible_description_", comment: "")
         }
@@ -445,7 +445,7 @@ class NCUtility: NSObject {
 
         if classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
 
-            originalImage = UIImage.init(contentsOfFile: fileNamePath)
+            originalImage = UIImage(contentsOfFile: fileNamePath)
 
             scaleImagePreview = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview), isAspectRation: false)
             scaleImageIcon = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: false)
@@ -527,7 +527,7 @@ class NCUtility: NSObject {
         let rect = CGRect(x: 0, y: 0, width: size, height: size)
 
         UIGraphicsBeginImageContextWithOptions(rect.size, false, 3.0)
-        UIBezierPath.init(roundedRect: rect, cornerRadius: rect.size.height).addClip()
+        UIBezierPath(roundedRect: rect, cornerRadius: rect.size.height).addClip()
         avatarImage.draw(in: rect)
         avatarImage = UIGraphicsGetImageFromCurrentImageContext() ?? image
         UIGraphicsEndImageContext()
@@ -545,7 +545,7 @@ class NCUtility: NSObject {
 
         UIGraphicsBeginImageContextWithOptions(rect.size, false, 3.0)
         let context = UIGraphicsGetCurrentContext()
-        UIBezierPath.init(roundedRect: rect, cornerRadius: rect.size.height).addClip()
+        UIBezierPath(roundedRect: rect, cornerRadius: rect.size.height).addClip()
         context?.setFillColor(userColor)
         context?.fill(rect)
         let textStyle = NSMutableParagraphStyle()
@@ -581,7 +581,7 @@ class NCUtility: NSObject {
 
             let sizeActivityIndicator = activityIndicator.frame.height + 50
 
-            self.viewActivityIndicator = UIView.init(frame: CGRect(x: 0, y: 0, width: sizeActivityIndicator, height: sizeActivityIndicator))
+            self.viewActivityIndicator = UIView(frame: CGRect(x: 0, y: 0, width: sizeActivityIndicator, height: sizeActivityIndicator))
             self.viewActivityIndicator?.translatesAutoresizingMaskIntoConstraints = false
             self.viewActivityIndicator?.layer.cornerRadius = 10
             self.viewActivityIndicator?.layer.masksToBounds = true

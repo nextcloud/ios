@@ -63,7 +63,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage))
         imageItem?.addGestureRecognizer(tapGesture)
 
-        buttonMenu.setImage(UIImage.init(named: "shareMenu")!.image(color: .gray, size: 50), for: .normal)
+        buttonMenu.setImage(UIImage(named: "shareMenu")!.image(color: .gray, size: 50), for: .normal)
         labelQuickStatus.textColor = NCBrandColor.shared.customer
         imageDownArrow.image = NCUtility.shared.loadImage(named: "arrowtriangle.down.fill", color: NCBrandColor.shared.customer)
     }

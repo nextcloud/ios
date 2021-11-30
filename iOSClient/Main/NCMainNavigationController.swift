@@ -25,8 +25,6 @@ import UIKit
 
 class NCMainNavigationController: UINavigationController {
 
-    private weak var appDelegate = UIApplication.shared.delegate as! AppDelegate
-
     // MARK: - View Life Cycle
 
     required init?(coder: NSCoder) {

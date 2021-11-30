@@ -86,7 +86,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
 
         //
-        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
 
         navigationItem.hidesBackButton = true
         navigationController?.navigationBar.prefersLargeTitles = false
@@ -99,7 +99,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
         if let navigationController = self.navigationController {
             if !navigationController.viewControllers.contains(self) {
                 let functionJS = "OCA.RichDocuments.documentsMain.onClose()"
-                webView.evaluateJavaScript(functionJS) { (_, _) in
+                webView.evaluateJavaScript(functionJS) { _, _ in
                     print("close")
                 }
             }
@@ -151,7 +151,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     // MARK: - Action
 
     @objc func openMenuMore() {
-        if imageIcon == nil { imageIcon = UIImage.init(named: "file_txt") }
+        if imageIcon == nil { imageIcon = UIImage(named: "file_txt") }
         NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: true, imageIcon: imageIcon)
     }
 
@@ -195,13 +195,13 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
                         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: true)
 
-                        NCCommunication.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
+                        NCCommunication.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
 
-                        }, taskHandler: { (_) in
+                        }, taskHandler: { _ in
 
-                        }, progressHandler: { (_) in
+                        }, progressHandler: { _ in
 
-                        }, completionHandler: { (account, _, _, _, allHeaderFields, error, errorCode, errorDescription) in
+                        }, completionHandler: { account, _, _, _, allHeaderFields, error, errorCode, errorDescription in
 
                             NCUtility.shared.stopActivityIndicator()
 
@@ -227,7 +227,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                     printInfo.jobName = "Document"
                                     pic.printInfo = printInfo
                                     pic.printingItem = URL(fileURLWithPath: item)
-                                    pic.present(from: CGRect.zero, in: self.view, animated: true, completionHandler: { (_, _, _) in })
+                                    pic.present(from: CGRect.zero, in: self.view, animated: true, completionHandler: { _, _, _ in })
                                 } else {
                                     self.documentController = UIDocumentInteractionController()
                                     self.documentController?.url = URL(fileURLWithPath: item)
@@ -274,7 +274,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     @objc func grabFocus() {
 
         let functionJS = "OCA.RichDocuments.documentsMain.postGrabFocus()"
-        webView.evaluateJavaScript(functionJS) { (_, _) in }
+        webView.evaluateJavaScript(functionJS) { _, _ in }
     }
 
     // MARK: -
@@ -285,10 +285,10 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
             let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, account: metadata!.account)!
 
-            NCCommunication.shared.createAssetRichdocuments(path: path) { (account, url, errorCode, errorDescription) in
+            NCCommunication.shared.createAssetRichdocuments(path: path) { account, url, errorCode, errorDescription in
                 if errorCode == 0 && account == self.appDelegate.account {
                     let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
-                    self.webView.evaluateJavaScript(functionJS, completionHandler: { (_, _) in })
+                    self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
                 } else if errorCode != 0 {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
                 } else {
@@ -302,10 +302,10 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, account: metadata!.account)!
 
-        NCCommunication.shared.createAssetRichdocuments(path: path) { (account, url, errorCode, errorDescription) in
+        NCCommunication.shared.createAssetRichdocuments(path: path) { account, url, errorCode, errorDescription in
             if errorCode == 0 && account == self.appDelegate.account {
                 let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
-                self.webView.evaluateJavaScript(functionJS, completionHandler: { (_, _) in })
+                self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
             } else if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             } else {

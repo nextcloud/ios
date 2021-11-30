@@ -31,7 +31,7 @@ extension NotificationCenter {
 //            return
 //        }
         DispatchQueue.main.asyncAfter(deadline: .now() + second) {
-            NotificationCenter.default.post(name: Notification.Name.init(rawValue: name), object: anObject, userInfo: aUserInfo)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: name), object: anObject, userInfo: aUserInfo)
         }
     }
 }

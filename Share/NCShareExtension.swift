@@ -77,7 +77,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         self.navigationController?.navigationBar.prefersLargeTitles = false
 
         // Cell
-        collectionView.register(UINib.init(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
+        collectionView.register(UINib(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
         collectionView.collectionViewLayout = NCListLayout()
 
         // Add Refresh Control
@@ -143,7 +143,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
 
                 setAccount(account: activeAccount.account)
-                getFilesExtensionContext { (filesName) in
+                getFilesExtensionContext { filesName in
 
                     self.filesName = filesName
                     DispatchQueue.main.async {
@@ -303,7 +303,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                     }
 
                     vcAccountRequest.activeAccount = self.activeAccount
-                    vcAccountRequest.accounts = accounts.sorted { (sorg, dest) -> Bool in
+                    vcAccountRequest.accounts = accounts.sorted { sorg, dest -> Bool in
                         return sorg.active && !dest.active
                     }
                     vcAccountRequest.enableTimerProgress = false
@@ -357,7 +357,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             numberFilesName = filesName.count
             uploadLabel.text = NSLocalizedString("_upload_", comment: "") + " \(numberFilesName) " + NSLocalizedString("_files_", comment: "")
             // Empty
-            emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: -50*counter, delegate: self)
+            emptyDataSet = NCEmptyDataSet(view: collectionView, offset: -50*counter, delegate: self)
             self.tableView.reloadData()
         }
     }
@@ -367,11 +367,11 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     func emptyDataSetView(_ view: NCEmptyView) {
 
         if networkInProgress {
-            view.emptyImage.image = UIImage.init(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
+            view.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
             view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
             view.emptyDescription.text = ""
         } else {
-            view.emptyImage.image = UIImage.init(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
+            view.emptyImage.image = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
             view.emptyTitle.text = NSLocalizedString("_files_no_folders_", comment: "")
             view.emptyDescription.text = ""
         }
@@ -387,7 +387,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
 
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: "", preferredStyle: .alert)
 
-        alertController.addTextField { (textField) in
+        alertController.addTextField { textField in
             textField.autocapitalizationType = UITextAutocapitalizationType.words
         }
 
@@ -437,7 +437,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
 
                 NCNetworking.shared.upload(metadata: metadata) {
 
-                } completion: { (errorCode, errorDescription) in
+                } completion: { errorCode, errorDescription in
 
                     if errorCode == 0 {
 
@@ -656,7 +656,7 @@ extension NCShareExtension: UITableViewDataSource {
             imageCell?.image = image.resizeImage(size: CGSize(width: 80, height: 80), isAspectRation: true)
         } else {
             if resultInternalType.iconName.count > 0 {
-                imageCell?.image = UIImage.init(named: resultInternalType.iconName)
+                imageCell?.image = UIImage(named: resultInternalType.iconName)
             } else {
                 imageCell?.image = NCBrandColor.cacheImages.file
             }
@@ -721,7 +721,7 @@ extension NCShareExtension {
         layoutForView = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
 
         let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", activeAccount.account, serverUrl))
-        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: layoutForView?.sort, ascending: layoutForView?.ascending, directoryOnTop: layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+        self.dataSource = NCDataSource(metadatasSource: metadatasSource, sort: layoutForView?.sort, ascending: layoutForView?.ascending, directoryOnTop: layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
 
         if withLoadFolder {
             loadFolder()
@@ -734,7 +734,7 @@ extension NCShareExtension {
 
     func createFolder(with fileName: String) {
 
-        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: activeAccount.account, urlBase: activeAccount.urlBase) { (errorCode, errorDescription) in
+        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: activeAccount.account, urlBase: activeAccount.urlBase) { errorCode, errorDescription in
 
             DispatchQueue.main.async {
                 if errorCode == 0 {
@@ -758,7 +758,7 @@ extension NCShareExtension {
         networkInProgress = true
         collectionView.reloadData()
 
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { (_, metadataFolder, _, _, _, _, errorCode, errorDescription) in
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { _, metadataFolder, _, _, _, _, errorCode, errorDescription in
 
             DispatchQueue.main.async {
                 if errorCode != 0 {
@@ -773,7 +773,7 @@ extension NCShareExtension {
         }
     }
 
-    func getFilesExtensionContext(completion: @escaping (_ filesName: [String])->Void) {
+    func getFilesExtensionContext(completion: @escaping (_ filesName: [String]) -> Void) {
 
         var itemsProvider: [NSItemProvider] = []
         var filesName: [String] = []
@@ -902,7 +902,7 @@ extension NCShareExtension {
             if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeItem as String) { typeIdentifier = kUTTypeItem as String }
             if itemProvider.hasItemConformingToTypeIdentifier("public.url") { typeIdentifier = "public.url" }
 
-            itemProvider.loadItem(forTypeIdentifier: typeIdentifier, options: nil, completionHandler: {(item, error) -> Void in
+            itemProvider.loadItem(forTypeIdentifier: typeIdentifier, options: nil, completionHandler: {item, error -> Void in
 
                 if error == nil {
 

@@ -37,11 +37,11 @@ extension FileProviderExtension {
         let directoryName = NCUtilityFileSystem.shared.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.account)
         let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
 
-        NCCommunication.shared.createFolder(serverUrlFileName) { (account, ocId, _, errorCode, errorDescription) in
+        NCCommunication.shared.createFolder(serverUrlFileName) { account, ocId, _, errorCode, _ in
 
             if errorCode == 0 {
 
-                NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, _, errorCode, _) in
+                NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { account, files, _, errorCode, _ in
 
                     if errorCode == 0 && files.count > 0 {
 
@@ -88,7 +88,7 @@ extension FileProviderExtension {
         let serverUrl = metadata.serverUrl
         let fileName = metadata.fileName
 
-        NCCommunication.shared.deleteFileOrFolder(serverUrlFileName) { (account, errorCode, _) in
+        NCCommunication.shared.deleteFileOrFolder(serverUrlFileName) { account, errorCode, _ in
 
             if errorCode == 0 { // || error == kOCErrorServerPathNotFound {
 
@@ -138,7 +138,7 @@ extension FileProviderExtension {
         let serverUrlTo = tableDirectoryTo.serverUrl
         let fileNameTo = serverUrlTo + "/" + itemFrom.filename
 
-        NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: false) { (account, errorCode, _) in
+        NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: false) { account, errorCode, _ in
 
             if errorCode == 0 {
 
@@ -180,7 +180,7 @@ extension FileProviderExtension {
         let fileNamePathTo = metadata.serverUrl + "/" + itemName
         let ocId = metadata.ocId
 
-        NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false) { (account, errorCode, _) in
+        NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false) { account, errorCode, _ in
 
             if errorCode == 0 {
 
@@ -247,7 +247,7 @@ extension FileProviderExtension {
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
 
-            NCCommunication.shared.setFavorite(fileName: fileNamePath, favorite: favorite) { (_, errorCode, _) in
+            NCCommunication.shared.setFavorite(fileName: fileNamePath, favorite: favorite) { _, errorCode, _ in
 
                 if errorCode == 0 {
 

@@ -27,7 +27,7 @@ import Queuer
 
 extension NCNetworking {
 
-    internal func uploadChunkedFile(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->Void) {
+    internal func uploadChunkedFile(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
 
         let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
         let chunkFolder = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
@@ -57,7 +57,7 @@ extension NCNetworking {
 
         NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_chunk_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: NCGlobal.shared.dismissAfterSecond, priority: .max)
 
-        createChunkedFolder(chunkFolderPath: chunkFolderPath, account: metadata.account) { (errorCode, errorDescription) in
+        createChunkedFolder(chunkFolderPath: chunkFolderPath, account: metadata.account) { errorCode, errorDescription in
 
             start()
 
@@ -77,11 +77,11 @@ extension NCNetworking {
 
                     let semaphore = Semaphore()
 
-                    NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, requestHandler: { (request) in
+                    NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, requestHandler: { request in
 
                         self.uploadRequest[fileNameLocalPath] = request
 
-                    }, taskHandler: { (task) in
+                    }, taskHandler: { task in
 
                         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
 
@@ -89,7 +89,7 @@ extension NCNetworking {
 
                         NCCommunicationCommon.shared.writeLog("Upload chunk: " + fileName)
 
-                    }, progressHandler: { (progress) in
+                    }, progressHandler: { progress in
 
                         if let size = size {
 
@@ -100,7 +100,7 @@ extension NCNetworking {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, object: nil, userInfo: ["account": metadata.account, "ocId": metadata.ocId, "fileName": metadata.fileName, "serverUrl": metadata.serverUrl, "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress": NSNumber(value: fractionCompleted), "totalBytes": NSNumber(value: totalBytes), "totalBytesExpected": NSNumber(value: totalBytesExpected)])
                         }
 
-                    }) { (_, _, _, _, _, _, _, errorCode, errorDescription) in
+                    }) { _, _, _, _, _, _, _, errorCode, errorDescription in
 
                         self.uploadRequest[fileNameLocalPath] = nil
                         uploadErrorCode = errorCode
@@ -131,7 +131,7 @@ extension NCNetworking {
                     addCustomHeaders["X-OC-CTime"] = creationDate
                     addCustomHeaders["X-OC-MTime"] = modificationDate
 
-                    NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders) { (_, errorCode, errorDescription) in
+                    NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders) { _, errorCode, errorDescription in
 
                         NCCommunicationCommon.shared.writeLog("Assembling chunk with error code: \(errorCode)")
 
@@ -143,7 +143,7 @@ extension NCNetworking {
                             NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
                             NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
 
-                            self.readFile(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account) { (_, metadata, _, _) in
+                            self.readFile(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account) { _, metadata, _, _ in
 
                                 if errorCode == 0, let metadata = metadata {
 
@@ -179,14 +179,14 @@ extension NCNetworking {
         }
     }
 
-    private func createChunkedFolder(chunkFolderPath: String, account: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->Void) {
+    private func createChunkedFolder(chunkFolderPath: String, account: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
 
-        NCCommunication.shared.readFileOrFolder(serverUrlFileName: chunkFolderPath, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (_, _, _, errorCode, errorDescription) in
+        NCCommunication.shared.readFileOrFolder(serverUrlFileName: chunkFolderPath, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, _, errorCode, errorDescription in
 
             if errorCode == 0 {
                 completion(0, "")
             } else if errorCode == NCGlobal.shared.errorResourceNotFound {
-                NCCommunication.shared.createFolder(chunkFolderPath, queue: NCCommunicationCommon.shared.backgroundQueue) { (_, _, _, errorCode, errorDescription) in
+                NCCommunication.shared.createFolder(chunkFolderPath, queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, _, errorCode, errorDescription in
                     completion(errorCode, errorDescription)
                 }
             } else {
@@ -204,13 +204,13 @@ extension NCNetworking {
         if errorCode == NSURLErrorCancelled || errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
 
             // Delete chunk folder
-            NCCommunication.shared.deleteFileOrFolder(chunkFolderPath) { (_, _, _) in }
+            NCCommunication.shared.deleteFileOrFolder(chunkFolderPath) { _, _, _ in }
 
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
             NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
 
-            NCCommunication.shared.deleteFileOrFolder(chunkFolderPath) { (_, _, _) in }
+            NCCommunication.shared.deleteFileOrFolder(chunkFolderPath) { _, _, _ in }
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
 

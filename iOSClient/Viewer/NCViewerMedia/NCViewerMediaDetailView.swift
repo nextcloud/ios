@@ -91,7 +91,7 @@ class NCViewerMediaDetailView: UIView {
             let annotation = MKPointAnnotation()
             annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
 
-            self.mapView = MKMapView.init()
+            self.mapView = MKMapView()
             if let mapView = self.mapView {
                 mapView.translatesAutoresizingMaskIntoConstraints = false
                 self.mapContainer.addSubview(mapView)

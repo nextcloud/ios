@@ -61,7 +61,7 @@ extension NCViewer {
                 title: titleFavorite,
                 icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
                 action: { _ in
-                    NCNetworking.shared.favoriteMetadata(metadata) { (errorCode, errorDescription) in
+                    NCNetworking.shared.favoriteMetadata(metadata) { errorCode, errorDescription in
                         if errorCode != 0 {
                             NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
@@ -95,7 +95,7 @@ extension NCViewer {
                     icon: NCUtility.shared.loadImage(named: "tray.and.arrow.down"),
                     action: { _ in
                         if (localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) && metadata.session == "" {
-                            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { (_) in }
+                            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { _ in }
                         } else {
                             NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
                         }
@@ -267,7 +267,7 @@ extension NCViewer {
                         title: NSLocalizedString("_download_image_max_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
                         action: { _ in
-                            NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
+                            NCNetworking.shared.download(metadata: metadata, selector: "") { _ in }
                         }
                     )
                 )
@@ -355,7 +355,7 @@ extension NCViewer {
 
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
 
-                            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { (errorCode, errorDescription) in
+                            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { errorCode, errorDescription in
                                 if errorCode != 0 {
                                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                 }

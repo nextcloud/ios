@@ -43,7 +43,6 @@ class NCViewerMediaPage: UIViewController {
         return self.pageViewController.viewControllers![0] as! NCViewerMedia
     }
 
-
     var metadatas: [tableMetadata] = []
     var currentIndex = 0
     var nextIndex: Int?
@@ -65,7 +64,7 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
 
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
@@ -568,7 +567,7 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
                 AudioServicesPlaySystemSound(1519) // peek feedback
 
                 if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                    self.ncplayerLivePhoto = NCPlayer.init(url: url, autoPlay: true, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil)
+                    self.ncplayerLivePhoto = NCPlayer(url: url, autoPlay: true, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil)
                 }
             }
 
