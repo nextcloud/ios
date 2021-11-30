@@ -181,6 +181,9 @@
 + (PDFDisplayDirection)getPDFDisplayDirection;
 + (void)setPDFDisplayDirection:(PDFDisplayDirection)direction;
 
++ (BOOL)getPrivacyScreen;
++ (void)setPrivacyScreen:(BOOL)set;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
