@@ -728,7 +728,15 @@
 
 + (BOOL)getPrivacyScreen
 {
-    return [[UICKeyChainStore stringForKey:@"privacyScreen" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
+    NSString *valueString = [UICKeyChainStore stringForKey:@"privacyScreen" service:NCGlobal.shared.serviceShareKeyChain];
+    
+    // Default TRUE
+    if (valueString == nil) {
+        [self setPrivacyScreen:YES];
+        return true;
+    }
+    
+    return [valueString boolValue];
 }
 
 + (void)setPrivacyScreen:(BOOL)set
