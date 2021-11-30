@@ -60,7 +60,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
     var networkingProcessUpload: NCNetworkingProcessUpload?
-    var passcodeViewController: TOPasscodeViewController?
     var pasteboardOcIds: [String] = []
     var shares: [tableShare] = []
     var timerErrorNetworking: Timer?
@@ -242,9 +241,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if account == "" { return }
         
-        // Dismiss FileViewInFolder
-        //activeFileViewInFolder?.dismiss(animated: false)
-        
         // Clear operation queue
         NCOperationQueue.shared.cancelAllQueue()
         // Clear download
@@ -264,20 +260,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if account == "" { return }
         
+        // Dismiss rootViewController
+        self.window?.rootViewController?.dismiss(animated: false)
+        
         // STOP TIMER UPLOAD PROCESS
         if NCUtility.shared.isSimulator() {
             networkingProcessUpload?.stopTimer()
         }
-        
-        NCCommunicationCommon.shared.writeLog("Application did enter in background")
-        
-        passcodeWithAutomaticallyPromptForBiometricValidation(false)
-        
+                
         if #available(iOS 13.0, *) {
             scheduleAppRefresh()
             scheduleBackgroundProcessing()
         }
         
+        passcodeWithAutomaticallyPromptForBiometricValidation(false)
+
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
     }
     
@@ -716,36 +713,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
                 
-        if passcodeViewController?.view.window == nil {
-            passcodeViewController = TOPasscodeViewController.init(passcodeType: .sixDigits, allowCancel: false)
-            passcodeViewController?.delegate = self
-            passcodeViewController?.keypadButtonShowLettering = false
-            if CCUtility.getEnableTouchFaceID() && laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-                if error == nil {
-                    if laContext.biometryType == .faceID  {
-                        passcodeViewController?.biometryType = .faceID
-                        passcodeViewController?.allowBiometricValidation = true
-                    } else if laContext.biometryType == .touchID  {
-                        passcodeViewController?.biometryType = .touchID
-                        passcodeViewController?.allowBiometricValidation = true
+        let passcodeViewController = TOPasscodeViewController.init(passcodeType: .sixDigits, allowCancel: false)
+        passcodeViewController.delegate = self
+        passcodeViewController.keypadButtonShowLettering = false
+        if CCUtility.getEnableTouchFaceID() && laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+            if error == nil {
+                if laContext.biometryType == .faceID  {
+                    passcodeViewController.biometryType = .faceID
+                    passcodeViewController.allowBiometricValidation = true
+                } else if laContext.biometryType == .touchID  {
+                    passcodeViewController.biometryType = .touchID
+                    passcodeViewController.allowBiometricValidation = true
+                }
+            }
+        }
+        
+        window?.rootViewController?.present(passcodeViewController, animated: true, completion: {
+            if CCUtility.getEnableTouchFaceID() && automaticallyPromptForBiometricValidation {
+                LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
+                    if success {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            passcodeViewController.dismiss(animated: true) {
+                                self.requestAccount(startTimer: true)
+                            }
+                        }
                     }
                 }
             }
-            if let passcodeViewController = self.passcodeViewController {
-                window?.rootViewController?.present(passcodeViewController, animated: true, completion: {
-                    self.enableTouchFaceID(automaticallyPromptForBiometricValidation)
-                })
-            }
-        } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.enableTouchFaceID(automaticallyPromptForBiometricValidation)
-            }
-        }
+        })
     }
         
     func didInputCorrectPasscode(in passcodeViewController: TOPasscodeViewController) {
         passcodeViewController.dismiss(animated: true) {
-            self.passcodeViewController = nil
             self.requestAccount(startTimer: true)
         }
     }
@@ -759,29 +758,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if success {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     passcodeViewController.dismiss(animated: true) {
-                        self.passcodeViewController = nil
                         self.requestAccount(startTimer: true)
                     }
                 }
             }
         }
     }
-    
-    func enableTouchFaceID(_ automaticallyPromptForBiometricValidation: Bool) {
-        if CCUtility.getEnableTouchFaceID() && automaticallyPromptForBiometricValidation && passcodeViewController?.view.window != nil {
-            LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
-                if success {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        self.passcodeViewController?.dismiss(animated: true) {
-                            self.passcodeViewController = nil
-                            self.requestAccount(startTimer: true)
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
+
     // MARK: - Open URL
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
