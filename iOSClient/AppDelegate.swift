@@ -176,7 +176,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         // Passcode
         DispatchQueue.main.async {
-            self.passcodeWithAutomaticallyPromptForBiometricValidation(true)
+            self.presentPasscode()
         }
         
         return true
@@ -220,7 +220,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         // Request Passcode
-        passcodeWithAutomaticallyPromptForBiometricValidation(true)
+        presentPasscode()
         
         // Initialize Auto upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { (_) in }
@@ -273,7 +273,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             scheduleBackgroundProcessing()
         }
         
-        passcodeWithAutomaticallyPromptForBiometricValidation(false)
+        //TODO: INSERT BACKGROUD PRIVACY
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
     }
@@ -698,7 +698,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     // MARK: - Passcode
     
-    func passcodeWithAutomaticallyPromptForBiometricValidation(_ automaticallyPromptForBiometricValidation: Bool) {
+    func presentPasscode() {
         
         let laContext = LAContext()
         var error: NSError?
@@ -706,7 +706,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         defer {
             self.requestAccount()
         }
-        
+                
         if account == "" { return }
         guard let passcode = CCUtility.getPasscode() else { return }
         if passcode.count == 0 || CCUtility.getNotPasscodeAtStart() { return }
@@ -718,34 +718,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if error == nil {
                 if laContext.biometryType == .faceID  {
                     passcodeViewController.biometryType = .faceID
-                    passcodeViewController.allowBiometricValidation = true
                 } else if laContext.biometryType == .touchID  {
                     passcodeViewController.biometryType = .touchID
-                    passcodeViewController.allowBiometricValidation = true
                 }
+                passcodeViewController.allowBiometricValidation = true
+                passcodeViewController.automaticallyPromptForBiometricValidation = true
             }
         }
         
-        window?.rootViewController?.present(passcodeViewController, animated: true, completion: {
-            if CCUtility.getEnableTouchFaceID() && automaticallyPromptForBiometricValidation {
-                LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
-                    if success {
-                        passcodeViewController.dismiss(animated: true) {
-                            self.requestAccount()
-                        }
-                    }
-                }
-            }
-        })
+        window?.rootViewController?.present(passcodeViewController, animated: true)
     }
-        
+    
     func isPasscodePresented() -> Bool {
         return window?.rootViewController?.presentedViewController is TOPasscodeViewController
     }
     
     func didInputCorrectPasscode(in passcodeViewController: TOPasscodeViewController) {
-        passcodeViewController.dismiss(animated: true) {
-            self.requestAccount()
+        DispatchQueue.main.async {
+            passcodeViewController.dismiss(animated: true) {
+                self.requestAccount()
+            }
         }
     }
     
@@ -756,8 +748,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
         LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
             if success {
-                passcodeViewController.dismiss(animated: true) {
-                    self.requestAccount()
+                DispatchQueue.main.async {
+                    passcodeViewController.dismiss(animated: true) {
+                        self.requestAccount()
+                    }
                 }
             }
         }
