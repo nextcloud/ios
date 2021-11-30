@@ -420,31 +420,39 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
             if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
                 etagResource = metadata.etagResource
             }
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, errorCode, _ in
+            NCCommunication.shared.downloadPreview(
+                fileNamePathOrFileId: fileNamePath,
+                fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                widthPreview: NCGlobal.shared.sizePreview,
+                heightPreview: NCGlobal.shared.sizePreview,
+                fileNameIconLocalPath: fileNameIconLocalPath,
+                sizeIcon: NCGlobal.shared.sizeIcon,
+                etag: etagResource,
+                queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, errorCode, _ in
 
-                if errorCode == 0 && imageIcon != nil {
-                    NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                    DispatchQueue.main.async {
-                        if self.metadata.ocId == self.cell?.fileObjectId {
-                            if let filePreviewImageView = self.cell?.filePreviewImageView {
-                                UIView.transition(with: filePreviewImageView,
-                                    duration: 0.75,
-                                    options: .transitionCrossDissolve,
-                                    animations: { filePreviewImageView.image = imageIcon! },
-                                    completion: nil)
+                    if errorCode == 0 && imageIcon != nil {
+                        NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
+                        DispatchQueue.main.async {
+                            if self.metadata.ocId == self.cell?.fileObjectId {
+                                if let filePreviewImageView = self.cell?.filePreviewImageView {
+                                    UIView.transition(with: filePreviewImageView,
+                                                      duration: 0.75,
+                                                      options: .transitionCrossDissolve,
+                                                      animations: { filePreviewImageView.image = imageIcon! },
+                                                      completion: nil)
+                                }
+                            } else {
+                                if self.view is UICollectionView {
+                                    (self.view as? UICollectionView)?.reloadData()
+                                } else if self.view is UITableView {
+                                    (self.view as? UITableView)?.reloadData()
+                                }
                             }
-                        } else {
-                            if self.view is UICollectionView {
-                                (self.view as? UICollectionView)?.reloadData()
-                            } else if self.view is UITableView {
-                                (self.view as? UITableView)?.reloadData()
-                            }
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedThumbnail, userInfo: ["ocId": self.metadata.ocId])
                         }
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedThumbnail, userInfo: ["ocId": self.metadata.ocId])
                     }
+                    self.finish()
                 }
-                self.finish()
-            }
         }
     }
 }

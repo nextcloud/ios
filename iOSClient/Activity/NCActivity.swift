@@ -347,7 +347,7 @@ extension NCActivity: UITableViewDataSource {
                 $0.color = UIColor.lightGray
             }
 
-            subject = subject + "\n" + "<date>" + CCUtility.dateDiff(activity.date as Date) + "</date>"
+            subject += "\n" + "<date>" + CCUtility.dateDiff(activity.date as Date) + "</date>"
             cell.subject.attributedText = subject.set(style: StyleGroup(base: normal, ["bold": bold, "date": date]))
         }
 

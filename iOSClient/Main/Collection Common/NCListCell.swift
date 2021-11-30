@@ -188,7 +188,6 @@ extension NCListCellDelegate {
     func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {}
 }
 
-// TODO: ###############HELP ME!!!!
 // MARK: - List Layout
 
 class NCListLayout: UICollectionViewFlowLayout {

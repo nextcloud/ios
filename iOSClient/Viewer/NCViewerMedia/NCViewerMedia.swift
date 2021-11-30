@@ -205,17 +205,24 @@ class NCViewerMedia: UIViewController {
                 etagResource = metadata.etagResource
             }
 
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource, queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, errorCode, _ in
+            NCCommunication.shared.downloadPreview(
+                fileNamePathOrFileId: fileNamePath,
+                fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                widthPreview: NCGlobal.shared.sizePreview,
+                heightPreview: NCGlobal.shared.sizePreview,
+                fileNameIconLocalPath: fileNameIconLocalPath,
+                sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource,
+                queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, errorCode, _ in
 
-                if errorCode == 0 && imageIcon != nil {
-                    NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
+                    if errorCode == 0 && imageIcon != nil {
+                        NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
+                    }
+
+                    // Download file max resolution
+                    downloadFile(metadata: metadata)
+                    // Download file live photo
+                    if metadata.livePhoto { downloadFileLivePhoto(metadata: metadata) }
                 }
-
-                // Download file max resolution
-                downloadFile(metadata: metadata)
-                // Download file live photo
-                if metadata.livePhoto { downloadFileLivePhoto(metadata: metadata) }
-            }
         } else {
 
             // Download file max resolution

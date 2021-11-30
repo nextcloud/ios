@@ -739,7 +739,7 @@ extension NCShareExtension {
             DispatchQueue.main.async {
                 if errorCode == 0 {
 
-                    self.serverUrl = self.serverUrl + "/" + fileName
+                    self.serverUrl += "/" + fileName
                     self.reloadDatasource(withLoadFolder: true)
                     self.setNavigationBar(navigationTitle: fileName)
 

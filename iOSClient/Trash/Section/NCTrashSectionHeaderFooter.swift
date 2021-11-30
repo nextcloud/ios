@@ -112,7 +112,7 @@ class NCTrashSectionFooter: UICollectionReusableView {
                 folders += 1
             } else {
                 files += 1
-                size = size + record.size
+                size += record.size
             }
         }
 

@@ -79,7 +79,7 @@ extension NCViewer {
                     title: NSLocalizedString("_details_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "info"),
                     action: { _ in
-                        NCFunctionCenter.shared.openShare(ViewController: viewController, metadata: metadata, indexPage: .activity)
+                        NCFunctionCenter.shared.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
                     }
                 )
             )

@@ -199,7 +199,15 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                     if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
                         session = NCCommunicationCommon.shared.sessionIdentifierUpload
                     } else {
-                        if assetMediaType == PHAssetMediaType.image && account.autoUploadWWAnPhoto == false { session = NCNetworking.shared.sessionIdentifierBackground } else if assetMediaType == PHAssetMediaType.video && account.autoUploadWWAnVideo == false { session = NCNetworking.shared.sessionIdentifierBackground } else if assetMediaType == PHAssetMediaType.image && account.autoUploadWWAnPhoto { session = NCNetworking.shared.sessionIdentifierBackgroundWWan } else if assetMediaType == PHAssetMediaType.video && account.autoUploadWWAnVideo { session = NCNetworking.shared.sessionIdentifierBackgroundWWan } else { session = NCNetworking.shared.sessionIdentifierBackground }
+                        if assetMediaType == PHAssetMediaType.image && account.autoUploadWWAnPhoto == false {
+                            session = NCNetworking.shared.sessionIdentifierBackground
+                        } else if assetMediaType == PHAssetMediaType.video && account.autoUploadWWAnVideo == false {
+                            session = NCNetworking.shared.sessionIdentifierBackground
+                        } else if assetMediaType == PHAssetMediaType.image && account.autoUploadWWAnPhoto {
+                            session = NCNetworking.shared.sessionIdentifierBackgroundWWan
+                        } else if assetMediaType == PHAssetMediaType.video && account.autoUploadWWAnVideo {
+                            session = NCNetworking.shared.sessionIdentifierBackgroundWWan
+                        } else { session = NCNetworking.shared.sessionIdentifierBackground }
                     }
 
                     formatter.dateFormat = "yyyy"

@@ -311,7 +311,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
         for sharee in sharees {
             var label = sharee.label
             if sharee.shareType == NCShareCommon.shared.SHARE_TYPE_CIRCLE {
-                label = label + " (" + sharee.circleInfo + ", " +  sharee.circleOwner + ")"
+                label += " (" + sharee.circleInfo + ", " +  sharee.circleOwner + ")"
             }
             dropDown.dataSource.append(label)
         }

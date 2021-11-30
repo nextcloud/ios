@@ -375,7 +375,7 @@ class NCUtility: NSObject {
             statusMessage = userIcon + " "
         }
         if let userMessage = userMessage {
-            statusMessage = statusMessage + userMessage
+            statusMessage += userMessage
         }
         statusMessage = statusMessage.trimmingCharacters(in: .whitespaces)
         if statusMessage == "" {

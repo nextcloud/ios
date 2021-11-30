@@ -357,7 +357,18 @@ import Queuer
             DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = progressType }
             #endif
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, object: nil, userInfo: ["account": metadata.account, "ocId": metadata.ocId, "fileName": metadata.fileName, "serverUrl": metadata.serverUrl, "status": NSNumber(value: NCGlobal.shared.metadataStatusInDownload), "progress": NSNumber(value: progress.fractionCompleted), "totalBytes": NSNumber(value: progress.totalUnitCount), "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
+            NotificationCenter.default.postOnMainThread(
+                name: NCGlobal.shared.notificationCenterProgressTask,
+                object: nil,
+                userInfo: [
+                    "account": metadata.account,
+                    "ocId": metadata.ocId,
+                    "fileName": metadata.fileName,
+                    "serverUrl": metadata.serverUrl,
+                    "status": NSNumber(value: NCGlobal.shared.metadataStatusInDownload),
+                    "progress": NSNumber(value: progress.fractionCompleted),
+                    "totalBytes": NSNumber(value: progress.totalUnitCount),
+                    "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
 
         }) { account, etag, _, _, _, error, errorCode, errorDescription in
 
@@ -496,7 +507,17 @@ import Queuer
             DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = progressType }
             #endif
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, userInfo: ["account": metadata.account, "ocId": metadata.ocId, "fileName": metadata.fileName, "serverUrl": metadata.serverUrl, "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress": NSNumber(value: progress.fractionCompleted), "totalBytes": NSNumber(value: progress.totalUnitCount), "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
+            NotificationCenter.default.postOnMainThread(
+                name: NCGlobal.shared.notificationCenterProgressTask,
+                userInfo: [
+                    "account": metadata.account,
+                    "ocId": metadata.ocId,
+                    "fileName": metadata.fileName,
+                    "serverUrl": metadata.serverUrl,
+                    "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload),
+                    "progress": NSNumber(value: progress.fractionCompleted),
+                    "totalBytes": NSNumber(value: progress.totalUnitCount),
+                    "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
 
         }) { _, ocId, etag, date, size, _, _, errorCode, errorDescription in
 
@@ -662,7 +683,17 @@ import Queuer
             DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = progressType }
             #endif
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, userInfo: ["account": metadata.account, "ocId": metadata.ocId, "fileName": metadata.fileName, "serverUrl": serverUrl, "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress": NSNumber(value: progress), "totalBytes": NSNumber(value: totalBytes), "totalBytesExpected": NSNumber(value: totalBytesExpected)])
+            NotificationCenter.default.postOnMainThread(
+                name: NCGlobal.shared.notificationCenterProgressTask,
+                userInfo: [
+                    "account": metadata.account,
+                    "ocId": metadata.ocId,
+                    "fileName": metadata.fileName,
+                    "serverUrl": serverUrl,
+                    "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload),
+                    "progress": NSNumber(value: progress),
+                    "totalBytes": NSNumber(value: totalBytes),
+                    "totalBytesExpected": NSNumber(value: totalBytesExpected)])
         }
     }
 

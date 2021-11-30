@@ -72,7 +72,7 @@ class NCLoginWeb: UIViewController {
             if loginFlowV2Available {
                 urlBase = loginFlowV2Login
             } else {
-                urlBase = urlBase + "/index.php/login/flow"
+                urlBase += "/index.php/login/flow"
             }
         }
 
@@ -181,7 +181,7 @@ extension NCLoginWeb: WKNavigationDelegate {
 
         for (key, value) in (error as NSError).userInfo {
             let message = "\(key) \(value)\n"
-            errorMessage = errorMessage + message
+            errorMessage += message
         }
 
         let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorMessage, preferredStyle: .alert)

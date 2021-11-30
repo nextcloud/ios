@@ -90,7 +90,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         initializeForm()
 
         let value = CCUtility.getTextRecognitionStatus()
-        SetTextRecognition(newValue: value)
+        setTextRecognition(newValue: value)
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -234,7 +234,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         if formRow.tag == "textRecognition" {
 
-            self.SetTextRecognition(newValue: newValue as! Int)
+            self.setTextRecognition(newValue: newValue as! Int)
         }
 
         if formRow.tag == "fileName" {
@@ -312,7 +312,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         }
     }
 
-    func SetTextRecognition(newValue: Int) {
+    func setTextRecognition(newValue: Int) {
 
         let rowCompressionQuality: XLFormRowDescriptor = self.form.formRow(withTag: "compressionQuality")!
         let rowFileTape: XLFormRowDescriptor = self.form.formRow(withTag: "filetype")!

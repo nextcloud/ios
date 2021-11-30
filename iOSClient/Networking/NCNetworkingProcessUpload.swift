@@ -243,7 +243,13 @@ class NCNetworkingProcessUpload: NSObject {
         var session: URLSession?
 
         // verify metadataStatusInUpload (BACKGROUND)
-        let metadatasInUploadBackground = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d AND sessionTaskIdentifier == 0", NCNetworking.shared.sessionIdentifierBackground, NCNetworking.shared.sessionIdentifierBackgroundExtension, NCNetworking.shared.sessionIdentifierBackgroundWWan, NCGlobal.shared.metadataStatusInUpload))
+        let metadatasInUploadBackground = NCManageDatabase.shared.getMetadatas(
+            predicate: NSPredicate(
+                format: "(session == %@ OR session == %@ OR session == %@) AND status == %d AND sessionTaskIdentifier == 0",
+                NCNetworking.shared.sessionIdentifierBackground,
+                NCNetworking.shared.sessionIdentifierBackgroundExtension,
+                NCNetworking.shared.sessionIdentifierBackgroundWWan,
+                NCGlobal.shared.metadataStatusInUpload))
         for metadata in metadatasInUploadBackground {
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d AND sessionTaskIdentifier == 0", metadata.ocId, NCGlobal.shared.metadataStatusInUpload)) {

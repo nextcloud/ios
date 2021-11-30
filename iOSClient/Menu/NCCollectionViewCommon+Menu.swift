@@ -116,7 +116,7 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_details_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "info"),
                     action: { _ in
-                        NCFunctionCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: .activity)
+                        NCFunctionCenter.shared.openShare(viewController: self, metadata: metadata, indexPage: .activity)
                     }
                 )
             )

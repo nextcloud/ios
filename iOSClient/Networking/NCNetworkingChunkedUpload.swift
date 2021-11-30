@@ -97,7 +97,18 @@ extension NCNetworking {
                             let totalBytes = metadata.size
                             let fractionCompleted = Float(totalBytesExpected) / Float(totalBytes)
 
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, object: nil, userInfo: ["account": metadata.account, "ocId": metadata.ocId, "fileName": metadata.fileName, "serverUrl": metadata.serverUrl, "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress": NSNumber(value: fractionCompleted), "totalBytes": NSNumber(value: totalBytes), "totalBytesExpected": NSNumber(value: totalBytesExpected)])
+                            NotificationCenter.default.postOnMainThread(
+                                name: NCGlobal.shared.notificationCenterProgressTask,
+                                object: nil,
+                                userInfo: [
+                                    "account": metadata.account,
+                                    "ocId": metadata.ocId,
+                                    "fileName": metadata.fileName,
+                                    "serverUrl": metadata.serverUrl,
+                                    "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload),
+                                    "progress": NSNumber(value: fractionCompleted),
+                                    "totalBytes": NSNumber(value: totalBytes),
+                                    "totalBytesExpected": NSNumber(value: totalBytesExpected)])
                         }
 
                     }) { _, _, _, _, _, _, _, errorCode, errorDescription in

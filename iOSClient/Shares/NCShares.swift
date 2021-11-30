@@ -76,7 +76,7 @@ class NCShares: NCCollectionViewCommon {
         collectionView?.reloadData()
 
         // Shares network
-        NCCommunication.shared.readShares(parameters: NCCShareParameter(), queue: NCCommunicationCommon.shared.backgroundQueue) { account, shares, errorCode, ErrorDescription in
+        NCCommunication.shared.readShares(parameters: NCCShareParameter(), queue: NCCommunicationCommon.shared.backgroundQueue) { account, shares, errorCode, errorDescription in
 
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
@@ -96,7 +96,7 @@ class NCShares: NCCollectionViewCommon {
 
                 DispatchQueue.main.async {
                     self.collectionView?.reloadData()
-                    NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
         }

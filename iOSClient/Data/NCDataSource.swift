@@ -162,7 +162,7 @@ class NCDataSource: NSObject {
             } else {
                 files += 1
             }
-            size = size + metadata.size
+            size += metadata.size
         }
 
         return (directories, files, size)

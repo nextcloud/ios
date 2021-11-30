@@ -249,7 +249,7 @@ class NCUtilityFileSystem: NSObject {
             for case let fileURL as URL in enumerator {
                 if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
                     if let size = attributes[.size] as? Int64 {
-                        totalSize = totalSize + size
+                        totalSize += size
                     }
                 }
             }

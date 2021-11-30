@@ -188,7 +188,7 @@ import IHProgressHUD
 
     // MARK: -
 
-    func openShare(ViewController: UIViewController, metadata: tableMetadata, indexPage: NCGlobal.NCSharePagingIndex) {
+    func openShare(viewController: UIViewController, metadata: tableMetadata, indexPage: NCGlobal.NCSharePagingIndex) {
 
         let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as! UINavigationController
         let shareViewController = shareNavigationController.topViewController as! NCSharePaging
@@ -197,7 +197,7 @@ import IHProgressHUD
         shareViewController.indexPage = indexPage
 
         shareNavigationController.modalPresentationStyle = .formSheet
-        ViewController.present(shareNavigationController, animated: true, completion: nil)
+        viewController.present(shareNavigationController, animated: true, completion: nil)
     }
 
     // MARK: -
@@ -316,7 +316,7 @@ import IHProgressHUD
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && status == PHAuthorizationStatus.authorized {
 
             if let image = UIImage(contentsOfFile: fileNamePath) {
-                UIImageWriteToSavedPhotosAlbum(image, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
+                UIImageWriteToSavedPhotosAlbum(image, self, #selector(saveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
             } else {
                 NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorFileNotSaved)
             }
@@ -324,7 +324,7 @@ import IHProgressHUD
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && status == PHAuthorizationStatus.authorized {
 
             if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath) {
-                UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
+                UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, #selector(saveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
             } else {
                 NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorFileNotSaved)
             }
@@ -335,7 +335,7 @@ import IHProgressHUD
         }
     }
 
-    @objc private func SaveAlbum(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+    @objc private func saveAlbum(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
 
         if error != nil {
             NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorFileNotSaved)
@@ -651,7 +651,7 @@ import IHProgressHUD
         }
 
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info")) { _ in
-            self.openShare(ViewController: viewController, metadata: metadata, indexPage: .activity)
+            self.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
         }
 
         let offline = UIAction(title: titleOffline, image: UIImage(systemName: "tray.and.arrow.down")) { _ in

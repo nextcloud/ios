@@ -278,7 +278,17 @@ import Alamofire
 
                 }, progressHandler: { progress in
 
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, userInfo: ["account": metadata.account, "ocId": metadata.ocId, "fileName": metadata.fileName, "serverUrl": serverUrl, "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload), "progress": NSNumber(value: progress.fractionCompleted), "totalBytes": NSNumber(value: progress.totalUnitCount), "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
+                    NotificationCenter.default.postOnMainThread(
+                        name: NCGlobal.shared.notificationCenterProgressTask,
+                        userInfo: [
+                            "account": metadata.account,
+                            "ocId": metadata.ocId,
+                            "fileName": metadata.fileName,
+                            "serverUrl": serverUrl,
+                            "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload),
+                            "progress": NSNumber(value: progress.fractionCompleted),
+                            "totalBytes": NSNumber(value: progress.totalUnitCount),
+                            "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
 
                 }) { account, ocId, etag, date, _, _, error, errorCode, errorDescription in
 

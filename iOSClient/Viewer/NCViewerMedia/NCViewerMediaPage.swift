@@ -46,7 +46,6 @@ class NCViewerMediaPage: UIViewController {
     var metadatas: [tableMetadata] = []
     var currentIndex = 0
     var nextIndex: Int?
-    var IndexInPlay: Int = -1
     var ncplayerLivePhoto: NCPlayer?
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!

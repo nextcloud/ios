@@ -78,7 +78,7 @@ class NCEmptyDataSet: NSObject {
         if section == 0 {
             numberItemsForSections = num
         } else {
-            numberItemsForSections = numberItemsForSections + num
+            numberItemsForSections += num
         }
 
         if let emptyView = emptyView {

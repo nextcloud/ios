@@ -12,21 +12,23 @@ force_try: warning
 empty_count:
   severity: warning
 
-type_name: 
+type_name:
 # validates_start_with_lowercase: true
   validates_start_with_lowercase: false
   
 cyclomatic_complexity:
   # error: 20
-  error: 30
+  error: 75
 
 file_length:
-  error: 2000
   # error: 1000
+  error: 2000
 
 line_length:
-  error: 400
   # error: 200
+  error: 400
+  # warning: 120
+  warning: 200
 
 function_parameter_count:
   warning: 5
@@ -36,7 +38,11 @@ function_parameter_count:
 
 function_body_length:
   # error: 100
-  error: 200
+  error: 250
+  
+type_body_length:
+  error: 350
+  error: 1000
 
 identifier_name:
   min_length:
