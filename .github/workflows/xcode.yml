@@ -13,13 +13,9 @@ on:
 jobs:
   XCBuild:
     runs-on: macOS-11
-    env:
-      PROJECT: Nextcloud.xcodeproj
     steps:
-    - name: Set var
+    - name: Set env var
       run: echo "DEVELOPER_DIR=$(xcode-select --print-path)" >> $GITHUB_ENV
-    - name: Check env
-      run: echo $DEVELOPER_DIR
     - uses: actions/checkout@v2
     - name: Restore Carhage Cache
       uses: actions/cache@v2
@@ -38,5 +34,6 @@ jobs:
       run: |
         xcodebuild clean build -project $PROJECT -scheme $SCHEME -destination "$DESTINATION"
       env:
+          PROJECT: Nextcloud.xcodeproj
           SCHEME: Nextcloud
           DESTINATION: platform=iOS Simulator,name=iPhone 11

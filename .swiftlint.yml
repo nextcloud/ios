@@ -41,7 +41,7 @@ function_body_length:
   error: 250
   
 type_body_length:
-  error: 350
+  # error: 350
   error: 1000
 
 identifier_name:
