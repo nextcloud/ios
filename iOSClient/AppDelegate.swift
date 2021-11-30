@@ -667,9 +667,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func requestAccount() {
               
         if isPasscodePresented() { return }
+        if !CCUtility.getAccountRequest() { return }
+        
         let accounts = NCManageDatabase.shared.getAllAccount()
         
-        if CCUtility.getAccountRequest() && accounts.count > 1 {
+        if accounts.count > 1 {
             
             if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
                
