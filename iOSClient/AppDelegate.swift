@@ -743,6 +743,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         })
     }
         
+    func isPasscodePresented() -> Bool {
+        let result = window?.rootViewController?.presentedViewController is TOPasscodeViewController
+        return result
+    }
+    
     func didInputCorrectPasscode(in passcodeViewController: TOPasscodeViewController) {
         passcodeViewController.dismiss(animated: true) {
             self.requestAccount(startTimer: true)
