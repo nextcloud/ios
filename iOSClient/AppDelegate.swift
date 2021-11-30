@@ -664,8 +664,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         changeAccount(account)
     }
     
-    func requestAccount(startTimer: Bool) {
+    func requestAccount() {
               
+        if isPasscodePresented() { return }
         let accounts = NCManageDatabase.shared.getAllAccount()
         
         if CCUtility.getAccountRequest() && accounts.count > 1 {
@@ -688,9 +689,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 
                 UIApplication.shared.keyWindow?.rootViewController?.present(popup, animated: true)
                 
-                if startTimer {
-                    vcAccountRequest.startTimer()
-                }
+                vcAccountRequest.startTimer()
             }
         }
     }
@@ -703,15 +702,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         var error: NSError?
         
         if account == "" { return }
-        
-        guard let passcode = CCUtility.getPasscode() else {
-            requestAccount(startTimer: false)
-            return
-        }
-        if passcode.count == 0 || CCUtility.getNotPasscodeAtStart() {
-            requestAccount(startTimer: false)
-            return
-        }
+        guard let passcode = CCUtility.getPasscode() else { return }
+        if passcode.count == 0 || CCUtility.getNotPasscodeAtStart() { return }
                 
         let passcodeViewController = TOPasscodeViewController.init(passcodeType: .sixDigits, allowCancel: false)
         passcodeViewController.delegate = self
@@ -732,11 +724,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if CCUtility.getEnableTouchFaceID() && automaticallyPromptForBiometricValidation {
                 LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
                     if success {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            passcodeViewController.dismiss(animated: true) {
-                                self.requestAccount(startTimer: true)
-                            }
-                        }
+                        passcodeViewController.dismiss(animated: true)
                     }
                 }
             }
@@ -744,14 +732,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
         
     func isPasscodePresented() -> Bool {
-        let result = window?.rootViewController?.presentedViewController is TOPasscodeViewController
-        return result
+        return window?.rootViewController?.presentedViewController is TOPasscodeViewController
     }
     
     func didInputCorrectPasscode(in passcodeViewController: TOPasscodeViewController) {
-        passcodeViewController.dismiss(animated: true) {
-            self.requestAccount(startTimer: true)
-        }
+        passcodeViewController.dismiss(animated: true)
     }
     
     func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
@@ -761,11 +746,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
         LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
             if success {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    passcodeViewController.dismiss(animated: true) {
-                        self.requestAccount(startTimer: true)
-                    }
-                }
+                passcodeViewController.dismiss(animated: true)
             }
         }
     }
