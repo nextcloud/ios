@@ -172,7 +172,7 @@
 "_upload_e2ee_"             = "The file you are uploading is encrypted, keep the app in the foreground until complete";
 "_chunk_size_mb_"           = "Chunk size in MB";
 "_chunk_footer_title_"      = "Chunked file upload (0 is disabled)\nImportant: the chunked upload works only when the app is \"active\".";
-"_code_privacy_"            = "Privacy code";
+"_privacy_legal_"           = "Privacy and Legal Policy";
 "_source_code_"             = "Get source code";
 "_account_select_"          = "Select the account";
 "_host_insert_"             = "Insert the host name, for example:";
@@ -825,6 +825,5 @@
 "_copied_path_"             = "Copied path";
 "_copy_path_"               = "Copy path";
 "_certificates_"            = "Certificates";
-"_privacy_"                 = "Privacy";
-"_privacy_screen_"          = "Enable a splash screen when the app is not active";
+"_privacy_screen_"          = "Enable splash screen when the app is not active";
 
