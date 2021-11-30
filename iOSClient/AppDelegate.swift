@@ -268,8 +268,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if account == "" { return }
         
-        // Dismiss rootViewController
-        self.window?.rootViewController?.dismiss(animated: false)
+        // Dismiss present window?.rootViewController?
+        let presentedViewController = window?.rootViewController?.presentedViewController
+        if !(presentedViewController is NCLoginNavigationController) {
+            presentedViewController?.dismiss(animated: false)
+        }
         
         // STOP TIMER UPLOAD PROCESS
         if NCUtility.shared.isSimulator() {
@@ -291,7 +294,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCCommunicationCommon.shared.writeLog("bye bye")
     }
     
-    // MARK: Privacy Protection
+    // MARK: - Privacy Protection
        
     private func showPrivacyProtectionWindow() {
         
@@ -539,7 +542,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if contextViewController == nil {
             if let viewController = viewController {
-                let navigationController = UINavigationController.init(rootViewController: viewController)
+                let navigationController = NCLoginNavigationController.init(rootViewController: viewController)
                 navigationController.navigationBar.barStyle = .black
                 navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText
                 navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer
@@ -553,7 +556,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         } else {
             if let viewController = viewController, let contextViewController = contextViewController {
-                let navigationController = UINavigationController.init(rootViewController: viewController)
+                let navigationController = NCLoginNavigationController.init(rootViewController: viewController)
                 navigationController.modalPresentationStyle = .fullScreen
                 navigationController.navigationBar.barStyle = .black
                 navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText
