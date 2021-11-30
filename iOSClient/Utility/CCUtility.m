@@ -726,6 +726,17 @@
     [UICKeyChainStore setString:directionString forKey:@"PDFDisplayDirection" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
++ (BOOL)getPrivacyScreen
+{
+    return [[UICKeyChainStore stringForKey:@"privacyScreen" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
+}
+
++ (void)setPrivacyScreen:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"privacyScreen" service:NCGlobal.shared.serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------

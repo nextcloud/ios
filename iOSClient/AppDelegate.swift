@@ -64,6 +64,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var shares: [tableShare] = []
     var timerErrorNetworking: Timer?
     
+    private var privacyProtectionWindow: UIWindow?
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         let userAgent = CCUtility.getUserAgent() as String
@@ -97,7 +99,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else {
             
             levelLog = CCUtility.getLogLevel()
-            NCCommunicationCommon.shared.levelLog = levelLog            
+            NCCommunicationCommon.shared.levelLog = levelLog
             NCCommunicationCommon.shared.copyLogToDocumentDirectory = true
             if isSimulatorOrTestFlight {
                 NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
@@ -187,6 +189,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // L' applicazione entrerà in primo piano (attivo sempre)
     func applicationDidBecomeActive(_ application: UIApplication) {
         
+        // Privacy
+        hidePrivacyProtectionWindow()
+        
         NCSettingsBundleHelper.setVersionAndBuildNumber()
         
         if account == "" { return }
@@ -239,6 +244,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // L' applicazione si dimetterà dallo stato di attivo
     func applicationWillResignActive(_ application: UIApplication) {
         
+        // Privacy
+        showPrivacyProtectionWindow()
+        
         if account == "" { return }
         
         // Clear operation queue
@@ -273,8 +281,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             scheduleBackgroundProcessing()
         }
         
-        //TODO: INSERT BACKGROUD PRIVACY
-
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
     }
     
@@ -283,6 +289,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         NCNetworking.shared.cancelAllDownloadTransfer()
         NCCommunicationCommon.shared.writeLog("bye bye")
+    }
+    
+    // MARK: Privacy Protection
+       
+    private func showPrivacyProtectionWindow() {
+        
+        if isPasscodePresented() { return }
+        if !CCUtility.getPrivacyScreen() { return }
+        
+        privacyProtectionWindow = UIWindow(frame: UIScreen.main.bounds)
+          
+        let storyboard = UIStoryboard(name: "LaunchScreen", bundle: nil)
+        let initialViewController = storyboard.instantiateInitialViewController()
+
+        self.privacyProtectionWindow?.rootViewController = initialViewController
+        
+        privacyProtectionWindow?.windowLevel = .alert + 1
+        privacyProtectionWindow?.makeKeyAndVisible()
+    }
+
+    private func hidePrivacyProtectionWindow() {
+        privacyProtectionWindow?.isHidden = true
+        privacyProtectionWindow = nil
     }
     
     // MARK: -
@@ -553,7 +582,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: true)
         }
         
-        // check certificate untrusted (-1202)        
+        // check certificate untrusted (-1202)
         if NCNetworking.shared.certificatesError == currentHost {
             
             let certificateHostSavedPath = CCUtility.getDirectoryCerificates()! + "/" + currentHost + ".der"
@@ -617,7 +646,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
             NCPushNotification.shared().unsubscribingNextcloudServerPushNotification(account.account, urlBase: account.urlBase, user: account.user, withSubscribing: false)
-        }        
+        }
         
         let results = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
         for result in results {
