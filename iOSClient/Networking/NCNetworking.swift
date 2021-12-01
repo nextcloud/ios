@@ -175,10 +175,8 @@ import Queuer
             let status = SecTrustEvaluate(serverTrust, &secresult)
             let isServerTrusted = SecTrustEvaluateWithError(serverTrust, nil)
 
-            if isServerTrusted {
-                return true
-            } else if status == errSecSuccess, let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
-                    
+            if let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
+                
                 let serverCertificateData = SecCertificateCopyData(serverCertificate)
                 let data = CFDataGetBytePtr(serverCertificateData);
                 let size = CFDataGetLength(serverCertificateData);
@@ -187,10 +185,14 @@ import Queuer
                 // write certificate tmp to disk
                 certificate.write(toFile: directoryCertificate + "/" + host + ".tmp", atomically: true)
                 
-                // verify
-                let certificateSavedPath = directoryCertificate + "/" + host + ".der"
-                if let certificateSaved = NSData(contentsOfFile: certificateSavedPath), certificate.isEqual(to: certificateSaved as Data) {
+                if isServerTrusted {
                     return true
+                } else if status == errSecSuccess {
+                    // verify
+                    let certificateSavedPath = directoryCertificate + "/" + host + ".der"
+                    if let certificateSaved = NSData(contentsOfFile: certificateSavedPath), certificate.isEqual(to: certificateSaved as Data) {
+                        return true
+                    }
                 }
             }
         }
