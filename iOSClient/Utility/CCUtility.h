@@ -183,8 +183,8 @@
 + (PDFDisplayDirection)getPDFDisplayDirection;
 + (void)setPDFDisplayDirection:(PDFDisplayDirection)direction;
 
-+ (BOOL)getPrivacyScreen;
-+ (void)setPrivacyScreen:(BOOL)set;
++ (BOOL)getPrivacyScreenEnabled;
++ (void)setPrivacyScreenEnabled:(BOOL)set;
 
 // ===== Varius =====
 

@@ -244,7 +244,7 @@
     
     if ([CCUtility getEnableTouchFaceID]) [rowEnableTouchDaceID setValue:@1]; else [rowEnableTouchDaceID setValue:@0];
     if ([CCUtility getNotPasscodeAtStart]) [rowNotPasscodeAtStart setValue:@1]; else [rowNotPasscodeAtStart setValue:@0];
-    if ([CCUtility getPrivacyScreen]) [rowPrivacyScreen setValue:@1]; else [rowPrivacyScreen setValue:@0];
+    if ([CCUtility getPrivacyScreenEnabled]) [rowPrivacyScreen setValue:@1]; else [rowPrivacyScreen setValue:@0];
 
 
     // -----------------------------------------------------------------
@@ -279,9 +279,9 @@
     if ([rowDescriptor.tag isEqualToString:@"privacyScreen"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setPrivacyScreen:true];
+            [CCUtility setPrivacyScreenEnabled:true];
         } else {
-            [CCUtility setPrivacyScreen:false];
+            [CCUtility setPrivacyScreenEnabled:false];
         }
     }
 }
