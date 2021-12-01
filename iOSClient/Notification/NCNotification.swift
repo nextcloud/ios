@@ -241,7 +241,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     func tapAction(with notification: NCCommunicationNotifications, label: String) {
         if notification.app == "spreed",
-           let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(appDelegate.userId)&withRoomToken=\(notification.objectId)"),
+           let roomToken = notification.objectId.split(separator: "/").first,
+           let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(appDelegate.userId)&withRoomToken=\(roomToken)"),
            UIApplication.shared.canOpenURL(talkUrl) {
             UIApplication.shared.open(talkUrl)
         } else if let actions = notification.actions,
