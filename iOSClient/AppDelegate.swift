@@ -739,8 +739,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
                 
         if account == "" { return }
-        guard let passcode = CCUtility.getPasscode() else { return }
-        if passcode.count == 0 || CCUtility.getNotPasscodeAtStart() { return }
+        if CCUtility.getPasscode().count == 0 || CCUtility.getNotPasscodeAtStart() { return }
                 
         // Dismiss present window?.rootViewController? [ONLY PASSCODE]
         let presentedViewController = window?.rootViewController?.presentedViewController
@@ -776,8 +775,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if account == "" { return }
         if !CCUtility.getEnableTouchFaceID() { return }
-        guard let passcode = CCUtility.getPasscode() else { return }
-        if passcode.count == 0 || CCUtility.getNotPasscodeAtStart() { return }
+        if CCUtility.getPasscode().count == 0 || CCUtility.getNotPasscodeAtStart() { return }
         guard let passcodeViewController = window?.rootViewController?.presentedViewController as? TOPasscodeViewController else { return }
 
         LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
