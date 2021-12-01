@@ -732,20 +732,20 @@
     [UICKeyChainStore setString:directionString forKey:@"PDFDisplayDirection" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (BOOL)getPrivacyScreen
++ (BOOL)getPrivacyScreenEnabled
 {
     NSString *valueString = [UICKeyChainStore stringForKey:@"privacyScreen" service:NCGlobal.shared.serviceShareKeyChain];
     
     // Default TRUE
     if (valueString == nil) {
-        [self setPrivacyScreen:YES];
+        [self setPrivacyScreenEnabled:YES];
         return true;
     }
     
     return [valueString boolValue];
 }
 
-+ (void)setPrivacyScreen:(BOOL)set
++ (void)setPrivacyScreenEnabled:(BOOL)set
 {
     NSString *sSet = (set) ? @"true" : @"false";
     [UICKeyChainStore setString:sSet forKey:@"privacyScreen" service:NCGlobal.shared.serviceShareKeyChain];
