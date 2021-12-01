@@ -297,7 +297,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
        
     private func showPrivacyProtectionWindow() {
         
-        if !CCUtility.getPrivacyScreenEnabled() { return }
+        guard CCUtility.getPrivacyScreenEnabled() else { return }
+        
         if CCUtility.isPasscodeAtStartEnabled() { return }
         
         privacyProtectionWindow = UIWindow(frame: UIScreen.main.bounds)
