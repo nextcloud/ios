@@ -150,7 +150,7 @@
     
     if (!NCBrandOptions.shared.disable_crash_service) {
         
-        // Privacy
+        // Privacy and Legal Policy
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"privacy" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_privacy_legal_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
