@@ -13,6 +13,9 @@ on:
 jobs:
   XCBuild:
     runs-on: macOS-11
+    env:
+      PROJECT: Nextcloud.xcodeproj
+      DESTINATION: platform=iOS Simulator,name=iPhone 11
     steps:
     - name: Set env var
       run: echo "DEVELOPER_DIR=$(xcode-select --print-path)" >> $GITHUB_ENV
@@ -30,16 +33,23 @@ jobs:
       run: carthage bootstrap --use-xcframeworks --platform iOS
     - name: Download GoogleService-Info.plist
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
-    - name: Build iOS
+    - name: Build & Test Nextcloud iOS
       run: |
-        xcodebuild clean build -project $PROJECT -scheme ${{ matrix.SCHEME }} -destination "$DESTINATION"
+        xcodebuild clean build test -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
       env:
-          PROJECT: Nextcloud.xcodeproj
-          DESTINATION: platform=iOS Simulator,name=iPhone 11
-      strategy:
-        matrix:
-          SCHEME:
-            - Nextcloud
-            - Share
-            - File Provider Extension
-            - Notification Service Extension
+          SCHEME: Nextcloud
+    - name: Build iOS Share
+      run: |
+        xcodebuild clean build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
+      env:
+          SCHEME: Share
+    - name: Build iOS File Extension
+      run: |
+        xcodebuild clean build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
+      env:
+          SCHEME: File Provider Extension
+    - name: Build iOS Notification Extension
+      run: |
+        xcodebuild clean build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
+      env:
+          SCHEME: Notification Service Extension

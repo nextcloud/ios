@@ -18,9 +18,7 @@ type_body_length:
   error: 500
 
 identifier_name:
-  min_length:
-    error: 0
-    warning: 2
+  min_length: 0
 
 
 excluded:
