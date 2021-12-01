@@ -743,9 +743,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 
         // Dismiss present window?.rootViewController? [ONLY PASSCODE]
         let presentedViewController = window?.rootViewController?.presentedViewController
-        if !(presentedViewController is NCLoginNavigationController) {
+        if presentedViewController is NCLoginNavigationController {
+            return
+        } else {
             presentedViewController?.dismiss(animated: false)
         }
+        
         
         let passcodeViewController = TOPasscodeViewController.init(passcodeType: .sixDigits, allowCancel: false)
         passcodeViewController.delegate = self
