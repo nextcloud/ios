@@ -103,7 +103,7 @@
     [UICKeyChainStore setString:sSet forKey:@"enableTouchFaceID" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (BOOL)isPasscodeEnableAtStart
++ (BOOL)isPasscodeAtStartEnabled
 {
     if ([self getPasscode].length > 0 && ![self getNotPasscodeAtStart]) return true;
     else return false;
