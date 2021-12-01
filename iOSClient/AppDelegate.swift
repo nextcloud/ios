@@ -298,7 +298,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     private func showPrivacyProtectionWindow() {
         
         if !CCUtility.getPrivacyScreen() { return }
-        if CCUtility.isPasscodeEnableAtStart() { return }
+        if CCUtility.isPasscodeAtStartEnabled() { return }
         
         privacyProtectionWindow = UIWindow(frame: UIScreen.main.bounds)
           
@@ -739,7 +739,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
                 
         if account == "" { return }
-        if !CCUtility.isPasscodeEnableAtStart() { return }
+        if !CCUtility.isPasscodeAtStartEnabled() { return }
                 
         // Dismiss present window?.rootViewController? [ONLY PASSCODE]
         let presentedViewController = window?.rootViewController?.presentedViewController
@@ -778,7 +778,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if account == "" { return }
         if !CCUtility.getEnableTouchFaceID() { return }
-        if !CCUtility.isPasscodeEnableAtStart() { return }
+        if !CCUtility.isPasscodeAtStartEnabled() { return }
         guard let passcodeViewController = window?.rootViewController?.presentedViewController as? TOPasscodeViewController else { return }
 
         LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
