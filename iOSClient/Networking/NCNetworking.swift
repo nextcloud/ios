@@ -173,7 +173,11 @@ import Queuer
             
             var secresult = SecTrustResultType.invalid
             let status = SecTrustEvaluate(serverTrust, &secresult)
-            if errSecSuccess == status, let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
+            let isServerTrusted = SecTrustEvaluateWithError(serverTrust, nil)
+
+            if isServerTrusted {
+                return true
+            } else if status == errSecSuccess, let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
                     
                 let serverCertificateData = SecCertificateCopyData(serverCertificate)
                 let data = CFDataGetBytePtr(serverCertificateData);
