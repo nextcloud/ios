@@ -293,29 +293,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCCommunicationCommon.shared.writeLog("bye bye")
     }
     
-    // MARK: - Privacy Protection
-       
-    private func showPrivacyProtectionWindow() {
-        
-        guard CCUtility.getPrivacyScreenEnabled() else { return }
-        
-        privacyProtectionWindow = UIWindow(frame: UIScreen.main.bounds)
-          
-        let storyboard = UIStoryboard(name: "LaunchScreen", bundle: nil)
-        let initialViewController = storyboard.instantiateInitialViewController()
-
-        self.privacyProtectionWindow?.rootViewController = initialViewController
-        
-        privacyProtectionWindow?.windowLevel = .alert + 1
-        privacyProtectionWindow?.makeKeyAndVisible()
-    }
-
-    private func hidePrivacyProtectionWindow() {
-        
-        privacyProtectionWindow?.isHidden = true
-        privacyProtectionWindow = nil
-    }
-    
     // MARK: -
 
     @objc private func initialize() {
@@ -805,6 +782,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
         return code == CCUtility.getPasscode()
+    }
+    
+    // MARK: - Privacy Protection
+       
+    private func showPrivacyProtectionWindow() {
+        
+        guard CCUtility.getPrivacyScreenEnabled() else { return }
+        
+        privacyProtectionWindow = UIWindow(frame: UIScreen.main.bounds)
+          
+        let storyboard = UIStoryboard(name: "LaunchScreen", bundle: nil)
+        let initialViewController = storyboard.instantiateInitialViewController()
+
+        self.privacyProtectionWindow?.rootViewController = initialViewController
+        
+        privacyProtectionWindow?.windowLevel = .alert + 1
+        privacyProtectionWindow?.makeKeyAndVisible()
+    }
+
+    private func hidePrivacyProtectionWindow() {
+        
+        privacyProtectionWindow?.isHidden = true
+        privacyProtectionWindow = nil
     }
     
     // MARK: - Open URL
