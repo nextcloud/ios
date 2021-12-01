@@ -298,7 +298,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     private func showPrivacyProtectionWindow() {
         
         guard CCUtility.getPrivacyScreenEnabled() else { return }
-        if CCUtility.isPasscodeAtStartEnabled() { return }
         
         privacyProtectionWindow = UIWindow(frame: UIScreen.main.bounds)
           
@@ -741,6 +740,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 
         if account == "" { return }
         if !CCUtility.isPasscodeAtStartEnabled() { return }
+        
+        // If activated hide the privacy protection
+        hidePrivacyProtectionWindow()
                 
         // Dismiss present window?.rootViewController? [ONLY PASSCODE]
         let presentedViewController = window?.rootViewController?.presentedViewController
