@@ -103,6 +103,12 @@
     [UICKeyChainStore setString:sSet forKey:@"enableTouchFaceID" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
++ (BOOL)isPasscodeEnableAtStart
+{
+    if ([self getPasscode].length > 0 && ![self getNotPasscodeAtStart]) return true;
+    else return false;
+}
+
 + (NSString *)getGroupBySettings
 {
     NSString *groupby = [UICKeyChainStore stringForKey:@"groupby" service:NCGlobal.shared.serviceShareKeyChain];
