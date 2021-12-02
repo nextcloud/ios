@@ -26,27 +26,47 @@ class NCShareLinkCell: UITableViewCell {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var buttonCopy: UIButton!
-    @IBOutlet weak var buttonMenu: UIButton!
-
-    private let iconShare: CGFloat = 200
-
+    @IBOutlet weak var descriptionLabel: UILabel!
+    
+    @IBOutlet weak var menuButton: UIButton!
+    @IBOutlet weak var copyButton: UIButton!
     var tableShare: tableShare?
-    weak var delegate: NCShareLinkCellDelegate?
+    var delegate: NCShareLinkCellDelegate?
+    var isInternalLink = false
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        var imageName: String
+        var imageBGColor: UIColor
+        var menuImageName = "shareMenu"
 
-        imageItem.image = NCShareCommon.shared.createLinkAvatar(imageName: "sharebylink", colorCircle: NCBrandColor.shared.brandElement)
-        buttonCopy.setImage(UIImage(named: "shareCopy")!.image(color: .gray, size: 50), for: .normal)
-        buttonMenu.setImage(UIImage(named: "shareMenu")!.image(color: .gray, size: 50), for: .normal)
+        if isInternalLink {
+            imageName = "shareInternalLink"
+            imageBGColor = .gray
+            descriptionLabel.text = "_share_internal_link_des_"
+            labelTitle.text = "_share_internal_link_"
+            menuButton.removeFromSuperview()
+        } else {
+            if tableShare == nil {
+                copyButton.removeFromSuperview()
+                menuImageName = "shareAdd"
+            }
+            imageName = "sharebylink"
+            imageBGColor = NCBrandColor.shared.brandElement
+            labelTitle.text = "_share_link_"
+            descriptionLabel.removeFromSuperview()
+            menuButton.setImage(UIImage.init(named: menuImageName)!.image(color: .gray, size: 50), for: .normal)
+        }
+
+        imageItem.image = NCShareCommon.shared.createLinkAvatar(imageName: imageName, colorCircle: imageBGColor)
+        copyButton.setImage(UIImage.init(named: "shareCopy")!.image(color: .gray, size: 50), for: .normal)
     }
 
-    @IBAction func touchUpInsideCopy(_ sender: Any) {
+    @IBAction func touchUpCopy(_ sender: Any) {
         delegate?.tapCopy(with: tableShare, sender: sender)
     }
 
-    @IBAction func touchUpInsideMenu(_ sender: Any) {
+    @IBAction func touchUpMenu(_ sender: Any) {
         delegate?.tapMenu(with: tableShare, sender: sender)
     }
 }
