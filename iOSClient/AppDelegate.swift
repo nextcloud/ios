@@ -544,8 +544,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func trustCertificateError(host: String) {
         
-        guard let currentHost = URL(string: self.urlBase)?.host else { return }
-        guard let pushNotificationServerProxyHost = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else { return }
+        guard let currentHost = URL(string: self.urlBase)?.host, let pushNotificationServerProxyHost = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else { return }
         if host == pushNotificationServerProxyHost || host != currentHost { return }
         
         let certificateHostSavedPath = CCUtility.getDirectoryCerificates()! + "/" + host + ".der"
