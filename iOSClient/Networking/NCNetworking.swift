@@ -164,37 +164,37 @@ import Queuer
         let certificateSavedPath = directoryCertificate + "/" + host + ".der"
         var isTrusted: Bool
 
+        #if !EXTENSION
         defer {
-            #if !EXTENSION
             DispatchQueue.main.async {
                 if !isTrusted {
                     (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host)
                 }
             }
-            #endif
         }
+        #endif
         
         print("SSL host: \(host)")
         
-        if let serverTrust: SecTrust = protectionSpace.serverTrust, let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0)  {
+        if let serverTrust: SecTrust = protectionSpace.serverTrust, let certificate = SecTrustGetCertificateAtIndex(serverTrust, 0)  {
             
             // extarct certificate txt
-            saveX509Certificate(serverTrust, host: host, directoryCertificate: directoryCertificate)
+            saveX509Certificate(certificate, host: host, directoryCertificate: directoryCertificate)
            
             var secresult = SecTrustResultType.invalid
             let status = SecTrustEvaluate(serverTrust, &secresult)
             let isServerTrusted = SecTrustEvaluateWithError(serverTrust, nil)
             
-            let serverCertificateData = SecCertificateCopyData(serverCertificate)
-            let data = CFDataGetBytePtr(serverCertificateData);
-            let size = CFDataGetLength(serverCertificateData);
-            let certificate = NSData(bytes: data, length: size)
+            let certificateCopyData = SecCertificateCopyData(certificate)
+            let data = CFDataGetBytePtr(certificateCopyData);
+            let size = CFDataGetLength(certificateCopyData);
+            let certificateData = NSData(bytes: data, length: size)
                 
-            certificate.write(toFile: directoryCertificate + "/" + host + ".tmp", atomically: true)
+            certificateData.write(toFile: directoryCertificate + "/" + host + ".tmp", atomically: true)
             
             if isServerTrusted {
                 isTrusted = true
-            } else if status == errSecSuccess, let certificateSaved = NSData(contentsOfFile: certificateSavedPath), certificate.isEqual(to: certificateSaved as Data) {
+            } else if status == errSecSuccess, let certificateDataSaved = NSData(contentsOfFile: certificateSavedPath), certificateData.isEqual(to: certificateDataSaved as Data) {
                 isTrusted = true
             } else {
                 isTrusted = false
@@ -217,20 +217,18 @@ import Queuer
         }
     }
     
-    private func saveX509Certificate(_ serverTrust: SecTrust, host: String, directoryCertificate: String) {
+    private func saveX509Certificate(_ certificate: SecCertificate, host: String, directoryCertificate: String) {
         
-        if let currentServerCert = SecTrustGetCertificateAtIndex(serverTrust, 0) {
-            
-            let certNamePathTXT = directoryCertificate + "/" + host + ".txt"
-            let data: CFData = SecCertificateCopyData(currentServerCert)
-            let mem = BIO_new_mem_buf(CFDataGetBytePtr(data), Int32(CFDataGetLength(data)))
-            let x509cert = d2i_X509_bio(mem, nil)
+        let certNamePathTXT = directoryCertificate + "/" + host + ".txt"
+        let data: CFData = SecCertificateCopyData(certificate)
+        let mem = BIO_new_mem_buf(CFDataGetBytePtr(data), Int32(CFDataGetLength(data)))
+        let x509cert = d2i_X509_bio(mem, nil)
 
-            if x509cert == nil {
-                print("[LOG] OpenSSL couldn't parse X509 Certificate")
-            } else {
-                
-                // save certificate
+        if x509cert == nil {
+            print("[LOG] OpenSSL couldn't parse X509 Certificate")
+        } else {
+            
+            // save certificate
 //                if FileManager.default.fileExists(atPath: certNamePath) {
 //                    do {
 //                        try FileManager.default.removeItem(atPath: certNamePath)
@@ -241,26 +239,25 @@ import Queuer
 //                    PEM_write_X509(fileCert, x509cert)
 //                }
 //                fclose(fileCert)
-                
-                // save details
-                if FileManager.default.fileExists(atPath: certNamePathTXT) {
-                    do {
-                        try FileManager.default.removeItem(atPath: certNamePathTXT)
-                    } catch { }
-                }
-                let fileCertInfo = fopen(certNamePathTXT, "w")
-                if fileCertInfo != nil {
-                    let output = BIO_new_fp(fileCertInfo, BIO_NOCLOSE)
-                    X509_print_ex(output, x509cert, UInt(XN_FLAG_COMPAT), UInt(X509_FLAG_COMPAT))
-                    BIO_free(output)
-                }
-                fclose(fileCertInfo)
-
-                X509_free(x509cert)
+            
+            // save details
+            if FileManager.default.fileExists(atPath: certNamePathTXT) {
+                do {
+                    try FileManager.default.removeItem(atPath: certNamePathTXT)
+                } catch { }
             }
-                
-            BIO_free(mem)
+            let fileCertInfo = fopen(certNamePathTXT, "w")
+            if fileCertInfo != nil {
+                let output = BIO_new_fp(fileCertInfo, BIO_NOCLOSE)
+                X509_print_ex(output, x509cert, UInt(XN_FLAG_COMPAT), UInt(X509_FLAG_COMPAT))
+                BIO_free(output)
+            }
+            fclose(fileCertInfo)
+
+            X509_free(x509cert)
         }
+            
+        BIO_free(mem)
     }
     
     func checkPushNotificationServerProxyCertificateUntrusted(viewController: UIViewController?, completion: @escaping (_ errorCode: Int)->()) {
