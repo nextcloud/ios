@@ -187,8 +187,9 @@ class NCShareCommon: NSObject {
                 activityViewController.popoverPresentationController?.sourceRect = (sender as AnyObject).bounds
             }
         }
-
-        viewController.present(activityViewController, animated: true, completion: nil)
+        DispatchQueue.main.async {
+            viewController.present(activityViewController, animated: true, completion: nil)
+        }
     }
 
     func getImageShareType(shareType: Int) -> UIImage? {
