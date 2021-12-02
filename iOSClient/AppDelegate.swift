@@ -273,8 +273,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             scheduleBackgroundProcessing()
         }
         
-        //TODO: INSERT BACKGROUD PRIVACY
-
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
     }
     
@@ -292,10 +290,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if account == "" { return }
 
         NCCommunicationCommon.shared.writeLog("initialize Main")
-        
-        // Clear error certificate
-        NCNetworking.shared.certificatesError = nil
-        
+                
         // Registeration push notification
         NCPushNotification.shared().pushNotification()
         
@@ -535,62 +530,53 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
     
-    func viewCertificateDetailsDismiss() {
-        self.startTimerErrorNetworking()
-    }
-    
     @objc func startTimerErrorNetworking() {
         timerErrorNetworking = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(checkErrorNetworking), userInfo: nil, repeats: true)
     }
     
     @objc private func checkErrorNetworking() {
-                
-        if account == "" { return }
-        guard let currentHost = URL(string: self.urlBase)?.host else { return }
-                
+        
         // check unauthorized server (401/403)
-        if CCUtility.getPassword(account)!.count == 0 {
+        if account != "" && CCUtility.getPassword(account)!.count == 0 {
             openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: true)
         }
+    }
+    
+    func trustCertificateError(host: String) {
         
-        // check certificate untrusted (-1202)        
-        if NCNetworking.shared.certificatesError == currentHost {
-            
-            let certificateHostSavedPath = CCUtility.getDirectoryCerificates()! + "/" + currentHost + ".der"
-            var title = NSLocalizedString("_ssl_certificate_changed_", comment: "")
-            
-            if !FileManager.default.fileExists(atPath: certificateHostSavedPath) {
-                title = NSLocalizedString("_connect_server_anyway_", comment: "")
-            }
-            
-            let alertController = UIAlertController(title: title, message: NSLocalizedString("_server_is_trusted_", comment: ""), preferredStyle: .alert)
-            
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
-                
-                NCNetworking.shared.writeCertificate(host: currentHost)
-                NCNetworking.shared.certificatesError = nil
-                self.startTimerErrorNetworking()
-            }))
-            
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
-                
-                NCNetworking.shared.certificatesError = nil
-                self.startTimerErrorNetworking()
-            }))
-            
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
-                if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController {
-                    let viewController = navigationController.topViewController as! NCViewCertificateDetails
-                    viewController.delegate = self
-                    viewController.host = currentHost
-                    self.window?.rootViewController?.present(navigationController, animated: true)
-                }
-            }))
-            
-            window?.rootViewController?.present(alertController, animated: true, completion: {
-                self.timerErrorNetworking?.invalidate()
-            })
+        guard let currentHost = URL(string: self.urlBase)?.host else { return }
+        guard let pushNotificationServerProxyHost = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else { return }
+        if host == pushNotificationServerProxyHost || host != currentHost { return }
+        
+        let certificateHostSavedPath = CCUtility.getDirectoryCerificates()! + "/" + host + ".der"
+        var title = NSLocalizedString("_ssl_certificate_changed_", comment: "")
+        
+        if !FileManager.default.fileExists(atPath: certificateHostSavedPath) {
+            title = NSLocalizedString("_connect_server_anyway_", comment: "")
         }
+        
+        let alertController = UIAlertController(title: title, message: NSLocalizedString("_server_is_trusted_", comment: ""), preferredStyle: .alert)
+        
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
+            NCNetworking.shared.writeCertificate(host: host)
+        }))
+        
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in }))
+        
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
+            if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController {
+                let viewController = navigationController.topViewController as! NCViewCertificateDetails
+                viewController.delegate = self
+                viewController.host = host
+                self.window?.rootViewController?.present(navigationController, animated: true)
+            }
+        }))
+        
+        window?.rootViewController?.present(alertController, animated: true)
+    }
+    
+    func viewCertificateDetailsDismiss(host: String) {
+        trustCertificateError(host: host)
     }
     
     // MARK: - Account
@@ -625,7 +611,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         NCManageDatabase.shared.clearDatabase(account: account, removeAccount: true)
         
-        NCNetworking.shared.certificatesError = nil
         CCUtility.clearAllKeysEnd(toEnd: account)
         CCUtility.clearAllKeysPushNotification(account)
         CCUtility.setPassword(account, password: nil)
