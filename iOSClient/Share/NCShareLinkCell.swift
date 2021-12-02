@@ -24,44 +24,57 @@ import UIKit
 
 class NCShareLinkCell: UITableViewCell {
 
-    @IBOutlet weak var imageItem: UIImageView!
-    @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var descriptionLabel: UILabel!
-    
-    @IBOutlet weak var menuButton: UIButton!
-    @IBOutlet weak var copyButton: UIButton!
+    @IBOutlet private weak var imageItem: UIImageView!
+    @IBOutlet private weak var labelTitle: UILabel!
+    @IBOutlet private weak var descriptionLabel: UILabel!
+
+    @IBOutlet private weak var menuButton: UIButton!
+    @IBOutlet private weak var copyButton: UIButton!
     var tableShare: tableShare?
     var delegate: NCShareLinkCellDelegate?
     var isInternalLink = false
 
-    override func awakeFromNib() {
-        super.awakeFromNib()
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        isInternalLink = false
+        tableShare = nil
+    }
+
+    func setupCellUI() {
         var imageName: String
         var imageBGColor: UIColor
         var menuImageName = "shareMenu"
 
+        menuButton.isHidden = isInternalLink
+        descriptionLabel.isHidden = !isInternalLink
+        copyButton.isHidden = !isInternalLink && tableShare == nil
+
         if isInternalLink {
             imageName = "shareInternalLink"
             imageBGColor = .gray
-            descriptionLabel.text = "_share_internal_link_des_"
-            labelTitle.text = "_share_internal_link_"
-            menuButton.removeFromSuperview()
+            labelTitle.text = NSLocalizedString("_share_internal_link_", comment: "")
+            descriptionLabel.text = NSLocalizedString("_share_internal_link_des_", comment: "")
         } else {
-            if tableShare == nil {
-                copyButton.removeFromSuperview()
+            labelTitle.text = NSLocalizedString("_share_link_", comment: "")
+            if let tableShare = tableShare {
+                if !tableShare.label.isEmpty {
+                    labelTitle.text? += " (\(tableShare.label))"
+                }
+            } else {
                 menuImageName = "shareAdd"
             }
+
             imageName = "sharebylink"
             imageBGColor = NCBrandColor.shared.brandElement
-            labelTitle.text = "_share_link_"
-            descriptionLabel.removeFromSuperview()
+
             menuButton.setImage(UIImage.init(named: menuImageName)!.image(color: .gray, size: 50), for: .normal)
         }
 
+        labelTitle.textColor = NCBrandColor.shared.label
         imageItem.image = NCShareCommon.shared.createLinkAvatar(imageName: imageName, colorCircle: imageBGColor)
         copyButton.setImage(UIImage.init(named: "shareCopy")!.image(color: .gray, size: 50), for: .normal)
     }
-
+    
     @IBAction func touchUpCopy(_ sender: Any) {
         delegate?.tapCopy(with: tableShare, sender: sender)
     }
