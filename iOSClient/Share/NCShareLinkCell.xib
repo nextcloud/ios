@@ -51,20 +51,22 @@
                             </button>
                         </subviews>
                     </stackView>
-                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="Wxr-1B-Czy">
-                        <rect key="frame" x="53" y="20.5" width="432" height="49"/>
+                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="Wxr-1B-Czy">
+                        <rect key="frame" x="53" y="12" width="432" height="66"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Share link" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="otH-mT-7Z4" userLabel="labelTitle">
-                                <rect key="frame" x="0.0" y="0.0" width="432" height="18"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="18" id="iet-xr-SX6"/>
-                                </constraints>
+                                <rect key="frame" x="0.0" y="0.0" width="432" height="22"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Description" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WJj-9P-3bn">
-                                <rect key="frame" x="0.0" y="33" width="432" height="16"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalCompressionResistancePriority="245" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WJj-9P-3bn">
+                                <rect key="frame" x="0.0" y="26" width="432" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="Eo4-Rq-ETK"/>
+                                </constraints>
+                                <string key="text">Only works....
+.;...</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <color key="textColor" systemColor="secondaryLabelColor"/>
                                 <nil key="highlightedColor"/>
@@ -75,11 +77,12 @@
                 <constraints>
                     <constraint firstItem="OQv-Vf-bvD" firstAttribute="leading" secondItem="Wxr-1B-Czy" secondAttribute="trailing" constant="15" id="8QW-n0-4lO"/>
                     <constraint firstItem="qDs-UG-Mn7" firstAttribute="leading" secondItem="3Oe-gU-3Nk" secondAttribute="leading" constant="5" id="KOm-wo-CBa"/>
+                    <constraint firstAttribute="bottom" secondItem="Wxr-1B-Czy" secondAttribute="bottom" constant="12" id="MM0-9i-BpF"/>
                     <constraint firstAttribute="trailing" secondItem="OQv-Vf-bvD" secondAttribute="trailing" constant="30" id="W3b-ww-vbQ"/>
                     <constraint firstItem="qDs-UG-Mn7" firstAttribute="centerY" secondItem="3Oe-gU-3Nk" secondAttribute="centerY" id="ZrD-Aw-xkx"/>
-                    <constraint firstItem="Wxr-1B-Czy" firstAttribute="centerY" secondItem="3Oe-gU-3Nk" secondAttribute="centerY" id="blr-Mw-Yjl"/>
                     <constraint firstItem="OQv-Vf-bvD" firstAttribute="centerY" secondItem="3Oe-gU-3Nk" secondAttribute="centerY" id="eLc-gk-xAr"/>
                     <constraint firstItem="Wxr-1B-Czy" firstAttribute="leading" secondItem="qDs-UG-Mn7" secondAttribute="trailing" constant="8" id="nXI-b3-EJM"/>
+                    <constraint firstItem="Wxr-1B-Czy" firstAttribute="top" secondItem="3Oe-gU-3Nk" secondAttribute="top" constant="12" id="vxe-9X-O1f"/>
                 </constraints>
             </tableViewCellContentView>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
