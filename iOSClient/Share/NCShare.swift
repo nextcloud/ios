@@ -308,6 +308,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
 extension NCShare: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.section == 0, indexPath.row == 0 {
+            // internal cell has description
+            return 90
+        }
         return 70
     }
 }
