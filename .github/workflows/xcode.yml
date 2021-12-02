@@ -40,16 +40,16 @@ jobs:
           SCHEME: Nextcloud
     - name: Build iOS Share
       run: |
-        xcodebuild clean build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
       env:
           SCHEME: Share
     - name: Build iOS File Extension
       run: |
-        xcodebuild clean build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
       env:
           SCHEME: File Provider Extension
     - name: Build iOS Notification Extension
       run: |
-        xcodebuild clean build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
       env:
           SCHEME: Notification Service Extension
