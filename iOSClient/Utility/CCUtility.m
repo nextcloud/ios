@@ -103,6 +103,12 @@
     [UICKeyChainStore setString:sSet forKey:@"enableTouchFaceID" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
++ (BOOL)isPasscodeAtStartEnabled
+{
+    if ([self getPasscode].length > 0 && ![self getNotPasscodeAtStart]) return true;
+    else return false;
+}
+
 + (NSString *)getGroupBySettings
 {
     NSString *groupby = [UICKeyChainStore stringForKey:@"groupby" service:NCGlobal.shared.serviceShareKeyChain];
@@ -724,6 +730,25 @@
 {
     NSString *directionString = [@(direction) stringValue];
     [UICKeyChainStore setString:directionString forKey:@"PDFDisplayDirection" service:NCGlobal.shared.serviceShareKeyChain];
+}
+
++ (BOOL)getPrivacyScreenEnabled
+{
+    NSString *valueString = [UICKeyChainStore stringForKey:@"privacyScreen" service:NCGlobal.shared.serviceShareKeyChain];
+    
+    // Default TRUE
+    if (valueString == nil) {
+        [self setPrivacyScreenEnabled:YES];
+        return true;
+    }
+    
+    return [valueString boolValue];
+}
+
++ (void)setPrivacyScreenEnabled:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"privacyScreen" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
 #pragma --------------------------------------------------------------------------------------------
