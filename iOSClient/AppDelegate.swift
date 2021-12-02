@@ -707,20 +707,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Passcode
     
     func presentPasscode(completion: @escaping ()->()) {
-        
+
         let laContext = LAContext()
         var error: NSError?
-        
+
         defer {
             self.requestAccount()
         }
-                
-        if account == "" { return }
-        if !CCUtility.isPasscodeAtStartEnabled() { return }
+
+        guard !account.isEmpty, CCUtility.isPasscodeAtStartEnabled() else { return }
         
         // If activated hide the privacy protection
         hidePrivacyProtectionWindow()
-                
+
         // Dismiss present window?.rootViewController? [ONLY PASSCODE]
         let presentedViewController = window?.rootViewController?.presentedViewController
         if presentedViewController is NCLoginNavigationController {
@@ -728,8 +727,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else {
             presentedViewController?.dismiss(animated: false)
         }
-        
-        
+
         let passcodeViewController = TOPasscodeViewController.init(passcodeType: .sixDigits, allowCancel: false)
         passcodeViewController.delegate = self
         passcodeViewController.keypadButtonShowLettering = false
@@ -755,11 +753,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func enableTouchFaceID() {
-        
-        if account == "" { return }
-        if !CCUtility.getEnableTouchFaceID() { return }
-        if !CCUtility.isPasscodeAtStartEnabled() { return }
-        guard let passcodeViewController = window?.rootViewController?.presentedViewController as? TOPasscodeViewController else { return }
+
+        guard !account.isEmpty,
+              CCUtility.getEnableTouchFaceID(),
+              CCUtility.isPasscodeAtStartEnabled(),
+              let passcodeViewController = window?.rootViewController?.presentedViewController as? TOPasscodeViewController
+        else { return }
 
         LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
             if success {
