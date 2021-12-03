@@ -373,7 +373,7 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     }
 }
 
-protocol NCNotificationCellDelegate {
+protocol NCNotificationCellDelegate: AnyObject {
     func tapRemove(with notification: NCCommunicationNotifications)
     func tapAction(with notification: NCCommunicationNotifications, label: String)
 }
