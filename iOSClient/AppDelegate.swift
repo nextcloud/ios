@@ -64,6 +64,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var shares: [tableShare] = []
     var timerErrorNetworking: Timer?
     
+    private var privacyProtectionWindow: UIWindow?
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         let userAgent = CCUtility.getUserAgent() as String
@@ -97,7 +99,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else {
             
             levelLog = CCUtility.getLogLevel()
-            NCCommunicationCommon.shared.levelLog = levelLog            
+            NCCommunicationCommon.shared.levelLog = levelLog
             NCCommunicationCommon.shared.copyLogToDocumentDirectory = true
             if isSimulatorOrTestFlight {
                 NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
@@ -167,7 +169,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else {
             if !CCUtility.getIntro() {
                 if let viewController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() {
-                    let navigationController = UINavigationController(rootViewController: viewController)
+                    let navigationController = NCLoginNavigationController.init(rootViewController: viewController)
                     window?.rootViewController = navigationController
                     window?.makeKeyAndVisible()
                 }
@@ -176,7 +178,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         // Passcode
         DispatchQueue.main.async {
-            self.presentPasscode()
+            self.presentPasscode {
+                self.enableTouchFaceID()
+            }
         }
         
         return true
@@ -186,6 +190,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione entrerà in primo piano (attivo sempre)
     func applicationDidBecomeActive(_ application: UIApplication) {
+        
+        // Privacy
+        hidePrivacyProtectionWindow()
         
         NCSettingsBundleHelper.setVersionAndBuildNumber()
         
@@ -219,9 +226,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             networkingProcessUpload?.startTimer()
         }
         
-        // Request Passcode
-        presentPasscode()
-        
         // Initialize Auto upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { (_) in }
                 
@@ -230,6 +234,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             
         // Request Service Server Nextcloud
         NCService.shared.startRequestServicesServer()
+        
+        // Request TouchID, FaceID
+        enableTouchFaceID()
         
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationWillEnterForeground)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRichdocumentGrabFocus)
@@ -240,7 +247,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationWillResignActive(_ application: UIApplication) {
         
         if account == "" { return }
-        
+
+        // Privacy
+        showPrivacyProtectionWindow()
+                
         // Clear operation queue
         NCOperationQueue.shared.cancelAllQueue()
         // Clear download
@@ -260,9 +270,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if account == "" { return }
         
-        // Dismiss rootViewController
-        self.window?.rootViewController?.dismiss(animated: false)
-        
         // STOP TIMER UPLOAD PROCESS
         if NCUtility.shared.isSimulator() {
             networkingProcessUpload?.stopTimer()
@@ -272,6 +279,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             scheduleAppRefresh()
             scheduleBackgroundProcessing()
         }
+        
+        // Passcode
+        presentPasscode { }
         
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
     }
@@ -505,7 +515,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if contextViewController == nil {
             if let viewController = viewController {
-                let navigationController = UINavigationController.init(rootViewController: viewController)
+                let navigationController = NCLoginNavigationController.init(rootViewController: viewController)
                 navigationController.navigationBar.barStyle = .black
                 navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText
                 navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer
@@ -519,7 +529,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         } else {
             if let viewController = viewController, let contextViewController = contextViewController {
-                let navigationController = UINavigationController.init(rootViewController: viewController)
+                let navigationController = NCLoginNavigationController.init(rootViewController: viewController)
                 navigationController.modalPresentationStyle = .fullScreen
                 navigationController.navigationBar.barStyle = .black
                 navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText
@@ -602,7 +612,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
             NCPushNotification.shared().unsubscribingNextcloudServerPushNotification(account.account, urlBase: account.urlBase, user: account.user, withSubscribing: false)
-        }        
+        }
         
         let results = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
         for result in results {
@@ -682,19 +692,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     // MARK: - Passcode
     
-    func presentPasscode() {
-        
+    func presentPasscode(completion: @escaping ()->()) {
+
         let laContext = LAContext()
         var error: NSError?
-        
+
         defer {
             self.requestAccount()
         }
-                
-        if account == "" { return }
-        guard let passcode = CCUtility.getPasscode() else { return }
-        if passcode.count == 0 || CCUtility.getNotPasscodeAtStart() { return }
-                
+
+        guard !account.isEmpty, CCUtility.isPasscodeAtStartEnabled() else { return }
+        
+        // If activated hide the privacy protection
+        hidePrivacyProtectionWindow()
+
+        // Dismiss present window?.rootViewController? [ONLY PASSCODE]
+        let presentedViewController = window?.rootViewController?.presentedViewController
+        if presentedViewController is NCLoginNavigationController {
+            return
+        } else {
+            presentedViewController?.dismiss(animated: false)
+        }
+
         let passcodeViewController = TOPasscodeViewController.init(passcodeType: .sixDigits, allowCancel: false)
         passcodeViewController.delegate = self
         passcodeViewController.keypadButtonShowLettering = false
@@ -706,15 +725,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     passcodeViewController.biometryType = .touchID
                 }
                 passcodeViewController.allowBiometricValidation = true
-                passcodeViewController.automaticallyPromptForBiometricValidation = true
+                passcodeViewController.automaticallyPromptForBiometricValidation = false
             }
         }
         
-        window?.rootViewController?.present(passcodeViewController, animated: true)
+        window?.rootViewController?.present(passcodeViewController, animated: true, completion: {
+            completion()
+        })
     }
     
     func isPasscodePresented() -> Bool {
         return window?.rootViewController?.presentedViewController is TOPasscodeViewController
+    }
+    
+    func enableTouchFaceID() {
+
+        guard !account.isEmpty,
+              CCUtility.getEnableTouchFaceID(),
+              CCUtility.isPasscodeAtStartEnabled(),
+              let passcodeViewController = window?.rootViewController?.presentedViewController as? TOPasscodeViewController
+        else { return }
+
+        LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
+            if success {
+                DispatchQueue.main.async {
+                    passcodeViewController.dismiss(animated: true) {
+                        self.requestAccount()
+                    }
+                }
+            }
+        }
     }
     
     func didInputCorrectPasscode(in passcodeViewController: TOPasscodeViewController) {
@@ -729,18 +769,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return code == CCUtility.getPasscode()
     }
     
-    func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
-        LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
-            if success {
-                DispatchQueue.main.async {
-                    passcodeViewController.dismiss(animated: true) {
-                        self.requestAccount()
-                    }
-                }
-            }
-        }
+    // MARK: - Privacy Protection
+       
+    private func showPrivacyProtectionWindow() {
+        
+        guard CCUtility.getPrivacyScreenEnabled() else { return }
+        
+        privacyProtectionWindow = UIWindow(frame: UIScreen.main.bounds)
+          
+        let storyboard = UIStoryboard(name: "LaunchScreen", bundle: nil)
+        let initialViewController = storyboard.instantiateInitialViewController()
+
+        self.privacyProtectionWindow?.rootViewController = initialViewController
+        
+        privacyProtectionWindow?.windowLevel = .alert + 1
+        privacyProtectionWindow?.makeKeyAndVisible()
     }
 
+    private func hidePrivacyProtectionWindow() {
+        
+        privacyProtectionWindow?.isHidden = true
+        privacyProtectionWindow = nil
+    }
+    
     // MARK: - Open URL
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
