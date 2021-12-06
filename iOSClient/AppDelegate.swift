@@ -550,10 +550,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func trustCertificateError(host: String) {
-        
-        guard let currentHost = URL(string: self.urlBase)?.host, let pushNotificationServerProxyHost = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else { return }
-        if host == pushNotificationServerProxyHost || host != currentHost { return }
-        
+
+        guard let currentHost = URL(string: self.urlBase)?.host,
+              let pushNotificationServerProxyHost = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host,
+              host != pushNotificationServerProxyHost,
+              host == currentHost
+        else { return }
+
         let certificateHostSavedPath = CCUtility.getDirectoryCerificates()! + "/" + host + ".der"
         var title = NSLocalizedString("_ssl_certificate_changed_", comment: "")
         
