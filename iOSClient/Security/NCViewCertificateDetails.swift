@@ -24,12 +24,12 @@
 import UIKit
 
 public protocol NCViewCertificateDetailsDelegate {
-    func viewCertificateDetailsDismiss()
+    func viewCertificateDetailsDismiss(host: String)
 }
 
 // optional func
 public extension NCViewCertificateDetailsDelegate {
-    func viewCertificateDetailsDismiss() {}
+    func viewCertificateDetailsDismiss(host: String) {}
 }
 
 class NCViewCertificateDetails: UIViewController  {
@@ -87,7 +87,7 @@ class NCViewCertificateDetails: UIViewController  {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        self.delegate?.viewCertificateDetailsDismiss()
+        self.delegate?.viewCertificateDetailsDismiss(host: host)
     }
     
     // MARK: ACTION

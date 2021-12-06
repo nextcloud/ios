@@ -270,9 +270,6 @@ extension NCLoginWeb: WKNavigationDelegate {
             NCUtility.shared.removeAllSettings()
         }
         
-        // Clear certificate error
-        NCNetworking.shared.certificatesError = nil
-
         // Add new account
         NCManageDatabase.shared.deleteAccount(account)
         NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: username, password: password)
