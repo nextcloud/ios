@@ -231,34 +231,41 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
             }
         }
     }
+
+    func checkEnforcedPassword(callback: @escaping (String?) -> Void) {
+        guard let metadata = self.metadata,
+              NCManageDatabase.shared.getCapabilitiesServerBool(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesFileSharingPubPasswdEnforced, exists: false)
+        else { return callback(nil) }
+
+        let alertController = UIAlertController(title: NSLocalizedString("_enforce_password_protection_", comment: ""), message: "", preferredStyle: .alert)
+        alertController.addTextField { textField in
+            textField.isSecureTextEntry = true
+        }
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { _ in })
+        let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { _ in
+            let password = alertController.textFields?.first?.text
+            callback(password)
+        }
+
+        alertController.addAction(okAction)
+
+        self.present(alertController, animated: true, completion:nil)
+    }
     
     @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
 
         guard let metadata = self.metadata else { return }
-        let isFilesSharingPublicPasswordEnforced = NCManageDatabase.shared.getCapabilitiesServerBool(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesFileSharingPubPasswdEnforced, exists: false)
         let shares = NCManageDatabase.shared.getTableShares(metadata: metadata)
 
-        if isFilesSharingPublicPasswordEnforced && shares.firstShareLink == nil {
-            let alertController = UIAlertController(title: NSLocalizedString("_enforce_password_protection_", comment: ""), message: "", preferredStyle: .alert)
-            alertController.addTextField { (textField) in
-                textField.isSecureTextEntry = true
+        if shares.firstShareLink == nil {
+            checkEnforcedPassword { password in
+                self.networking?.createShareLink(password: password)
             }
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { (action:UIAlertAction) in })
-            let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { (action:UIAlertAction) in
-                let password = alertController.textFields?.first?.text
-                self.networking?.createShareLink(password: password ?? "")
-            }
-            
-            alertController.addAction(okAction)
-            
-            self.present(alertController, animated: true, completion:nil)
-        } else if shares.firstShareLink == nil {
-            networking?.createShareLink(password: "")
         } else {
             tapMenu(with: shares.firstShareLink!, sender: sender)
         }
     }
-    
+
     @objc func tapLinkMenuViewWindow(gesture: UITapGestureRecognizer) {
         shareLinkMenuView?.unLoad()
         shareLinkMenuView = nil
@@ -354,12 +361,14 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
                 }
             }
         }
-        
-        dropDown.selectionAction = { [weak self] (index, item) in
+
+        dropDown.selectionAction = { (index, item) in
             let sharee = sharees[index]
-            self!.networking?.createShare(shareWith: sharee.shareWith, shareType: sharee.shareType, metadata: self!.metadata!)
+            self.checkEnforcedPassword { password in
+                self.networking?.createShare(shareWith: sharee.shareWith, shareType: sharee.shareType, password: password, metadata: self.metadata!)
+            }
         }
-        
+
         dropDown.show()
     }
 }
