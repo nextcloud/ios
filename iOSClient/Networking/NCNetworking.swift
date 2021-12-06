@@ -227,19 +227,7 @@ import Queuer
         if x509cert == nil {
             print("[LOG] OpenSSL couldn't parse X509 Certificate")
         } else {
-            
-            // save certificate
-//                if FileManager.default.fileExists(atPath: certNamePath) {
-//                    do {
-//                        try FileManager.default.removeItem(atPath: certNamePath)
-//                    } catch { }
-//                }
-//                let fileCert = fopen(certNamePath, "w")
-//                if fileCert != nil {
-//                    PEM_write_X509(fileCert, x509cert)
-//                }
-//                fclose(fileCert)
-            
+
             // save details
             if FileManager.default.fileExists(atPath: certNamePathTXT) {
                 do {
@@ -256,7 +244,7 @@ import Queuer
 
             X509_free(x509cert)
         }
-            
+
         BIO_free(mem)
     }
     
