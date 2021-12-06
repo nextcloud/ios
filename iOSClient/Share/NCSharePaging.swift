@@ -110,6 +110,7 @@ class NCSharePaging: UIViewController {
         self.title = pagingIndexItem.title
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.orientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
         changeTheming()
     }
 
@@ -131,11 +132,22 @@ class NCSharePaging: UIViewController {
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
     }
 
+    deinit {
+       NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
+    }
+
     @objc func exitTapped() {
         self.dismiss(animated: true, completion: nil)
     }
 
-    // MARK: - NotificationCenter
+    //MARK: - NotificationCenter
+
+    @objc func orientationDidChange() {
+        print(#function, self.view.bounds.width, view.frame.width)
+        pagingViewController.menuItemSize = .fixed(
+            width: self.view.bounds.width / CGFloat(NCGlobal.NCSharePagingIndex.allCases.count),
+            height: 40)
+    }
 
     @objc func changeTheming() {
         pagingViewController.indicatorColor = NCBrandColor.shared.brandElement
@@ -170,8 +182,8 @@ extension NCSharePaging: PagingViewControllerDelegate {
 extension NCSharePaging: PagingViewControllerDataSource {
 
     func pagingViewController(_: PagingViewController, viewControllerAt index: Int) -> UIViewController {
-
-        let height = pagingViewController.options.menuHeight + NCSharePagingView.HeaderHeight
+    
+        let height = pagingViewController.options.menuHeight + NCSharePagingView.headerHeight
 
         switch NCGlobal.NCSharePagingIndex(rawValue: index) {
         case .activity:
@@ -242,7 +254,7 @@ class NCShareHeaderViewController: PagingViewController {
 
 class NCSharePagingView: PagingView {
     
-    static let HeaderHeight: CGFloat = 100
+    static let headerHeight: CGFloat = 100
     var metadata = tableMetadata()
 
     var headerHeightConstraint: NSLayoutConstraint?
@@ -293,7 +305,7 @@ class NCSharePagingView: PagingView {
         headerView.translatesAutoresizingMaskIntoConstraints = false
 
         headerHeightConstraint = headerView.heightAnchor.constraint(
-            equalToConstant: NCSharePagingView.HeaderHeight
+            equalToConstant: NCSharePagingView.headerHeight
         )
         headerHeightConstraint?.isActive = true
 
