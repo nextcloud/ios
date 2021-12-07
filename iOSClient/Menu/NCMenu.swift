@@ -84,86 +84,72 @@ class NCMenu: UITableViewController {
         return cell
     }
 
+    // MARK: - Tabel View Layout
+
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60
+    }
+
     // MARK: - Accessibility
-    
+
     open override func accessibilityPerformEscape() -> Bool {
         dismiss(animated: true)
         return true
     }
-
 }
 extension NCMenu: FloatingPanelControllerDelegate {
 
-    func floatingPanel(_ vc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout? {
-        let safeAreaInsetsBottom = Int(UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0)
-        return NCMenuFloatingPanelLayout(height: self.actions.count * 60 + safeAreaInsetsBottom)
-    }
-    
-    func floatingPanel(_ vc: FloatingPanelController, behaviorFor newCollection: UITraitCollection) -> FloatingPanelBehavior? {
-        return NCMenuFloatingPanelBehavior()
+    func floatingPanel(_ fpc: FloatingPanelController, layoutFor size: CGSize) -> FloatingPanelLayout {
+        return NCMenuFloatingPanelLayout(numberOfActions: self.actions.count, view: view)
     }
 
-    func floatingPanelDidEndDecelerating(_ vc: FloatingPanelController) {
-        if vc.position == .hidden {
-            vc.dismiss(animated: false, completion: nil)
-        }
+    func floatingPanel(_ fpc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout {
+        return NCMenuFloatingPanelLayout(numberOfActions: self.actions.count, view: view)
+    }
+
+    func floatingPanel(_ fpc: FloatingPanelController, animatorForDismissingWith velocity: CGVector) -> UIViewPropertyAnimator {
+        return UIViewPropertyAnimator(duration: 0.1, curve: .easeInOut)
+    }
+
+    func floatingPanel(_ fpc: FloatingPanelController, animatorForPresentingTo state: FloatingPanelState) -> UIViewPropertyAnimator {
+        return UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut)
+    }
+    
+    func floatingPanelDidChangeState(_ fpc: FloatingPanelController) {
+        guard fpc.state == .hidden else { return }
+        fpc.dismiss(animated: false, completion: nil)
     }
 }
 
 class NCMenuFloatingPanelLayout: FloatingPanelLayout {
+    var position: FloatingPanelPosition = .bottom
 
-    let height: CGFloat
+    var initialState: FloatingPanelState = .full
 
-    init(height: Int) {
-        self.height = CGFloat(height)
+    var anchors: [FloatingPanelState : FloatingPanelLayoutAnchoring] {
+        [
+            .full: FloatingPanelLayoutAnchor(absoluteInset: topInset, edge: .top, referenceGuide: .superview)
+        ]
     }
 
-    var initialPosition: FloatingPanelPosition {
-        return .full
+    let topInset: CGFloat
+
+    init(numberOfActions: Int, view: UIView) {
+        let bottomInset = UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0
+        let panelHeight = CGFloat(numberOfActions * 60) + bottomInset
+        topInset = max(48, view.bounds.height - panelHeight)
     }
 
-    var supportedPositions: Set<FloatingPanelPosition> {
-        return [.full, .hidden]
-    }
-
-    func insetFor(position: FloatingPanelPosition) -> CGFloat? {
-        if (position == .full) {
-            return max(48, UIScreen.main.bounds.size.height - height)
-        } else {
-            return nil
-        }
-    }
-
-    var positionReference: FloatingPanelLayoutReference {
-        return .fromSuperview
-    }
-
-    public func prepareLayout(surfaceView: UIView, in view: UIView) -> [NSLayoutConstraint] {
+    func prepareLayout(surfaceView: UIView, in view: UIView) -> [NSLayoutConstraint] {
         return [
             surfaceView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
             surfaceView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0),
         ]
     }
 
-    func backdropAlphaFor(position: FloatingPanelPosition) -> CGFloat {
+    func backdropAlpha(for state: FloatingPanelState) -> CGFloat {
         return 0.2
     }
-}
-
-public class NCMenuFloatingPanelBehavior: FloatingPanelBehavior {
-
-    public func addAnimator(_ fpc: FloatingPanelController, to: FloatingPanelPosition) -> UIViewPropertyAnimator {
-        return UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut)
-    }
-
-    public func removeAnimator(_ fpc: FloatingPanelController, from: FloatingPanelPosition) -> UIViewPropertyAnimator {
-        return UIViewPropertyAnimator(duration: 0.1, curve: .easeInOut)
-    }
-
-    public func moveAnimator(_ fpc: FloatingPanelController, from: FloatingPanelPosition, to: FloatingPanelPosition) -> UIViewPropertyAnimator {
-        return UIViewPropertyAnimator(duration: 0.1, curve: .easeInOut)
-    }
-
 }
 
 class NCMenuPanelController: FloatingPanelController {
@@ -177,7 +163,7 @@ class NCMenuPanelController: FloatingPanelController {
 
         self.surfaceView.backgroundColor = NCBrandColor.shared.systemBackground
         self.isRemovalInteractionEnabled = true
-        self.surfaceView.cornerRadius = 16
+        self.surfaceView.layer.cornerRadius = 16
     }
 }
 
