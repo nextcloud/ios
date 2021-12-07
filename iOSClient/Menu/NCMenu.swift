@@ -5,9 +5,11 @@
 //  Created by Philippe Weidmann on 16.01.20.
 //  Copyright © 2020 Philippe Weidmann. All rights reserved.
 //  Copyright © 2020 Marino Faggiana All rights reserved.
+//  Copyright © 2021 Henrik Storch All rights reserved.
 //
 //  Author Philippe Weidmann <philippe.weidmann@infomaniak.com>
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -108,16 +110,18 @@ extension NCMenu: FloatingPanelControllerDelegate {
     }
 
     func floatingPanel(_ fpc: FloatingPanelController, animatorForDismissingWith velocity: CGVector) -> UIViewPropertyAnimator {
+        print(#function, fpc.state)
         return UIViewPropertyAnimator(duration: 0.1, curve: .easeInOut)
     }
 
     func floatingPanel(_ fpc: FloatingPanelController, animatorForPresentingTo state: FloatingPanelState) -> UIViewPropertyAnimator {
+        print(#function, fpc.state)
         return UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut)
     }
-    
-    func floatingPanelDidChangeState(_ fpc: FloatingPanelController) {
-        guard fpc.state == .hidden else { return }
-        fpc.dismiss(animated: false, completion: nil)
+
+    func floatingPanelWillEndDragging(_ fpc: FloatingPanelController, withVelocity velocity: CGPoint, targetState: UnsafeMutablePointer<FloatingPanelState>) {
+        guard velocity.y > 750 else { return }
+        fpc.dismiss(animated: true, completion: nil)
     }
 }
 
