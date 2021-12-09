@@ -252,9 +252,9 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
         dropDown.width = searchField.bounds.width
         dropDown.direction = .bottom
 
-        dropDown.cellNib = UINib(nibName: "NCShareUserDropDownCell", bundle: nil)
-        dropDown.customCellConfiguration = { (index: Index, _: String, cell: DropDownCell) -> Void in
-            guard let cell = cell as? NCShareUserDropDownCell else { return }
+        dropDown.cellNib = UINib(nibName: "NCSearchUserDropDownCell", bundle: nil)
+        dropDown.customCellConfiguration = { (index: Index, item: String, cell: DropDownCell) -> Void in
+            guard let cell = cell as? NCSearchUserDropDownCell else { return }
             let sharee = sharees[index]
             cell.imageItem.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
             cell.imageShareeType.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)

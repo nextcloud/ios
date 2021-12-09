@@ -239,7 +239,7 @@
 		F771E3F820E239B500AFB62D /* FileProviderExtension+Thumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3F520E239B400AFB62D /* FileProviderExtension+Thumbnail.swift */; };
 		F7725A60251F33BB00D125E0 /* NCFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7725A5E251F33BB00D125E0 /* NCFiles.swift */; };
 		F7725A61251F33BB00D125E0 /* NCFiles.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7725A5F251F33BB00D125E0 /* NCFiles.storyboard */; };
-		F774264A22EB4D0000B23912 /* NCShareUserDropDownCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F774264822EB4D0000B23912 /* NCShareUserDropDownCell.xib */; };
+		F774264A22EB4D0000B23912 /* NCSearchUserDropDownCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F774264822EB4D0000B23912 /* NCSearchUserDropDownCell.xib */; };
 		F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77444F322281649000D5EB0 /* NCGridMediaCell.swift */; };
 		F77444F622281649000D5EB0 /* NCGridMediaCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F77444F422281649000D5EB0 /* NCGridMediaCell.xib */; };
 		F77444F8222816D5000D5EB0 /* NCPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */; };
@@ -672,7 +672,7 @@
 		F7725A5E251F33BB00D125E0 /* NCFiles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCFiles.swift; sourceTree = "<group>"; };
 		F7725A5F251F33BB00D125E0 /* NCFiles.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCFiles.storyboard; sourceTree = "<group>"; };
 		F774264022EB3F7300B23912 /* DropDown.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DropDown.framework; path = Carthage/Build/iOS/DropDown.framework; sourceTree = "<group>"; };
-		F774264822EB4D0000B23912 /* NCShareUserDropDownCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareUserDropDownCell.xib; sourceTree = "<group>"; };
+		F774264822EB4D0000B23912 /* NCSearchUserDropDownCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSearchUserDropDownCell.xib; sourceTree = "<group>"; };
 		F77438EB1FCD694900662C46 /* ka-GE */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ka-GE"; path = "ka-GE.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F77438F21FCD69D300662C46 /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F77438F91FCD6A0D00662C46 /* zh-Hant-TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant-TW"; path = "zh-Hant-TW.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -1075,15 +1075,15 @@
 				F73CB3B122E072A000AD728E /* NCShareHeaderView.xib */,
 				F787704E22E7019900F287A9 /* NCShareLinkCell.xib */,
 				AF2D7C7B2742556F00ADF566 /* NCShareLinkCell.swift */,
-				F79728D322F96F2D003CACA7 /* NCShareLinkFolderMenuView.xib */,
-				F769454122E9F0EE000A798A /* NCShareLinkMenuView.swift */,
 				F7DFAA8922E22EF100FC4527 /* NCShareLinkMenuView.xib */,
 				F769454722E9F20D000A798A /* NCShareNetworking.swift */,
 				F769453F22E9F077000A798A /* NCSharePaging.swift */,
 				F77EFC0B26D6751F00806ED6 /* NCShareQuickStatusMenu.swift */,
+				F774264822EB4D0000B23912 /* NCSearchUserDropDownCell.xib */,
 				F769453B22E9CFFF000A798A /* NCShareUserCell.xib */,
 				AF2D7C7D2742559100ADF566 /* NCShareUserCell.swift */,
-				F774264822EB4D0000B23912 /* NCShareUserDropDownCell.xib */,
+				F79728D322F96F2D003CACA7 /* NCShareLinkFolderMenuView.xib */,
+				F769454122E9F0EE000A798A /* NCShareLinkMenuView.swift */,
 				F79728D522F9A0B0003CACA7 /* NCShareUserFolderMenuView.xib */,
 				F769453D22E9E97D000A798A /* NCShareUserMenuView.xib */,
 				F769454322E9F142000A798A /* NCShareUserMenuView.swift */,
@@ -2097,7 +2097,7 @@
 				F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */,
 				F77B0F631D118A16002130FE /* Localizable.strings in Resources */,
 				F7632FC1218353AA00721B71 /* NCTrashSectionFooter.xib in Resources */,
-				F774264A22EB4D0000B23912 /* NCShareUserDropDownCell.xib in Resources */,
+				F774264A22EB4D0000B23912 /* NCSearchUserDropDownCell.xib in Resources */,
 				F7CB689A2541676B0050EC94 /* NCMore.storyboard in Resources */,
 				F70B866D2642A21300ED5349 /* NCBackgroundImageColor.storyboard in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,

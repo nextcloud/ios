@@ -87,9 +87,9 @@ protocol NCShareUserCellDelegate: AnyObject {
     func quickStatus(with tableShare: tableShare?, sender: Any)
 }
 
-// MARK: - NCShareUserDropDownCell
+// MARK: - NCSearchUserDropDownCell
 
-class NCShareUserDropDownCell: DropDownCell, NCCellProtocol {
+class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
