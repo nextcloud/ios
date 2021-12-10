@@ -110,12 +110,10 @@ extension NCMenu: FloatingPanelControllerDelegate {
     }
 
     func floatingPanel(_ fpc: FloatingPanelController, animatorForDismissingWith velocity: CGVector) -> UIViewPropertyAnimator {
-        print(#function, fpc.state)
         return UIViewPropertyAnimator(duration: 0.1, curve: .easeInOut)
     }
 
     func floatingPanel(_ fpc: FloatingPanelController, animatorForPresentingTo state: FloatingPanelState) -> UIViewPropertyAnimator {
-        print(#function, fpc.state)
         return UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut)
     }
 
@@ -168,6 +166,7 @@ class NCMenuPanelController: FloatingPanelController {
 
         self.surfaceView.backgroundColor = NCBrandColor.shared.systemBackground
         self.isRemovalInteractionEnabled = true
+        self.backdropView.dismissalTapGestureRecognizer.isEnabled = true
         self.surfaceView.layer.cornerRadius = 16
     }
 }
