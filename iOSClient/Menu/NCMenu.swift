@@ -91,13 +91,6 @@ class NCMenu: UITableViewController {
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
     }
-
-    // MARK: - Accessibility
-
-    open override func accessibilityPerformEscape() -> Bool {
-        dismiss(animated: true)
-        return true
-    }
 }
 extension NCMenu: FloatingPanelControllerDelegate {
 
