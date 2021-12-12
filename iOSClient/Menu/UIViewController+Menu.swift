@@ -66,7 +66,7 @@ extension UIViewController {
         NCCommunication.shared.getHovercard(for: userId) { card, _, _ in
             guard let card = card else { return }
 
-            let personHeader = NCMenuAction(
+            let personHeader = NCMenuButton(
                 title: card.displayName,
                 icon: NCUtility.shared.loadUserImage(
                     for: userId,
@@ -74,14 +74,14 @@ extension UIViewController {
                        userBaseUrl: appDelegate),
                 action: nil)
 
-            let actions = card.actions.map { action -> NCMenuAction in
+            let actions = card.actions.map { action -> NCMenuButton in
                 var image = NCUtility.shared.loadImage(named: "user", color: NCBrandColor.shared.label)
                 if let url = URL(string: action.icon),
                    let svgSource = SVGKSourceURL.source(from: url),
                    let svg = SVGKImage(source: svgSource) {
                     image = svg.uiImage.imageColor(NCBrandColor.shared.label)
                 }
-                return NCMenuAction(
+                return NCMenuButton(
                     title: action.title,
                     icon: image,
                     action: { _ in self.handleProfileAction(action, for: userId) })

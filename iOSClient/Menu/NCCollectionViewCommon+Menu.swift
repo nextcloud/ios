@@ -83,7 +83,7 @@ extension NCCollectionViewCommon {
         }
 
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: metadata.fileNameView,
                 icon: iconHeader,
                 action: nil
@@ -94,7 +94,7 @@ extension NCCollectionViewCommon {
         // FAVORITE
         //
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
                 action: { _ in
@@ -112,7 +112,7 @@ extension NCCollectionViewCommon {
         //
         if !isFolderEncrypted && !appDelegate.disableSharesView {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_details_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "info"),
                     action: { _ in
@@ -127,7 +127,7 @@ extension NCCollectionViewCommon {
         //
         if !isFolderEncrypted {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "tray.and.arrow.down"),
                     action: { _ in
@@ -175,7 +175,7 @@ extension NCCollectionViewCommon {
 
             if editor != "" {
                 actions.append(
-                    NCMenuAction(
+                    NCMenuButton(
                         title: title,
                         icon: icon!,
                         action: { _ in
@@ -191,7 +191,7 @@ extension NCCollectionViewCommon {
         //
         if !metadata.directory && !NCBrandOptions.shared.disable_openin_file {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_open_in_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
                     action: { menuAction in
@@ -212,7 +212,7 @@ extension NCCollectionViewCommon {
         //
         if (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && metadata.contentType != "image/svg+xml") || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_print_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "printer"),
                     action: { _ in
@@ -235,7 +235,7 @@ extension NCCollectionViewCommon {
             }
 
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: title,
                     icon: icon,
                     action: { _ in
@@ -259,7 +259,7 @@ extension NCCollectionViewCommon {
         if #available(iOS 13.0, *) {
             if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && metadata.contentType != "image/svg+xml" {
                 actions.append(
-                    NCMenuAction(
+                    NCMenuButton(
                         title: NSLocalizedString("_save_as_scan_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "viewfinder.circle"),
                         action: { _ in
@@ -275,7 +275,7 @@ extension NCCollectionViewCommon {
         //
         if !(isFolderEncrypted && metadata.serverUrl == serverUrlHome) {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_rename_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "pencil"),
                     action: { _ in
@@ -299,7 +299,7 @@ extension NCCollectionViewCommon {
         //
         if !isFolderEncrypted && serverUrl != "" {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_move_or_copy_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "arrow.up.right.square"),
                     action: { _ in
@@ -314,7 +314,7 @@ extension NCCollectionViewCommon {
         //
         if !metadata.directory {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_copy_file_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
                     action: { _ in
@@ -324,7 +324,7 @@ extension NCCollectionViewCommon {
                 )
             )
         }
-        
+
         /*
         //
         // USE AS BACKGROUND
@@ -332,7 +332,7 @@ extension NCCollectionViewCommon {
         if #available(iOS 13.0, *) {
             if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && self.layoutKey == NCGlobal.shared.layoutViewFiles && !NCBrandOptions.shared.disable_background_image {
                 actions.append(
-                    NCMenuAction(
+                    NCMenuButton(
                         title: NSLocalizedString("_use_as_background_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "text.below.photo"),
                         action: { menuAction in
@@ -354,7 +354,7 @@ extension NCCollectionViewCommon {
         if #available(iOS 13.0, *) {
             if !isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue) {
                 actions.append(
-                    NCMenuAction(
+                    NCMenuButton(
                         title: NSLocalizedString("_modify_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
                         action: { menuAction in
@@ -375,7 +375,7 @@ extension NCCollectionViewCommon {
         // DELETE
         //
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: titleDelete,
                 icon: NCUtility.shared.loadImage(named: "trash"),
                 action: { _ in
@@ -397,7 +397,7 @@ extension NCCollectionViewCommon {
         //
         if !metadata.e2eEncrypted && metadata.directory && CCUtility.isEnd(toEndEnabled: appDelegate.account) && metadata.serverUrl == serverUrlHome {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "lock"),
                     action: { _ in
@@ -422,7 +422,7 @@ extension NCCollectionViewCommon {
         //
         if metadata.e2eEncrypted && metadata.directory && CCUtility.isEnd(toEndEnabled: appDelegate.account) && metadata.serverUrl == serverUrlHome {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "lock"),
                     action: { _ in
@@ -447,13 +447,13 @@ extension NCCollectionViewCommon {
 
     func toggleMenuSelect() {
 
-        var actions = [NCMenuAction]()
+        var actions = [NCMenuButton]()
 
         //
         // SELECT ALL
         //
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: NSLocalizedString("_select_all_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "checkmark.circle.fill"),
                 action: { _ in
@@ -466,7 +466,7 @@ extension NCCollectionViewCommon {
         // OPEN IN
         //
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: NSLocalizedString("_open_in_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
                 action: { _ in
@@ -480,7 +480,7 @@ extension NCCollectionViewCommon {
         // SAVE TO PHOTO GALLERY
         //
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: NSLocalizedString("_save_selected_files_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
                 action: { _ in
@@ -508,7 +508,7 @@ extension NCCollectionViewCommon {
         // COPY - MOVE
         //
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "arrow.up.right.square"),
                 action: { _ in
@@ -530,7 +530,7 @@ extension NCCollectionViewCommon {
         // COPY
         //
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: NSLocalizedString("_copy_file_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
                 action: { _ in
@@ -548,7 +548,7 @@ extension NCCollectionViewCommon {
         // DELETE
         //
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: NSLocalizedString("_delete_selected_files_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "trash"),
                 action: { _ in

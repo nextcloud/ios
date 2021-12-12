@@ -41,7 +41,7 @@ class NCSortMenu: NSObject {
         self.hideDirectoryOnTop = hideDirectoryOnTop
 
         var layoutForView = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
-        var actions = [NCMenuAction]()
+        var actions = [NCMenuButton]()
         var title = ""
         var icon = UIImage()
 
@@ -54,7 +54,7 @@ class NCSortMenu: NSObject {
         }
 
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: title,
                 icon: icon,
                 selected: layoutForView.sort == "fileName",
@@ -76,7 +76,7 @@ class NCSortMenu: NSObject {
         }
 
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: title,
                 icon: icon,
                 selected: layoutForView.sort == "date",
@@ -98,7 +98,7 @@ class NCSortMenu: NSObject {
         }
 
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: title,
                 icon: icon,
                 selected: layoutForView.sort == "size",
@@ -113,7 +113,7 @@ class NCSortMenu: NSObject {
 
         if !hideDirectoryOnTop {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_directory_on_top_no_", comment: ""),
                     icon: UIImage(named: "foldersOnTop")!.image(color: NCBrandColor.shared.gray, size: 50),
                     selected: layoutForView.directoryOnTop,

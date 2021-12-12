@@ -520,10 +520,10 @@ extension NCActivity: NCShareCommentsCellDelegate {
     }
 
     func toggleMenu(with tableComments: tableComments?) {
-        var actions = [NCMenuAction]()
+        var actions = [NCMenuButton]()
 
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: NSLocalizedString("_edit_comment_", comment: ""),
                 icon: UIImage(named: "edit")!.image(color: NCBrandColor.shared.gray, size: 50),
                 action: { _ in
@@ -554,7 +554,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
         )
 
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: NSLocalizedString("_delete_comment_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "trash"),
                 action: { _ in

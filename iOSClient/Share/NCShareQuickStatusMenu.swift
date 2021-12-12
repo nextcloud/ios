@@ -14,10 +14,10 @@ class NCShareQuickStatusMenu: NSObject {
 
         print(tableShare.permissions)
         let menuViewController = UIStoryboard(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
-        var actions = [NCMenuAction]()
+        var actions = [NCMenuButton]()
 
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: NSLocalizedString("_share_read_only_", comment: ""),
                 icon: UIImage(),
                 selected: tableShare.permissions == (NCGlobal.shared.permissionReadShare + NCGlobal.shared.permissionShareShare) || tableShare.permissions == NCGlobal.shared.permissionReadShare,
@@ -31,7 +31,7 @@ class NCShareQuickStatusMenu: NSObject {
         )
 
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: directory ? NSLocalizedString("_share_allow_upload_", comment: "") : NSLocalizedString("_share_editing_", comment: ""),
                 icon: UIImage(),
                 selected: hasUploadPermission(tableShare: tableShare),

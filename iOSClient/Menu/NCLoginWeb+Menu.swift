@@ -28,7 +28,7 @@ extension NCLoginWeb {
 
     func toggleMenu() {
 
-        var actions = [NCMenuAction]()
+        var actions = [NCMenuButton]()
 
         let accounts = NCManageDatabase.shared.getAllAccount()
         var avatar = NCUtility.shared.loadImage(named: "person.crop.circle")
@@ -43,7 +43,7 @@ extension NCLoginWeb {
                    userBaseUrl: account)
 
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: title,
                     icon: avatar,
                     onTitle: title,
@@ -64,7 +64,7 @@ extension NCLoginWeb {
         }
 
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: NSLocalizedString("_delete_active_account_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "trash", color: NCBrandColor.shared.gray),
                 onTitle: NSLocalizedString("_delete_active_account_", comment: ""),

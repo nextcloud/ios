@@ -29,11 +29,11 @@ extension NCTrash {
 
     func toggleMenuMoreHeader() {
 
-        var actions: [NCMenuAction] = []
+        var actions: [NCMenuButton] = []
 
         if isEditMode {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_trash_delete_selected_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "trash"),
                     action: { _ in
@@ -54,7 +54,7 @@ extension NCTrash {
             )
         } else {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_trash_delete_all_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "trash"),
                     action: { _ in
@@ -75,7 +75,7 @@ extension NCTrash {
 
     func toggleMenuMoreList(with objectId: String, image: UIImage?) {
 
-        var actions: [NCMenuAction] = []
+        var actions: [NCMenuButton] = []
 
         guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: appDelegate.account) else {
             return
@@ -93,7 +93,7 @@ extension NCTrash {
         }
 
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: tableTrash.trashbinFileName,
                 icon: iconHeader,
                 action: nil
@@ -101,7 +101,7 @@ extension NCTrash {
         )
 
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: NSLocalizedString("_delete_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "trash"),
                 action: { _ in
@@ -115,7 +115,7 @@ extension NCTrash {
 
     func toggleMenuMoreGrid(with objectId: String, namedButtonMore: String, image: UIImage?) {
 
-        var actions: [NCMenuAction] = []
+        var actions: [NCMenuButton] = []
 
         guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: appDelegate.account) else {
             return
@@ -133,7 +133,7 @@ extension NCTrash {
         }
 
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: tableTrash.trashbinFileName,
                 icon: iconHeader,
                 action: nil
@@ -141,7 +141,7 @@ extension NCTrash {
         )
 
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: NSLocalizedString("_restore_", comment: ""),
                 icon: UIImage(named: "restore")!.image(color: NCBrandColor.shared.gray, size: 50),
                 action: { _ in
@@ -151,7 +151,7 @@ extension NCTrash {
         )
 
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: NSLocalizedString("_delete_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "trash"),
                 action: { _ in

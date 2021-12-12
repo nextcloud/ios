@@ -29,12 +29,12 @@ extension NCMedia {
 
     func toggleMenu() {
 
-        var actions: [NCMenuAction] = []
+        var actions: [NCMenuButton] = []
 
         if !isEditMode {
             if metadatas.count > 0 {
                 actions.append(
-                    NCMenuAction(
+                    NCMenuButton(
                         title: NSLocalizedString("_select_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "checkmark.circle.fill"),
                         action: { _ in
@@ -45,7 +45,7 @@ extension NCMedia {
             }
 
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString(filterClassTypeImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "photo"),
                     selected: filterClassTypeImage,
@@ -59,7 +59,7 @@ extension NCMedia {
             )
 
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString(filterClassTypeVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "video"),
                     selected: filterClassTypeVideo,
@@ -73,7 +73,7 @@ extension NCMedia {
             )
 
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_select_media_folder_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "folder"),
                     action: { _ in
@@ -90,7 +90,7 @@ extension NCMedia {
             )
 
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_media_by_modified_date_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "circle.grid.cross.up.fill"),
                     selected: CCUtility.getMediaSortDate() == "date",
@@ -103,7 +103,7 @@ extension NCMedia {
             )
 
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_media_by_created_date_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "circle.grid.cross.down.fill"),
                     selected: CCUtility.getMediaSortDate() == "creationDate",
@@ -116,7 +116,7 @@ extension NCMedia {
             )
 
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_media_by_upload_date_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "circle.grid.cross.right.fill"),
                     selected: CCUtility.getMediaSortDate() == "uploadDate",
@@ -134,7 +134,7 @@ extension NCMedia {
             // CANCEL
             //
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_cancel_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "xmark"),
                     action: { _ in
@@ -149,7 +149,7 @@ extension NCMedia {
             // OPEN IN
             //
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_open_in_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
                     action: { _ in
@@ -165,7 +165,7 @@ extension NCMedia {
             // SAVE TO PHOTO GALLERY
             //
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_save_selected_files_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
                     action: { _ in
@@ -195,7 +195,7 @@ extension NCMedia {
             // COPY - MOVE
             //
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "arrow.up.right.square"),
                     action: { _ in
@@ -219,7 +219,7 @@ extension NCMedia {
             // COPY
             //
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_copy_file_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
                     action: { _ in
@@ -239,7 +239,7 @@ extension NCMedia {
             // DELETE
             //
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_delete_selected_files_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "trash"),
                     action: { _ in

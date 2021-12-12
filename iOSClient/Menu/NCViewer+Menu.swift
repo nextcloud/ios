@@ -29,7 +29,7 @@ extension NCViewer {
 
     func toggleMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool, imageIcon: UIImage?) {
 
-        var actions = [NCMenuAction]()
+        var actions = [NCMenuButton]()
 
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
         if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
@@ -57,7 +57,7 @@ extension NCViewer {
         // FAVORITE
         //
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: titleFavorite,
                 icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
                 action: { _ in
@@ -75,7 +75,7 @@ extension NCViewer {
         //
         if !appDelegate.disableSharesView {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_details_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "info"),
                     action: { _ in
@@ -90,7 +90,7 @@ extension NCViewer {
         //
         if metadata.session == "" && !webView {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: titleOffline,
                     icon: NCUtility.shared.loadImage(named: "tray.and.arrow.down"),
                     action: { _ in
@@ -109,7 +109,7 @@ extension NCViewer {
         //
         if metadata.session == "" && !webView {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_open_in_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
                     action: { _ in
@@ -124,7 +124,7 @@ extension NCViewer {
         //
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_print_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "printer"),
                     action: { _ in
@@ -148,7 +148,7 @@ extension NCViewer {
             }
 
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: title,
                     icon: icon,
                     action: { _ in
@@ -168,7 +168,7 @@ extension NCViewer {
         if #available(iOS 13.0, *) {
             if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && metadata.contentType != "image/svg+xml" {
                 actions.append(
-                    NCMenuAction(
+                    NCMenuButton(
                         title: NSLocalizedString("_save_as_scan_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "viewfinder.circle"),
                         action: { _ in
@@ -184,7 +184,7 @@ extension NCViewer {
         //
         if !webView {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_rename_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "pencil"),
                     action: { _ in
@@ -209,7 +209,7 @@ extension NCViewer {
         //
         if !webView {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_move_or_copy_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "arrow.up.right.square"),
                     action: { _ in
@@ -232,7 +232,7 @@ extension NCViewer {
         // COPY
         //
         actions.append(
-            NCMenuAction(
+            NCMenuButton(
                 title: NSLocalizedString("_copy_file_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
                 action: { _ in
@@ -247,7 +247,7 @@ extension NCViewer {
         //
         if !webView {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "arrow.forward.square"),
                     action: { menuAction in
@@ -263,7 +263,7 @@ extension NCViewer {
         if metadata.session == "" {
             if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "" {
                 actions.append(
-                    NCMenuAction(
+                    NCMenuButton(
                         title: NSLocalizedString("_download_image_max_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
                         action: { _ in
@@ -279,7 +279,7 @@ extension NCViewer {
         //
         if metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_search_", comment: ""),
                     icon: UIImage(named: "search")!.image(color: NCBrandColor.shared.gray, size: 50),
                     action: { _ in
@@ -300,7 +300,7 @@ extension NCViewer {
             }
 
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: title,
                     icon: icon,
                     action: { _ in
@@ -314,7 +314,7 @@ extension NCViewer {
             )
 
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: NSLocalizedString("_go_to_page_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "repeat"),
                     action: { _ in
@@ -330,7 +330,7 @@ extension NCViewer {
         if #available(iOS 13.0, *) {
             if !isFolderEncrypted && metadata.contentType != "image/gif" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue) {
                 actions.append(
-                    NCMenuAction(
+                    NCMenuButton(
                         title: NSLocalizedString("_modify_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
                         action: { _ in
@@ -346,7 +346,7 @@ extension NCViewer {
         //
         if !webView {
             actions.append(
-                NCMenuAction(
+                NCMenuButton(
                     title: titleDelete,
                     icon: NCUtility.shared.loadImage(named: "trash"),
                     action: { _ in

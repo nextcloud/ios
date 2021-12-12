@@ -45,11 +45,17 @@ class NCMenu: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let menuAction = actions[indexPath.row]
-        if let action = menuAction.action {
+        if let menuAction = actions[indexPath.row] as? NCMenuButton {
             self.dismiss(animated: true, completion: nil)
-            action(menuAction)
+            menuAction.action?(menuAction)
+        } else if let toggleCell = tableView.cellForRow(at: indexPath) as? NCMenuToggleCell {
+            toggleCell.toggle.setOn(!toggleCell.toggle.isOn, animated: true)
+            toggleCell.toggle(sender: self)
+        } else if let textFieldCell = tableView.cellForRow(at: indexPath) as? NCMenuTextFIeldCell {
+            textFieldCell.textField.becomeFirstResponder()
         }
+        
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 
     // MARK: - Table view data source
@@ -63,25 +69,22 @@ class NCMenu: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "menuActionCell", for: indexPath)
+        let cell: UITableViewCell
+        if let action = actions[indexPath.row] as? NCMenuToggle,
+           let toggleCell = tableView.dequeueReusableCell(withIdentifier: "menuToggleCell", for: indexPath) as? NCMenuToggleCell {
+            toggleCell.setup(with: action)
+            cell = toggleCell
+        } else if let action = actions[indexPath.row] as? NCMenuTextField,
+                  let textCell = tableView.dequeueReusableCell(withIdentifier: "menuTextFieldCell", for: indexPath) as? NCMenuTextFIeldCell {
+            textCell.setup(with: action)
+            cell = textCell
+        } else if let action = actions[indexPath.row] as? NCMenuButton,
+                  let buttonCell = tableView.dequeueReusableCell(withIdentifier: "menuButtonCell", for: indexPath) as? NCMenuButtonCell {
+            buttonCell.setup(with: action)
+            cell = buttonCell
+        } else { cell = UITableViewCell() }
+
         cell.tintColor = NCBrandColor.shared.customer
-        let action = actions[indexPath.row]
-        let actionIconView = cell.viewWithTag(1) as? UIImageView
-        let actionNameLabel = cell.viewWithTag(2) as? UILabel
-
-        if action.action == nil {
-            cell.selectionStyle = .none
-        }
-
-        if action.isOn {
-            actionIconView?.image = action.onIcon
-            actionNameLabel?.text = action.onTitle
-        } else {
-            actionIconView?.image = action.icon
-            actionNameLabel?.text = action.title
-        }
-
-        cell.accessoryType = action.selectable && action.selected ? .checkmark : .none
 
         return cell
     }
@@ -89,6 +92,9 @@ class NCMenu: UITableViewController {
     // MARK: - Tabel View Layout
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if actions[indexPath.row] is NCMenuTextField {
+            return 95
+        }
         return 60
     }
 }
@@ -116,7 +122,7 @@ extension NCMenu: FloatingPanelControllerDelegate {
     }
 }
 
-class NCMenuAction {
+class NCMenuButton: NCMenuAction {
 
     let title: String
     let icon: UIImage
@@ -125,16 +131,16 @@ class NCMenuAction {
     var onIcon: UIImage?
     var selected: Bool = false
     var isOn: Bool = false
-    var action: ((_ menuAction: NCMenuAction) -> Void)?
+    var action: ((_ menuAction: NCMenuButton) -> Void)?
 
-    init(title: String, icon: UIImage, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+    init(title: String, icon: UIImage, action: ((_ menuButton: NCMenuButton) -> Void)?) {
         self.title = title
         self.icon = icon
         self.action = action
         self.selectable = false
     }
 
-    init(title: String, icon: UIImage, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, on: Bool, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+    init(title: String, icon: UIImage, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, on: Bool, action: ((_ menuButton: NCMenuButton) -> Void)?) {
         self.title = title
         self.icon = icon
         self.onTitle = onTitle ?? title
@@ -144,4 +150,43 @@ class NCMenuAction {
         self.isOn = on
         self.selectable = true
     }
+}
+
+class NCMenuToggle: NCMenuAction {
+    let title: String
+    let icon: UIImage
+    var isOn: Bool {
+        didSet { onChange?(isOn) }
+    }
+    let onChange: ((_ isOn: Bool) -> Void)?
+
+    init(title: String, icon: UIImage, isOn: Bool, onChange: ((_ isOn: Bool) -> Void)?) {
+        self.title = title
+        self.icon = icon
+        self.isOn = isOn
+        self.onChange = onChange
+    }
+}
+
+class NCMenuTextField: NCMenuAction {
+    var title: String
+    var icon: UIImage
+    var text: String {
+        didSet { onCommit?(text) }
+    }
+    var placeholder: String
+    let onCommit: ((_ text: String?) -> Void)?
+
+    init(title: String, icon: UIImage, text: String, placeholder: String, onCommit: ((String?) -> Void)?) {
+        self.title = title
+        self.icon = icon
+        self.text = text
+        self.placeholder = placeholder
+        self.onCommit = onCommit
+    }
+}
+
+protocol NCMenuAction {
+    var title: String { get }
+    var icon: UIImage { get }
 }
