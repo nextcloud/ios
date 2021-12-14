@@ -53,6 +53,9 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     public var sharingEnabled = true
     public var height: CGFloat = 0
     
+    public  var tableShareSelected: tableShare?
+    private var shareeSelected: NCCommunicationSharee?
+    
     private var shareLinkMenuView: NCShareLinkMenuView?
     private var shareUserMenuView: NCShareUserMenuView?
     private var shareMenuViewWindow: UIView?
@@ -148,6 +151,11 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         // changeTheming
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changePermissions(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShareChangePermissions), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(shareMenuViewInClicked), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShareViewIn), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(shareMenuAdvancePermissionClicked), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShareAdvancePermission), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(shareMenuSendEmailClicked), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShareSendEmail), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(shareMenuUnshareClicked), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShareUnshare), object: nil)
         
         changeTheming()
     }
@@ -271,14 +279,15 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         guard let tableShare = tableShare else { return }
 
+        tableShareSelected = tableShare
+        
         if tableShare.shareType == 3 {
-            let views = NCShareCommon.shared.openViewMenuShareLink(shareViewController: self, tableShare: tableShare, metadata: metadata!)
-            shareLinkMenuView = views.shareLinkMenuView
-            shareMenuViewWindow = views.viewWindow
+            let shareMenu = NCShareMenu()
+            let isFolder = metadata?.directory ?? false
+            shareMenu.toggleMenu(viewController: self, sendMail: false, folder: isFolder)
             
             let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
             tap.delegate = self
-            shareMenuViewWindow?.addGestureRecognizer(tap)
         } else {
             let views = NCShareCommon.shared.openViewMenuUser(shareViewController: self, tableShare: tableShare, metadata: metadata!)
             shareUserMenuView = views.shareUserMenuView
@@ -311,7 +320,9 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
     }
     
-    func unShareCompleted() { }
+    func unShareCompleted() {
+        self.reloadData()
+    }
     
     func updateShareWithError(idShare: Int) {
         self.reloadData()
@@ -393,6 +404,45 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         }
         
         dropDown.show()
+    }
+    
+    @objc func shareMenuViewInClicked() {
+        let image = UIImage(named: "pencil")
+        let imageToShare = [ image! ]
+        let activityViewController = UIActivityViewController(activityItems: imageToShare, applicationActivities: nil)
+        activityViewController.popoverPresentationController?.sourceView = self.view
+        
+        activityViewController.excludedActivityTypes = [ UIActivity.ActivityType.airDrop, UIActivity.ActivityType.postToFacebook ]
+        self.present(activityViewController, animated: true, completion: nil)
+    }
+    
+    @objc func shareMenuAdvancePermissionClicked() {
+        let storyboard = UIStoryboard(name: "NCShare", bundle: nil)
+        var advancePermission: NCShareAdvancePermission
+        advancePermission = storyboard.instantiateViewController(withIdentifier: "NCShareAdvancePermission") as! NCShareAdvancePermission
+        advancePermission.metadata = self.metadata
+        advancePermission.sharee = self.shareeSelected
+        advancePermission.newUser = false
+        advancePermission.tableShare = self.tableShareSelected
+        guard let navigationController = navigationController else {
+            print("this vc is not embedded in navigationController")
+            return
+        }
+        navigationController.pushViewController(advancePermission, animated: true)
+    }
+    
+    @objc func shareMenuSendEmailClicked() {
+        let storyboard = UIStoryboard(name: "NCShare", bundle: nil)
+        let viewNewUserComment = storyboard.instantiateViewController(withIdentifier: "NCShareNewUserAddComment") as! NCShareNewUserAddComment
+        viewNewUserComment.metadata = self.metadata
+        viewNewUserComment.tableShare = self.tableShareSelected
+        viewNewUserComment.isUpdating = true
+        self.navigationController?.pushViewController(viewNewUserComment, animated: true)
+    }
+    
+    @objc func shareMenuUnshareClicked() {
+        guard let tableShare = self.tableShareSelected else { return }
+        networking?.unShare(idShare: tableShare.idShare)
     }
 }
 

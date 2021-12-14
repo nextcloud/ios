@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="NCShareTextInputCell" customModule="Nextcloud" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="644" height="94"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zIu-1K-ZBo">
+                    <rect key="frame" x="0.0" y="0.0" width="644" height="1"/>
+                    <color key="backgroundColor" systemColor="systemGray4Color"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="o58-9X-9jS"/>
+                    </constraints>
+                </view>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="calender" translatesAutoresizingMaskIntoConstraints="NO" id="YK3-ah-Nx0">
+                    <rect key="frame" x="604" y="35" width="24" height="24"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="24" id="UyU-Ba-YJX"/>
+                        <constraint firstAttribute="width" secondItem="YK3-ah-Nx0" secondAttribute="height" multiplier="1:1" id="k28-lm-qOw"/>
+                    </constraints>
+                </imageView>
+                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Date" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Yyq-Ik-ENe">
+                    <rect key="frame" x="16" y="30" width="612" height="34"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="34" id="FCL-BW-7sd"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits"/>
+                </textField>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jKy-1g-ndM">
+                    <rect key="frame" x="0.0" y="93" width="644" height="1"/>
+                    <color key="backgroundColor" systemColor="systemGray4Color"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="8Dx-V8-40I"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="YK3-ah-Nx0" firstAttribute="centerY" secondItem="Yyq-Ik-ENe" secondAttribute="centerY" id="0nk-St-xX0"/>
+                <constraint firstItem="Yyq-Ik-ENe" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="FVf-UM-xE3"/>
+                <constraint firstAttribute="bottom" secondItem="jKy-1g-ndM" secondAttribute="bottom" id="OtZ-MG-7W9"/>
+                <constraint firstAttribute="trailing" secondItem="jKy-1g-ndM" secondAttribute="trailing" id="QcK-0L-wAB"/>
+                <constraint firstItem="zIu-1K-ZBo" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="W6v-jQ-XSe"/>
+                <constraint firstAttribute="trailing" secondItem="zIu-1K-ZBo" secondAttribute="trailing" id="ccP-r3-9Xi"/>
+                <constraint firstItem="jKy-1g-ndM" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="dJI-hd-KxJ"/>
+                <constraint firstItem="zIu-1K-ZBo" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="fgt-OE-O0a"/>
+                <constraint firstItem="Yyq-Ik-ENe" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="oce-QC-xjG"/>
+                <constraint firstItem="Yyq-Ik-ENe" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="16" id="w8W-xh-UNc"/>
+                <constraint firstItem="YK3-ah-Nx0" firstAttribute="trailing" secondItem="Yyq-Ik-ENe" secondAttribute="trailing" id="zoy-1T-PyE"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="calendarImageView" destination="YK3-ah-Nx0" id="Byl-aE-WkL"/>
+                <outlet property="cellTextField" destination="Yyq-Ik-ENe" id="Apj-ft-G1e"/>
+                <outlet property="seperator" destination="zIu-1K-ZBo" id="6zu-Uv-n0t"/>
+                <outlet property="seperatorBottom" destination="jKy-1g-ndM" id="9We-YO-cTe"/>
+            </connections>
+            <point key="canvasLocation" x="194.20289855072465" y="-206.91964285714286"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="calender" width="500" height="500"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGray4Color">
+            <color red="0.81960784313725488" green="0.81960784313725488" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

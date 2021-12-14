@@ -363,6 +363,11 @@ class NCGlobal: NSObject {
     let notificationCenterShowPlayerToolBar                     = "showPlayerToolBar"               // userInfo: ocId, enableTimerAutoHide
     
     let notificationCenterOpenMediaDetail                       = "openMediaDetail"                 // userInfo: ocId
+    
+    let notificationCenterShareViewIn                           = "ShareViewIn"
+    let notificationCenterShareAdvancePermission                = "ShareAdvancePermission"
+    let notificationCenterShareSendEmail                        = "ShareSendEmail"
+    let notificationCenterShareUnshare                          = "ShareUnshare"
 
 }
 
