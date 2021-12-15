@@ -360,6 +360,9 @@ class NCGlobal: NSObject {
     
     let notificationCenterOpenMediaDetail                       = "openMediaDetail"                 // userInfo: ocId
 
+    let notificationCenterReloadMediaPage                       = "reloadMediaPage"
+    let notificationCenterPlayMedia                             = "playMedia"
+    let notificationCenterPauseMedia                            = "pauseMedia"
 }
 
 //let rootView = UIApplication.shared.keyWindow?.rootViewController?.view
