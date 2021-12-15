@@ -51,8 +51,9 @@ class NCViewerMediaDetailView: UIView {
     var lensModel: String?
     var metadata: tableMetadata?
     var mapView: MKMapView?
-    weak var delegate: NCViewerMediaDetailViewDelegate?
-
+    var ncplayer: NCPlayer?
+    var delegate: NCViewerMediaDetailViewDelegate?
+        
     override func awakeFromNib() {
         super.awakeFromNib()
 
@@ -75,15 +76,16 @@ class NCViewerMediaDetailView: UIView {
         self.mapView?.removeFromSuperview()
         self.mapView = nil
     }
-
-    func show(metadata: tableMetadata, image: UIImage?, textColor: UIColor?, latitude: Double, longitude: Double, location: String?, date: Date?, lensModel: String?, delegate: NCViewerMediaDetailViewDelegate?) {
-
+    
+    func show(metadata: tableMetadata, image: UIImage?, textColor: UIColor?, latitude: Double, longitude: Double, location: String?, date: Date?, lensModel: String?, ncplayer: NCPlayer?, delegate: NCViewerMediaDetailViewDelegate?) {
+                        
         self.metadata = metadata
         self.latitude = latitude
         self.longitude = longitude
         self.location = location
         self.date = date
         self.lensModel = lensModel
+        self.ncplayer = ncplayer
         self.delegate = delegate
 
         if mapView == nil && (latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0) {

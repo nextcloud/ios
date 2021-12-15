@@ -78,8 +78,8 @@ class NCViewerMediaPage: UIViewController {
         pageViewController.view.addGestureRecognizer(panGestureRecognizer)
         pageViewController.view.addGestureRecognizer(singleTapGestureRecognizer)
         pageViewController.view.addGestureRecognizer(longtapGestureRecognizer)
-
-        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex], direction: .forward)
+        
+        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
         pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: true, completion: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
@@ -98,7 +98,9 @@ class NCViewerMediaPage: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(hidePlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(showPlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
-
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadMediaPage(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadMediaPage), object: nil)
+        
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
@@ -127,6 +129,8 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
 
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadMediaPage), object: nil)
+
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
@@ -140,9 +144,9 @@ class NCViewerMediaPage: UIViewController {
     }
 
     // MARK: -
-
-    func getViewerMedia(index: Int, metadata: tableMetadata, direction: UIPageViewController.NavigationDirection) -> NCViewerMedia {
-
+    
+    func getViewerMedia(index: Int, metadata: tableMetadata) -> NCViewerMedia {
+        
         let viewerMedia = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMedia") as! NCViewerMedia
         viewerMedia.index = index
         viewerMedia.metadata = metadata
@@ -286,7 +290,12 @@ class NCViewerMediaPage: UIViewController {
             }
         }
     }
-
+    
+    @objc func reloadMediaPage(_ notification: NSNotification) {
+        
+        self.reloadCurrentPage()
+    }
+    
     @objc func applicationDidBecomeActive(_ notification: NSNotification) {
 
         progressView.progress = 0
@@ -432,18 +441,27 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
         }
 
         currentViewController.ncplayer?.deactivateObserver()
-
-        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex], direction: direction)
+        
+        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
         pageViewController.setViewControllers([viewerMedia], direction: direction, animated: true, completion: nil)
     }
-
+    
+    func reloadCurrentPage() {
+        
+        currentViewController.ncplayer?.deactivateObserver()
+        
+        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
+        viewerMedia.autoPlay = false
+        pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: false, completion: nil)
+    }
+    
     func goTo(index: Int, direction: UIPageViewController.NavigationDirection, autoPlay: Bool) {
 
         currentIndex = index
 
         currentViewController.ncplayer?.deactivateObserver()
 
-        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex], direction: direction)
+        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
         viewerMedia.autoPlay = autoPlay
         pageViewController.setViewControllers([viewerMedia], direction: direction, animated: true, completion: nil)
     }
@@ -452,7 +470,7 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
 
         if currentIndex == 0 { return nil }
 
-        let viewerMedia = getViewerMedia(index: currentIndex-1, metadata: metadatas[currentIndex-1], direction: .reverse)
+        let viewerMedia = getViewerMedia(index: currentIndex-1, metadata: metadatas[currentIndex-1])
         return viewerMedia
     }
 
@@ -460,7 +478,7 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
 
         if currentIndex == metadatas.count-1 { return nil }
 
-        let viewerMedia = getViewerMedia(index: currentIndex+1, metadata: metadatas[currentIndex+1], direction: .forward)
+        let viewerMedia = getViewerMedia(index: currentIndex+1, metadata: metadatas[currentIndex+1])
         return viewerMedia
     }
 
@@ -566,7 +584,7 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
                 AudioServicesPlaySystemSound(1519) // peek feedback
 
                 if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                    self.ncplayerLivePhoto = NCPlayer(url: url, autoPlay: true, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil)
+                    self.ncplayerLivePhoto = NCPlayer.init(url: url, autoPlay: true, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil, viewController: self)
                 }
             }
 

@@ -195,6 +195,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         hidePrivacyProtectionWindow()
         
         NCSettingsBundleHelper.setVersionAndBuildNumber()
+        
+        NCSettingsBundleHelper.setVersionAndBuildNumber()
 
         if account == "" { return }
 
@@ -274,11 +276,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if NCUtility.shared.isSimulator() {
             networkingProcessUpload?.stopTimer()
         }
-
+                
         if #available(iOS 13.0, *) {
             scheduleAppRefresh()
             scheduleBackgroundProcessing()
         }
+        
+        // Passcode
+        presentPasscode { }
         
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
     }
@@ -583,7 +588,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         window?.rootViewController?.present(alertController, animated: true)
     }
-    
+
     func viewCertificateDetailsDismiss(host: String) {
         trustCertificateError(host: host)
     }
@@ -719,9 +724,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         passcodeViewController.keypadButtonShowLettering = false
         if CCUtility.getEnableTouchFaceID() && laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
             if error == nil {
-                if laContext.biometryType == .faceID {
+                if laContext.biometryType == .faceID  {
                     passcodeViewController.biometryType = .faceID
-                } else if laContext.biometryType == .touchID {
+                } else if laContext.biometryType == .touchID  {
                     passcodeViewController.biometryType = .touchID
                 }
                 passcodeViewController.allowBiometricValidation = true
@@ -733,7 +738,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             completion()
         })
     }
-
+    
     func isPasscodePresented() -> Bool {
         return window?.rootViewController?.presentedViewController is TOPasscodeViewController
     }
@@ -768,7 +773,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
         return code == CCUtility.getPasscode()
     }
-    
+
     // MARK: - Privacy Protection
        
     private func showPrivacyProtectionWindow() {

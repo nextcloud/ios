@@ -151,7 +151,7 @@ class NCViewerMedia: UIViewController {
             NCKTVHTTPCache.shared.restartProxy(user: appDelegate.user, password: appDelegate.password)
 
             if ncplayer == nil, let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                self.ncplayer = NCPlayer(url: url, autoPlay: self.autoPlay, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView)
+                self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self)
             } else {
                 self.ncplayer?.activateObserver(playerToolBar: self.playerToolBar)
                 if detailView.isShow() == false && ncplayer?.isPlay() == false {
@@ -435,9 +435,9 @@ extension NCViewerMedia {
                 self.detailViewHeighConstraint.constant = 170
             }
             self.view.layoutIfNeeded()
-
-            self.detailView.show(metadata: self.metadata, image: self.image, textColor: self.viewerMediaPage?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel, delegate: self)
-
+            
+            self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMediaPage?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel, ncplayer: self.ncplayer ,delegate: self)
+                
             if let image = self.imageVideoContainer.image {
                 let ratioW = self.imageVideoContainer.frame.width / image.size.width
                 let ratioH = self.imageVideoContainer.frame.height / image.size.height
@@ -482,8 +482,8 @@ extension NCViewerMedia {
     func reloadDetail() {
 
         if self.detailView.isShow() {
-            CCUtility.setExif(metadata) { latitude, longitude, location, date, lensModel in
-                self.detailView.show(metadata: self.metadata, image: self.image, textColor: self.viewerMediaPage?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel, delegate: self)
+            CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
+                self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMediaPage?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel, ncplayer: self.ncplayer ,delegate: self)
             }
         }
     }
