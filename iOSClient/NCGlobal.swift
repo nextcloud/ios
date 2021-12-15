@@ -136,10 +136,11 @@ class NCGlobal: NSObject {
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
     @objc let e2eeVersion                           = "1.1"
     
-    // Max Cache Proxy Video
+    // Video
     //
     let maxHTTPCache: Int64                         = 10000000000   // 10 GB
-    
+    let fileNameVideoEncoded: String                = "video_encoded.mp4"
+
     // NCSharePaging
     //
     enum NCSharePagingIndex: Int, CaseIterable {
