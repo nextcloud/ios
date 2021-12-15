@@ -95,7 +95,7 @@ class NCMenu: UITableViewController {
 extension NCMenu: FloatingPanelControllerDelegate {
 
     func floatingPanel(_ fpc: FloatingPanelController, layoutFor size: CGSize) -> FloatingPanelLayout {
-        return NCMenuFloatingPanelLayout(numberOfActions: self.actions.count)
+        return NCMenuFloatingPanelLayout(numberOfActions: self.actions.count, size: size)
     }
 
     func floatingPanel(_ fpc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout {
@@ -129,9 +129,9 @@ class NCMenuFloatingPanelLayout: FloatingPanelLayout {
 
     let topInset: CGFloat
 
-    init(numberOfActions: Int) {
+    init(numberOfActions: Int, size: CGSize = UIScreen.main.bounds.size) {
         let bottomInset = UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0
-        let screenHeight = UIScreen.main.bounds.size.height
+        let screenHeight = size.height
         let panelHeight = CGFloat(numberOfActions * 60) + bottomInset
         topInset = max(48, screenHeight - panelHeight)
     }
