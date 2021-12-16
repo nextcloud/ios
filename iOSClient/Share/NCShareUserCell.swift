@@ -24,7 +24,7 @@ import UIKit
 import DropDown
 
 class NCShareUserCell: UITableViewCell, NCCellProtocol {
-    
+
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var buttonMenu: UIButton!
@@ -33,12 +33,12 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var btnQuickStatus: UIButton!
     @IBOutlet weak var labelQuickStatus: UILabel!
     @IBOutlet weak var imageDownArrow: UIImageView!
-    
+
     var tableShare: tableShare?
-    var delegate: NCShareUserCellDelegate?
-    
+    weak var delegate: NCShareUserCellDelegate?
+
     var fileAvatarImageView: UIImageView? {
-        get{
+        get {
             return imageItem
         }
     }
@@ -47,41 +47,41 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
             return nil
         }
     }
-    var filePreviewImageView : UIImageView? {
-        get{
+    var filePreviewImageView: UIImageView? {
+        get {
             return nil
         }
     }
     var fileUser: String? {
-        get{
+        get {
             return tableShare?.shareWith
         }
     }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage))
         imageItem?.addGestureRecognizer(tapGesture)
 
-        buttonMenu.setImage(UIImage.init(named: "shareMenu")!.image(color: .gray, size: 50), for: .normal)
+        buttonMenu.setImage(UIImage(named: "shareMenu")!.image(color: .gray, size: 50), for: .normal)
         labelQuickStatus.textColor = NCBrandColor.shared.customer
         imageDownArrow.image = NCUtility.shared.loadImage(named: "arrowtriangle.down.fill", color: NCBrandColor.shared.customer)
     }
-    
+
     @objc func tapAvatarImage(_ sender: UITapGestureRecognizer) {
         delegate?.showProfile(with: tableShare, sender: sender)
     }
-    
+
     @IBAction func touchUpInsideMenu(_ sender: Any) {
         delegate?.tapMenu(with: tableShare, sender: sender)
     }
-    
+
     @IBAction func quickStatusClicked(_ sender: Any) {
         delegate?.quickStatus(with: tableShare, sender: sender)
     }
 }
 
-protocol NCShareUserCellDelegate {
+protocol NCShareUserCellDelegate: AnyObject {
     func tapMenu(with tableShare: tableShare?, sender: Any)
     func showProfile(with tableComment: tableShare?, sender: Any)
     func quickStatus(with tableShare: tableShare?, sender: Any)
@@ -90,15 +90,15 @@ protocol NCShareUserCellDelegate {
 // MARK: - NCShareUserDropDownCell
 
 class NCShareUserDropDownCell: DropDownCell, NCCellProtocol {
-    
+
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var status: UILabel!
     @IBOutlet weak var imageShareeType: UIImageView!
     @IBOutlet weak var centerTitle: NSLayoutConstraint!
-    
+
     private var user: String = ""
-    
+
     var fileAvatarImageView: UIImageView? {
         get {
             return imageItem

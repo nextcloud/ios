@@ -23,7 +23,7 @@
 
 import UIKit
 
-public protocol NCEmptyDataSetDelegate {
+public protocol NCEmptyDataSetDelegate: AnyObject {
     func emptyDataSetView(_ view: NCEmptyView)
 }
 
@@ -33,32 +33,32 @@ public extension NCEmptyDataSetDelegate {
 }
 
 class NCEmptyDataSet: NSObject {
-    
+
     private var emptyView: NCEmptyView?
     private var timer: Timer?
     private var numberItemsForSections: Int = 0
-    private var delegate: NCEmptyDataSetDelegate?
+    private weak var delegate: NCEmptyDataSetDelegate?
 
     private var fillBackgroundName: String = ""
     private var fillBackgroundView = UIImageView()
 
     init(view: UIView, offset: CGFloat = 0, delegate: NCEmptyDataSetDelegate?) {
         super.init()
-                
+
         if let emptyView = UINib(nibName: "NCEmptyView", bundle: nil).instantiate(withOwner: self, options: nil).first as? NCEmptyView {
-        
+
             self.delegate = delegate
             self.emptyView = emptyView
-            
+
             emptyView.isHidden = true
             emptyView.translatesAutoresizingMaskIntoConstraints = false
-            
+
 //            emptyView.backgroundColor = .red
 //            emptyView.isHidden = false
-            
+
             emptyView.emptyTitle.sizeToFit()
             emptyView.emptyDescription.sizeToFit()
-                          
+
             view.addSubview(emptyView)
 
             emptyView.widthAnchor.constraint(equalToConstant: 350).isActive = true
@@ -72,31 +72,31 @@ class NCEmptyDataSet: NSObject {
             }
         }
     }
-        
+
     func numberOfItemsInSection(_ num: Int, section: Int) {
-        
+
         if section == 0 {
             numberItemsForSections = num
         } else {
-            numberItemsForSections = numberItemsForSections + num
+            numberItemsForSections += num
         }
-        
+
         if let emptyView = emptyView {
-            
+
             self.delegate?.emptyDataSetView(emptyView)
-            
+
             if !(timer?.isValid ?? false) && emptyView.isHidden == true {
                 timer = Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(timerHandler(_:)), userInfo: nil, repeats: false)
             }
-            
+
             if numberItemsForSections > 0 {
                 self.emptyView?.isHidden = true
             }
         }
     }
-    
+
     @objc func timerHandler(_ timer: Timer) {
-        
+
         if numberItemsForSections == 0 {
             self.emptyView?.isHidden = false
         } else {
@@ -106,14 +106,14 @@ class NCEmptyDataSet: NSObject {
 }
 
 public class NCEmptyView: UIView {
-    
+
     @IBOutlet weak var emptyImage: UIImageView!
     @IBOutlet weak var emptyTitle: UILabel!
     @IBOutlet weak var emptyDescription: UILabel!
-    
+
     public override func awakeFromNib() {
         super.awakeFromNib()
-        
+
         emptyTitle.textColor = NCBrandColor.shared.label
     }
 }

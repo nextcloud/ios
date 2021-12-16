@@ -137,7 +137,7 @@ class NCPlayer: NSObject {
                 player?.seek(to: time)
             }
         }
-        
+
         player?.currentItem?.asset.loadValuesAsynchronously(forKeys: ["playable"], completionHandler: {
             
             var error: NSError? = nil
@@ -176,16 +176,16 @@ class NCPlayer: NSObject {
 
     deinit {
         print("deinit NCPlayer")
-        
+
         deactivateObserver()
     }
-    
+
     func activateObserver(playerToolBar: NCPlayerToolBar?) {
-        
+
         self.playerToolBar = playerToolBar
-        
+
         // At end go back to start & show toolbar
-        observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
+        observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { notification in
             if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
                 
                 NCKTVHTTPCache.shared.saveCache(metadata: self.metadata)
@@ -193,20 +193,20 @@ class NCPlayer: NSObject {
                 self.videoSeek(time: .zero)
                
                 if !(self.detailView?.isShow() ?? false) {
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":self.metadata.ocId, "enableTimerAutoHide": false])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": self.metadata.ocId, "enableTimerAutoHide": false])
                 }
                 
                 self.playerToolBar?.updateToolBar()
             }
         }
-        
+
         // Evey 1 second update toolbar
-        observerAVPlayertTime = player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { (CMTime) in
+        observerAVPlayertTime = player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { _ in
             if self.player?.currentItem?.status == .readyToPlay {
                 self.playerToolBar?.updateToolBar()
             }
         })
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(generatorImagePreview), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
@@ -214,25 +214,25 @@ class NCPlayer: NSObject {
         NotificationCenter.default.addObserver(self, selector: #selector(playerPause), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPauseMedia), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playerPlay), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayMedia), object: nil)
     }
-    
+
     func deactivateObserver() {
-        
+
         if isPlay() {
             playerPause()
         }
-        
+
         self.playerToolBar = nil
-        
+
         if let observerAVPlayerItemDidPlayToEndTime = self.observerAVPlayerItemDidPlayToEndTime {
             NotificationCenter.default.removeObserver(observerAVPlayerItemDidPlayToEndTime)
         }
         self.observerAVPlayerItemDidPlayToEndTime = nil
-        
+
         if  let observerAVPlayertTime = self.observerAVPlayertTime {
             player?.removeTimeObserver(observerAVPlayertTime)
         }
         self.observerAVPlayertTime = nil
-        
+
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
@@ -240,8 +240,8 @@ class NCPlayer: NSObject {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPauseMedia), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayMedia), object: nil)
     }
-    
-    //MARK: - NotificationCenter
+
+    // MARK: - NotificationCenter
 
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
                 
@@ -251,16 +251,16 @@ class NCPlayer: NSObject {
             }
         }
     }
-    
+
     @objc func applicationDidBecomeActive(_ notification: NSNotification) {
-        
+
         playerToolBar?.updateToolBar()
     }
-    
-    //MARK: -
-    
+
+    // MARK: -
+
     func isPlay() -> Bool {
-        
+
         if player?.rate == 1 { return true } else { return false }
     }
     
@@ -274,18 +274,18 @@ class NCPlayer: NSObject {
         
         player?.pause()
         self.playerToolBar?.updateToolBar()
-        
+
         if let playerToolBar = self.playerToolBar, playerToolBar.isPictureInPictureActive() {
             playerToolBar.pictureInPictureController?.stopPictureInPicture()
         }
     }
-    
+
     func videoSeek(time: CMTime) {
-        
+
         player?.seek(to: time)
         self.saveTime(time)
     }
-    
+
     func saveTime(_ time: CMTime) {
 
         if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue { return }
@@ -293,16 +293,16 @@ class NCPlayer: NSObject {
         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationTime: nil)
         generatorImagePreview()
     }
-    
+
     func saveCurrentTime() {
-        
+
         if let player = self.player {
             saveTime(player.currentTime())
         }
     }
-    
+
     @objc func generatorImagePreview() {
-        
+
         guard let time = player?.currentTime() else { return }
         if metadata.livePhoto { return }
         if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue { return }
@@ -321,25 +321,21 @@ class NCPlayer: NSObject {
                 // Update Playing Info Center
                 let mediaItemPropertyTitle = MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyTitle] as? String
                 if let image = image, mediaItemPropertyTitle == metadata.fileNameView {
-                    MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { size in
+                    MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
                         return image
                     }
                 }
                 // Preview
                 if let data = image?.jpegData(compressionQuality: 0.5) {
-                    try data.write(to: URL.init(fileURLWithPath: fileNamePreviewLocalPath), options: .atomic)
+                    try data.write(to: URL(fileURLWithPath: fileNamePreviewLocalPath), options: .atomic)
                 }
                 // Icon
                 if let data = image?.jpegData(compressionQuality: 0.5) {
-                    try data.write(to: URL.init(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
+                    try data.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
                 }
-            }
-            catch let error as NSError {
+            } catch let error as NSError {
                 print(error.localizedDescription)
             }
         }
     }
 }
-
-
-

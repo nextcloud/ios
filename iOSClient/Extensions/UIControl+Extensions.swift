@@ -25,16 +25,16 @@
 import Foundation
 
 public class ActionClosure {
-    
-    public let selector : Selector
-    private let closure : (_ sendersender: Any?) -> ()
-    
-    init(_ attachObj: AnyObject, closure: @escaping (_ sender: Any?) -> ()) {
+
+    public let selector: Selector
+    private let closure : (_ sendersender: Any?) -> Void
+
+    init(_ attachObj: AnyObject, closure: @escaping (_ sender: Any?) -> Void) {
         self.closure = closure
         self.selector = #selector(target(_ :))
         objc_setAssociatedObject(attachObj, UUID().uuidString, self, .OBJC_ASSOCIATION_RETAIN)
     }
-    
+
     @objc func target(_ sender: Any?) {
         closure(sender)
     }

@@ -24,36 +24,36 @@
 import UIKit
 
 class NCManageAutoUploadFileName: XLFormViewController {
-    
+
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let dateExample = Date()
-    
+
     func initializeForm() {
-        
-        let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
+
+        let form: XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
         form.rowNavigationOptions = XLFormRowNavigationOptions.stopDisableRow
-        
-        var section : XLFormSectionDescriptor
-        var row : XLFormRowDescriptor
+
+        var section: XLFormSectionDescriptor
+        var row: XLFormRowDescriptor
 
         // Section Mode filename
 
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_mode_filename_", comment: ""))
         form.addFormSection(section)
-        
+
         // Maintain the original fileName
-        
+
         row = XLFormRowDescriptor(tag: "maintainOriginalFileName", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_maintain_original_filename_", comment: ""))
         row.value = CCUtility.getOriginalFileName(NCGlobal.shared.keyFileNameOriginalAutoUpload)
         row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
-        
+
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
 
         section.addFormRow(row)
-        
+
         // Add File Name Type
-        
+
         row = XLFormRowDescriptor(tag: "addFileNameType", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_add_filenametype_", comment: ""))
         row.value = CCUtility.getFileNameType(NCGlobal.shared.keyFileNameAutoUploadType)
         row.hidden = "$\("maintainOriginalFileName") == 1"
@@ -63,20 +63,20 @@ class NCManageAutoUploadFileName: XLFormViewController {
         row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
 
         section.addFormRow(row)
-                
+
         // Section: Rename File Name
-        
+
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_filename_", comment: ""))
         form.addFormSection(section)
-        
+
         row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeText, title: (NSLocalizedString("_filename_", comment: "")))
-        let fileNameMask : String = CCUtility.getFileNameMask(NCGlobal.shared.keyFileNameAutoUploadMask)
+        let fileNameMask: String = CCUtility.getFileNameMask(NCGlobal.shared.keyFileNameAutoUploadMask)
         if fileNameMask.count > 0 {
             row.value = fileNameMask
         }
         row.hidden = "$\("maintainOriginalFileName") == 1"
         row.cellConfig["backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground
-        
+
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
 
@@ -85,9 +85,9 @@ class NCManageAutoUploadFileName: XLFormViewController {
         row.cellConfig["textField.textColor"] = NCBrandColor.shared.label
 
         section.addFormRow(row)
-        
+
         // Section: Preview File Name
-        
+
         row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
         row.height = 180
         row.disabled = true
@@ -98,124 +98,122 @@ class NCManageAutoUploadFileName: XLFormViewController {
         row.cellConfig["textView.textColor"] = NCBrandColor.shared.label
 
         section.addFormRow(row)
-        
+
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         self.form = form
     }
-    
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         self.title = NSLocalizedString("_mode_filename_", comment: "")
         view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        
+
         tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        
+
         initializeForm()
         reloadForm()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         appDelegate.activeViewController = self
     }
-    
-    //MARK: XLForm
+
+    // MARK: XLForm
 
     func reloadForm() {
-        
+
         self.form.delegate = nil
-        
-        let maskFileName : XLFormRowDescriptor = self.form.formRow(withTag: "maskFileName")!
-        let previewFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
+
+        let maskFileName: XLFormRowDescriptor = self.form.formRow(withTag: "maskFileName")!
+        let previewFileName: XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
         previewFileName.value = self.previewFileName(valueRename: maskFileName.value as? String)
-        
+
         self.tableView.reloadData()
         self.form.delegate = self
     }
-    
+
     override func formRowDescriptorValueHasChanged(_ formRow: XLFormRowDescriptor!, oldValue: Any!, newValue: Any!) {
-        
+
         super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
-        
+
         if formRow.tag == "addFileNameType" {
             CCUtility.setFileNameType((formRow.value! as AnyObject).boolValue, key: NCGlobal.shared.keyFileNameAutoUploadType)
             self.reloadForm()
-        }
-        else if formRow.tag == "maintainOriginalFileName" {
-            CCUtility.setOriginalFileName((formRow.value! as AnyObject).boolValue, key:NCGlobal.shared.keyFileNameOriginalAutoUpload)
+        } else if formRow.tag == "maintainOriginalFileName" {
+            CCUtility.setOriginalFileName((formRow.value! as AnyObject).boolValue, key: NCGlobal.shared.keyFileNameOriginalAutoUpload)
             self.reloadForm()
-        }
-        else if formRow.tag == "maskFileName" {
-            
+        } else if formRow.tag == "maskFileName" {
+
             let fileName = formRow.value as? String
-            
+
             self.form.delegate = nil
-            
+
             if let fileName = fileName {
                 formRow.value = CCUtility.removeForbiddenCharactersServer(fileName)
             }
-            
+
             self.form.delegate = self
-            
-            let previewFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
+
+            let previewFileName: XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
             previewFileName.value = self.previewFileName(valueRename: formRow.value as? String)
-            
+
             // reload cell
             if fileName != nil {
-                
+
                 if newValue as! String != formRow.value as! String {
-                    
+
                     self.reloadFormRow(formRow)
-                    
+
                     NCContentPresenter.shared.messageNotification("_info_", description: "_forbidden_characters_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCharactersForbidden)
                 }
             }
-            
+
             self.reloadFormRow(previewFileName)
         }
     }
-    
+
     // MARK: - Utility
-    
-    func previewFileName(valueRename : String?) -> String {
-        
-        var returnString : String = ""
-        
+
+    func previewFileName(valueRename: String?) -> String {
+
+        var returnString: String = ""
+
         if CCUtility.getOriginalFileName(NCGlobal.shared.keyFileNameOriginalAutoUpload) {
-            
+
             return (NSLocalizedString("_filename_", comment: "") + ": IMG_0001.JPG")
-            
+
         } else if let valueRename = valueRename {
-            
+
             let valueRenameTrimming = valueRename.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-            
+
             if valueRenameTrimming.count > 0 {
-                
+
                 self.form.delegate = nil
                 CCUtility.setFileNameMask(valueRename, key: NCGlobal.shared.keyFileNameAutoUploadMask)
                 self.form.delegate = self
-                
+
                 returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: dateExample, fileType: PHAssetMediaType.image, keyFileName: NCGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)
 
             } else {
-                
+
                 CCUtility.setFileNameMask("", key: NCGlobal.shared.keyFileNameAutoUploadMask)
                 returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: dateExample, fileType: PHAssetMediaType.image, keyFileName: nil, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)
             }
-            
+
         } else {
-            
+
             CCUtility.setFileNameMask("", key: NCGlobal.shared.keyFileNameAutoUploadMask)
             returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: dateExample, fileType: PHAssetMediaType.image, keyFileName: nil, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)
         }
-        
+
         return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm") + ":" + "\n\n" + returnString
     }
-    
+
     // MARK: -
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

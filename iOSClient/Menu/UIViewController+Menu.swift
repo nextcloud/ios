@@ -63,7 +63,7 @@ extension UIViewController {
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         guard serverVersionMajor >= NCGlobal.shared.nextcloudVersion23 else { return }
 
-        NCCommunication.shared.getHovercard(for: userId) { (card, errCode, err) in
+        NCCommunication.shared.getHovercard(for: userId) { card, _, _ in
             guard let card = card else { return }
 
             let personHeader = NCMenuAction(
@@ -104,7 +104,7 @@ extension UIViewController {
 
         present(mail, animated: true)
     }
-    
+
     func presentMenu(with actions: [NCMenuAction]) {
         let menuViewController = NCMenu.makeNCMenu(with: actions)
 

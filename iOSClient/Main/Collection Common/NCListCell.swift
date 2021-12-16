@@ -24,7 +24,7 @@
 import UIKit
 
 class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
-    
+
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageSelect: UIImageView!
@@ -44,7 +44,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     private var objectId = ""
     private var user = ""
 
-    var delegate: NCListCellDelegate?
+    weak var delegate: NCListCellDelegate?
     var namedButtonMore = ""
 
     var fileAvatarImageView: UIImageView? {
@@ -60,7 +60,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             objectId = newValue ?? ""
         }
     }
-    var filePreviewImageView : UIImageView? {
+    var filePreviewImageView: UIImageView? {
         get {
             return imageItem
         }
@@ -73,13 +73,13 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             user = newValue ?? ""
         }
     }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
-               
+
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
-        
+
         progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.transform = CGAffineTransform(scaleX: 1.0, y: 0.5)
         progressView.trackTintColor = .clear
@@ -89,53 +89,53 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         longPressedGesture.delegate = self
         longPressedGesture.delaysTouchesBegan = true
         self.addGestureRecognizer(longPressedGesture)
-        
+
         let longPressedGestureMore = UILongPressGestureRecognizer(target: self, action: #selector(longPressInsideMore(gestureRecognizer:)))
         longPressedGestureMore.minimumPressDuration = 0.5
         longPressedGestureMore.delegate = self
         longPressedGestureMore.delaysTouchesBegan = true
         buttonMore.addGestureRecognizer(longPressedGestureMore)
-        
+
         separator.backgroundColor = NCBrandColor.shared.separator
         separatorHeightConstraint.constant = 0.5
     }
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
         imageItem.backgroundColor = nil
     }
-    
+
     @IBAction func touchUpInsideShare(_ sender: Any) {
         delegate?.tapShareListItem(with: objectId, sender: sender)
     }
-    
+
     @IBAction func touchUpInsideMore(_ sender: Any) {
         delegate?.tapMoreListItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, sender: sender)
     }
-    
+
     @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
         delegate?.longPressMoreListItem(with: objectId, namedButtonMore: namedButtonMore, gestureRecognizer: gestureRecognizer)
     }
-    
+
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
         delegate?.longPressListItem(with: objectId, gestureRecognizer: gestureRecognizer)
     }
-    
+
     func setButtonMore(named: String, image: UIImage) {
         namedButtonMore = named
         imageMore.image = image
     }
-    
+
     func hideButtonMore(_ status: Bool) {
         imageMore.isHidden = status
         buttonMore.isHidden = status
     }
-    
+
     func hideButtonShare(_ status: Bool) {
         imageShared.isHidden = status
         buttonShared.isHidden = status
     }
-    
+
     func selectMode(_ status: Bool) {
         if status {
             imageItemLeftConstraint.constant = 45
@@ -146,7 +146,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             backgroundView = nil
         }
     }
-    
+
     func selected(_ status: Bool) {
         if status {
             var blurEffect: UIVisualEffect?
@@ -173,7 +173,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 }
 
-protocol NCListCellDelegate {
+protocol NCListCellDelegate: AnyObject {
     func tapShareListItem(with objectId: String, sender: Any)
     func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any)
     func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer)
@@ -191,34 +191,34 @@ extension NCListCellDelegate {
 // MARK: - List Layout
 
 class NCListLayout: UICollectionViewFlowLayout {
-    
+
     var itemHeight: CGFloat = 60
-    
+
     // MARK: - View Life Cycle
 
     override init() {
         super.init()
-        
+
         sectionHeadersPinToVisibleBounds = false
-        
+
         minimumInteritemSpacing = 0
         minimumLineSpacing = 1
-        
+
         self.scrollDirection = .vertical
         self.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override var itemSize: CGSize {
         get {
             if let collectionView = collectionView {
                 let itemWidth: CGFloat = collectionView.frame.width
                 return CGSize(width: itemWidth, height: self.itemHeight)
             }
-            
+
             // Default fallback
             return CGSize(width: 100, height: 100)
         }
@@ -226,7 +226,7 @@ class NCListLayout: UICollectionViewFlowLayout {
             super.itemSize = newValue
         }
     }
-    
+
     override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
         return proposedContentOffset
     }

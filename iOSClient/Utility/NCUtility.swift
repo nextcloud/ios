@@ -29,7 +29,6 @@ import PDFKit
 import Accelerate
 import CoreMedia
 
-
 // MARK: - NCUtility
 
 class NCUtility: NSObject {
@@ -37,27 +36,27 @@ class NCUtility: NSObject {
         let instance = NCUtility()
         return instance
     }()
-    
+
     private var activityIndicator: UIActivityIndicatorView?
     private var viewActivityIndicator: UIView?
     private var viewBackgroundActivityIndicator: UIView?
 
     func setLayoutForView(key: String, serverUrl: String, layoutForView: NCGlobal.layoutForViewType) {
-        
+
         let string =  layoutForView.layout + "|" + layoutForView.sort + "|" + "\(layoutForView.ascending)" + "|" + layoutForView.groupBy + "|" + "\(layoutForView.directoryOnTop)" + "|" + layoutForView.titleButtonHeader + "|" + "\(layoutForView.itemForLine)" + "|" + layoutForView.imageBackgroud + "|" + layoutForView.imageBackgroudContentMode
         var keyStore = key
-        
+
         if serverUrl != "" {
             keyStore = serverUrl
         }
-        
+
         UICKeyChainStore.setString(string, forKey: keyStore, service: NCGlobal.shared.serviceShareKeyChain)
     }
-    
+
     func setLayoutForView(key: String, serverUrl: String, layout: String?) {
-        
+
         var layoutForView: NCGlobal.layoutForViewType = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
-        
+
         if let layout = layout {
             layoutForView.layout = layout
             setLayoutForView(key: key, serverUrl: serverUrl, layoutForView: layoutForView)
@@ -65,24 +64,24 @@ class NCUtility: NSObject {
     }
 
     func setBackgroundImageForView(key: String, serverUrl: String, imageBackgroud: String, imageBackgroudContentMode: String) {
-        
+
         var layoutForView: NCGlobal.layoutForViewType = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
-        
+
         layoutForView.imageBackgroud = imageBackgroud
         layoutForView.imageBackgroudContentMode = imageBackgroudContentMode
-        
+
         setLayoutForView(key: key, serverUrl: serverUrl, layoutForView: layoutForView)
     }
-    
+
     func getLayoutForView(key: String, serverUrl: String, sort: String = "fileName", ascending: Bool = true, titleButtonHeader: String = "_sorted_by_name_a_z_") -> (NCGlobal.layoutForViewType) {
-        
+
         var keyStore = key
         var layoutForView: NCGlobal.layoutForViewType = NCGlobal.layoutForViewType(layout: NCGlobal.shared.layoutList, sort: sort, ascending: ascending, groupBy: "none", directoryOnTop: true, titleButtonHeader: titleButtonHeader, itemForLine: 3, imageBackgroud: "", imageBackgroudContentMode: "")
-        
+
         if serverUrl != "" {
             keyStore = serverUrl
         }
-        
+
         guard let string = UICKeyChainStore.string(forKey: keyStore, service: NCGlobal.shared.serviceShareKeyChain) else {
             setLayoutForView(key: key, serverUrl: serverUrl, layoutForView: layoutForView)
             return layoutForView
@@ -102,102 +101,102 @@ class NCUtility: NSObject {
             if array.count > 8 {
                 layoutForView.imageBackgroud = array[7]
                 layoutForView.imageBackgroudContentMode = array[8]
-                //layoutForView.lightColorBackground = array[9] WAS STRING
-                //layoutForView.darkColorBackground = array[10] WAS STRING
+                // layoutForView.lightColorBackground = array[9] WAS STRING
+                // layoutForView.darkColorBackground = array[10] WAS STRING
             }
         }
-        
+
         return layoutForView
     }
-        
-    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool, account: String, closure: @escaping (String?) -> ()) {
-        
+
+    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool, account: String, closure: @escaping (String?) -> Void) {
+
         var fileNamePNG = ""
-        
+
         guard let svgUrlString = svgUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
               let iconURL = URL(string: svgUrlString) else {
             return closure(nil)
         }
-        
+
         if let fileName = fileName {
             fileNamePNG = fileName
         } else {
             fileNamePNG = iconURL.deletingPathExtension().lastPathComponent + ".png"
         }
-        
+
         let imageNamePath = CCUtility.getDirectoryUserData() + "/" + fileNamePNG
-        
+
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
-            
-            NCCommunication.shared.downloadContent(serverUrl: iconURL.absoluteString) { (account, data, errorCode, errorMessage) in
-               
+
+            NCCommunication.shared.downloadContent(serverUrl: iconURL.absoluteString) { _, data, errorCode, _ in
+
                 if errorCode == 0 && data != nil {
-                
-                    if let image = UIImage.init(data: data!) {
-                        
+
+                    if let image = UIImage(data: data!) {
+
                         var newImage: UIImage = image
-                        
+
                         if width != nil {
-                            
+
                             let ratio = image.size.height / image.size.width
                             let newSize = CGSize(width: width!, height: width! * ratio)
-                            
+
                             let renderFormat = UIGraphicsImageRendererFormat.default()
                             renderFormat.opaque = false
                             let renderer = UIGraphicsImageRenderer(size: CGSize(width: newSize.width, height: newSize.height), format: renderFormat)
                             newImage = renderer.image {
-                                (context) in
+                                _ in
                                 image.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
                             }
                         }
-                        
+
                         guard let pngImageData = newImage.pngData() else {
                             return closure(nil)
                         }
-                        
-                        try? pngImageData.write(to: URL(fileURLWithPath:imageNamePath))
-                        
+
+                        try? pngImageData.write(to: URL(fileURLWithPath: imageNamePath))
+
                         return closure(imageNamePath)
-                        
+
                     } else {
-                        
+
                         guard let svgImage: SVGKImage = SVGKImage(data: data) else {
                             return closure(nil)
                         }
-                            
+
                         if width != nil {
                             let scale = svgImage.size.height / svgImage.size.width
                             svgImage.size = CGSize(width: width!, height: width! * scale)
                         }
-                            
+
                         guard let image: UIImage = svgImage.uiImage else {
                             return closure(nil)
                         }
                         guard let pngImageData = image.pngData() else {
                             return closure(nil)
                         }
-                            
-                        try? pngImageData.write(to: URL(fileURLWithPath:imageNamePath))
-                                                    
+
+                        try? pngImageData.write(to: URL(fileURLWithPath: imageNamePath))
+
                         return closure(imageNamePath)
                     }
                 } else {
                     return closure(nil)
                 }
             }
-            
+
         } else {
             return closure(imageNamePath)
         }
     }
-    
+
     @objc func isSimulatorOrTestFlight() -> Bool {
         guard let path = Bundle.main.appStoreReceiptURL?.path else {
             return false
         }
         return path.contains("CoreSimulator") || path.contains("sandboxReceipt")
     }
-    
+
     @objc func isSimulator() -> Bool {
         guard let path = Bundle.main.appStoreReceiptURL?.path else {
             return false
@@ -206,55 +205,55 @@ class NCUtility: NSObject {
     }
 
     @objc func isRichDocument(_ metadata: tableMetadata) -> Bool {
-        
+
         guard let mimeType = CCUtility.getMimeType(metadata.fileNameView) else {
             return false
         }
-        
+
         guard let richdocumentsMimetypes = NCManageDatabase.shared.getCapabilitiesServerArray(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes) else {
             return false
         }
-        
+
         // contentype
         for richdocumentMimetype: String in richdocumentsMimetypes {
             if richdocumentMimetype.contains(metadata.contentType) || metadata.contentType == "text/plain" {
                 return true
             }
         }
-        
+
         // mimetype
         if richdocumentsMimetypes.count > 0 && mimeType.components(separatedBy: ".").count > 2 {
-            
+
             let mimeTypeArray = mimeType.components(separatedBy: ".")
             let mimeType = mimeTypeArray[mimeTypeArray.count - 2] + "." + mimeTypeArray[mimeTypeArray.count - 1]
-            
+
             for richdocumentMimetype: String in richdocumentsMimetypes {
                 if richdocumentMimetype.contains(mimeType) {
                     return true
                 }
             }
         }
-        
+
         return false
     }
-    
+
     @objc func isDirectEditing(account: String, contentType: String) -> [String] {
-        
+
         var editor: [String] = []
-        
+
         guard let results = NCManageDatabase.shared.getDirectEditingEditors(account: account) else {
             return editor
         }
-        
+
         for result: tableDirectEditingEditors in results {
             for mimetype in result.mimetypes {
                 if mimetype == contentType {
                     editor.append(result.editor)
                 }
-                
+
                 // HARDCODE
                 // https://github.com/nextcloud/text/issues/913
-                
+
                 if mimetype == "text/markdown" && contentType == "text/x-markdown" {
                     editor.append(result.editor)
                 }
@@ -268,36 +267,36 @@ class NCUtility: NSObject {
                 }
             }
         }
-        
+
         // HARDCODE
-        //if editor.count == 0 {
+        // if editor.count == 0 {
         //    editor.append(NCGlobal.shared.editorText)
-        //}
-                
+        // }
+
         return Array(Set(editor))
     }
-    
+
     @objc func removeAllSettings() {
-        
+
         URLCache.shared.memoryCapacity = 0
         URLCache.shared.diskCapacity = 0
         KTVHTTPCache.cacheDeleteAllCaches()
-        
+
         NCManageDatabase.shared.clearDatabase(account: nil, removeAccount: true)
-        
+
         CCUtility.removeGroupDirectoryProviderStorage()
         CCUtility.removeGroupLibraryDirectory()
-        
+
         CCUtility.removeDocumentsDirectory()
         CCUtility.removeTemporaryDirectory()
-        
+
         CCUtility.createDirectoryStandard()
-        
+
         CCUtility.deleteAllChainStore()
     }
-    
+
     @objc func permissionsContainsString(_ metadataPermissions: String, permissions: String) -> Bool {
-        
+
         for char in permissions {
             if metadataPermissions.contains(char) == false {
                 return false
@@ -305,19 +304,19 @@ class NCUtility: NSObject {
         }
         return true
     }
-    
+
     @objc func getCustomUserAgentOnlyOffice() -> String {
-        
+
         let appVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
         if UIDevice.current.userInterfaceIdiom == .pad {
             return "Mozilla/5.0 (iPad) Nextcloud-iOS/\(appVersion)"
-        }else{
+        } else {
             return "Mozilla/5.0 (iPhone) Mobile Nextcloud-iOS/\(appVersion)"
         }
     }
-    
+
     @objc func pdfThumbnail(url: URL, width: CGFloat = 240) -> UIImage? {
-       
+
         guard let data = try? Data(contentsOf: url), let page = PDFDocument(data: data)?.page(at: 0) else {
             return nil
         }
@@ -331,68 +330,68 @@ class NCUtility: NSObject {
 
         return page.thumbnail(of: screenSize, for: .mediaBox)
     }
-    
+
     @objc func isQuickLookDisplayable(metadata: tableMetadata) -> Bool {
         return true
     }
-        
+
     @objc func ocIdToFileId(ocId: String?) -> String? {
-    
+
         guard let ocId = ocId else { return nil }
-        
+
         let items = ocId.components(separatedBy: "oc")
         if items.count < 2 { return nil }
         guard let intFileId = Int(items[0]) else { return nil }
         return String(intFileId)
     }
-    
+
     func getUserStatus(userIcon: String?, userStatus: String?, userMessage: String?) -> (onlineStatus: UIImage?, statusMessage: String, descriptionMessage: String) {
-        
+
         var onlineStatus: UIImage?
         var statusMessage: String = ""
         var descriptionMessage: String = ""
         var messageUserDefined: String = ""
-        
+
         if userStatus?.lowercased() == "online" {
-            onlineStatus = UIImage.init(named: "userStatusOnline")!.image(color: UIColor(red: 103.0/255.0, green: 176.0/255.0, blue: 134.0/255.0, alpha: 1.0), size: 50)
+            onlineStatus = UIImage(named: "userStatusOnline")!.image(color: UIColor(red: 103.0/255.0, green: 176.0/255.0, blue: 134.0/255.0, alpha: 1.0), size: 50)
             messageUserDefined = NSLocalizedString("_online_", comment: "")
         }
         if userStatus?.lowercased() == "away" {
-            onlineStatus = UIImage.init(named: "userStatusAway")!.image(color: UIColor(red: 233.0/255.0, green: 166.0/255.0, blue: 75.0/255.0, alpha: 1.0), size: 50)
+            onlineStatus = UIImage(named: "userStatusAway")!.image(color: UIColor(red: 233.0/255.0, green: 166.0/255.0, blue: 75.0/255.0, alpha: 1.0), size: 50)
             messageUserDefined = NSLocalizedString("_away_", comment: "")
         }
         if userStatus?.lowercased() == "dnd" {
-            onlineStatus = UIImage.init(named: "userStatusDnd")?.resizeImage(size: CGSize(width: 100, height: 100), isAspectRation: false)
+            onlineStatus = UIImage(named: "userStatusDnd")?.resizeImage(size: CGSize(width: 100, height: 100), isAspectRation: false)
             messageUserDefined = NSLocalizedString("_dnd_", comment: "")
             descriptionMessage = NSLocalizedString("_dnd_description_", comment: "")
         }
-        if userStatus?.lowercased() == "offline" || userStatus?.lowercased() == "invisible"  {
-            onlineStatus = UIImage.init(named: "userStatusOffline")!.image(color: .black, size: 50) 
+        if userStatus?.lowercased() == "offline" || userStatus?.lowercased() == "invisible" {
+            onlineStatus = UIImage(named: "userStatusOffline")!.image(color: .black, size: 50)
             messageUserDefined = NSLocalizedString("_invisible_", comment: "")
             descriptionMessage = NSLocalizedString("_invisible_description_", comment: "")
         }
-        
+
         if let userIcon = userIcon {
             statusMessage = userIcon + " "
         }
         if let userMessage = userMessage {
-            statusMessage = statusMessage + userMessage
+            statusMessage += userMessage
         }
         statusMessage = statusMessage.trimmingCharacters(in: .whitespaces)
         if statusMessage == "" {
             statusMessage = messageUserDefined
         }
-                
+
         return(onlineStatus, statusMessage, descriptionMessage)
     }
 
     // MARK: -
 
     func imageFromVideo(url: URL, at time: TimeInterval) -> UIImage? {
-        
+
         let asset = AVURLAsset(url: url)
         let assetIG = AVAssetImageGenerator(asset: asset)
-        
+
         assetIG.appliesPreferredTrackTransform = true
         assetIG.apertureMode = AVAssetImageGenerator.ApertureMode.encodedPixels
 
@@ -407,13 +406,13 @@ class NCUtility: NSObject {
 
         return UIImage(cgImage: thumbnailImageRef)
     }
-    
+
     func imageFromVideo(url: URL, at time: TimeInterval, completion: @escaping (UIImage?) -> Void) {
         DispatchQueue.global(qos: .background).async {
-            
+
             let asset = AVURLAsset(url: url)
             let assetIG = AVAssetImageGenerator(asset: asset)
-            
+
             assetIG.appliesPreferredTrackTransform = true
             assetIG.apertureMode = AVAssetImageGenerator.ApertureMode.encodedPixels
 
@@ -431,41 +430,41 @@ class NCUtility: NSObject {
             }
         }
     }
-    
+
     func createImageFrom(fileName: String, ocId: String, etag: String, classFile: String) {
-        
+
         var originalImage, scaleImagePreview, scaleImageIcon: UIImage?
-        
+
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
         let fileNamePathPreview = CCUtility.getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)!
         let fileNamePathIcon = CCUtility.getDirectoryProviderStorageIconOcId(ocId, etag: etag)!
-        
+
         if FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
         if !CCUtility.fileProviderStorageExists(ocId, fileNameView: fileName) { return }
         if classFile != NCCommunicationCommon.typeClassFile.image.rawValue && classFile != NCCommunicationCommon.typeClassFile.video.rawValue { return }
-        
+
         if classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
-            
-            originalImage = UIImage.init(contentsOfFile: fileNamePath)
-            
+
+            originalImage = UIImage(contentsOfFile: fileNamePath)
+
             scaleImagePreview = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview), isAspectRation: false)
             scaleImageIcon = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: false)
-            
+
             try? scaleImagePreview?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
             try? scaleImageIcon?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
-            
+
         } else if classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-            
+
             let videoPath = NSTemporaryDirectory()+"tempvideo.mp4"
             NCUtilityFileSystem.shared.linkItem(atPath: fileNamePath, toPath: videoPath)
-            
+
             originalImage = imageFromVideo(url: URL(fileURLWithPath: videoPath), at: 0)
-            
+
             try? originalImage?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
             try? originalImage?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
         }
     }
-    
+
     @objc func getVersionApp() -> String {
         if let dictionary = Bundle.main.infoDictionary {
             if let version = dictionary["CFBundleShortVersionString"], let build = dictionary["CFBundleVersion"] {
@@ -474,11 +473,11 @@ class NCUtility: NSObject {
         }
         return ""
     }
-    
+
     func loadImage(named: String, color: UIColor = NCBrandColor.shared.gray, size: CGFloat = 50, symbolConfiguration: Any? = nil) -> UIImage {
-        
+
         var image: UIImage?
-        
+
         if #available(iOS 13.0, *) {
             if let symbolConfiguration = symbolConfiguration {
                 image = UIImage(systemName: named, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.imageColor(color)
@@ -491,14 +490,14 @@ class NCUtility: NSObject {
         } else {
             image = UIImage(named: named)?.image(color: color, size: size)
         }
-        
+
         if image != nil {
             return image!
         }
-        
+
         return  UIImage(named: "file")!.image(color: color, size: size)
     }
-    
+
     @objc func loadUserImage(for user: String, displayName: String?, userBaseUrl: NCUserBaseUrl) -> UIImage {
 
         let fileName = userBaseUrl.userBaseUrl + "-" + user + ".png"
@@ -512,7 +511,7 @@ class NCUtility: NSObject {
             return avatarImg
         } else { return getDefaultUserIcon() }
     }
-    
+
     func getDefaultUserIcon() -> UIImage {
         if #available(iOS 13.0, *) {
             let config = UIImage.SymbolConfiguration(pointSize: 30)
@@ -521,21 +520,21 @@ class NCUtility: NSObject {
             return NCUtility.shared.loadImage(named: "person.crop.circle", size: 30)
         }
     }
-    
+
     @objc func createAvatar(image: UIImage, size: CGFloat) -> UIImage {
-        
+
         var avatarImage = image
         let rect = CGRect(x: 0, y: 0, width: size, height: size)
-        
+
         UIGraphicsBeginImageContextWithOptions(rect.size, false, 3.0)
-        UIBezierPath.init(roundedRect: rect, cornerRadius: rect.size.height).addClip()
+        UIBezierPath(roundedRect: rect, cornerRadius: rect.size.height).addClip()
         avatarImage.draw(in: rect)
         avatarImage = UIGraphicsGetImageFromCurrentImageContext() ?? image
         UIGraphicsEndImageContext()
-        
+
         return avatarImage
     }
-    
+
     func createAvatar(displayName: String, size: CGFloat) -> UIImage? {
         guard let initials = displayName.uppercaseInitials else {
             return nil
@@ -543,10 +542,10 @@ class NCUtility: NSObject {
         let userColor = NCGlobal.shared.usernameToColor(displayName)
         let rect = CGRect(x: 0, y: 0, width: size, height: size)
         var avatarImage: UIImage?
-        
+
         UIGraphicsBeginImageContextWithOptions(rect.size, false, 3.0)
         let context = UIGraphicsGetCurrentContext()
-        UIBezierPath.init(roundedRect: rect, cornerRadius: rect.size.height).addClip()
+        UIBezierPath(roundedRect: rect, cornerRadius: rect.size.height).addClip()
         context?.setFillColor(userColor)
         context?.fill(rect)
         let textStyle = NSMutableParagraphStyle()
@@ -565,24 +564,24 @@ class NCUtility: NSObject {
     // MARK: -
 
     @objc func startActivityIndicator(backgroundView: UIView?, blurEffect: Bool, bottom: CGFloat = 0, style: UIActivityIndicatorView.Style = .whiteLarge) {
-        
+
         if self.activityIndicator != nil {
             stopActivityIndicator()
         }
-        
+
         DispatchQueue.main.async {
-            
+
             self.activityIndicator = UIActivityIndicatorView(style: style)
             guard let activityIndicator = self.activityIndicator else { return }
             if self.viewBackgroundActivityIndicator != nil { return }
-            
+
             activityIndicator.color = NCBrandColor.shared.label
             activityIndicator.hidesWhenStopped = true
             activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 
             let sizeActivityIndicator = activityIndicator.frame.height + 50
-            
-            self.viewActivityIndicator = UIView.init(frame: CGRect(x: 0, y: 0, width: sizeActivityIndicator, height: sizeActivityIndicator))
+
+            self.viewActivityIndicator = UIView(frame: CGRect(x: 0, y: 0, width: sizeActivityIndicator, height: sizeActivityIndicator))
             self.viewActivityIndicator?.translatesAutoresizingMaskIntoConstraints = false
             self.viewActivityIndicator?.layer.cornerRadius = 10
             self.viewActivityIndicator?.layer.masksToBounds = true
@@ -603,69 +602,69 @@ class NCUtility: NSObject {
             #else
             self.viewBackgroundActivityIndicator = backgroundView
             #endif
-            
+
             // VIEW ACTIVITY INDICATOR
-            
+
             guard let viewActivityIndicator = self.viewActivityIndicator else { return }
             viewActivityIndicator.addSubview(activityIndicator)
-            
+
             if blurEffect {
                 let blurEffect = UIBlurEffect(style: .regular)
                 let blurEffectView = UIVisualEffectView(effect: blurEffect)
                 blurEffectView.frame = viewActivityIndicator.frame
                 viewActivityIndicator.insertSubview(blurEffectView, at: 0)
             }
-                
+
             NSLayoutConstraint.activate([
                 viewActivityIndicator.widthAnchor.constraint(equalToConstant: sizeActivityIndicator),
                 viewActivityIndicator.heightAnchor.constraint(equalToConstant: sizeActivityIndicator),
                 activityIndicator.centerXAnchor.constraint(equalTo: viewActivityIndicator.centerXAnchor),
                 activityIndicator.centerYAnchor.constraint(equalTo: viewActivityIndicator.centerYAnchor)
             ])
-            
+
             // BACKGROUD VIEW ACTIVITY INDICATOR
-            
+
             guard let viewBackgroundActivityIndicator = self.viewBackgroundActivityIndicator else { return }
             viewBackgroundActivityIndicator.addSubview(viewActivityIndicator)
-                
+
             var verticalConstant: CGFloat = 0
             if bottom > 0 {
                 verticalConstant = (viewBackgroundActivityIndicator.frame.size.height / 2) - bottom
             }
-            
+
             NSLayoutConstraint.activate([
                 viewActivityIndicator.centerXAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerXAnchor),
                 viewActivityIndicator.centerYAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerYAnchor, constant: verticalConstant)
             ])
-            
+
             activityIndicator.startAnimating()
         }
     }
-    
+
     @objc func stopActivityIndicator() {
-                    
+
         DispatchQueue.main.async {
-            
+
             self.activityIndicator?.stopAnimating()
             self.activityIndicator?.removeFromSuperview()
             self.activityIndicator = nil
-            
+
             self.viewActivityIndicator?.removeFromSuperview()
             self.viewActivityIndicator = nil
-            
+
             if self.viewBackgroundActivityIndicator is NCViewActivityIndicator {
                 self.viewBackgroundActivityIndicator?.removeFromSuperview()
             }
             self.viewBackgroundActivityIndicator = nil
         }
     }
-    
+
     /*
     Facebook's comparison algorithm:
     */
-    
+
     func compare(tolerance: Float, expected: Data, observed: Data) throws -> Bool {
-        
+
         enum customError: Error {
             case unableToGetUIImageFromData
             case unableToGetCGImageFromData
@@ -673,7 +672,7 @@ class NCUtility: NSObject {
             case imagesHasDifferentSizes
             case unableToInitializeContext
         }
-        
+
         guard let expectedUIImage = UIImage(data: expected), let observedUIImage = UIImage(data: observed) else {
             throw customError.unableToGetUIImageFromData
         }
@@ -743,36 +742,36 @@ class NCUtility: NSObject {
 
         return isEqual
     }
-    
+
     func stringFromTime(_ time: CMTime) -> String {
-    
+
         let interval = Int(CMTimeGetSeconds(time))
-        
+
         let seconds = interval % 60
         let minutes = (interval / 60) % 60
         let hours = (interval / 3600)
-        
+
         if hours > 0 {
             return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
         } else {
             return String(format: "%02d:%02d", minutes, seconds)
         }
     }
-    
+
     func colorNavigationController(_ navigationController: UINavigationController?, backgroundColor: UIColor, titleColor: UIColor, tintColor: UIColor?, withoutShadow: Bool) {
-        
+
         if #available(iOS 13.0, *) {
-            
+
             // iOS 14, 15
             let appearance = UINavigationBarAppearance()
             appearance.titleTextAttributes = [.foregroundColor: titleColor]
             appearance.largeTitleTextAttributes = [.foregroundColor: titleColor]
-            
+
             if withoutShadow {
                 appearance.shadowColor = .clear
                 appearance.shadowImage = UIImage()
             }
-            
+
             if let tintColor = tintColor {
                 navigationController?.navigationBar.tintColor = tintColor
             }
@@ -782,19 +781,19 @@ class NCUtility: NSObject {
             navigationController?.navigationBar.standardAppearance = appearance
             navigationController?.navigationBar.compactAppearance = appearance
             navigationController?.navigationBar.scrollEdgeAppearance = appearance
-            
+
         } else {
-            
+
             navigationController?.navigationBar.isTranslucent = true
             navigationController?.navigationBar.barTintColor = backgroundColor
-            
+
             if withoutShadow {
                 navigationController?.navigationBar.shadowImage = UIImage()
                 navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
             }
-            
+
             let titleDict: NSDictionary = [NSAttributedString.Key.foregroundColor: titleColor]
-            navigationController?.navigationBar.titleTextAttributes = titleDict as? [NSAttributedString.Key : Any]
+            navigationController?.navigationBar.titleTextAttributes = titleDict as? [NSAttributedString.Key: Any]
             if let tintColor = tintColor {
                 navigationController?.navigationBar.tintColor = tintColor
             }
@@ -805,16 +804,14 @@ class NCUtility: NSObject {
 // MARK: -
 
 class NCViewActivityIndicator: UIView {
- 
+
     // MARK: - View Life Cycle
 
     override init(frame: CGRect) {
         super.init(frame: frame)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
-
