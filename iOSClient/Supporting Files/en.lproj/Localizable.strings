@@ -112,6 +112,9 @@
 "_sharing_"                 = "Sharing";
 "_details_"                 = "Details";
 "_rotate_"                  = "Rotate right";
+"_discard_"                 = "Discard";
+"_rotate_button_"           = "Rotate";
+"_save_changes_message_"    = "Do you want to save changes?";
 "_dark_mode_"               = "Dark mode";
 "_dark_mode_detect_"        = "Detect iOS dark mode";
 "_screen_"                  = "Screen";

@@ -173,4 +173,47 @@ extension UIImage {
         UIGraphicsEndImageContext()
         return newImage
     }
+    
+    func rotateExif(orientation: UIImage.Orientation) -> UIImage {
+        
+        if(orientation == UIImage.Orientation.up){return self}
+        
+        let current = self.imageOrientation
+        let currentDegrees: Int = (
+            current == UIImage.Orientation.down || current == UIImage.Orientation.downMirrored ? 180 : (
+                current == UIImage.Orientation.left || current == UIImage.Orientation.leftMirrored ? 270 : (
+                    current == UIImage.Orientation.right || current == UIImage.Orientation.rightMirrored ? 90 : 0
+                )
+            )
+        )
+        let changeDegrees: Int = (
+            orientation == UIImage.Orientation.down || orientation == UIImage.Orientation.downMirrored ? 180 : (
+                orientation == UIImage.Orientation.left || orientation == UIImage.Orientation.leftMirrored ? 270 : (
+                    orientation == UIImage.Orientation.right || orientation == UIImage.Orientation.rightMirrored ? 90 : 0
+                )
+            )
+        )
+        
+        
+        let mirrored: Bool = (
+            current == UIImage.Orientation.downMirrored || current == UIImage.Orientation.upMirrored ||
+                current == UIImage.Orientation.leftMirrored || current == UIImage.Orientation.rightMirrored ||
+                orientation == UIImage.Orientation.downMirrored || orientation == UIImage.Orientation.upMirrored ||
+                orientation == UIImage.Orientation.leftMirrored || orientation == UIImage.Orientation.rightMirrored
+        )
+        
+        let degrees: Int = currentDegrees + changeDegrees
+        
+        let newOrientation: UIImage.Orientation = (
+            degrees == 270 || degrees == 630 ? (mirrored ? UIImage.Orientation.leftMirrored : UIImage.Orientation.left) : (
+                degrees == 180 || degrees == 540 ? (mirrored ? UIImage.Orientation.downMirrored : UIImage.Orientation.down) : (
+                    degrees == 90 || degrees == 450 ? (mirrored ? UIImage.Orientation.rightMirrored : UIImage.Orientation.right) : (
+                        mirrored ? UIImage.Orientation.upMirrored : UIImage.Orientation.up
+                    )
+                )
+            )
+        )
+        
+        return UIImage(cgImage: self.cgImage!, scale: 1.0, orientation: newOrientation)
+    }
 }
