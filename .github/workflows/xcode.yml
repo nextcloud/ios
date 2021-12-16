@@ -1,0 +1,55 @@
+name: Build
+
+on: 
+  push:
+    branches: 
+      - master
+      - develop
+  pull_request:
+    branches: 
+      - master
+      - develop
+
+jobs:
+  XCBuild:
+    runs-on: macOS-11
+    env:
+      PROJECT: Nextcloud.xcodeproj
+      DESTINATION: platform=iOS Simulator,name=iPhone 11
+    steps:
+    - name: Set env var
+      run: echo "DEVELOPER_DIR=$(xcode-select --print-path)" >> $GITHUB_ENV
+    - uses: actions/checkout@v2
+    - name: Restore Carhage Cache
+      uses: actions/cache@v2
+      id: carthage-cache
+      with:
+        path: Carthage
+        key: ${{ runner.os }}-carthage-${{ hashFiles('**/Cartfile.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-carthage-
+    - name: Carthage
+      if: steps.carthage-cache.outputs.cache-hit != 'true'
+      run: carthage bootstrap --use-xcframeworks --platform iOS
+    - name: Download GoogleService-Info.plist
+      run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
+    - name: Build & Test Nextcloud iOS
+      run: |
+        xcodebuild clean build test -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
+      env:
+          SCHEME: Nextcloud
+    - name: Build iOS Share
+      run: |
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
+      env:
+          SCHEME: Share
+    - name: Build iOS File Extension
+      run: |
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
+      env:
+          SCHEME: File Provider Extension
+    - name: Build iOS Notification Extension
+      run: |
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
+      env:
+          SCHEME: Notification Service Extension

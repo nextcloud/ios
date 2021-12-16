@@ -29,4 +29,3 @@ protocol NCCellProtocol {
     var filePreviewImageView: UIImageView? { get }
     var fileUser: String? { get }
 }
-
