@@ -32,9 +32,9 @@ class NCMenu: UITableViewController {
 
     var actions = [NCMenuAction]()
 
-    static func makeNCMenu(with actions: [NCMenuAction]) -> NCMenu {
-        let menuViewController = UIStoryboard(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
-        menuViewController.actions = actions
+    static func makeNCMenu(with actions: [NCMenuAction]) -> NCMenu? {
+        let menuViewController = UIStoryboard(name: "NCMenu", bundle: nil).instantiateInitialViewController() as? NCMenu
+        menuViewController?.actions = actions
         return menuViewController
     }
 
@@ -66,19 +66,19 @@ class NCMenu: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "menuActionCell", for: indexPath)
         cell.tintColor = NCBrandColor.shared.customer
         let action = actions[indexPath.row]
-        let actionIconView = cell.viewWithTag(1) as! UIImageView
-        let actionNameLabel = cell.viewWithTag(2) as! UILabel
+        let actionIconView = cell.viewWithTag(1) as? UIImageView
+        let actionNameLabel = cell.viewWithTag(2) as? UILabel
 
         if action.action == nil {
             cell.selectionStyle = .none
         }
 
         if action.isOn {
-            actionIconView.image = action.onIcon
-            actionNameLabel.text = action.onTitle
+            actionIconView?.image = action.onIcon
+            actionNameLabel?.text = action.onTitle
         } else {
-            actionIconView.image = action.icon
-            actionNameLabel.text = action.title
+            actionIconView?.image = action.icon
+            actionNameLabel?.text = action.title
         }
 
         cell.accessoryType = action.selectable && action.selected ? .checkmark : .none
@@ -113,60 +113,6 @@ extension NCMenu: FloatingPanelControllerDelegate {
     func floatingPanelWillEndDragging(_ fpc: FloatingPanelController, withVelocity velocity: CGPoint, targetState: UnsafeMutablePointer<FloatingPanelState>) {
         guard velocity.y > 750 else { return }
         fpc.dismiss(animated: true, completion: nil)
-    }
-}
-
-class NCMenuFloatingPanelLayout: FloatingPanelLayout {
-    var position: FloatingPanelPosition = .bottom
-
-    var initialState: FloatingPanelState = .full
-
-    var anchors: [FloatingPanelState : FloatingPanelLayoutAnchoring] {
-        [
-            .full: FloatingPanelLayoutAnchor(absoluteInset: topInset, edge: .top, referenceGuide: .superview)
-        ]
-    }
-
-    let topInset: CGFloat
-
-    init(numberOfActions: Int) {
-        // sometimes UIScreen.main.bounds.size.height is not updated correctly
-        // this ensures we use the correct height value
-        // can't use `layoutFor size` since menu is dieplayed on top of the whole screen not just the VC
-        let screenHeight = UIApplication.shared.isLandscape
-        ? min(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
-        : max(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
-        let bottomInset = UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0
-        let panelHeight = CGFloat(numberOfActions * 60) + bottomInset
-
-        topInset = max(48, screenHeight - panelHeight)
-    }
-
-    func prepareLayout(surfaceView: UIView, in view: UIView) -> [NSLayoutConstraint] {
-        return [
-            surfaceView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
-            surfaceView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0)
-        ]
-    }
-
-    func backdropAlpha(for state: FloatingPanelState) -> CGFloat {
-        return 0.2
-    }
-}
-
-class NCMenuPanelController: FloatingPanelController {
-
-    var parentPresenter: UIViewController?
-
-    // MARK: - View Life Cycle
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        self.surfaceView.backgroundColor = NCBrandColor.shared.systemBackground
-        self.isRemovalInteractionEnabled = true
-        self.backdropView.dismissalTapGestureRecognizer.isEnabled = true
-        self.surfaceView.layer.cornerRadius = 16
     }
 }
 
