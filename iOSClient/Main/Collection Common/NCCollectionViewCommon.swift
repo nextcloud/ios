@@ -948,25 +948,29 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch) { (account, metadatas, errorCode, errorDescription) in
-
+        NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, user: appDelegate.user, literal: literalSearch) { metadatas in
+            guard let metadatas = metadatas else { return }
             DispatchQueue.main.async {
-                if self.searchController?.isActive == true, errorCode == 0, let metadatas = metadatas {
-                    self.metadatasSource = metadatas
-                }
-                self.refreshControl.endRefreshing()
-                self.isReloadDataSourceNetworkInProgress = false
+                self.metadatasSource = Array(metadatas)
                 self.reloadDataSource()
             }
+        } completion: { metadatas, errorCode, errorDescription in
+            if self.searchController?.isActive == true, errorCode == 0, let metadatas = metadatas {
+                self.metadatasSource = Array(metadatas)
+            }
+            self.refreshControl.endRefreshing()
+            self.isReloadDataSourceNetworkInProgress = false
+            self.reloadDataSource()
         }
+
     }
 
     @objc func networkReadFolder(forced: Bool, completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> Void) {
 
         var tableDirectory: tableDirectory?
-
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.account) { account, metadataFolder, errorCode, errorDescription in
-
+        
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { (account, metadataFolder, errorCode, errorDescription) in
+            
             if errorCode == 0 {
 
                 if let metadataFolder = metadataFolder {

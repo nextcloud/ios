@@ -155,8 +155,8 @@ extension NCNetworking {
                             NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
                             NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
 
-                            self.readFile(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account) { _, metadata, _, _ in
-
+                            self.readFile(serverUrlFileName: serverUrlFileNameDestination) { (_, metadata, _, _) in
+                                    
                                 if errorCode == 0, let metadata = metadata {
 
                                     metadata.assetLocalIdentifier = assetLocalIdentifier

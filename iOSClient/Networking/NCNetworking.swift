@@ -880,7 +880,7 @@ import Queuer
         }
     }
 
-    @objc func readFile(serverUrlFileName: String, account: String, queue: DispatchQueue = NCCommunicationCommon.shared.backgroundQueue, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ errorCode: Int, _ errorDescription: String) -> Void) {
+    @objc func readFile(serverUrlFileName: String, queue: DispatchQueue = NCCommunicationCommon.shared.backgroundQueue, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ errorCode: Int, _ errorDescription: String) -> Void) {
 
         NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: queue) { account, files, _, errorCode, errorDescription in
 
@@ -925,6 +925,69 @@ import Queuer
         }
     }
 
+    @objc func unifiedSearchFiles(urlBase: NCUserBaseUrl, user: String, literal: String, update: @escaping (Set<tableMetadata>?) -> Void, completion: @escaping (_ metadatas: Set<tableMetadata>?, _ errorCode: Int, _ errorDescription: String) -> ()) {
+        var seachFiles = Set<tableMetadata>()
+        var errCode = 0
+        var errDescr = ""
+        let dispatchGroup = DispatchGroup()
+        dispatchGroup.notify(queue: .main) {
+            completion(seachFiles, errCode, errDescr)
+        }
+        dispatchGroup.enter()
+
+        NCCommunication.shared.unifiedSearch(term: literal) { parialResult, provider, errorCode, errorDescription in
+            guard let parialResult = parialResult else { return }
+            // WARNING: SUPER HACKY SOLUTION!!
+            // FIXME: Needs to be fixed by FTS team
+            if parialResult.name == "Full Text Search" {
+                parialResult.entries.forEach({ entry in
+                    let comp = entry.subline.split(separator: "/")
+                    let path = comp.dropLast().joined(separator: "/")
+                    guard let lastComp = comp.last else { return }
+                    if let tableFile = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(
+                              format: "serverUrl == %@ && fileName == %@",
+                              urlBase.urlBase + "/remote.php/dav/files/" + user + "/" + path,
+                              String(lastComp))) {
+                        seachFiles.insert(tableFile)
+                    } else {
+                        self.loadMetadata(urlBase: urlBase, filePath: "/" + entry.subline, dispatchGroup: dispatchGroup) { newMetadata in
+                            seachFiles.insert(newMetadata)
+                        }
+                    }
+                })
+            } else if parialResult.name == "Files" {
+                parialResult.entries.forEach({ entry in
+                    if let fileId = entry.fileId,
+                       let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "fileId == %@", String(fileId))) {
+                        seachFiles.insert(result)
+                    } else if let filePath = entry.filePath {
+                        self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: dispatchGroup) { newMetadata in
+                            seachFiles.insert(newMetadata)
+                        }
+                    } else { print(#function, "[ERROR]: File has no path: \(entry)") }
+                })
+            }
+            update(seachFiles)
+        } completion: { results, errorCode, errorDescription in
+            dispatchGroup.leave()
+            errCode = errorCode
+            errDescr = errorDescription
+        }
+    }
+
+    func loadMetadata(urlBase: NCUserBaseUrl, filePath: String, dispatchGroup: DispatchGroup, completion: @escaping (tableMetadata) -> Void) {
+        let urlPath = urlBase.urlBase + "/remote.php/dav/files/" + urlBase.user + filePath
+        dispatchGroup.enter()
+        self.readFile(serverUrlFileName: urlPath) { account, metadata, errorCode, errorDescription in
+            defer { dispatchGroup.leave() }
+            guard let metadata = metadata else { return }
+            DispatchQueue.main.async {
+                NCManageDatabase.shared.addMetadata(metadata)
+            }
+            completion(metadata)
+        }
+    }
+
     // MARK: - WebDav Create Folder
 
     @objc func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool = false, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
@@ -957,9 +1020,9 @@ import Queuer
         NCCommunication.shared.createFolder(fileNameFolderUrl) { account, ocId, _, errorCode, errorDescription in
 
             if errorCode == 0 {
-
-                self.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { account, metadataFolder, errorCode, errorDescription in
-
+                
+                self.readFile(serverUrlFileName: fileNameFolderUrl) { (account, metadataFolder, errorCode, errorDescription) in
+                    
                     if errorCode == 0 {
 
                         if let metadata = metadataFolder {
