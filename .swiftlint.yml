@@ -3,7 +3,6 @@ opt_in_rules: # some rules are turned off by default, so you need to opt-in
   - empty_count
   - empty_string
   - explicit_init
-  - file_types_order
   - unneeded_parentheses_in_closure_argument
 
 empty_count:
@@ -81,7 +80,6 @@ excluded:
   - iOSClient/Menu/NCCollectionViewCommon+Menu.swift
   - iOSClient/Menu/NCLoginWeb+Menu.swift
   - iOSClient/Menu/NCMedia+Menu.swift
-  - iOSClient/Menu/NCMenu.swift
   - iOSClient/Menu/NCSortMenu.swift
   - iOSClient/Menu/NCViewer+Menu.swift
   - iOSClient/More/NCMore.swift

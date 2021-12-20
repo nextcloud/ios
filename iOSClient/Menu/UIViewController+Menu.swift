@@ -106,7 +106,10 @@ extension UIViewController {
     }
 
     func presentMenu(with actions: [NCMenuAction]) {
-        let menuViewController = NCMenu.makeNCMenu(with: actions)
+        guard let menuViewController = NCMenu.makeNCMenu(with: actions) else {
+            NCContentPresenter.shared.showGenericError(description: "_internal_generic_error_")
+            return
+        }
 
         let menuPanelController = NCMenuPanelController()
         menuPanelController.parentPresenter = self
