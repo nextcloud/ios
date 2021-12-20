@@ -109,6 +109,7 @@ class NCViewerMedia: UIViewController {
                 self.imageVideoContainer.image = image
             }
         }
+        NotificationCenter.default.addObserver(self, selector: #selector(rotateImage), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationImagePreviewRotateImage), object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -219,9 +220,9 @@ class NCViewerMedia: UIViewController {
         } else {
             
             // Download file max resolution
-            downloadFile(metadata: metadata)
+//            downloadFile(metadata: metadata)
             // Download file live photo
-            if metadata.livePhoto { downloadFileLivePhoto(metadata: metadata) }
+//            if metadata.livePhoto { downloadFileLivePhoto(metadata: metadata) }
         }
         
         // Download file max resolution
@@ -403,6 +404,84 @@ class NCViewerMedia: UIViewController {
                         
         default:
             break
+        }
+    }
+    
+    @objc func doneRotate(sender: Any) {
+        let message = NSLocalizedString("_save_changes_message_", comment: "")
+        let alertController = UIAlertController(title: NSLocalizedString("_save_", comment: ""), message: message, preferredStyle: .alert)
+            
+        let discard = NSLocalizedString("_discard_", comment: "")
+        alertController.addAction(UIAlertAction(title: discard, style: .cancel, handler: { [weak self] action in
+            self?.discardRotatedImage()
+        }))
+        
+        let save = NSLocalizedString("_save_", comment: "")
+        alertController.addAction(UIAlertAction(title: save, style: .default, handler: { [weak self] action in
+            self?.saveRotatedImage()
+        }))
+        
+        self.present(alertController, animated: true)
+    }
+    
+    func saveRotatedImage() {
+        viewerMediaPage?.navigationItem.leftBarButtonItem = nil
+        if let image = imageVideoContainer.image {
+            uploadRotatedImage(image: image)
+        }
+        navigationController?.popViewController(animated: true)
+    }
+    
+    func discardRotatedImage() {
+        viewerMediaPage?.navigationItem.leftBarButtonItem = nil
+        imageVideoContainer.image = image
+        scrollView.layoutIfNeeded()
+        viewerMediaPage?.pageViewController.dataSource = viewerMediaPage
+        viewerMediaPage?.navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: viewerMediaPage, action: #selector(viewerMediaPage?.openMenuMore))
+    }
+    
+    @objc func rotateImage() {
+        if viewerMediaPage?.navigationItem.leftBarButtonItem == nil {
+            let leftButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneRotate(sender:)))
+            viewerMediaPage?.navigationItem.leftBarButtonItem = leftButton
+
+            let rightButton = UIBarButtonItem(title: NSLocalizedString("_rotate_button_", comment: ""), style: .plain, target: self, action: #selector(rotateImage))
+            viewerMediaPage?.navigationItem.rightBarButtonItem = rightButton
+            viewerMediaPage?.pageViewController.dataSource = nil
+        }
+        
+        let originalImage = imageVideoContainer.image
+        let rotatedImage = originalImage?.rotateExif(orientation: .right)
+        imageVideoContainer.image = rotatedImage
+        scrollView.layoutIfNeeded()
+    }
+    
+    func uploadRotatedImage(image: UIImage) {
+        guard let data = image.jpegData(compressionQuality: 0.9) else { return }
+        let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!)
+        
+        do {
+            try data.write(to: url)
+        } catch {
+            print("Unable to save file: ", error.localizedDescription)
+            return
+        }
+        
+        let ocId = NSUUID().uuidString
+        let size = NCUtilityFileSystem.shared.getFileSize(filePath: url.path)
+        
+        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: metadata.fileNameView)!
+        
+        if NCUtilityFileSystem.shared.copyFile(atPath: url.path, toPath: fileNamePath) {
+            
+            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: metadata.account, user: metadata.user, userId: metadata.userId, fileName: metadata.fileName, fileNameView: metadata.fileNameView, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: url.path, contentType: "", livePhoto: false)
+            
+            metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
+            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+            metadataForUpload.size = size
+            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+            
+            appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: [metadataForUpload])
         }
     }
 }

@@ -300,34 +300,34 @@ class NCViewerMediaZoom: UIViewController {
     }
     
     func saveRotatedImage() {
-        viewerMedia?.navigationItem.leftBarButtonItem = nil
-        if let image = imageVideoContainer.image {
+        viewerImage?.navigationItem.leftBarButtonItem = nil
+        if let image = imageView.image {
             uploadRotatedImage(image: image)
         }
         navigationController?.popViewController(animated: true)
     }
     
     func discardRotatedImage() {
-        viewerMedia?.navigationItem.leftBarButtonItem = nil
-        imageVideoContainer.image = image
+        viewerImage?.navigationItem.leftBarButtonItem = nil
+        imageView.image = image
         scrollView.layoutIfNeeded()
-        viewerMedia?.pageViewController.dataSource = viewerMedia
-        viewerMedia?.navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: viewerMedia, action: #selector(viewerMedia?.openMenuMore))
+        viewerImage?.pageViewController.dataSource = viewerImage
+        viewerImage?.navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: viewerImage, action: #selector(viewerImage?.openMenuMore))
     }
     
     @objc func rotateImage() {
-        if viewerMedia?.navigationItem.leftBarButtonItem == nil {
+        if viewerImage?.navigationItem.leftBarButtonItem == nil {
             let leftButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneRotate(sender:)))
-            viewerMedia?.navigationItem.leftBarButtonItem = leftButton
+            viewerImage?.navigationItem.leftBarButtonItem = leftButton
 
             let rightButton = UIBarButtonItem(title: NSLocalizedString("_rotate_button_", comment: ""), style: .plain, target: self, action: #selector(rotateImage))
-            viewerMedia?.navigationItem.rightBarButtonItem = rightButton
-            viewerMedia?.pageViewController.dataSource = nil
+            viewerImage?.navigationItem.rightBarButtonItem = rightButton
+            viewerImage?.pageViewController.dataSource = nil
         }
         
-        let originalImage = imageVideoContainer.image
+        let originalImage = imageView.image
         let rotatedImage = originalImage?.rotateExif(orientation: .right)
-        imageVideoContainer.image = rotatedImage
+        imageView.image = rotatedImage
         scrollView.layoutIfNeeded()
     }
     
@@ -348,7 +348,8 @@ class NCViewerMediaZoom: UIViewController {
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: metadata.fileNameView)!
         
         if NCUtilityFileSystem.shared.copyFile(atPath: url.path, toPath: fileNamePath) {
-            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: metadata.account, user: metadata.user, userId: metadata.userId, fileName: metadata.fileName, fileNameView: metadata.fileNameView, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: url.path, contentType: "", livePhoto: false)
+            
+            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: metadata.account, fileName: metadata.fileName, fileNameView: metadata.fileNameView, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: url.path, contentType: "", livePhoto: false)
             
             metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
             metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
