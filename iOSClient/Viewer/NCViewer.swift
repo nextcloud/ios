@@ -48,7 +48,7 @@ class NCViewer: NSObject {
             
             if let navigationController = viewController.navigationController {
                             
-                let viewerMediaPageContainer:NCViewerMedia = UIStoryboard(name: "NCViewerMedia", bundle: nil).instantiateInitialViewController() as! NCViewerMedia
+                let viewerMediaPageContainer:NCViewerMediaPage = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as! NCViewerMediaPage
                 var index = 0
                 for medatasImage in metadatas {
                     if medatasImage.ocId == metadata.ocId {

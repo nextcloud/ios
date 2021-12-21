@@ -54,7 +54,7 @@ class NCPlayerToolBar: UIView {
     private var timerAutoHide: Timer?
     
     var pictureInPictureController: AVPictureInPictureController?
-    weak var viewerMedia: NCViewerMedia?
+    weak var viewerMediaPage: NCViewerMediaPage?
 
     // MARK: - View Life Cycle
 
@@ -489,7 +489,7 @@ class NCPlayerToolBar: UIView {
         
         var index: Int = 0
         
-        if let currentIndex = self.viewerMedia?.currentIndex, let metadatas = self.viewerMedia?.metadatas, let ncplayer = self.ncplayer {
+        if let currentIndex = self.viewerMediaPage?.currentIndex, let metadatas = self.viewerMediaPage?.metadatas, let ncplayer = self.ncplayer {
         
             if currentIndex == metadatas.count - 1 {
                 index = 0
@@ -497,7 +497,7 @@ class NCPlayerToolBar: UIView {
                 index = currentIndex + 1
             }
             
-            self.viewerMedia?.goTo(index: index, direction: .forward, autoPlay: ncplayer.isPlay())
+            self.viewerMediaPage?.goTo(index: index, direction: .forward, autoPlay: ncplayer.isPlay())
         }
     }
     
@@ -505,7 +505,7 @@ class NCPlayerToolBar: UIView {
         
         var index: Int = 0
 
-        if let currentIndex = self.viewerMedia?.currentIndex, let metadatas = self.viewerMedia?.metadatas, let ncplayer = self.ncplayer {
+        if let currentIndex = self.viewerMediaPage?.currentIndex, let metadatas = self.viewerMediaPage?.metadatas, let ncplayer = self.ncplayer {
             
             if currentIndex == 0 {
                 index = metadatas.count - 1
@@ -513,7 +513,7 @@ class NCPlayerToolBar: UIView {
                 index = currentIndex - 1
             }
             
-            self.viewerMedia?.goTo(index: index, direction: .reverse, autoPlay: ncplayer.isPlay())
+            self.viewerMediaPage?.goTo(index: index, direction: .reverse, autoPlay: ncplayer.isPlay())
         }
     }
 }
