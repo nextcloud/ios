@@ -31,7 +31,7 @@ class NCMenu: UITableViewController {
     var actions = [NCMenuAction]()
 
     static func makeNCMenu(with actions: [NCMenuAction]) -> NCMenu {
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+        let menuViewController = UIStoryboard(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         menuViewController.actions = actions
         return menuViewController
     }
