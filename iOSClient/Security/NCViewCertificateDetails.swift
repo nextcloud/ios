@@ -24,15 +24,15 @@
 import UIKit
 
 public protocol NCViewCertificateDetailsDelegate {
-    func viewCertificateDetailsDismiss()
+    func viewCertificateDetailsDismiss(host: String)
 }
 
 // optional func
 public extension NCViewCertificateDetailsDelegate {
-    func viewCertificateDetailsDismiss() {}
+    func viewCertificateDetailsDismiss(host: String) {}
 }
 
-class NCViewCertificateDetails: UIViewController  {
+class NCViewCertificateDetails: UIViewController {
 
     @IBOutlet weak var buttonCancel: UIBarButtonItem!
     @IBOutlet weak var scrollView: UIScrollView!
@@ -49,13 +49,13 @@ class NCViewCertificateDetails: UIViewController  {
 
         self.navigationItem.title = NSLocalizedString("_certificate_details_", comment: "")
         buttonCancel.title = NSLocalizedString("_close_", comment: "")
-        
+
         let certNamePathTXT = directoryCertificate + "/" + host + ".txt"
         if FileManager.default.fileExists(atPath: certNamePathTXT) {
             do {
                 let text = try String(contentsOfFile: certNamePathTXT, encoding: .utf8)
                 let font = UIFont.systemFont(ofSize: 13)
-                let attributes = [NSAttributedString.Key.font: font] as [NSAttributedString.Key : Any]
+                let attributes = [NSAttributedString.Key.font: font] as [NSAttributedString.Key: Any]
                 var contentRect = NSString(string: text).boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: 0), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: attributes, context: nil)
                 contentRect = CGRect(x: contentRect.origin.x, y: contentRect.origin.y, width: ceil(contentRect.size.width), height: ceil(contentRect.size.height))
                 var contentWidth = contentRect.size.width
@@ -66,14 +66,14 @@ class NCViewCertificateDetails: UIViewController  {
                 if contentHeight < view.frame.size.height {
                     contentHeight = view.frame.size.width
                 }
-                
+
                 textView.frame = CGRect(x: 0, y: 0, width: contentWidth, height: contentHeight)
                 textView.font = font
                 textView.text = text
-                
+
                 scrollView.contentSize = contentRect.size
                 scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
-                
+
             } catch {
                 print("error")
             }
@@ -83,15 +83,15 @@ class NCViewCertificateDetails: UIViewController  {
             }
         }
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        self.delegate?.viewCertificateDetailsDismiss()
+        self.delegate?.viewCertificateDetailsDismiss(host: host)
     }
-    
+
     // MARK: ACTION
-    
+
     @IBAction func actionCancel(_ sender: UIBarButtonItem) {
         self.dismiss(animated: true, completion: nil)
     }

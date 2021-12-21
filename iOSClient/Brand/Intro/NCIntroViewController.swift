@@ -33,22 +33,22 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     @IBOutlet weak var introCollectionView: UICollectionView!
     @IBOutlet weak var pageControl: UIPageControl!
 
-    @objc var delegate: NCIntroViewController?
+    @objc weak var delegate: NCIntroViewController?
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private let titles = [NSLocalizedString("_intro_1_title_", comment: ""), NSLocalizedString("_intro_2_title_", comment: ""), NSLocalizedString("_intro_3_title_", comment: ""), NSLocalizedString("_intro_4_title_", comment: "")]
     private let images = [UIImage(named: "intro1"), UIImage(named: "intro2"), UIImage(named: "intro3"), UIImage(named: "intro4")]
     private var timerAutoScroll: Timer?
     private var textColor: UIColor = .white
     private var textColorOpponent: UIColor = .black
-    
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         let isTooLight = NCBrandColor.shared.customer.isTooLight()
         let isTooDark = NCBrandColor.shared.customer.isTooDark()
-        
+
         if isTooLight {
             textColor = .black
             textColorOpponent = .white
@@ -59,7 +59,7 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
             textColor = .white
             textColorOpponent = .black
         }
-        
+
         if #available(iOS 13.0, *) {
             let navBarAppearance = UINavigationBarAppearance()
             navBarAppearance.configureWithTransparentBackground()
@@ -76,7 +76,6 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         }
         self.navigationController?.navigationBar.tintColor = textColor
 
-        
         pageControl.currentPageIndicatorTintColor = textColor
         pageControl.pageIndicatorTintColor = .lightGray
 
@@ -101,11 +100,11 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         introCollectionView.delegate = self
         introCollectionView.backgroundColor = NCBrandColor.shared.customer
         pageControl.numberOfPages = self.titles.count
-        
+
         view.backgroundColor = NCBrandColor.shared.customer
         timerAutoScroll = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(NCIntroViewController.autoScroll)), userInfo: nil, repeats: true)
     }
-    
+
     override var preferredStatusBarStyle: UIStatusBarStyle {
         if #available(iOS 13.0, *) {
             if traitCollection.userInterfaceStyle == .light {
@@ -129,10 +128,9 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     }
 
     @objc func autoScroll() {
-        if(pageControl.currentPage + 1 >= titles.count) {
+        if pageControl.currentPage + 1 >= titles.count {
             pageControl.currentPage = 0
-        }
-        else {
+        } else {
             pageControl.currentPage += 1
         }
         introCollectionView.scrollToItem(at: IndexPath(row: pageControl.currentPage, section: 0), at: .centeredHorizontally, animated: true)

@@ -5,9 +5,11 @@
 //  Created by Philippe Weidmann on 16.01.20.
 //  Copyright © 2020 Philippe Weidmann. All rights reserved.
 //  Copyright © 2020 Marino Faggiana All rights reserved.
+//  Copyright © 2021 Henrik Storch All rights reserved.
 //
 //  Author Philippe Weidmann <philippe.weidmann@infomaniak.com>
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -30,12 +32,12 @@ class NCMenu: UITableViewController {
 
     var actions = [NCMenuAction]()
 
-    static func makeNCMenu(with actions: [NCMenuAction]) -> NCMenu {
-        let menuViewController = UIStoryboard(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
-        menuViewController.actions = actions
+    static func makeNCMenu(with actions: [NCMenuAction]) -> NCMenu? {
+        let menuViewController = UIStoryboard(name: "NCMenu", bundle: nil).instantiateInitialViewController() as? NCMenu
+        menuViewController?.actions = actions
         return menuViewController
     }
-    
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -64,19 +66,19 @@ class NCMenu: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "menuActionCell", for: indexPath)
         cell.tintColor = NCBrandColor.shared.customer
         let action = actions[indexPath.row]
-        let actionIconView = cell.viewWithTag(1) as! UIImageView
-        let actionNameLabel = cell.viewWithTag(2) as! UILabel
+        let actionIconView = cell.viewWithTag(1) as? UIImageView
+        let actionNameLabel = cell.viewWithTag(2) as? UILabel
 
         if action.action == nil {
             cell.selectionStyle = .none
         }
 
-        if (action.isOn) {
-            actionIconView.image = action.onIcon
-            actionNameLabel.text = action.onTitle
+        if action.isOn {
+            actionIconView?.image = action.onIcon
+            actionNameLabel?.text = action.onTitle
         } else {
-            actionIconView.image = action.icon
-            actionNameLabel.text = action.title
+            actionIconView?.image = action.icon
+            actionNameLabel?.text = action.title
         }
 
         cell.accessoryType = action.selectable && action.selected ? .checkmark : .none
@@ -84,100 +86,33 @@ class NCMenu: UITableViewController {
         return cell
     }
 
-    // MARK: - Accessibility
-    
-    open override func accessibilityPerformEscape() -> Bool {
-        dismiss(animated: true)
-        return true
-    }
+    // MARK: - Tabel View Layout
 
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60
+    }
 }
 extension NCMenu: FloatingPanelControllerDelegate {
 
-    func floatingPanel(_ vc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout? {
-        let safeAreaInsetsBottom = Int(UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0)
-        return NCMenuFloatingPanelLayout(height: self.actions.count * 60 + safeAreaInsetsBottom)
-    }
-    
-    func floatingPanel(_ vc: FloatingPanelController, behaviorFor newCollection: UITraitCollection) -> FloatingPanelBehavior? {
-        return NCMenuFloatingPanelBehavior()
+    func floatingPanel(_ fpc: FloatingPanelController, layoutFor size: CGSize) -> FloatingPanelLayout {
+        return NCMenuFloatingPanelLayout(numberOfActions: self.actions.count)
     }
 
-    func floatingPanelDidEndDecelerating(_ vc: FloatingPanelController) {
-        if vc.position == .hidden {
-            vc.dismiss(animated: false, completion: nil)
-        }
-    }
-}
-
-class NCMenuFloatingPanelLayout: FloatingPanelLayout {
-
-    let height: CGFloat
-
-    init(height: Int) {
-        self.height = CGFloat(height)
+    func floatingPanel(_ fpc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout {
+        return NCMenuFloatingPanelLayout(numberOfActions: self.actions.count)
     }
 
-    var initialPosition: FloatingPanelPosition {
-        return .full
+    func floatingPanel(_ fpc: FloatingPanelController, animatorForDismissingWith velocity: CGVector) -> UIViewPropertyAnimator {
+        return UIViewPropertyAnimator(duration: 0.1, curve: .easeInOut)
     }
 
-    var supportedPositions: Set<FloatingPanelPosition> {
-        return [.full, .hidden]
-    }
-
-    func insetFor(position: FloatingPanelPosition) -> CGFloat? {
-        if (position == .full) {
-            return max(48, UIScreen.main.bounds.size.height - height)
-        } else {
-            return nil
-        }
-    }
-
-    var positionReference: FloatingPanelLayoutReference {
-        return .fromSuperview
-    }
-
-    public func prepareLayout(surfaceView: UIView, in view: UIView) -> [NSLayoutConstraint] {
-        return [
-            surfaceView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
-            surfaceView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0),
-        ]
-    }
-
-    func backdropAlphaFor(position: FloatingPanelPosition) -> CGFloat {
-        return 0.2
-    }
-}
-
-public class NCMenuFloatingPanelBehavior: FloatingPanelBehavior {
-
-    public func addAnimator(_ fpc: FloatingPanelController, to: FloatingPanelPosition) -> UIViewPropertyAnimator {
+    func floatingPanel(_ fpc: FloatingPanelController, animatorForPresentingTo state: FloatingPanelState) -> UIViewPropertyAnimator {
         return UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut)
     }
 
-    public func removeAnimator(_ fpc: FloatingPanelController, from: FloatingPanelPosition) -> UIViewPropertyAnimator {
-        return UIViewPropertyAnimator(duration: 0.1, curve: .easeInOut)
-    }
-
-    public func moveAnimator(_ fpc: FloatingPanelController, from: FloatingPanelPosition, to: FloatingPanelPosition) -> UIViewPropertyAnimator {
-        return UIViewPropertyAnimator(duration: 0.1, curve: .easeInOut)
-    }
-
-}
-
-class NCMenuPanelController: FloatingPanelController {
-
-    var parentPresenter: UIViewController?
-
-    // MARK: - View Life Cycle
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        self.surfaceView.backgroundColor = NCBrandColor.shared.systemBackground
-        self.isRemovalInteractionEnabled = true
-        self.surfaceView.cornerRadius = 16
+    func floatingPanelWillEndDragging(_ fpc: FloatingPanelController, withVelocity velocity: CGPoint, targetState: UnsafeMutablePointer<FloatingPanelState>) {
+        guard velocity.y > 750 else { return }
+        fpc.dismiss(animated: true, completion: nil)
     }
 }
 
