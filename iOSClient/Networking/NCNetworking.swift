@@ -925,7 +925,7 @@ import Queuer
         }
     }
 
-    @objc func unifiedSearchFiles(urlBase: NCUserBaseUrl, user: String, literal: String, update: @escaping (Set<tableMetadata>?) -> Void, completion: @escaping (_ metadatas: Set<tableMetadata>?, _ errorCode: Int, _ errorDescription: String) -> ()) {
+    @objc func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, update: @escaping (Set<tableMetadata>?) -> Void, completion: @escaping (_ metadatas: Set<tableMetadata>?, _ errorCode: Int, _ errorDescription: String) -> ()) {
         var seachFiles = Set<tableMetadata>()
         var errCode = 0
         var errDescr = ""
@@ -937,17 +937,15 @@ import Queuer
 
         NCCommunication.shared.unifiedSearch(term: literal) { parialResult, provider, errorCode, errorDescription in
             guard let parialResult = parialResult else { return }
-            // WARNING: SUPER HACKY SOLUTION!!
-            // FIXME: Needs to be fixed by FTS team
+            // NOTE: FTS could return attributes like files
             if parialResult.name == "Full Text Search" {
                 parialResult.entries.forEach({ entry in
-                    let comp = entry.subline.split(separator: "/")
-                    let path = comp.dropLast().joined(separator: "/")
-                    guard let lastComp = comp.last else { return }
+                    let url = URLComponents(string: entry.resourceURL)
+                    guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else { return }
                     if let tableFile = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(
-                              format: "serverUrl == %@ && fileName == %@",
-                              urlBase.urlBase + "/remote.php/dav/files/" + user + "/" + path,
-                              String(lastComp))) {
+                              format: "path == %@ && fileName == %@",
+                              "/remote.php/dav/files/" + urlBase.user + dir,
+                              filename)) {
                         seachFiles.insert(tableFile)
                     } else {
                         self.loadMetadata(urlBase: urlBase, filePath: "/" + entry.subline, dispatchGroup: dispatchGroup) { newMetadata in
@@ -983,8 +981,8 @@ import Queuer
             guard let metadata = metadata else { return }
             DispatchQueue.main.async {
                 NCManageDatabase.shared.addMetadata(metadata)
+                completion(metadata)
             }
-            completion(metadata)
         }
     }
 
@@ -1506,4 +1504,11 @@ import Queuer
         }
     }
     */
+}
+
+
+extension Array where Element == URLQueryItem {
+    subscript(name: String) -> URLQueryItem? {
+        first(where: { $0.name == name })
+    }
 }

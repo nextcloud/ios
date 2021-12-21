@@ -350,6 +350,14 @@ class tableLocalFile: Object {
 }
 
 class tableMetadata: Object, NCUserBaseUrl {
+    override func isEqual(_ object: Any?) -> Bool {
+        if let object = object as? tableMetadata {
+            return self.fileId == object.fileId && self.account == object.account
+                   && self.path == object.path && self.fileName == object.fileName
+        } else {
+            return false
+        }
+    }
 
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""

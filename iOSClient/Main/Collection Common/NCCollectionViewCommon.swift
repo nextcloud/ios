@@ -948,7 +948,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, user: appDelegate.user, literal: literalSearch) { metadatas in
+        NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch) { metadatas in
             guard let metadatas = metadatas else { return }
             DispatchQueue.main.async {
                 self.metadatasSource = Array(metadatas)
