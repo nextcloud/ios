@@ -344,10 +344,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             if NCManageDatabase.shared.getAccounts() == nil {
                 NCUtility.shared.removeAllSettings()
             }
-               
-            // Clear certificate error
-            NCNetworking.shared.certificatesError = nil
-            
+                           
             NCManageDatabase.shared.deleteAccount(account)
             NCManageDatabase.shared.addAccount(account, urlBase: url, user: user, password: password)
             

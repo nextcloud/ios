@@ -48,8 +48,6 @@ import Queuer
     var uploadRequest: [String: UploadRequest] = [:]
     var uploadMetadataInBackground: [String: tableMetadata] = [:]
     
-    var certificatesError: String?
-
     @objc public let sessionMaximumConnectionsPerHost = 5
     @objc public let sessionIdentifierBackground: String = "com.nextcloud.session.upload.background"
     @objc public let sessionIdentifierBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
@@ -163,45 +161,49 @@ import Queuer
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
         let directoryCertificate = CCUtility.getDirectoryCerificates()!
         let host = challenge.protectionSpace.host
-        let pushNotificationServerProxyHost = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host
-            
+        let certificateSavedPath = directoryCertificate + "/" + host + ".der"
+        var isTrusted: Bool
+
+        defer {
+            #if !EXTENSION
+            DispatchQueue.main.async {
+                if !isTrusted {
+                    (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host)
+                }
+            }
+            #endif
+        }
+        
         print("SSL host: \(host)")
         
-        if let serverTrust: SecTrust = protectionSpace.serverTrust {
+        if let serverTrust: SecTrust = protectionSpace.serverTrust, let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0)  {
             
+            // extarct certificate txt
             saveX509Certificate(serverTrust, host: host, directoryCertificate: directoryCertificate)
-            
+           
             var secresult = SecTrustResultType.invalid
             let status = SecTrustEvaluate(serverTrust, &secresult)
             let isServerTrusted = SecTrustEvaluateWithError(serverTrust, nil)
-
-            if let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
+            
+            let serverCertificateData = SecCertificateCopyData(serverCertificate)
+            let data = CFDataGetBytePtr(serverCertificateData);
+            let size = CFDataGetLength(serverCertificateData);
+            let certificate = NSData(bytes: data, length: size)
                 
-                let serverCertificateData = SecCertificateCopyData(serverCertificate)
-                let data = CFDataGetBytePtr(serverCertificateData);
-                let size = CFDataGetLength(serverCertificateData);
-                let certificate = NSData(bytes: data, length: size)
-                
-                // write certificate tmp to disk
-                certificate.write(toFile: directoryCertificate + "/" + host + ".tmp", atomically: true)
-                
-                if isServerTrusted {
-                    return true
-                } else if status == errSecSuccess {
-                    // verify
-                    let certificateSavedPath = directoryCertificate + "/" + host + ".der"
-                    if let certificateSaved = NSData(contentsOfFile: certificateSavedPath), certificate.isEqual(to: certificateSaved as Data) {
-                        return true
-                    }
-                }
+            certificate.write(toFile: directoryCertificate + "/" + host + ".tmp", atomically: true)
+            
+            if isServerTrusted {
+                isTrusted = true
+            } else if status == errSecSuccess, let certificateSaved = NSData(contentsOfFile: certificateSavedPath), certificate.isEqual(to: certificateSaved as Data) {
+                isTrusted = true
+            } else {
+                isTrusted = false
             }
+        } else {
+            isTrusted = false
         }
         
-        if host != pushNotificationServerProxyHost {
-            NCNetworking.shared.certificatesError = host
-        }
-        
-        return false
+        return isTrusted
     }
     
     func writeCertificate(host: String) {
