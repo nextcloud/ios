@@ -359,11 +359,14 @@ class NCGlobal: NSObject {
     let notificationCenterShowPlayerToolBar                     = "showPlayerToolBar"               // userInfo: ocId, enableTimerAutoHide
     
     let notificationCenterOpenMediaDetail                       = "openMediaDetail"                 // userInfo: ocId
+<<<<<<< HEAD
+    @objc let notificationImagePreviewRotateImage               = "imagePreviewRotateImage"
+=======
 
     let notificationCenterReloadMediaPage                       = "reloadMediaPage"
     let notificationCenterPlayMedia                             = "playMedia"
     let notificationCenterPauseMedia                            = "pauseMedia"
-    @objc let notificationImagePreviewRotateImage               = "imagePreviewRotateImage"
+>>>>>>> 6a1778936 (Improvements code Player video)
 }
 
 //let rootView = UIApplication.shared.keyWindow?.rootViewController?.view
