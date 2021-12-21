@@ -34,7 +34,14 @@ extension UIViewController {
         
         switch action.appId {
         case "email":
-            sendEmail(to: action.title)
+            guard let url = action.hyperlinkUrl,
+                  url.scheme == "mailto",
+                  let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+                NCContentPresenter.shared.showGenericError(description: "_cannot_send_mail_error_")
+                return
+            }
+
+            sendEmail(to: components.path)
         case "spreed":
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             if let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(userId)&withUser=\(appDelegate.userId)"),
@@ -44,7 +51,8 @@ extension UIViewController {
                 UIApplication.shared.open(url, options: [:])
             }
         default:
-            guard let url = action.hyperlinkUrl else {
+            guard let url = action.hyperlinkUrl, UIApplication.shared.canOpenURL(url) else {
+                NCContentPresenter.shared.showGenericError(description: "_open_url_error")
                 return
             }
             UIApplication.shared.open(url, options: [:])
@@ -80,20 +88,16 @@ extension UIViewController {
     }
     
     func sendEmail(to email: String) {
-        if MFMailComposeViewController.canSendMail() {
-            let mail = MFMailComposeViewController()
-            mail.mailComposeDelegate = self
-            mail.setToRecipients([email])
-
-            present(mail, animated: true)
-        } else {
-            NCContentPresenter.shared.messageNotification(
-                "_error_", description: "_error_send_mail_",
-                delay: NCGlobal.shared.dismissAfterSecond,
-                type: NCContentPresenter.messageType.error,
-                errorCode: NCGlobal.shared.errorGeneric,
-                forced: true)
+        guard MFMailComposeViewController.canSendMail() else {
+            NCContentPresenter.shared.showGenericError(description: "_cannot_send_mail_error_")
+            return
         }
+
+        let mail = MFMailComposeViewController()
+        mail.mailComposeDelegate = self
+        mail.setToRecipients([email])
+
+        present(mail, animated: true)
     }
     
     fileprivate func presentMenu(with actions: [NCMenuAction]) {
