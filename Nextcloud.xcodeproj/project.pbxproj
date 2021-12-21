@@ -3192,7 +3192,7 @@
 			repositoryURL = "https://github.com/scenee/FloatingPanel";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.7.6;
+				minimumVersion = 2.0.0;
 			};
 		};
 		F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */ = {

@@ -35,7 +35,7 @@ class NCMenu: UITableViewController {
         menuViewController.actions = actions
         return menuViewController
     }
-    
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -71,7 +71,7 @@ class NCMenu: UITableViewController {
             cell.selectionStyle = .none
         }
 
-        if (action.isOn) {
+        if action.isOn {
             actionIconView.image = action.onIcon
             actionNameLabel.text = action.onTitle
         } else {
@@ -103,8 +103,13 @@ extension NCMenu: FloatingPanelControllerDelegate {
         return NCMenuFloatingPanelLayout(numberOfActions: self.actions.count, view: view)
     }
 
+<<<<<<< HEAD
+    func floatingPanel(_ vc: FloatingPanelController, behaviorFor newCollection: UITraitCollection) -> FloatingPanelBehavior? {
+        return NCMenuFloatingPanelBehavior()
+=======
     func floatingPanel(_ fpc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout {
         return NCMenuFloatingPanelLayout(numberOfActions: self.actions.count, view: view)
+>>>>>>> 366b60367 (Update FloatingPanel ~> v2)
     }
 
     func floatingPanel(_ fpc: FloatingPanelController, animatorForDismissingWith velocity: CGVector) -> UIViewPropertyAnimator {
@@ -132,7 +137,17 @@ class NCMenuFloatingPanelLayout: FloatingPanelLayout {
         ]
     }
 
+<<<<<<< HEAD
+    func insetFor(position: FloatingPanelPosition) -> CGFloat? {
+        if position == .full {
+            return max(48, UIScreen.main.bounds.size.height - height)
+        } else {
+            return nil
+        }
+    }
+=======
     let topInset: CGFloat
+>>>>>>> 366b60367 (Update FloatingPanel ~> v2)
 
     init(numberOfActions: Int, view: UIView) {
         let bottomInset = UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0
@@ -143,7 +158,7 @@ class NCMenuFloatingPanelLayout: FloatingPanelLayout {
     func prepareLayout(surfaceView: UIView, in view: UIView) -> [NSLayoutConstraint] {
         return [
             surfaceView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
-            surfaceView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0),
+            surfaceView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0)
         ]
     }
 
