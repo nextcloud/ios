@@ -36,7 +36,7 @@ extension NCTrash {
                 NCMenuAction(
                     title: NSLocalizedString("_trash_delete_selected_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "trash"),
-                    action: { menuAction in
+                    action: { _ in
                         let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
                             for ocId in self.selectOcId {
@@ -57,7 +57,7 @@ extension NCTrash {
                 NCMenuAction(
                     title: NSLocalizedString("_trash_delete_all_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "trash"),
-                    action: { menuAction in
+                    action: { _ in
                         let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_", comment: ""), message: "", preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
                             self.emptyTrash()
@@ -85,7 +85,7 @@ extension NCTrash {
         if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
             iconHeader = icon
         } else {
-            if(tableTrash.directory) {
+            if tableTrash.directory {
                 iconHeader = UIImage(named: "folder")!.image(color: NCBrandColor.shared.gray, size: 50)
             } else {
                 iconHeader = UIImage(named: tableTrash.iconName)
@@ -104,7 +104,7 @@ extension NCTrash {
             NCMenuAction(
                 title: NSLocalizedString("_delete_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "trash"),
-                action: { menuAction in
+                action: { _ in
                     self.deleteItem(with: objectId)
                 }
             )
@@ -112,7 +112,7 @@ extension NCTrash {
 
         self.presentMenu(with: actions)
     }
-    
+
     func toggleMenuMoreGrid(with objectId: String, namedButtonMore: String, image: UIImage?) {
 
         var actions: [NCMenuAction] = []
@@ -125,7 +125,7 @@ extension NCTrash {
         if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
             iconHeader = icon
         } else {
-            if(tableTrash.directory) {
+            if tableTrash.directory {
                 iconHeader = UIImage(named: "folder")!.image(color: NCBrandColor.shared.gray, size: 50)
             } else {
                 iconHeader = UIImage(named: tableTrash.iconName)
@@ -144,7 +144,7 @@ extension NCTrash {
             NCMenuAction(
                 title: NSLocalizedString("_restore_", comment: ""),
                 icon: UIImage(named: "restore")!.image(color: NCBrandColor.shared.gray, size: 50),
-                action: { menuAction in
+                action: { _ in
                     self.restoreItem(with: objectId)
                 }
             )
@@ -154,7 +154,7 @@ extension NCTrash {
             NCMenuAction(
                 title: NSLocalizedString("_delete_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "trash"),
-                action: { menuAction in
+                action: { _ in
                     self.deleteItem(with: objectId)
                 }
             )
@@ -163,4 +163,3 @@ extension NCTrash {
         presentMenu(with: actions)
     }
 }
-

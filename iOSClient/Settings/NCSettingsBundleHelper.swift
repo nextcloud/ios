@@ -24,7 +24,7 @@
 import Foundation
 
 class NCSettingsBundleHelper: NSObject {
-    
+
     @objc class func setVersionAndBuildNumber() {
         let version = NCUtility.shared.getVersionApp() as String
         UserDefaults.standard.set(version, forKey: "version_preference")

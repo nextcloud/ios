@@ -35,7 +35,7 @@ class NCMenu: UITableViewController {
         menuViewController.actions = actions
         return menuViewController
     }
-    
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -71,7 +71,7 @@ class NCMenu: UITableViewController {
             cell.selectionStyle = .none
         }
 
-        if (action.isOn) {
+        if action.isOn {
             actionIconView.image = action.onIcon
             actionNameLabel.text = action.onTitle
         } else {
@@ -85,7 +85,7 @@ class NCMenu: UITableViewController {
     }
 
     // MARK: - Accessibility
-    
+
     open override func accessibilityPerformEscape() -> Bool {
         dismiss(animated: true)
         return true
@@ -98,7 +98,7 @@ extension NCMenu: FloatingPanelControllerDelegate {
         let safeAreaInsetsBottom = Int(UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0)
         return NCMenuFloatingPanelLayout(height: self.actions.count * 60 + safeAreaInsetsBottom)
     }
-    
+
     func floatingPanel(_ vc: FloatingPanelController, behaviorFor newCollection: UITraitCollection) -> FloatingPanelBehavior? {
         return NCMenuFloatingPanelBehavior()
     }
@@ -127,7 +127,7 @@ class NCMenuFloatingPanelLayout: FloatingPanelLayout {
     }
 
     func insetFor(position: FloatingPanelPosition) -> CGFloat? {
-        if (position == .full) {
+        if position == .full {
             return max(48, UIScreen.main.bounds.size.height - height)
         } else {
             return nil
@@ -141,7 +141,7 @@ class NCMenuFloatingPanelLayout: FloatingPanelLayout {
     public func prepareLayout(surfaceView: UIView, in view: UIView) -> [NSLayoutConstraint] {
         return [
             surfaceView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
-            surfaceView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0),
+            surfaceView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0)
         ]
     }
 

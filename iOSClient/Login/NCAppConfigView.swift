@@ -31,20 +31,20 @@ class NCAppConfigView: UIViewController {
     private var serverUrl: String?
     private var username: String?
     private var password: String?
-    
+
     @IBOutlet weak var logoImage: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
-    
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         self.view.backgroundColor = NCBrandColor.shared.brandElement
         titleLabel.textColor = NCBrandColor.shared.brandText
-        
+
         titleLabel.text = NSLocalizedString("_appconfig_view_title_", comment: "")
-        
+
         if let serverConfig = UserDefaults.standard.dictionary(forKey: NCBrandConfiguration.shared.configuration_bundleId) {
             serverUrl = serverConfig[NCBrandConfiguration.shared.configuration_serverUrl] as? String
             username = serverConfig[NCBrandConfiguration.shared.configuration_username] as? String
@@ -55,13 +55,13 @@ class NCAppConfigView: UIViewController {
             password = UserDefaults.standard.string(forKey: NCBrandConfiguration.shared.configuration_password)
         }
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+
         // Stop timer error network
         appDelegate.timerErrorNetworking?.invalidate()
-        
+
         guard let serverUrl = self.serverUrl else {
             NCContentPresenter.shared.messageNotification("_error_", description: "User Default, serverUrl not found", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             return
@@ -74,28 +74,28 @@ class NCAppConfigView: UIViewController {
             NCContentPresenter.shared.messageNotification("_error_", description: "User Default, password not found", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             return
         }
-        
-        NCCommunication.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password, userAgent: nil) { (token, errorCode, errorDescription) in
+
+        NCCommunication.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password, userAgent: nil) { token, errorCode, errorDescription in
             DispatchQueue.main.async {
                 if errorCode == 0 && token != nil {
                     let account: String = "\(username) \(serverUrl)"
-                    
+
                     // NO account found, clear
                     if NCManageDatabase.shared.getAccounts() == nil { NCUtility.shared.removeAllSettings() }
-                    
+
                     // Add new account
                     NCManageDatabase.shared.deleteAccount(account)
                     NCManageDatabase.shared.addAccount(account, urlBase: serverUrl, user: username, password: token!)
-                    
+
                     guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else {
                         NCContentPresenter.shared.messageNotification("_error_", description: "setAccountActive error", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
                         self.dismiss(animated: true, completion: nil)
                         return
                     }
-                    
+
                     self.appDelegate.settingAccount(account, urlBase: serverUrl, user: username, userId: tableAccount.userId, password: token!)
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
-                    
+
                     self.dismiss(animated: true) {}
                 } else {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
@@ -103,10 +103,10 @@ class NCAppConfigView: UIViewController {
             }
         }
     }
-    
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        
+
         // Start timer error network
         appDelegate.startTimerErrorNetworking()
     }

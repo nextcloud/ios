@@ -25,12 +25,12 @@ import UIKit
 import MapKit
 import NCCommunication
 
-public protocol NCViewerMediaDetailViewDelegate {
+public protocol NCViewerMediaDetailViewDelegate: AnyObject {
     func downloadFullResolution()
 }
 
 class NCViewerMediaDetailView: UIView {
-    
+
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var sizeLabel: UILabel!
     @IBOutlet weak var sizeValue: UILabel!
@@ -43,7 +43,7 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var messageButton: UIButton!
     @IBOutlet weak var mapContainer: UIView!
     @IBOutlet weak var locationButton: UIButton!
-    
+
     var latitude: Double = 0
     var longitude: Double = 0
     var location: String?
@@ -56,7 +56,7 @@ class NCViewerMediaDetailView: UIView {
         
     override func awakeFromNib() {
         super.awakeFromNib()
-           
+
         separator.backgroundColor = NCBrandColor.shared.separator
         sizeLabel.text = ""
         sizeValue.text = ""
@@ -66,13 +66,13 @@ class NCViewerMediaDetailView: UIView {
         dimValue.text = ""
         lensModelLabel.text = ""
         lensModelValue.text = ""
-        messageButton.setTitle("" , for: .normal)
-        locationButton.setTitle("" , for: .normal)
+        messageButton.setTitle("", for: .normal)
+        locationButton.setTitle("", for: .normal)
     }
-    
+
     deinit {
         print("deinit NCViewerMediaDetailView")
-        
+
         self.mapView?.removeFromSuperview()
         self.mapView = nil
     }
@@ -87,24 +87,24 @@ class NCViewerMediaDetailView: UIView {
         self.lensModel = lensModel
         self.ncplayer = ncplayer
         self.delegate = delegate
-        
+
         if mapView == nil && (latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0) {
-            
+
             let annotation = MKPointAnnotation()
             annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-            
-            self.mapView = MKMapView.init()
+
+            self.mapView = MKMapView()
             if let mapView = self.mapView {
                 mapView.translatesAutoresizingMaskIntoConstraints = false
                 self.mapContainer.addSubview(mapView)
-                
+
                 NSLayoutConstraint.activate([
                     mapView.topAnchor.constraint(equalTo: self.mapContainer.topAnchor),
                     mapView.bottomAnchor.constraint(equalTo: self.mapContainer.bottomAnchor),
                     mapView.leadingAnchor.constraint(equalTo: self.mapContainer.leadingAnchor),
-                    mapView.trailingAnchor.constraint(equalTo: self.mapContainer.trailingAnchor),
+                    mapView.trailingAnchor.constraint(equalTo: self.mapContainer.trailingAnchor)
                 ])
-                
+
                 mapView.layer.cornerRadius = 6
                 mapView.isZoomEnabled = true
                 mapView.isScrollEnabled = false
@@ -113,19 +113,19 @@ class NCViewerMediaDetailView: UIView {
                 mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
             }
         }
-        
+
         // Size
         sizeLabel.text = NSLocalizedString("_size_", comment: "")
         sizeValue.text = CCUtility.transformedSize(metadata.size)
         sizeValue.textColor = textColor
-        
+
         // Date
         if let date = date {
             let formatter = DateFormatter()
             formatter.dateStyle = .full
             formatter.timeStyle = .medium
             let dateString = formatter.string(from: date as Date)
-            
+
             dateLabel.text = NSLocalizedString("_date_", comment: "")
             dateValue.text = dateString
         } else {
@@ -133,14 +133,14 @@ class NCViewerMediaDetailView: UIView {
             dateValue.text = NSLocalizedString("_not_available_", comment: "")
         }
         dateValue.textColor = textColor
-        
+
         // Dimension / Duration
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
             if let image = image {
                 dimLabel.text = NSLocalizedString("_resolution_", comment: "")
                 dimValue.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
             }
-        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue  {
+        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
             if let durationTime = NCManageDatabase.shared.getVideoDurationTime(metadata: metadata) {
                 self.dimLabel.text = NSLocalizedString("_duration_", comment: "")
                 self.dimValue.text = NCUtility.shared.stringFromTime(durationTime)
@@ -154,46 +154,46 @@ class NCViewerMediaDetailView: UIView {
             lensModelValue.text = lensModel
             lensModelValue.textColor = textColor
         }
-        
+
         // Message
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "" {
             messageButton.setTitle(NSLocalizedString("_try_download_full_resolution_", comment: ""), for: .normal)
             messageButton.isHidden = false
         } else {
-            messageButton.setTitle("" , for: .normal)
+            messageButton.setTitle("", for: .normal)
             messageButton.isHidden = true
         }
-        
+
         // Location
         if let location = location {
             locationButton.setTitle(location, for: .normal)
             locationButton.isHidden = false
         } else {
-            locationButton.setTitle("" , for: .normal)
+            locationButton.setTitle("", for: .normal)
             locationButton.isHidden = true
         }
-        
+
         self.isHidden = false
     }
-    
+
     func hide() {
         self.isHidden = true
     }
-    
+
     func isShow() -> Bool {
         return !self.isHidden
     }
-    
-    //MARK: - Action
+
+    // MARK: - Action
 
     @IBAction func touchLocation(_ sender: Any) {
-        
+
         if latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0 {
-            
+
             let latitude: CLLocationDegrees = self.latitude
             let longitude: CLLocationDegrees = self.longitude
 
-            let regionDistance:CLLocationDistance = 10000
+            let regionDistance: CLLocationDistance = 10000
             let coordinates = CLLocationCoordinate2DMake(latitude, longitude)
             let regionSpan = MKCoordinateRegion(center: coordinates, latitudinalMeters: regionDistance, longitudinalMeters: regionDistance)
             let options = [
@@ -206,18 +206,18 @@ class NCViewerMediaDetailView: UIView {
             mapItem.openInMaps(launchOptions: options)
         }
     }
-    
+
     @IBAction func touchFavorite(_ sender: Any) {
-        
+
     }
-    
+
     @IBAction func touchMessage(_ sender: Any) {
-        
+
         delegate?.downloadFullResolution()
     }
-    
-    //MARK: -
-    func secondsToHoursMinutesSeconds (seconds : Int) -> (Int, Int, Int) {
+
+    // MARK: -
+    func secondsToHoursMinutesSeconds (seconds: Int) -> (Int, Int, Int) {
       return (seconds / 3600, (seconds % 3600) / 60, (seconds % 3600) % 60)
     }
 }
