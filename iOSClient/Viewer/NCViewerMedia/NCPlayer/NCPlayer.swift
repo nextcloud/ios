@@ -351,15 +351,26 @@ class NCPlayer: NSObject {
 }
 
 #if MFFF
-
 extension NCPlayer: MFFFDelegate {
-
+    
     func downloadedFile(url: URL, ocId: String?) {
         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             NCManageDatabase.shared.addLocalFile(metadata: metadata)
             CCUtility.setExif(metadata) { _, _, _, _, _ in }
         }
     }
+    
+    func sessionStarted(url: URL, ocId: String?) {
+        
+    }
+    
+    func sessionProgress(url: URL, ocId: String?, progress: CGFloat) {
+        
+    }
+    
+    func sessionEnded(url: URL, ocId: String?, returnCode: Int?) {
+        
+    }
 }
-
 #endif
+
