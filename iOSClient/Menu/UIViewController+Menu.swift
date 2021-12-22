@@ -27,7 +27,7 @@ import NCCommunication
 import UIKit
 
 extension UIViewController {
-    fileprivate func handleProfileAction(_ action: NCHovercard.Action, for userId: String) {
+    fileprivate func handleProfileAction(_ action: NCCHovercard.Action, for userId: String) {
         switch action.appId {
         case "email":
             guard

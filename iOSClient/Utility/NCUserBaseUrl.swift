@@ -33,4 +33,7 @@ public extension NCUserBaseUrl {
     var userBaseUrl: String {
         user + "-" + (URL(string: urlBase)?.host ?? "")
     }
+    var userAccount: String {
+        user + " " + urlBase
+    }
 }

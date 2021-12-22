@@ -668,9 +668,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Empty
 
     func emptyDataSetView(_ view: NCEmptyView) {
-
-        if searchController?.isActive ?? false {
-            view.emptyImage.image = UIImage(named: "search")?.image(color: .gray, size: UIScreen.main.bounds.width)
+                
+        if isSearching {
+            view.emptyImage.image = UIImage.init(named: "search")?.image(color: .gray, size: UIScreen.main.bounds.width)
             if isReloadDataSourceNetworkInProgress {
                 view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
             } else {
@@ -941,28 +941,35 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func networkSearch() {
         guard !appDelegate.account.isEmpty, let literalSearch = literalSearch, !literalSearch.isEmpty
         else {
-            self.refreshControl.endRefreshing()
+            DispatchQueue.main.async { self.refreshControl.endRefreshing() }
             return
+        }
+        let completionHanlder: ([tableMetadata]?, Int, String) ->  Void =  { metadatas, errorCode, errorDescription in
+            DispatchQueue.main.async {
+                if self.searchController?.isActive == true, errorCode == 0, let metadatas = metadatas {
+                    self.metadatasSource = metadatas
+                }
+                self.refreshControl.endRefreshing()
+                self.isReloadDataSourceNetworkInProgress = false
+                self.reloadDataSource()
+            }
         }
 
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
-
-        NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch) { metadatas in
-            guard let metadatas = metadatas else { return }
-            DispatchQueue.main.async {
-                self.metadatasSource = Array(metadatas)
-                self.reloadDataSource()
-            }
-        } completion: { metadatas, errorCode, errorDescription in
-            if self.searchController?.isActive == true, errorCode == 0, let metadatas = metadatas {
-                self.metadatasSource = Array(metadatas)
-            }
-            self.refreshControl.endRefreshing()
-            self.isReloadDataSourceNetworkInProgress = false
-            self.reloadDataSource()
+        
+        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+        if serverVersionMajor > NCGlobal.shared.nextcloudVersion20 {
+            NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch, update: { metadatas in
+                guard let metadatas = metadatas else { return }
+                DispatchQueue.main.async {
+                    self.metadatasSource = Array(metadatas)
+                    self.reloadDataSource()
+                }
+            }, completion: completionHanlder)
+        } else {
+            NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch, completion: completionHanlder)
         }
-
     }
 
     @objc func networkReadFolder(forced: Bool, completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> Void) {
