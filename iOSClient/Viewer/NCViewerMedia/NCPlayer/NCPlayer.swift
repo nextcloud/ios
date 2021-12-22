@@ -70,6 +70,11 @@ class NCPlayer: NSObject {
             self.url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
         }
         
+        // MFFF Delegate
+        #if MFFF
+        MFFF.shared.delegate = self
+        #endif
+        
         openAVPlayer() { status, error in
             
             switch status {
@@ -344,3 +349,17 @@ class NCPlayer: NSObject {
         }
     }
 }
+
+#if MFFF
+
+extension NCPlayer: MFFFDelegate {
+
+    func downloadedFile(url: URL, ocId: String?) {
+        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            NCManageDatabase.shared.addLocalFile(metadata: metadata)
+            CCUtility.setExif(metadata) { _, _, _, _, _ in }
+        }
+    }
+}
+
+#endif
