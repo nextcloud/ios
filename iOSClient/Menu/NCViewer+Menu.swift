@@ -133,7 +133,39 @@ extension NCViewer {
                 )
             )
         }
-
+        
+        //
+        // CONVERSION VIDEO TO MPEG4 (MFFF Lib)
+        //
+        #if MFFF
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+            
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_video_conversion_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "film"),
+                    action: { menuAction in
+                        
+                        let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                        let urlOut = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
+                        
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPauseMedia)
+                        
+                        MFFF.shared.convertVideo(url: url, urlOut: urlOut, serverUrl: metadata.serverUrl, fileName: metadata.fileNameView, contentType: metadata.contentType, ocId: metadata.ocId) { url, returnCode in
+                            if returnCode?.isSuccess() ?? false {
+                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadMediaPage)
+                            } else if returnCode?.isCancel() ?? false {
+                                print("cancel")
+                            } else {
+                                NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
+                            }
+                        }
+                    }
+                )
+            )
+        }
+        #endif
+        
         //
         // SAVE IMAGE / VIDEO
         //

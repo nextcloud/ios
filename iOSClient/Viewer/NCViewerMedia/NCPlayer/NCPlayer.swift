@@ -79,41 +79,46 @@ class NCPlayer: NSObject {
                 }
                 break
             case .failed:
-                if error?.code == AVError.Code.fileFormatNotRecognized.rawValue && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded) && !NCBrandOptions.shared.disable_ff {
+                #if MFFF
+                if error?.code == AVError.Code.fileFormatNotRecognized.rawValue {
                     let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_video_format_not_recognized_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
-                        /*
-                        ncFF.convertVideo { session, url in
-                            let returnCode = session?.getReturnCode()
-                             
-                            if returnCode?.isSuccess() ?? false {
-                                 self.url = url
-                                 self.openAVPlayer() { status, error in
-                                     if let error = error {
-                                         NCContentPresenter.shared.messageNotification(error.localizedDescription, description: error.localizedFailureReason, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
-                                     }
-                                 }
-                             } else if returnCode?.isCancel() ?? false {
-                                // nothing
-                             } else {
-                                 NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
+                        
+                        let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                        let urlOut = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
+                        
+                        MFFF.shared.convertVideo(url: url, urlOut: urlOut, serverUrl: self.metadata.serverUrl, fileName: self.metadata.fileNameView, contentType: self.metadata.contentType, ocId: metadata.ocId) { url, returnCode in
+                            if returnCode?.isSuccess() ?? false, let url = url {
+                                self.url = url
+                                self.openAVPlayer() { status, error in
+                                    if let error = error {
+                                        NCContentPresenter.shared.messageNotification(error.localizedDescription, description: error.localizedFailureReason, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
+                                    }
+                                }
+                            } else if returnCode?.isCancel() ?? false {
+                                print("cancel")
+                            } else {
+                                NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
                             }
-                         }
-                         */
+                        }
                     }))
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
                         NCContentPresenter.shared.messageNotification("_info_", description: "_video_conversion_available_after_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorNoError, priority: .max)
                     }))
                     self.appDelegate.window?.rootViewController?.present(alertController, animated: true)
+                } else if let title = error?.localizedDescription, let description = error?.localizedFailureReason {
+                    NCContentPresenter.shared.messageNotification(title, description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
                 } else {
-                    if let title = error?.localizedDescription, let description = error?.localizedFailureReason {
-                        NCContentPresenter.shared.messageNotification(title, description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
-                    } else {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
-                    }
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
                 }
+                #else
+                if let title = error?.localizedDescription, let description = error?.localizedFailureReason {
+                    NCContentPresenter.shared.messageNotification(title, description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
+                } else {
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
+                }
+                #endif
                 break
-                
             case .cancelled:
                 break
             default:
