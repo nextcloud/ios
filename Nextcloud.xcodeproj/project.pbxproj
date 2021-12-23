@@ -1755,7 +1755,6 @@
 		F7F67B9F1A24D27800EE80DA = {
 			isa = PBXGroup;
 			children = (
-				AF4AFF04277382BB00EBE49C /* ios-communication-library */,
 				F7F67BAA1A24D27800EE80DA /* iOSClient */,
 				F7F67BAB1A24D27800EE80DA /* Supporting Files */,
 				F771E3D120E2392D00AFB62D /* File Provider Extension */,

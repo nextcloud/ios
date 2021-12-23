@@ -156,7 +156,7 @@ extension NCNetworking {
                             NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
 
                             self.readFile(serverUrlFileName: serverUrlFileNameDestination) { (_, metadata, _, _) in
-                                    
+
                                 if errorCode == 0, let metadata = metadata {
 
                                     metadata.assetLocalIdentifier = assetLocalIdentifier

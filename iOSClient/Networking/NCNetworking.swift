@@ -902,14 +902,14 @@ import Queuer
     //MARK: - Search
     
     /// WebDAV search
-    @objc func searchFiles(urlBase: String, user: String, literal: String, completion: @escaping (_ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
+    @objc func searchFiles(urlBase: NCUserBaseUrl, literal: String, completion: @escaping (_ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
 
-        NCCommunication.shared.searchLiteral(serverUrl: urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.searchLiteral(serverUrl: urlBase.urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, errorCode, errorDescription) in
             guard errorCode != 0 else {
                 return completion(nil, errorCode, errorDescription)
             }
 
-            NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+            NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, metadatasFolder, metadatas in
 
                 // Update sub directories
                 for folder in metadatasFolder {
@@ -919,7 +919,6 @@ import Queuer
 
                 NCManageDatabase.shared.addMetadatas(metadatas)
                 let metadatas = Array(metadatas.map(tableMetadata.init))
-
                 completion(metadatas, errorCode, errorDescription)
             }
         }
@@ -927,21 +926,37 @@ import Queuer
 
     /// Unified Search (NC>=20)
     @objc func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, update: @escaping (Set<tableMetadata>?) -> Void, completion: @escaping (_ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
-        var seachFiles = Set<tableMetadata>()
+        var searchFiles = Set<tableMetadata>()
         var errCode = 0
         var errDescr = ""
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
         dispatchGroup.notify(queue: .main) {
-            completion(Array(seachFiles), errCode, errDescr)
+            completion(Array(searchFiles), errCode, errDescr)
         }
 
-        NCCommunication.shared.unifiedSearch(term: literal) { parialResult, provider, errorCode, errorDescription in
-            guard let parialResult = parialResult else { return }
-            print("##ProoviderId", provider.id)
-            // NOTE: FTS could return attributes like files
-            if parialResult.name == "Full Text Search" {
-                parialResult.entries.forEach({ entry in
+        NCCommunication.shared.unifiedSearch(term: literal) { provider in
+            ["files", "fulltextsearch"].contains(provider.id)
+        } update: { partialResult, provider, errorCode, errorDescription in
+            guard let partialResult = partialResult else { return }
+            
+            switch provider.id {
+            case "files":
+                partialResult.entries.forEach({ entry in
+                    if let fileId = entry.fileId,
+                       let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", urlBase.userAccount, String(fileId))) {
+                        searchFiles.insert(result)
+                    } else if let filePath = entry.filePath {
+                        self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: dispatchGroup) { newMetadata in
+                            searchFiles.insert(newMetadata)
+                        }
+                    } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
+                })
+                break
+            case "fulltextsearch":
+                // NOTE: FTS could also return attributes like files
+                // https://github.com/nextcloud/files_fulltextsearch/issues/143
+                partialResult.entries.forEach({ entry in
                     let url = URLComponents(string: entry.resourceURL)
                     guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else { return }
                     if let tableFile = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(
@@ -949,27 +964,16 @@ import Queuer
                               urlBase.userAccount,
                               "/remote.php/dav/files/" + urlBase.user + dir,
                               filename)) {
-                        print("##TableFile", tableFile, urlBase.userBaseUrl)
-                        seachFiles.insert(tableFile)
+                        searchFiles.insert(tableFile)
                     } else {
-                        self.loadMetadata(urlBase: urlBase, filePath: "/" + entry.subline, dispatchGroup: dispatchGroup) { newMetadata in
-                            seachFiles.insert(newMetadata)
+                        self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: dispatchGroup) { newMetadata in
+                            searchFiles.insert(newMetadata)
                         }
                     }
                 })
-            } else if parialResult.name == "Files" {
-                parialResult.entries.forEach({ entry in
-                    if let fileId = entry.fileId,
-                       let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "fileId == %@", String(fileId))) {
-                        seachFiles.insert(result)
-                    } else if let filePath = entry.filePath {
-                        self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: dispatchGroup) { newMetadata in
-                            seachFiles.insert(newMetadata)
-                        }
-                    } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
-                })
+            default: return     // unknown provider results
             }
-            update(seachFiles)
+            update(searchFiles)
         } completion: { results, errorCode, errorDescription in
             dispatchGroup.leave()
             errCode = errorCode

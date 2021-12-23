@@ -944,7 +944,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             DispatchQueue.main.async { self.refreshControl.endRefreshing() }
             return
         }
-        let completionHanlder: ([tableMetadata]?, Int, String) ->  Void =  { metadatas, errorCode, errorDescription in
+        let completionHandler: ([tableMetadata]?, Int, String) ->  Void =  { metadatas, errorCode, errorDescription in
             DispatchQueue.main.async {
                 if self.searchController?.isActive == true, errorCode == 0, let metadatas = metadatas {
                     self.metadatasSource = metadatas
@@ -959,16 +959,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView?.reloadData()
         
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-        if serverVersionMajor > NCGlobal.shared.nextcloudVersion20 {
+        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
             NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch, update: { metadatas in
                 guard let metadatas = metadatas else { return }
-                DispatchQueue.main.async {
-                    self.metadatasSource = Array(metadatas)
-                    self.reloadDataSource()
-                }
-            }, completion: completionHanlder)
+                self.metadatasSource = Array(metadatas)
+                self.reloadDataSource()
+            }, completion: completionHandler)
         } else {
-            NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch, completion: completionHanlder)
+            NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch, completion: completionHandler)
         }
     }
 

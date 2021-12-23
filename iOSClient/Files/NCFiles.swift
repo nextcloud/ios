@@ -81,10 +81,8 @@ class NCFiles: NCCollectionViewCommon {
             
             self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
             
-//            DispatchQueue.main.async { [weak self] in
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
-//            }
+            self.refreshControl.endRefreshing()
+            self.collectionView.reloadData()
         }
     }
 

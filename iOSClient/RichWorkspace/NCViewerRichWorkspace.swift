@@ -59,9 +59,9 @@ import MarkdownKit
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { (account, metadata, errorCode, errorDescription) in
-            
+
             if errorCode == 0 && account == self.appDelegate.account {
                 guard let metadata = metadata else { return }
                 NCManageDatabase.shared.setDirectory(richWorkspace: metadata.richWorkspace, serverUrl: self.serverUrl, account: account)
