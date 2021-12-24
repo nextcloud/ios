@@ -58,7 +58,7 @@ class NCSortMenu: NSObject {
                 title: title,
                 icon: icon,
                 selected: layoutForView.sort == "fileName",
-                on: layoutForView.sort == "fileName",
+                isOn: layoutForView.sort == "fileName",
                 action: { _ in
                     layoutForView.sort = "fileName"
                     layoutForView.ascending = !layoutForView.ascending
@@ -80,7 +80,7 @@ class NCSortMenu: NSObject {
                 title: title,
                 icon: icon,
                 selected: layoutForView.sort == "date",
-                on: layoutForView.sort == "date",
+                isOn: layoutForView.sort == "date",
                 action: { _ in
                     layoutForView.sort = "date"
                     layoutForView.ascending = !layoutForView.ascending
@@ -102,7 +102,7 @@ class NCSortMenu: NSObject {
                 title: title,
                 icon: icon,
                 selected: layoutForView.sort == "size",
-                on: layoutForView.sort == "size",
+                isOn: layoutForView.sort == "size",
                 action: { _ in
                     layoutForView.sort = "size"
                     layoutForView.ascending = !layoutForView.ascending
@@ -117,7 +117,7 @@ class NCSortMenu: NSObject {
                     title: NSLocalizedString("_directory_on_top_no_", comment: ""),
                     icon: UIImage(named: "foldersOnTop")!.image(color: NCBrandColor.shared.gray, size: 50),
                     selected: layoutForView.directoryOnTop,
-                    on: layoutForView.directoryOnTop,
+                    isOn: layoutForView.directoryOnTop,
                     action: { _ in
                         layoutForView.directoryOnTop = !layoutForView.directoryOnTop
                         self.actionMenu(layoutForView: layoutForView)

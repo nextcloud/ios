@@ -12,10 +12,10 @@ import UIKit
 extension NCShare {
 
     func toggleMenuShareLink(tableShare: tableShare, metadata: tableMetadata, icon: UIImage?) {
-        
+
         var actions = [NCMenuAction]()
         let permissionIx: Int
-        let hasPassword = tableShare.shareWith.count > 0
+        let hasPassword = tableShare.shareWith.isEmpty
 
         if metadata.directory {
             // File Drop
@@ -34,13 +34,11 @@ extension NCShare {
             if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
                 permissionIx = 1
             } else {
-                //default: read only
+                // default: read only
                 permissionIx = 0
             }
         }
-        
-        
-        
+
 //        // Set expiration date
 //        if tableShare.expirationDate != nil {
 //            switchSetExpirationDate.setOn(true, animated: false)
@@ -56,7 +54,6 @@ extension NCShare {
 //            fieldSetExpirationDate.text = ""
 //        }
 
-
         let title = tableShare.label.isEmpty ? NSLocalizedString("_share_link", comment: "") : tableShare.label
         actions.append(NCMenuButton(title: title, icon: icon, action: nil))
         actions.append(NCMenuTextField(
@@ -65,7 +62,14 @@ extension NCShare {
             text: tableShare.label,
             placeholder: NSLocalizedString("_Link_name_", comment: ""),
             onCommit: { newName in
-                self.networking?.updateShare(idShare: tableShare.idShare, password: nil, permissions: tableShare.permissions, note: nil, label: newName, expirationDate: nil, hideDownload: tableShare.hideDownload)
+                self.networking?.updateShare(
+                    idShare: tableShare.idShare,
+                    password: nil,
+                    permissions: tableShare.permissions,
+                    note: nil,
+                    label: newName,
+                    expirationDate: nil,
+                    hideDownload: tableShare.hideDownload)
             }))
 
         let pemissionButtonGroup = NCMenuButtonGroup(title: "_permissions_", selectedIx: permissionIx, actions: [
@@ -73,8 +77,15 @@ extension NCShare {
                 title: "_share_read_only_",
                 icon: nil,
                 action: { button in
-                    let permissions = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: metadata.directory)
+                    let permissions = CCUtility.getPermissionsValue(
+                        byCanEdit: false,
+                        andCanCreate: false,
+                        andCanChange: false,
+                        andCanDelete: false,
+                        andCanShare: false,
+                        andIsFolder: metadata.directory)
                     print(button.title, permissions)
+                    self.updateShare(tableShare, permissions: permissions)
                 }),
             NCMenuButton(
                 title: "_share_allow_editing_",
@@ -88,7 +99,7 @@ extension NCShare {
                         andCanShare: false,
                         andIsFolder: metadata.directory)
                     print(button.title, permissions)
-                    //                self.networking?.updateShare(idShare: tableShare.idShare, password: nil, permissions: permissions, note: nil, label: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
+                    self.updateShare(tableShare, permissions: permissions)
                 }),
             NCMenuButton(
                 title: "_share_file_drop_",
@@ -96,39 +107,22 @@ extension NCShare {
                 action: { button in
                     let permissions = NCGlobal.shared.permissionCreateShare
                     print(button.title, permissions)
+                    self.updateShare(tableShare, permissions: permissions)
                 })
         ])
-        
+
         actions.append(pemissionButtonGroup)
-        
-//        actions.append(NCMenuToggle(
-//            title: NSLocalizedString("_share_allow_editing_", comment: ""),
-//            icon: nil,
-//            isOn: allowUploadAndEditing,
-//            onChange: { isOn in
-//                var permissions = CCUtility.getPermissionsValue(
-//                    byCanEdit: isOn,
-//                    andCanCreate: isOn,
-//                    andCanChange: isOn,
-//                    andCanDelete: isOn,
-//                    andCanShare: false, andIsFolder: metadata.directory)
-//
-//                self.networking?.updateShare(idShare: tableShare.idShare, password: nil, permissions: permissions, note: nil, label: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
-//            }))
-//        actions.append(NCMenuToggle(
-//            title: NSLocalizedString("_share_file_drop_", comment: ""),
-//            icon: nil,
-//            isOn: canDropFile,
-//            onChange: { isOn in
-//                if isOn, tableShare.permissions != NCGlobal.shared.permissionCreateShare {
-//                    switchReadOnly.setOn(false, animated: false)
-//                    switchAllowUploadAndEditing.setOn(false, animated: false)
-//                    networking?.updateShare(idShare: tableShare.idShare, password: nil, permissions: permissions, note: nil, label: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
-//                } else {
-//                    sender.setOn(true, animated: false)
-//                }
-//            }))
-        
+
         presentMenu(with: actions)
+    }
+
+    fileprivate func updateShare(_ tableShare: tableShare, permissions: Int) {
+        self.networking?.updateShare(
+            idShare: tableShare.idShare,
+            password: nil,
+            permissions: permissions,
+            note: nil, label: nil,
+            expirationDate: nil,
+            hideDownload: tableShare.hideDownload)
     }
 }

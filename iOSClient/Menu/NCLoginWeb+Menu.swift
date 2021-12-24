@@ -49,7 +49,7 @@ extension NCLoginWeb {
                     onTitle: title,
                     onIcon: avatar,
                     selected: account.active == true,
-                    on: account.active == true,
+                    isOn: account.active == true,
                     action: { _ in
                         if self.appDelegate.account != account.account {
                             NCManageDatabase.shared.setAccountActive(account.account)
@@ -70,7 +70,7 @@ extension NCLoginWeb {
                 onTitle: NSLocalizedString("_delete_active_account_", comment: ""),
                 onIcon: avatar,
                 selected: false,
-                on: false,
+                isOn: false,
                 action: { _ in
                     self.appDelegate.deleteAccount(self.appDelegate.account, wipe: false)
                     self.dismiss(animated: true) {

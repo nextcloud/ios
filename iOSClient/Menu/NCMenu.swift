@@ -59,7 +59,7 @@ class NCMenu: UITableViewController {
         } else {
             print(#function, "[ERROR] No menu action found")
         }
-        
+
         tableView.deselectRow(at: indexPath, animated: true)
     }
 

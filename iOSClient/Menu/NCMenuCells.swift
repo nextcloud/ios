@@ -46,14 +46,14 @@ class NCMenuTextFieldCell: UITableViewCell, NCMenuCell, UITextFieldDelegate {
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
-    @objc func keyboardWillShow(notification : Notification) {
+    @objc func keyboardWillShow(notification: Notification) {
         let frameEndUserInfoKey = UIResponder.keyboardFrameEndUserInfoKey
-        
+
         guard let info = notification.userInfo,
               let centerObject = textField.superview?.convert(textField.center, to: nil),
               let keyboardFrame = info[frameEndUserInfoKey] as? CGRect
         else { return }
-        
+
         let diff = keyboardFrame.origin.y - centerObject.y - textField.frame.height
         if diff < 0 {
             parentViewController?.view.frame.origin.y = diff
@@ -98,7 +98,7 @@ class NCMenuButtonCell: UITableViewCell, NCMenuCell {
         self.action = action
         updateUI()
     }
-    
+
     func updateUI() {
         guard let action = action else { return }
 
@@ -128,4 +128,3 @@ extension NCMenuCell {
         icon.image = action?.icon
     }
 }
-

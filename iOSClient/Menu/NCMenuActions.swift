@@ -32,8 +32,7 @@ protocol NCMenuAction {
 extension Array where Element == NCMenuAction {
     var actionCount: Int {
         self.reduce(0, {
-            if let gropuActions = ($1 as? NCMenuButtonGroup)?.actions.count { return $0 + gropuActions + 1 }
-            else { return $0 + 1 }
+            if let gropuActions = ($1 as? NCMenuButtonGroup)?.actions.count { return $0 + gropuActions + 1 } else { return $0 + 1 }
         })
     }
 }
@@ -51,7 +50,7 @@ class NCMenuButtonGroup: NCMenuAction {
         self.actions = actions
         self.cells = cells
         self.icon = icon
-        
+
         for buttonIx in 0..<self.actions.count {
             actions[buttonIx].selectable = true
             actions[buttonIx].selected = buttonIx == selectedIx
