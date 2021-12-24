@@ -112,6 +112,7 @@ class NCMenu: UITableViewController {
         actions[section] is NCMenuButtonGroup ? 20 : 0
     }
 
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat { return 0 }
     override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? { nil }
 
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
