@@ -48,11 +48,11 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
 
     var shares: (firstShareLink: tableShare?,  share: [tableShare]?) = (nil, nil)
 
-    private var shareLinkMenuView: NCShareLinkMenuView?
+//    private var shareLinkMenuView: NCShareLinkMenuView?
     private var shareUserMenuView: NCShareUserMenuView?
-    private var shareMenuViewWindow: UIView?
+//    private var shareMenuViewWindow: UIView?
     private var dropDown = DropDown()
-    private var networking: NCShareNetworking?
+    var networking: NCShareNetworking?
 
     // MARK: - View Life Cycle
 
@@ -197,8 +197,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
     }
     
     @objc func tapLinkMenuViewWindow(gesture: UITapGestureRecognizer) {
-        shareLinkMenuView?.unLoad()
-        shareLinkMenuView = nil
+//        shareLinkMenuView?.unLoad()
+//        shareLinkMenuView = nil
         shareUserMenuView?.unLoad()
         shareUserMenuView = nil
     }
@@ -437,21 +437,22 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
         if let tableShare = tableShare {
             // open share menu
             if tableShare.shareType == 3 {
-                let views = NCShareCommon.shared.openViewMenuShareLink(shareViewController: self, tableShare: tableShare, metadata: metadata)
-                shareLinkMenuView = views.shareLinkMenuView
-                shareMenuViewWindow = views.viewWindow
+                toggleMenuShareLink(tableShare: tableShare, metadata: metadata, icon: nil)
+//                let views = NCShareCommon.shared.openViewMenuShareLink(shareViewController: self, tableShare: tableShare, metadata: metadata)
+//                shareLinkMenuView = views.shareLinkMenuView
+//                shareMenuViewWindow = views.viewWindow
                 
-                let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
-                tap.delegate = self
-                shareMenuViewWindow?.addGestureRecognizer(tap)
+//                let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
+//                tap.delegate = self
+//                shareMenuViewWindow?.addGestureRecognizer(tap)
             } else {
                 let views = NCShareCommon.shared.openViewMenuUser(shareViewController: self, tableShare: tableShare, metadata: metadata)
                 shareUserMenuView = views.shareUserMenuView
-                shareMenuViewWindow = views.viewWindow
+//                shareMenuViewWindow = views.viewWindow
                 
-                let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
-                tap.delegate = self
-                shareMenuViewWindow?.addGestureRecognizer(tap)
+//                let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
+//                tap.delegate = self
+//                shareMenuViewWindow?.addGestureRecognizer(tap)
             }
         } else if isFilesSharingPublicPasswordEnforced {
             // create share with pw

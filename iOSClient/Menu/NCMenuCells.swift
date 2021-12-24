@@ -96,7 +96,12 @@ class NCMenuButtonCell: UITableViewCell, NCMenuCell {
 
     func setup(with action: NCMenuButton) {
         self.action = action
-        
+        updateUI()
+    }
+    
+    func updateUI() {
+        guard let action = action else { return }
+
         if action.action == nil {
             selectionStyle = .none
         }

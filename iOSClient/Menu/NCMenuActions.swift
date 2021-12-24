@@ -26,49 +26,88 @@ import UIKit
 
 protocol NCMenuAction {
     var title: String { get }
-    var icon: UIImage { get }
+    var icon: UIImage? { get }
+}
+
+extension Array where Element == NCMenuAction {
+    var actionCount: Int {
+        self.reduce(0, {
+            if let gropuActions = ($1 as? NCMenuButtonGroup)?.actions.count { return $0 + gropuActions + 1 }
+            else { return $0 + 1 }
+        })
+    }
+}
+
+class NCMenuButtonGroup: NCMenuAction {
+    var title: String
+    var selectedIx: Int
+    var actions: [NCMenuButton]
+    var cells: [NCMenuButtonCell] = []
+    var icon: UIImage?
+
+    internal init(title: String, selectedIx: Int, actions: [NCMenuButton], cells: [NCMenuButtonCell] = [], icon: UIImage? = nil) {
+        self.title = title
+        self.selectedIx = selectedIx
+        self.actions = actions
+        self.cells = cells
+        self.icon = icon
+        
+        for buttonIx in 0..<self.actions.count {
+            actions[buttonIx].selectable = true
+            actions[buttonIx].selected = buttonIx == selectedIx
+        }
+    }
+
+    func shouldSelect(buttonIx: Int) {
+        guard buttonIx != selectedIx else { return }
+        selectedIx = buttonIx
+        for cellIx in 0..<cells.count {
+            cells[cellIx].action?.selected = cellIx == selectedIx
+            cells[cellIx].updateUI()
+        }
+        actions[selectedIx].action?(actions[selectedIx])
+    }
 }
 
 class NCMenuButton: NCMenuAction {
-
     let title: String
-    let icon: UIImage
-    let selectable: Bool
+    let icon: UIImage?
+    var selectable: Bool
     var onTitle: String?
     var onIcon: UIImage?
     var selected: Bool = false
     var isOn: Bool = false
-    var action: ((_ menuAction: NCMenuButton) -> Void)?
+    var action: ((NCMenuButton) -> Void)?
 
-    init(title: String, icon: UIImage, action: ((_ menuButton: NCMenuButton) -> Void)?) {
-        self.title = title
+    init(title: String, icon: UIImage?, action: ((NCMenuButton) -> Void)?) {
+        self.title = NSLocalizedString(title, comment: "")
         self.icon = icon
         self.action = action
         self.selectable = false
     }
 
-    init(title: String, icon: UIImage, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, on: Bool, action: ((_ menuButton: NCMenuButton) -> Void)?) {
-        self.title = title
+    init(title: String, icon: UIImage?, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, isOn: Bool, action: ((NCMenuButton) -> Void)?) {
+        self.title = NSLocalizedString(title, comment: "")
         self.icon = icon
-        self.onTitle = onTitle ?? title
+        self.onTitle = onTitle ?? self.title
         self.onIcon = onIcon ?? icon
         self.action = action
         self.selected = selected
-        self.isOn = on
+        self.isOn = isOn
         self.selectable = true
     }
 }
 
 class NCMenuToggle: NCMenuAction {
     let title: String
-    let icon: UIImage
+    let icon: UIImage?
     var isOn: Bool {
         didSet { onChange?(isOn) }
     }
-    let onChange: ((_ isOn: Bool) -> Void)?
+    let onChange: ((_ newValue: Bool) -> Void)?
 
-    init(title: String, icon: UIImage, isOn: Bool, onChange: ((_ isOn: Bool) -> Void)?) {
-        self.title = title
+    init(title: String, icon: UIImage?, isOn: Bool, onChange: ((_ isOn: Bool) -> Void)?) {
+        self.title = NSLocalizedString(title, comment: "")
         self.icon = icon
         self.isOn = isOn
         self.onChange = onChange
@@ -77,18 +116,18 @@ class NCMenuToggle: NCMenuAction {
 
 class NCMenuTextField: NCMenuAction {
     var title: String
-    var icon: UIImage
+    var icon: UIImage?
     var text: String {
         didSet { onCommit?(text) }
     }
     var placeholder: String
-    let onCommit: ((_ text: String?) -> Void)?
+    let onCommit: ((_ text: String) -> Void)?
 
-    init(title: String, icon: UIImage, text: String, placeholder: String, onCommit: ((String?) -> Void)?) {
-        self.title = title
+    init(title: String, icon: UIImage?, text: String, placeholder: String, onCommit: ((String) -> Void)?) {
+        self.title = NSLocalizedString(title, comment: "")
         self.icon = icon
         self.text = text
-        self.placeholder = placeholder
+        self.placeholder = NSLocalizedString(placeholder, comment: "")
         self.onCommit = onCommit
     }
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="dbT-V0-aXb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="dbT-V0-aXb">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -91,7 +91,7 @@
                                     <outlet property="toggle" destination="n5z-4O-aJy" id="k9j-tP-4E8"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="menuTextFieldCell" rowHeight="95" id="4Us-iM-nzC" customClass="NCMenuTextFIeldCell" customModule="Nextcloud" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="menuTextFieldCell" rowHeight="95" id="4Us-iM-nzC" customClass="NCMenuTextFieldCell" customModule="Nextcloud" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="164.5" width="414" height="95"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="4Us-iM-nzC" id="Dza-tK-P8d">
@@ -130,9 +130,9 @@
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <outlet property="icon" destination="j5D-do-4Qf" id="Nly-R9-9Z3"/>
-                                    <outlet property="label" destination="I7u-uc-187" id="m6j-v5-kND"/>
-                                    <outlet property="textField" destination="hbH-YV-ENC" id="LcC-pH-DCg"/>
+                                    <outlet property="icon" destination="j5D-do-4Qf" id="nYR-bH-GZz"/>
+                                    <outlet property="label" destination="I7u-uc-187" id="yZ0-60-E2h"/>
+                                    <outlet property="textField" destination="hbH-YV-ENC" id="PQp-rR-zXj"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>

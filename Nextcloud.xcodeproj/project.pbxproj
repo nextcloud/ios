@@ -35,6 +35,7 @@
 		AF70F89F2762CC1B00093456 /* NCMenuCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF70F89E2762CC1B00093456 /* NCMenuCells.swift */; };
 		AF70F8A42767512800093456 /* NCMenuActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF70F8A027674EA100093456 /* NCMenuActions.swift */; };
 		AF70F8A52767523400093456 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF70F8A227674F1C00093456 /* UIView+Extensions.swift */; };
+		AF70F8A7276754E000093456 /* NCShare+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF70F8A6276754E000093456 /* NCShare+Menu.swift */; };
 		AF817EF1274BC781009ED85B /* NCUserBaseUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF817EF0274BC781009ED85B /* NCUserBaseUrl.swift */; };
 		AF817EF2274BC781009ED85B /* NCUserBaseUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF817EF0274BC781009ED85B /* NCUserBaseUrl.swift */; };
 		AF817EF3274BC781009ED85B /* NCUserBaseUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF817EF0274BC781009ED85B /* NCUserBaseUrl.swift */; };
@@ -468,6 +469,7 @@
 		AF70F89E2762CC1B00093456 /* NCMenuCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMenuCells.swift; sourceTree = "<group>"; };
 		AF70F8A027674EA100093456 /* NCMenuActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMenuActions.swift; sourceTree = "<group>"; };
 		AF70F8A227674F1C00093456 /* UIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
+		AF70F8A6276754E000093456 /* NCShare+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCShare+Menu.swift"; sourceTree = "<group>"; };
 		AF817EF0274BC781009ED85B /* NCUserBaseUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUserBaseUrl.swift; sourceTree = "<group>"; };
 		AF8ED1F92757821000B8DBC4 /* NextcloudTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF8ED1FB2757821000B8DBC4 /* NextcloudTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextcloudTests.swift; sourceTree = "<group>"; };
@@ -930,6 +932,7 @@
 				F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */,
 				F75D19E225EFE09000D74598 /* NCTrash+Menu.swift */,
 				F710D2012405826100A6033D /* NCViewer+Menu.swift */,
+				AF70F8A6276754E000093456 /* NCShare+Menu.swift */,
 			);
 			path = Menu;
 			sourceTree = "<group>";
@@ -1083,6 +1086,7 @@
 				F787704E22E7019900F287A9 /* NCShareLinkCell.xib */,
 				AF2D7C7B2742556F00ADF566 /* NCShareLinkCell.swift */,
 				F7DFAA8922E22EF100FC4527 /* NCShareLinkMenuView.xib */,
+				F769454122E9F0EE000A798A /* NCShareLinkMenuView.swift */,
 				F769454722E9F20D000A798A /* NCShareNetworking.swift */,
 				F769453F22E9F077000A798A /* NCSharePaging.swift */,
 				F77EFC0B26D6751F00806ED6 /* NCShareQuickStatusMenu.swift */,
@@ -1090,7 +1094,6 @@
 				F769453B22E9CFFF000A798A /* NCShareUserCell.xib */,
 				AF2D7C7D2742559100ADF566 /* NCShareUserCell.swift */,
 				F79728D322F96F2D003CACA7 /* NCShareLinkFolderMenuView.xib */,
-				F769454122E9F0EE000A798A /* NCShareLinkMenuView.swift */,
 				F79728D522F9A0B0003CACA7 /* NCShareUserFolderMenuView.xib */,
 				F769453D22E9E97D000A798A /* NCShareUserMenuView.xib */,
 				F769454322E9F142000A798A /* NCShareUserMenuView.swift */,
@@ -2368,6 +2371,7 @@
 				F7CA212D25F1333300826ABB /* NCAccountRequest.swift in Sources */,
 				F765F73125237E3F00391DBE /* NCRecent.swift in Sources */,
 				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
+				AF70F8A7276754E000093456 /* NCShare+Menu.swift in Sources */,
 				F769454422E9F142000A798A /* NCShareUserMenuView.swift in Sources */,
 				F7581D2425EFDDDF004DC699 /* NCMedia+Menu.swift in Sources */,
 				F738D4902756740100CD1D38 /* NCLoginNavigationController.swift in Sources */,

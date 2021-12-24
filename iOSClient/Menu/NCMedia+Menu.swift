@@ -49,7 +49,7 @@ extension NCMedia {
                     title: NSLocalizedString(filterClassTypeImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "photo"),
                     selected: filterClassTypeImage,
-                    on: true,
+                    isOn: true,
                     action: { _ in
                         self.filterClassTypeImage = !self.filterClassTypeImage
                         self.filterClassTypeVideo = false
@@ -63,7 +63,7 @@ extension NCMedia {
                     title: NSLocalizedString(filterClassTypeVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "video"),
                     selected: filterClassTypeVideo,
-                    on: true,
+                    isOn: true,
                     action: { _ in
                         self.filterClassTypeVideo = !self.filterClassTypeVideo
                         self.filterClassTypeImage = false
@@ -94,7 +94,7 @@ extension NCMedia {
                     title: NSLocalizedString("_media_by_modified_date_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "circle.grid.cross.up.fill"),
                     selected: CCUtility.getMediaSortDate() == "date",
-                    on: true,
+                    isOn: true,
                     action: { _ in
                         CCUtility.setMediaSortDate("date")
                         self.reloadDataSourceWithCompletion { _ in }
@@ -107,7 +107,7 @@ extension NCMedia {
                     title: NSLocalizedString("_media_by_created_date_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "circle.grid.cross.down.fill"),
                     selected: CCUtility.getMediaSortDate() == "creationDate",
-                    on: true,
+                    isOn: true,
                     action: { _ in
                         CCUtility.setMediaSortDate("creationDate")
                         self.reloadDataSourceWithCompletion { _ in }
@@ -120,7 +120,7 @@ extension NCMedia {
                     title: NSLocalizedString("_media_by_upload_date_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "circle.grid.cross.right.fill"),
                     selected: CCUtility.getMediaSortDate() == "uploadDate",
-                    on: true,
+                    isOn: true,
                     action: { _ in
                         CCUtility.setMediaSortDate("uploadDate")
                         self.reloadDataSourceWithCompletion { _ in }
