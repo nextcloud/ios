@@ -58,7 +58,6 @@ extension NCCreateFormUploadConflictDelegate {
     @objc var alwaysNewFileNameNumber: Bool = false
     @objc var textLabelDetailNewFile: String?
 
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadatasConflictNewFiles: [String] = []
     var metadatasConflictAlreadyExistingFiles: [String] = []
     var fileNamesPath: [String: String] = [:]
@@ -310,12 +309,7 @@ extension NCCreateFormUploadConflictDelegate {
         }
 
         metadatasNOConflict.append(contentsOf: metadatasMOV)
-
-        if delegate != nil {
-            delegate?.dismissCreateFormUploadConflict(metadatas: metadatasNOConflict)
-        } else {
-            appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadatasNOConflict)
-        }
+        delegate?.dismissCreateFormUploadConflict(metadatas: metadatasNOConflict)
 
         dismiss(animated: true)
     }

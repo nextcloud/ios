@@ -463,6 +463,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                         conflict.metadatasNOConflict = metadatasNOConflict
                         conflict.metadatasMOV = metadatasMOV
                         conflict.metadatasUploadInConflict = metadatasUploadInConflict
+                        conflict.delegate = self.appDelegate
 
                         self.appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
                     }

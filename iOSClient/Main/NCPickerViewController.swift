@@ -160,7 +160,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {
 
                     if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
-
+                        conflict.delegate = appDelegate
                         conflict.serverUrl = serverUrl
                         conflict.metadatasUploadInConflict = [metadataForUpload]
 

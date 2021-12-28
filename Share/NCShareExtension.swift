@@ -4,8 +4,10 @@
 //
 //  Created by Marino Faggiana on 20/04/2021.
 //  Copyright © 2021 Marino Faggiana. All rights reserved.
+//  Copyright © 2021 Henrik Storch. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -68,6 +70,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
 
     private var numberFilesName: Int = 0
     private var counterUpload: Int = 0
+    private var uploadDispatchGroup: DispatchGroup?
 
     // MARK: - View Life Cycle
 
@@ -408,77 +411,98 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     }
 
     @objc func actionUpload() {
+        guard !filesName.isEmpty else { fatalError("No files") }
+        uploadDispatchGroup = DispatchGroup()
+        uploadDispatchGroup?.enter()
+        uploadDispatchGroup?.notify(queue: .main, execute: finishedUploading)
 
-        if let fileName = filesName.first {
-
-            counterUpload += 1
-            filesName.removeFirst()
+        var conflicts: [tableMetadata] = []
+        for fileName in filesName {
             let ocId = NSUUID().uuidString
-            let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+            let atPath = (NSTemporaryDirectory() + fileName)
+            let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+            guard NCUtilityFileSystem.shared.copyFile(atPath: atPath, toPath: toPath) else { continue }
+            let metadata = NCManageDatabase.shared.createMetadata(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "", contentType: "", livePhoto: false)
+            metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+            metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
+            metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
+            metadata.status = NCGlobal.shared.metadataStatusWaitUpload
+            if NCManageDatabase.shared.getMetadataConflict(account: activeAccount.account, serverUrl: serverUrl, fileName: fileName) != nil {
+                conflicts.append(metadata)
+            } else {
+                upload(metadata)
+            }
+        }
+        
+        if !conflicts.isEmpty {
+            uploadDispatchGroup?.enter()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
 
-            if NCUtilityFileSystem.shared.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: filePath) {
+                    conflict.serverUrl = self.serverUrl
+                    conflict.metadatasUploadInConflict = conflicts
+                    conflict.delegate = self
 
-                let metadata = NCManageDatabase.shared.createMetadata(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "", contentType: "", livePhoto: false)
-
-                metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
-                metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
-                metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
-                metadata.status = NCGlobal.shared.metadataStatusWaitUpload
-
-                // E2EE
-                if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
-                    metadata.e2eEncrypted = true
-                }
-
-                // CHUNCK
-                if chunckSize != 0 && metadata.size > chunckSize {
-                    metadata.chunk = true
-                }
-
-                NCNetworking.shared.upload(metadata: metadata) {
-
-                } completion: { errorCode, errorDescription in
-
-                    if errorCode == 0 {
-
-                        self.actionUpload()
-
-                    } else {
-
-                        IHProgressHUD.dismiss()
-
-                        NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
-                        NCManageDatabase.shared.deleteChunks(account: self.activeAccount.account, ocId: ocId)
-
-                        let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-                            self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
-                        }))
-                        self.present(alertController, animated: true)
-                    }
+                    self.present(conflict, animated: true, completion: nil)
                 }
             }
-        } else {
+        }
+        uploadDispatchGroup?.leave()
+    }
 
-            IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
+    func upload(_ metadata: tableMetadata) {
+        uploadDispatchGroup?.enter()
+        // E2EE
+        if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
+            metadata.e2eEncrypted = true
+        }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+        // CHUNCK
+        if chunckSize != 0 && metadata.size > chunckSize {
+            metadata.chunk = true
+        }
+
+        NCNetworking.shared.upload(metadata: metadata) {
+
+        } completion: { errorCode, errorDescription in
+            if errorCode == 0 {
+                self.counterUpload += 1
+                self.uploadDispatchGroup?.leave()
+            } else {
+
+                IHProgressHUD.dismiss()
+
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                NCManageDatabase.shared.deleteChunks(account: self.activeAccount.account, ocId: metadata.ocId)
+
+                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
+                    // what does this do?
+//                    self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+                    self.uploadDispatchGroup?.leave()
+                }))
+                self.present(alertController, animated: true)
             }
+        }
+    }
+
+    func finishedUploading() {
+        IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
         }
     }
 
     func rename(fileName: String, fileNameNew: String) {
+        guard let fileIx = self.filesName.firstIndex(where: { $0 == fileName }),
+              !self.filesName.contains(fileNameNew),
+              NCUtilityFileSystem.shared.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: (NSTemporaryDirectory() + fileNameNew))
+        else { return }
 
-        if let row = self.filesName.firstIndex(where: {$0 == fileName}) {
-
-            if NCUtilityFileSystem.shared.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: (NSTemporaryDirectory() + fileNameNew)) {
-                filesName[row] = fileNameNew
-                tableView.reloadData()
-            }
-        }
+        filesName[fileIx] = fileNameNew
+        tableView.reloadData()
     }
-
+    
     func accountRequestChangeAccount(account: String) {
         setAccount(account: account)
     }
@@ -996,4 +1020,11 @@ class NCShareExtensionButtonWithIndexPath: UIButton {
     var indexPath: IndexPath?
     var fileName: String?
     var image: UIImage?
+}
+
+extension NCShareExtension: NCCreateFormUploadConflictDelegate {
+    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
+        metadatas?.forEach { self.upload($0) }
+        uploadDispatchGroup?.leave()
+    }
 }
