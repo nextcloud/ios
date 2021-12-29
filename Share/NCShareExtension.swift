@@ -147,46 +147,25 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        guard serverUrl.isEmpty else { return }
 
-        if serverUrl == "" {
-
-            if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-
-                setAccount(account: activeAccount.account)
-                getFilesExtensionContext { filesName in
-
-                    self.filesName = filesName
-                    DispatchQueue.main.async {
-
-                        var saveHtml: [String] = []
-                        var saveOther: [String] = []
-
-                        for fileName in self.filesName {
-                            if (fileName as NSString).pathExtension.lowercased() == "html" {
-                                saveHtml.append(fileName)
-                            } else {
-                                saveOther.append(fileName)
-                            }
-                        }
-
-                        if saveOther.count > 0 && saveHtml.count > 0 {
-                            for file in saveHtml {
-                                self.filesName = self.filesName.filter {$0 != file}
-                            }
-                        }
-
-                        self.setCommandView()
-                    }
-                }
-
-            } else {
-                showAlert(description: "_no_active_account_") {
-                    self.extensionContext?.cancelRequest(withError: NCShareExtensionError.noAccount)
-                }
+        guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else {
+            return showAlert(description: "_no_active_account_") {
+                self.extensionContext?.cancelRequest(withError: NCShareExtensionError.noAccount)
             }
         }
+
+        setAccount(account: activeAccount.account)
+        guard let inputItems = extensionContext?.inputItems as? [NSExtensionItem] else {
+            self.extensionContext?.cancelRequest(withError: NCShareExtensionError.noFiles)
+            return
+        }
+        NCFilesExtensionHandler(items: inputItems) { fileNames in
+            self.filesName = fileNames
+            DispatchQueue.main.async { self.setCommandView() }
+        }
     }
-    
+
     func showAlert(title: String = "_error_", description: String, onDismiss: (() -> Void)? = nil) {
         let alertController = UIAlertController(title: NSLocalizedString(title, comment: ""), message: NSLocalizedString(description, comment: ""), preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
@@ -500,7 +479,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
 
         } completion: { errorCode, _ in
             defer { self.uploadDispatchGroup?.leave() }
-            if errorCode != 0 {
+            if errorCode == 0 {
                 self.counterUpload += 1
             } else {
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))

@@ -9,7 +9,7 @@
 import UIKit
 import NCCommunication
 
-protocol NCShareCellDelegate {
+protocol NCShareCellDelegate: AnyObject {
     func removeFile(named fileName: String)
 }
 
@@ -18,7 +18,7 @@ class NCShareCell: UITableViewCell {
     @IBOutlet weak var fileNameCell: UILabel!
     @IBOutlet weak var moreButton: UIButton!
     @IBOutlet weak var sizeCell: UILabel!
-    var delegate: NCShareCellDelegate?
+    weak var delegate: NCShareCellDelegate?
     var fileName = ""
 
     func setup(fileName: String) {
@@ -32,7 +32,7 @@ class NCShareCell: UITableViewCell {
         if let image = UIImage(contentsOfFile: (NSTemporaryDirectory() + fileName)) {
             imageCell?.image = image.resizeImage(size: CGSize(width: 80, height: 80), isAspectRation: true)
         } else {
-            if resultInternalType.iconName.count > 0 {
+            if !resultInternalType.iconName.isEmpty {
                 imageCell?.image = UIImage(named: resultInternalType.iconName)
             } else {
                 imageCell?.image = NCBrandColor.cacheImages.file
@@ -43,7 +43,7 @@ class NCShareCell: UITableViewCell {
 
         let fileSize = NCUtilityFileSystem.shared.getFileSize(filePath: (NSTemporaryDirectory() + fileName))
         sizeCell?.text = CCUtility.transformedSize(fileSize)
-        
+
         moreButton?.setImage(NCUtility.shared.loadImage(named: "deleteScan").image(color: NCBrandColor.shared.label, size: 15), for: .normal)
     }
 
