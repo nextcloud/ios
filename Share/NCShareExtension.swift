@@ -27,6 +27,10 @@ import UIKit
 import NCCommunication
 import IHProgressHUD
 
+enum NCShareExtensionError: Error {
+    case cancel, fileUpload, noAccount, noFiles
+}
+
 class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDelegate, NCAccountRequestDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
@@ -177,7 +181,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
 
             } else {
                 showAlert(description: "_no_active_account_") {
-                    self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+                    self.extensionContext?.cancelRequest(withError: NCShareExtensionError.noAccount)
                 }
             }
         }
@@ -223,7 +227,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     func setAccount(account: String) {
 
         guard let activeAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
-            extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
+            extensionContext?.cancelRequest(withError: NCShareExtensionError.noAccount)
             return
         }
         self.activeAccount = activeAccount
@@ -254,7 +258,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         backButton.setImage(UIImage(named: "back"), for: .normal)
         backButton.tintColor = .systemBlue
         backButton.semanticContentAttribute = .forceLeftToRight
-        backButton.setTitle(" "+NSLocalizedString("_back_", comment: ""), for: .normal)
+        backButton.setTitle(" " + NSLocalizedString("_back_", comment: ""), for: .normal)
         backButton.setTitleColor(.systemBlue, for: .normal)
         backButton.action(for: .touchUpInside) { _ in
 
@@ -351,7 +355,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         var counter: CGFloat = 0
 
         if filesName.count == 0 {
-            self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+            self.extensionContext?.cancelRequest(withError: NCShareExtensionError.noFiles)
             return
         } else {
             if filesName.count < 3 {
@@ -391,7 +395,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     // MARK: ACTION
 
     @IBAction func actionCancel(_ sender: UIBarButtonItem) {
-        extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
+        extensionContext?.cancelRequest(withError: NCShareExtensionError.cancel)
     }
 
     @objc func actionCreateFolder() {
@@ -491,7 +495,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         if !uploadErrors.isEmpty {
             let fileList = "- " + uploadErrors.map({ $0.fileName }).joined(separator: "\n  - ")
             showAlert(title: "_error_files_upload_", description: fileList) {
-                self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+                self.extensionContext?.cancelRequest(withError: NCShareExtensionError.fileUpload)
             }
         } else {
             IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
@@ -685,7 +689,7 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate {
         }
         self.filesName.remove(at: index)
         if self.filesName.count == 0 {
-            self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+            self.extensionContext?.cancelRequest(withError: NCShareExtensionError.noFiles)
         } else {
             self.setCommandView()
         }
