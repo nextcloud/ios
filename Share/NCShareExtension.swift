@@ -173,14 +173,19 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                 }
 
             } else {
-
-                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_no_active_account_", comment: ""), preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
+                showAlert(description: "_no_active_account_") {
                     self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
-                }))
-                self.present(alertController, animated: true)
+                }
             }
         }
+    }
+    
+    func showAlert(title: String = "_error_", description: String, onDismiss: (() -> Void)? = nil) {
+        let alertController = UIAlertController(title: NSLocalizedString(title, comment: ""), message: NSLocalizedString(description, comment: ""), preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
+            onDismiss?()
+        }))
+        self.present(alertController, animated: true)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -394,15 +399,13 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             textField.autocapitalizationType = UITextAutocapitalizationType.words
         }
 
-        let actionSave = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default) { (_: UIAlertAction) in
+        let actionSave = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default) { _ in
             if let fileName = alertController.textFields?.first?.text {
                 self.createFolder(with: fileName)
             }
         }
 
-        let actionCancel = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in
-            print("You've pressed cancel button")
-        }
+        let actionCancel = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel)
 
         alertController.addAction(actionSave)
         alertController.addAction(actionCancel)
@@ -465,7 +468,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         NCNetworking.shared.upload(metadata: metadata) {
 
         } completion: { errorCode, errorDescription in
-            if errorCode == 0 {
+            if errorCode != 0 {
                 self.counterUpload += 1
                 self.uploadDispatchGroup?.leave()
             } else {
@@ -475,13 +478,9 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.shared.deleteChunks(account: self.activeAccount.account, ocId: metadata.ocId)
 
-                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-                    // what does this do?
-//                    self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+                self.showAlert(description: errorDescription) {
                     self.uploadDispatchGroup?.leave()
-                }))
-                self.present(alertController, animated: true)
+                }
             }
         }
     }
@@ -503,22 +502,18 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
 extension NCShareExtension: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath),
+              let serverUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else {
+                  return showAlert(description: "_invalid_url_")
+              }
 
-        if let metadata = dataSource.cellForItemAt(indexPath: indexPath) {
-            if let serverUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) {
-
-                if metadata.e2eEncrypted && !CCUtility.isEnd(toEndEnabled: activeAccount.account) {
-                    let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: NSLocalizedString("_e2e_goto_settings_for_enable_", comment: ""), preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                    self.present(alertController, animated: true)
-                    return
-                }
-
-                self.serverUrl = serverUrl
-                reloadDatasource(withLoadFolder: true)
-                setNavigationBar(navigationTitle: metadata.fileNameView)
-            }
+        if metadata.e2eEncrypted && !CCUtility.isEnd(toEndEnabled: activeAccount.account) {
+            showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
         }
+
+        self.serverUrl = serverUrl
+        reloadDatasource(withLoadFolder: true)
+        setNavigationBar(navigationTitle: metadata.fileNameView)
     }
 }
 
@@ -676,8 +671,9 @@ extension NCShareExtension: UITableViewDataSource {
 
 extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate {
     func removeFile(named fileName: String) {
-        print(#line, self.filesName.firstIndex(of: fileName), fileName)
-        guard let index = self.filesName.firstIndex(of: fileName) else { return }
+        guard let index = self.filesName.firstIndex(of: fileName) else {
+            return showAlert(title: "_file_not_found_", description: fileName)
+        }
         self.filesName.remove(at: index)
         if self.filesName.count == 0 {
             self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
@@ -689,8 +685,9 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate {
     func rename(fileName: String, fileNameNew: String) {
         guard let fileIx = self.filesName.firstIndex(of: fileName),
               !self.filesName.contains(fileNameNew),
-              NCUtilityFileSystem.shared.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: (NSTemporaryDirectory() + fileNameNew))
-        else { return }
+              NCUtilityFileSystem.shared.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: (NSTemporaryDirectory() + fileNameNew)) else {
+                  return showAlert(title: "_single_file_conflict_title_", description: "'\(fileName)' -> '\(fileNameNew)'")
+              }
 
         filesName[fileIx] = fileNameNew
         tableView.reloadData()
@@ -729,10 +726,7 @@ extension NCShareExtension {
                     self.setNavigationBar(navigationTitle: fileName)
 
                 } else {
-
-                    let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                    self.present(alertController, animated: true)
+                    self.showAlert(description: errorDescription)
                 }
             }
         }
@@ -747,9 +741,7 @@ extension NCShareExtension {
 
             DispatchQueue.main.async {
                 if errorCode != 0 {
-                    let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                    self.present(alertController, animated: true)
+                    self.showAlert(description: errorDescription)
                 }
                 self.networkInProgress = false
                 self.metadataFolder = metadataFolder
