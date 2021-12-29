@@ -42,6 +42,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     @IBOutlet weak var createFolderLabel: UILabel!
 
     @IBOutlet weak var uploadView: UIView!
+    //is this still needed?
     @IBOutlet weak var uploadImage: UIImageView!
     @IBOutlet weak var uploadLabel: UILabel!
 
@@ -71,6 +72,8 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     private var numberFilesName: Int = 0
     private var counterUpload: Int = 0
     private var uploadDispatchGroup: DispatchGroup?
+    private var uploadErrors: [tableMetadata] = []
+    private var uploadStarted = false
 
     // MARK: - View Life Cycle
 
@@ -414,7 +417,11 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     }
 
     @objc func actionUpload() {
-        guard !filesName.isEmpty else { fatalError("No files") }
+        guard !uploadStarted else { return }
+        guard !filesName.isEmpty else { return showAlert(description: "_files_no_files_") }
+
+        uploadStarted = true
+        uploadErrors = []
         uploadDispatchGroup = DispatchGroup()
         uploadDispatchGroup?.enter()
         uploadDispatchGroup?.notify(queue: .main, execute: finishedUploading)
@@ -468,27 +475,29 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         NCNetworking.shared.upload(metadata: metadata) {
 
         } completion: { errorCode, errorDescription in
+            defer { self.uploadDispatchGroup?.leave() }
             if errorCode != 0 {
                 self.counterUpload += 1
-                self.uploadDispatchGroup?.leave()
             } else {
-
-                IHProgressHUD.dismiss()
-
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.shared.deleteChunks(account: self.activeAccount.account, ocId: metadata.ocId)
-
-                self.showAlert(description: errorDescription) {
-                    self.uploadDispatchGroup?.leave()
-                }
+                self.uploadErrors.append(metadata)
             }
         }
     }
 
     func finishedUploading() {
-        IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+        uploadStarted = false
+        if !uploadErrors.isEmpty {
+            let fileList = "- " + uploadErrors.map({ $0.fileName }).joined(separator: "\n  - ")
+            showAlert(title: "_error_files_upload_", description: fileList) {
+                self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+            }
+        } else {
+            IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+            }
         }
     }
 
@@ -726,7 +735,7 @@ extension NCShareExtension {
                     self.setNavigationBar(navigationTitle: fileName)
 
                 } else {
-                    self.showAlert(description: errorDescription)
+                    self.showAlert(title: "_error_createsubfolders_upload_", description: errorDescription)
                 }
             }
         }

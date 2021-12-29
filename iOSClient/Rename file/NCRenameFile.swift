@@ -219,8 +219,9 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             }
 
             fileNameNew = (fileNameWithoutExt.text ?? "") + "." + (ext.text ?? "")
-            self.delegate?.rename(fileName: fileName, fileNameNew: fileNameNew)
-            self.dismiss(animated: true)
+            self.dismiss(animated: true) {
+                self.delegate?.rename(fileName: fileName, fileNameNew: fileNameNew)
+            }
         }
     }
 
