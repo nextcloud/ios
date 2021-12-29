@@ -4,6 +4,7 @@ opt_in_rules: # some rules are turned off by default, so you need to opt-in
   - empty_string
   - explicit_init
   - unneeded_parentheses_in_closure_argument
+  - operator_usage_whitespace
 
 empty_count:
   severity: warning
@@ -33,7 +34,6 @@ excluded:
   - File Provider Extension/FileProviderExtension.swift
   - File Provider Extension/FileProviderUtility.swift
   - Notification Service Extension/NotificationService.swift
-  - Share/NCShareExtension.swift
   - iOSClient/Activity/NCActivity.swift
   - iOSClient/Activity/NCActivityTableViewCell.swift
   - iOSClient/AppDelegate.swift

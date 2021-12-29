@@ -46,7 +46,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     @IBOutlet weak var createFolderLabel: UILabel!
 
     @IBOutlet weak var uploadView: UIView!
-    //is this still needed?
+    // is this still needed?
     @IBOutlet weak var uploadImage: UIImageView!
     @IBOutlet weak var uploadLabel: UILabel!
 
@@ -55,22 +55,22 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     var filesName: [String] = []
     // -------------------------------------------------------------
 
-    private var emptyDataSet: NCEmptyDataSet?
-    private let keyLayout = NCGlobal.shared.layoutViewShareExtension
-    private var metadataFolder: tableMetadata?
-    private var networkInProgress = false
-    private var dataSource = NCDataSource()
+    var emptyDataSet: NCEmptyDataSet?
+    let keyLayout = NCGlobal.shared.layoutViewShareExtension
+    var metadataFolder: tableMetadata?
+    var networkInProgress = false
+    var dataSource = NCDataSource()
 
-    private var layoutForView: NCGlobal.layoutForViewType?
+    var layoutForView: NCGlobal.layoutForViewType?
 
-    private var heightRowTableView: CGFloat = 50
+    var heightRowTableView: CGFloat = 50
     private var heightCommandView: CGFloat = 170
 
-    private var autoUploadFileName = ""
-    private var autoUploadDirectory = ""
+    var autoUploadFileName = ""
+    var autoUploadDirectory = ""
 
-    private let refreshControl = UIRefreshControl()
-    private var activeAccount: tableAccount!
+    let refreshControl = UIRefreshControl()
+    var activeAccount: tableAccount!
     private let chunckSize = CCUtility.getChunkSize() * 1000000
 
     private var numberFilesName: Int = 0
@@ -217,7 +217,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         if let userInfo = notification.userInfo as NSDictionary?, let progressNumber = userInfo["progress"] as? NSNumber {
 
             let progress = CGFloat(progressNumber.floatValue)
-            let status =  NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUpload) " + NSLocalizedString("_of_", comment: "") + " \(self.numberFilesName)"
+            let status = NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUpload) " + NSLocalizedString("_of_", comment: "") + " \(self.numberFilesName)"
             IHProgressHUD.show(progress: progress, status: status)
         }
     }
@@ -233,7 +233,16 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
         self.activeAccount = activeAccount
 
         // NETWORKING
-        NCCommunicationCommon.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), urlBase: activeAccount.urlBase, userAgent: CCUtility.getUserAgent(), webDav: NCUtilityFileSystem.shared.getWebDAV(account: activeAccount.account), nextcloudVersion: 0, delegate: NCNetworking.shared)
+        NCCommunicationCommon.shared.setup(
+            account: activeAccount.account,
+            user: activeAccount.user,
+            userId: activeAccount.userId,
+            password: CCUtility.getPassword(activeAccount.account),
+            urlBase: activeAccount.urlBase,
+            userAgent: CCUtility.getUserAgent(),
+            webDav: NCUtilityFileSystem.shared.getWebDAV(account: activeAccount.account),
+            nextcloudVersion: 0,
+            delegate: NCNetworking.shared)
 
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
@@ -326,11 +335,11 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                     vcAccountRequest.delegate = self
                     vcAccountRequest.dismissDidEnterBackground = true
 
-                    let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
+                    let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
                     let numberCell = accounts.count
                     let height = min(CGFloat(numberCell * Int(vcAccountRequest.heightCell) + 45), screenHeighMax)
 
-                    let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height+20)
+                    let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height + 20)
 
                     self.present(popup, animated: true)
                 }
@@ -354,7 +363,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
 
         var counter: CGFloat = 0
 
-        if filesName.count == 0 {
+        if filesName.isEmpty {
             self.extensionContext?.cancelRequest(withError: NCShareExtensionError.noFiles)
             return
         } else {
@@ -372,7 +381,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             numberFilesName = filesName.count
             uploadLabel.text = NSLocalizedString("_upload_", comment: "") + " \(numberFilesName) " + NSLocalizedString("_files_", comment: "")
             // Empty
-            emptyDataSet = NCEmptyDataSet(view: collectionView, offset: -50*counter, delegate: self)
+            emptyDataSet = NCEmptyDataSet(view: collectionView, offset: -50 * counter, delegate: self)
             self.tableView.reloadData()
         }
     }
@@ -436,7 +445,18 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
             let atPath = (NSTemporaryDirectory() + fileName)
             let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
             guard NCUtilityFileSystem.shared.copyFile(atPath: atPath, toPath: toPath) else { continue }
-            let metadata = NCManageDatabase.shared.createMetadata(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "", contentType: "", livePhoto: false)
+            let metadata = NCManageDatabase.shared.createMetadata(
+                account: activeAccount.account,
+                user: activeAccount.user,
+                userId: activeAccount.userId,
+                fileName: fileName,
+                fileNameView: fileName,
+                ocId: ocId,
+                serverUrl: serverUrl,
+                urlBase: activeAccount.urlBase,
+                url: "",
+                contentType: "",
+                livePhoto: false)
             metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
@@ -447,7 +467,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
                 upload(metadata)
             }
         }
-        
+
         if !conflicts.isEmpty {
             uploadDispatchGroup?.enter()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
@@ -478,7 +498,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
 
         NCNetworking.shared.upload(metadata: metadata) {
 
-        } completion: { errorCode, errorDescription in
+        } completion: { errorCode, _ in
             defer { self.uploadDispatchGroup?.leave() }
             if errorCode != 0 {
                 self.counterUpload += 1
@@ -510,185 +530,13 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
     }
 }
 
-// MARK: - Collection View
-
-extension NCShareExtension: UICollectionViewDelegate {
-
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath),
-              let serverUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else {
-                  return showAlert(description: "_invalid_url_")
-              }
-
-        if metadata.e2eEncrypted && !CCUtility.isEnd(toEndEnabled: activeAccount.account) {
-            showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
-        }
-
-        self.serverUrl = serverUrl
-        reloadDatasource(withLoadFolder: true)
-        setNavigationBar(navigationTitle: metadata.fileNameView)
-    }
-}
-
-extension NCShareExtension: UICollectionViewDataSource {
-
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
-    }
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberOfItems = dataSource.numberOfItems()
-        emptyDataSet?.numberOfItemsInSection(numberOfItems, section: section)
-        return numberOfItems
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
-            return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
-        }
-
-        var tableShare: tableShare?
-        var isShare = false
-        var isMounted = false
-
-        if let metadataFolder = metadataFolder {
-            isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionShared)
-            isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionMounted)
-        }
-
-        if dataSource.metadataShare[metadata.ocId] != nil {
-            tableShare = dataSource.metadataShare[metadata.ocId]
-        }
-
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
-        cell.delegate = self
-
-        cell.fileObjectId = metadata.ocId
-        cell.fileUser = metadata.ownerId
-        cell.labelTitle.text = metadata.fileNameView
-        cell.labelTitle.textColor = NCBrandColor.shared.label
-
-        cell.imageSelect.image = nil
-        cell.imageStatus.image = nil
-        cell.imageLocal.image = nil
-        cell.imageFavorite.image = nil
-        cell.imageShared.image = nil
-        cell.imageMore.image = nil
-
-        cell.imageItem.image = nil
-        cell.imageItem.backgroundColor = nil
-
-        cell.progressView.progress = 0.0
-
-        if metadata.directory {
-
-            if metadata.e2eEncrypted {
-                cell.imageItem.image = NCBrandColor.cacheImages.folderEncrypted
-            } else if isShare {
-                cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
-            } else if tableShare != nil && tableShare?.shareType != 3 {
-                cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
-            } else if tableShare != nil && tableShare?.shareType == 3 {
-                cell.imageItem.image = NCBrandColor.cacheImages.folderPublic
-            } else if metadata.mountType == "group" {
-                cell.imageItem.image = NCBrandColor.cacheImages.folderGroup
-            } else if isMounted {
-                cell.imageItem.image = NCBrandColor.cacheImages.folderExternal
-            } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
-                cell.imageItem.image = NCBrandColor.cacheImages.folderAutomaticUpload
-            } else {
-                cell.imageItem.image = NCBrandColor.cacheImages.folder
-            }
-
-            cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
-
-            let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
-            let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account, lockServerUrl))
-
-            // Local image: offline
-            if tableDirectory != nil && tableDirectory!.offline {
-                cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
-            }
-
-        }
-
-        // image Favorite
-        if metadata.favorite {
-            cell.imageFavorite.image = NCBrandColor.cacheImages.favorite
-        }
-
-        cell.imageSelect.isHidden = true
-        cell.backgroundView = nil
-        cell.hideButtonMore(true)
-        cell.hideButtonShare(true)
-        cell.selectMode(false)
-
-        // Live Photo
-        if metadata.livePhoto {
-            cell.imageStatus.image = NCBrandColor.cacheImages.livePhoto
-        }
-
-        // Remove last separator
-        if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 {
-            cell.separator.isHidden = true
-        } else {
-            cell.separator.isHidden = false
-        }
-
-        return cell
-    }
-}
-
-// MARK: - Table View
-
-extension NCShareExtension: UITableViewDelegate {
-
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return heightRowTableView
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let fileName = filesName[indexPath.row]
-
-        guard let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile else  { return }
-        
-        let resultInternalType = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
-        vcRename.delegate = self
-        vcRename.fileName = fileName
-        let img = UIImage(contentsOfFile: (NSTemporaryDirectory() + fileName)) ?? UIImage(named: resultInternalType.iconName) ?? NCBrandColor.cacheImages.file
-        vcRename.imagePreview = img
-        let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
-
-        self.present(popup, animated: true)
-    }
-}
-
-extension NCShareExtension: UITableViewDataSource {
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        filesName.count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCShareCell else { return UITableViewCell() }
-        let fileName = filesName[indexPath.row]
-        cell.setup(fileName: fileName)
-        cell.delegate = self
-        cell.moreButton?.isHidden = filesName.count < 2
-
-        return cell
-    }
-}
-
 extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate {
     func removeFile(named fileName: String) {
         guard let index = self.filesName.firstIndex(of: fileName) else {
             return showAlert(title: "_file_not_found_", description: fileName)
         }
         self.filesName.remove(at: index)
-        if self.filesName.count == 0 {
+        if self.filesName.isEmpty {
             self.extensionContext?.cancelRequest(withError: NCShareExtensionError.noFiles)
         } else {
             self.setCommandView()
@@ -704,233 +552,6 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate {
 
         filesName[fileIx] = fileNameNew
         tableView.reloadData()
-    }
-}
-
-// MARK: - NC API & Algorithm
-
-extension NCShareExtension {
-
-    @objc func reloadDatasource(withLoadFolder: Bool) {
-
-        layoutForView = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
-
-        let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", activeAccount.account, serverUrl))
-        self.dataSource = NCDataSource(metadatasSource: metadatasSource, sort: layoutForView?.sort, ascending: layoutForView?.ascending, directoryOnTop: layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
-
-        if withLoadFolder {
-            loadFolder()
-        } else {
-            self.refreshControl.endRefreshing()
-        }
-
-        collectionView.reloadData()
-    }
-
-    func createFolder(with fileName: String) {
-
-        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: activeAccount.account, urlBase: activeAccount.urlBase) { errorCode, errorDescription in
-
-            DispatchQueue.main.async {
-                if errorCode == 0 {
-
-                    self.serverUrl += "/" + fileName
-                    self.reloadDatasource(withLoadFolder: true)
-                    self.setNavigationBar(navigationTitle: fileName)
-
-                } else {
-                    self.showAlert(title: "_error_createsubfolders_upload_", description: errorDescription)
-                }
-            }
-        }
-    }
-
-    func loadFolder() {
-
-        networkInProgress = true
-        collectionView.reloadData()
-
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { _, metadataFolder, _, _, _, _, errorCode, errorDescription in
-
-            DispatchQueue.main.async {
-                if errorCode != 0 {
-                    self.showAlert(description: errorDescription)
-                }
-                self.networkInProgress = false
-                self.metadataFolder = metadataFolder
-                self.reloadDatasource(withLoadFolder: false)
-            }
-        }
-    }
-
-    func getFilesExtensionContext(completion: @escaping (_ filesName: [String]) -> Void) {
-
-        var itemsProvider: [NSItemProvider] = []
-        var filesName: [String] = []
-        var conuter = 0
-        let dateFormatter = DateFormatter()
-
-        // ----------------------------------------------------------------------------------------
-
-        // Image
-        func getItem(image: UIImage, fileNameOriginal: String?) {
-
-            var fileName: String = ""
-
-            if let pngImageData = image.pngData() {
-
-                if fileNameOriginal != nil {
-                    fileName =  fileNameOriginal!
-                } else {
-                    fileName = "\(dateFormatter.string(from: Date()))\(conuter).png"
-                }
-
-                let filenamePath = NSTemporaryDirectory() + fileName
-
-                if (try? pngImageData.write(to: URL(fileURLWithPath: filenamePath), options: [.atomic])) != nil {
-                    filesName.append(fileName)
-                }
-            }
-        }
-
-        // URL
-        func getItem(url: NSURL, fileNameOriginal: String?) {
-
-            guard let path = url.path else { return }
-
-            var fileName: String = ""
-
-            if fileNameOriginal != nil {
-                fileName =  fileNameOriginal!
-            } else {
-                if let ext = url.pathExtension {
-                    fileName = "\(dateFormatter.string(from: Date()))\(conuter)." + ext
-                }
-            }
-
-            let filenamePath = NSTemporaryDirectory() + fileName
-
-            do {
-                try FileManager.default.removeItem(atPath: filenamePath)
-            } catch { }
-
-            do {
-                try FileManager.default.copyItem(atPath: path, toPath: filenamePath)
-
-                do {
-                    let attr: NSDictionary? = try FileManager.default.attributesOfItem(atPath: filenamePath) as NSDictionary?
-
-                    if let _attr = attr {
-                        if _attr.fileSize() > 0 {
-                            filesName.append(fileName)
-                        }
-                    }
-
-                } catch { }
-            } catch { }
-        }
-
-        // Data
-        func getItem(data: Data, fileNameOriginal: String?, description: String) {
-
-            var fileName: String = ""
-
-            if data.count > 0 {
-
-                if fileNameOriginal != nil {
-                    fileName =  fileNameOriginal!
-                } else {
-                    let fullNameArr = description.components(separatedBy: "\"")
-                    let fileExtArr = fullNameArr[1].components(separatedBy: ".")
-                    let pathExtention = (fileExtArr[fileExtArr.count-1]).uppercased()
-                    fileName = "\(dateFormatter.string(from: Date()))\(conuter).\(pathExtention)"
-                }
-
-                let filenamePath = NSTemporaryDirectory() + fileName
-                FileManager.default.createFile(atPath: filenamePath, contents: data, attributes: nil)
-                filesName.append(fileName)
-            }
-        }
-
-        // String
-        func getItem(string: NSString, fileNameOriginal: String?) {
-
-            var fileName: String = ""
-
-            if string.length > 0 {
-
-                fileName = "\(dateFormatter.string(from: Date()))\(conuter).txt"
-                let filenamePath = NSTemporaryDirectory() + "\(dateFormatter.string(from: Date()))\(conuter).txt"
-                FileManager.default.createFile(atPath: filenamePath, contents: string.data(using: String.Encoding.utf8.rawValue), attributes: nil)
-                filesName.append(fileName)
-            }
-        }
-
-        // ----------------------------------------------------------------------------------------
-
-        guard let inputItems: [NSExtensionItem] = extensionContext?.inputItems as? [NSExtensionItem] else {
-            return completion(filesName)
-        }
-
-        for item: NSExtensionItem in inputItems {
-            if let attachments = item.attachments {
-                if attachments.isEmpty { continue }
-                for (_, itemProvider) in (attachments.enumerated()) {
-                    if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeItem as String) || itemProvider.hasItemConformingToTypeIdentifier("public.url") {
-                        itemsProvider.append(itemProvider)
-                    }
-                }
-            }
-        }
-
-        CCUtility.emptyTemporaryDirectory()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH-mm-ss-"
-
-        for itemProvider in itemsProvider {
-
-            var typeIdentifier = ""
-            if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeItem as String) { typeIdentifier = kUTTypeItem as String }
-            if itemProvider.hasItemConformingToTypeIdentifier("public.url") { typeIdentifier = "public.url" }
-
-            itemProvider.loadItem(forTypeIdentifier: typeIdentifier, options: nil, completionHandler: {item, error -> Void in
-
-                if error == nil {
-
-                    var fileNameOriginal: String?
-
-                    if let url = item as? NSURL {
-                        if FileManager.default.fileExists(atPath: url.path ?? "") {
-                            fileNameOriginal = url.lastPathComponent!
-                        } else if url.scheme?.lowercased().contains("http") == true {
-                            fileNameOriginal = "\(dateFormatter.string(from: Date()))\(conuter).html"
-                        } else {
-                            fileNameOriginal = "\(dateFormatter.string(from: Date()))\(conuter)"
-                        }
-                    }
-
-                    if let image = item as? UIImage {
-                       getItem(image: image, fileNameOriginal: fileNameOriginal)
-                    }
-
-                    if let url = item as? URL {
-                        getItem(url: url as NSURL, fileNameOriginal: fileNameOriginal)
-                    }
-
-                    if let data = item as? Data {
-                        getItem(data: data, fileNameOriginal: fileNameOriginal, description: itemProvider.description)
-                    }
-
-                    if let string = item as? NSString {
-                        getItem(string: string, fileNameOriginal: fileNameOriginal)
-                    }
-                }
-
-                conuter += 1
-                if conuter == itemsProvider.count {
-                    completion(filesName)
-                }
-            })
-        }
     }
 }
 
