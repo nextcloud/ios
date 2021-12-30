@@ -23,7 +23,7 @@
 
 #import <UIKit/UIKit.h>
 #import <MessageUI/MessageUI.h>
-#import <XLForm/XLForm.h>
+#import <XLForm.h>
 #import "CCUtility.h"
 
 @interface NCSettings : XLFormViewController

@@ -78,16 +78,21 @@
 {
     OPENSSL_init();
     
+    int ret;
     EVP_PKEY * pkey;
     pkey = EVP_PKEY_new();
-    
     RSA * rsa;
-    rsa = RSA_generate_key(
-                           2048, /* number of bits for the key - 2048 is a sensible value */
-                           RSA_F4, /* exponent - RSA_F4 is defined as 0x10001L */
-                           NULL, /* callback - can be NULL if we aren't displaying progress */
-                           NULL /* callback argument - not needed in this case */
-                           );
+    BIGNUM *bignum = BN_new();
+    ret = BN_set_word(bignum, RSA_F4);
+    if (ret != 1) {
+        return NO;
+    }
+
+    rsa = RSA_new();
+    ret = RSA_generate_key_ex(rsa, 2048, bignum, NULL);
+    if (ret != 1) {
+        return NO;
+    }
     
     EVP_PKEY_assign_RSA(pkey, rsa);
     
@@ -581,7 +586,6 @@
 
 - (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey privateKey:(NSString *)privateKey
 {
-    ENGINE *eng = ENGINE_get_default_RSA();
     EVP_PKEY *key = NULL;
     int status = 0;
     
@@ -616,7 +620,7 @@
             return nil;
     }
     
-    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(key, eng);
+    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(key, NULL);
     if (!ctx)
         return nil;
     
@@ -658,7 +662,6 @@
 - (NSString *)decryptAsymmetricData:(NSData *)cipherData privateKey:(NSString *)privateKey
 {
     unsigned char *pKey = (unsigned char *)[privateKey UTF8String];
-    ENGINE *eng = ENGINE_get_default_RSA();
     int status = 0;
     
     BIO *bio = BIO_new_mem_buf(pKey, -1);
@@ -669,7 +672,7 @@
     if (!key)
         return nil;
     
-    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(key, eng);
+    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(key, NULL);
     if (!ctx)
         return nil;
     

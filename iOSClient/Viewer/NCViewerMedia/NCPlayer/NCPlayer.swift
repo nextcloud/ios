@@ -92,8 +92,8 @@ class NCPlayer: NSObject {
                         let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                         let urlOut = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
                         
-                        MFFF.shared.convertVideo(url: url, urlOut: urlOut, serverUrl: self.metadata.serverUrl, fileName: self.metadata.fileNameView, contentType: self.metadata.contentType, ocId: metadata.ocId) { url, returnCode in
-                            if returnCode?.isSuccess() ?? false, let url = url {
+                        MFFF.shared.convertVideo(url: url, urlOut: urlOut, serverUrl: self.metadata.serverUrl, fileName: self.metadata.fileNameView, contentType: self.metadata.contentType, ocId: metadata.ocId) { urlVideo, urlSubtitle, returnCode in
+                            if returnCode?.isSuccess() ?? false, let url = urlVideo {
                                 self.url = url
                                 self.openAVPlayer() { status, error in
                                     if let error = error {
@@ -360,16 +360,15 @@ extension NCPlayer: MFFFDelegate {
         }
     }
     
-    func sessionStarted(url: URL, ocId: String?) {
-        
+    func sessionStarted(url: URL, ocId: String?, subtitle: Bool) {
+        self.playerToolBar?.forcedHide(true)
     }
     
-    func sessionProgress(url: URL, ocId: String?, progress: CGFloat) {
-        
+    func sessionProgress(url: URL, ocId: String?, progress: CGFloat, subtitle: Bool) {
     }
     
-    func sessionEnded(url: URL, ocId: String?, returnCode: Int?) {
-        
+    func sessionEnded(url: URL, ocId: String?, returnCode: Int?, subtitle: Bool) {
+        self.playerToolBar?.forcedHide(false)
     }
 }
 #endif

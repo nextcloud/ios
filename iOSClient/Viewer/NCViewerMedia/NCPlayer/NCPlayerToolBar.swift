@@ -51,6 +51,7 @@ class NCPlayerToolBar: UIView {
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
     private var timerAutoHide: Timer?
+    private var forcedHide: Bool = false
 
     var pictureInPictureController: AVPictureInPictureController?
     weak var viewerMediaPage: NCViewerMediaPage?
@@ -259,7 +260,8 @@ class NCPlayerToolBar: UIView {
 
         if metadata?.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata?.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
         if let metadata = self.metadata, metadata.livePhoto { return }
-
+        if forcedHide { return }
+        
         timerAutoHide?.invalidate()
         if enableTimerAutoHide {
             startTimerAutoHide()
@@ -358,6 +360,12 @@ class NCPlayerToolBar: UIView {
     func stopTimerAutoHide() {
 
         timerAutoHide?.invalidate()
+    }
+    
+    func forcedHide(_ forcedHide: Bool) {
+        
+        if forcedHide { hide() } else { show() }
+        self.forcedHide = forcedHide
     }
 
     // MARK: - Event / Gesture
