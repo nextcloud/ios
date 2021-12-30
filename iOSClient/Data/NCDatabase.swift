@@ -392,6 +392,7 @@ class tableMetadata: Object {
     @objc dynamic var urlBase = ""
     @objc dynamic var user = ""
     @objc dynamic var userId = ""
+    @objc dynamic var typeFile = ""
 
     override static func primaryKey() -> String {
         return "ocId"

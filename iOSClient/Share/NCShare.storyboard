@@ -487,7 +487,7 @@
                                                     <action selector="cancelClicked:" destination="CEB-pg-uj2" eventType="touchUpInside" id="gDq-mn-piU"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zrn-Qk-smo">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zrn-Qk-smo">
                                                 <rect key="frame" x="199" y="0.0" width="183" height="40"/>
                                                 <color key="backgroundColor" red="0.8862745098" green="0.0" blue="0.4549019608" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
@@ -546,6 +546,11 @@
             <point key="canvasLocation" x="4262" y="-168"/>
         </scene>
     </scenes>
+    <designables>
+        <designable name="KHG-xj-wfG">
+            <size key="intrinsicContentSize" width="37.333333333333336" height="18"/>
+        </designable>
+    </designables>
     <resources>
         <image name="favorite" width="315" height="315"/>
         <image name="folder" width="300" height="300"/>

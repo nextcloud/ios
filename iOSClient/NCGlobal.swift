@@ -258,7 +258,18 @@ class NCGlobal: NSObject {
     @objc let permissionMaxFolderShare: Int         = 31
     @objc let permissionDefaultFileRemoteShareNoSupportShareOption: Int     = 3
     @objc let permissionDefaultFolderRemoteShareNoSupportShareOption: Int   = 15
-        
+    
+    // Metadata : FileType
+    //
+    @objc let metadataTypeFileAudio                 = "audio"
+    @objc let metadataTypeFileCompress              = "compress"
+    @objc let metadataTypeFileDirectory             = "directory"
+    @objc let metadataTypeFileDocument              = "document"
+    @objc let metadataTypeFileImage                 = "image"
+    @objc let metadataTypeFileUnknown               = "unknow"
+    @objc let metadataTypeFileVideo                 = "video"
+    @objc let metadataTypeFileImagemeter            = "imagemeter"
+
     // Filename Mask and Type
     //
     let keyFileNameMask                             = "fileNameMask"

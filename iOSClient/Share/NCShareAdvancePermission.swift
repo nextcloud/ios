@@ -56,7 +56,7 @@ class NCShareAdvancePermission: XLFormViewController, NCSelectDelegate, NCShareN
         }
         return tableShare?.shareType ?? NCShareCommon.shared.SHARE_TYPE_USER
     }()
-    var permissionInt = 0
+    var permissionInt = NCGlobal.shared.permissionReadShare
     var rowInFirstSection = 0
     var canReshare = false
     var hideDownload = false
@@ -67,12 +67,12 @@ class NCShareAdvancePermission: XLFormViewController, NCSelectDelegate, NCShareN
     var directory: Bool = false
     var typeFile: String!
     let tableViewBottomInset: CGFloat = 80.0
-    static let displayDateFormat = "dd. MMM. YYYY"
+    static let displayDateFormat = "dd. MMM. yyyy"
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.typeFile = self.metadata?.classFile
+        self.typeFile = self.metadata?.typeFile
         
         self.metadata?.permissions = self.permissions
         if !newUser {
@@ -130,7 +130,7 @@ class NCShareAdvancePermission: XLFormViewController, NCSelectDelegate, NCShareN
 
         self.directory = self.metadata?.directory ?? false
         self.linkLabel = tableShare?.label ?? ""
-        self.permissionInt = tableShare?.permissions ?? 0
+        self.permissionInt = tableShare?.permissions ?? NCGlobal.shared.permissionReadShare
         self.hideDownload = tableShare?.hideDownload ?? false
         networking = NCShareNetworking.init(metadata: metadata!, urlBase: appDelegate.urlBase,  view: self.view, delegate: self)
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
@@ -221,8 +221,11 @@ class NCShareAdvancePermission: XLFormViewController, NCSelectDelegate, NCShareN
         }
         self.headerView.info.textColor = NCBrandColor.shared.optionItem
         self.headerView.info.text = CCUtility.transformedSize(metadata!.size) + ", " + CCUtility.dateDiff(metadata!.date as Date)
-        self.headerView.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 250)
+        self.headerView.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 190)
         self.tableView.tableHeaderView = self.headerView
+        headerView.translatesAutoresizingMaskIntoConstraints = false
+        headerView.heightAnchor.constraint(equalToConstant: 190).isActive = true
+        headerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         
         //Sharing
         section = XLFormSectionDescriptor.formSection(withTitle: "")
@@ -778,8 +781,8 @@ class NCShareAdvancePermission: XLFormViewController, NCSelectDelegate, NCShareN
     @IBAction func nextClicked(_ sender: Any) {
         let isPasswordEnabled = self.isPasswordEnabled()
         if isPasswordEnabled {
-            let password = getPasswordFromField() ?? ""
-            if  password == "" {
+            let password = (getPasswordFromField() ?? "").trimmingCharacters(in: .whitespaces)
+                if  password == ""{
                 let alert = UIAlertController(title: "", message: NSLocalizedString("_please_enter_password", comment: ""), preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .cancel, handler: nil))
                 self.present(alert, animated: true)
@@ -797,17 +800,26 @@ class NCShareAdvancePermission: XLFormViewController, NCSelectDelegate, NCShareN
                 return
             }
         }
+        let label = linkLabel.trimmingCharacters(in: .whitespacesAndNewlines)
+        let expirationDate = isExpiryEnabled ? getServerStyleDate(date: self.expirationDate as Date) : ""
         
         if newUser {
             let storyboard = UIStoryboard(name: "NCShare", bundle: nil)
             let viewNewUserComment = storyboard.instantiateViewController(withIdentifier: "NCShareNewUserAddComment") as! NCShareNewUserAddComment
+            if canReshare {
+                self.permissionInt = self.permissionInt + NCGlobal.shared.permissionShareShare
+            }
             viewNewUserComment.metadata = self.metadata
+            viewNewUserComment.permission = self.permissionInt
+            viewNewUserComment.password = self.password
+            viewNewUserComment.label = label
+            viewNewUserComment.expirationDate = nil
+            viewNewUserComment.hideDownload = self.hideDownload
+            
             viewNewUserComment.sharee = sharee
             viewNewUserComment.isUpdating = false
             self.navigationController!.pushViewController(viewNewUserComment, animated: true)
         } else {
-            let label = linkLabel.trimmingCharacters(in: .whitespacesAndNewlines)
-            let expirationDate = isExpiryEnabled ? getServerStyleDate(date: self.expirationDate as Date) : ""
             networking?.updateShare(idShare: self.tableShare!.idShare, password: password, permissions: self.permissionInt, note: nil, label: label, expirationDate: expirationDate, hideDownload: self.hideDownload)
         }
     }
@@ -862,8 +874,8 @@ class NCShareAdvancePermission: XLFormViewController, NCSelectDelegate, NCShareN
             return image
         }
         
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !metadata.hasPreview {
-            NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo && !metadata.hasPreview {
+            NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.typeFile)
         }
         
         if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
@@ -880,14 +892,14 @@ class NCShareAdvancePermission: XLFormViewController, NCSelectDelegate, NCShareN
         let ext = CCUtility.getExtension(metadata.fileNameView)
         var image: UIImage?
         
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
            
             let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             
             if ext == "GIF" {
                 if !FileManager().fileExists(atPath: previewPath) {
-                    NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+                    NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.typeFile)
                 }
                 image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
             } else if ext == "SVG" {
@@ -908,7 +920,7 @@ class NCShareAdvancePermission: XLFormViewController, NCSelectDelegate, NCShareN
                     return nil
                 }
             } else {
-                NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)//typeFile
+                NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.typeFile)
                 image = UIImage.init(contentsOfFile: imagePath)
             }
         }

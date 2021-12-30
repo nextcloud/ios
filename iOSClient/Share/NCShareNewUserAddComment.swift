@@ -30,7 +30,11 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
     private var networking: NCShareNetworking?
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var permission: Int = 0
-    var hideDownload: Bool?
+    var password: String?
+    var label: String?
+    var expirationDate: String?
+    var hideDownload = false
+    
     var creatingShare = false
     var note = ""
     var shareeEmail: String?
@@ -74,6 +78,8 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
         btnSendShare.setTitle(NSLocalizedString("_send_share_", comment: ""), for: .normal)
         btnSendShare.layer.cornerRadius = 10
         btnSendShare.layer.masksToBounds = true
+        
+        commentTextView.showsVerticalScrollIndicator = false
         setTitle()
         changeTheming()
         networking = NCShareNetworking.init(metadata: metadata!, urlBase: appDelegate.urlBase, view: self.view, delegate: self)
@@ -107,15 +113,6 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
     
     @IBAction func sendShareClicked(_ sender: Any) {
         let message = commentTextView.text.trimmingCharacters(in: .whitespaces)
-        if message.count > 0 {
-            NCCommunication.shared.putComments(fileId: metadata!.fileId, message: message) { (account, errorCode, errorDescription) in
-                if errorCode == 0 {
-                    self.commentTextView.text = ""
-                } else {
-                    NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                }
-            }
-        }
         self.note = message
         if isUpdating {
             self.networking?.updateShare(idShare: tableShare!.idShare, password: nil, permissions: self.tableShare!.permissions, note: message, label: nil, expirationDate: nil, hideDownload: tableShare!.hideDownload)
@@ -133,8 +130,8 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
             return image
         }
         
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && !metadata.hasPreview {
-            NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+        if metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo && !metadata.hasPreview {
+            NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.typeFile)
         }
         
         if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
@@ -171,14 +168,14 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
         let ext = CCUtility.getExtension(metadata.fileNameView)
         var image: UIImage?
         
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
            
             let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             
             if ext == "GIF" {
                 if !FileManager().fileExists(atPath: previewPath) {
-                    NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+                    NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.typeFile)
                 }
                 image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
             } else if ext == "SVG" {
@@ -199,7 +196,7 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
                     return nil
                 }
             } else {
-                NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+                NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.typeFile)
                 image = UIImage.init(contentsOfFile: imagePath)
             }
         }
@@ -210,22 +207,31 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
     //MARK: - NCShareNetworkingDelegate
     
     func popToShare() {
-        let controller = self.navigationController?.viewControllers[(self.navigationController?.viewControllers.count)! - 3]
-        self.navigationController?.popToViewController(controller!, animated: true)
+        self.navigationController?.popToRootViewController(animated: true)
     }
     
-    func readShareCompleted() {}
+    func readShareCompleted() {
+        popToShare()
+    }
     
-    func shareCompleted() {
+    func shareCompleted() {}
+    
+    func shareCompleted(createdShareId: Int?) {
         if self.creatingShare {
             self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata!.account)
+            if let id = createdShareId {
+                networking?.updateShare(idShare: id, password: password, permissions: permission, note: nil, label: label, expirationDate: expirationDate, hideDownload: hideDownload)
+            } else {
+                popToShare()
+            }
         }
-        popToShare()
     }
     
     func unShareCompleted() {}
     
-    func updateShareWithError(idShare: Int) {}
+    func updateShareWithError(idShare: Int) {
+        popToShare()
+    }
     
     func getSharees(sharees: [NCCommunicationSharee]?) {}
     
