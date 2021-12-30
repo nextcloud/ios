@@ -91,8 +91,9 @@ class NCPlayer: NSObject {
                         
                         let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                         let urlOut = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
+                        let tableVideo = NCManageDatabase.shared.getVideo(metadata: metadata)
                         
-                        MFFF.shared.convertVideo(url: url, urlOut: urlOut, serverUrl: self.metadata.serverUrl, fileName: self.metadata.fileNameView, contentType: self.metadata.contentType, ocId: metadata.ocId) { urlVideo, urlSubtitle, returnCode in
+                        MFFF.shared.convertVideo(url: url, urlOut: urlOut, serverUrl: self.metadata.serverUrl, fileName: self.metadata.fileNameView, contentType: self.metadata.contentType, ocId: metadata.ocId, codecNameVideo: tableVideo?.codecNameVideo, codecNameAudio: tableVideo?.codecNameAudio, codecChannelLayout: tableVideo?.codecAudioChannelLayout, languageAudio: tableVideo?.codecAudioLanguage, languageSubtitle: tableVideo?.codecSubtitleLanguage) { urlVideo, urlSubtitle, returnCode in
                             if returnCode?.isSuccess() ?? false, let url = urlVideo {
                                 self.url = url
                                 self.openAVPlayer() { status, error in
@@ -360,15 +361,22 @@ extension NCPlayer: MFFFDelegate {
         }
     }
     
-    func sessionStarted(url: URL, ocId: String?, subtitle: Bool) {
+    func sessionStarted(url: URL, ocId: String?) {
         self.playerToolBar?.forcedHide(true)
     }
     
-    func sessionProgress(url: URL, ocId: String?, progress: CGFloat, subtitle: Bool) {
+    func sessionProgress(url: URL, ocId: String?, progress: CGFloat) {
     }
     
-    func sessionEnded(url: URL, ocId: String?, returnCode: Int?, subtitle: Bool) {
+    func sessionEnded(url: URL, ocId: String?, returnCode: Int?, traces: [MFFFTrace]?) {
         self.playerToolBar?.forcedHide(false)
+        
+        if returnCode == 0, let traces = traces, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            let traceVideo = traces.filter { $0.codecType == "video" }.first
+            let traceAudio = traces.filter { $0.codecType == "audio" }.first
+            let traceSubtitle = traces.filter { $0.codecType == "subtitle" }.first
+            NCManageDatabase.shared.addVideoCodec(metadata: metadata, codecNameVideo: traceVideo?.codecName, codecNameAudio: traceAudio?.codecName, codecAudioChannelLayout: traceAudio?.codecChannelLayout, codecAudioLanguage: traceAudio?.languageAudio, codecSubtitleLanguage: traceSubtitle?.languageSubtitle)
+        }
     }
 }
 #endif

@@ -148,10 +148,11 @@ extension NCViewer {
                         
                         let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                         let urlOut = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
-                        
+                        let tableVideo = NCManageDatabase.shared.getVideo(metadata: metadata)
+
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPauseMedia)
                         
-                        MFFF.shared.convertVideo(url: url, urlOut: urlOut, serverUrl: metadata.serverUrl, fileName: metadata.fileNameView, contentType: metadata.contentType, ocId: metadata.ocId) { url, returnCode in
+                        MFFF.shared.convertVideo(url: url, urlOut: urlOut, serverUrl: metadata.serverUrl, fileName: metadata.fileNameView, contentType: metadata.contentType, ocId: metadata.ocId, codecNameVideo: tableVideo?.codecNameVideo, codecNameAudio: tableVideo?.codecNameAudio, codecChannelLayout: tableVideo?.codecAudioChannelLayout, languageAudio: tableVideo?.codecAudioLanguage, languageSubtitle: tableVideo?.codecSubtitleLanguage) { urlVideo, urlSubtitle, returnCode in
                             if returnCode?.isSuccess() ?? false {
                                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadMediaPage)
                             } else if returnCode?.isCancel() ?? false {

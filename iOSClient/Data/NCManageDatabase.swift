@@ -1721,6 +1721,47 @@ class NCManageDatabase: NSObject {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
+    
+    func addVideoCodec(metadata: tableMetadata, codecNameVideo: String?, codecNameAudio: String?, codecAudioChannelLayout: String?, codecAudioLanguage: String?, codecSubtitleLanguage: String?) {
+
+        let realm = try! Realm()
+
+        do {
+            try realm.safeWrite {
+                if let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first {
+                    if let codecNameVideo = codecNameVideo { result.codecNameVideo = codecNameVideo }
+                    if let codecNameAudio = codecNameAudio { result.codecNameAudio = codecNameAudio }
+                    if let codecAudioChannelLayout = codecAudioChannelLayout { result.codecAudioChannelLayout = codecAudioChannelLayout }
+                    if let codecAudioLanguage = codecAudioLanguage { result.codecAudioLanguage = codecAudioLanguage }
+                    if let codecSubtitleLanguage = codecSubtitleLanguage { result.codecSubtitleLanguage = codecSubtitleLanguage }
+                    realm.add(result, update: .all)
+                } else {
+                    let addObject = tableVideo()
+                    addObject.account = metadata.account
+                    addObject.ocId = metadata.ocId
+                    addObject.codecNameVideo = codecNameVideo
+                    addObject.codecNameAudio = codecNameAudio
+                    addObject.codecAudioChannelLayout = codecAudioChannelLayout
+                    addObject.codecAudioLanguage = codecAudioLanguage
+                    addObject.codecSubtitleLanguage = codecSubtitleLanguage
+                    realm.add(addObject, update: .all)
+                }
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    func getVideo(metadata: tableMetadata?) -> tableVideo? {
+        guard let metadata = metadata else { return nil }
+        
+        let realm = try! Realm()
+        guard let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first else {
+            return nil
+        }
+        
+        return tableVideo.init(value: result)
+    }
 
     func getVideoDurationTime(metadata: tableMetadata?) -> CMTime? {
         guard let metadata = metadata else { return nil }
