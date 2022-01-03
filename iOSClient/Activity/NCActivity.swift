@@ -26,7 +26,7 @@ import UIKit
 import SwiftRichString
 import NCCommunication
 
-class NCActivity: UIViewController {
+class NCActivity: UIViewController, NCSharePagingContent {
 
     @IBOutlet weak var tableView: UITableView!
 
@@ -34,6 +34,7 @@ class NCActivity: UIViewController {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelUser: UILabel!
     @IBOutlet weak var newCommentField: UITextField!
+    var textField: UITextField { newCommentField }
 
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     var height: CGFloat = 0
