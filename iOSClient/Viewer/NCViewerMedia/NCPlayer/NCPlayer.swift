@@ -29,10 +29,10 @@ import MediaPlayer
 
 class NCPlayer: NSObject {
    
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    internal var url: URL
+    internal var playerToolBar: NCPlayerToolBar?
     
-    private var url: URL
-    private var playerToolBar: NCPlayerToolBar?
     private var imageVideoContainer: imageVideoContainerView
     private var detailView: NCViewerMediaDetailView?
     private var viewController: UIViewController
@@ -69,12 +69,7 @@ class NCPlayer: NSObject {
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded) {
             self.url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
         }
-        
-        // MFFF Delegate
-        #if MFFF
-        MFFF.shared.delegate = self
-        #endif
-        
+              
         openAVPlayer() { status, error in
             
             switch status {
@@ -85,43 +80,12 @@ class NCPlayer: NSObject {
                 break
             case .failed:
                 #if MFFF
-                if error?.code == AVError.Code.fileFormatNotRecognized.rawValue {
-                    let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_video_format_not_recognized_", comment: ""), preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
-                        
-                        let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                        let urlOut = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
-                        let tableVideo = NCManageDatabase.shared.getVideo(metadata: metadata)
-                        
-                        MFFF.shared.convertVideo(url: url, urlOut: urlOut, serverUrl: self.metadata.serverUrl, fileName: self.metadata.fileNameView, contentType: self.metadata.contentType, ocId: metadata.ocId, codecNameVideo: tableVideo?.codecNameVideo, codecNameAudio: tableVideo?.codecNameAudio, codecChannelLayout: tableVideo?.codecAudioChannelLayout, languageAudio: tableVideo?.codecAudioLanguage, languageSubtitle: tableVideo?.codecSubtitleLanguage) { urlVideo, urlSubtitle, returnCode in
-                            if returnCode?.isSuccess() ?? false, let url = urlVideo {
-                                self.url = url
-                                self.openAVPlayer() { status, error in
-                                    if let error = error {
-                                        NCContentPresenter.shared.messageNotification(error.localizedDescription, description: error.localizedFailureReason, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
-                                    }
-                                }
-                            } else if returnCode?.isCancel() ?? false {
-                                print("cancel")
-                            } else {
-                                NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
-                            }
-                        }
-                    }))
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in
-                        NCContentPresenter.shared.messageNotification("_info_", description: "_video_conversion_available_after_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorNoError, priority: .max)
-                    }))
-                    self.appDelegate.window?.rootViewController?.present(alertController, animated: true)
-                } else if let title = error?.localizedDescription, let description = error?.localizedFailureReason {
-                    NCContentPresenter.shared.messageNotification(title, description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
-                } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
-                }
+                self.convertVideo(error: error)
                 #else
                 if let title = error?.localizedDescription, let description = error?.localizedFailureReason {
-                    NCContentPresenter.shared.messageNotification(title, description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
+                    self.playerToolBar?.showMessage(title, description: description, hiddenAfterSeconds: NCGlobal.shared.dismissAfterSecond)
                 } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
+                    self.playerToolBar?.showMessage("_error_", description: "_error_something_wrong_", hiddenAfterSeconds: NCGlobal.shared.dismissAfterSecond)
                 }
                 #endif
                 break
@@ -137,6 +101,7 @@ class NCPlayer: NSObject {
         
         print("Play URL: \(self.url)")
         player = AVPlayer(url: self.url)
+        playerToolBar?.setMetadata(self.metadata)
         
         if metadata.livePhoto {
             player?.isMuted = false
@@ -173,7 +138,7 @@ class NCPlayer: NSObject {
                         self.imageVideoContainer.image = self.imageVideoContainer.image?.image(alpha: 0)
                     }
                     
-                    self.playerToolBar?.setBarPlayer(ncplayer: self, metadata: self.metadata)
+                    self.playerToolBar?.setBarPlayer(ncplayer: self)
                     self.generatorImagePreview()
                     if !(self.detailView?.isShow() ?? false) {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":self.metadata.ocId, "enableTimerAutoHide": false])
@@ -267,7 +232,7 @@ class NCPlayer: NSObject {
 
         playerToolBar?.updateToolBar()
     }
-
+    
     // MARK: -
 
     func isPlay() -> Bool {
@@ -350,34 +315,4 @@ class NCPlayer: NSObject {
         }
     }
 }
-
-#if MFFF
-extension NCPlayer: MFFFDelegate {
-    
-    func downloadedFile(url: URL, ocId: String?) {
-        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            NCManageDatabase.shared.addLocalFile(metadata: metadata)
-            CCUtility.setExif(metadata) { _, _, _, _, _ in }
-        }
-    }
-    
-    func sessionStarted(url: URL, ocId: String?) {
-        self.playerToolBar?.forcedHide(true)
-    }
-    
-    func sessionProgress(url: URL, ocId: String?, progress: CGFloat) {
-    }
-    
-    func sessionEnded(url: URL, ocId: String?, returnCode: Int?, traces: [MFFFTrace]?) {
-        self.playerToolBar?.forcedHide(false)
-        
-        if returnCode == 0, let traces = traces, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            let traceVideo = traces.filter { $0.codecType == "video" }.first
-            let traceAudio = traces.filter { $0.codecType == "audio" }.first
-            let traceSubtitle = traces.filter { $0.codecType == "subtitle" }.first
-            NCManageDatabase.shared.addVideoCodec(metadata: metadata, codecNameVideo: traceVideo?.codecName, codecNameAudio: traceAudio?.codecName, codecAudioChannelLayout: traceAudio?.codecChannelLayout, codecAudioLanguage: traceAudio?.languageAudio, codecSubtitleLanguage: traceSubtitle?.languageSubtitle)
-        }
-    }
-}
-#endif
 

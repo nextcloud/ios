@@ -1722,7 +1722,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func addVideoCodec(metadata: tableMetadata, codecNameVideo: String?, codecNameAudio: String?, codecAudioChannelLayout: String?, codecAudioLanguage: String?, codecSubtitleLanguage: String?) {
+    func addVideoCodec(metadata: tableMetadata, codecNameVideo: String?, codecNameAudio: String?, codecAudioChannelLayout: String?, codecAudioLanguage: String?, codecSubtitleLanguage: String?, codecMaxCompatibility: Bool, codecQuality: String?) {
 
         let realm = try! Realm()
 
@@ -1734,6 +1734,8 @@ class NCManageDatabase: NSObject {
                     if let codecAudioChannelLayout = codecAudioChannelLayout { result.codecAudioChannelLayout = codecAudioChannelLayout }
                     if let codecAudioLanguage = codecAudioLanguage { result.codecAudioLanguage = codecAudioLanguage }
                     if let codecSubtitleLanguage = codecSubtitleLanguage { result.codecSubtitleLanguage = codecSubtitleLanguage }
+                    result.codecMaxCompatibility = codecMaxCompatibility
+                    if let codecQuality = codecQuality { result.codecQuality = codecQuality }
                     realm.add(result, update: .all)
                 } else {
                     let addObject = tableVideo()
@@ -1744,6 +1746,8 @@ class NCManageDatabase: NSObject {
                     addObject.codecAudioChannelLayout = codecAudioChannelLayout
                     addObject.codecAudioLanguage = codecAudioLanguage
                     addObject.codecSubtitleLanguage = codecSubtitleLanguage
+                    addObject.codecMaxCompatibility = codecMaxCompatibility
+                    addObject.codecQuality = codecQuality
                     realm.add(addObject, update: .all)
                 }
             }

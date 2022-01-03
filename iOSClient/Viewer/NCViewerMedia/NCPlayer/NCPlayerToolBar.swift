@@ -31,6 +31,7 @@ import MediaPlayer
 class NCPlayerToolBar: UIView {
 
     @IBOutlet weak var playerTopToolBarView: UIView!
+    @IBOutlet weak var playerMessage: UIView!
     @IBOutlet weak var pipButton: UIButton!
     @IBOutlet weak var muteButton: UIButton!
     @IBOutlet weak var playButton: UIButton!
@@ -39,6 +40,13 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var playbackSlider: UISlider!
     @IBOutlet weak var labelLeftTime: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
+
+    @IBOutlet weak var playerMessageHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var playerMessageProgressView: UIProgressView!
+    @IBOutlet weak var playerMessageTitle: UILabel!
+    @IBOutlet weak var playerMessageComment: UILabel!
+    @IBOutlet weak var playerMessageButton: UIButton!
+    @IBOutlet weak var playerMessageCommentBottomConstraint: NSLayoutConstraint!
 
     enum sliderEventType {
         case began
@@ -51,7 +59,7 @@ class NCPlayerToolBar: UIView {
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
     private var timerAutoHide: Timer?
-    private var forcedHide: Bool = false
+    private var timerAutoHideMessage: Timer?
 
     var pictureInPictureController: AVPictureInPictureController?
     weak var viewerMediaPage: NCViewerMediaPage?
@@ -83,6 +91,10 @@ class NCPlayerToolBar: UIView {
         blurEffectTopToolBarView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         playerTopToolBarView.insertSubview(blurEffectTopToolBarView, at: 0)
 
+        playerMessage.layer.cornerRadius = 10
+        playerMessage.layer.masksToBounds = true
+        playerMessage.isHidden = true
+        
         pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .lightGray), for: .normal)
         pipButton.isEnabled = false
 
@@ -122,11 +134,15 @@ class NCPlayerToolBar: UIView {
     }
 
     // MARK: -
-
-    func setBarPlayer(ncplayer: NCPlayer, metadata: tableMetadata) {
+    
+    func setMetadata(_ metadata: tableMetadata) {
+        
+        self.metadata = metadata
+    }
+    
+    func setBarPlayer(ncplayer: NCPlayer) {
 
         self.ncplayer = ncplayer
-        self.metadata = metadata
 
         playbackSlider.value = 0
         playbackSlider.minimumValue = 0
@@ -258,17 +274,24 @@ class NCPlayerToolBar: UIView {
 
     public func show(enableTimerAutoHide: Bool = false) {
 
-        if metadata?.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata?.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
-        if let metadata = self.metadata, metadata.livePhoto { return }
-        if forcedHide { return }
+        guard let metadata = self.metadata else { return }
+        if ncplayer == nil { return }
+        if metadata.livePhoto { return }
+        if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
+
+        #if MFFF
+        if MFFF.shared.existsMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))) {
+            self.hide()
+            return
+        }
+        #endif
         
         timerAutoHide?.invalidate()
         if enableTimerAutoHide {
             startTimerAutoHide()
         }
-
         if !self.isHidden { return }
-
+        
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 1
             self.playerTopToolBarView.alpha = 1
@@ -362,12 +385,68 @@ class NCPlayerToolBar: UIView {
         timerAutoHide?.invalidate()
     }
     
-    func forcedHide(_ forcedHide: Bool) {
+    // MARK: - Message
+    
+    func showMessage(_ title: String, description: String?, backgroundColor: UIColor = NCBrandColor.shared.brand, isHiddenPregress: Bool = true, hiddenAfterSeconds: Double = 0) {
         
-        if forcedHide { hide() } else { show() }
-        self.forcedHide = forcedHide
-    }
+        self.playerMessage.backgroundColor = backgroundColor
 
+        self.playerMessageTitle.text = NSLocalizedString(title, comment: "")
+        self.playerMessageTitle.textColor = NCBrandColor.shared.brandText
+        
+        self.playerMessageButton.isHidden = isHiddenPregress
+        self.playerMessageButton.setBackgroundImage(UIImage(named: "stop")!.image(color: .black, size: 30), for: .normal)
+        
+        if let description = description {
+            self.playerMessageComment.text = NSLocalizedString(description, comment: "")      
+        }
+        self.playerMessageComment.textColor = NCBrandColor.shared.brandText
+        
+        self.playerMessageProgressView.progress = 0
+        self.playerMessageProgressView.tintColor = .black
+        self.playerMessageProgressView.isHidden = isHiddenPregress
+        
+        playerMessageCommentBottomConstraint.constant = 30
+        playerMessageHeightConstraint.constant = 120
+        if isHiddenPregress {
+            playerMessageCommentBottomConstraint.constant = 5
+            playerMessageHeightConstraint.constant = 90
+        }
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            self.playerMessage.alpha = 1
+        }, completion: { (_: Bool) in
+            self.playerMessage.isHidden = false
+        })
+        
+        timerAutoHideMessage?.invalidate()
+        if hiddenAfterSeconds > 0 {
+            timerAutoHideMessage = Timer.scheduledTimer(timeInterval: hiddenAfterSeconds, target: self, selector: #selector(hideMessage), userInfo: nil, repeats: false)
+        }
+    }
+    
+    @objc func hideMessage() {
+        
+        self.playerMessageProgressView.progress = 0
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            self.playerMessage.alpha = 0
+        }, completion: { (_: Bool) in
+            self.playerMessage.isHidden = true
+        })
+    }
+    
+    func showMessageProgress(_ progress: Float) {
+        
+        self.playerMessageProgressView.progress = progress
+    }
+    
+    func isHiddenMessage() -> Bool {
+        
+        timerAutoHideMessage?.invalidate()
+        return self.playerMessage.isHidden
+    }
+    
     // MARK: - Event / Gesture
 
     @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
@@ -494,6 +573,15 @@ class NCPlayerToolBar: UIView {
             backward()
         }
         */
+    }
+    
+    @IBAction func playerMessageButtonTouchInside(_ sender: UIButton) {
+       
+        #if MFFF
+        if let metadata = metadata {
+            MFFF.shared.stopMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
+        }
+        #endif
     }
 
     func forward() {

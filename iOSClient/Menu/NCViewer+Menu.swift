@@ -145,21 +145,8 @@ extension NCViewer {
                     title: NSLocalizedString("_video_conversion_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "film"),
                     action: { menuAction in
-                        
-                        let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                        let urlOut = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
-                        let tableVideo = NCManageDatabase.shared.getVideo(metadata: metadata)
-
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPauseMedia)
-                        
-                        MFFF.shared.convertVideo(url: url, urlOut: urlOut, serverUrl: metadata.serverUrl, fileName: metadata.fileNameView, contentType: metadata.contentType, ocId: metadata.ocId, codecNameVideo: tableVideo?.codecNameVideo, codecNameAudio: tableVideo?.codecNameAudio, codecChannelLayout: tableVideo?.codecAudioChannelLayout, languageAudio: tableVideo?.codecAudioLanguage, languageSubtitle: tableVideo?.codecSubtitleLanguage) { urlVideo, urlSubtitle, returnCode in
-                            if returnCode?.isSuccess() ?? false {
-                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadMediaPage)
-                            } else if returnCode?.isCancel() ?? false {
-                                print("cancel")
-                            } else {
-                                NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
-                            }
+                        if let ncplayer = (viewController as? NCViewerMediaPage)?.currentViewController.ncplayer {
+                            ncplayer.convertVideo()
                         }
                     }
                 )
