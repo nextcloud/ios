@@ -49,7 +49,7 @@ extension String {
         //https://stackoverflow.com/a/32166735/9506784
 
         let length = Int(CC_MD5_DIGEST_LENGTH)
-        let messageData = self.data(using: .utf8)!
+        let messageData = self.data(using: .utf8) ?? Data()
         var digestData = Data(count: length)
 
         _ = digestData.withUnsafeMutableBytes { digestBytes -> UInt8 in
