@@ -31,7 +31,7 @@ class NCShareLinkCell: UITableViewCell {
     @IBOutlet private weak var menuButton: UIButton!
     @IBOutlet private weak var copyButton: UIButton!
     var tableShare: tableShare?
-    var delegate: NCShareLinkCellDelegate?
+    weak var delegate: NCShareLinkCellDelegate?
     var isInternalLink = false
 
     override func prepareForReuse() {
@@ -67,14 +67,14 @@ class NCShareLinkCell: UITableViewCell {
             imageName = "sharebylink"
             imageBGColor = NCBrandColor.shared.brandElement
 
-            menuButton.setImage(UIImage.init(named: menuImageName)!.image(color: .gray, size: 50), for: .normal)
+            menuButton.setImage(UIImage(named: menuImageName)?.image(color: .gray, size: 50), for: .normal)
         }
 
         labelTitle.textColor = NCBrandColor.shared.label
         imageItem.image = NCShareCommon.shared.createLinkAvatar(imageName: imageName, colorCircle: imageBGColor)
-        copyButton.setImage(UIImage.init(named: "shareCopy")!.image(color: .gray, size: 50), for: .normal)
+        copyButton.setImage(UIImage(named: "shareCopy")?.image(color: .gray, size: 50), for: .normal)
     }
-    
+
     @IBAction func touchUpCopy(_ sender: Any) {
         delegate?.tapCopy(with: tableShare, sender: sender)
     }
