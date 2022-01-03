@@ -28,7 +28,7 @@ import DropDown
 import NCCommunication
 import MarqueeLabel
 
-class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingDelegate {
+class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingDelegate, NCSharePagingContent {
 
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var sharedWithYouByView: UIView!
@@ -38,6 +38,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
     @IBOutlet weak var sharedWithYouByNote: MarqueeLabel!
     @IBOutlet weak var searchFieldTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var searchField: UITextField!
+    var textField: UITextField { searchField }
+
     @IBOutlet weak var tableView: UITableView!
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -170,9 +172,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
     // MARK: - IBAction
 
     @IBAction func searchFieldDidEndOnExit(textField: UITextField) {
-
-        guard let searchString = textField.text else { return }
-
+        guard let searchString = textField.text, !searchString.isEmpty else { return }
         networking?.getSharees(searchString: searchString)
     }
 

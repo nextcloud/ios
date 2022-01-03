@@ -27,6 +27,10 @@ import Parchment
 import NCCommunication
 import MarqueeLabel
 
+protocol NCSharePagingContent {
+    var textField: UITextField { get }
+}
+
 class NCSharePaging: UIViewController {
 
     private let pagingViewController = NCShareHeaderViewController()
@@ -35,6 +39,7 @@ class NCSharePaging: UIViewController {
     private var activityEnabled = true
     private var commentsEnabled = true
     private var sharingEnabled = true
+    private var currentVC: NCSharePagingContent?
 
     @objc var metadata = tableMetadata()
     var indexPage = NCGlobal.NCSharePagingIndex.activity
@@ -47,6 +52,8 @@ class NCSharePaging: UIViewController {
         view.backgroundColor = NCBrandColor.shared.systemBackground
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done, target: self, action: #selector(exitTapped))
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
 
         // Verify Comments & Sharing enabled
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
@@ -114,6 +121,11 @@ class NCSharePaging: UIViewController {
         changeTheming()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        currentVC = pagingViewController.pageViewController.selectedViewController as? NCSharePagingContent
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -133,26 +145,48 @@ class NCSharePaging: UIViewController {
     }
 
     deinit {
-       NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
-    }
-
-    @objc func exitTapped() {
-        self.dismiss(animated: true, completion: nil)
+        NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
     //MARK: - NotificationCenter
 
     @objc func orientationDidChange() {
-        print(#function, self.view.bounds.width, view.frame.width)
         pagingViewController.menuItemSize = .fixed(
             width: self.view.bounds.width / CGFloat(NCGlobal.NCSharePagingIndex.allCases.count),
             height: 40)
+        currentVC?.textField.resignFirstResponder()
     }
 
     @objc func changeTheming() {
         pagingViewController.indicatorColor = NCBrandColor.shared.brandElement
         (pagingViewController.view as! NCSharePagingView).setupConstraints()
         pagingViewController.reloadMenu()
+    }
+
+    // MARK: - Keyboard & TextField
+    @objc func keyboardWillShow(notification: Notification) {
+         let frameEndUserInfoKey = UIResponder.keyboardFrameEndUserInfoKey
+
+         guard let info = notification.userInfo,
+               let textField = currentVC?.textField,
+               let centerObject = textField.superview?.convert(textField.center, to: nil),
+               let keyboardFrame = info[frameEndUserInfoKey] as? CGRect
+         else { return }
+
+        let diff = keyboardFrame.origin.y - centerObject.y - textField.frame.height
+         if diff < 0 {
+             view.frame.origin.y = diff
+         }
+     }
+
+     @objc func keyboardWillHide(notification: NSNotification) {
+         view.frame.origin.y = 0
+     }
+
+    @objc func exitTapped() {
+        self.dismiss(animated: true, completion: nil)
     }
 }
 
@@ -174,6 +208,9 @@ extension NCSharePaging: PagingViewControllerDelegate {
         } else {
             self.title = item.title
         }
+
+        currentVC?.textField.resignFirstResponder()
+        self.currentVC = destinationViewController as? NCSharePagingContent
     }
 }
 
@@ -182,7 +219,7 @@ extension NCSharePaging: PagingViewControllerDelegate {
 extension NCSharePaging: PagingViewControllerDataSource {
 
     func pagingViewController(_: PagingViewController, viewControllerAt index: Int) -> UIViewController {
-    
+
         let height = pagingViewController.options.menuHeight + NCSharePagingView.headerHeight
 
         switch NCGlobal.NCSharePagingIndex(rawValue: index) {
