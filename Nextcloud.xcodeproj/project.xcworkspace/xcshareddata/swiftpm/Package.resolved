@@ -29,6 +29,15 @@
         }
       },
       {
+        "package": "ChromaColorPicker",
+        "repositoryURL": "https://github.com/marinofaggiana/ChromaColorPicker",
+        "state": {
+          "branch": "master",
+          "revision": "b1b2c58c3c5617c73863a073cb6393c79195932e",
+          "version": null
+        }
+      },
+      {
         "package": "CocoaLumberjack",
         "repositoryURL": "https://github.com/CocoaLumberjack/CocoaLumberjack.git",
         "state": {
