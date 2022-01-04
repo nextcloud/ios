@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/Alamofire/Alamofire",
         "state": {
           "branch": null,
-          "revision": "d120af1e8638c7da36c8481fd61a66c0c08dc4fc",
-          "version": "5.4.4"
+          "revision": "f82c23a8a7ef8dc1a49a8bfc6a96883e79121864",
+          "version": "5.5.0"
         }
       },
       {
@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/CocoaLumberjack/CocoaLumberjack.git",
         "state": {
           "branch": null,
-          "revision": "e518eb6e362df327574ba5e04269cd6d29f40aec",
-          "version": "3.7.2"
+          "revision": "80ada1f753b0d53d9b57c465936a7c4169375002",
+          "version": "3.7.4"
         }
       },
       {
@@ -192,11 +192,11 @@
       },
       {
         "package": "Parchment",
-        "repositoryURL": "https://github.com/marinofaggiana/Parchment",
+        "repositoryURL": "https://github.com/rechsteiner/Parchment",
         "state": {
-          "branch": "master",
-          "revision": "f4081dbd1a1793217686a381330e90b6626710c7",
-          "version": null
+          "branch": null,
+          "revision": "2b1a370e71480cb1a95dd56ef8bddc2e0a45e033",
+          "version": "3.1.0"
         }
       },
       {

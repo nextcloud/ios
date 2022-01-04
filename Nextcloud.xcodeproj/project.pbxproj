@@ -202,6 +202,7 @@
 		F765F73225237E3F00391DBE /* NCRecent.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F765F73025237E3F00391DBE /* NCRecent.storyboard */; };
 		F76673ED22C901F6007ED366 /* FileProviderDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76673EC22C901F5007ED366 /* FileProviderDomain.swift */; };
 		F76673F022C90434007ED366 /* FileProviderUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76673EF22C90433007ED366 /* FileProviderUtility.swift */; };
+		F7677E5F2784431900448939 /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = F7677E5E2784431900448939 /* Parchment */; };
 		F7682FE023C36B0500983A04 /* NCMainTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7682FDF23C36B0500983A04 /* NCMainTabBar.swift */; };
 		F769453C22E9CFFF000A798A /* NCShareUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F769453B22E9CFFF000A798A /* NCShareUserCell.xib */; };
 		F769453E22E9E97E000A798A /* NCShareUserMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F769453D22E9E97D000A798A /* NCShareUserMenuView.xib */; };
@@ -296,7 +297,6 @@
 		F79B646226CA661600838ACA /* UIControl+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B645F26CA661600838ACA /* UIControl+Extensions.swift */; };
 		F79B646326CA661600838ACA /* UIControl+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B645F26CA661600838ACA /* UIControl+Extensions.swift */; };
 		F79B869B265E19D40085C0E0 /* NSMutableAttributedString+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B869A265E19D40085C0E0 /* NSMutableAttributedString+Extensions.swift */; };
-		F79BCEEB270B49C800B5B71F /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F79BCEEA270B49C800B5B71F /* SwiftUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F79EC77F26316193004E59D6 /* NCRenameFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70D87CE25EE6E58008CBBBD /* NCRenameFile.swift */; };
 		F79EC784263161BA004E59D6 /* NCRenameFile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70D87CD25EE6E58008CBBBD /* NCRenameFile.storyboard */; };
 		F79EC78926316AC4004E59D6 /* NCPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F702F30725EE5D47008F8E80 /* NCPopupViewController.swift */; };
@@ -366,7 +366,6 @@
 		F7EFC0CD256BF8DD00461AAD /* NCUserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EFC0CC256BF8DD00461AAD /* NCUserStatus.swift */; };
 		F7F1E54C2492369A00E42386 /* NCMediaCommandView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7F1E54B2492369A00E42386 /* NCMediaCommandView.xib */; };
 		F7F5488F273995CE0067475B /* IHProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F7F5488E273995CE0067475B /* IHProgressHUD */; };
-		F7F5CE252707089C007ED1CD /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = F7F5CE242707089C007ED1CD /* Parchment */; };
 		F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
 		F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
 		F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */; };
@@ -881,7 +880,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F76DA941277B75870082465B /* KTVHTTPCache.xcframework in Frameworks */,
-				F79BCEEB270B49C800B5B71F /* SwiftUI.framework in Frameworks */,
 				F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */,
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
 				F7233B3A27835FA400F40A43 /* ChromaColorPicker in Frameworks */,
@@ -899,10 +897,10 @@
 				F710FC7A277B7D0000AA9FBF /* Realm in Frameworks */,
 				F73521B527396D2900919197 /* IHProgressHUD in Frameworks */,
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
-				F7F5CE252707089C007ED1CD /* Parchment in Frameworks */,
 				F74E7720277A2EF40013B958 /* XLForm in Frameworks */,
 				F73ADD1C265546890069EA0D /* SwiftEntryKit in Frameworks */,
 				F74E771B277A21DB0013B958 /* OpenSSL in Frameworks */,
+				F7677E5F2784431900448939 /* Parchment in Frameworks */,
 				F76DA96C277B78400082465B /* FSCalendar in Frameworks */,
 				F76DA93F277B75870082465B /* KTVCocoaHTTPServer.xcframework in Frameworks */,
 			);
@@ -1884,7 +1882,6 @@
 				F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */,
 				F73ADD1B265546890069EA0D /* SwiftEntryKit */,
 				F75EAED726D2552E00F4320E /* MarqueeLabel */,
-				F7F5CE242707089C007ED1CD /* Parchment */,
 				F73521B427396D2900919197 /* IHProgressHUD */,
 				F74E771A277A21DB0013B958 /* OpenSSL */,
 				F74E771F277A2EF40013B958 /* XLForm */,
@@ -1896,6 +1893,7 @@
 				F710FC79277B7D0000AA9FBF /* Realm */,
 				F710FC7B277B7D0000AA9FBF /* RealmSwift */,
 				F7233B3927835FA400F40A43 /* ChromaColorPicker */,
+				F7677E5E2784431900448939 /* Parchment */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -2013,7 +2011,6 @@
 				F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */,
 				F75EAED626D2552E00F4320E /* XCRemoteSwiftPackageReference "MarqueeLabel" */,
-				F7F5CE232707089B007ED1CD /* XCRemoteSwiftPackageReference "Parchment" */,
 				F73521B327396D2800919197 /* XCRemoteSwiftPackageReference "IHProgressHUD" */,
 				F74E7719277A21DB0013B958 /* XCRemoteSwiftPackageReference "OpenSSL" */,
 				F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */,
@@ -2024,6 +2021,7 @@
 				F76DA96D277B78AE0082465B /* XCRemoteSwiftPackageReference "TLPhotoPicker" */,
 				F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */,
 				F7233B3827835FA300F40A43 /* XCRemoteSwiftPackageReference "ChromaColorPicker" */,
+				F7677E5D2784431800448939 /* XCRemoteSwiftPackageReference "Parchment" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -2948,7 +2946,11 @@
 				);
 				LIBRARY_SEARCH_PATHS = "";
 				MARKETING_VERSION = 4.2.1;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-weak_framework",
+					SwiftUI,
+				);
 				OTHER_SWIFT_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2995,7 +2997,11 @@
 				);
 				LIBRARY_SEARCH_PATHS = "";
 				MARKETING_VERSION = 4.2.1;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-weak_framework",
+					SwiftUI,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -3276,6 +3282,14 @@
 				minimumVersion = 4.3.0;
 			};
 		};
+		F7677E5D2784431800448939 /* XCRemoteSwiftPackageReference "Parchment" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/rechsteiner/Parchment";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
 		F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/FabrizioBrancati/Queuer";
@@ -3346,14 +3360,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 10.1.1;
-			};
-		};
-		F7F5CE232707089B007ED1CD /* XCRemoteSwiftPackageReference "Parchment" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/marinofaggiana/Parchment";
-			requirement = {
-				branch = master;
-				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -3479,6 +3485,11 @@
 			package = F75EAED626D2552E00F4320E /* XCRemoteSwiftPackageReference "MarqueeLabel" */;
 			productName = MarqueeLabel;
 		};
+		F7677E5E2784431900448939 /* Parchment */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F7677E5D2784431800448939 /* XCRemoteSwiftPackageReference "Parchment" */;
+			productName = Parchment;
+		};
 		F76DA962277B760E0082465B /* Queuer */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */;
@@ -3573,11 +3584,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F73521B327396D2800919197 /* XCRemoteSwiftPackageReference "IHProgressHUD" */;
 			productName = IHProgressHUD;
-		};
-		F7F5CE242707089C007ED1CD /* Parchment */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F7F5CE232707089B007ED1CD /* XCRemoteSwiftPackageReference "Parchment" */;
-			productName = Parchment;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
