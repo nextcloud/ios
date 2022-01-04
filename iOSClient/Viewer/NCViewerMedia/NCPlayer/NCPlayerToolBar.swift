@@ -44,7 +44,8 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var playerMessageHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var playerMessageProgressView: UIProgressView!
     @IBOutlet weak var playerMessageTitle: UILabel!
-    @IBOutlet weak var playerMessageComment: UILabel!
+    @IBOutlet weak var playerMessageTitleTopConstraint: NSLayoutConstraint!
+    @IBOutlet weak var playerMessageDescription: UILabel!
     @IBOutlet weak var playerMessageButton: UIButton!
     @IBOutlet weak var playerMessageCommentBottomConstraint: NSLayoutConstraint!
 
@@ -279,7 +280,7 @@ class NCPlayerToolBar: UIView {
         if metadata.livePhoto { return }
         if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
 
-        #if MFFF
+        #if MFFFLIB
         if MFFF.shared.existsMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))) {
             self.hide()
             return
@@ -389,6 +390,7 @@ class NCPlayerToolBar: UIView {
     
     func showMessage(_ title: String, description: String?, backgroundColor: UIColor = NCBrandColor.shared.brand, isHiddenPregress: Bool = true, hiddenAfterSeconds: Double = 0) {
         
+        self.playerMessageHeightConstraint.constant = 120
         self.playerMessage.backgroundColor = backgroundColor
 
         self.playerMessageTitle.text = NSLocalizedString(title, comment: "")
@@ -398,19 +400,25 @@ class NCPlayerToolBar: UIView {
         self.playerMessageButton.setBackgroundImage(UIImage(named: "stop")!.image(color: .black, size: 30), for: .normal)
         
         if let description = description {
-            self.playerMessageComment.text = NSLocalizedString(description, comment: "")      
+            self.playerMessageDescription.isHidden = false
+            self.playerMessageDescription.text = NSLocalizedString(description, comment: "")
+            self.playerMessageTitleTopConstraint.constant = 8
+        } else {
+            self.playerMessageDescription.isHidden = true
+            self.playerMessageHeightConstraint.constant = 65
+            self.playerMessageDescription.text = ""
+            self.playerMessageTitleTopConstraint.constant = 20
         }
-        self.playerMessageComment.textColor = NCBrandColor.shared.brandText
+        self.playerMessageDescription.textColor = NCBrandColor.shared.brandText
         
         self.playerMessageProgressView.progress = 0
         self.playerMessageProgressView.tintColor = .black
         self.playerMessageProgressView.isHidden = isHiddenPregress
         
-        playerMessageCommentBottomConstraint.constant = 30
-        playerMessageHeightConstraint.constant = 120
+        self.playerMessageCommentBottomConstraint.constant = 30
         if isHiddenPregress {
-            playerMessageCommentBottomConstraint.constant = 5
-            playerMessageHeightConstraint.constant = 90
+            self.playerMessageCommentBottomConstraint.constant = 5
+            self.playerMessageHeightConstraint.constant = 90
         }
         
         UIView.animate(withDuration: 0.3, animations: {
@@ -577,7 +585,7 @@ class NCPlayerToolBar: UIView {
     
     @IBAction func playerMessageButtonTouchInside(_ sender: UIButton) {
        
-        #if MFFF
+        #if MFFFLIB
         if let metadata = metadata {
             MFFF.shared.stopMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
         }

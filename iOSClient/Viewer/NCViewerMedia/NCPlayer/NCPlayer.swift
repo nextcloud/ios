@@ -79,7 +79,7 @@ class NCPlayer: NSObject {
                 }
                 break
             case .failed:
-                #if MFFF
+                #if MFFFLIB
                 self.convertVideo(error: error)
                 #else
                 if let title = error?.localizedDescription, let description = error?.localizedFailureReason {
