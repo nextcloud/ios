@@ -28,7 +28,7 @@ import NCCommunication
 import MarqueeLabel
 
 protocol NCSharePagingContent {
-    var textField: UITextField { get }
+    var textField: UITextField? { get }
 }
 
 class NCSharePaging: UIViewController {
@@ -155,7 +155,7 @@ class NCSharePaging: UIViewController {
         pagingViewController.menuItemSize = .fixed(
             width: self.view.bounds.width / CGFloat(NCGlobal.NCSharePagingIndex.allCases.count),
             height: 40)
-        currentVC?.textField.resignFirstResponder()
+        currentVC?.textField?.resignFirstResponder()
     }
 
     @objc func changeTheming() {
@@ -206,7 +206,7 @@ extension NCSharePaging: PagingViewControllerDelegate {
             self.title = item.title
         }
 
-        currentVC?.textField.resignFirstResponder()
+        currentVC?.textField?.resignFirstResponder()
         self.currentVC = destinationViewController as? NCSharePagingContent
     }
 }

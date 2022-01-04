@@ -38,7 +38,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
     @IBOutlet weak var sharedWithYouByNote: MarqueeLabel!
     @IBOutlet weak var searchFieldTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var searchField: UITextField!
-    var textField: UITextField { searchField }
+    var textField: UITextField? { searchField }
 
     @IBOutlet weak var tableView: UITableView!
 
