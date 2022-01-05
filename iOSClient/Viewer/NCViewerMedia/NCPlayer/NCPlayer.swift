@@ -69,7 +69,7 @@ class NCPlayer: NSObject {
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded) {
             self.url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
         }
-              
+
         openAVPlayer() { status, error in
             
             switch status {
@@ -232,7 +232,7 @@ class NCPlayer: NSObject {
 
         playerToolBar?.updateToolBar()
     }
-    
+
     // MARK: -
 
     func isPlay() -> Bool {

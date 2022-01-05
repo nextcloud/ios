@@ -292,7 +292,7 @@ class NCPlayerToolBar: UIView {
             startTimerAutoHide()
         }
         if !self.isHidden { return }
-        
+
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 1
             self.playerTopToolBarView.alpha = 1
@@ -395,10 +395,10 @@ class NCPlayerToolBar: UIView {
 
         self.playerMessageTitle.text = NSLocalizedString(title, comment: "")
         self.playerMessageTitle.textColor = NCBrandColor.shared.brandText
-        
+
         self.playerMessageButton.isHidden = isHiddenPregress
         self.playerMessageButton.setBackgroundImage(UIImage(named: "stop")!.image(color: .black, size: 30), for: .normal)
-        
+
         if let description = description {
             self.playerMessageDescription.isHidden = false
             self.playerMessageDescription.text = NSLocalizedString(description, comment: "")
@@ -410,23 +410,23 @@ class NCPlayerToolBar: UIView {
             self.playerMessageTitleTopConstraint.constant = 20
         }
         self.playerMessageDescription.textColor = NCBrandColor.shared.brandText
-        
+
         self.playerMessageProgressView.progress = 0
         self.playerMessageProgressView.tintColor = .black
         self.playerMessageProgressView.isHidden = isHiddenPregress
-        
+
         self.playerMessageCommentBottomConstraint.constant = 30
         if isHiddenPregress {
             self.playerMessageCommentBottomConstraint.constant = 5
             self.playerMessageHeightConstraint.constant = 90
         }
-        
+
         UIView.animate(withDuration: 0.3, animations: {
             self.playerMessage.alpha = 1
         }, completion: { (_: Bool) in
             self.playerMessage.isHidden = false
         })
-        
+
         timerAutoHideMessage?.invalidate()
         if hiddenAfterSeconds > 0 {
             timerAutoHideMessage = Timer.scheduledTimer(timeInterval: hiddenAfterSeconds, target: self, selector: #selector(hideMessage), userInfo: nil, repeats: false)
@@ -434,9 +434,9 @@ class NCPlayerToolBar: UIView {
     }
     
     @objc func hideMessage() {
-        
+
         self.playerMessageProgressView.progress = 0
-        
+
         UIView.animate(withDuration: 0.3, animations: {
             self.playerMessage.alpha = 0
         }, completion: { (_: Bool) in
