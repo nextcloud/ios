@@ -143,6 +143,11 @@
 "_recent_"                  = "Recent";
 "_view_in_folder_"          = "View in folder";
 "_leave_share_"             = "Leave this share";
+
+/* Remove a file from a list, don't delete it entirely */
+"_remove_file_"             = "Remove file";
+
+/* Delete file and put it into the trash */
 "_delete_file_"             = "Delete file";
 "_delete_folder_"           = "Delete folder";
 "_delete_photo_"            = "Delete photo";

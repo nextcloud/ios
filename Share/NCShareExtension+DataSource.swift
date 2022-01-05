@@ -75,7 +75,6 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.imageFavorite.image = nil
         cell.imageShared.image = nil
         cell.imageMore.image = nil
-
         cell.imageItem.image = nil
         cell.imageItem.backgroundColor = nil
 
@@ -160,17 +159,7 @@ extension NCShareExtension: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let fileName = filesName[indexPath.row]
-
-        guard let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile else { return }
-
-        let resultInternalType = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
-        vcRename.delegate = self
-        vcRename.fileName = fileName
-        let img = UIImage(contentsOfFile: (NSTemporaryDirectory() + fileName)) ?? UIImage(named: resultInternalType.iconName) ?? NCBrandColor.cacheImages.file
-        vcRename.imagePreview = img
-        let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
-
-        self.present(popup, animated: true)
+        renameFile(named: fileName)
     }
 }
 
@@ -181,7 +170,6 @@ extension NCShareExtension: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCShareCell else { return UITableViewCell() }
         let fileName = filesName[indexPath.row]
         cell.setup(fileName: fileName)

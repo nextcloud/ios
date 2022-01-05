@@ -114,6 +114,19 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCel
         }
     }
 
+    func renameFile(named fileName: String) {
+        guard let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile else { return }
+
+        let resultInternalType = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
+        vcRename.delegate = self
+        vcRename.fileName = fileName
+        let img = UIImage(contentsOfFile: (NSTemporaryDirectory() + fileName)) ?? UIImage(named: resultInternalType.iconName) ?? NCBrandColor.cacheImages.file
+        vcRename.imagePreview = img
+        let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
+
+        self.present(popup, animated: true)
+    }
+
     func rename(fileName: String, fileNameNew: String) {
         guard let fileIx = self.filesName.firstIndex(of: fileName),
               !self.filesName.contains(fileNameNew),
