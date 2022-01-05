@@ -40,14 +40,11 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var playbackSlider: UISlider!
     @IBOutlet weak var labelLeftTime: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
-
     @IBOutlet weak var playerMessageHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var playerMessageProgressView: UIProgressView!
     @IBOutlet weak var playerMessageTitle: UILabel!
-    @IBOutlet weak var playerMessageTitleTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var playerMessageDescription: UILabel!
     @IBOutlet weak var playerMessageButton: UIButton!
-    @IBOutlet weak var playerMessageCommentBottomConstraint: NSLayoutConstraint!
 
     enum sliderEventType {
         case began
@@ -157,7 +154,7 @@ class NCPlayerToolBar: UIView {
     }
 
     public func updateToolBar() {
-
+        
         guard let ncplayer = self.ncplayer else { return }
 
         // MUTE
@@ -223,6 +220,7 @@ class NCPlayerToolBar: UIView {
     // MARK: Handle Notifications
 
     @objc func handleRouteChange(notification: Notification) {
+        
         guard let userInfo = notification.userInfo, let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt, let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else { return }
 
         switch reason {
@@ -275,9 +273,7 @@ class NCPlayerToolBar: UIView {
 
     public func show(enableTimerAutoHide: Bool = false) {
 
-        guard let metadata = self.metadata else { return }
-        if ncplayer == nil { return }
-        if metadata.livePhoto { return }
+        guard let metadata = self.metadata, ncplayer != nil, !metadata.livePhoto else { return }
         if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
 
         #if MFFFLIB
@@ -292,7 +288,7 @@ class NCPlayerToolBar: UIView {
             startTimerAutoHide()
         }
         if !self.isHidden { return }
-
+        
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 1
             self.playerTopToolBarView.alpha = 1
@@ -342,8 +338,7 @@ class NCPlayerToolBar: UIView {
 
     func skip(seconds: Float64) {
 
-        guard let ncplayer = ncplayer else { return }
-        guard let player = ncplayer.player else { return }
+        guard let ncplayer = ncplayer, let player = ncplayer.player else { return }
 
         let currentTime = player.currentTime()
         var newTime: CMTime = .zero
@@ -388,45 +383,41 @@ class NCPlayerToolBar: UIView {
     
     // MARK: - Message
     
-    func showMessage(_ title: String, description: String?, backgroundColor: UIColor = NCBrandColor.shared.brand, isHiddenPregress: Bool = true, hiddenAfterSeconds: Double = 0) {
+    func showMessage(_ title: String, description: String? = nil, backgroundColor: UIColor = NCBrandColor.shared.brand, isProgressHidden: Bool = true, hiddenAfterSeconds: Double = 0) {
         
-        self.playerMessageHeightConstraint.constant = 120
         self.playerMessage.backgroundColor = backgroundColor
-
-        self.playerMessageTitle.text = NSLocalizedString(title, comment: "")
         self.playerMessageTitle.textColor = NCBrandColor.shared.brandText
-
-        self.playerMessageButton.isHidden = isHiddenPregress
-        self.playerMessageButton.setBackgroundImage(UIImage(named: "stop")!.image(color: .black, size: 30), for: .normal)
-
-        if let description = description {
-            self.playerMessageDescription.isHidden = false
-            self.playerMessageDescription.text = NSLocalizedString(description, comment: "")
-            self.playerMessageTitleTopConstraint.constant = 8
-        } else {
-            self.playerMessageDescription.isHidden = true
-            self.playerMessageHeightConstraint.constant = 65
-            self.playerMessageDescription.text = ""
-            self.playerMessageTitleTopConstraint.constant = 20
-        }
         self.playerMessageDescription.textColor = NCBrandColor.shared.brandText
 
+        self.playerMessageTitle.text = NSLocalizedString(title, comment: "")
+        
+        if let description = description {
+            self.playerMessageDescription.text = NSLocalizedString(description, comment: "")
+        } else {
+            self.playerMessageHeightConstraint.constant = 65
+            self.playerMessageTitle.text = ""
+            self.playerMessageTitle.isHidden = true
+            self.playerMessageDescription.font = UIFont.boldSystemFont(ofSize: 14.0)
+            self.playerMessageDescription.text = NSLocalizedString(title, comment: "")
+        }
+        
         self.playerMessageProgressView.progress = 0
         self.playerMessageProgressView.tintColor = .black
-        self.playerMessageProgressView.isHidden = isHiddenPregress
-
-        self.playerMessageCommentBottomConstraint.constant = 30
-        if isHiddenPregress {
-            self.playerMessageCommentBottomConstraint.constant = 5
+        self.playerMessageProgressView.isHidden = isProgressHidden
+        
+        self.playerMessageButton.isHidden = isProgressHidden
+        self.playerMessageButton.setBackgroundImage(UIImage(named: "stop")!.image(color: .black, size: 30), for: .normal)
+        
+        if isProgressHidden && description != nil {
             self.playerMessageHeightConstraint.constant = 90
         }
-
+        
         UIView.animate(withDuration: 0.3, animations: {
             self.playerMessage.alpha = 1
         }, completion: { (_: Bool) in
             self.playerMessage.isHidden = false
         })
-
+        
         timerAutoHideMessage?.invalidate()
         if hiddenAfterSeconds > 0 {
             timerAutoHideMessage = Timer.scheduledTimer(timeInterval: hiddenAfterSeconds, target: self, selector: #selector(hideMessage), userInfo: nil, repeats: false)
@@ -434,9 +425,9 @@ class NCPlayerToolBar: UIView {
     }
     
     @objc func hideMessage() {
-
+        
         self.playerMessageProgressView.progress = 0
-
+        
         UIView.animate(withDuration: 0.3, animations: {
             self.playerMessage.alpha = 0
         }, completion: { (_: Bool) in
@@ -449,7 +440,7 @@ class NCPlayerToolBar: UIView {
         self.playerMessageProgressView.progress = progress
     }
     
-    func isHiddenMessage() -> Bool {
+    func isMessageHidden() -> Bool {
         
         timerAutoHideMessage?.invalidate()
         return self.playerMessage.isHidden

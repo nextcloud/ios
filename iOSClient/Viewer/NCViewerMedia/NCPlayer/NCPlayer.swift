@@ -69,7 +69,7 @@ class NCPlayer: NSObject {
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded) {
             self.url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
         }
-
+              
         openAVPlayer() { status, error in
             
             switch status {
@@ -232,7 +232,7 @@ class NCPlayer: NSObject {
 
         playerToolBar?.updateToolBar()
     }
-
+    
     // MARK: -
 
     func isPlay() -> Bool {
@@ -279,9 +279,7 @@ class NCPlayer: NSObject {
 
     @objc func generatorImagePreview() {
 
-        guard let time = player?.currentTime() else { return }
-        if metadata.livePhoto { return }
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue { return }
+        guard let time = player?.currentTime(), !metadata.livePhoto, metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue  else { return }
 
         var image: UIImage?
 

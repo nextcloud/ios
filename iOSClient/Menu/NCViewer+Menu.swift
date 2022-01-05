@@ -137,7 +137,7 @@ extension NCViewer {
         //
         // CONVERSION VIDEO TO MPEG4 (MFFF Lib)
         //
-        #if MFFF
+        #if MFFFLIB
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             
             actions.append(

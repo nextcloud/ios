@@ -394,26 +394,30 @@
                                             <outlet property="playbackSlider" destination="SR4-e8-1hC" id="Khx-Oe-NEQ"/>
                                             <outlet property="playerMessage" destination="dcP-0P-XaU" id="Elb-g9-KLN"/>
                                             <outlet property="playerMessageButton" destination="IBy-FL-p7m" id="oCg-wD-wui"/>
-                                            <outlet property="playerMessageCommentBottomConstraint" destination="mQr-bP-ade" id="UTD-j1-pNq"/>
                                             <outlet property="playerMessageDescription" destination="0ay-aW-oWe" id="6iU-2Q-5al"/>
                                             <outlet property="playerMessageHeightConstraint" destination="Hj6-hL-o4b" id="hbN-pd-ZtS"/>
                                             <outlet property="playerMessageProgressView" destination="xph-h7-QuN" id="mJi-16-HJC"/>
                                             <outlet property="playerMessageTitle" destination="hDm-OS-aGd" id="aHa-Zu-vYF"/>
-                                            <outlet property="playerMessageTitleTopConstraint" destination="hZH-VC-Bs7" id="3Mh-Eb-8XB"/>
                                             <outlet property="playerTopToolBarView" destination="dgJ-dQ-lSp" id="22g-Yn-k5r"/>
                                         </connections>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dcP-0P-XaU" userLabel="Player Message">
+                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dcP-0P-XaU" userLabel="Player Message">
                                         <rect key="frame" x="15" y="606" width="384" height="120"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="description" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0ay-aW-oWe">
                                                 <rect key="frame" x="15" y="30" width="354" height="60"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="60" id="bKn-Vz-IHT"/>
+                                                </constraints>
                                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hDm-OS-aGd">
-                                                <rect key="frame" x="15" y="8" width="354" height="19"/>
+                                                <rect key="frame" x="15" y="5" width="354" height="20"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="20" id="hgP-I5-k0D"/>
+                                                </constraints>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -439,20 +443,18 @@
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
+                                            <constraint firstItem="0ay-aW-oWe" firstAttribute="centerY" secondItem="dcP-0P-XaU" secondAttribute="centerY" id="2O1-Ll-kTg"/>
+                                            <constraint firstItem="hDm-OS-aGd" firstAttribute="top" secondItem="dcP-0P-XaU" secondAttribute="top" constant="5" id="EoF-FL-wGD"/>
                                             <constraint firstAttribute="height" constant="120" id="Hj6-hL-o4b"/>
                                             <constraint firstAttribute="trailing" secondItem="0ay-aW-oWe" secondAttribute="trailing" constant="15.000000000000057" id="KK6-KV-ov5"/>
                                             <constraint firstItem="xph-h7-QuN" firstAttribute="leading" secondItem="dcP-0P-XaU" secondAttribute="leading" constant="15" id="PG4-3d-CnT"/>
-                                            <constraint firstItem="0ay-aW-oWe" firstAttribute="top" secondItem="hDm-OS-aGd" secondAttribute="bottom" constant="3" id="VoM-4v-uHz"/>
                                             <constraint firstItem="IBy-FL-p7m" firstAttribute="leading" secondItem="xph-h7-QuN" secondAttribute="trailing" constant="10" id="Wxd-Wo-eC1"/>
                                             <constraint firstAttribute="trailing" secondItem="IBy-FL-p7m" secondAttribute="trailing" constant="5" id="bbL-qa-ywb"/>
                                             <constraint firstItem="0ay-aW-oWe" firstAttribute="leading" secondItem="dcP-0P-XaU" secondAttribute="leading" constant="15" id="efH-Ty-CxK"/>
-                                            <constraint firstItem="hDm-OS-aGd" firstAttribute="top" secondItem="dcP-0P-XaU" secondAttribute="top" constant="8" id="hZH-VC-Bs7"/>
                                             <constraint firstAttribute="bottom" secondItem="IBy-FL-p7m" secondAttribute="bottom" constant="5" id="hj6-vu-1oD"/>
                                             <constraint firstAttribute="bottom" secondItem="xph-h7-QuN" secondAttribute="bottom" constant="18" id="ktP-qt-9Vo"/>
-                                            <constraint firstAttribute="bottom" secondItem="0ay-aW-oWe" secondAttribute="bottom" constant="30" id="mQr-bP-ade"/>
                                             <constraint firstItem="hDm-OS-aGd" firstAttribute="leading" secondItem="dcP-0P-XaU" secondAttribute="leading" constant="15" id="uJh-HI-mhr"/>
                                             <constraint firstAttribute="trailing" secondItem="hDm-OS-aGd" secondAttribute="trailing" constant="15" id="waz-yc-nK3"/>
-                                            <constraint firstItem="0ay-aW-oWe" firstAttribute="top" secondItem="dcP-0P-XaU" secondAttribute="top" constant="30" id="xau-Hg-qaU"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -515,7 +517,7 @@
         <image name="gobackward.10" catalog="system" width="121" height="128"/>
         <image name="goforward.10" catalog="system" width="121" height="128"/>
         <image name="networkInProgress" width="300" height="300"/>
-        <image name="pip.enter" catalog="system" width="32" height="32"/>
+        <image name="pip.enter" catalog="system" width="128" height="96"/>
         <image name="play.fill" catalog="system" width="116" height="128"/>
         <image name="taskCancelDownload" width="25" height="25"/>
         <systemColor name="systemBackgroundColor">
