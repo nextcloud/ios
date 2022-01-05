@@ -44,6 +44,8 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var playerMessageProgressView: UIProgressView!
     @IBOutlet weak var playerMessageTitle: UILabel!
     @IBOutlet weak var playerMessageDescription: UILabel!
+    @IBOutlet weak var playerMessageDescriptionLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var playerMessageImageView: UIImageView!
     @IBOutlet weak var playerMessageButton: UIButton!
 
     enum sliderEventType {
@@ -383,12 +385,17 @@ class NCPlayerToolBar: UIView {
     
     // MARK: - Message
     
-    func showMessage(_ title: String, description: String? = nil, backgroundColor: UIColor = NCBrandColor.shared.brand, isProgressHidden: Bool = true, hiddenAfterSeconds: Double = 0) {
+    func showMessage(_ title: String, description: String? = nil, backgroundColor: UIColor = NCBrandColor.shared.brand, image: UIImage? = nil, isProgressHidden: Bool = true, hiddenAfterSeconds: Double = 0) {
         
         self.playerMessage.backgroundColor = backgroundColor
         self.playerMessageTitle.textColor = NCBrandColor.shared.brandText
         self.playerMessageDescription.textColor = NCBrandColor.shared.brandText
 
+        self.playerMessageHeightConstraint.constant = 120
+        self.playerMessageDescriptionLeadingConstraint.constant = 15
+        self.playerMessageImageView.isHidden = true
+        self.playerMessageTitle.isHidden = false
+        
         self.playerMessageTitle.text = NSLocalizedString(title, comment: "")
         
         if let description = description {
@@ -399,6 +406,11 @@ class NCPlayerToolBar: UIView {
             self.playerMessageTitle.isHidden = true
             self.playerMessageDescription.font = UIFont.boldSystemFont(ofSize: 14.0)
             self.playerMessageDescription.text = NSLocalizedString(title, comment: "")
+            if let image = image {
+                self.playerMessageDescriptionLeadingConstraint.constant = 55
+                self.playerMessageImageView.isHidden = false
+                self.playerMessageImageView.image = image
+            }
         }
         
         self.playerMessageProgressView.progress = 0

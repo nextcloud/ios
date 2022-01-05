@@ -395,7 +395,9 @@
                                             <outlet property="playerMessage" destination="dcP-0P-XaU" id="Elb-g9-KLN"/>
                                             <outlet property="playerMessageButton" destination="IBy-FL-p7m" id="oCg-wD-wui"/>
                                             <outlet property="playerMessageDescription" destination="0ay-aW-oWe" id="6iU-2Q-5al"/>
+                                            <outlet property="playerMessageDescriptionLeadingConstraint" destination="efH-Ty-CxK" id="d84-FQ-BZ8"/>
                                             <outlet property="playerMessageHeightConstraint" destination="Hj6-hL-o4b" id="hbN-pd-ZtS"/>
+                                            <outlet property="playerMessageImageView" destination="EJQ-0a-jb7" id="8Jt-6y-TwO"/>
                                             <outlet property="playerMessageProgressView" destination="xph-h7-QuN" id="mJi-16-HJC"/>
                                             <outlet property="playerMessageTitle" destination="hDm-OS-aGd" id="aHa-Zu-vYF"/>
                                             <outlet property="playerTopToolBarView" destination="dgJ-dQ-lSp" id="22g-Yn-k5r"/>
@@ -414,7 +416,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hDm-OS-aGd">
-                                                <rect key="frame" x="15" y="5" width="354" height="20"/>
+                                                <rect key="frame" x="15" y="7" width="354" height="20"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="20" id="hgP-I5-k0D"/>
                                                 </constraints>
@@ -440,18 +442,27 @@
                                                     <action selector="playerMessageButtonTouchInside:" destination="sBp-t2-eFh" eventType="touchUpInside" id="6vh-TU-5IR"/>
                                                 </connections>
                                             </button>
+                                            <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="EJQ-0a-jb7">
+                                                <rect key="frame" x="15" y="45" width="30" height="30"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="30" id="UmQ-gc-TEX"/>
+                                                    <constraint firstAttribute="width" constant="30" id="fX4-Lq-fgy"/>
+                                                </constraints>
+                                            </imageView>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstItem="0ay-aW-oWe" firstAttribute="centerY" secondItem="dcP-0P-XaU" secondAttribute="centerY" id="2O1-Ll-kTg"/>
-                                            <constraint firstItem="hDm-OS-aGd" firstAttribute="top" secondItem="dcP-0P-XaU" secondAttribute="top" constant="5" id="EoF-FL-wGD"/>
+                                            <constraint firstItem="hDm-OS-aGd" firstAttribute="top" secondItem="dcP-0P-XaU" secondAttribute="top" constant="7" id="EoF-FL-wGD"/>
                                             <constraint firstAttribute="height" constant="120" id="Hj6-hL-o4b"/>
                                             <constraint firstAttribute="trailing" secondItem="0ay-aW-oWe" secondAttribute="trailing" constant="15.000000000000057" id="KK6-KV-ov5"/>
                                             <constraint firstItem="xph-h7-QuN" firstAttribute="leading" secondItem="dcP-0P-XaU" secondAttribute="leading" constant="15" id="PG4-3d-CnT"/>
                                             <constraint firstItem="IBy-FL-p7m" firstAttribute="leading" secondItem="xph-h7-QuN" secondAttribute="trailing" constant="10" id="Wxd-Wo-eC1"/>
                                             <constraint firstAttribute="trailing" secondItem="IBy-FL-p7m" secondAttribute="trailing" constant="5" id="bbL-qa-ywb"/>
                                             <constraint firstItem="0ay-aW-oWe" firstAttribute="leading" secondItem="dcP-0P-XaU" secondAttribute="leading" constant="15" id="efH-Ty-CxK"/>
+                                            <constraint firstItem="EJQ-0a-jb7" firstAttribute="leading" secondItem="dcP-0P-XaU" secondAttribute="leading" constant="15" id="hi3-7x-wte"/>
                                             <constraint firstAttribute="bottom" secondItem="IBy-FL-p7m" secondAttribute="bottom" constant="5" id="hj6-vu-1oD"/>
+                                            <constraint firstItem="EJQ-0a-jb7" firstAttribute="centerY" secondItem="dcP-0P-XaU" secondAttribute="centerY" id="iqd-VK-nKr"/>
                                             <constraint firstAttribute="bottom" secondItem="xph-h7-QuN" secondAttribute="bottom" constant="18" id="ktP-qt-9Vo"/>
                                             <constraint firstItem="hDm-OS-aGd" firstAttribute="leading" secondItem="dcP-0P-XaU" secondAttribute="leading" constant="15" id="uJh-HI-mhr"/>
                                             <constraint firstAttribute="trailing" secondItem="hDm-OS-aGd" secondAttribute="trailing" constant="15" id="waz-yc-nK3"/>
