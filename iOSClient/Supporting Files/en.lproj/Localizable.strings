@@ -823,8 +823,8 @@
 "_certificates_"            = "Certificates";
 "_privacy_screen_"          = "Splash screen when app inactive";
 // Video
-"_video_conversion_"        = "Video conversion";
-"_preparation_video_"       = "Video preparation in progress…";
+"_video_processing_"        = "Video processing";
+"_video_being_processed_"   = "Video being processed…";
 "_downloading_"             = "Downloading";
 "_download_error_"          = "Download error";
 "_subtitle_"                = "Subtitle";
@@ -832,5 +832,5 @@
 "_reuired_conversion_"      = "This video takes a long time to convert.";
 "_stay_app_foreground_"     = "Stay with the app in the foreground…";
 "_conversion_available_"    = "The conversion is always available on menu";
-"_video_format_not_recognized_"     = "This video is not compatible, do you want to try to convert it?";
+"_video_format_not_recognized_"     = "This video needs to be processed to be played, do you want to do it now?";
 "_conversion_max_compatibility_"    = "Max compatibility, the conversion can take much longer";
