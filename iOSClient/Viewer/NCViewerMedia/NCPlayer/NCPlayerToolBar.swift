@@ -39,7 +39,7 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var playbackSlider: UISlider!
     @IBOutlet weak var labelLeftTime: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
-
+   
     enum sliderEventType {
         case began
         case ended
@@ -51,6 +51,7 @@ class NCPlayerToolBar: UIView {
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
     private var timerAutoHide: Timer?
+    private var timerAutoHideMessage: Timer?
 
     var pictureInPictureController: AVPictureInPictureController?
     weak var viewerMediaPage: NCViewerMediaPage?
@@ -121,11 +122,15 @@ class NCPlayerToolBar: UIView {
     }
 
     // MARK: -
-
-    func setBarPlayer(ncplayer: NCPlayer, metadata: tableMetadata) {
+    
+    func setMetadata(_ metadata: tableMetadata) {
+        
+        self.metadata = metadata
+    }
+    
+    func setBarPlayer(ncplayer: NCPlayer) {
 
         self.ncplayer = ncplayer
-        self.metadata = metadata
 
         playbackSlider.value = 0
         playbackSlider.minimumValue = 0
@@ -139,7 +144,7 @@ class NCPlayerToolBar: UIView {
     }
 
     public func updateToolBar() {
-
+        
         guard let ncplayer = self.ncplayer else { return }
 
         // MUTE
@@ -205,6 +210,7 @@ class NCPlayerToolBar: UIView {
     // MARK: Handle Notifications
 
     @objc func handleRouteChange(notification: Notification) {
+        
         guard let userInfo = notification.userInfo, let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt, let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else { return }
 
         switch reason {
@@ -257,16 +263,22 @@ class NCPlayerToolBar: UIView {
 
     public func show(enableTimerAutoHide: Bool = false) {
 
-        if metadata?.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata?.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
-        if let metadata = self.metadata, metadata.livePhoto { return }
-
+        guard let metadata = self.metadata, ncplayer != nil, !metadata.livePhoto, (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) else
+        { return }
+        
+        #if MFFFLIB
+        if MFFF.shared.existsMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))) {
+            self.hide()
+            return
+        }
+        #endif
+        
         timerAutoHide?.invalidate()
         if enableTimerAutoHide {
             startTimerAutoHide()
         }
-
         if !self.isHidden { return }
-
+        
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 1
             self.playerTopToolBarView.alpha = 1
@@ -316,8 +328,7 @@ class NCPlayerToolBar: UIView {
 
     func skip(seconds: Float64) {
 
-        guard let ncplayer = ncplayer else { return }
-        guard let player = ncplayer.player else { return }
+        guard let ncplayer = ncplayer, let player = ncplayer.player else { return }
 
         let currentTime = player.currentTime()
         var newTime: CMTime = .zero
@@ -359,7 +370,7 @@ class NCPlayerToolBar: UIView {
 
         timerAutoHide?.invalidate()
     }
-
+    
     // MARK: - Event / Gesture
 
     @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
@@ -486,6 +497,15 @@ class NCPlayerToolBar: UIView {
             backward()
         }
         */
+    }
+    
+    @IBAction func playerMessageButtonTouchInside(_ sender: UIButton) {
+       
+        #if MFFFLIB
+        if let metadata = metadata {
+            MFFF.shared.stopMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
+        }
+        #endif
     }
 
     func forward() {

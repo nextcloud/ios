@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/Alamofire/Alamofire",
         "state": {
           "branch": null,
-          "revision": "d120af1e8638c7da36c8481fd61a66c0c08dc4fc",
-          "version": "5.4.4"
+          "revision": "f82c23a8a7ef8dc1a49a8bfc6a96883e79121864",
+          "version": "5.5.0"
         }
       },
       {
@@ -29,12 +29,30 @@
         }
       },
       {
+        "package": "ChromaColorPicker",
+        "repositoryURL": "https://github.com/marinofaggiana/ChromaColorPicker",
+        "state": {
+          "branch": "master",
+          "revision": "b1b2c58c3c5617c73863a073cb6393c79195932e",
+          "version": null
+        }
+      },
+      {
         "package": "CocoaLumberjack",
         "repositoryURL": "https://github.com/CocoaLumberjack/CocoaLumberjack.git",
         "state": {
           "branch": null,
-          "revision": "e518eb6e362df327574ba5e04269cd6d29f40aec",
-          "version": "3.7.2"
+          "revision": "80ada1f753b0d53d9b57c465936a7c4169375002",
+          "version": "3.7.4"
+        }
+      },
+      {
+        "package": "DropDown",
+        "repositoryURL": "https://github.com/AssistoLab/DropDown",
+        "state": {
+          "branch": "master",
+          "revision": "2ab6f6ce19f0117d1a76ea043ef8f57722c65d16",
+          "version": null
         }
       },
       {
@@ -53,6 +71,15 @@
           "branch": null,
           "revision": "0fbbbc8d99b4dfe58bb1dd704d14b45f35b46584",
           "version": "2.5.1"
+        }
+      },
+      {
+        "package": "FSCalendar",
+        "repositoryURL": "https://github.com/WenchaoD/FSCalendar",
+        "state": {
+          "branch": null,
+          "revision": "afaf247581eb1f8aea847f2e6c99c665ae900494",
+          "version": "2.8.3"
         }
       },
       {
@@ -113,9 +140,9 @@
         "package": "NCCommunication",
         "repositoryURL": "https://github.com/nextcloud/ios-communication-library/",
         "state": {
-          "branch": null,
-          "revision": "c8e3eac61a846775d570b1d252612a8d2d02930d",
-          "version": "0.99.3"
+          "branch": "develop",
+          "revision": "ffbe682e48882a064de692bae82995229c5a88ff",
+          "version": null
         }
       },
       {
@@ -155,12 +182,21 @@
         }
       },
       {
-        "package": "Parchment",
-        "repositoryURL": "https://github.com/marinofaggiana/Parchment",
+        "package": "OpenSSL",
+        "repositoryURL": "https://github.com/krzyzanowskim/OpenSSL",
         "state": {
-          "branch": "master",
-          "revision": "f4081dbd1a1793217686a381330e90b6626710c7",
-          "version": null
+          "branch": null,
+          "revision": "45545c5729b5597d2d4910a5edd07b1bf42e5839",
+          "version": "1.1.1200"
+        }
+      },
+      {
+        "package": "Parchment",
+        "repositoryURL": "https://github.com/rechsteiner/Parchment",
+        "state": {
+          "branch": null,
+          "revision": "2b1a370e71480cb1a95dd56ef8bddc2e0a45e033",
+          "version": "3.1.0"
         }
       },
       {
@@ -182,6 +218,15 @@
         }
       },
       {
+        "package": "Queuer",
+        "repositoryURL": "https://github.com/FabrizioBrancati/Queuer",
+        "state": {
+          "branch": null,
+          "revision": "52515108d0ac4616d9e15ffcc7ad986e300d31ff",
+          "version": "2.1.1"
+        }
+      },
+      {
         "package": "QuickLayout",
         "repositoryURL": "https://github.com/huri000/QuickLayout",
         "state": {
@@ -191,21 +236,21 @@
         }
       },
       {
-        "package": "Realm",
-        "repositoryURL": "https://github.com/realm/realm-cocoa",
-        "state": {
-          "branch": null,
-          "revision": "f483fa0a52f6d49897d133a827510a35e21183c1",
-          "version": "10.20.1"
-        }
-      },
-      {
         "package": "RealmDatabase",
         "repositoryURL": "https://github.com/realm/realm-core",
         "state": {
           "branch": null,
           "revision": "c3c11a841642ac93c27bd1edd61f989fc0bfb809",
           "version": "11.6.1"
+        }
+      },
+      {
+        "package": "Realm",
+        "repositoryURL": "https://github.com/realm/realm-swift",
+        "state": {
+          "branch": null,
+          "revision": "e83cc9f28e8bccd477b6b81cee521c02239d2773",
+          "version": "10.20.2"
         }
       },
       {
@@ -269,6 +314,33 @@
           "branch": null,
           "revision": "d7a1d23f04c86c1cd2e8f19247dd15d74e0ea8be",
           "version": "5.6.0"
+        }
+      },
+      {
+        "package": "TLPhotoPicker",
+        "repositoryURL": "https://github.com/tilltue/TLPhotoPicker",
+        "state": {
+          "branch": null,
+          "revision": "43cc38e7ed183b3b25867ea3e1f271468ca2756f",
+          "version": "2.1.8"
+        }
+      },
+      {
+        "package": "UICKeyChainStore",
+        "repositoryURL": "https://github.com/kishikawakatsumi/UICKeyChainStore",
+        "state": {
+          "branch": "master",
+          "revision": "db869212bc69b6198a62efe03e2f5fc8e19c6b65",
+          "version": null
+        }
+      },
+      {
+        "package": "XLForm",
+        "repositoryURL": "https://github.com/xmartlabs/XLForm",
+        "state": {
+          "branch": null,
+          "revision": "870afc56602fd518e33d0b271371a2d5acd410ea",
+          "version": "4.3.0"
         }
       }
     ]

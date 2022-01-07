@@ -133,7 +133,27 @@ extension NCViewer {
                 )
             )
         }
-
+        
+        //
+        // CONVERSION VIDEO TO MPEG4 (MFFF Lib)
+        //
+        #if MFFFLIB
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+            
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_video_conversion_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "film"),
+                    action: { menuAction in
+                        if let ncplayer = (viewController as? NCViewerMediaPage)?.currentViewController.ncplayer {
+                            ncplayer.convertVideo()
+                        }
+                    }
+                )
+            )
+        }
+        #endif
+        
         //
         // SAVE IMAGE / VIDEO
         //

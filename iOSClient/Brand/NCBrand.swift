@@ -92,7 +92,6 @@ import UIKit
 
     @objc public var disable_background_color:          Bool = true
     @objc public var disable_background_image:          Bool = true
-    @objc public var disable_ff:                        Bool = true
 
     override init() {
 
