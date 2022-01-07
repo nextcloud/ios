@@ -73,11 +73,10 @@ class NCShareExtension: UIViewController {
     var activeAccount: tableAccount!
     private let chunckSize = CCUtility.getChunkSize() * 1000000
 
-    private var numberFilesName: Int = 0
     private var counterUpload: Int = 0
     var uploadDispatchGroup: DispatchGroup?
     private var uploadErrors: [tableMetadata] = []
-    private var uploadStarted = false
+    private(set) var uploadStarted = false
 
     // MARK: - View Life Cycle
 
@@ -190,11 +189,9 @@ class NCShareExtension: UIViewController {
     }
 
     @objc func triggerProgressTask(_ notification: NSNotification) {
-        if let userInfo = notification.userInfo as NSDictionary?, let progressNumber = userInfo["progress"] as? NSNumber {
-            let progress = CGFloat(progressNumber.floatValue)
-            let status = NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUpload) " + NSLocalizedString("_of_", comment: "") + " \(self.numberFilesName)"
-            IHProgressHUD.show(progress: progress, status: status)
-        }
+        guard let progress = notification.userInfo?["progress"] as? CGFloat else { return }
+        let status = NSLocalizedString("_upload_file_", comment: "") + " \(counterUpload) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
+        IHProgressHUD.show(progress: progress, status: status)
     }
 
     func setNavigationBar(navigationTitle: String) {
@@ -271,8 +268,7 @@ class NCShareExtension: UIViewController {
             self.tableView.isScrollEnabled = false
         }
         // Label upload button
-        numberFilesName = filesName.count
-        uploadLabel.text = NSLocalizedString("_upload_", comment: "") + " \(numberFilesName) " + NSLocalizedString("_files_", comment: "")
+        uploadLabel.text = NSLocalizedString("_upload_", comment: "") + " \(filesName.count) " + NSLocalizedString("_files_", comment: "")
         // Empty
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: -50 * counter, delegate: self)
         self.tableView.reloadData()

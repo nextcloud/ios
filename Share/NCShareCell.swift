@@ -25,6 +25,7 @@ import UIKit
 import NCCommunication
 
 protocol NCShareCellDelegate: AnyObject {
+    var uploadStated: Bool { get }
     func removeFile(named fileName: String)
     func renameFile(named fileName: String)
 }
@@ -64,7 +65,7 @@ class NCShareCell: UITableViewCell {
     }
 
     @IBAction func buttonTapped(_ sender: Any) {
-        guard !fileName.isEmpty else { return }
+        guard !fileName.isEmpty, delegate?.uploadStated != true else { return }
         let alertController = UIAlertController(title: "", message: fileName, preferredStyle: .alert)
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_rename_file_", comment: ""), style: .default) { _ in

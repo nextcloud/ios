@@ -178,7 +178,9 @@ extension NCCreateFormUploadConflictDelegate {
         }))
 
         conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_keep_existing_action_title_", comment: ""), style: .cancel, handler: { _ in
-            self.dismiss(animated: true, completion: nil)
+            self.dismiss(animated: true) {
+                self.delegate?.dismissCreateFormUploadConflict(metadatas: nil)
+            }
         }))
 
         conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_more_action_title_", comment: ""), style: .default, handler: { _ in
@@ -236,9 +238,9 @@ extension NCCreateFormUploadConflictDelegate {
     }
 
     @IBAction func buttonCancelTouch(_ sender: Any) {
-
-        delegate?.dismissCreateFormUploadConflict(metadatas: nil)
-        dismiss(animated: true)
+        dismiss(animated: true) {
+            self.delegate?.dismissCreateFormUploadConflict(metadatas: nil)
+        }
     }
 
     @IBAction func buttonContinueTouch(_ sender: Any) {
@@ -309,9 +311,10 @@ extension NCCreateFormUploadConflictDelegate {
         }
 
         metadatasNOConflict.append(contentsOf: metadatasMOV)
-        delegate?.dismissCreateFormUploadConflict(metadatas: metadatasNOConflict)
 
-        dismiss(animated: true)
+        dismiss(animated: true) {
+            self.delegate?.dismissCreateFormUploadConflict(metadatas: self.metadatasNOConflict)
+        }
     }
 }
 

@@ -158,6 +158,7 @@ extension NCShareExtension: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard !uploadStarted else { return }
         let fileName = filesName[indexPath.row]
         renameFile(named: fileName)
     }
