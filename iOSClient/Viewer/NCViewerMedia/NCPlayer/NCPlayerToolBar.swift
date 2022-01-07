@@ -31,7 +31,6 @@ import MediaPlayer
 class NCPlayerToolBar: UIView {
 
     @IBOutlet weak var playerTopToolBarView: UIView!
-    @IBOutlet weak var playerMessage: UIView!
     @IBOutlet weak var pipButton: UIButton!
     @IBOutlet weak var muteButton: UIButton!
     @IBOutlet weak var playButton: UIButton!
@@ -40,14 +39,7 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var playbackSlider: UISlider!
     @IBOutlet weak var labelLeftTime: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
-    @IBOutlet weak var playerMessageHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var playerMessageProgressView: UIProgressView!
-    @IBOutlet weak var playerMessageTitle: UILabel!
-    @IBOutlet weak var playerMessageDescription: UILabel!
-    @IBOutlet weak var playerMessageDescriptionLeadingConstraint: NSLayoutConstraint!
-    @IBOutlet weak var playerMessageImageView: UIImageView!
-    @IBOutlet weak var playerMessageButton: UIButton!
-
+   
     enum sliderEventType {
         case began
         case ended
@@ -91,10 +83,6 @@ class NCPlayerToolBar: UIView {
         blurEffectTopToolBarView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         playerTopToolBarView.insertSubview(blurEffectTopToolBarView, at: 0)
 
-        playerMessage.layer.cornerRadius = 10
-        playerMessage.layer.masksToBounds = true
-        playerMessage.isHidden = true
-        
         pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .lightGray), for: .normal)
         pipButton.isEnabled = false
 
@@ -275,9 +263,9 @@ class NCPlayerToolBar: UIView {
 
     public func show(enableTimerAutoHide: Bool = false) {
 
-        guard let metadata = self.metadata, ncplayer != nil, !metadata.livePhoto else { return }
-        if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
-
+        guard let metadata = self.metadata, ncplayer != nil, !metadata.livePhoto, (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) else
+        { return }
+        
         #if MFFFLIB
         if MFFF.shared.existsMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))) {
             self.hide()
