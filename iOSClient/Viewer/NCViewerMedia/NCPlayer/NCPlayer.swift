@@ -83,9 +83,9 @@ class NCPlayer: NSObject {
                 self.convertVideo(error: error)
                 #else
                 if let title = error?.localizedDescription, let description = error?.localizedFailureReason {
-                    self.playerToolBar?.showMessage(title, description: description, hiddenAfterSeconds: NCGlobal.shared.dismissAfterSecond)
+                    NCContentPresenter.shared.messageNotification(title, description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)                    
                 } else {
-                    self.playerToolBar?.showMessage("_error_", description: "_error_something_wrong_", hiddenAfterSeconds: NCGlobal.shared.dismissAfterSecond)
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
                 }
                 #endif
                 break
