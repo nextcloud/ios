@@ -131,6 +131,7 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCel
     }
 
     func rename(fileName: String, fileNameNew: String) {
+        guard fileName != fileNameNew else { return }
         guard let fileIx = self.filesName.firstIndex(of: fileName),
               !self.filesName.contains(fileNameNew),
               NCUtilityFileSystem.shared.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: (NSTemporaryDirectory() + fileNameNew)) else {
