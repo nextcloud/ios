@@ -498,15 +498,6 @@ class NCPlayerToolBar: UIView {
         */
     }
     
-    @IBAction func playerMessageButtonTouchInside(_ sender: UIButton) {
-       
-        #if MFFFLIB
-        if let metadata = metadata {
-            MFFF.shared.stopMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
-        }
-        #endif
-    }
-
     func forward() {
 
         var index: Int = 0
