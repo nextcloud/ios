@@ -46,8 +46,8 @@ class NCShareCell: UITableViewCell {
         imageCell?.layer.cornerRadius = 6
         imageCell?.layer.masksToBounds = true
 
-        if let image = UIImage(contentsOfFile: (NSTemporaryDirectory() + fileName)) {
-            imageCell?.image = image.resizeImage(size: CGSize(width: 80, height: 80), isAspectRation: true)
+        if let image = UIImage.downsample(imageAt: URL(fileURLWithPath: NSTemporaryDirectory() + fileName), to: CGSize(width: 80, height: 80)) {
+            imageCell.image = image
         } else {
             if !resultInternalType.iconName.isEmpty {
                 imageCell?.image = UIImage(named: resultInternalType.iconName)
