@@ -292,45 +292,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         return gestureRecognizer.view == touch.view
     }
-    
-    func tapCopy(with tableShare: tableShare?, sender: Any) {
-        
-        if let link = tableShare?.url {
-            NCShareCommon.shared.copyLink(link: link, viewController: self, sender: sender)
-        }
-    }
-    
-    func tapMenu(with tableShare: tableShare?, sender: Any) {
-        guard let tableShare = tableShare else { return }
-        guard let metadata = self.metadata else { return }
-        self.tableShareSelected = tableShare
-        let isFolder = metadata.directory
-        
-        if tableShare.shareType == 3 {
-            let shareMenu = NCShareMenu()
-            let isFolder = metadata.directory
-            shareMenu.toggleMenu(viewController: self, sendMail: false, folder: isFolder)
-            let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
-            tap.delegate = self
-        } else {
-            let shareMenu = NCShareMenu()
-            shareMenu.toggleMenu(viewController: self, sendMail: true, folder: isFolder)
-            
-            let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
-            tap.delegate = self
-        }
-    }
-
-    func quickStatus(with tableShare: tableShare?, sender: Any) {
-
-        guard let tableShare = tableShare else { return }
-
-        if tableShare.shareType != NCGlobal.shared.permissionDefaultFileRemoteShareNoSupportShareOption {
-            //self.quickStatusTableShare = tableShare
-            let quickStatusMenu = NCShareQuickStatusMenu()
-            quickStatusMenu.toggleMenu(viewController: self, directory: metadata!.directory, tableShare: tableShare)
-        }
-    }
 
     // MARK: - NCShareNetworkingDelegate
 
@@ -421,21 +382,21 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
 
         dropDown.selectionAction = { (index, item) in
             let sharee = sharees[index]
-            self?.searchField.layer.borderColor = NCBrandColor.shared.label.cgColor
+            self.searchField.layer.borderColor = NCBrandColor.shared.label.cgColor
             let storyboard = UIStoryboard(name: "NCShare", bundle: nil)
             DispatchQueue.main.async() { [self] in
                 var viewNewUserPermission: NCShareAdvancePermission
                 viewNewUserPermission = storyboard.instantiateViewController(withIdentifier: "NCShareAdvancePermission") as! NCShareAdvancePermission
-                if let ocId = self?.metadata?.ocId {
+                if let ocId = self.metadata?.ocId {
                     let metaData = NCManageDatabase.shared.getMetadataFromOcId(ocId)
-                    self?.metadata = metaData
+                    self.metadata = metaData
                 }
                 
-                viewNewUserPermission.metadata = self?.metadata
+                viewNewUserPermission.metadata = self.metadata
                 viewNewUserPermission.sharee = sharee
-                viewNewUserPermission.shareeEmail = self?.shareeEmail
+                viewNewUserPermission.shareeEmail = self.shareeEmail
                 viewNewUserPermission.newUser = true
-                self?.navigationController!.pushViewController(viewNewUserPermission, animated: true)
+                self.navigationController!.pushViewController(viewNewUserPermission, animated: true)
             }
         }
 
@@ -593,23 +554,22 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
     func tapMenu(with tableShare: tableShare?, sender: Any) {
 
         guard let tableShare = tableShare else { return }
-
+        guard let metadata = self.metadata else { return }
+        self.tableShareSelected = tableShare
+        let isFolder = metadata.directory
+        
         if tableShare.shareType == 3 {
-            let views = NCShareCommon.shared.openViewMenuShareLink(shareViewController: self, tableShare: tableShare, metadata: metadata!)
-            shareLinkMenuView = views.shareLinkMenuView
-            shareMenuViewWindow = views.viewWindow
-
+            let shareMenu = NCShareMenu()
+            let isFolder = metadata.directory
+            shareMenu.toggleMenu(viewController: self, sendMail: false, folder: isFolder)
             let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
             tap.delegate = self
-            shareMenuViewWindow?.addGestureRecognizer(tap)
         } else {
-            let views = NCShareCommon.shared.openViewMenuUser(shareViewController: self, tableShare: tableShare, metadata: metadata!)
-            shareUserMenuView = views.shareUserMenuView
-            shareMenuViewWindow = views.viewWindow
-
+            let shareMenu = NCShareMenu()
+            shareMenu.toggleMenu(viewController: self, sendMail: true, folder: isFolder)
+            
             let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
             tap.delegate = self
-            shareMenuViewWindow?.addGestureRecognizer(tap)
         }
     }
 
