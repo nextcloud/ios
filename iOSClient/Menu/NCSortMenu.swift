@@ -26,26 +26,25 @@ import FloatingPanel
 import NCCommunication
 
 class NCSortMenu: NSObject {
-    
+
     private var sortButton: UIButton?
     private var serverUrl: String = ""
     private var hideDirectoryOnTop: Bool?
-    
+
     private var key = ""
 
     func toggleMenu(viewController: UIViewController, key: String, sortButton: UIButton?, serverUrl: String, hideDirectoryOnTop: Bool = false) {
-        
+
         self.key = key
         self.sortButton = sortButton
         self.serverUrl = serverUrl
         self.hideDirectoryOnTop = hideDirectoryOnTop
-        
+
         var layoutForView = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
         var actions = [NCMenuAction]()
         var title = ""
         var icon = UIImage()
-        
+
         if layoutForView.ascending {
             title = NSLocalizedString("_order_by_name_z_a_", comment: "")
             icon = UIImage(named: "sortFileNameZA")!.image(color: NCBrandColor.shared.gray, size: 50)
@@ -53,14 +52,14 @@ class NCSortMenu: NSObject {
             title = NSLocalizedString("_order_by_name_a_z_", comment: "")
             icon = UIImage(named: "sortFileNameAZ")!.image(color: NCBrandColor.shared.gray, size: 50)
         }
-       
+
         actions.append(
             NCMenuAction(
                 title: title,
                 icon: icon,
                 selected: layoutForView.sort == "fileName",
                 on: layoutForView.sort == "fileName",
-                action: { menuAction in
+                action: { _ in
                     layoutForView.sort = "fileName"
                     layoutForView.ascending = !layoutForView.ascending
                     self.actionMenu(layoutForView: layoutForView)
@@ -75,14 +74,14 @@ class NCSortMenu: NSObject {
             title = NSLocalizedString("_order_by_date_less_recent_", comment: "")
             icon = UIImage(named: "sortDateLessRecent")!.image(color: NCBrandColor.shared.gray, size: 50)
         }
-        
+
         actions.append(
             NCMenuAction(
                 title: title,
                 icon: icon,
                 selected: layoutForView.sort == "date",
                 on: layoutForView.sort == "date",
-                action: { menuAction in
+                action: { _ in
                     layoutForView.sort = "date"
                     layoutForView.ascending = !layoutForView.ascending
                     self.actionMenu(layoutForView: layoutForView)
@@ -97,14 +96,14 @@ class NCSortMenu: NSObject {
             title = NSLocalizedString("_order_by_size_smallest_", comment: "")
             icon = UIImage(named: "sortSmallest")!.image(color: NCBrandColor.shared.gray, size: 50)
         }
-        
+
         actions.append(
             NCMenuAction(
                 title: title,
                 icon: icon,
                 selected: layoutForView.sort == "size",
                 on: layoutForView.sort == "size",
-                action: { menuAction in
+                action: { _ in
                     layoutForView.sort = "size"
                     layoutForView.ascending = !layoutForView.ascending
                     self.actionMenu(layoutForView: layoutForView)
@@ -119,29 +118,21 @@ class NCSortMenu: NSObject {
                     icon: UIImage(named: "foldersOnTop")!.image(color: NCBrandColor.shared.gray, size: 50),
                     selected: layoutForView.directoryOnTop,
                     on: layoutForView.directoryOnTop,
-                    action: { menuAction in
+                    action: { _ in
                         layoutForView.directoryOnTop = !layoutForView.directoryOnTop
                         self.actionMenu(layoutForView: layoutForView)
                     }
                 )
             )
         }
-        
-        menuViewController.actions = actions
 
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = viewController
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-
-        viewController.present(menuPanelController, animated: true, completion: nil)
+        viewController.presentMenu(with: actions)
     }
-    
+
     func actionMenu(layoutForView: NCGlobal.layoutForViewType) {
-                
+
         var layoutForView = layoutForView
-        
+
         switch layoutForView.sort {
         case "fileName":
             layoutForView.titleButtonHeader = layoutForView.ascending ? "_sorted_by_name_a_z_" : "_sorted_by_name_z_a_"
@@ -152,11 +143,11 @@ class NCSortMenu: NSObject {
         default:
             break
         }
-        
+
         self.sortButton?.setTitle(NSLocalizedString(layoutForView.titleButtonHeader, comment: ""), for: .normal)
-        
+
         NCUtility.shared.setLayoutForView(key: key, serverUrl: serverUrl, layoutForView: layoutForView)
-        
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl":self.serverUrl])
+
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.serverUrl])
     }
 }

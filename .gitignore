@@ -37,6 +37,8 @@ DerivedData
 
 ## Package
 Carthage/
+
+### SwiftPackageManager ###
+.swiftpm
 Package.resolved
-Cartfile.resolved
 

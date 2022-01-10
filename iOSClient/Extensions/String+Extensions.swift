@@ -34,7 +34,7 @@ extension String {
             })
         return initials.isEmpty ? nil : initials
     }
-    
+
     func formatSecondsToString(_ seconds: TimeInterval) -> String {
         if seconds.isNaN {
             return "00:00:00"
@@ -44,14 +44,14 @@ extension String {
         let hour = Int(seconds / 3600)
         return String(format: "%02d:%02d:%02d", hour, min, sec)
     }
-    
+
     func md5() -> String {
         //https://stackoverflow.com/a/32166735/9506784
 
         let length = Int(CC_MD5_DIGEST_LENGTH)
-        let messageData = self.data(using:.utf8)!
+        let messageData = self.data(using: .utf8)!
         var digestData = Data(count: length)
-        
+
         _ = digestData.withUnsafeMutableBytes { digestBytes -> UInt8 in
             messageData.withUnsafeBytes { messageBytes -> UInt8 in
                 if let messageBytesBaseAddress = messageBytes.baseAddress, let digestBytesBlindMemory = digestBytes.bindMemory(to: UInt8.self).baseAddress {
@@ -61,7 +61,7 @@ extension String {
                 return 0
             }
         }
-        
+
         return digestData.map { String(format: "%02hhx", $0) }.joined()
     }
 }

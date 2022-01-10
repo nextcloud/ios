@@ -27,7 +27,7 @@
 #import <sys/sysctl.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <MessageUI/MessageUI.h>
-#import <UICKeyChainStore/UICKeyChainStore.h>
+#import <UICKeyChainStore.h>
 #import <Photos/Photos.h>
 #import <PDFKit/PDFKit.h>
 
@@ -50,6 +50,8 @@
 
 + (BOOL)getEnableTouchFaceID;
 + (void)setEnableTouchFaceID:(BOOL)set;
+
++ (BOOL)isPasscodeAtStartEnabled;
 
 + (NSString *)getGroupBySettings;
 + (void)setGroupBySettings:(NSString *)groupby;
@@ -146,10 +148,6 @@
 
 + (NSData *)getDatabaseEncryptionKey;
 
-+ (BOOL)getCertificateError:(NSString *)account;
-+ (void)setCertificateError:(NSString *)account;
-+ (void)clearCertificateError:(NSString *)account;
-
 + (BOOL)getDisableLocalCacheAfterUpload;
 + (void)setDisableLocalCacheAfterUpload:(BOOL)disable;
 
@@ -185,6 +183,9 @@
 + (PDFDisplayDirection)getPDFDisplayDirection;
 + (void)setPDFDisplayDirection:(PDFDisplayDirection)direction;
 
++ (BOOL)getPrivacyScreenEnabled;
++ (void)setPrivacyScreenEnabled:(BOOL)set;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
@@ -206,7 +207,6 @@
 + (void)createDirectoryStandard;
 
 + (NSURL *)getDirectoryGroup;
-+ (NSString *)getUserUrlBase:(NSString *)user urlBase:(NSString *)urlBase;
 + (NSString *)getDirectoryDocuments;
 + (NSString *)getDirectoryReaderMetadata;
 + (NSString *)getDirectoryAudio;

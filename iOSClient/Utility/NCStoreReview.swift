@@ -25,37 +25,37 @@ import UIKit
 import StoreKit
 
 class NCStoreReview: NSObject {
-    
+
     let runIncrementerSetting = "numberOfRuns"
     let minimumRunCount = 5
-    
+
     func getRunCounts () -> Int {
-        
+
         let uDefaults = UserDefaults()
         let savedRuns = uDefaults.value(forKey: runIncrementerSetting)
-        
+
         var runs = 0
-        if (savedRuns != nil) {
+        if savedRuns != nil {
             runs = savedRuns as! Int
         }
-        
+
         print("Nextcloud iOS run Counts are \(runs)")
         return runs
     }
-    
+
     @objc func incrementAppRuns() {
-        
+
         let uDefaults = UserDefaults()
         let runs = getRunCounts() + 1
         uDefaults.setValuesForKeys([runIncrementerSetting: runs])
         uDefaults.synchronize()
     }
-    
+
     @objc func showStoreReview() {
-        
+
         let runs = getRunCounts()
-        
-        if (runs > minimumRunCount) {
+
+        if runs > minimumRunCount {
             SKStoreReviewController.requestReview()
         }
     }

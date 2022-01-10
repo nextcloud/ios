@@ -29,6 +29,15 @@
         }
       },
       {
+        "package": "ChromaColorPicker",
+        "repositoryURL": "https://github.com/marinofaggiana/ChromaColorPicker",
+        "state": {
+          "branch": "master",
+          "revision": "b1b2c58c3c5617c73863a073cb6393c79195932e",
+          "version": null
+        }
+      },
+      {
         "package": "CocoaLumberjack",
         "repositoryURL": "https://github.com/CocoaLumberjack/CocoaLumberjack.git",
         "state": {
@@ -38,12 +47,21 @@
         }
       },
       {
+        "package": "DropDown",
+        "repositoryURL": "https://github.com/AssistoLab/DropDown",
+        "state": {
+          "branch": "master",
+          "revision": "2ab6f6ce19f0117d1a76ea043ef8f57722c65d16",
+          "version": null
+        }
+      },
+      {
         "package": "Firebase",
         "repositoryURL": "https://github.com/firebase/firebase-ios-sdk",
         "state": {
           "branch": null,
-          "revision": "81b568348ab4e113dd8bcef5a83c5dd431741ae4",
-          "version": "8.8.1"
+          "revision": "08686f04881483d2bc098b2696e674c0ba135e47",
+          "version": "8.10.0"
         }
       },
       {
@@ -51,8 +69,17 @@
         "repositoryURL": "https://github.com/scenee/FloatingPanel",
         "state": {
           "branch": null,
-          "revision": "ca7596e1cae161415f54059a8c44b82c95724160",
-          "version": "1.7.6"
+          "revision": "0fbbbc8d99b4dfe58bb1dd704d14b45f35b46584",
+          "version": "2.5.1"
+        }
+      },
+      {
+        "package": "FSCalendar",
+        "repositoryURL": "https://github.com/WenchaoD/FSCalendar",
+        "state": {
+          "branch": null,
+          "revision": "afaf247581eb1f8aea847f2e6c99c665ae900494",
+          "version": "2.8.3"
         }
       },
       {
@@ -60,8 +87,8 @@
         "repositoryURL": "https://github.com/google/GoogleAppMeasurement.git",
         "state": {
           "branch": null,
-          "revision": "06add56b27b88ae5180e92d4ee21a1199ee888a1",
-          "version": "8.8.0"
+          "revision": "9b2f6aca5b4685c45f9f5481f19bee8e7982c538",
+          "version": "8.9.1"
         }
       },
       {
@@ -69,8 +96,8 @@
         "repositoryURL": "https://github.com/google/GoogleDataTransport.git",
         "state": {
           "branch": null,
-          "revision": "7fb27ea49414b9c5483503cd06baa821c8654d1e",
-          "version": "9.1.1"
+          "revision": "15ccdfd25ac55b9239b82809531ff26605e7556e",
+          "version": "9.1.2"
         }
       },
       {
@@ -78,8 +105,8 @@
         "repositoryURL": "https://github.com/google/GoogleUtilities.git",
         "state": {
           "branch": null,
-          "revision": "616fac2626b6b2d1424d79a6f786b4e2ed1cfb49",
-          "version": "7.5.2"
+          "revision": "797005ad8a1f0614063933e2fa010a5d13cb09d0",
+          "version": "7.6.0"
         }
       },
       {
@@ -101,11 +128,20 @@
         }
       },
       {
+        "package": "IHProgressHUD",
+        "repositoryURL": "https://github.com/marinofaggiana/IHProgressHUD",
+        "state": {
+          "branch": "master",
+          "revision": "a3d94dfb869ff9b2f9e5a4d0359a73a625072853",
+          "version": null
+        }
+      },
+      {
         "package": "NCCommunication",
         "repositoryURL": "https://github.com/nextcloud/ios-communication-library/",
         "state": {
-          "branch": null,
-          "revision": "9b748dd71eff508307e6091f790b5a05be0509e4",
+          "branch": "develop",
+          "revision": "ffbe682e48882a064de692bae82995229c5a88ff",
           "version": null
         }
       },
@@ -146,12 +182,21 @@
         }
       },
       {
-        "package": "Parchment",
-        "repositoryURL": "https://github.com/marinofaggiana/Parchment",
+        "package": "OpenSSL",
+        "repositoryURL": "https://github.com/krzyzanowskim/OpenSSL",
         "state": {
-          "branch": "master",
-          "revision": "f4081dbd1a1793217686a381330e90b6626710c7",
-          "version": null
+          "branch": null,
+          "revision": "45545c5729b5597d2d4910a5edd07b1bf42e5839",
+          "version": "1.1.1200"
+        }
+      },
+      {
+        "package": "Parchment",
+        "repositoryURL": "https://github.com/rechsteiner/Parchment",
+        "state": {
+          "branch": null,
+          "revision": "2b1a370e71480cb1a95dd56ef8bddc2e0a45e033",
+          "version": "3.1.0"
         }
       },
       {
@@ -173,6 +218,15 @@
         }
       },
       {
+        "package": "Queuer",
+        "repositoryURL": "https://github.com/FabrizioBrancati/Queuer",
+        "state": {
+          "branch": null,
+          "revision": "52515108d0ac4616d9e15ffcc7ad986e300d31ff",
+          "version": "2.1.1"
+        }
+      },
+      {
         "package": "QuickLayout",
         "repositoryURL": "https://github.com/huri000/QuickLayout",
         "state": {
@@ -182,21 +236,21 @@
         }
       },
       {
-        "package": "Realm",
-        "repositoryURL": "https://github.com/realm/realm-cocoa",
-        "state": {
-          "branch": null,
-          "revision": "7ca0ce1dd58553d5be1ec9cc7283b068c256979d",
-          "version": "10.17.0"
-        }
-      },
-      {
         "package": "RealmDatabase",
         "repositoryURL": "https://github.com/realm/realm-core",
         "state": {
           "branch": null,
-          "revision": "23f60515a00f076a9e3f2dc672fe1ae07601ee90",
-          "version": "11.4.1"
+          "revision": "c3c11a841642ac93c27bd1edd61f989fc0bfb809",
+          "version": "11.6.1"
+        }
+      },
+      {
+        "package": "Realm",
+        "repositoryURL": "https://github.com/realm/realm-swift",
+        "state": {
+          "branch": null,
+          "revision": "e83cc9f28e8bccd477b6b81cee521c02239d2773",
+          "version": "10.20.2"
         }
       },
       {
@@ -258,8 +312,35 @@
         "repositoryURL": "https://github.com/yahoojapan/SwiftyXMLParser",
         "state": {
           "branch": null,
-          "revision": "ad5eeeaf7797f69e26943aaa53c81c6a9fdaa516",
-          "version": "5.5.0"
+          "revision": "d7a1d23f04c86c1cd2e8f19247dd15d74e0ea8be",
+          "version": "5.6.0"
+        }
+      },
+      {
+        "package": "TLPhotoPicker",
+        "repositoryURL": "https://github.com/tilltue/TLPhotoPicker",
+        "state": {
+          "branch": null,
+          "revision": "43cc38e7ed183b3b25867ea3e1f271468ca2756f",
+          "version": "2.1.8"
+        }
+      },
+      {
+        "package": "UICKeyChainStore",
+        "repositoryURL": "https://github.com/kishikawakatsumi/UICKeyChainStore",
+        "state": {
+          "branch": "master",
+          "revision": "db869212bc69b6198a62efe03e2f5fc8e19c6b65",
+          "version": null
+        }
+      },
+      {
+        "package": "XLForm",
+        "repositoryURL": "https://github.com/xmartlabs/XLForm",
+        "state": {
+          "branch": null,
+          "revision": "870afc56602fd518e33d0b271371a2d5acd410ea",
+          "version": "4.3.0"
         }
       }
     ]

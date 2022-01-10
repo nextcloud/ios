@@ -27,18 +27,20 @@ import FloatingPanel
 extension NCLoginWeb {
 
     func toggleMenu() {
-        
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+
         var actions = [NCMenuAction]()
-        
+
         let accounts = NCManageDatabase.shared.getAllAccount()
         var avatar = NCUtility.shared.loadImage(named: "person.crop.circle")
-        
+
         for account in accounts {
-            
+
             let title = account.user + " " + (URL(string: account.urlBase)?.host ?? "")
 
-            avatar = NCUtility.shared.loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase)
+            avatar = NCUtility.shared.loadUserImage(
+                for: account.user,
+                   displayName: account.displayName,
+                   userBaseUrl: account)
 
             actions.append(
                 NCMenuAction(
@@ -48,7 +50,7 @@ extension NCLoginWeb {
                     onIcon: avatar,
                     selected: account.active == true,
                     on: account.active == true,
-                    action: { menuAction in
+                    action: { _ in
                         if self.appDelegate.account != account.account {
                             NCManageDatabase.shared.setAccountActive(account.account)
                             self.dismiss(animated: true) {
@@ -69,7 +71,7 @@ extension NCLoginWeb {
                 onIcon: avatar,
                 selected: false,
                 on: false,
-                action: { menuAction in
+                action: { _ in
                     self.appDelegate.deleteAccount(self.appDelegate.account, wipe: false)
                     self.dismiss(animated: true) {
                         let accounts = NCManageDatabase.shared.getAllAccount()
@@ -82,16 +84,7 @@ extension NCLoginWeb {
                 }
             )
         )
-       
-        menuViewController.actions = actions
 
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-
-        self.present(menuPanelController, animated: true, completion: nil)
+        presentMenu(with: actions)
     }
 }
-

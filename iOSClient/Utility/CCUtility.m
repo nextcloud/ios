@@ -103,6 +103,12 @@
     [UICKeyChainStore setString:sSet forKey:@"enableTouchFaceID" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
++ (BOOL)isPasscodeAtStartEnabled
+{
+    if ([self getPasscode].length > 0 && ![self getNotPasscodeAtStart]) return true;
+    else return false;
+}
+
 + (NSString *)getGroupBySettings
 {
     NSString *groupby = [UICKeyChainStore stringForKey:@"groupby" service:NCGlobal.shared.serviceShareKeyChain];
@@ -550,41 +556,6 @@
     [UICKeyChainStore setData:data forKey:@"databaseEncryptionKey" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (BOOL)getCertificateError:(NSString *)account
-{
-    NSString *key = [@"certificateError" stringByAppendingString:account];
-    NSString *error = [UICKeyChainStore stringForKey:key service:NCGlobal.shared.serviceShareKeyChain];
-    
-    if (error == nil) {
-        return false;
-    }
-    
-    return true;
-}
-
-+ (void)setCertificateError:(NSString *)account
-{
-    // In background do not write the error
-#if !defined(EXTENSION)
-    UIApplicationState state = [[UIApplication sharedApplication] applicationState];
-    if (state == UIApplicationStateBackground || state == UIApplicationStateInactive) {
-        return;
-    }
-    NSString *key = [@"certificateError" stringByAppendingString:account];
-    
-    [UICKeyChainStore setString:@"true" forKey:key service:NCGlobal.shared.serviceShareKeyChain];
-#else
-    return;
-#endif
-}
-
-+ (void)clearCertificateError:(NSString *)account
-{
-    NSString *key = [@"certificateError" stringByAppendingString:account];
-    
-    [UICKeyChainStore setString:nil forKey:key service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getDisableLocalCacheAfterUpload
 {
     return [[UICKeyChainStore stringForKey:@"disableLocalCacheAfterUpload" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
@@ -759,6 +730,25 @@
 {
     NSString *directionString = [@(direction) stringValue];
     [UICKeyChainStore setString:directionString forKey:@"PDFDisplayDirection" service:NCGlobal.shared.serviceShareKeyChain];
+}
+
++ (BOOL)getPrivacyScreenEnabled
+{
+    NSString *valueString = [UICKeyChainStore stringForKey:@"privacyScreen" service:NCGlobal.shared.serviceShareKeyChain];
+    
+    // Default TRUE
+    if (valueString == nil) {
+        [self setPrivacyScreenEnabled:YES];
+        return true;
+    }
+    
+    return [valueString boolValue];
+}
+
++ (void)setPrivacyScreenEnabled:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"privacyScreen" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1030,7 +1020,6 @@
     path = [[dirGroup URLByAppendingPathComponent:[[NCGlobal shared] appDatabaseNextcloud]] path];
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:path error:nil];
     
     // create Directory User Data
     path = [[dirGroup URLByAppendingPathComponent:NCGlobal.shared.appUserData] path];
@@ -1075,23 +1064,6 @@
 {
     NSURL *path = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions shared].capabilitiesGroups];
     return path;
-}
-
-+ (NSString *)getUserUrlBase:(NSString *)user urlBase:(NSString *)urlBase
-{
-    NSString *baseUrl = [urlBase lowercaseString];
-    NSString *dirUserBaseUrl = @"";
-
-    if ([user length] && [baseUrl length]) {
-        
-        if ([baseUrl hasPrefix:@"https://"]) baseUrl = [baseUrl substringFromIndex:8];
-        if ([baseUrl hasPrefix:@"http://"]) baseUrl = [baseUrl substringFromIndex:7];
-        
-        dirUserBaseUrl = [NSString stringWithFormat:@"%@-%@", user, baseUrl];
-        dirUserBaseUrl = [[self removeForbiddenCharactersFileSystem:dirUserBaseUrl] lowercaseString];
-    }
-    
-    return dirUserBaseUrl;
 }
 
 // Return the path of directory Documents -> NSDocumentDirectory

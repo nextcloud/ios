@@ -24,7 +24,7 @@
 import UIKit
 
 class NCCreateFormUploadConflictCell: UITableViewCell {
-    
+
     @IBOutlet weak var labelFileName: UILabel!
 
     @IBOutlet weak var imageAlreadyExistingFile: UIImageView!
@@ -35,21 +35,21 @@ class NCCreateFormUploadConflictCell: UITableViewCell {
 
     @IBOutlet weak var switchAlreadyExistingFile: UISwitch!
     @IBOutlet weak var switchNewFile: UISwitch!
-    
-    var delegate: NCCreateFormUploadConflictCellDelegate?
+
+    weak var delegate: NCCreateFormUploadConflictCellDelegate?
     var ocId: String = ""
 
     @IBAction func valueChangedSwitchNewFile(_ sender: Any) {
         delegate?.valueChangedSwitchNewFile(with: ocId, isOn: switchNewFile.isOn)
     }
-    
+
     @IBAction func valueChangedSwitchAlreadyExistingFile(_ sender: Any) {
         delegate?.valueChangedSwitchAlreadyExistingFile(with: ocId, isOn: switchAlreadyExistingFile.isOn)
     }
 }
 
-protocol NCCreateFormUploadConflictCellDelegate {
-    
+protocol NCCreateFormUploadConflictCellDelegate: AnyObject {
+
     func valueChangedSwitchNewFile(with ocId: String, isOn: Bool)
     func valueChangedSwitchAlreadyExistingFile(with ocId: String, isOn: Bool)
 

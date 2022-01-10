@@ -28,16 +28,15 @@ import NCCommunication
 extension NCTrash {
 
     func toggleMenuMoreHeader() {
-        
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+
         var actions: [NCMenuAction] = []
-                
+
         if isEditMode {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_trash_delete_selected_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "trash"),
-                    action: { menuAction in
+                    action: { _ in
                         let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
                             for ocId in self.selectOcId {
@@ -58,7 +57,7 @@ extension NCTrash {
                 NCMenuAction(
                     title: NSLocalizedString("_trash_delete_all_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "trash"),
-                    action: { menuAction in
+                    action: { _ in
                         let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_", comment: ""), message: "", preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
                             self.emptyTrash()
@@ -70,21 +69,12 @@ extension NCTrash {
                 )
             )
         }
-        
-        menuViewController.actions = actions
-        
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
 
-        self.present(menuPanelController, animated: true, completion: nil)
+        presentMenu(with: actions)
     }
-    
+
     func toggleMenuMoreList(with objectId: String, image: UIImage?) {
-        
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+
         var actions: [NCMenuAction] = []
 
         guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: appDelegate.account) else {
@@ -95,7 +85,7 @@ extension NCTrash {
         if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
             iconHeader = icon
         } else {
-            if(tableTrash.directory) {
+            if tableTrash.directory {
                 iconHeader = UIImage(named: "folder")!.image(color: NCBrandColor.shared.gray, size: 50)
             } else {
                 iconHeader = UIImage(named: tableTrash.iconName)
@@ -114,26 +104,17 @@ extension NCTrash {
             NCMenuAction(
                 title: NSLocalizedString("_delete_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "trash"),
-                action: { menuAction in
+                action: { _ in
                     self.deleteItem(with: objectId)
                 }
             )
         )
 
-        menuViewController.actions = actions
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-
-        self.present(menuPanelController, animated: true, completion: nil)
+        self.presentMenu(with: actions)
     }
-    
+
     func toggleMenuMoreGrid(with objectId: String, namedButtonMore: String, image: UIImage?) {
-        
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+
         var actions: [NCMenuAction] = []
 
         guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: appDelegate.account) else {
@@ -144,7 +125,7 @@ extension NCTrash {
         if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
             iconHeader = icon
         } else {
-            if(tableTrash.directory) {
+            if tableTrash.directory {
                 iconHeader = UIImage(named: "folder")!.image(color: NCBrandColor.shared.gray, size: 50)
             } else {
                 iconHeader = UIImage(named: tableTrash.iconName)
@@ -163,7 +144,7 @@ extension NCTrash {
             NCMenuAction(
                 title: NSLocalizedString("_restore_", comment: ""),
                 icon: UIImage(named: "restore")!.image(color: NCBrandColor.shared.gray, size: 50),
-                action: { menuAction in
+                action: { _ in
                     self.restoreItem(with: objectId)
                 }
             )
@@ -173,21 +154,12 @@ extension NCTrash {
             NCMenuAction(
                 title: NSLocalizedString("_delete_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "trash"),
-                action: { menuAction in
+                action: { _ in
                     self.deleteItem(with: objectId)
                 }
             )
         )
 
-        menuViewController.actions = actions
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-
-        self.present(menuPanelController, animated: true, completion: nil)
+        presentMenu(with: actions)
     }
 }
-

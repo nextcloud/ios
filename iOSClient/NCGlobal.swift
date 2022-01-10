@@ -39,7 +39,7 @@ class NCGlobal: NSObject {
             in: username,
             range: NSRange(username.startIndex..., in: username))
 
-        if (!matches.isEmpty) {
+        if !matches.isEmpty {
             // Already a md5 hash?
             // done, use as is.
             hash = lowerUsername
@@ -68,7 +68,7 @@ class NCGlobal: NSObject {
         var totalBytes: Int64
         var totalBytesExpected: Int64
     }
-    
+
     // Struct for LayoutForView
     //
     struct layoutForViewType {
@@ -82,7 +82,7 @@ class NCGlobal: NSObject {
         var imageBackgroud: String
         var imageBackgroudContentMode: String
     }
-    
+
     // Directory on Group
     //
     @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"
@@ -99,7 +99,7 @@ class NCGlobal: NSObject {
     let metadataKeyedUnarchiver                     = "it.twsweb.nextcloud.metadata"
     let refreshTask                                 = "com.nextcloud.refreshTask"
     let processingTask                              = "com.nextcloud.processingTask"
-    
+
     // Nextcloud version
     //
     let nextcloudVersion12: Int                     =  12
@@ -107,44 +107,46 @@ class NCGlobal: NSObject {
     let nextcloudVersion17: Int                     =  17
     let nextcloudVersion18: Int                     =  18
     let nextcloudVersion20: Int                     =  20
+    let nextcloudVersion23: Int                     =  23
 
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 212
-    
+    let databaseSchemaVersion: UInt64               = 215
+
     // Intro selector
     //
     @objc let introLogin: Int                       = 0
     let introSignup: Int                            = 1
-    
+
     // Varie size GUI
     //
     @objc let heightCellSettings: CGFloat           = 50
-    
+
     // Avatar & Preview size
     //
     let avatarSize: Int                             = 128 * Int(UIScreen.main.scale)
     let avatarSizeRounded: Int                      = 128
     let sizePreview: Int                            = 1024
     let sizeIcon: Int                               = 512
-    
+
     // E2EE
     //
     let e2eeMaxFileSize: UInt64                     = 500000000     // 500 MB
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
     @objc let e2eeVersion                           = "1.1"
     
-    // Max Cache Proxy Video
+    // Video
     //
     let maxHTTPCache: Int64                         = 10000000000   // 10 GB
-    
+    let fileNameVideoEncoded: String                = "video_encoded.mp4"
+
     // NCSharePaging
     //
-    let indexPageActivity: Int                      = 0
-    let indexPageComments: Int                      = 1
-    let indexPageSharing: Int                       = 2
-    
+    enum NCSharePagingIndex: Int, CaseIterable {
+        case activity, sharing
+    }
+
     // NCViewerProviderContextMenu
     //
     let maxAutoDownload: UInt64                     = 50000000      // 50MB
@@ -153,12 +155,12 @@ class NCGlobal: NSObject {
     // Nextcloud unsupported
     //
     let nextcloud_unsupported_version: Int          = 16
-    
+
     // Layout
     //
     let layoutList                                  = "typeLayoutList"
     let layoutGrid                                  = "typeLayoutGrid"
-    
+
     let layoutViewMove                              = "LayoutMove"
     let layoutViewTrash                             = "LayoutTrash"
     let layoutViewOffline                           = "LayoutOffline"
@@ -174,7 +176,7 @@ class NCGlobal: NSObject {
     //
     let buttonMoreMore                              = "more"
     let buttonMoreStop                              = "stop"
-    
+
     // Text -  OnlyOffice - Collabora - QuickLook
     //
     let editorText                                  = "text"
@@ -191,25 +193,19 @@ class NCGlobal: NSObject {
     let templateDocument                            = "document"
     let templateSpreadsheet                         = "spreadsheet"
     let templatePresentation                        = "presentation"
-    
+
     // Rich Workspace
     //
     let fileNameRichWorkspace                       = "Readme.md"
-    
-    // Certificate pinning
-    //
-    let certificate                                 = "certificate.der"
-    let certificateTmp                              = "tmp.der"
-    let certificateTmpV2                            = "certificatetmp.der"
-    
+
     // Extension
     @objc let extensionPreview                      = "ico"
-    
+
     // ContentPresenter
     //
     @objc let dismissAfterSecond: TimeInterval      = 4
     @objc let dismissAfterSecondLong: TimeInterval  = 10
-    
+
     // Error
     //
     @objc let errorNoError: Int                     = 0
@@ -242,16 +238,16 @@ class NCGlobal: NSObject {
     @objc let permissionCanDelete                   = "D"
     @objc let permissionCanRename                   = "N"
     @objc let permissionCanMove                     = "V"
-    
-    //Share permission
-    //permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
+
+    // Share permission
+    // permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all
     //
     @objc let permissionReadShare: Int              = 1
     @objc let permissionUpdateShare: Int            = 2
     @objc let permissionCreateShare: Int            = 4
     @objc let permissionDeleteShare: Int            = 8
     @objc let permissionShareShare: Int             = 16
-    
+
     @objc let permissionMinFileShare: Int           = 1
     @objc let permissionMaxFileShare: Int           = 19
     @objc let permissionMinFolderShare: Int         = 1
@@ -319,7 +315,7 @@ class NCGlobal: NSObject {
     let metadataStatusInUpload: Int                 = 2
     let metadataStatusUploading: Int                = 3
     let metadataStatusUploadError: Int              = 4
-    
+
     // Notification Center
     //
     @objc let notificationCenterApplicationDidEnterBackground   = "applicationDidEnterBackground"
@@ -350,7 +346,7 @@ class NCGlobal: NSObject {
     let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, serverUrl, account
 
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
-    
+
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId
     let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: ocId, fileNameView, classFile, onlyLocalCache
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, errorCode, errorDescription
@@ -362,17 +358,16 @@ class NCGlobal: NSObject {
     let notificationCenterMenuPDFDisplayDirection               = "menuPDFDisplayDirection"         // userInfo: direction
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
     let notificationCenterMenuDetailClose                       = "menuDetailClose"
-    
+
     let notificationCenterChangedLocation                       = "changedLocation"
     let notificationStatusAuthorizationChangedLocation          = "statusAuthorizationChangedLocation"
-    
+
     let notificationCenterShareChangePermissions                = "shareChangePermissions"          // userInfo: idShare, permissions, hideDownload
-    
+
     let notificationCenterDownloadedThumbnail                   = "DownloadedThumbnail"             // userInfo: ocId
-    
+
     let notificationCenterHidePlayerToolBar                     = "hidePlayerToolBar"               // userInfo: ocId
     let notificationCenterShowPlayerToolBar                     = "showPlayerToolBar"               // userInfo: ocId, enableTimerAutoHide
-    
     let notificationCenterOpenMediaDetail                       = "openMediaDetail"                 // userInfo: ocId
     
     let notificationCenterShareViewIn                           = "ShareViewIn"
@@ -380,31 +375,7 @@ class NCGlobal: NSObject {
     let notificationCenterShareSendEmail                        = "ShareSendEmail"
     let notificationCenterShareUnshare                          = "ShareUnshare"
 
+    let notificationCenterReloadMediaPage                       = "reloadMediaPage"
+    let notificationCenterPlayMedia                             = "playMedia"
+    let notificationCenterPauseMedia                            = "pauseMedia"
 }
-
-//let rootView = UIApplication.shared.keyWindow?.rootViewController?.view
-
-/*
-DispatchQueue.main.async {
-DispatchQueue.main.asyncAfter(deadline: .now() + 0.1)
-DispatchQueue.global().async
-DispatchQueue.global(qos: .background).async
-
-#if targetEnvironment(simulator)
-#endif
-
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-dispatch_async(dispatch_get_main_queue(), ^{
-dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-
-#if TARGET_OS_SIMULATOR
-#endif
-
-if let popoverController = alertController.popoverPresentationController {
-    popoverController.sourceView = self.view
-    popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
-    popoverController.permittedArrowDirections = []
-}
-
-@discardableResult
-*/

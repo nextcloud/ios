@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ne8-hS-cp3">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ne8-hS-cp3">
     <device id="retina5_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Viewer Media-->
+        <!--Viewer Media Page-->
         <scene sceneID="yQe-Pb-BKZ">
             <objects>
-                <viewController automaticallyAdjustsScrollViewInsets="NO" hidesBottomBarWhenPushed="YES" id="ne8-hS-cp3" customClass="NCViewerMedia" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController automaticallyAdjustsScrollViewInsets="NO" hidesBottomBarWhenPushed="YES" id="ne8-hS-cp3" customClass="NCViewerMediaPage" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="8k6-KQ-iNa"/>
                         <viewControllerLayoutGuide type="bottom" id="baP-ZX-MR4"/>
@@ -65,10 +65,10 @@
             </objects>
             <point key="canvasLocation" x="3748" y="777.66116941529242"/>
         </scene>
-        <!--Viewer Media Zoom-->
+        <!--Viewer Media-->
         <scene sceneID="rpT-vc-Kiv">
             <objects>
-                <viewController storyboardIdentifier="NCViewerMediaZoom" automaticallyAdjustsScrollViewInsets="NO" id="gXy-ag-ank" customClass="NCViewerMediaZoom" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NCViewerMedia" automaticallyAdjustsScrollViewInsets="NO" id="gXy-ag-ank" customClass="NCViewerMedia" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="IQm-1K-tBr"/>
                         <viewControllerLayoutGuide type="bottom" id="zwn-Sc-mqc"/>
@@ -80,7 +80,7 @@
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" maximumZoomScale="4" translatesAutoresizingMaskIntoConstraints="NO" id="CdQ-LC-Trx">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                                 <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="kPV-JM-UnM" customClass="imageVideoContainerView" customModule="Nextcloud" customModuleProvider="target">
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="networkInProgress" translatesAutoresizingMaskIntoConstraints="NO" id="kPV-JM-UnM" customClass="imageVideoContainerView" customModule="Nextcloud" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                                     </imageView>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="2AU-85-K8y">
@@ -451,7 +451,7 @@
         <image name="audioOn" width="28" height="28"/>
         <image name="gobackward.10" catalog="system" width="121" height="128"/>
         <image name="goforward.10" catalog="system" width="121" height="128"/>
-        <image name="logo" width="256" height="128"/>
+        <image name="networkInProgress" width="300" height="300"/>
         <image name="pip.enter" catalog="system" width="128" height="96"/>
         <image name="play.fill" catalog="system" width="116" height="128"/>
         <systemColor name="systemBackgroundColor">

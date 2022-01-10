@@ -29,10 +29,10 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
-    
+
     private var objectId: String = ""
     private var user: String = ""
-    
+
     var date: Date?
 
     var filePreviewImageView: UIImageView? {
@@ -61,7 +61,7 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
             user = newValue ?? ""
         }
     }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         initCell()
@@ -71,7 +71,7 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
         super.prepareForReuse()
         initCell()
     }
-    
+
     func initCell() {
         imageItem.backgroundColor = UIColor.lightGray
         imageStatus.image = nil
@@ -81,7 +81,7 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
         imageVisualEffect.layer.cornerRadius = 6
         imageVisualEffect.clipsToBounds = true
     }
-    
+
     func selectMode(_ status: Bool) {
         if status {
             imageSelect.isHidden = false
@@ -90,7 +90,7 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
             imageVisualEffect.isHidden = true
         }
     }
-    
+
     func selected(_ status: Bool) {
         if status {
             imageSelect.image = NCBrandColor.cacheImages.checkedYes
@@ -102,4 +102,3 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
         }
     }
 }
-

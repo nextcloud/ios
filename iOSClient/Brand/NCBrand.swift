@@ -23,21 +23,21 @@
 
 import UIKit
 
-//MARK: - Configuration
+// MARK: - Configuration
 
 @objc class NCBrandConfiguration: NSObject {
     @objc static let shared: NCBrandConfiguration = {
         let instance = NCBrandConfiguration()
         return instance
     }()
-    
-    @objc public let configuration_bundleId:            String = "it.twsweb.Nextcloud"
-    @objc public let configuration_serverUrl:           String = "serverUrl"
-    @objc public let configuration_username:            String = "username"
-    @objc public let configuration_password:            String = "password"
+
+    @objc public let configuration_bundleId: String = "it.twsweb.Nextcloud"
+    @objc public let configuration_serverUrl: String = "serverUrl"
+    @objc public let configuration_username: String = "username"
+    @objc public let configuration_password: String = "password"
 }
 
-//MARK: - Options
+// MARK: - Options
 
 @objc class NCBrandOptions: NSObject {
     @objc static let shared: NCBrandOptions = {
@@ -45,31 +45,31 @@ import UIKit
         return instance
     }()
     
-    @objc public var brand:                             String = "Nextcloud"
-    //@objc public var mailMe:                            String = "ios@nextcloud.com"                              // Deprecated
-    @objc public var textCopyrightNextcloudiOS:         String = "Nextcloud Liquid for iOS %@ © 2021"
-    @objc public var textCopyrightNextcloudServer:      String = "Nextcloud Server %@"
-    @objc public var loginBaseUrl:                      String = "https://dev1.next.magentacloud.de/"
-    @objc public var pushNotificationServerProxy:       String = "https://push-notifications.nextcloud.com"
-    @objc public var linkLoginHost:                     String = "https://nextcloud.com/install"
-    @objc public var linkloginPreferredProviders:       String = "https://nextcloud.com/signup-ios";
-    @objc public var webLoginAutenticationProtocol:     String = "nc://"                                            // example "abc://"
-    @objc public var privacy:                           String = "https://nextcloud.com/privacy"
-    @objc public var sourceCode:                        String = "https://github.com/nextcloud/ios"
+    @objc public var brand: String = "Nextcloud"
+    // @objc public var mailMe:                            String = "ios@nextcloud.com"                              // Deprecated
+    @objc public var textCopyrightNextcloudiOS: String = "Nextcloud Liquid for iOS %@ © 2021"
+    @objc public var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
+    @objc public var loginBaseUrl: String = "https://cloud.nextcloud.com"
+    @objc public var pushNotificationServerProxy: String = "https://push-notifications.nextcloud.com"
+    @objc public var linkLoginHost: String = "https://nextcloud.com/install"
+    @objc public var linkloginPreferredProviders: String = "https://nextcloud.com/signup-ios"
+    @objc public var webLoginAutenticationProtocol: String = "nc://"                                            // example "abc://"
+    @objc public var privacy: String = "https://nextcloud.com/privacy"
+    @objc public var sourceCode: String = "https://github.com/nextcloud/ios"
 
     // Personalized
-    @objc public var webCloseViewProtocolPersonalized:  String = ""                                                 // example "abc://change/plan"      Don't touch me !!
-    @objc public var folderBrandAutoUpload:             String = ""                                                 // example "_auto_upload_folder_"   Don't touch me !!
-    
+    @objc public var webCloseViewProtocolPersonalized: String = ""                                                 // example "abc://change/plan"      Don't touch me !!
+    @objc public var folderBrandAutoUpload: String = ""                                                 // example "_auto_upload_folder_"   Don't touch me !!
+
     // Auto Upload default folder
-    @objc public var folderDefaultAutoUpload:           String = "Photos"
-    
+    @objc public var folderDefaultAutoUpload: String = "Photos"
+
     // Capabilities Group
-    @objc public var capabilitiesGroups:                String = "group.it.twsweb.Crypto-Cloud"
-    
+    @objc public var capabilitiesGroups: String = "group.it.twsweb.Crypto-Cloud"
+
     // User Agent
-    @objc public var userAgent:                         String = "Nextcloud-iOS"                                    // Don't touch me !!
-    
+    @objc public var userAgent: String = "Nextcloud-iOS"                                    // Don't touch me !!
+
     // Options
     @objc public var use_login_web_personalized:        Bool = false                                                // Don't touch me !!
     @objc public var use_default_auto_upload:           Bool = false
@@ -94,14 +94,14 @@ import UIKit
     @objc public var disable_background_image:          Bool = true
 
     override init() {
-        
+
         if folderBrandAutoUpload != "" {
             folderDefaultAutoUpload = folderBrandAutoUpload
         }
     }
 }
 
-//MARK: - Color
+// MARK: - Color
 
 class NCBrandColor: NSObject {
     @objc static let shared: NCBrandColor = {
@@ -110,14 +110,14 @@ class NCBrandColor: NSObject {
         instance.createUserColors()
         return instance
     }()
-    
+
     struct cacheImages {
         static var file = UIImage()
 
         static var shared = UIImage()
         static var canShare = UIImage()
         static var shareByLink = UIImage()
-        
+
         static var favorite = UIImage()
         static var comment = UIImage()
         static var livePhoto = UIImage()
@@ -131,10 +131,10 @@ class NCBrandColor: NSObject {
         static var folderExternal = UIImage()
         static var folderAutomaticUpload = UIImage()
         static var folder = UIImage()
-        
+
         static var checkedYes = UIImage()
         static var checkedNo = UIImage()
-        
+
         static var buttonMore = UIImage()
         static var buttonStop = UIImage()
         static var buttonRestore = UIImage()
@@ -170,7 +170,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
-    
+
     @objc public var secondarySystemBackground: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -180,7 +180,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
-    
+
     @objc public var tertiarySystemBackground: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -190,7 +190,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
-    
+
     @objc public var systemGroupedBackground: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -200,7 +200,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
-    
+
     @objc public var secondarySystemGroupedBackground: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -210,7 +210,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
-    
+
     @objc public var label: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -220,7 +220,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
-    
+
     @objc public var separator: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -230,7 +230,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
-    
+
     @objc public var opaqueSeparator: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -240,7 +240,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
-    
+
     @objc public var systemGray: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -250,7 +250,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
-    
+
     @objc public var systemGray2: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -260,7 +260,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
-    
+
     @objc public var systemGray3: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -270,7 +270,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
-    
+
     @objc public var systemGray4: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -280,7 +280,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
-    
+
     @objc public var systemGray5: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -290,7 +290,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
-    
+
     @objc public var systemGray6: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -300,7 +300,7 @@ class NCBrandColor: NSObject {
             }
         }
     }
-    
+
     @objc public var systemFill: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -338,7 +338,7 @@ class NCBrandColor: NSObject {
     override init() {
         self.brand = self.customer
         self.brandElement = self.customer
-        self.brandText = self.customerText        
+        self.brandText = self.customerText
     }
 
     private func createUserColors() {
@@ -346,21 +346,21 @@ class NCBrandColor: NSObject {
     }
 
     public func createImagesThemingColor() {
-        
+
         let gray: UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
 
-        cacheImages.file = UIImage.init(named: "file")!
-        
+        cacheImages.file = UIImage(named: "file")!
+
         cacheImages.shared = UIImage(named: "share")!.image(color: gray, size: 50)
         cacheImages.canShare = UIImage(named: "share")!.image(color: gray, size: 50)
         cacheImages.shareByLink = UIImage(named: "sharebylink")!.image(color: gray, size: 50)
-        
+
         cacheImages.favorite = NCUtility.shared.loadImage(named: "star.fill", color: yellowFavorite)
         cacheImages.comment = UIImage(named: "comment")!.image(color: gray, size: 50)
         cacheImages.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: label)
-        cacheImages.offlineFlag = UIImage.init(named: "offlineFlag")!
-        cacheImages.local = UIImage.init(named: "local")!
-            
+        cacheImages.offlineFlag = UIImage(named: "offlineFlag")!
+        cacheImages.local = UIImage(named: "local")!
+
         let folderWidth: CGFloat = UIScreen.main.bounds.width / 3
         cacheImages.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement, size: folderWidth)
         cacheImages.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: brandElement, size: folderWidth)
@@ -369,31 +369,31 @@ class NCBrandColor: NSObject {
         cacheImages.folderExternal = UIImage(named: "folder_external")!.image(color: brandElement, size: folderWidth)
         cacheImages.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement, size: folderWidth)
         cacheImages.folder =  UIImage(named: "folder")!.image(color: brandElement, size: folderWidth)
-        
+
         cacheImages.checkedYes = NCUtility.shared.loadImage(named: "checkmark.circle.fill", color: .systemBlue)
         cacheImages.checkedNo = NCUtility.shared.loadImage(named: "circle", color: gray)
-        
+
         cacheImages.buttonMore = UIImage(named: "more")!.image(color: gray, size: 50)
         cacheImages.buttonStop = UIImage(named: "stop")!.image(color: gray, size: 50)
         cacheImages.buttonRestore = UIImage(named: "restore")!.image(color: gray, size: 50)
     }
-    
+
     #if !EXTENSION
     public func settingThemingColor(account: String) {
-        
+
         let darker: CGFloat = 30    // %
         let lighter: CGFloat = 30   // %
 
         if NCBrandOptions.shared.use_themingColor {
-            
+
             let themingColor = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColor)
-            
+
             let themingColorElement = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorElement)
-            
+
             let themingColorText = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorText)
-            
+
             settingBrandColor(themingColor, themingColorElement: themingColorElement, themingColorText: themingColorText)
-                        
+
             if NCBrandColor.shared.brandElement.isTooLight() {
                 if let color = NCBrandColor.shared.brandElement.darker(by: darker) {
                     NCBrandColor.shared.brandElement = color
@@ -402,10 +402,10 @@ class NCBrandColor: NSObject {
                 if let color = NCBrandColor.shared.brandElement.lighter(by: lighter) {
                     NCBrandColor.shared.brandElement = color
                 }
-            }           
-            
+            }
+
         } else {
-            
+
             if NCBrandColor.shared.customer.isTooLight() {
                 if let color = NCBrandColor.shared.customer.darker(by: darker) {
                     NCBrandColor.shared.brandElement = color
@@ -417,20 +417,20 @@ class NCBrandColor: NSObject {
             } else {
                 NCBrandColor.shared.brandElement = NCBrandColor.shared.customer
             }
-            
+
             NCBrandColor.shared.brand = NCBrandColor.shared.customer
             NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
         }
-                
+
         DispatchQueue.main.async {
             self.createImagesThemingColor()
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
         }
     }
     #endif
-    
+
     @objc func settingBrandColor(_ themingColor: String?, themingColorElement: String?, themingColorText: String?) {
-                
+
         // COLOR
         if themingColor?.first == "#" {
             if let color = UIColor(hex: themingColor!) {
@@ -441,7 +441,7 @@ class NCBrandColor: NSObject {
         } else {
             NCBrandColor.shared.brand = NCBrandColor.shared.customer
         }
-        
+
         // COLOR TEXT
         if themingColorText?.first == "#" {
             if let color = UIColor(hex: themingColorText!) {
@@ -452,7 +452,7 @@ class NCBrandColor: NSObject {
         } else {
             NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
         }
-        
+
         // COLOR ELEMENT
         if themingColorElement?.first == "#" {
             if let color = UIColor(hex: themingColorElement!) {
@@ -476,13 +476,13 @@ class NCBrandColor: NSObject {
     private func mixPalette(steps: Int, color1: CGColor, color2: CGColor) -> [CGColor] {
         var palette = [color1]
         let step = stepCalc(steps: steps, color1: color1, color2: color2)
-        
+
         let c1Components = color1.components!
         for i in 1 ..< steps {
             let r = c1Components[0] + step[0] * CGFloat(i)
             let g = c1Components[1] + step[1] * CGFloat(i)
             let b = c1Components[2] + step[2] * CGFloat(i)
-            
+
             palette.append(UIColor(red: r, green: g, blue: b, alpha: 1).cgColor)
         }
         return palette
