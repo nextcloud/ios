@@ -129,7 +129,7 @@ class NCFilesExtensionHandler {
                 default: return
                 }
 
-                if let fileName = fileName { filesName.append(fileName) }
+                if let fileName = fileName, !filesName.contains(fileName) { filesName.append(fileName) }
             }
         }
     }

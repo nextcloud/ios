@@ -175,8 +175,6 @@ extension NCShareExtension: UITableViewDataSource {
         let fileName = filesName[indexPath.row]
         cell.setup(fileName: fileName)
         cell.delegate = self
-        cell.moreButton?.isHidden = filesName.count < 2
-
         return cell
     }
 }

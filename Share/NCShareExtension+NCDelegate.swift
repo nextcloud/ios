@@ -102,8 +102,6 @@ extension NCShareExtension: NCEmptyDataSetDelegate, NCAccountRequestDelegate {
 }
 
 extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCellDelegate {
-    // Bug in Swift?
-    var uploadStated: Bool { uploadStarted }
 
     func removeFile(named fileName: String) {
         guard let index = self.filesName.firstIndex(of: fileName) else {
