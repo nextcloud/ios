@@ -123,8 +123,12 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCel
         let resultInternalType = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
         vcRename.delegate = self
         vcRename.fileName = fileName
-        let img = UIImage(contentsOfFile: (NSTemporaryDirectory() + fileName)) ?? UIImage(named: resultInternalType.iconName) ?? NCBrandColor.cacheImages.file
-        vcRename.imagePreview = img
+        if let previewImage = UIImage.downsample(imageAt: URL(fileURLWithPath: NSTemporaryDirectory() + fileName), to: CGSize(width: 140, height: 140)) {
+            vcRename.imagePreview = previewImage
+        } else {
+            vcRename.imagePreview = UIImage(named: resultInternalType.iconName) ?? NCBrandColor.cacheImages.file
+        }
+
         let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
 
         self.present(popup, animated: true)

@@ -88,7 +88,6 @@ class NCFilesExtensionHandler {
     var itemsProvider: [NSItemProvider] = []
     var counter = 0
     lazy var filesName: [String] = []
-    var completion: ([String]) -> Void
     let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH-mm-ss-"
@@ -98,7 +97,6 @@ class NCFilesExtensionHandler {
     @discardableResult
     init(items: [NSExtensionItem], completion: @escaping ([String]) -> Void) {
         CCUtility.emptyTemporaryDirectory()
-        self.completion = completion
         self.itemsProvider = items.compactMap({ $0.attachments }).flatMap { $0.filter({
             $0.hasItemConformingToTypeIdentifier(kUTTypeItem as String) || $0.hasItemConformingToTypeIdentifier("public.url")
         }) }
@@ -136,11 +134,12 @@ class NCFilesExtensionHandler {
 
     // Image
     func getItem(image: UIImage, fileName: String) -> String? {
-        let filenamePath = NSTemporaryDirectory() + fileName
+        var fileUrl = URL(fileURLWithPath: NSTemporaryDirectory() + fileName)
+        if fileUrl.pathExtension.isEmpty { fileUrl.appendPathExtension("png") }
         guard let pngImageData = image.pngData(),
-              (try? pngImageData.write(to: URL(fileURLWithPath: filenamePath), options: [.atomic])) != nil
+              (try? pngImageData.write(to: fileUrl, options: [.atomic])) != nil
         else { return nil }
-        return fileName
+        return fileUrl.lastPathComponent
     }
 
     // URL
