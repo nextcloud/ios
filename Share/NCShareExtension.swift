@@ -73,10 +73,10 @@ class NCShareExtension: UIViewController {
     var activeAccount: tableAccount!
     private let chunckSize = CCUtility.getChunkSize() * 1000000
 
-    private var counterUpload: Int = 0
-    var uploadDispatchGroup: DispatchGroup?
+    private var counterUploaded: Int = 0
+    var uploadMetadata: [tableMetadata] = []
     private var uploadErrors: [tableMetadata] = []
-    private(set) var uploadStarted = false
+    var uploadStarted = false
 
     // MARK: - View Life Cycle
 
@@ -137,7 +137,7 @@ class NCShareExtension: UIViewController {
         }
 
         // HUD
-        IHProgressHUD.set(viewForExtension: self.view)
+        IHProgressHUD.set(viewForExtension: self.collectionView)
         IHProgressHUD.set(defaultMaskType: .clear)
         IHProgressHUD.set(minimumDismiss: 0)
 
@@ -149,6 +149,7 @@ class NCShareExtension: UIViewController {
         guard serverUrl.isEmpty else { return }
 
         guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else {
+            self.uploadStarted = false
             return showAlert(description: "_no_active_account_") {
                 self.extensionContext?.cancelRequest(withError: NCShareExtensionError.noAccount)
             }
@@ -156,6 +157,7 @@ class NCShareExtension: UIViewController {
 
         accountRequestChangeAccount(account: activeAccount.account)
         guard let inputItems = extensionContext?.inputItems as? [NSExtensionItem] else {
+            uploadStarted = false
             self.extensionContext?.cancelRequest(withError: NCShareExtensionError.noFiles)
             return
         }
@@ -190,7 +192,7 @@ class NCShareExtension: UIViewController {
 
     @objc func triggerProgressTask(_ notification: NSNotification) {
         guard let progress = notification.userInfo?["progress"] as? CGFloat else { return }
-        let status = NSLocalizedString("_upload_file_", comment: "") + " \(counterUpload + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
+        let status = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
         IHProgressHUD.show(progress: progress, status: status)
     }
 
@@ -258,6 +260,7 @@ class NCShareExtension: UIViewController {
 
     func setCommandView() {
         guard !filesName.isEmpty else {
+            uploadStarted = false
             self.extensionContext?.cancelRequest(withError: NCShareExtensionError.noFiles)
             return
         }
@@ -277,6 +280,8 @@ class NCShareExtension: UIViewController {
     // MARK: ACTION
 
     @IBAction func actionCancel(_ sender: UIBarButtonItem) {
+        // make sure no uploads are continued
+        uploadStarted = false
         extensionContext?.cancelRequest(withError: NCShareExtensionError.cancel)
     }
 
@@ -311,9 +316,6 @@ extension NCShareExtension {
 
         uploadStarted = true
         uploadErrors = []
-        uploadDispatchGroup = DispatchGroup()
-        uploadDispatchGroup?.enter()
-        uploadDispatchGroup?.notify(queue: .main, execute: finishedUploading)
 
         var conflicts: [tableMetadata] = []
         for fileName in filesName {
@@ -334,26 +336,26 @@ extension NCShareExtension {
             if NCManageDatabase.shared.getMetadataConflict(account: activeAccount.account, serverUrl: serverUrl, fileName: fileName) != nil {
                 conflicts.append(metadata)
             } else {
-                upload(metadata)
+                uploadMetadata.append(metadata)
             }
         }
 
         if !conflicts.isEmpty {
-            uploadDispatchGroup?.enter()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict
-                else { return }
-                conflict.serverUrl = self.serverUrl
-                conflict.metadatasUploadInConflict = conflicts
-                conflict.delegate = self
-                self.present(conflict, animated: true, completion: nil)
-            }
+            guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict
+            else { return }
+            conflict.serverUrl = self.serverUrl
+            conflict.metadatasUploadInConflict = conflicts
+            conflict.delegate = self
+            self.present(conflict, animated: true, completion: nil)
+        } else {
+            upload()
         }
-        uploadDispatchGroup?.leave()
     }
 
-    func upload(_ metadata: tableMetadata) {
-        uploadDispatchGroup?.enter()
+    func upload() {
+        guard uploadStarted else { return }
+        guard !uploadMetadata.isEmpty else { return finishedUploading() }
+        let metadata = uploadMetadata.removeFirst()
         // E2EE
         if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
             metadata.e2eEncrypted = true
@@ -367,9 +369,10 @@ extension NCShareExtension {
         NCNetworking.shared.upload(metadata: metadata) {
 
         } completion: { errorCode, _ in
-            defer { self.uploadDispatchGroup?.leave() }
             if errorCode == 0 {
-                self.counterUpload += 1
+                self.counterUploaded += 1
+                // next
+                self.upload()
             } else {
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.shared.deleteChunks(account: self.activeAccount.account, ocId: metadata.ocId)
