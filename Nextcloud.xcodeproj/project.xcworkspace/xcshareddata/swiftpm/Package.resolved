@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/Alamofire/Alamofire",
         "state": {
           "branch": null,
-          "revision": "f82c23a8a7ef8dc1a49a8bfc6a96883e79121864",
-          "version": "5.5.0"
+          "revision": "d120af1e8638c7da36c8481fd61a66c0c08dc4fc",
+          "version": "5.4.4"
         }
       },
       {
@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/CocoaLumberjack/CocoaLumberjack.git",
         "state": {
           "branch": null,
-          "revision": "80ada1f753b0d53d9b57c465936a7c4169375002",
-          "version": "3.7.4"
+          "revision": "e518eb6e362df327574ba5e04269cd6d29f40aec",
+          "version": "3.7.2"
         }
       },
       {
@@ -105,8 +105,8 @@
         "repositoryURL": "https://github.com/google/GoogleUtilities.git",
         "state": {
           "branch": null,
-          "revision": "b3bb0c5551fb3f80ca939829639ab5b093edd14f",
-          "version": "7.7.0"
+          "revision": "797005ad8a1f0614063933e2fa010a5d13cb09d0",
+          "version": "7.6.0"
         }
       },
       {
@@ -182,15 +182,6 @@
         }
       },
       {
-        "package": "OpenSSL",
-        "repositoryURL": "https://github.com/krzyzanowskim/OpenSSL",
-        "state": {
-          "branch": null,
-          "revision": "45545c5729b5597d2d4910a5edd07b1bf42e5839",
-          "version": "1.1.1200"
-        }
-      },
-      {
         "package": "Parchment",
         "repositoryURL": "https://github.com/rechsteiner/Parchment",
         "state": {
@@ -249,8 +240,8 @@
         "repositoryURL": "https://github.com/realm/realm-swift",
         "state": {
           "branch": null,
-          "revision": "f297dfb2dd256018ed76cde0cdf9ea93ee0158c4",
-          "version": "10.21.0"
+          "revision": "e83cc9f28e8bccd477b6b81cee521c02239d2773",
+          "version": "10.20.2"
         }
       },
       {
@@ -321,8 +312,8 @@
         "repositoryURL": "https://github.com/tilltue/TLPhotoPicker",
         "state": {
           "branch": null,
-          "revision": "0d0cbbd2d20ed5fd36e5f4052209f5e2d9aaa8b7",
-          "version": "2.1.9"
+          "revision": "43cc38e7ed183b3b25867ea3e1f271468ca2756f",
+          "version": "2.1.8"
         }
       },
       {
