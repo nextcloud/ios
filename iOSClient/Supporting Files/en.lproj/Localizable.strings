@@ -888,3 +888,4 @@
 "_conversion_available_"    = "The conversion is always available on menu";
 "_video_format_not_recognized_"     = "This video needs to be processed to be played, do you want to do it now?";
 "_conversion_max_compatibility_"    = "Max compatibility, the conversion can take much longer";
+"_create_link_"                 = "Create Link";

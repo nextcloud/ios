@@ -117,7 +117,7 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
         if isUpdating {
             self.networking?.updateShare(idShare: tableShare!.idShare, password: nil, permissions: self.tableShare!.permissions, note: message, label: nil, expirationDate: nil, hideDownload: tableShare!.hideDownload)
         } else {
-            self.networking?.createShare(shareWith: sharee!.shareWith, shareType: sharee!.shareType, metadata: self.metadata!)
+            self.networking?.createShare(shareWith: sharee!.shareWith, shareType: sharee!.shareType, password: password, metadata: self.metadata!)
         }
         self.creatingShare = true
     }

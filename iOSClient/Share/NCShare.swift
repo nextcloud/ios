@@ -47,6 +47,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
     @IBOutlet weak var buttonCopy: UIButton!
     @IBOutlet weak var buttonMenu: UIButton!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var btnCreateLink: UIButton!
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -77,7 +78,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
 
         searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
 
-        shareLinkImage.image = NCShareCommon.shared.createLinkAvatar(imageName: "sharebylink", colorCircle: NCBrandColor.shared.brandElement)
+//        shareLinkImage.image = NCShareCommon.shared.createLinkAvatar(imageName: "sharebylink", colorCircle: NCBrandColor.shared.brandElement)
         shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
         shareLinkLabel.textColor = NCBrandColor.shared.label
         buttonCopy.setImage(UIImage(named: "shareCopy")?.image(color: .gray, size: 50), for: .normal)
@@ -179,6 +180,16 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
     }
 
     @objc func changeTheming() {
+        self.btnCreateLink.setTitle(NSLocalizedString("_create_link_", comment: ""), for: .normal)
+        self.btnCreateLink.layer.cornerRadius = 7
+        self.btnCreateLink.layer.masksToBounds = true
+        self.btnCreateLink.layer.borderWidth = 1
+        self.btnCreateLink.titleLabel?.font = UIFont.systemFont(ofSize: 17)
+        self.btnCreateLink.titleLabel!.adjustsFontSizeToFitWidth = true
+        self.btnCreateLink.titleLabel!.minimumScaleFactor = 0.5
+        self.btnCreateLink.layer.borderColor = NCBrandColor.shared.label.cgColor
+        self.btnCreateLink.setTitleColor(NCBrandColor.shared.label, for: .normal)
+        self.btnCreateLink.backgroundColor = .clear
         tableView.reloadData()
     }
 
@@ -197,10 +208,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
         let shares = NCManageDatabase.shared.getTableShares(metadata: metadata!)
         if shares.firstShareLink == nil {
             buttonMenu.setImage(UIImage(named: "shareAdd")?.image(color: .gray, size: 50), for: .normal)
-            buttonCopy.isHidden = true
+            //buttonCopy.isHidden = true
         } else {
             buttonMenu.setImage(UIImage(named: "shareMenu")?.image(color: .gray, size: 50), for: .normal)
-            buttonCopy.isHidden = false
+            //buttonCopy.isHidden = false
 
             shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
             if shares.firstShareLink?.label.count ?? 0 > 0 {
@@ -291,6 +302,34 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         return gestureRecognizer.view == touch.view
+    }
+    
+    @IBAction func createLinkClicked(_ sender: Any) {
+        guard let metadata = metadata else { return }
+        let isFilesSharingPublicPasswordEnforced = NCManageDatabase.shared.getCapabilitiesServerBool(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesFileSharingPubPasswdEnforced, exists: false)
+        let shares = NCManageDatabase.shared.getTableShares(metadata: metadata)
+        
+        if isFilesSharingPublicPasswordEnforced && shares.firstShareLink == nil {
+            let alertController = UIAlertController(title: NSLocalizedString("_enforce_password_protection_", comment: ""), message: "", preferredStyle: .alert)
+            alertController.addTextField { (textField) in
+                textField.isSecureTextEntry = true
+            }
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { (action:UIAlertAction) in })
+            let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) {[weak self] (action:UIAlertAction) in
+                let password = alertController.textFields?.first?.text
+                self?.networking?.createShareLink(password: password ?? "")
+            }
+            
+            alertController.addAction(okAction)
+            
+            present(alertController, animated: true, completion:nil)
+        } else if shares.firstShareLink == nil {
+            networking?.createShareLink(password: "")
+        } else {
+//            tapMenu(with: shares.firstShareLink!, sender: sender, index: <#Int#>)
+            networking?.createShareLink(password: "")
+        }
+        
     }
 
     // MARK: - NCShareNetworkingDelegate
