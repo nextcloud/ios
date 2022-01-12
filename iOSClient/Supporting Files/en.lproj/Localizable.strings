@@ -830,7 +830,7 @@
 "_subtitle_"                = "Subtitle";
 "_dts_to_ac3_"              = "The DTS is not supported, it requires a conversion to Dolby Digital";
 "_reuired_conversion_"      = "This video takes a long time to convert.";
-"_stay_app_foreground_"     = "Stay with the app in the foreground…";
+"_stay_app_foreground_"     = "Keep the app in the foreground …";
 "_conversion_available_"    = "The conversion is always available on menu";
 "_video_format_not_recognized_"     = "This video needs to be processed to be played, do you want to do it now?";
 "_conversion_max_compatibility_"    = "Max compatibility, the conversion can take much longer";
