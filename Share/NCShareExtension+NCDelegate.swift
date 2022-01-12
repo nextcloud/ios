@@ -71,8 +71,7 @@ extension NCShareExtension: NCEmptyDataSetDelegate, NCAccountRequestDelegate {
 
     func accountRequestChangeAccount(account: String) {
         guard let activeAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
-            uploadStarted = false
-            extensionContext?.cancelRequest(withError: NCShareExtensionError.noAccount)
+            cancel(with: NCShareExtensionError.noAccount)
             return
         }
         self.activeAccount = activeAccount
@@ -110,8 +109,7 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCel
         }
         self.filesName.remove(at: index)
         if self.filesName.isEmpty {
-            uploadStarted = false
-            self.extensionContext?.cancelRequest(withError: NCShareExtensionError.noFiles)
+            cancel(with: NCShareExtensionError.noFiles)
         } else {
             self.setCommandView()
         }

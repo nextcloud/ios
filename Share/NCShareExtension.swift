@@ -63,8 +63,8 @@ class NCShareExtension: UIViewController {
 
     var layoutForView: NCGlobal.layoutForViewType?
 
-    var heightRowTableView: CGFloat = 50
-    private var heightCommandView: CGFloat = 170
+    let heightRowTableView: CGFloat = 50
+    private let heightCommandView: CGFloat = 170
 
     var autoUploadFileName = ""
     var autoUploadDirectory = ""
@@ -74,8 +74,8 @@ class NCShareExtension: UIViewController {
     private let chunckSize = CCUtility.getChunkSize() * 1000000
 
     private var counterUploaded: Int = 0
-    var uploadMetadata: [tableMetadata] = []
     private var uploadErrors: [tableMetadata] = []
+    var uploadMetadata: [tableMetadata] = []
     var uploadStarted = false
 
     // MARK: - View Life Cycle
@@ -149,16 +149,14 @@ class NCShareExtension: UIViewController {
         guard serverUrl.isEmpty else { return }
 
         guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else {
-            self.uploadStarted = false
             return showAlert(description: "_no_active_account_") {
-                self.extensionContext?.cancelRequest(withError: NCShareExtensionError.noAccount)
+                self.cancel(with: NCShareExtensionError.noAccount)
             }
         }
 
         accountRequestChangeAccount(account: activeAccount.account)
         guard let inputItems = extensionContext?.inputItems as? [NSExtensionItem] else {
-            uploadStarted = false
-            self.extensionContext?.cancelRequest(withError: NCShareExtensionError.noFiles)
+            cancel(with: NCShareExtensionError.noFiles)
             return
         }
         NCFilesExtensionHandler(items: inputItems) { fileNames in
@@ -181,6 +179,12 @@ class NCShareExtension: UIViewController {
     }
 
     // MARK: -
+
+    func cancel(with error: NCShareExtensionError) {
+        // make sure no uploads are continued
+        uploadStarted = false
+        extensionContext?.cancelRequest(withError: error)
+    }
 
     func showAlert(title: String = "_error_", description: String, onDismiss: (() -> Void)? = nil) {
         let alertController = UIAlertController(title: NSLocalizedString(title, comment: ""), message: NSLocalizedString(description, comment: ""), preferredStyle: .alert)
@@ -260,8 +264,7 @@ class NCShareExtension: UIViewController {
 
     func setCommandView() {
         guard !filesName.isEmpty else {
-            uploadStarted = false
-            self.extensionContext?.cancelRequest(withError: NCShareExtensionError.noFiles)
+            cancel(with: NCShareExtensionError.noFiles)
             return
         }
         let counter = min(CGFloat(filesName.count), 3)
@@ -280,9 +283,7 @@ class NCShareExtension: UIViewController {
     // MARK: ACTION
 
     @IBAction func actionCancel(_ sender: UIBarButtonItem) {
-        // make sure no uploads are continued
-        uploadStarted = false
-        extensionContext?.cancelRequest(withError: NCShareExtensionError.cancel)
+        cancel(with: NCShareExtensionError.cancel)
     }
 
     @objc func actionCreateFolder() {
@@ -366,9 +367,7 @@ extension NCShareExtension {
             metadata.chunk = true
         }
 
-        NCNetworking.shared.upload(metadata: metadata) {
-
-        } completion: { errorCode, _ in
+        NCNetworking.shared.upload(metadata: metadata) { } completion: { errorCode, _ in
             if errorCode == 0 {
                 self.counterUploaded += 1
                 // next
