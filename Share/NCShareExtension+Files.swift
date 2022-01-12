@@ -86,7 +86,6 @@ extension NCShareExtension {
 
 class NCFilesExtensionHandler {
     var itemsProvider: [NSItemProvider] = []
-    var counter = 0
     lazy var filesName: [String] = []
     let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -97,6 +96,8 @@ class NCFilesExtensionHandler {
     @discardableResult
     init(items: [NSExtensionItem], completion: @escaping ([String]) -> Void) {
         CCUtility.emptyTemporaryDirectory()
+        var counter = 0
+
         self.itemsProvider = items.compactMap({ $0.attachments }).flatMap { $0.filter({
             $0.hasItemConformingToTypeIdentifier(kUTTypeItem as String) || $0.hasItemConformingToTypeIdentifier("public.url")
         }) }

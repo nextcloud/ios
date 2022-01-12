@@ -183,6 +183,11 @@ class NCShareExtension: UIViewController {
     func cancel(with error: NCShareExtensionError) {
         // make sure no uploads are continued
         uploadStarted = false
+        let metadata = uploadMetadata[counterUploaded]
+        let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+
+        NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        NCNetworking.shared.uploadRequest[filePath]?.tasks.forEach({ $0.cancel() })
         extensionContext?.cancelRequest(withError: error)
     }
 
@@ -315,6 +320,7 @@ extension NCShareExtension {
         guard !uploadStarted else { return }
         guard !filesName.isEmpty else { return showAlert(description: "_files_no_files_") }
 
+        counterUploaded = 0
         uploadStarted = true
         uploadErrors = []
 
@@ -355,17 +361,14 @@ extension NCShareExtension {
 
     func upload() {
         guard uploadStarted else { return }
-        guard !uploadMetadata.isEmpty else { return finishedUploading() }
-        let metadata = uploadMetadata.removeFirst()
+        guard uploadMetadata.count > counterUploaded else { return finishedUploading() }
+        let metadata = uploadMetadata[counterUploaded]
+
         // E2EE
-        if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
-            metadata.e2eEncrypted = true
-        }
+        metadata.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
 
         // CHUNCK
-        if chunckSize != 0 && metadata.size > chunckSize {
-            metadata.chunk = true
-        }
+        metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
 
         NCNetworking.shared.upload(metadata: metadata) { } completion: { errorCode, _ in
             if errorCode == 0 {
