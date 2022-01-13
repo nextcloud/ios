@@ -32,24 +32,11 @@ import Queuer
 
 extension NCCollectionViewCommon {
 
-    fileprivate func setAvailableOffline(metadata: tableMetadata, isOffline: Bool) {
-        if isOffline {
-            if metadata.directory {
-                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: false, account: self.appDelegate.account)
-            } else {
-                NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: false)
-            }
-        } else {
-            if metadata.directory {
-                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: self.appDelegate.account)
-                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCGlobal.shared.selectorDownloadAllFile)
-            } else {
-                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { _ in }
-                if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                    NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCGlobal.shared.selectorLoadOffline) { _ in }
-                }
-            }
+    fileprivate func setMetadatasAvalableOffline(_ metadatas: [tableMetadata], isOffline: Bool) {
+        metadatas.forEach { metadata in
+            NCFunctionCenter.shared.setMetadataAvalableOffline(metadata, isOffline: isOffline)
         }
+        self.tapSelect(sender: self)
         self.reloadDataSource()
     }
 
@@ -154,7 +141,7 @@ extension NCCollectionViewCommon {
                     title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "tray.and.arrow.down"),
                     action: { _ in
-                        self.setAvailableOffline(metadata: metadata, isOffline: isOffline)
+                        self.setMetadatasAvalableOffline([metadata], isOffline: isOffline)
                     }
                 )
             )
@@ -485,10 +472,19 @@ extension NCCollectionViewCommon {
                 title: isAnyOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "tray.and.arrow.down"),
                 action: { _ in
-                    selectedMetadatas.forEach { metadata in
-                        self.setAvailableOffline(metadata: metadata, isOffline: isAnyOffline)
+                    if !isAnyOffline, selectedMetadatas.count > 3 {
+                        let alert = UIAlertController(
+                            title: NSLocalizedString("_set_available_offline_", comment: ""),
+                            message: NSLocalizedString("_select_offline_warning_", comment: ""),
+                            preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default, handler: { _ in
+                            self.setMetadatasAvalableOffline(selectedMetadatas, isOffline: isAnyOffline)
+                        }))
+                        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
+                        self.present(alert, animated: true)
+                    } else {
+                        self.setMetadatasAvalableOffline(selectedMetadatas, isOffline: isAnyOffline)
                     }
-                    self.tapSelect(sender: self)
                 }
             )
         )

@@ -29,10 +29,8 @@ import JGProgressHUD
 @objc class NCFunctionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
     @objc public static let shared: NCFunctionCenter = {
         let instance = NCFunctionCenter()
-
         NotificationCenter.default.addObserver(instance, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.addObserver(instance, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
-
         return instance
     }()
 
@@ -164,6 +162,25 @@ import JGProgressHUD
                         NCContentPresenter.shared.messageNotification("_download_file_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, priority: .max)
                     }
                 }
+            }
+        }
+    }
+
+    func setMetadataAvalableOffline(_ metadata: tableMetadata, isOffline: Bool) {
+        let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+        if isOffline {
+            if metadata.directory {
+                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: false, account: self.appDelegate.account)
+            } else {
+                NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: false)
+            }
+        } else if metadata.directory {
+            NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: self.appDelegate.account)
+            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCGlobal.shared.selectorDownloadAllFile)
+        } else {
+            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { _ in }
+            if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+                NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCGlobal.shared.selectorLoadOffline) { _ in }
             }
         }
     }
@@ -673,26 +690,9 @@ import JGProgressHUD
         }
 
         let offline = UIAction(title: titleOffline, image: UIImage(systemName: "tray.and.arrow.down")) { _ in
-            if isOffline {
-                if metadata.directory {
-                    NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: false, account: self.appDelegate.account)
-                } else {
-                    NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: false)
-                }
-            } else {
-                if metadata.directory {
-                    NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: self.appDelegate.account)
-                    NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCGlobal.shared.selectorDownloadAllFile)
-                } else {
-                    NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { _ in }
-                    if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                        NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCGlobal.shared.selectorLoadOffline) { _ in }
-                    }
-                }
-            }
-
-            if viewController is NCCollectionViewCommon {
-                (viewController as! NCCollectionViewCommon).reloadDataSource()
+            self.setMetadataAvalableOffline(metadata, isOffline: isOffline)
+            if let viewController = viewController as? NCCollectionViewCommon {
+                viewController.reloadDataSource()
             }
         }
 
