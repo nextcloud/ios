@@ -58,7 +58,6 @@ extension NCCreateFormUploadConflictDelegate {
     @objc var alwaysNewFileNameNumber: Bool = false
     @objc var textLabelDetailNewFile: String?
 
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadatasConflictNewFiles: [String] = []
     var metadatasConflictAlreadyExistingFiles: [String] = []
     var fileNamesPath: [String: String] = [:]
@@ -179,7 +178,9 @@ extension NCCreateFormUploadConflictDelegate {
         }))
 
         conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_keep_existing_action_title_", comment: ""), style: .cancel, handler: { _ in
-            self.dismiss(animated: true, completion: nil)
+            self.dismiss(animated: true) {
+                self.delegate?.dismissCreateFormUploadConflict(metadatas: nil)
+            }
         }))
 
         conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_more_action_title_", comment: ""), style: .default, handler: { _ in
@@ -237,9 +238,9 @@ extension NCCreateFormUploadConflictDelegate {
     }
 
     @IBAction func buttonCancelTouch(_ sender: Any) {
-
-        delegate?.dismissCreateFormUploadConflict(metadatas: nil)
-        dismiss(animated: true)
+        dismiss(animated: true) {
+            self.delegate?.dismissCreateFormUploadConflict(metadatas: nil)
+        }
     }
 
     @IBAction func buttonContinueTouch(_ sender: Any) {
@@ -305,19 +306,15 @@ extension NCCreateFormUploadConflictDelegate {
                 }
 
             } else {
-                print("error")
+                // used UIAlert (replace all)
             }
         }
 
         metadatasNOConflict.append(contentsOf: metadatasMOV)
 
-        if delegate != nil {
-            delegate?.dismissCreateFormUploadConflict(metadatas: metadatasNOConflict)
-        } else {
-            appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadatasNOConflict)
+        dismiss(animated: true) {
+            self.delegate?.dismissCreateFormUploadConflict(metadatas: self.metadatasNOConflict)
         }
-
-        dismiss(animated: true)
     }
 }
 
@@ -458,8 +455,8 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
                 do {
                     if metadataNewFile.classFile ==  NCCommunicationCommon.typeClassFile.image.rawValue {
-                        let data = try Data(contentsOf: URL(fileURLWithPath: filePathNewFile))
-                        if let image = UIImage(data: data) {
+                        // preserver memory especially for very large files in Share extension
+                        if let image = UIImage.downsample(imageAt: URL(fileURLWithPath: filePathNewFile), to: cell.imageNewFile.frame.size) {
                             cell.imageNewFile.image = image
                         }
                     }

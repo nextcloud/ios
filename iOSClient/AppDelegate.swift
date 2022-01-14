@@ -890,3 +890,10 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
     func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
     }
 }
+
+extension AppDelegate: NCCreateFormUploadConflictDelegate {
+    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
+        guard let metadatas = metadatas, !metadatas.isEmpty else { return }
+        networkingProcessUpload?.createProcessUploads(metadatas: metadatas)
+    }
+}

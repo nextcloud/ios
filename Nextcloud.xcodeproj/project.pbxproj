@@ -18,6 +18,13 @@
 		371B5A2E23D0B04500FAFAE9 /* NCMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371B5A2D23D0B04500FAFAE9 /* NCMenu.swift */; };
 		3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */; };
 		8491B1CD273BBA82001C8C5B /* UIViewController+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */; };
+		AF22B206277B4E4C00DAB0CC /* NCCreateFormUploadConflict.swift in Sources */ = {isa = PBXBuildFile; fileRef = F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */; };
+		AF22B207277B4E4C00DAB0CC /* NCCreateFormUploadConflict.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F704B5E22430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard */; };
+		AF22B208277B4E4C00DAB0CC /* NCCreateFormUploadConflictCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F704B5E82430C0B800632F5F /* NCCreateFormUploadConflictCell.swift */; };
+		AF22B209277B4E4C00DAB0CC /* NCCreateFormUploadConflictCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F704B5E62430C06700632F5F /* NCCreateFormUploadConflictCell.xib */; };
+		AF22B20C277C6F4D00DAB0CC /* NCShareCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF22B20B277C6F4D00DAB0CC /* NCShareCell.swift */; };
+		AF22B217277D196700DAB0CC /* NCShareExtension+DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF22B215277D196700DAB0CC /* NCShareExtension+DataSource.swift */; };
+		AF22B218277D196700DAB0CC /* NCShareExtension+Files.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF22B216277D196700DAB0CC /* NCShareExtension+Files.swift */; };
 		AF2D7C7C2742556F00ADF566 /* NCShareLinkCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2D7C7B2742556F00ADF566 /* NCShareLinkCell.swift */; };
 		AF2D7C7E2742559100ADF566 /* NCShareUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2D7C7D2742559100ADF566 /* NCShareUserCell.swift */; };
 		AF4BF614275629E20081CEEF /* NCManageDatabase+Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF613275629E20081CEEF /* NCManageDatabase+Account.swift */; };
@@ -32,6 +39,7 @@
 		AF4BF61F27562B3F0081CEEF /* NCManageDatabase+Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF61D27562B3F0081CEEF /* NCManageDatabase+Activity.swift */; };
 		AF4BF62027562B3F0081CEEF /* NCManageDatabase+Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF61D27562B3F0081CEEF /* NCManageDatabase+Activity.swift */; };
 		AF4BF62127562B3F0081CEEF /* NCManageDatabase+Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF61D27562B3F0081CEEF /* NCManageDatabase+Activity.swift */; };
+		AF730AFA27843E4C00B7520E /* NCShareExtension+NCDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF730AF927843E4C00B7520E /* NCShareExtension+NCDelegate.swift */; };
 		AF817EF1274BC781009ED85B /* NCUserBaseUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF817EF0274BC781009ED85B /* NCUserBaseUrl.swift */; };
 		AF817EF2274BC781009ED85B /* NCUserBaseUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF817EF0274BC781009ED85B /* NCUserBaseUrl.swift */; };
 		AF817EF3274BC781009ED85B /* NCUserBaseUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF817EF0274BC781009ED85B /* NCUserBaseUrl.swift */; };
@@ -448,11 +456,15 @@
 		371B5A3223D0BD5500FAFAE9 /* FloatingPanel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FloatingPanel.framework; path = Carthage/Build/iOS/FloatingPanel.framework; sourceTree = "<group>"; };
 		3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Menu.swift"; sourceTree = "<group>"; };
 		8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Menu.swift"; sourceTree = "<group>"; };
+		AF22B20B277C6F4D00DAB0CC /* NCShareCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCell.swift; sourceTree = "<group>"; };
+		AF22B215277D196700DAB0CC /* NCShareExtension+DataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCShareExtension+DataSource.swift"; sourceTree = "<group>"; };
+		AF22B216277D196700DAB0CC /* NCShareExtension+Files.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCShareExtension+Files.swift"; sourceTree = "<group>"; };
 		AF2D7C7B2742556F00ADF566 /* NCShareLinkCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareLinkCell.swift; sourceTree = "<group>"; };
 		AF2D7C7D2742559100ADF566 /* NCShareUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareUserCell.swift; sourceTree = "<group>"; };
 		AF4BF613275629E20081CEEF /* NCManageDatabase+Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Account.swift"; sourceTree = "<group>"; };
 		AF4BF61827562A4B0081CEEF /* NCManageDatabse+Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabse+Metadata.swift"; sourceTree = "<group>"; };
 		AF4BF61D27562B3F0081CEEF /* NCManageDatabase+Activity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Activity.swift"; sourceTree = "<group>"; };
+		AF730AF927843E4C00B7520E /* NCShareExtension+NCDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCShareExtension+NCDelegate.swift"; sourceTree = "<group>"; };
 		AF817EF0274BC781009ED85B /* NCUserBaseUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUserBaseUrl.swift; sourceTree = "<group>"; };
 		AF8ED1F92757821000B8DBC4 /* NextcloudTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF8ED1FB2757821000B8DBC4 /* NextcloudTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextcloudTests.swift; sourceTree = "<group>"; };
@@ -1437,6 +1449,10 @@
 			children = (
 				F714803A262EBE3900693E51 /* MainInterface.storyboard */,
 				F7148040262EBE4000693E51 /* NCShareExtension.swift */,
+				AF730AF927843E4C00B7520E /* NCShareExtension+NCDelegate.swift */,
+				AF22B215277D196700DAB0CC /* NCShareExtension+DataSource.swift */,
+				AF22B216277D196700DAB0CC /* NCShareExtension+Files.swift */,
+				AF22B20B277C6F4D00DAB0CC /* NCShareCell.swift */,
 				F7148046262EBE4B00693E51 /* Share-Bridging-Header.h */,
 			);
 			path = Share;
@@ -2060,7 +2076,9 @@
 				F7148054262ED51000693E51 /* NCListCell.xib in Resources */,
 				F7D57C8626317BDA00DE301D /* NCAccountRequest.storyboard in Resources */,
 				F7145A1A1D12E3B700CAFEEC /* Images.xcassets in Resources */,
+				AF22B209277B4E4C00DAB0CC /* NCCreateFormUploadConflictCell.xib in Resources */,
 				F7148063262ED66200693E51 /* NCEmptyView.xib in Resources */,
+				AF22B207277B4E4C00DAB0CC /* NCCreateFormUploadConflict.storyboard in Resources */,
 				F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */,
 				F746EC51273906C40052598D /* NCViewCertificateDetails.storyboard in Resources */,
 				F79EC784263161BA004E59D6 /* NCRenameFile.storyboard in Resources */,
@@ -2248,6 +2266,7 @@
 				F7707687263A853700A1BA94 /* NCContentPresenter.swift in Sources */,
 				F70460532499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
 				F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */,
+				AF22B20C277C6F4D00DAB0CC /* NCShareCell.swift in Sources */,
 				F79B646126CA661600838ACA /* UIControl+Extensions.swift in Sources */,
 				F7EDE4CC262D7B6F00414FE6 /* NCEmptyDataSet.swift in Sources */,
 				AF4BF61A27562A4B0081CEEF /* NCManageDatabse+Metadata.swift in Sources */,
@@ -2256,20 +2275,25 @@
 				AF817EF2274BC781009ED85B /* NCUserBaseUrl.swift in Sources */,
 				F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */,
 				F74AF3A5247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
+				AF22B206277B4E4C00DAB0CC /* NCCreateFormUploadConflict.swift in Sources */,
 				F7BD71E62636EAFC00643C34 /* NCNetworkingE2EE.swift in Sources */,
 				F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
+				AF22B218277D196700DAB0CC /* NCShareExtension+Files.swift in Sources */,
 				F702F2D025EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
 				F7EDE4DB262D7BA200414FE6 /* NCCellProtocol.swift in Sources */,
 				F7EDE4D1262D7B8400414FE6 /* NCDataSource.swift in Sources */,
 				F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */,
 				F75A9EE723796C6F0044CFCE /* NCNetworking.swift in Sources */,
+				AF730AFA27843E4C00B7520E /* NCShareExtension+NCDelegate.swift in Sources */,
 				F7EDE4E0262D7BAF00414FE6 /* NCGridCell.swift in Sources */,
 				F7A76DC8256A71CD00119AB3 /* UIImage+Extensions.swift in Sources */,
 				F7B8CD96261AF401007C1359 /* NCNetworkingChunkedUpload.swift in Sources */,
 				F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
 				F7D57C8B26317BDE00DE301D /* NCAccountRequest.swift in Sources */,
+				AF22B217277D196700DAB0CC /* NCShareExtension+DataSource.swift in Sources */,
 				F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
 				F79EC77F26316193004E59D6 /* NCRenameFile.swift in Sources */,
+				AF22B208277B4E4C00DAB0CC /* NCCreateFormUploadConflictCell.swift in Sources */,
 				F7148041262EBE4000693E51 /* NCShareExtension.swift in Sources */,
 				F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,

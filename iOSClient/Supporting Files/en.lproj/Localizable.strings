@@ -143,6 +143,11 @@
 "_recent_"                  = "Recent";
 "_view_in_folder_"          = "View in folder";
 "_leave_share_"             = "Leave this share";
+
+/* Remove a file from a list, don't delete it entirely */
+"_remove_file_"             = "Remove file";
+
+/* Delete file and put it into the trash */
 "_delete_file_"             = "Delete file";
 "_delete_folder_"           = "Delete folder";
 "_delete_photo_"            = "Delete photo";
@@ -763,6 +768,7 @@
 "_request_entity_too_large_"            = "The file is too large";
 "_not_possible_download_"               = "It is not possible to download the file";
 "_not_possible_upload_"                 = "It is not possible to upload the file";
+"_error_files_upload_"                  = "Error uploading files";
 "_method_not_allowed_"                  = "The requested method is not supported";
 "_invalid_url_"                         = "Invalid server URL";
 "_invalid_literal_"                     = "Invalid search string";
