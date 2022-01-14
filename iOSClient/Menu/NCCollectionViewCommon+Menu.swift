@@ -36,7 +36,6 @@ extension NCCollectionViewCommon {
         metadatas.forEach { metadata in
             NCFunctionCenter.shared.setMetadataAvalableOffline(metadata, isOffline: isOffline)
         }
-        self.tapSelect(sender: self)
         self.reloadDataSource()
     }
 
@@ -485,6 +484,7 @@ extension NCCollectionViewCommon {
                     } else {
                         self.setMetadatasAvalableOffline(selectedMetadatas, isOffline: isAnyOffline)
                     }
+                    self.tapSelect(sender: self)
                 }
             )
         )

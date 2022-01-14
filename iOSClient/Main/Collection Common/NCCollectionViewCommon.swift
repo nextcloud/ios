@@ -448,13 +448,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func downloadedFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let _ = userInfo["errorCode"] as? Int, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
-                let indexPath = IndexPath(row: row, section: 0)
-                if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                    collectionView?.reloadItems(at: [indexPath])
-                }
-            }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let _ = userInfo["errorCode"] as? Int,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
+              let row = dataSource.reloadMetadata(ocId: metadata.ocId)
+        else { return }
+        let indexPath = IndexPath(row: row, section: 0)
+        if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
+            collectionView?.reloadItems(at: [indexPath])
         }
     }
 
