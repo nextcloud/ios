@@ -12,7 +12,10 @@ class NCShareMenu: NSObject {
     
     func toggleMenu(viewController: UIViewController, sendMail: Bool, folder: Bool) {
         
-        let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as! NCMenu
+        guard let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as? NCMenu else {
+            return
+        }
+        
         var actions = [NCMenuAction]()
         
         if !folder {

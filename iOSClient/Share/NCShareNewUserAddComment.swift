@@ -28,13 +28,12 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
     public var metadata: tableMetadata?
     public var sharee: NCCommunicationSharee?
     private var networking: NCShareNetworking?
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     var permission: Int = 0
     var password: String?
     var label: String?
     var expirationDate: String?
     var hideDownload = false
-    
     var creatingShare = false
     var note = ""
     var shareeEmail: String?
@@ -49,11 +48,11 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
             self.folderImageView.isHidden = true
         } else {
             if metadata!.directory {
-                self.folderImageView.image = UIImage.init(named: "folder")!
+                self.folderImageView.image = UIImage(named: "folder")!
             } else if metadata!.iconName.count > 0 {
-                self.folderImageView.image = UIImage.init(named: metadata!.iconName)
+                self.folderImageView.image = UIImage(named: metadata!.iconName)
             } else {
-                self.folderImageView.image = UIImage.init(named: "file")
+                self.folderImageView.image = UIImage(named: "file")
             }
         }
         self.favorite.layoutIfNeeded()
@@ -69,20 +68,17 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
         
         commentContainerView.layer.borderWidth = 1
         commentContainerView.layer.cornerRadius = 4.0
-        
         btnCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
         btnCancel.layer.cornerRadius = 10
         btnCancel.layer.masksToBounds = true
         btnCancel.layer.borderWidth = 1
-        
         btnSendShare.setTitle(NSLocalizedString("_send_share_", comment: ""), for: .normal)
         btnSendShare.layer.cornerRadius = 10
         btnSendShare.layer.masksToBounds = true
-        
         commentTextView.showsVerticalScrollIndicator = false
         setTitle()
         changeTheming()
-        networking = NCShareNetworking.init(metadata: metadata!, urlBase: appDelegate.urlBase, view: self.view, delegate: self)
+        networking = NCShareNetworking.init(metadata: metadata!, urlBase: appDelegate?.urlBase ?? "", view: self.view, delegate: self)
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         buttonContainerView.addShadow(location: .top)
     }
@@ -91,7 +87,7 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
         let defaultTitle = NSLocalizedString("_sharing_", comment: "")
         title = isUpdating ? (tableShare?.shareWith ?? defaultTitle) : (sharee?.shareWith ?? defaultTitle)
     }
-    
+
     @objc func changeTheming() {
         self.view.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
         self.commentTextView.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
@@ -115,17 +111,17 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
         let message = commentTextView.text.trimmingCharacters(in: .whitespaces)
         self.note = message
         if isUpdating {
-            self.networking?.updateShare(idShare: tableShare!.idShare, password: nil, permissions: self.tableShare!.permissions, note: message, label: nil, expirationDate: nil, hideDownload: tableShare!.hideDownload)
+            let idShare = tableShare!.idShare
+            let perTbl = tableShare!.permissions
+            networking?.updateShare(idShare: idShare, password: nil, permissions: perTbl, note: message, label: nil, expirationDate: nil, hideDownload: tableShare!.hideDownload)
         } else {
             self.networking?.createShare(shareWith: sharee!.shareWith, shareType: sharee!.shareType, password: password, metadata: self.metadata!)
         }
         self.creatingShare = true
     }
     
-    //MARK: - Image
-    
+    // MARK: - Image
     func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
-                
         if let image = getImage(metadata: metadata) {
             return image
         }
@@ -137,9 +133,9 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
         if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
             if let imagePreviewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag) {
                 return UIImage.init(contentsOfFile: imagePreviewPath)
+                
             }
         }
-        
         return nil
     }
     
@@ -157,19 +153,20 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
                         self.metadata?.favorite = false
                     }
                 } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    let delay = NCGlobal.shared.dismissAfterSecond
+                    let type = NCContentPresenter.messageType.error
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: delay, type: type, errorCode: errorCode)
                 }
             }
         }
     }
     
     private func getImage(metadata: tableMetadata) -> UIImage? {
-        
         let ext = CCUtility.getExtension(metadata.fileNameView)
         var image: UIImage?
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
-           
+            
             let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             
@@ -200,7 +197,6 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
                 image = UIImage.init(contentsOfFile: imagePath)
             }
         }
-        
         return image
     }
     
@@ -218,7 +214,7 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
     
     func shareCompleted(createdShareId: Int?) {
         if self.creatingShare {
-            self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata!.account)
+            self.appDelegate?.shares = NCManageDatabase.shared.getTableShares(account: self.metadata!.account)
             if let id = createdShareId {
                 networking?.updateShare(idShare: id, password: password, permissions: permission, note: nil, label: label, expirationDate: expirationDate, hideDownload: hideDownload)
             } else {
