@@ -393,7 +393,7 @@ class NCShareExtension: UIViewController, NCListCellDelegate, NCEmptyDataSetDele
 
         let actionSave = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default) { (_: UIAlertAction) in
             if let fileName = alertController.textFields?.first?.text {
-                self.createFolder(with: fileName.trimmingCharacters(in: .whitespacesAndNewlines))
+                self.createFolder(with: fileName)
             }
         }
 
