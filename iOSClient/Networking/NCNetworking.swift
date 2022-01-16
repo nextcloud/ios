@@ -922,6 +922,8 @@ import Queuer
 
         let isDirectoryEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: account, urlBase: urlBase)
 
+        let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
+
         if isDirectoryEncrypted {
             #if !EXTENSION
             NCNetworkingE2EE.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, completion: completion)
