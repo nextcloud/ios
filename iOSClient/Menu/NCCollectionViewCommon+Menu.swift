@@ -469,6 +469,7 @@ extension NCCollectionViewCommon {
                     icon: NCUtility.shared.loadImage(named: "restore"),
                     action: { _ in
                         self.selectOcId.forEach(trash.restoreItem)
+                        self.tapSelect(sender: self)
                     }
                 )
             )
@@ -479,12 +480,8 @@ extension NCCollectionViewCommon {
                     action: { _ in
                         let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
-                            for ocId in self.selectOcId {
-                                trash.deleteItem(with: ocId)
-                            }
-                            self.isEditMode = false
-                            self.selectOcId.removeAll()
-                            self.collectionView.reloadData()
+                            self.selectOcId.forEach(trash.deleteItem)
+                            self.tapSelect(sender: self)
                         }))
                         alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in
                         }))

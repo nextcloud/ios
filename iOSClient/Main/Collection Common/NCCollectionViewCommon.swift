@@ -937,6 +937,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
+    func collectionViewSelectAll() {
+        selectOcId = dataSource.metadatas.map({ $0.ocId })
+        navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(dataSource.metadatas.count)"
+        collectionView.reloadData()
+    }
+
     // MARK: - DataSource + NC Endpoint
 
     @objc func reloadDataSource() {
@@ -1243,12 +1249,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
         pushed = true
         navigationController?.pushViewController(viewController, animated: true)
-    }
-
-    func collectionViewSelectAll() {
-        selectOcId = dataSource.metadatas.map({ $0.ocId })
-        navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(dataSource.metadatas.count)"
-        collectionView.reloadData()
     }
 
     @available(iOS 13.0, *)

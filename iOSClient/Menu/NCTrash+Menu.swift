@@ -30,10 +30,10 @@ extension NCTrash {
     func toggleMenuMoreHeader() {
 
         var actions: [NCMenuAction] = []
-        
+
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_trash_restore_all_", comment: "")
+                title: NSLocalizedString("_trash_restore_all_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "restore"),
                 action: { _ in
                     self.datasource.forEach({ self.restoreItem(with: $0.fileId) })
@@ -50,8 +50,7 @@ extension NCTrash {
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
                         self.emptyTrash()
                     }))
-                    alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in
-                    }))
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
                     self.present(alert, animated: true, completion: nil)
                 }
             )

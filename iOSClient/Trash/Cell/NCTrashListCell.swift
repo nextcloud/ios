@@ -44,7 +44,6 @@ class NCTrashListCell: UICollectionViewCell {
     weak var delegate: NCTrashListCellDelegate?
 
     var objectId = ""
-    var indexPath = IndexPath()
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -80,18 +79,26 @@ class NCTrashListCell: UICollectionViewCell {
 
     func selected(_ status: Bool) {
         if status {
+            var blurEffect: UIVisualEffect?
+            var blurEffectView: UIView?
             imageSelect.image = NCBrandColor.cacheImages.checkedYes
-
-            let blurEffect = UIBlurEffect(style: .extraLight)
-            let blurEffectView = UIVisualEffectView(effect: blurEffect)
-            blurEffectView.frame = self.bounds
-            blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            blurEffectView.backgroundColor = NCBrandColor.shared.brandElement.withAlphaComponent(0.2)
+            if traitCollection.userInterfaceStyle == .dark {
+                blurEffect = UIBlurEffect(style: .dark)
+                blurEffectView = UIVisualEffectView(effect: blurEffect)
+                blurEffectView?.backgroundColor = .black
+            } else {
+                blurEffect = UIBlurEffect(style: .extraLight)
+                blurEffectView = UIVisualEffectView(effect: blurEffect)
+                blurEffectView?.backgroundColor = .lightGray
+            }
+            blurEffectView?.frame = self.bounds
+            blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             backgroundView = blurEffectView
-
+            separator.isHidden = true
         } else {
             imageSelect.image = NCBrandColor.cacheImages.checkedNo
             backgroundView = nil
+            separator.isHidden = false
         }
     }
 }

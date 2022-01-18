@@ -29,7 +29,7 @@ class NCTrash: NCCollectionViewCommon, NCTrashListCellDelegate, NCTrashSectionHe
     var trashPath = ""
     var blinkFileId: String?
 
-    private var datasource: [tableTrash] = []
+    var datasource: [tableTrash] = []
     private let highHeader: CGFloat = 50
 
     // MARK: - View Life Cycle
@@ -38,6 +38,7 @@ class NCTrash: NCCollectionViewCommon, NCTrashListCellDelegate, NCTrashSectionHe
 
         view.backgroundColor = NCBrandColor.shared.systemBackground
         self.navigationController?.navigationBar.prefersLargeTitles = true
+        titleCurrentFolder = titleCurrentFolder.isEmpty ? NSLocalizedString("_trash_view_", comment: "") : titleCurrentFolder
 
         // Cell
         collectionView.register(UINib(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
@@ -193,7 +194,13 @@ class NCTrash: NCCollectionViewCommon, NCTrashListCellDelegate, NCTrashSectionHe
 
     override func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
     }
-    
+
+    override func collectionViewSelectAll() {
+        selectOcId = datasource.map({ $0.fileId })
+        navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(datasource.count)"
+        collectionView.reloadData()
+    }
+
     @objc func reloadTrashDataSource() { self.reloadDataSource() }
     
     @objc override func reloadDataSource() {
@@ -240,13 +247,14 @@ extension NCTrash {
 
         let tableTrash = datasource[indexPath.item]
 
-        if isEditMode {
+        guard !isEditMode else {
             if let index = selectOcId.firstIndex(of: tableTrash.fileId) {
                 selectOcId.remove(at: index)
             } else {
                 selectOcId.append(tableTrash.fileId)
             }
             collectionView.reloadItems(at: [indexPath])
+            self.navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(datasource.count)"
             return
         }
 
@@ -325,7 +333,6 @@ extension NCTrash {
             cell.delegate = self
 
             cell.objectId = tableTrash.fileId
-            cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
             cell.labelTitle.textColor = NCBrandColor.shared.label
 
