@@ -71,7 +71,7 @@
 "_save_exit_"               = "Do you want to exit without saving?";
 "_video_"                   = "Video";
 "_overwrite_"               = "Overwrite";
-"_transfers_in_queue_"      = "Tranfers in progress, please wait …";
+"_transfers_in_queue_"      = "Transfers in progress, please wait …";
 "_too_errors_upload_"       = "Too many errors, please verify the problem";
 "_create_folder_"           = "Create folder";
 "_create_folder_on_"        = "Create folder on";
@@ -303,7 +303,7 @@
 "_want_delete_"                 = "Do you really want to delete?";
 "_no_delete_"                   = "No, do not delete";
 "_yes_delete_"                  = "Yes, delete";
-"_remove_cache_"                = "Please wait, deleting cache …";
+"_remove_cache_"                = "Deleting cache, please wait …";
 "_optimizations_"               = "Optimizations";
 "_synchronizations_"            = "Synchronized folders";
 "_version_server_"              = "Server version";
