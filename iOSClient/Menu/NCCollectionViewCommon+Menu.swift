@@ -461,6 +461,39 @@ extension NCCollectionViewCommon {
                 }
             )
         )
+        
+        if let trash = self as? NCTrash {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_trash_restore_selected_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "restore"),
+                    action: { _ in
+                        self.selectOcId.forEach(trash.restoreItem)
+                    }
+                )
+            )
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_trash_delete_selected_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "trash"),
+                    action: { _ in
+                        let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
+                            for ocId in self.selectOcId {
+                                trash.deleteItem(with: ocId)
+                            }
+                            self.isEditMode = false
+                            self.selectOcId.removeAll()
+                            self.collectionView.reloadData()
+                        }))
+                        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in
+                        }))
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                )
+            )
+            return presentMenu(with: actions)
+        }
 
         //
         // OPEN IN

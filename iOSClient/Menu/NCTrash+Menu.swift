@@ -30,46 +30,32 @@ extension NCTrash {
     func toggleMenuMoreHeader() {
 
         var actions: [NCMenuAction] = []
-
-        if isEditMode {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_trash_delete_selected_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "trash"),
-                    action: { _ in
-                        let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
-                            for ocId in self.selectOcId {
-                                self.deleteItem(with: ocId)
-                            }
-                            self.isEditMode = false
-                            self.selectOcId.removeAll()
-                            self.collectionView.reloadData()
-                        }))
-                        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in
-                        }))
-                        self.present(alert, animated: true, completion: nil)
-                    }
-                )
+        
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_trash_restore_all_", comment: "")
+                icon: NCUtility.shared.loadImage(named: "restore"),
+                action: { _ in
+                    self.datasource.forEach({ self.restoreItem(with: $0.fileId) })
+                }
             )
-        } else {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_trash_delete_all_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "trash"),
-                    action: { _ in
-                        let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_", comment: ""), message: "", preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
-                            self.emptyTrash()
-                        }))
-                        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in
-                        }))
-                        self.present(alert, animated: true, completion: nil)
-                    }
-                )
-            )
-        }
+        )
 
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_trash_delete_all_", comment: ""),
+                icon: NCUtility.shared.loadImage(named: "trash"),
+                action: { _ in
+                    let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_", comment: ""), message: "", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
+                        self.emptyTrash()
+                    }))
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in
+                    }))
+                    self.present(alert, animated: true, completion: nil)
+                }
+            )
+        )
         presentMenu(with: actions)
     }
 
