@@ -4,7 +4,9 @@
 //
 //  Created by Marino Faggiana on 02/10/2018.
 //  Copyright © 2018 Marino Faggiana. All rights reserved.
+//  Copyright © 2022 Henrik Storch. All rights reserved.
 //
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
