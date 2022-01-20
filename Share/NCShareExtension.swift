@@ -150,13 +150,13 @@ class NCShareExtension: UIViewController {
 
         guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else {
             return showAlert(description: "_no_active_account_") {
-                self.cancel(with: NCShareExtensionError.noAccount)
+                self.cancel(with: .noAccount)
             }
         }
 
         accountRequestChangeAccount(account: activeAccount.account)
         guard let inputItems = extensionContext?.inputItems as? [NSExtensionItem] else {
-            cancel(with: NCShareExtensionError.noFiles)
+            cancel(with: .noFiles)
             return
         }
         NCFilesExtensionHandler(items: inputItems) { fileNames in
@@ -177,17 +177,22 @@ class NCShareExtension: UIViewController {
         collectionView.reloadData()
         tableView.reloadData()
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.cancel(with: .cancel)
+    }
 
     // MARK: -
 
     func cancel(with error: NCShareExtensionError) {
         // make sure no uploads are continued
         uploadStarted = false
-        let metadata = uploadMetadata[counterUploaded]
-        let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-
-        NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        NCNetworking.shared.uploadRequest[filePath]?.tasks.forEach({ $0.cancel() })
+        for metadata in uploadMetadata {
+            let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NCNetworking.shared.uploadRequest[filePath]?.tasks.forEach({ $0.cancel() })
+        }
         extensionContext?.cancelRequest(withError: error)
     }
 
@@ -269,7 +274,7 @@ class NCShareExtension: UIViewController {
 
     func setCommandView() {
         guard !filesName.isEmpty else {
-            cancel(with: NCShareExtensionError.noFiles)
+            cancel(with: .noFiles)
             return
         }
         let counter = min(CGFloat(filesName.count), 3)
@@ -288,7 +293,7 @@ class NCShareExtension: UIViewController {
     // MARK: ACTION
 
     @IBAction func actionCancel(_ sender: UIBarButtonItem) {
-        cancel(with: NCShareExtensionError.cancel)
+        cancel(with: .cancel)
     }
 
     @objc func actionCreateFolder() {
@@ -370,6 +375,9 @@ extension NCShareExtension {
         // CHUNCK
         metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
 
+        let status = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
+        IHProgressHUD.set(status: status)
+        
         NCNetworking.shared.upload(metadata: metadata) { } completion: { errorCode, _ in
             if errorCode == 0 {
                 self.counterUploaded += 1
