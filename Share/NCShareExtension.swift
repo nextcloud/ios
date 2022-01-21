@@ -180,7 +180,12 @@ class NCShareExtension: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.cancel(with: .cancel)
+        // remove all metadata in queue
+        for metadata in uploadMetadata {
+            let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NCNetworking.shared.uploadRequest[filePath]?.tasks.forEach({ $0.cancel() })
+        }
     }
 
     // MARK: -
@@ -188,11 +193,6 @@ class NCShareExtension: UIViewController {
     func cancel(with error: NCShareExtensionError) {
         // make sure no uploads are continued
         uploadStarted = false
-        for metadata in uploadMetadata {
-            let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NCNetworking.shared.uploadRequest[filePath]?.tasks.forEach({ $0.cancel() })
-        }
         extensionContext?.cancelRequest(withError: error)
     }
 
@@ -376,7 +376,7 @@ extension NCShareExtension {
         metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
 
         let status = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
-        IHProgressHUD.set(status: status)
+        IHProgressHUD.show(progress: 0, status: status)
         
         NCNetworking.shared.upload(metadata: metadata) { } completion: { errorCode, _ in
             if errorCode == 0 {
