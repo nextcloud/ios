@@ -183,8 +183,10 @@ class NCShareExtension: UIViewController {
         // remove all metadata in queue
         for metadata in uploadMetadata {
             let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NCNetworking.shared.uploadRequest[filePath]?.tasks.forEach({ $0.cancel() })
+            NCUtilityFileSystem.shared.deleteFile(filePath: path)
         }
     }
 
