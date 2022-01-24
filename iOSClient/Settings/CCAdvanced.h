@@ -22,7 +22,7 @@
 //
 
 #import <MessageUI/MFMailComposeViewController.h>
-#import <XLForm/XLForm.h>
+#import <XLForm.h>
 
 @interface CCAdvanced : XLFormViewController <MFMailComposeViewControllerDelegate>
 
