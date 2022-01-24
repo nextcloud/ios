@@ -139,7 +139,6 @@ class NCShareExtension: UIViewController {
         // HUD
         IHProgressHUD.set(viewForExtension: self.collectionView)
         IHProgressHUD.set(defaultMaskType: .clear)
-        IHProgressHUD.set(minimumDismiss: 0)
 
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
     }
@@ -362,11 +361,11 @@ extension NCShareExtension {
             conflict.delegate = self
             self.present(conflict, animated: true, completion: nil)
         } else {
-            upload()
+            upload(withHUD: true)
         }
     }
 
-    func upload() {
+    func upload(withHUD hud: Bool = false) {
         guard uploadStarted else { return }
         guard uploadMetadata.count > counterUploaded else { return finishedUploading() }
         let metadata = uploadMetadata[counterUploaded]
@@ -376,9 +375,11 @@ extension NCShareExtension {
 
         // CHUNCK
         metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
-
-        let status = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
-        IHProgressHUD.show(progress: 0, status: status)
+        
+        if hud {
+            let status = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
+            IHProgressHUD.show(withStatus: status)
+        }
         
         NCNetworking.shared.upload(metadata: metadata) { } completion: { errorCode, _ in
             if errorCode == 0 {
