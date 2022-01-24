@@ -141,6 +141,8 @@ extension NCManageDatabase {
 
         let metadata = tableMetadata()
         let resultInternalType = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
+        
+        let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
 
         metadata.account = account
         metadata.chunk = false
