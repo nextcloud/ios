@@ -176,7 +176,7 @@ class NCShareExtension: UIViewController {
         collectionView.reloadData()
         tableView.reloadData()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         // remove all metadata in queue
@@ -375,12 +375,12 @@ extension NCShareExtension {
 
         // CHUNCK
         metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
-        
+
         if counterUploaded == 0 {
             let status = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
             IHProgressHUD.show(withStatus: status)
         }
-        
+
         NCNetworking.shared.upload(metadata: metadata) { } completion: { errorCode, _ in
             if errorCode == 0 {
                 self.counterUploaded += 1
