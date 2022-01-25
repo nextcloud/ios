@@ -361,11 +361,11 @@ extension NCShareExtension {
             conflict.delegate = self
             self.present(conflict, animated: true, completion: nil)
         } else {
-            upload(withHUD: true)
+            upload()
         }
     }
 
-    func upload(withHUD hud: Bool = false) {
+    func upload() {
         guard uploadStarted else { return }
         guard uploadMetadata.count > counterUploaded else { return finishedUploading() }
         let metadata = uploadMetadata[counterUploaded]
@@ -376,7 +376,7 @@ extension NCShareExtension {
         // CHUNCK
         metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
         
-        if hud {
+        if counterUploaded == 0 {
             let status = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
             IHProgressHUD.show(withStatus: status)
         }

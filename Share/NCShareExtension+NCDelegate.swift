@@ -154,6 +154,6 @@ extension NCShareExtension: NCCreateFormUploadConflictDelegate {
         }
 
         self.uploadMetadata.append(contentsOf: metadatas)
-        self.upload(withHUD: true)
+        self.upload()
     }
 }
