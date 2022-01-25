@@ -137,7 +137,7 @@ class NCShareExtension: UIViewController {
         }
 
         // HUD
-        IHProgressHUD.set(viewForExtension: self.collectionView)
+        IHProgressHUD.set(viewForExtension: self.view)
         IHProgressHUD.set(defaultMaskType: .clear)
 
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
