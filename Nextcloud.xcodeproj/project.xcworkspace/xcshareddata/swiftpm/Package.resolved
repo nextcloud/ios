@@ -185,9 +185,9 @@
         "package": "Parchment",
         "repositoryURL": "https://github.com/rechsteiner/Parchment",
         "state": {
-          "branch": null,
-          "revision": "df36404c683019d26c36bb0862350300e31f4688",
-          "version": "3.0.0"
+          "branch": "main",
+          "revision": "cad6924f8a292eecaedc1bdefb57006f7979b9eb",
+          "version": null
         }
       },
       {
