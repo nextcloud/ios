@@ -60,8 +60,8 @@
         "repositoryURL": "https://github.com/firebase/firebase-ios-sdk",
         "state": {
           "branch": null,
-          "revision": "08686f04881483d2bc098b2696e674c0ba135e47",
-          "version": "8.10.0"
+          "revision": "5344857522053b5d4403ec8173ec0d23200a97ea",
+          "version": "8.11.0"
         }
       },
       {
@@ -131,9 +131,9 @@
         "package": "IHProgressHUD",
         "repositoryURL": "https://github.com/marinofaggiana/IHProgressHUD",
         "state": {
-          "branch": "master",
-          "revision": "a3d94dfb869ff9b2f9e5a4d0359a73a625072853",
-          "version": null
+          "branch": null,
+          "revision": "0805867f3eaa451bd0516ac352d3cf2c493b1444",
+          "version": "0.2.0"
         }
       },
       {
@@ -186,8 +186,8 @@
         "repositoryURL": "https://github.com/rechsteiner/Parchment",
         "state": {
           "branch": null,
-          "revision": "2b1a370e71480cb1a95dd56ef8bddc2e0a45e033",
-          "version": "3.1.0"
+          "revision": "df36404c683019d26c36bb0862350300e31f4688",
+          "version": "3.0.0"
         }
       },
       {
@@ -231,8 +231,8 @@
         "repositoryURL": "https://github.com/realm/realm-core",
         "state": {
           "branch": null,
-          "revision": "f1976f0d96d9b06fbe0afbd60090b1c3966b1e23",
-          "version": "11.8.0"
+          "revision": "6b81f1a7a2d421f9e0b9e7f04e76bcf736a54409",
+          "version": "11.9.0"
         }
       },
       {
@@ -240,8 +240,8 @@
         "repositoryURL": "https://github.com/realm/realm-swift",
         "state": {
           "branch": null,
-          "revision": "39177714b95bb5b1b29fffe28f1c7da77eef8e8b",
-          "version": "10.21.1"
+          "revision": "9dff9f2862240d521ad6ad599541269177ddb993",
+          "version": "10.22.0"
         }
       },
       {
