@@ -177,9 +177,11 @@ class NCShareExtension: UIViewController {
         tableView.reloadData()
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        // remove all metadata in queue
+    // MARK: -
+
+    func cancel(with error: NCShareExtensionError) {
+        // make sure no uploads are continued
+        uploadStarted = false
         for metadata in uploadMetadata {
             let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
@@ -187,13 +189,6 @@ class NCShareExtension: UIViewController {
             NCNetworking.shared.uploadRequest[filePath]?.tasks.forEach({ $0.cancel() })
             NCUtilityFileSystem.shared.deleteFile(filePath: path)
         }
-    }
-
-    // MARK: -
-
-    func cancel(with error: NCShareExtensionError) {
-        // make sure no uploads are continued
-        uploadStarted = false
         extensionContext?.cancelRequest(withError: error)
     }
 
