@@ -27,28 +27,28 @@ import Realm
 import UIKit
 import NCCommunication
 
-class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDelegate, NCTrashSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
+class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDelegate, NCTrashSectionHeaderMenuDelegate, NCEmptyDataSetDelegate, NCGridCellDelegate {
 
     var selectableDataSource: [RealmSwiftObject] { datasource }
 
     @IBOutlet weak var collectionView: UICollectionView!
 
-     var trashPath = ""
-     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
-     var blinkFileId: String?
-     var emptyDataSet: NCEmptyDataSet?
+    var trashPath = ""
+    var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
+    var blinkFileId: String?
+    var emptyDataSet: NCEmptyDataSet?
 
     internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
-     internal var isEditMode = false
-     internal var selectOcId: [String] = []
+    internal var isEditMode = false
+    internal var selectOcId: [String] = []
 
-     var datasource: [tableTrash] = []
-     var layoutForView: NCGlobal.layoutForViewType?
-     var listLayout: NCListLayout!
-     var gridLayout: NCGridLayout!
-     let highHeader: CGFloat = 50
-     private let refreshControl = UIRefreshControl()
+    var datasource: [tableTrash] = []
+    var layoutForView: NCGlobal.layoutForViewType?
+    var listLayout: NCListLayout!
+    var gridLayout: NCGridLayout!
+    let highHeader: CGFloat = 50
+    private let refreshControl = UIRefreshControl()
 
     // MARK: - View Life Cycle
 
@@ -183,7 +183,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     func tapMoreListItem(with objectId: String, image: UIImage?, sender: Any) {
 
         if !isEditMode {
-            toggleMenuMoreList(with: objectId, image: image)
+            toggleMenuMore(with: objectId, image: image, isGridCell: false)
         } else if let button = sender as? UIView {
             let buttonPosition = button.convert(CGPoint.zero, to: collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)
@@ -194,7 +194,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
 
         if !isEditMode {
-            toggleMenuMoreGrid(with: objectId, namedButtonMore: namedButtonMore, image: image)
+            toggleMenuMore(with: objectId, image: image, isGridCell: true)
         } else if let button = sender as? UIView {
             let buttonPosition = button.convert(CGPoint.zero, to: collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)

@@ -111,7 +111,7 @@ extension NCSelectableNavigationView where Self: UIViewController {
                     icon: NCUtility.shared.loadImage(named: "trash"),
                     action: { _ in
                         let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
+                        alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
                             self.selectOcId.forEach(trash.deleteItem)
                             self.tapSelect()
                         }))

@@ -51,7 +51,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCell {
         super.awakeFromNib()
 
         imageRestore.image = NCBrandColor.cacheImages.buttonRestore
-        imageMore.image = NCBrandColor.cacheImages.buttonMore
+        imageMore.image = NCUtility.shared.loadImage(named: "trash")
 
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true

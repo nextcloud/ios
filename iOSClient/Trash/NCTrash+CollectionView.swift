@@ -110,11 +110,13 @@ extension NCTrash: UICollectionViewDataSource {
 
         if collectionView.collectionViewLayout == listLayout {
             guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCTrashListCell else { return UICollectionViewCell() }
+            listCell.delegate = self
             cell = listCell
         } else {
             // GRID
             guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell else { return UICollectionViewCell() }
             gridCell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
+            gridCell.delegate = self
             cell = gridCell
         }
 

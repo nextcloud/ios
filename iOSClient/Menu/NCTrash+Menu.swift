@@ -48,8 +48,8 @@ extension NCTrash {
                 title: NSLocalizedString("_trash_delete_all_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "trash"),
                 action: { _ in
-                    let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_", comment: ""), message: "", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
+                    let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_description_", comment: ""), message: "", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("_trash_delete_all_", comment: ""), style: .destructive, handler: { _ in
                         self.emptyTrash()
                     }))
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
@@ -60,53 +60,24 @@ extension NCTrash {
         presentMenu(with: actions)
     }
 
-    func toggleMenuMoreList(with objectId: String, image: UIImage?) {
-
-        var actions: [NCMenuAction] = []
+    func toggleMenuMore(with objectId: String, image: UIImage?, isGridCell: Bool) {
 
         guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: appDelegate.account) else {
             return
         }
 
-        var iconHeader: UIImage!
-        if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
-            iconHeader = icon
-        } else {
-            if tableTrash.directory {
-                iconHeader = UIImage(named: "folder")!.image(color: NCBrandColor.shared.gray, size: 50)
-            } else {
-                iconHeader = UIImage(named: tableTrash.iconName)
-            }
-        }
+        guard isGridCell else {
+            let alert = UIAlertController(title: NSLocalizedString("_want_delete_", comment: ""), message: tableTrash.trashbinFileName, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
+                self.deleteItem(with: objectId)
+            }))
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
+            self.present(alert, animated: true, completion: nil)
 
-        actions.append(
-            NCMenuAction(
-                title: tableTrash.trashbinFileName,
-                icon: iconHeader,
-                action: nil
-            )
-        )
-
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_delete_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "trash"),
-                action: { _ in
-                    self.deleteItem(with: objectId)
-                }
-            )
-        )
-
-        self.presentMenu(with: actions)
-    }
-
-    func toggleMenuMoreGrid(with objectId: String, namedButtonMore: String, image: UIImage?) {
-
-        var actions: [NCMenuAction] = []
-
-        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: appDelegate.account) else {
             return
         }
+
+        var actions: [NCMenuAction] = []
 
         var iconHeader: UIImage!
         if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
