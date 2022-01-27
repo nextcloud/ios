@@ -23,16 +23,32 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import Realm
 import UIKit
 import NCCommunication
 
-class NCTrash: NCCollectionViewCommon, NCTrashListCellDelegate, NCTrashSectionHeaderMenuDelegate {
+class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDelegate, NCTrashSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
 
-    var trashPath = ""
-    var blinkFileId: String?
+    var selectableDataSource: [RealmSwiftObject] { datasource }
 
-    var datasource: [tableTrash] = []
-    let highHeader: CGFloat = 50
+    @IBOutlet weak var collectionView: UICollectionView!
+
+     var trashPath = ""
+     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
+     var blinkFileId: String?
+     var emptyDataSet: NCEmptyDataSet?
+
+    internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+
+     internal var isEditMode = false
+     internal var selectOcId: [String] = []
+
+     var datasource: [tableTrash] = []
+     var layoutForView: NCGlobal.layoutForViewType?
+     var listLayout: NCListLayout!
+     var gridLayout: NCGridLayout!
+     let highHeader: CGFloat = 50
+     private let refreshControl = UIRefreshControl()
 
     // MARK: - View Life Cycle
 
@@ -40,7 +56,6 @@ class NCTrash: NCCollectionViewCommon, NCTrashListCellDelegate, NCTrashSectionHe
 
         view.backgroundColor = NCBrandColor.shared.systemBackground
         self.navigationController?.navigationBar.prefersLargeTitles = true
-        titleCurrentFolder = titleCurrentFolder.isEmpty ? NSLocalizedString("_trash_view_", comment: "") : titleCurrentFolder
 
         // Cell
         collectionView.register(UINib(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
@@ -65,7 +80,7 @@ class NCTrash: NCCollectionViewCommon, NCTrashListCellDelegate, NCTrashSectionHe
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: highHeader, delegate: self)
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadTrashDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
 
         changeTheming()
     }
@@ -106,13 +121,13 @@ class NCTrash: NCCollectionViewCommon, NCTrashListCellDelegate, NCTrashSectionHe
         }
     }
 
-    @objc override func changeTheming() {
+    @objc func changeTheming() {
         collectionView.reloadData()
     }
 
     // MARK: - Empty
 
-    override func emptyDataSetView(_ view: NCEmptyView) {
+    func emptyDataSetView(_ view: NCEmptyView) {
         view.emptyImage.image = UIImage(named: "trash")?.image(color: .gray, size: UIScreen.main.bounds.width)
         view.emptyTitle.text = NSLocalizedString("_trash_no_trash_", comment: "")
         view.emptyDescription.text = NSLocalizedString("_trash_no_trash_description_", comment: "")
@@ -176,7 +191,7 @@ class NCTrash: NCCollectionViewCommon, NCTrashListCellDelegate, NCTrashSectionHe
         } // else: undefined sender
     }
 
-    override func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
+    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
 
         if !isEditMode {
             toggleMenuMoreGrid(with: objectId, namedButtonMore: namedButtonMore, image: image)
@@ -187,21 +202,11 @@ class NCTrash: NCCollectionViewCommon, NCTrashListCellDelegate, NCTrashSectionHe
         } // else: undefined sender
     }
 
-    override func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
-    }
+    func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) { }
 
-    override func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
-    }
+    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) { }
 
-    override func collectionViewSelectAll() {
-        selectOcId = datasource.map({ $0.fileId })
-        navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(datasource.count)"
-        collectionView.reloadData()
-    }
-
-    @objc func reloadTrashDataSource() { self.reloadDataSource() }
-
-    @objc override func reloadDataSource() {
+    @objc func reloadDataSource() {
 
         layoutForView = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
 

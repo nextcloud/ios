@@ -24,9 +24,9 @@
 import Foundation
 
 // MARK: UICollectionViewDelegate
-extension NCTrash {
+extension NCTrash: UICollectionViewDelegate {
 
-    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
         let tableTrash = datasource[indexPath.item]
 
@@ -51,9 +51,9 @@ extension NCTrash {
 }
 
 // MARK: UICollectionViewDataSource
-extension NCTrash {
+extension NCTrash: UICollectionViewDataSource {
 
-    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
 
         if kind == UICollectionView.elementKindSectionHeader {
 
@@ -82,12 +82,12 @@ extension NCTrash {
         }
     }
 
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         emptyDataSet?.numberOfItemsInSection(datasource.count, section: section)
         return datasource.count
     }
 
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
         let tableTrash = datasource[indexPath.item]
         var image: UIImage?
@@ -129,13 +129,13 @@ extension NCTrash {
 }
 
 // MARK: UICollectionViewDelegateFlowLayout
-extension NCTrash {
+extension NCTrash: UICollectionViewDelegateFlowLayout {
 
-    override func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: highHeader)
     }
 
-    override func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: highHeader)
     }
 }

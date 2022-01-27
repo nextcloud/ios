@@ -22,9 +22,11 @@
 //
 
 import UIKit
+import Realm
 import NCCommunication
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate, NCBackgroundImageColorDelegate {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate, NCBackgroundImageColorDelegate, NCSelectableNavigationView {
+    var selectableDataSource: [RealmSwiftObject] { dataSource.metadatas }
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -577,76 +579,63 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Layout
 
     @objc func setNavigationItem() {
-
-        if isEditMode {
-
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "navigationMore"), style: .plain, target: self, action: #selector(tapSelectMenu(sender:)))
-            navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain, target: self, action: #selector(tapSelect(sender:)))
-            navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(dataSource.metadatas.count)"
-
-        } else {
-
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_select_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(tapSelect(sender:)))
-            navigationItem.leftBarButtonItem = nil
-            navigationItem.title = titleCurrentFolder
-
-            // PROFILE BUTTON
-
-            if layoutKey == NCGlobal.shared.layoutViewFiles {
-                let activeAccount = NCManageDatabase.shared.getActiveAccount()
-
-                let image = NCUtility.shared.loadUserImage(
-                    for: appDelegate.user,
-                       displayName: activeAccount?.displayName,
-                       userBaseUrl: appDelegate)
-
-                let button = UIButton(type: .custom)
-                button.setImage(image, for: .normal)
-
-                if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) {
-
-                    var titleButton = "  "
-
-                    if getNavigationTitle() == activeAccount?.alias {
-                        titleButton = ""
-                    } else {
-                        titleButton += activeAccount?.displayName ?? ""
-                    }
-
-                    button.setTitle(titleButton, for: .normal)
-                    button.setTitleColor(.systemBlue, for: .normal)
+        self.setNavigationHeader()
+        guard !isEditMode, layoutKey == NCGlobal.shared.layoutViewFiles else { return }
+        
+        // PROFILE BUTTON
+        
+        let activeAccount = NCManageDatabase.shared.getActiveAccount()
+        
+        let image = NCUtility.shared.loadUserImage(
+            for: appDelegate.user,
+               displayName: activeAccount?.displayName,
+               userBaseUrl: appDelegate)
+        
+        let button = UIButton(type: .custom)
+        button.setImage(image, for: .normal)
+        
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) {
+            
+            var titleButton = "  "
+            
+            if getNavigationTitle() == activeAccount?.alias {
+                titleButton = ""
+            } else {
+                titleButton += activeAccount?.displayName ?? ""
+            }
+            
+            button.setTitle(titleButton, for: .normal)
+            button.setTitleColor(.systemBlue, for: .normal)
+        }
+        
+        button.semanticContentAttribute = .forceLeftToRight
+        button.sizeToFit()
+        button.action(for: .touchUpInside) { _ in
+            
+            let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
+            if accounts.count > 0 {
+                
+                if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
+                    
+                    vcAccountRequest.activeAccount = NCManageDatabase.shared.getActiveAccount()
+                    vcAccountRequest.accounts = accounts
+                    vcAccountRequest.enableTimerProgress = false
+                    vcAccountRequest.enableAddAccount = true
+                    vcAccountRequest.delegate = self
+                    vcAccountRequest.dismissDidEnterBackground = true
+                    
+                    let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
+                    let numberCell = accounts.count + 1
+                    let height = min(CGFloat(numberCell * Int(vcAccountRequest.heightCell) + 45), screenHeighMax)
+                    
+                    let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height)
+                    
+                    UIApplication.shared.keyWindow?.rootViewController?.present(popup, animated: true)
                 }
-
-                button.semanticContentAttribute = .forceLeftToRight
-                button.sizeToFit()
-                button.action(for: .touchUpInside) { _ in
-
-                    let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
-                    if accounts.count > 0 {
-
-                        if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
-
-                            vcAccountRequest.activeAccount = NCManageDatabase.shared.getActiveAccount()
-                            vcAccountRequest.accounts = accounts
-                            vcAccountRequest.enableTimerProgress = false
-                            vcAccountRequest.enableAddAccount = true
-                            vcAccountRequest.delegate = self
-                            vcAccountRequest.dismissDidEnterBackground = true
-
-                            let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
-                            let numberCell = accounts.count + 1
-                            let height = min(CGFloat(numberCell * Int(vcAccountRequest.heightCell) + 45), screenHeighMax)
-
-                            let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height)
-
-                            UIApplication.shared.keyWindow?.rootViewController?.present(popup, animated: true)
-                        }
-                    }
-                }
-                navigationItem.setLeftBarButton(UIBarButtonItem(customView: button), animated: true)
-                navigationItem.leftItemsSupplementBackButton = true
             }
         }
+        navigationItem.setLeftBarButton(UIBarButtonItem(customView: button), animated: true)
+        navigationItem.leftItemsSupplementBackButton = true
     }
 
     func getNavigationTitle() -> String {
@@ -729,16 +718,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - TAP EVENT
 
-    @objc func tapSelect(sender: Any) {
-
-        isEditMode = !isEditMode
-
-        selectOcId.removeAll()
-        setNavigationItem()
-
-        self.collectionView.reloadData()
-    }
-
     func accountRequestChangeAccount(account: String) {
         NCManageDatabase.shared.setAccountActive(account)
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
@@ -785,11 +764,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         let sortMenu = NCSortMenu()
         sortMenu.toggleMenu(viewController: self, key: layoutKey, sortButton: sender as? UIButton, serverUrl: serverUrl)
-    }
-
-    @objc func tapSelectMenu(sender: Any) {
-
-        toggleMenuSelect()
     }
 
     func tapMoreHeader(sender: Any) { }
@@ -935,12 +909,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             self.present(popup, animated: true)
         }
-    }
-
-    func collectionViewSelectAll() {
-        selectOcId = dataSource.metadatas.map({ $0.ocId })
-        navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(dataSource.metadatas.count)"
-        collectionView.reloadData()
     }
 
     // MARK: - DataSource + NC Endpoint
