@@ -275,7 +275,7 @@ import XLForm
         } else {
 
             //Trim whitespaces after checks above
-            fileNameForm = fileNameForm.trimmingCharacters(in: .whitespacesAndNewlines)
+            fileNameForm = (fileNameForm as! String).trimmingCharacters(in: .whitespacesAndNewlines)
 
             let result = NCCommunicationCommon.shared.getInternalType(fileName: fileNameForm as! String, mimeType: "", directory: false)
             if NCUtility.shared.isDirectEditing(account: appDelegate.account, contentType: result.mimeType).count == 0 {
