@@ -3246,7 +3246,7 @@
 			repositoryURL = "https://github.com/marinofaggiana/IHProgressHUD";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.2.0;
+				minimumVersion = 0.3.0;
 			};
 		};
 		F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */ = {
