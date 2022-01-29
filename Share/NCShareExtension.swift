@@ -44,9 +44,7 @@ class NCShareExtension: UIViewController {
     @IBOutlet weak var createFolderView: UIView!
     @IBOutlet weak var createFolderImage: UIImageView!
     @IBOutlet weak var createFolderLabel: UILabel!
-
     @IBOutlet weak var uploadView: UIView!
-    // is this still needed?
     @IBOutlet weak var uploadImage: UIImageView!
     @IBOutlet weak var uploadLabel: UILabel!
 
@@ -60,21 +58,17 @@ class NCShareExtension: UIViewController {
     var metadataFolder: tableMetadata?
     var networkInProgress = false
     var dataSource = NCDataSource()
-
     var layoutForView: NCGlobal.layoutForViewType?
-
     let heightRowTableView: CGFloat = 50
-    private let heightCommandView: CGFloat = 170
-
+    let heightCommandView: CGFloat = 170
     var autoUploadFileName = ""
     var autoUploadDirectory = ""
-
     let refreshControl = UIRefreshControl()
     var activeAccount: tableAccount!
-    private let chunckSize = CCUtility.getChunkSize() * 1000000
-
-    private var counterUploaded: Int = 0
-    private var uploadErrors: [tableMetadata] = []
+    let chunckSize = CCUtility.getChunkSize() * 1000000
+    var progress: CGFloat = 0
+    var counterUploaded: Int = 0
+    var uploadErrors: [tableMetadata] = []
     var uploadMetadata: [tableMetadata] = []
     var uploadStarted = false
 
@@ -85,36 +79,31 @@ class NCShareExtension: UIViewController {
 
         self.navigationController?.navigationBar.prefersLargeTitles = false
 
-        // Cell
         collectionView.register(UINib(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
         collectionView.collectionViewLayout = NCListLayout()
 
-        // Add Refresh Control
         collectionView.addSubview(refreshControl)
         refreshControl.tintColor = NCBrandColor.shared.brandText
         refreshControl.backgroundColor = NCBrandColor.shared.systemBackground
         refreshControl.addTarget(self, action: #selector(reloadDatasource), for: .valueChanged)
 
-        // Command view
         commandView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
         separatorView.backgroundColor = NCBrandColor.shared.separator
         separatorHeightConstraint.constant = 0.5
 
-        // Table view
         tableView.separatorColor = NCBrandColor.shared.separator
         tableView.layer.cornerRadius = 10
         tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: 1)))
         commandViewHeightConstraint.constant = heightCommandView
 
-        // Create folder
         createFolderView.layer.cornerRadius = 10
         createFolderImage.image = NCUtility.shared.loadImage(named: "folder.badge.plus", color: NCBrandColor.shared.label)
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
         let createFolderGesture = UITapGestureRecognizer(target: self, action: #selector(actionCreateFolder))
         createFolderView.addGestureRecognizer(createFolderGesture)
 
-        // Upload
         uploadView.layer.cornerRadius = 10
+        
         // uploadImage.image = NCUtility.shared.loadImage(named: "square.and.arrow.up", color: NCBrandColor.shared.label)
         uploadLabel.text = NSLocalizedString("_upload_", comment: "")
         uploadLabel.textColor = .systemBlue
@@ -136,7 +125,6 @@ class NCShareExtension: UIViewController {
             NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
         }
 
-        // HUD
         IHProgressHUD.set(viewForExtension: self.view)
         IHProgressHUD.set(defaultMaskType: .clear)
 
@@ -175,6 +163,7 @@ class NCShareExtension: UIViewController {
         super.traitCollectionDidChange(previousTraitCollection)
         collectionView.reloadData()
         tableView.reloadData()
+        showHUD()
     }
 
     // MARK: -
@@ -202,8 +191,15 @@ class NCShareExtension: UIViewController {
 
     @objc func triggerProgressTask(_ notification: NSNotification) {
         guard let progress = notification.userInfo?["progress"] as? CGFloat else { return }
-        let status = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
-        IHProgressHUD.show(progress: progress, status: status)
+        self.progress = progress
+        showHUD()
+    }
+    
+    func showHUD() {
+        if uploadStarted {
+            let status = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
+            IHProgressHUD.show(progress: self.progress, status: status)
+        }
     }
 
     func setNavigationBar(navigationTitle: String) {
@@ -232,12 +228,10 @@ class NCShareExtension: UIViewController {
             self.setNavigationBar(navigationTitle: navigationTitle)
         }
 
-        // PROFILE BUTTON
         let image = NCUtility.shared.loadUserImage(
             for: activeAccount.user,
                displayName: activeAccount.displayName,
                userBaseUrl: activeAccount)
-
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
 
@@ -372,8 +366,7 @@ extension NCShareExtension {
         metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
 
         if counterUploaded == 0 {
-            let status = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
-            IHProgressHUD.show(withStatus: status)
+            showHUD()
         }
 
         NCNetworking.shared.upload(metadata: metadata) { } completion: { errorCode, _ in
