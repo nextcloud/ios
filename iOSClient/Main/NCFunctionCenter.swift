@@ -24,6 +24,7 @@
 import UIKit
 import NCCommunication
 import Queuer
+import JGProgressHUD
 
 @objc class NCFunctionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
     @objc public static let shared: NCFunctionCenter = {
@@ -360,26 +361,33 @@ import Queuer
 
         let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
         let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
-
-//        IHProgressHUD.set(defaultMaskType: .clear)
-//        IHProgressHUD.set(minimumDismiss: 2)
+        let hud = JGProgressHUD()
+        
+        hud.indicatorView = JGProgressHUDRingIndicatorView()
+        (hud.indicatorView as! JGProgressHUDRingIndicatorView).ringWidth = 2
+        hud.show(in: (appDelegate.window?.rootViewController?.view)!)
 
         NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
-
-//            IHProgressHUD.show(progress: CGFloat(progress))
+            
+            hud.progress = Float(progress)
 
         }, completion: { _, resources in
 
             if resources != nil {
                 NCLivePhoto.saveToLibrary(resources!) { result in
                     if !result {
-//                        IHProgressHUD.showError(withStatus: NSLocalizedString("_livephoto_save_error_", comment: ""))
+                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                        hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
                     } else {
-//                        IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
+                        hud.indicatorView = JGProgressHUDSuccessIndicatorView()
+                        hud.textLabel.text = NSLocalizedString("_success_", comment: "")
                     }
+                    hud.dismiss(afterDelay: 1)
                 }
             } else {
-//                IHProgressHUD.showError(withStatus: NSLocalizedString("_livephoto_save_error_", comment: ""))
+                hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
+                hud.dismiss(afterDelay: 1)
             }
         })
     }
