@@ -828,6 +828,7 @@
 "_copy_path_"               = "Copy path";
 "_certificates_"            = "Certificates";
 "_privacy_screen_"          = "Splash screen when app inactive";
+"_saving_"                  = "Saving …";
 // Video
 "_video_processing_"        = "Video processing";
 "_video_being_processed_"   = "Video being processed …";

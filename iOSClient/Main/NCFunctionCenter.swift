@@ -366,7 +366,8 @@ import JGProgressHUD
         hud.indicatorView = JGProgressHUDRingIndicatorView()
         (hud.indicatorView as! JGProgressHUDRingIndicatorView).ringWidth = 2
         hud.show(in: (appDelegate.window?.rootViewController?.view)!)
-
+        hud.textLabel.text = NSLocalizedString("_saving_", comment: "")
+        
         NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
             
             hud.progress = Float(progress)
@@ -375,14 +376,16 @@ import JGProgressHUD
 
             if resources != nil {
                 NCLivePhoto.saveToLibrary(resources!) { result in
-                    if !result {
-                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                        hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
-                    } else {
-                        hud.indicatorView = JGProgressHUDSuccessIndicatorView()
-                        hud.textLabel.text = NSLocalizedString("_success_", comment: "")
+                    DispatchQueue.main.async {
+                        if !result {
+                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                            hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
+                        } else {
+                            hud.indicatorView = JGProgressHUDSuccessIndicatorView()
+                            hud.textLabel.text = NSLocalizedString("_success_", comment: "")
+                        }
+                        hud.dismiss(afterDelay: 1)
                     }
-                    hud.dismiss(afterDelay: 1)
                 }
             } else {
                 hud.indicatorView = JGProgressHUDErrorIndicatorView()
