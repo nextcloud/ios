@@ -135,7 +135,6 @@
 		F72D7EB7263B1207000B3DFC /* MarkdownKit in Frameworks */ = {isa = PBXBuildFile; productRef = F72D7EB6263B1207000B3DFC /* MarkdownKit */; };
 		F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */ = {isa = PBXBuildFile; productRef = F72DA9B325F53E4E00B87DB1 /* SwiftRichString */; };
 		F733598125C1C188002ABA72 /* NCAskAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = F733598025C1C188002ABA72 /* NCAskAuthorization.swift */; };
-		F73521B527396D2900919197 /* IHProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F73521B427396D2900919197 /* IHProgressHUD */; };
 		F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */; };
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
@@ -376,7 +375,6 @@
 		F7EFC0C6256BC77700461AAD /* NCMoreUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7EFC0C5256BC77700461AAD /* NCMoreUserCell.xib */; };
 		F7EFC0CD256BF8DD00461AAD /* NCUserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EFC0CC256BF8DD00461AAD /* NCUserStatus.swift */; };
 		F7F1E54C2492369A00E42386 /* NCMediaCommandView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7F1E54B2492369A00E42386 /* NCMediaCommandView.xib */; };
-		F7F5488F273995CE0067475B /* IHProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F7F5488E273995CE0067475B /* IHProgressHUD */; };
 		F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
 		F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
 		F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */; };
@@ -872,7 +870,6 @@
 				F7EBCDCF277B81FF00A4EF67 /* UICKeyChainStore in Frameworks */,
 				F75E57BF25BF0EC8002B72C2 /* SVGKit in Frameworks */,
 				F7EBCDD5277B82DE00A4EF67 /* Queuer in Frameworks */,
-				F7F5488F273995CE0067475B /* IHProgressHUD in Frameworks */,
 				F786D593253454CE00E3DD7B /* NCCommunication in Frameworks */,
 				F72D7EB7263B1207000B3DFC /* MarkdownKit in Frameworks */,
 			);
@@ -915,7 +912,6 @@
 				F76DA969277B77EA0082465B /* DropDown in Frameworks */,
 				F75EAED826D2552E00F4320E /* MarqueeLabel in Frameworks */,
 				F710FC7A277B7D0000AA9FBF /* Realm in Frameworks */,
-				F73521B527396D2900919197 /* IHProgressHUD in Frameworks */,
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
 				F74E7720277A2EF40013B958 /* XLForm in Frameworks */,
 				F73ADD1C265546890069EA0D /* SwiftEntryKit in Frameworks */,
@@ -1837,7 +1833,6 @@
 				F75E57BE25BF0EC8002B72C2 /* SVGKit */,
 				F72D7EB6263B1207000B3DFC /* MarkdownKit */,
 				F73ADD2026554F8E0069EA0D /* SwiftEntryKit */,
-				F7F5488E273995CE0067475B /* IHProgressHUD */,
 				F710FC7D277B7D2600AA9FBF /* Realm */,
 				F710FC7F277B7D2700AA9FBF /* RealmSwift */,
 				F7EBCDCE277B81FF00A4EF67 /* UICKeyChainStore */,
@@ -1904,7 +1899,6 @@
 				F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */,
 				F73ADD1B265546890069EA0D /* SwiftEntryKit */,
 				F75EAED726D2552E00F4320E /* MarqueeLabel */,
-				F73521B427396D2900919197 /* IHProgressHUD */,
 				F74E771F277A2EF40013B958 /* XLForm */,
 				F76DA962277B760E0082465B /* Queuer */,
 				F76DA965277B76F30082465B /* UICKeyChainStore */,
@@ -2033,7 +2027,6 @@
 				F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */,
 				F75EAED626D2552E00F4320E /* XCRemoteSwiftPackageReference "MarqueeLabel" */,
-				F73521B327396D2800919197 /* XCRemoteSwiftPackageReference "IHProgressHUD" */,
 				F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */,
 				F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */,
 				F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */,
@@ -3058,7 +3051,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEFINES_MODULE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -3124,7 +3117,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -3254,14 +3247,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 3.7.2;
-			};
-		};
-		F73521B327396D2800919197 /* XCRemoteSwiftPackageReference "IHProgressHUD" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/marinofaggiana/IHProgressHUD";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.3.0;
 			};
 		};
 		F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */ = {
@@ -3444,11 +3429,6 @@
 			package = F72DA9B225F53E4E00B87DB1 /* XCRemoteSwiftPackageReference "SwiftRichString" */;
 			productName = SwiftRichString;
 		};
-		F73521B427396D2900919197 /* IHProgressHUD */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F73521B327396D2800919197 /* XCRemoteSwiftPackageReference "IHProgressHUD" */;
-			productName = IHProgressHUD;
-		};
 		F73ADD1B265546890069EA0D /* SwiftEntryKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */;
@@ -3593,11 +3573,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F7ED547A25EEA65400956C55 /* XCRemoteSwiftPackageReference "QRCodeReader" */;
 			productName = QRCodeReader;
-		};
-		F7F5488E273995CE0067475B /* IHProgressHUD */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F73521B327396D2800919197 /* XCRemoteSwiftPackageReference "IHProgressHUD" */;
-			productName = IHProgressHUD;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
