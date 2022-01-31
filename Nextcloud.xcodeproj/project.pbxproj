@@ -128,6 +128,7 @@
 		F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */; };
 		F72928A0253B0937009CA4FD /* NCMainNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F729289F253B0937009CA4FD /* NCMainNavigationController.swift */; };
 		F72A47EC2487B06B005AD489 /* NCOperationQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72A47EB2487B06B005AD489 /* NCOperationQueue.swift */; };
+		F72CD01227A7E92400E59476 /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F72CD01127A7E92400E59476 /* JGProgressHUD */; };
 		F72CD63A25C19EBF00F46F9A /* NCAutoUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72CD63925C19EBF00F46F9A /* NCAutoUpload.swift */; };
 		F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */; };
 		F72D404923D2082500A97FD0 /* NCViewerNextcloudText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72D404823D2082500A97FD0 /* NCViewerNextcloudText.swift */; };
@@ -864,6 +865,7 @@
 			files = (
 				F7E57302278F14FF00F8C99E /* OpenSSL.xcframework in Frameworks */,
 				F710FC80277B7D2700AA9FBF /* RealmSwift in Frameworks */,
+				F72CD01227A7E92400E59476 /* JGProgressHUD in Frameworks */,
 				F710FC7E277B7D2600AA9FBF /* Realm in Frameworks */,
 				F73ADD2126554F8E0069EA0D /* SwiftEntryKit in Frameworks */,
 				F7EBCDCF277B81FF00A4EF67 /* UICKeyChainStore in Frameworks */,
@@ -1838,6 +1840,7 @@
 				F710FC7F277B7D2700AA9FBF /* RealmSwift */,
 				F7EBCDCE277B81FF00A4EF67 /* UICKeyChainStore */,
 				F7EBCDD4277B82DE00A4EF67 /* Queuer */,
+				F72CD01127A7E92400E59476 /* JGProgressHUD */,
 			);
 			productName = "Share Ext";
 			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */;
@@ -2037,6 +2040,7 @@
 				F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */,
 				F7233B3827835FA300F40A43 /* XCRemoteSwiftPackageReference "ChromaColorPicker" */,
 				F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */,
+				F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -3233,6 +3237,14 @@
 				kind = branch;
 			};
 		};
+		F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/JonasGessner/JGProgressHUD.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 		F72DA9B225F53E4E00B87DB1 /* XCRemoteSwiftPackageReference "SwiftRichString" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/malcommac/SwiftRichString";
@@ -3413,6 +3425,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F7233B3827835FA300F40A43 /* XCRemoteSwiftPackageReference "ChromaColorPicker" */;
 			productName = ChromaColorPicker;
+		};
+		F72CD01127A7E92400E59476 /* JGProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
+			productName = JGProgressHUD;
 		};
 		F72D7EB6263B1207000B3DFC /* MarkdownKit */ = {
 			isa = XCSwiftPackageProductDependency;

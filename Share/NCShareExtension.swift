@@ -25,7 +25,7 @@
 
 import UIKit
 import NCCommunication
-import IHProgressHUD
+import JGProgressHUD
 
 enum NCShareExtensionError: Error {
     case cancel, fileUpload, noAccount, noFiles
@@ -71,6 +71,7 @@ class NCShareExtension: UIViewController {
     var uploadErrors: [tableMetadata] = []
     var uploadMetadata: [tableMetadata] = []
     var uploadStarted = false
+    let hud = JGProgressHUD()
 
     // MARK: - View Life Cycle
 
@@ -125,9 +126,8 @@ class NCShareExtension: UIViewController {
             NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
         }
 
-        IHProgressHUD.set(viewForExtension: self.view)
-        IHProgressHUD.set(defaultMaskType: .clear)
-
+        hud.indicatorView = JGProgressHUDPieIndicatorView()
+        
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
     }
 
@@ -163,7 +163,6 @@ class NCShareExtension: UIViewController {
         super.traitCollectionDidChange(previousTraitCollection)
         collectionView.reloadData()
         tableView.reloadData()
-        showHUD()
     }
 
     // MARK: -
@@ -190,18 +189,10 @@ class NCShareExtension: UIViewController {
     }
 
     @objc func triggerProgressTask(_ notification: NSNotification) {
-        guard let progress = notification.userInfo?["progress"] as? CGFloat else { return }
-        self.progress = progress
-        showHUD()
+        guard let progress = notification.userInfo?["progress"] as? Float else { return }
+        hud.progress = progress
     }
     
-    func showHUD() {
-        if uploadStarted {
-            let status = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
-            IHProgressHUD.show(progress: self.progress, status: status)
-        }
-    }
-
     func setNavigationBar(navigationTitle: String) {
 
         navigationItem.title = navigationTitle
@@ -365,9 +356,9 @@ extension NCShareExtension {
         // CHUNCK
         metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
 
-        if counterUploaded == 0 {
-            showHUD()
-        }
+        hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
+        hud.progress = 0
+        hud.show(in: self.view)
 
         NCNetworking.shared.upload(metadata: metadata) { } completion: { errorCode, _ in
             if errorCode == 0 {
@@ -390,7 +381,7 @@ extension NCShareExtension {
                 self.extensionContext?.cancelRequest(withError: NCShareExtensionError.fileUpload)
             }
         } else {
-            IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
+            hud.indicatorView = JGProgressHUDSuccessIndicatorView()
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
             }
