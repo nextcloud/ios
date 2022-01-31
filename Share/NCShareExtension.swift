@@ -191,6 +191,7 @@ class NCShareExtension: UIViewController {
 
     @objc func triggerProgressTask(_ notification: NSNotification) {
         guard let progress = notification.userInfo?["progress"] as? Float else { return }
+        hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
         hud.progress = progress
     }
     
