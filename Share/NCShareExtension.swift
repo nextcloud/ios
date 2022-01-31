@@ -207,17 +207,18 @@ class NCShareExtension: UIViewController {
         backButton.setTitle(" " + NSLocalizedString("_back_", comment: ""), for: .normal)
         backButton.setTitleColor(.systemBlue, for: .normal)
         backButton.action(for: .touchUpInside) { _ in
+            if !self.uploadStarted {
+                while self.serverUrl.last != "/" { self.serverUrl.removeLast() }
+                self.serverUrl.removeLast()
 
-            while self.serverUrl.last != "/" { self.serverUrl.removeLast() }
-            self.serverUrl.removeLast()
+                self.reloadDatasource(withLoadFolder: true)
 
-            self.reloadDatasource(withLoadFolder: true)
-
-            var navigationTitle = (self.serverUrl as NSString).lastPathComponent
-            if NCUtilityFileSystem.shared.getHomeServer(account: self.activeAccount.account) == self.serverUrl {
-                navigationTitle = NCBrandOptions.shared.brand
+                var navigationTitle = (self.serverUrl as NSString).lastPathComponent
+                if NCUtilityFileSystem.shared.getHomeServer(account: self.activeAccount.account) == self.serverUrl {
+                    navigationTitle = NCBrandOptions.shared.brand
+                }
+                self.setNavigationBar(navigationTitle: navigationTitle)
             }
-            self.setNavigationBar(navigationTitle: navigationTitle)
         }
 
         let image = NCUtility.shared.loadUserImage(
@@ -243,7 +244,9 @@ class NCShareExtension: UIViewController {
         profileButton.semanticContentAttribute = .forceLeftToRight
         profileButton.sizeToFit()
         profileButton.action(for: .touchUpInside) { _ in
-            self.showAccountPicker()
+            if !self.uploadStarted {
+                self.showAccountPicker()
+            }
         }
         var navItems = [UIBarButtonItem(customView: profileButton)]
         if serverUrl != NCUtilityFileSystem.shared.getHomeServer(account: activeAccount.account) {
