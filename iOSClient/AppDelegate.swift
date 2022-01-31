@@ -210,9 +210,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if account == "" { return }
         guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
 
-        // close HUD
-//        IHProgressHUD.dismiss()
-
         // Account changed ??
         if activeAccount.account != account {
             settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))

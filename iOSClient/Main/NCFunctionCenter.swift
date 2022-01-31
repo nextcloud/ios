@@ -464,25 +464,29 @@ import JGProgressHUD
                 let ocIdUpload = UUID().uuidString
                 let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
                 try data.write(to: URL(fileURLWithPath: fileNameLocalPath))
-
-//                IHProgressHUD.set(defaultMaskType: .clear)
-//                IHProgressHUD.set(minimumDismiss: 2)
+                let hud = JGProgressHUD()
+                
+                hud.indicatorView = JGProgressHUDRingIndicatorView()
+                (hud.indicatorView as! JGProgressHUDRingIndicatorView).ringWidth = 2
+                hud.show(in: (appDelegate.window?.rootViewController?.view)!)
+                hud.textLabel.text = fileName
 
                 NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { _ in
                 } progressHandler: { progress in
-
-//                    IHProgressHUD.show(progress: CGFloat(progress.fractionCompleted), status: fileName)
-
+                    hud.progress = Float(progress.fractionCompleted)
                 } completionHandler: { account, ocId, etag, _, _, _, errorCode, errorDescription in
                     if errorCode == 0 && etag != nil && ocId != nil {
                         let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
                         NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
                         NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
-//                        IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
+                        hud.indicatorView = JGProgressHUDSuccessIndicatorView()
+                        hud.textLabel.text = NSLocalizedString("_success_", comment: "")
                     } else {
-//                        IHProgressHUD.showError(withStatus: NSLocalizedString(errorDescription, comment: ""))
+                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                        hud.textLabel.text = NSLocalizedString(errorDescription, comment: "")
                     }
+                    hud.dismiss(afterDelay: 1)
                 }
             } catch {
                 return false
