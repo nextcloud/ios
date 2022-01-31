@@ -362,9 +362,7 @@ extension NCShareExtension {
 
         hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
         hud.progress = 0
-        if counterUploaded == 0 {
-            hud.show(in: self.view)
-        }
+        hud.show(in: self.view)
         
         NCNetworking.shared.upload(metadata: metadata) { } completion: { errorCode, _ in
             if errorCode == 0 {

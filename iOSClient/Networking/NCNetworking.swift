@@ -411,12 +411,46 @@ import Queuer
     // MARK: - Upload
 
     @objc func upload(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
-
-        var metadata = tableMetadata.init(value: metadata)
-        var fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        
+        func uploadMetadata(_ metadata: tableMetadata) {
+            
+            NCManageDatabase.shared.addMetadata(metadata)
+            let metadata = tableMetadata.init(value: metadata)
+            
+            if metadata.e2eEncrypted {
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
+                NCNetworkingE2EE.shared.upload(metadata: metadata, start: start) { errorCode, errorDescription in
+                    DispatchQueue.main.async {
+                        completion(errorCode, errorDescription)
+                    }
+                }
+#endif
+            } else if metadata.chunk {
+                uploadChunkedFile(metadata: metadata, start: start) { errorCode, errorDescription in
+                    DispatchQueue.main.async {
+                        completion(errorCode, errorDescription)
+                    }
+                }
+            } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
+                uploadFile(metadata: metadata, start: start) { errorCode, errorDescription in
+                    DispatchQueue.main.async {
+                        completion(errorCode, errorDescription)
+                    }
+                }
+            } else {
+                uploadFileInBackground(metadata: metadata, start: start) { errorCode, errorDescription in
+                    DispatchQueue.main.async {
+                        completion(errorCode, errorDescription)
+                    }
+                }
+            }
+        }
+        
+        let metadata = tableMetadata.init(value: metadata)
 
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
 
+            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
             metadata.contentType = results.mimeType
             metadata.iconName = results.iconName
@@ -429,47 +463,21 @@ import Queuer
             }
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameLocalPath)
 
-            NCManageDatabase.shared.addMetadata(metadata)
-            metadata = tableMetadata.init(value: metadata)
-
-            if metadata.e2eEncrypted {
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
-                NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: metadata), start: { start() }, completion: completion)
-#endif
-            } else if metadata.chunk {
-                uploadChunkedFile(metadata: metadata, start: { start() }, completion: completion)
-            } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
-                uploadFile(metadata: metadata, start: { start() }, completion: completion)
-            } else {
-                uploadFileInBackground(metadata: metadata, start: { start() }, completion: completion)
-            }
+            uploadMetadata(metadata)
 
         } else {
 
             CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadata, notification: true) { extractMetadata, fileNamePath in
 
-                guard let extractMetadata = extractMetadata else {
+                guard let metadata = extractMetadata else {
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     return completion(NCGlobal.shared.errorInternalError, "Internal error")
                 }
 
-                let metadata = tableMetadata.init(value: extractMetadata)
-                fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId, fileNameView: extractMetadata.fileNameView)
+                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                 NCUtilityFileSystem.shared.moveFileInBackground(atPath: fileNamePath!, toPath: fileNameLocalPath)
 
-                NCManageDatabase.shared.addMetadata(extractMetadata)
-
-                if metadata.e2eEncrypted {
-                    #if !EXTENSION_FILE_PROVIDER_EXTENSION
-                    NCNetworkingE2EE.shared.upload(metadata: extractMetadata, start: { start() }, completion: completion)
-                    #endif
-                } else if metadata.chunk {
-                    self.uploadChunkedFile(metadata: metadata, start: { start() }, completion: completion)
-                } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
-                    self.uploadFile(metadata: metadata, start: { start() }, completion: completion)
-                } else {
-                    self.uploadFileInBackground(metadata: metadata, start: { start() }, completion: completion)
-                }
+                uploadMetadata(metadata)
             }
         }
     }
