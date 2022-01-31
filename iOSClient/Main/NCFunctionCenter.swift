@@ -7,24 +7,6 @@
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-
-import UIKit
-import NCCommunication
-import Queuer
-import IHProgressHUD
 
 @objc class NCFunctionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
     @objc public static let shared: NCFunctionCenter = {
@@ -362,25 +344,25 @@ import IHProgressHUD
         let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
         let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
 
-        IHProgressHUD.set(defaultMaskType: .clear)
-        IHProgressHUD.set(minimumDismiss: 2)
+//        IHProgressHUD.set(defaultMaskType: .clear)
+//        IHProgressHUD.set(minimumDismiss: 2)
 
         NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
 
-            IHProgressHUD.show(progress: CGFloat(progress))
+//            IHProgressHUD.show(progress: CGFloat(progress))
 
         }, completion: { _, resources in
 
             if resources != nil {
                 NCLivePhoto.saveToLibrary(resources!) { result in
                     if !result {
-                        IHProgressHUD.showError(withStatus: NSLocalizedString("_livephoto_save_error_", comment: ""))
+//                        IHProgressHUD.showError(withStatus: NSLocalizedString("_livephoto_save_error_", comment: ""))
                     } else {
-                        IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
+//                        IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
                     }
                 }
             } else {
-                IHProgressHUD.showError(withStatus: NSLocalizedString("_livephoto_save_error_", comment: ""))
+//                IHProgressHUD.showError(withStatus: NSLocalizedString("_livephoto_save_error_", comment: ""))
             }
         })
     }
@@ -458,13 +440,13 @@ import IHProgressHUD
                 let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
                 try data.write(to: URL(fileURLWithPath: fileNameLocalPath))
 
-                IHProgressHUD.set(defaultMaskType: .clear)
-                IHProgressHUD.set(minimumDismiss: 2)
+//                IHProgressHUD.set(defaultMaskType: .clear)
+//                IHProgressHUD.set(minimumDismiss: 2)
 
                 NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { _ in
                 } progressHandler: { progress in
 
-                    IHProgressHUD.show(progress: CGFloat(progress.fractionCompleted), status: fileName)
+//                    IHProgressHUD.show(progress: CGFloat(progress.fractionCompleted), status: fileName)
 
                 } completionHandler: { account, ocId, etag, _, _, _, errorCode, errorDescription in
                     if errorCode == 0 && etag != nil && ocId != nil {
@@ -472,9 +454,9 @@ import IHProgressHUD
                         NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
                         NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
-                        IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
+//                        IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
                     } else {
-                        IHProgressHUD.showError(withStatus: NSLocalizedString(errorDescription, comment: ""))
+//                        IHProgressHUD.showError(withStatus: NSLocalizedString(errorDescription, comment: ""))
                     }
                 }
             } catch {
