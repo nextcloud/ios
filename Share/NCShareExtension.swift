@@ -126,7 +126,8 @@ class NCShareExtension: UIViewController {
             NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
         }
 
-        hud.indicatorView = JGProgressHUDPieIndicatorView()
+        hud.indicatorView = JGProgressHUDRingIndicatorView()
+        (hud.indicatorView as! JGProgressHUDRingIndicatorView).ringWidth = 2
         
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
     }
@@ -382,6 +383,7 @@ extension NCShareExtension {
             }
         } else {
             hud.indicatorView = JGProgressHUDSuccessIndicatorView()
+            hud.textLabel.text = NSLocalizedString("_success_", comment: "")
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
             }
