@@ -191,7 +191,6 @@ class NCShareExtension: UIViewController {
 
     @objc func triggerProgressTask(_ notification: NSNotification) {
         guard let progress = notification.userInfo?["progress"] as? Float else { return }
-        hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
         hud.progress = progress
     }
     
@@ -363,8 +362,10 @@ extension NCShareExtension {
 
         hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
         hud.progress = 0
-        hud.show(in: self.view)
-
+        if counterUploaded == 0 {
+            hud.show(in: self.view)
+        }
+        
         NCNetworking.shared.upload(metadata: metadata) { } completion: { errorCode, _ in
             if errorCode == 0 {
                 self.counterUploaded += 1
