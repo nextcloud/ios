@@ -127,7 +127,9 @@ class NCShareExtension: UIViewController {
         }
 
         hud.indicatorView = JGProgressHUDRingIndicatorView()
-        (hud.indicatorView as! JGProgressHUDRingIndicatorView).ringWidth = 2
+        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+            indicatorView.ringWidth = 1.5
+        }
         
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
     }

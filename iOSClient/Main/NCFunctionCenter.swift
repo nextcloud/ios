@@ -364,7 +364,9 @@ import JGProgressHUD
         let hud = JGProgressHUD()
         
         hud.indicatorView = JGProgressHUDRingIndicatorView()
-        (hud.indicatorView as! JGProgressHUDRingIndicatorView).ringWidth = 2
+        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+            indicatorView.ringWidth = 1.5
+        }
         hud.show(in: (appDelegate.window?.rootViewController?.view)!)
         hud.textLabel.text = NSLocalizedString("_saving_", comment: "")
         
@@ -470,7 +472,9 @@ import JGProgressHUD
                 let hud = JGProgressHUD()
                 
                 hud.indicatorView = JGProgressHUDRingIndicatorView()
-                (hud.indicatorView as! JGProgressHUDRingIndicatorView).ringWidth = 2
+                if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                    indicatorView.ringWidth = 1.5
+                }
                 hud.show(in: (appDelegate.window?.rootViewController?.view)!)
                 hud.textLabel.text = fileName
 
