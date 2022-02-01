@@ -356,7 +356,6 @@ extension NCShareExtension {
 
         // E2EE
         metadata.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
-
         // CHUNCK
         metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
 
@@ -370,7 +369,7 @@ extension NCShareExtension {
                 self.upload()
             } else {
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NCManageDatabase.shared.deleteChunks(account: self.activeAccount.account, ocId: metadata.ocId)
+                NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
                 self.uploadErrors.append(metadata)
             }
         }
