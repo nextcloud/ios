@@ -171,13 +171,13 @@ class NCShareExtension: UIViewController {
     func cancel(with error: NCShareExtensionError) {
         // make sure no uploads are continued
         uploadStarted = false
-        for metadata in uploadMetadata {
-            let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-            let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NCNetworking.shared.uploadRequest[filePath]?.tasks.forEach({ $0.cancel() })
-            NCUtilityFileSystem.shared.deleteFile(filePath: path)
-        }
+//        for metadata in uploadMetadata {
+//            let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+//            let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
+//            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+//            NCNetworking.shared.uploadRequest[filePath]?.tasks.forEach({ $0.cancel() })
+//            NCUtilityFileSystem.shared.deleteFile(filePath: path)
+//        }
         extensionContext?.cancelRequest(withError: error)
     }
 
@@ -327,7 +327,7 @@ extension NCShareExtension {
                 contentType: "",
                 livePhoto: false)
             metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
-            metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
+            metadata.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
             if NCManageDatabase.shared.getMetadataConflict(account: activeAccount.account, serverUrl: serverUrl, fileName: fileName) != nil {
