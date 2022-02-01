@@ -128,21 +128,21 @@
         }
       },
       {
-        "package": "IHProgressHUD",
-        "repositoryURL": "https://github.com/marinofaggiana/IHProgressHUD",
-        "state": {
-          "branch": null,
-          "revision": "99f72a0f59f2b6c48fb143b4196a1198936787d3",
-          "version": "0.3.0"
-        }
-      },
-      {
         "package": "NCCommunication",
         "repositoryURL": "https://github.com/nextcloud/ios-communication-library/",
         "state": {
           "branch": null,
           "revision": "c7aabb42f734f30c2e325dec4000c59349f33005",
           "version": "0.99.4"
+        }
+      },
+      {
+        "package": "JGProgressHUD",
+        "repositoryURL": "https://github.com/JonasGessner/JGProgressHUD.git",
+        "state": {
+          "branch": null,
+          "revision": "78d7cd35f1d90ff74fd82e486f2cbe4b24be8cf9",
+          "version": "2.2.0"
         }
       },
       {

@@ -25,7 +25,7 @@
 
 import UIKit
 import NCCommunication
-import IHProgressHUD
+import JGProgressHUD
 
 enum NCShareExtensionError: Error {
     case cancel, fileUpload, noAccount, noFiles
@@ -71,6 +71,7 @@ class NCShareExtension: UIViewController {
     var uploadErrors: [tableMetadata] = []
     var uploadMetadata: [tableMetadata] = []
     var uploadStarted = false
+    let hud = JGProgressHUD()
 
     // MARK: - View Life Cycle
 
@@ -125,9 +126,11 @@ class NCShareExtension: UIViewController {
             NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
         }
 
-        IHProgressHUD.set(viewForExtension: self.view)
-        IHProgressHUD.set(defaultMaskType: .clear)
-
+        hud.indicatorView = JGProgressHUDRingIndicatorView()
+        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+            indicatorView.ringWidth = 1.5
+        }
+        
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
     }
 
@@ -163,7 +166,6 @@ class NCShareExtension: UIViewController {
         super.traitCollectionDidChange(previousTraitCollection)
         collectionView.reloadData()
         tableView.reloadData()
-        showHUD()
     }
 
     // MARK: -
@@ -171,13 +173,6 @@ class NCShareExtension: UIViewController {
     func cancel(with error: NCShareExtensionError) {
         // make sure no uploads are continued
         uploadStarted = false
-        for metadata in uploadMetadata {
-            let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-            let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NCNetworking.shared.uploadRequest[filePath]?.tasks.forEach({ $0.cancel() })
-            NCUtilityFileSystem.shared.deleteFile(filePath: path)
-        }
         extensionContext?.cancelRequest(withError: error)
     }
 
@@ -190,18 +185,10 @@ class NCShareExtension: UIViewController {
     }
 
     @objc func triggerProgressTask(_ notification: NSNotification) {
-        guard let progress = notification.userInfo?["progress"] as? CGFloat else { return }
-        self.progress = progress
-        showHUD()
+        guard let progress = notification.userInfo?["progress"] as? Float else { return }
+        hud.progress = progress
     }
     
-    func showHUD() {
-        if uploadStarted {
-            let status = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
-            IHProgressHUD.show(progress: self.progress, status: status)
-        }
-    }
-
     func setNavigationBar(navigationTitle: String) {
 
         navigationItem.title = navigationTitle
@@ -215,17 +202,18 @@ class NCShareExtension: UIViewController {
         backButton.setTitle(" " + NSLocalizedString("_back_", comment: ""), for: .normal)
         backButton.setTitleColor(.systemBlue, for: .normal)
         backButton.action(for: .touchUpInside) { _ in
+            if !self.uploadStarted {
+                while self.serverUrl.last != "/" { self.serverUrl.removeLast() }
+                self.serverUrl.removeLast()
 
-            while self.serverUrl.last != "/" { self.serverUrl.removeLast() }
-            self.serverUrl.removeLast()
+                self.reloadDatasource(withLoadFolder: true)
 
-            self.reloadDatasource(withLoadFolder: true)
-
-            var navigationTitle = (self.serverUrl as NSString).lastPathComponent
-            if NCUtilityFileSystem.shared.getHomeServer(account: self.activeAccount.account) == self.serverUrl {
-                navigationTitle = NCBrandOptions.shared.brand
+                var navigationTitle = (self.serverUrl as NSString).lastPathComponent
+                if NCUtilityFileSystem.shared.getHomeServer(account: self.activeAccount.account) == self.serverUrl {
+                    navigationTitle = NCBrandOptions.shared.brand
+                }
+                self.setNavigationBar(navigationTitle: navigationTitle)
             }
-            self.setNavigationBar(navigationTitle: navigationTitle)
         }
 
         let image = NCUtility.shared.loadUserImage(
@@ -251,7 +239,9 @@ class NCShareExtension: UIViewController {
         profileButton.semanticContentAttribute = .forceLeftToRight
         profileButton.sizeToFit()
         profileButton.action(for: .touchUpInside) { _ in
-            self.showAccountPicker()
+            if !self.uploadStarted {
+                self.showAccountPicker()
+            }
         }
         var navItems = [UIBarButtonItem(customView: profileButton)]
         if serverUrl != NCUtilityFileSystem.shared.getHomeServer(account: activeAccount.account) {
@@ -332,7 +322,7 @@ extension NCShareExtension {
                 contentType: "",
                 livePhoto: false)
             metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
-            metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
+            metadata.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
             if NCManageDatabase.shared.getMetadataConflict(account: activeAccount.account, serverUrl: serverUrl, fileName: fileName) != nil {
@@ -361,22 +351,22 @@ extension NCShareExtension {
 
         // E2EE
         metadata.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
-
         // CHUNCK
         metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
 
-        if counterUploaded == 0 {
-            showHUD()
-        }
-
+        hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
+        hud.progress = 0
+        hud.show(in: self.view)
+        
         NCNetworking.shared.upload(metadata: metadata) { } completion: { errorCode, _ in
             if errorCode == 0 {
                 self.counterUploaded += 1
-                // next
                 self.upload()
             } else {
+                let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NCManageDatabase.shared.deleteChunks(account: self.activeAccount.account, ocId: metadata.ocId)
+                NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
+                NCUtilityFileSystem.shared.deleteFile(filePath: path)
                 self.uploadErrors.append(metadata)
             }
         }
@@ -390,7 +380,8 @@ extension NCShareExtension {
                 self.extensionContext?.cancelRequest(withError: NCShareExtensionError.fileUpload)
             }
         } else {
-            IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
+            hud.indicatorView = JGProgressHUDSuccessIndicatorView()
+            hud.textLabel.text = NSLocalizedString("_success_", comment: "")
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
             }

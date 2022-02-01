@@ -242,6 +242,15 @@ class NCNetworkingProcessUpload: NSObject {
 
         var session: URLSession?
 
+        // remove leaning upload share extension
+        let metadatasUploadShareExtension = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND sessionSelector == %@", NCCommunicationCommon.shared.sessionIdentifierUpload, NCGlobal.shared.selectorUploadFileShareExtension))
+        for metadata in metadatasUploadShareExtension {
+            let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
+            NCUtilityFileSystem.shared.deleteFile(filePath: path)
+        }
+        
         // verify metadataStatusInUpload (BACKGROUND)
         let metadatasInUploadBackground = NCManageDatabase.shared.getMetadatas(
             predicate: NSPredicate(
