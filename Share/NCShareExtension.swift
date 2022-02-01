@@ -171,13 +171,6 @@ class NCShareExtension: UIViewController {
     func cancel(with error: NCShareExtensionError) {
         // make sure no uploads are continued
         uploadStarted = false
-//        for metadata in uploadMetadata {
-//            let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-//            let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
-//            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-//            NCNetworking.shared.uploadRequest[filePath]?.tasks.forEach({ $0.cancel() })
-//            NCUtilityFileSystem.shared.deleteFile(filePath: path)
-//        }
         extensionContext?.cancelRequest(withError: error)
     }
 
@@ -368,8 +361,10 @@ extension NCShareExtension {
                 self.counterUploaded += 1
                 self.upload()
             } else {
+                let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
+                NCUtilityFileSystem.shared.deleteFile(filePath: path)
                 self.uploadErrors.append(metadata)
             }
         }
