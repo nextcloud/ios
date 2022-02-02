@@ -24,7 +24,7 @@
 import UIKit
 import NCCommunication
 import Queuer
-import IHProgressHUD
+import JGProgressHUD
 
 @objc class NCFunctionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
     @objc public static let shared: NCFunctionCenter = {
@@ -361,26 +361,38 @@ import IHProgressHUD
 
         let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
         let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
-
-        IHProgressHUD.set(defaultMaskType: .clear)
-        IHProgressHUD.set(minimumDismiss: 2)
-
+        let hud = JGProgressHUD()
+        
+        hud.indicatorView = JGProgressHUDRingIndicatorView()
+        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+            indicatorView.ringWidth = 1.5
+        }
+        hud.show(in: (appDelegate.window?.rootViewController?.view)!)
+        hud.textLabel.text = NSLocalizedString("_saving_", comment: "")
+        
         NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
-
-            IHProgressHUD.show(progress: CGFloat(progress))
+            
+            hud.progress = Float(progress)
 
         }, completion: { _, resources in
 
             if resources != nil {
                 NCLivePhoto.saveToLibrary(resources!) { result in
-                    if !result {
-                        IHProgressHUD.showError(withStatus: NSLocalizedString("_livephoto_save_error_", comment: ""))
-                    } else {
-                        IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
+                    DispatchQueue.main.async {
+                        if !result {
+                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                            hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
+                        } else {
+                            hud.indicatorView = JGProgressHUDSuccessIndicatorView()
+                            hud.textLabel.text = NSLocalizedString("_success_", comment: "")
+                        }
+                        hud.dismiss(afterDelay: 1)
                     }
                 }
             } else {
-                IHProgressHUD.showError(withStatus: NSLocalizedString("_livephoto_save_error_", comment: ""))
+                hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
+                hud.dismiss(afterDelay: 1)
             }
         })
     }
@@ -457,25 +469,31 @@ import IHProgressHUD
                 let ocIdUpload = UUID().uuidString
                 let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
                 try data.write(to: URL(fileURLWithPath: fileNameLocalPath))
-
-                IHProgressHUD.set(defaultMaskType: .clear)
-                IHProgressHUD.set(minimumDismiss: 2)
+                let hud = JGProgressHUD()
+                
+                hud.indicatorView = JGProgressHUDRingIndicatorView()
+                if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                    indicatorView.ringWidth = 1.5
+                }
+                hud.show(in: (appDelegate.window?.rootViewController?.view)!)
+                hud.textLabel.text = fileName
 
                 NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { _ in
                 } progressHandler: { progress in
-
-                    IHProgressHUD.show(progress: CGFloat(progress.fractionCompleted), status: fileName)
-
+                    hud.progress = Float(progress.fractionCompleted)
                 } completionHandler: { account, ocId, etag, _, _, _, errorCode, errorDescription in
                     if errorCode == 0 && etag != nil && ocId != nil {
                         let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
                         NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
                         NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
-                        IHProgressHUD.showSuccesswithStatus(NSLocalizedString("_success_", comment: ""))
+                        hud.indicatorView = JGProgressHUDSuccessIndicatorView()
+                        hud.textLabel.text = NSLocalizedString("_success_", comment: "")
                     } else {
-                        IHProgressHUD.showError(withStatus: NSLocalizedString(errorDescription, comment: ""))
+                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                        hud.textLabel.text = NSLocalizedString(errorDescription, comment: "")
                     }
+                    hud.dismiss(afterDelay: 1)
                 }
             } catch {
                 return false

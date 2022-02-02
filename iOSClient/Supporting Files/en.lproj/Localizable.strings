@@ -25,7 +25,7 @@
 "_accessibility_add_upload_" = "Add and upload";
 "_download_file_"           = "Download file";
 "_loading_"                 = "Loading";
-"_loading_with_points_"     = "Loading…";
+"_loading_with_points_"     = "Loading …";
 "_loading_num_"             = "Loading file %i";
 "_loading_autoupload_"      = "Auto uploading";
 "_uploading_"               = "Uploading";
@@ -71,7 +71,7 @@
 "_save_exit_"               = "Do you want to exit without saving?";
 "_video_"                   = "Video";
 "_overwrite_"               = "Overwrite";
-"_transfers_in_queue_"      = "Tranfers in progress, please wait…";
+"_transfers_in_queue_"      = "Transfers in progress, please wait …";
 "_too_errors_upload_"       = "Too many errors, please verify the problem";
 "_create_folder_"           = "Create folder";
 "_create_folder_on_"        = "Create folder on";
@@ -115,7 +115,7 @@
 "_dark_mode_detect_"        = "Detect iOS dark mode";
 "_screen_"                  = "Screen";
 "_wipe_account_"            = "Account wiped from server";
-"_appconfig_view_title_"    = "Account configuration in progress…";
+"_appconfig_view_title_"    = "Account configuration in progress …";
 "_no_permission_add_file_"  = "You don't have permission to add files";
 "_no_permission_delete_file_" = "You don't have permission to delete files";
 "_no_permission_modify_file_" = "You don't have permission to modify files";
@@ -143,6 +143,11 @@
 "_recent_"                  = "Recent";
 "_view_in_folder_"          = "View in folder";
 "_leave_share_"             = "Leave this share";
+
+/* Remove a file from a list, don't delete it entirely */
+"_remove_file_"             = "Remove file";
+
+/* Delete file and put it into the trash */
 "_delete_file_"             = "Delete file";
 "_delete_folder_"           = "Delete folder";
 "_delete_photo_"            = "Delete photo";
@@ -298,7 +303,7 @@
 "_want_delete_"                 = "Do you really want to delete?";
 "_no_delete_"                   = "No, do not delete";
 "_yes_delete_"                  = "Yes, delete";
-"_remove_cache_"                = "Please wait, deleting cache…";
+"_remove_cache_"                = "Deleting cache, please wait …";
 "_optimizations_"               = "Optimizations";
 "_synchronizations_"            = "Synchronized folders";
 "_version_server_"              = "Server version";
@@ -386,7 +391,7 @@
 "_connection_error_"            = "Connection error";
 "_serverstatus_error_"          = "Connection to server failure, verify your server address or network status";
 "_add_your_nextcloud_"          = "Add your Nextcloud account";
-"_login_url_"                   = "Server address https://…";
+"_login_url_"                   = "Server address https:// …";
 "_login_bottom_label_"          = "Don't have a server yet?\nChoose one of the providers.";
 "_error_multidomain_"           = "Address not allowed, only the following domains are valid:";
 "_account_already_exists_"      = "The account %@ already exists";
@@ -417,7 +422,7 @@
 "_access_photo_location_not_enabled_"       = "Access to Photos and Location not enabled";
 "_access_photo_location_not_enabled_msg_"   = "Please go to \"Settings\" and turn on \"Photo Access\" and \"Location Services\"";
 "_tutorial_photo_view_"                     = "No photos or videos uploaded yet";
-"_create_full_upload_"                      = "Creating archive… May take a long time. During this process, keep the application active during the transfer as well.";
+"_create_full_upload_"                      = "Creating archive … May take a long time. During this process, keep the application active during the transfer as well.";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_activate_autoupload_"                     = "Enable auto upload";
 "_remove_photo_CameraRoll_"                 = "Remove from camera roll";
@@ -433,13 +438,13 @@
 "_over_30_days_"                = "over 30 days";
 "_connection_internet_offline_" = "The internet connection appears to be offline or Wi-Fi is required";
 "_insert_password_"             = "Enter password";
-"_update_in_progress_"          = "Version upgrade, please wait…";
+"_update_in_progress_"          = "Version upgrade, please wait …";
 "_forbidden_characters_"        = "The file or folder name contains invalid characters";
 "_cannot_send_mail_error_"      = "No account set up, or wrong email address entered";
 "_open_url_error_"              = "Cannot open the URL for this action";
 "_photo_camera_"                = "Photos";
 "_media_"                       = "Media";
-"_unzip_in_progress_"           = "Extraction in progress on local storage…";
+"_unzip_in_progress_"           = "Extraction in progress on local storage …";
 "_file_unpacked_"               = "File unpacked on local storage";
 "_file_saved_local_"            = "File saved on local storage.";
 "_file_not_present_"            = "Error: File not present, please reload.";
@@ -473,8 +478,8 @@
 "_protect_passcode_"            = "Protect with password";
 "_share_"                       = "Share";
 "_reload_"                      = "Reload";
-"_open_in_"                     = "Open in…";
-"_open_"                        = "Open…";
+"_open_in_"                     = "Open in …";
+"_open_"                        = "Open …";
 "_remove_local_file_"           = "Remove from cache";
 "_add_local_"                   = "Add to local storage";
 "_comm_erro_pull_down_"         = "Attention: Communication error with the server. Pull down to refresh.";
@@ -485,7 +490,7 @@
 "_files_"                       = "files";
 "_file_"                        = "file";
 "_folder_blocked_"              = "Folder blocked";
-"_downloading_progress_"        = "Initiating download of files…";
+"_downloading_progress_"        = "Initiating download of files …";
 "_no_file_pull_down_"           = "Upload a file or pull down to refresh";
 "_browse_images_"               = "Browse images";
 "_synchronized_folder_"         = "Keep the folder synchronized";
@@ -515,11 +520,11 @@
 "_directory_on_top_no_"         = "Folders on top";
 "_folder_automatic_upload_"     = "Folder for \"Auto upload\"";
 "_search_no_record_found_"      = "No result";
-"_search_in_progress_"          = "Search in progress…";
+"_search_in_progress_"          = "Search in progress …";
 "_search_instruction_"          = "Search for file (minimum 2 characters)";
 "_files_no_files_"              = "No files in here";
 "_files_no_folders_"            = "No folders in here";
-"_request_in_progress_"         = "Request to server in progress…";
+"_request_in_progress_"         = "Request to server in progress …";
 
 "audio"                         = "AUDIO";
 "compress"                      = "COMPRESS";
@@ -558,7 +563,7 @@
 "_password_pdf_error_"          = "Wrong password";
 "_error_download_photobrowser_" = "Error: Unable to download photo";
 "_share_link_"                  = "Share link";
-"_share_link_button_"           = "Send link to…";
+"_share_link_button_"           = "Send link to …";
 "_Link_name_"                   = "Link name";
 "_password_"                    = "Password";
 "_share_password_"              = "Password protected link";
@@ -568,12 +573,12 @@
 "_add_sharee_"                  = "Add users or groups";
 "_add_sharee_footer_"           = "You can share this resource by adding users or groups. To remove a share, remove all users and groups";
 "_find_sharee_title_"           = "Search";
-"_find_sharee_"                 = "Search for user or group…";
+"_find_sharee_"                 = "Search for user or group …";
 "_find_sharee_footer_"          = "Enter part of the name of the user or group to search for (at least 2 characters) followed by \"Return\", select the users that should be allowed to access the share followed by \"Done\" to confirm";
 "_user_is_group_"               = "(Group)";
 "_direct_sharee_title_"         = "Share";
 "_direct_sharee_footer_"        = "If you already know the name, enter it, then select the share type and press \"Done\" to confirm";
-"_direct_sharee_"               = "Enter the username…";
+"_direct_sharee_"               = "Enter the username …";
 "_user_sharee_footer_"          = "Tap to change permissions";
 "_share_type_title_"            = "Type of share";
 "_share_type_user_"             = "User";
@@ -583,7 +588,7 @@
 "_password_obligatory_"         = "Enforce password protection enabled, password obligatory";
 "_shared_with_you_by_"          = "Shared with you by";
 "_shareLinksearch_placeholder_" = "Type a name and press Enter";
-"_new_comment_"                 = "New comment…";
+"_new_comment_"                 = "New comment …";
 "_edit_comment_"                = "Edit comment";
 "_delete_comment_"              = "Delete comment";
 "_share_allow_editing_"         = "Allow editing";
@@ -763,6 +768,7 @@
 "_request_entity_too_large_"            = "The file is too large";
 "_not_possible_download_"               = "It is not possible to download the file";
 "_not_possible_upload_"                 = "It is not possible to upload the file";
+"_error_files_upload_"                  = "Error uploading files";
 "_method_not_allowed_"                  = "The requested method is not supported";
 "_invalid_url_"                         = "Invalid server URL";
 "_invalid_literal_"                     = "Invalid search string";
@@ -822,4 +828,16 @@
 "_copy_path_"               = "Copy path";
 "_certificates_"            = "Certificates";
 "_privacy_screen_"          = "Splash screen when app inactive";
-
+"_saving_"                  = "Saving …";
+// Video
+"_video_processing_"        = "Video processing";
+"_video_being_processed_"   = "Video being processed …";
+"_downloading_"             = "Downloading";
+"_download_error_"          = "Download error";
+"_subtitle_"                = "Subtitle";
+"_dts_to_ac3_"              = "The DTS is not supported, it requires a conversion to Dolby Digital";
+"_reuired_conversion_"      = "This video takes a long time to convert.";
+"_stay_app_foreground_"     = "Keep the app in the foreground …";
+"_conversion_available_"    = "The conversion is always available on menu";
+"_video_format_not_recognized_"     = "This video needs to be processed to be played, do you want to do it now?";
+"_conversion_max_compatibility_"    = "Max compatibility, the conversion can take much longer";

@@ -173,4 +173,35 @@ extension UIImage {
         UIGraphicsEndImageContext()
         return newImage
     }
+
+    /// Downsamles a image using ImageIO. Has better memory perfomance than redrawing using UIKit
+    ///
+    /// - [Source](https://swiftsenpai.com/development/reduce-uiimage-memory-footprint/)
+    /// - [Original Source, WWDC18](https://developer.apple.com/videos/play/wwdc2018/416/?time=1352)
+    /// - Parameters:
+    ///   - imageURL: The URL path of the image
+    ///   - pointSize: The target point size
+    ///   - scale: The point to pixel scale (Pixeld per point)
+    /// - Returns: The downsampled image, if successful
+    static func downsample(imageAt imageURL: URL, to pointSize: CGSize, scale: CGFloat = UIScreen.main.scale) -> UIImage? {
+
+        // Create an CGImageSource that represent an image
+        let imageSourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
+        guard let imageSource = CGImageSourceCreateWithURL(imageURL as CFURL, imageSourceOptions) else { return nil }
+
+        // Calculate the desired dimension
+        let maxDimensionInPixels = max(pointSize.width, pointSize.height) * scale
+
+        // Perform downsampling
+        let downsampleOptions = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxDimensionInPixels
+        ] as CFDictionary
+        guard let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) else { return nil }
+
+        // Return the downsampled image as UIImage
+        return UIImage(cgImage: downsampledImage)
+    }
 }

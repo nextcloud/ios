@@ -86,7 +86,7 @@ import Alamofire
                                 object.serverUrl = serverUrl
                                 object.version = 1
 
-                                _ = NCManageDatabase.shared.addE2eEncryption(object)
+                                NCManageDatabase.shared.addE2eEncryption(object)
 
                                 self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: urlBase) { e2eToken, errorCode, errorDescription in
                                     // unlock
