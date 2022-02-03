@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="eeP-9N-ZRP">
-                                <rect key="frame" x="0.0" y="153" width="375" height="514"/>
+                                <rect key="frame" x="0.0" y="163" width="375" height="504"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="dataSource" destination="uQo-FX-ejX" id="Y7U-AM-3WZ"/>
@@ -67,7 +67,7 @@
                             <constraint firstItem="ILQ-5j-b92" firstAttribute="trailing" secondItem="zd0-7e-z9V" secondAttribute="trailing" constant="20" id="Zkq-S4-Hnu"/>
                             <constraint firstItem="ILQ-5j-b92" firstAttribute="bottom" secondItem="eeP-9N-ZRP" secondAttribute="bottom" id="a74-Md-bui"/>
                             <constraint firstItem="zd0-7e-z9V" firstAttribute="leading" secondItem="6HO-NK-obf" secondAttribute="trailing" constant="10" id="bKe-sM-Gvy"/>
-                            <constraint firstItem="eeP-9N-ZRP" firstAttribute="top" secondItem="6HO-NK-obf" secondAttribute="bottom" constant="10" id="eqV-Ls-16q"/>
+                            <constraint firstItem="eeP-9N-ZRP" firstAttribute="top" secondItem="6HO-NK-obf" secondAttribute="bottom" constant="20" id="eqV-Ls-16q"/>
                             <constraint firstItem="eeP-9N-ZRP" firstAttribute="leading" secondItem="ILQ-5j-b92" secondAttribute="leading" id="pNx-zH-54E"/>
                             <constraint firstItem="we1-Q7-8Us" firstAttribute="leading" secondItem="ILQ-5j-b92" secondAttribute="leading" constant="20" id="uvM-m5-Ofp"/>
                             <constraint firstItem="s98-hk-uUP" firstAttribute="centerX" secondItem="ILQ-5j-b92" secondAttribute="centerX" id="vLn-iu-xOz"/>
