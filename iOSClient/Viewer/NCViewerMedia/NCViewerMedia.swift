@@ -164,12 +164,9 @@ class NCViewerMedia: UIViewController {
             }
             
             #if MFFFLIB
-            MFFF.shared.delegate = self.ncplayer
-//            if !MFFF.shared.existsMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))) {
-//                self.playerToolBar.hideMessage()
-//            }
+            MFFF.shared.setDelegate = self.ncplayer
             #endif
-
+            
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
 
             viewerMediaPage?.clearCommandCenter()

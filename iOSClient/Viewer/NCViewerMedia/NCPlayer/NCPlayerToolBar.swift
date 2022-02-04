@@ -262,9 +262,9 @@ class NCPlayerToolBar: UIView {
 
     public func show(enableTimerAutoHide: Bool = false) {
 
-        guard let metadata = self.metadata, ncplayer != nil, !metadata.livePhoto, (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue) else
-        { return }
-        
+        guard let metadata = self.metadata, ncplayer != nil, !metadata.livePhoto else { return }
+        if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
+
         #if MFFFLIB
         if MFFF.shared.existsMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))) {
             self.hide()
