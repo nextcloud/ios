@@ -142,7 +142,7 @@ extension NCViewer {
             
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_video_conversion_", comment: ""),
+                    title: NSLocalizedString("_video_processing_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "film"),
                     action: { menuAction in
                         if let ncplayer = (viewController as? NCViewerMediaPage)?.currentViewController.ncplayer {
