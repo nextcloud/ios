@@ -416,7 +416,7 @@ extension DragDropViewController: UICollectionViewDataSource {
                     CCUtility.removeFile(atPath: fileNameAtPath)
                     self.itemsSource.remove(at: indexPath.row)
 
-                    self.collectionViewSource.reloadData()
+                    self.collectionViewSource.deleteItems(at: [indexPath])
                 }
             }
 
@@ -445,8 +445,8 @@ extension DragDropViewController: UICollectionViewDataSource {
 
                     self.imagesDestination.remove(at: indexPath.row)
                     self.itemsDestination.remove(at: indexPath.row)
-
-                    self.collectionViewDestination.reloadData()
+                    
+                    self.collectionViewDestination.deleteItems(at: [indexPath])
 
                     // Save button
                     if self.imagesDestination.count == 0 {
@@ -459,12 +459,13 @@ extension DragDropViewController: UICollectionViewDataSource {
             cell.rotate.action(for: .touchUpInside) { sender in
 
                 let buttonPosition: CGPoint = (sender as! UIButton).convert(.zero, to: self.collectionViewDestination)
-                if let indexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition) {
-
-                    let image = self.imagesDestination[indexPath.row]
-                    self.imagesDestination[indexPath.row] = image.rotate(radians: .pi/2)!
-
-                    self.collectionViewDestination.reloadData()
+                if let indexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition), let cell = self.collectionViewDestination.cellForItem(at: indexPath) as? ScanCell {
+                    
+                    var image = self.imagesDestination[indexPath.row]
+                    image = image.rotate(radians: .pi/2)!
+                    self.imagesDestination[indexPath.row] = image
+                    
+                    cell.customImageView.image = image
                 }
             }
 
