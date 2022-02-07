@@ -52,7 +52,6 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var businessSize: String = ""
     @objc dynamic var businessType = ""
     @objc dynamic var city = ""
-    @objc dynamic var company = ""
     @objc dynamic var country = ""
     @objc dynamic var displayName = ""
     @objc dynamic var email = ""
@@ -62,6 +61,7 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var lastLogin: Int64 = 0
     @objc dynamic var locale = ""
     @objc dynamic var mediaPath = ""
+    @objc dynamic var organisation = ""
     @objc dynamic var password = ""
     @objc dynamic var phone = ""
     @objc dynamic var quota: Int64 = 0
@@ -83,7 +83,7 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var userStatusMessageIsPredefined: Bool = false
     @objc dynamic var userStatusStatus: String?
     @objc dynamic var userStatusStatusIsUserDefined: Bool = false
-    @objc dynamic var webpage = ""
+    @objc dynamic var website = ""
     @objc dynamic var zip = ""
 
     // COLOR Files
