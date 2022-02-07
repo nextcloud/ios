@@ -278,7 +278,7 @@ import JGProgressHUD
 
         NCUtilityFileSystem.shared.copyFile(atPath: fileNamePath, toPath: fileNamePathDestination)
 
-        let storyboard = UIStoryboard(name: "Scan", bundle: nil)
+        let storyboard = UIStoryboard(name: "NCScan", bundle: nil)
         let navigationController = storyboard.instantiateInitialViewController()!
 
         navigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
