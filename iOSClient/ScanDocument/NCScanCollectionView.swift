@@ -46,12 +46,12 @@ class NCScanCollectionView: UIViewController {
     @IBOutlet weak var segmentControlFilter: UISegmentedControl!
 
     // filter
-    enum typeFilter {
+    enum TypeFilter {
         case original
         case grayScale
         case bn
     }
-    private var filter: typeFilter = typeFilter.original
+    private var filter: TypeFilter = TypeFilter.original
 
     override var canBecomeFirstResponder: Bool { return true }
 
@@ -167,11 +167,11 @@ class NCScanCollectionView: UIViewController {
 
         switch segmentControlFilter.selectedSegmentIndex {
         case 0:
-            filter = typeFilter.original
+            filter = .original
         case 1:
-            filter = typeFilter.grayScale
+            filter = .grayScale
         case 2:
-            filter = typeFilter.bn
+            filter = .bn
         default:
             break
         }
@@ -213,15 +213,15 @@ class NCScanCollectionView: UIViewController {
 
         var inputContrast: Double = 0
 
-        if filter == typeFilter.original {
+        if filter == .original {
             return image
         }
 
-        if filter == typeFilter.grayScale {
+        if filter == .grayScale {
             inputContrast = 1
         }
 
-        if filter == typeFilter.bn {
+        if filter == .bn {
             inputContrast = 4
         }
 
