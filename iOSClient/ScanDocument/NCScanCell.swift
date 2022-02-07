@@ -1,5 +1,5 @@
 //
-//  ScanCell.swift
+//  NCScanCell.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 21/08/18.
@@ -23,7 +23,7 @@
 
 import UIKit
 
-class ScanCell: UICollectionViewCell {
+class NCScanCell: UICollectionViewCell {
 
     @IBOutlet weak var customImageView: UIImageView!
     @IBOutlet weak var customLabel: UILabel!

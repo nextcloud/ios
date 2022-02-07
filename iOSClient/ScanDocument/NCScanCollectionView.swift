@@ -1,5 +1,5 @@
 //
-//  ScanCollectionView.swift
+//  NCScanCollectionView.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 21/08/18.
@@ -24,7 +24,7 @@
 import UIKit
 
 @available(iOS 13.0, *)
-class DragDropViewController: UIViewController {
+class NCScanCollectionView: UIViewController {
 
     // Data Source for collectionViewSource
     private var itemsSource: [String] = []
@@ -372,10 +372,10 @@ class DragDropViewController: UIViewController {
     }
 }
 
-// MARK: - UICollectionViewDataSource Methods
+// MARK: -  Methods
 
 @available(iOS 13.0, *)
-extension DragDropViewController: UICollectionViewDataSource {
+extension NCScanCollectionView: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 
@@ -386,7 +386,7 @@ extension DragDropViewController: UICollectionViewDataSource {
 
         if collectionView == collectionViewSource {
 
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as! ScanCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as! NCScanCell
 
             let fileNamePath = CCUtility.getDirectoryScan() + "/" + itemsSource[indexPath.row]
 
@@ -424,7 +424,7 @@ extension DragDropViewController: UICollectionViewDataSource {
 
         } else {
 
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as! ScanCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as! NCScanCell
 
             var image = imagesDestination[indexPath.row]
 
@@ -459,7 +459,7 @@ extension DragDropViewController: UICollectionViewDataSource {
             cell.rotate.action(for: .touchUpInside) { sender in
 
                 let buttonPosition: CGPoint = (sender as! UIButton).convert(.zero, to: self.collectionViewDestination)
-                if let indexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition), let cell = self.collectionViewDestination.cellForItem(at: indexPath) as? ScanCell {
+                if let indexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition), let cell = self.collectionViewDestination.cellForItem(at: indexPath) as? NCScanCell {
                     
                     var image = self.imagesDestination[indexPath.row]
                     image = image.rotate(radians: .pi/2)!
@@ -498,10 +498,10 @@ extension UIImage {
     }
 }
 
-// MARK: - UICollectionViewDragDelegate Methods
+// MARK: -
 
 @available(iOS 13.0, *)
-extension DragDropViewController: UICollectionViewDragDelegate {
+extension NCScanCollectionView: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
 
         if collectionView == collectionViewSource {
@@ -559,10 +559,10 @@ extension DragDropViewController: UICollectionViewDragDelegate {
     }
 }
 
-// MARK: - UICollectionViewDropDelegate Methods
+// MARK: -
 
 @available(iOS 13.0, *)
-extension DragDropViewController: UICollectionViewDropDelegate {
+extension NCScanCollectionView: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
 

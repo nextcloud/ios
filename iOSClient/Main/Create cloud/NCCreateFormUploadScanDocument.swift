@@ -762,10 +762,10 @@ class NCCreateScanDocument: NSObject, VNDocumentCameraViewControllerDelegate {
         }
 
         controller.dismiss(animated: true) {
-            if self.viewController is DragDropViewController {
-                (self.viewController as! DragDropViewController).loadImage()
+            if self.viewController is NCScanCollectionView {
+                (self.viewController as! NCScanCollectionView).loadImage()
             } else {
-                let storyboard = UIStoryboard(name: "Scan", bundle: nil)
+                let storyboard = UIStoryboard(name: "NCScan", bundle: nil)
                 let controller = storyboard.instantiateInitialViewController()!
 
                 controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
