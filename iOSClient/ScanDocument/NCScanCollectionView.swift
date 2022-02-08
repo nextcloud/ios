@@ -355,7 +355,12 @@ class NCScanCollectionView: UIViewController {
 
         if pasteboard.hasImages {
 
-            let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: NCGlobal.shared.keyFileNameMask, keyFileNameType: NCGlobal.shared.keyFileNameType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal, forcedNewFileName: true)!
+            let fileName = CCUtility.createFileName("scan.png", fileDate: Date(),
+                                                    fileType: PHAssetMediaType.image,
+                                                    keyFileName: NCGlobal.shared.keyFileNameMask,
+                                                    keyFileNameType: NCGlobal.shared.keyFileNameType,
+                                                    keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
+                                                    forcedNewFileName: true)!
             let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
 
             guard let image = pasteboard.image?.fixedOrientation() else {
@@ -410,7 +415,7 @@ extension NCScanCollectionView: UICollectionViewDataSource {
             cell.customImageView?.image = image
             cell.delete.action(for: .touchUpInside) { sender in
 
-                let buttonPosition: CGPoint = (sender as! UIButton).convert(.zero, to: self.collectionViewSource)
+                let buttonPosition: CGPoint = (sender as? UIButton)!.convert(.zero, to: self.collectionViewSource)
                 if let indexPath = self.collectionViewSource.indexPathForItem(at: buttonPosition) {
 
                     let fileNameAtPath = CCUtility.getDirectoryScan() + "/" + self.itemsSource[indexPath.row]
