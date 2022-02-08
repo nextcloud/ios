@@ -33,7 +33,7 @@ class NCScanCollectionView: UIViewController {
     private var imagesDestination: [UIImage] = []
     private var itemsDestination: [String] = []
 
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     // MARK: Outlets
     @IBOutlet weak var collectionViewSource: UICollectionView!
@@ -259,7 +259,7 @@ class NCScanCollectionView: UIViewController {
                 if collectionView === collectionViewDestination {
 
                     imagesDestination.remove(at: sourceIndexPath.row)
-                    imagesDestination.insert(item.dragItem.localObject as! UIImage, at: dIndexPath.row)
+                    imagesDestination.insert((item.dragItem.localObject as? UIImage)!, at: dIndexPath.row)
 
                     let fileName = itemsDestination[sourceIndexPath.row]
                     itemsDestination.remove(at: sourceIndexPath.row)
@@ -268,7 +268,7 @@ class NCScanCollectionView: UIViewController {
                 } else {
 
                     itemsSource.remove(at: sourceIndexPath.row)
-                    itemsSource.insert(item.dragItem.localObject as! String, at: dIndexPath.row)
+                    itemsSource.insert((item.dragItem.localObject as? String)!, at: dIndexPath.row)
                 }
 
                 collectionView.deleteItems(at: [sourceIndexPath])
@@ -297,7 +297,7 @@ class NCScanCollectionView: UIViewController {
 
                 if collectionView === collectionViewDestination {
 
-                    let fileName = item.dragItem.localObject as! String
+                    let fileName = (item.dragItem.localObject as? String)!
                     let fileNamePathAt = CCUtility.getDirectoryScan() + "/" + fileName
 
                     guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)) else {
@@ -387,7 +387,7 @@ extension NCScanCollectionView: UICollectionViewDataSource {
 
         if collectionView == collectionViewSource {
 
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as! NCScanCell
+            let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as? NCScanCell)!
 
             let fileNamePath = CCUtility.getDirectoryScan() + "/" + itemsSource[indexPath.row]
 
@@ -425,7 +425,7 @@ extension NCScanCollectionView: UICollectionViewDataSource {
 
         } else {
 
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as! NCScanCell
+            let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as? NCScanCell)!
 
             var image = imagesDestination[indexPath.row]
 
@@ -441,7 +441,7 @@ extension NCScanCollectionView: UICollectionViewDataSource {
             cell.customLabel.text = NSLocalizedString("_scan_document_pdf_page_", comment: "") + " " + "\(indexPath.row+1)"
             cell.delete.action(for: .touchUpInside) { sender in
 
-                let buttonPosition: CGPoint = (sender as! UIButton).convert(.zero, to: self.collectionViewDestination)
+                let buttonPosition: CGPoint = (sender as? UIButton)!.convert(.zero, to: self.collectionViewDestination)
                 if let indexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition) {
 
                     self.imagesDestination.remove(at: indexPath.row)
@@ -459,7 +459,7 @@ extension NCScanCollectionView: UICollectionViewDataSource {
             }
             cell.rotate.action(for: .touchUpInside) { sender in
 
-                let buttonPosition: CGPoint = (sender as! UIButton).convert(.zero, to: self.collectionViewDestination)
+                let buttonPosition: CGPoint = (sender as? UIButton)!.convert(.zero, to: self.collectionViewDestination)
                 if let indexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition), let cell = self.collectionViewDestination.cellForItem(at: indexPath) as? NCScanCell {
                     
                     var image = self.imagesDestination[indexPath.row]
