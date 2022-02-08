@@ -109,6 +109,7 @@ class NCScanCollectionView: UIViewController {
     // MARK: Button Action
 
     @IBAction func cancelAction(sender: UIBarButtonItem) {
+        
         self.dismiss(animated: true, completion: nil)
     }
 
