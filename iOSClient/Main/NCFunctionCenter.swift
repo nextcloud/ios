@@ -39,6 +39,7 @@ import JGProgressHUD
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var viewerQuickLook: NCViewerQuickLook?
     var documentController: UIDocumentInteractionController?
+    var copyDispatchGroup: DispatchGroup?
 
     // MARK: - Download
 
@@ -97,8 +98,7 @@ import JGProgressHUD
                         }
 
                     case NCGlobal.shared.selectorLoadCopy:
-
-                        copyPasteboard()
+                        copyDispatchGroup?.leave()
 
                     case NCGlobal.shared.selectorLoadOffline:
 
@@ -418,37 +418,26 @@ import JGProgressHUD
 
     // MARK: - Copy & Paste
 
-    func copyPasteboard() {
-
-        var metadatas: [tableMetadata] = []
+    func copyPasteboard(pasteboardOcIds: [String], completion: @escaping () -> Void) {
+        var metadatas: [tableMetadata] = pasteboardOcIds.compactMap(NCManageDatabase.shared.getMetadataFromOcId)
         var items = [[String: Any]]()
-
-        for ocId in appDelegate.pasteboardOcIds {
-            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                metadatas.append(metadata)
-            }
-        }
+        copyDispatchGroup = DispatchGroup()
 
         for metadata in metadatas {
-
-            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                do {
-                    // Get Data
-                    let data = try Data(contentsOf: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
-                    // Pasteboard item
-                    if let unmanagedFileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (metadata.fileNameView as NSString).pathExtension as CFString, nil) {
-                        let fileUTI = unmanagedFileUTI.takeRetainedValue() as String
-                        items.append([fileUTI: data])
-                    }
-                } catch {
-                    print("error")
-                }
+            if let pasteboardItem = metadata.toPasteBoardItem() {
+                metadatas.removeAll(where: { $0 == metadata })
+                items.append(pasteboardItem)
             } else {
+                copyDispatchGroup?.enter()
                 NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadCopy) { _ in }
             }
         }
 
-        UIPasteboard.general.setItems(items, options: [:])
+        copyDispatchGroup?.notify(queue: .main, execute: {
+            items.append(contentsOf: metadatas.compactMap({ $0.toPasteBoardItem() }))
+            UIPasteboard.general.setItems(items, options: [:])
+            completion()
+        })
     }
 
     func pastePasteboard(serverUrl: String) {
@@ -658,8 +647,7 @@ import JGProgressHUD
         let titleOffline = isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: "")
 
         let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc")) { _ in
-            self.appDelegate.pasteboardOcIds = [metadata.ocId]
-            self.copyPasteboard()
+            self.copyPasteboard(pasteboardOcIds: [metadata.ocId], completion: { })
         }
 
         let copyPath = UIAction(title: NSLocalizedString("_copy_path_", comment: ""), image: UIImage(systemName: "doc.on.clipboard")) { _ in
@@ -831,5 +819,19 @@ import JGProgressHUD
 
         let submenu = UIMenu(title: "", options: .displayInline, children: children)
         return UIMenu(title: "", children: [detail, submenu])
+    }
+}
+
+fileprivate extension tableMetadata {
+    func toPasteBoardItem() -> [String: Any]? {
+        // Get Data
+        let fileUrl = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView))
+        guard CCUtility.fileProviderStorageExists(ocId, fileNameView: fileNameView),
+              let data = try? Data(contentsOf: fileUrl),
+              let unmanagedFileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension as CFString, nil)
+        else { return nil }
+        // Pasteboard item
+        let fileUTI = unmanagedFileUTI.takeRetainedValue() as String
+        return [fileUTI: data]
     }
 }
