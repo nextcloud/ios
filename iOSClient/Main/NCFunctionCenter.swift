@@ -96,9 +96,6 @@ import JGProgressHUD
                             self.openDocumentController(metadata: metadata)
                         }
 
-                    case NCGlobal.shared.selectorLoadCopy: break
-//                        copyDispatchGroup?.leave()
-
                     case NCGlobal.shared.selectorLoadOffline:
 
                         NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: true)
@@ -450,7 +447,7 @@ import JGProgressHUD
             for metadata in downloadMetadatas {
                 guard !isCancelled else { return }
                 copyDispatchGroup.enter()
-                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadCopy) { _ in
+                NCNetworking.shared.download(metadata: metadata, selector: "") { _ in
                     copyDispatchGroup.leave()
                     seamphore.signal()
                 }
