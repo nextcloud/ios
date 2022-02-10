@@ -21,6 +21,7 @@
 //
 
 "_cancel_"                  = "Cancel";
+"_tap_to_cancel_"           = "Tap to cancel";
 "_upload_file_"             = "Upload file";
 "_accessibility_add_upload_" = "Add and upload";
 "_download_file_"           = "Download file";

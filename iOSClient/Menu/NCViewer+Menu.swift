@@ -257,7 +257,7 @@ extension NCViewer {
                 title: NSLocalizedString("_copy_file_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
                 action: { _ in
-                    NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: [metadata.ocId], completion: { })
+                    NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view, completion: { })
                 }
             )
         )
