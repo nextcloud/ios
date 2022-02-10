@@ -224,10 +224,9 @@ extension NCMedia {
                     icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
                     action: { _ in
                         self.isEditMode = false
-                        NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: self.selectOcId, hudView: self.view) {
-                            self.selectOcId.removeAll()
-                            self.reloadDataThenPerform { }
-                        }
+                        NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: self.selectOcId, hudView: self.view)
+                        self.selectOcId.removeAll()
+                        self.reloadDataThenPerform { }
                     }
                 )
             )

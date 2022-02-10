@@ -417,8 +417,7 @@ import JGProgressHUD
 
     // MARK: - Copy & Paste
 
-    func copyPasteboard(pasteboardOcIds: [String], hudView: UIView, completion: @escaping () -> Void) {
-        var metadatas: [tableMetadata] = pasteboardOcIds.compactMap(NCManageDatabase.shared.getMetadataFromOcId)
+    func copyPasteboard(pasteboardOcIds: [String], hudView: UIView) {
         var items = [[String: Any]]()
         var isCancelled = false
         let hud = JGProgressHUD()
@@ -429,15 +428,14 @@ import JGProgressHUD
 
         // getting file data can take some time and block the main queue
         DispatchQueue.global(qos: .userInitiated).async {
-            metadatas = metadatas.compactMap({ metadata in
-                if let pasteboardItem = metadata.toPasteBoardItem() {
-                    items.append(pasteboardItem)
-                    return nil
-                }
-                return metadata
-            })
+            var downloadMetadatas: [tableMetadata] = []
+            for ocid in pasteboardOcIds {
+                guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocid) else { continue }
+                if let pasteboardItem = metadata.toPasteBoardItem() { items.append(pasteboardItem) }
+                else { downloadMetadatas.append(metadata) }
+            }
 
-            if !metadatas.isEmpty {
+            if !downloadMetadatas.isEmpty {
                 DispatchQueue.main.async {
                     hud.textLabel.text = NSLocalizedString("_status_downloading_", comment: "")
                     hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
@@ -445,12 +443,11 @@ import JGProgressHUD
                         isCancelled = true
                         hud.dismiss()
                     }
-                    hud.show(in: hudView)
                 }
             }
 
             // do 5 downloads in paralell to optimize efficiancy
-            for metadata in metadatas {
+            for metadata in downloadMetadatas {
                 guard !isCancelled else { return }
                 copyDispatchGroup.enter()
                 NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadCopy) { _ in
@@ -466,9 +463,8 @@ import JGProgressHUD
                 hud.textLabel.text = NSLocalizedString("_success_", comment: "")
                 hud.detailTextLabel.text = ""
                 hud.dismiss(afterDelay: 1)
-                items.append(contentsOf: metadatas.compactMap({ $0.toPasteBoardItem() }))
+                items.append(contentsOf: downloadMetadatas.compactMap({ $0.toPasteBoardItem() }))
                 UIPasteboard.general.setItems(items, options: [:])
-                completion()
             })
         }
     }
@@ -680,7 +676,7 @@ import JGProgressHUD
         let titleOffline = isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: "")
 
         let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc")) { _ in
-            self.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view, completion: { })
+            self.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view)
         }
 
         let copyPath = UIAction(title: NSLocalizedString("_copy_path_", comment: ""), image: UIImage(systemName: "doc.on.clipboard")) { _ in

@@ -320,7 +320,7 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_copy_file_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
                     action: { _ in
-                        NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: self.view, completion: { })
+                        NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: self.view)
                     }
                 )
             )
@@ -535,7 +535,8 @@ extension NCCollectionViewCommon {
                 title: NSLocalizedString("_copy_file_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
                 action: { _ in
-                    NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: self.selectOcId, hudView: self.view, completion: { self.tapSelect(sender: self) })
+                    NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: self.selectOcId, hudView: self.view)
+                    self.tapSelect(sender: self)
                 }
             )
         )
