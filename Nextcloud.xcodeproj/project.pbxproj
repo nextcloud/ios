@@ -2755,7 +2755,7 @@
 				);
 				MARKETING_VERSION = 4.3.0;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) NC";
 				SWIFT_VERSION = 5.0;
@@ -2810,7 +2810,7 @@
 				);
 				MARKETING_VERSION = 4.3.0;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG NC";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
