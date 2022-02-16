@@ -35,7 +35,7 @@ extension UIViewController {
                 url.scheme == "mailto",
                 let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
             else {
-                NCContentPresenter.shared.showGenericError(description: "_cannot_send_mail_error_")
+                NCContentPresenter.shared.showError(description: "_cannot_send_mail_error_")
                 return
             }
             sendEmail(to: components.path)
@@ -50,7 +50,7 @@ extension UIViewController {
 
         default:
             guard let url = action.hyperlinkUrl, UIApplication.shared.canOpenURL(url) else {
-                NCContentPresenter.shared.showGenericError(description: "_open_url_error_")
+                NCContentPresenter.shared.showError(description: "_open_url_error_")
                 return
             }
             UIApplication.shared.open(url, options: [:])
@@ -94,7 +94,7 @@ extension UIViewController {
 
     func sendEmail(to email: String) {
         guard MFMailComposeViewController.canSendMail() else {
-            NCContentPresenter.shared.showGenericError(description: "_cannot_send_mail_error_")
+            NCContentPresenter.shared.showError(description: "_cannot_send_mail_error_")
             return
         }
 
@@ -107,7 +107,7 @@ extension UIViewController {
 
     func presentMenu(with actions: [NCMenuAction]) {
         guard let menuViewController = NCMenu.makeNCMenu(with: actions) else {
-            NCContentPresenter.shared.showGenericError(description: "_internal_generic_error_")
+            NCContentPresenter.shared.showError(description: "_internal_generic_error_")
             return
         }
 

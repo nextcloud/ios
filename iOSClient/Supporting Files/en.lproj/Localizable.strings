@@ -708,10 +708,11 @@
 "_trash_view_"                      = "Deleted files";
 "_trash_restore_all_"               = "Restore all files";
 "_trash_delete_all_"                = "Empty trash";
+"_trash_delete_all_description_"    = "Do you want to empty the trash?";
 "_trash_no_trash_"                  = "No files deleted";
 "_trash_no_trash_description_"      = "You can restore deleted files from here";
 "_trash_restore_selected_"          = "Restore selected files";
-"_trash_delete_selected_"           = "Deleted selected files";
+"_trash_delete_selected_"           = "Delete selected files";
 "_manage_file_offline_"             = "Manage offline files";
 "_set_available_offline_"           = "Set as available offline";
 "_remove_available_offline_"        = "Remove as available offline";
