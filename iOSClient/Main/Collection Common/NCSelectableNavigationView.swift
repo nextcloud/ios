@@ -152,7 +152,7 @@ extension NCSelectableNavigationView where Self: UIViewController {
                             if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                                 NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
                             } else {
-                                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                                if CCUtility.fileProviderStorageExists(metadata) {
                                     NCFunctionCenter.shared.saveAlbum(metadata: metadata)
                                 } else {
                                     NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
@@ -189,8 +189,7 @@ extension NCSelectableNavigationView where Self: UIViewController {
                 title: NSLocalizedString("_copy_file_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
                 action: { _ in
-                    self.appDelegate.pasteboardOcIds = self.selectOcId
-                    NCFunctionCenter.shared.copyPasteboard()
+                    NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: self.selectOcId, hudView: self.view)
                     self.tapSelect()
                 }
             )
