@@ -1652,7 +1652,7 @@
     long fileSize = 0;
     int pixelY = 0;
     int pixelX = 0;
-    NSString *lensModel;
+    NSString *lensModel = @"";
 
     if (![metadata.classFile isEqualToString:@"image"] || ![CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
         completition(latitude, longitude, location, date, lensModel);
