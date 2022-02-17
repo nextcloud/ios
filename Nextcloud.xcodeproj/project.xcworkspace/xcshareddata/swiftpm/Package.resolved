@@ -60,8 +60,8 @@
         "repositoryURL": "https://github.com/firebase/firebase-ios-sdk",
         "state": {
           "branch": null,
-          "revision": "5344857522053b5d4403ec8173ec0d23200a97ea",
-          "version": "8.11.0"
+          "revision": "78f7087fd5d48eb7c36e299f330b6dddccd647b2",
+          "version": "8.12.1"
         }
       },
       {
@@ -69,8 +69,8 @@
         "repositoryURL": "https://github.com/scenee/FloatingPanel",
         "state": {
           "branch": null,
-          "revision": "0fbbbc8d99b4dfe58bb1dd704d14b45f35b46584",
-          "version": "2.5.1"
+          "revision": "fe30e60235c5cc753e2ee2a3eebc8e654971634d",
+          "version": "2.5.2"
         }
       },
       {
@@ -87,8 +87,8 @@
         "repositoryURL": "https://github.com/google/GoogleAppMeasurement.git",
         "state": {
           "branch": null,
-          "revision": "9b2f6aca5b4685c45f9f5481f19bee8e7982c538",
-          "version": "8.9.1"
+          "revision": "6cc2991c11872510a5314bc112cc7558dd9d046a",
+          "version": "8.12.0"
         }
       },
       {
@@ -249,7 +249,7 @@
         "repositoryURL": "https://github.com/SVGKit/SVGKit.git",
         "state": {
           "branch": "3.x",
-          "revision": "e9bc636845fb4d6d5d8e25a9bd08e75c5cf92de9",
+          "revision": "fbd7fc73c4ee5593fde57b9d50fe53d307dcf07c",
           "version": null
         }
       },
