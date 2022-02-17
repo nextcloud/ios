@@ -26,10 +26,17 @@ import FloatingPanel
 import NCCommunication
 
 extension NCMedia {
+    func tapSelect() {
+        self.isEditMode = false
+        self.selectOcId.removeAll()
+        self.reloadDataThenPerform { }
+    }
 
     func toggleMenu() {
 
         var actions: [NCMenuAction] = []
+
+        defer { presentMenu(with: actions) }
 
         if !isEditMode {
             if metadatas.count > 0 {
@@ -137,125 +144,37 @@ extension NCMedia {
                 NCMenuAction(
                     title: NSLocalizedString("_cancel_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "xmark"),
-                    action: { _ in
-                        self.isEditMode = false
-                        self.selectOcId.removeAll()
-                        self.reloadDataThenPerform { }
-                    }
+                    action: { _ in self.tapSelect() }
                 )
             )
+
+            guard !selectOcId.isEmpty else { return }
+            let selectedMetadatas = selectOcId.compactMap(NCManageDatabase.shared.getMetadataFromOcId)
 
             //
             // OPEN IN
             //
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_open_in_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
-                    action: { _ in
-                        self.isEditMode = false
-                        NCFunctionCenter.shared.openActivityViewController(selectOcId: self.selectOcId)
-                        self.selectOcId.removeAll()
-                        self.reloadDataThenPerform { }
-                    }
-                )
-            )
+            actions.append(.openInAction(selectedMetadatas: selectedMetadatas, viewController: self, completion: tapSelect))
 
             //
             // SAVE TO PHOTO GALLERY
             //
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_save_selected_files_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
-                    action: { _ in
-                        self.isEditMode = false
-                        for ocId in self.selectOcId {
-                            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-                                    if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                                        NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
-                                    } else {
-                                        if CCUtility.fileProviderStorageExists(metadata) {
-                                            NCFunctionCenter.shared.saveAlbum(metadata: metadata)
-                                        } else {
-                                            NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        self.selectOcId.removeAll()
-                        self.reloadDataThenPerform { }
-                    }
-                )
-            )
+            actions.append(.saveMediaAction(selectedMediaMetadatas: selectedMetadatas, completion: tapSelect))
 
             //
             // COPY - MOVE
             //
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "arrow.up.right.square"),
-                    action: { _ in
-                        self.isEditMode = false
-                        var meradatasSelect = [tableMetadata]()
-                        for ocId in self.selectOcId {
-                            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                meradatasSelect.append(metadata)
-                            }
-                        }
-                        if meradatasSelect.count > 0 {
-                            NCFunctionCenter.shared.openSelectView(items: meradatasSelect, viewController: self)
-                        }
-                        self.selectOcId.removeAll()
-                        self.reloadDataThenPerform { }
-                    }
-                )
-            )
+            actions.append(.moveOrCopyAction(selectedMetadatas: selectedMetadatas, completion: tapSelect))
 
             //
             // COPY
             //
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_copy_file_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
-                    action: { _ in
-                        self.isEditMode = false
-                        NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: self.selectOcId, hudView: self.view)
-                        self.selectOcId.removeAll()
-                        self.reloadDataThenPerform { }
-                    }
-                )
-            )
+            actions.append(.copyAction(selectOcId: selectOcId, completion: tapSelect))
 
             //
             // DELETE
             //
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_delete_selected_files_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "trash"),
-                    action: { _ in
-                        self.isEditMode = false
-                        for ocId in self.selectOcId {
-                            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                                NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { errorCode, errorDescription in
-                                    if errorCode != 0 {
-                                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                                    }
-                                }
-                            }
-                        }
-                        self.selectOcId.removeAll()
-                        self.reloadDataThenPerform { }
-                    }
-                )
-            )
+            actions.append(.deleteAction(selectedMetadatas: selectedMetadatas, metadataFolder: nil, viewController: self, completion: tapSelect))
         }
-
-        presentMenu(with: actions)
     }
 }
