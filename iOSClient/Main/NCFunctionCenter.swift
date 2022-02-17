@@ -466,63 +466,56 @@ import JGProgressHUD
         }
     }
 
-    func pastePasteboard(serverUrl: String) {
+    func upload(pasteboardType: String?, data: Data?, to serverUrl: String) -> Bool {
 
-        var pasteboardTypes: [String] = []
+        guard let data = data, let pasteboardType = pasteboardType else { return false }
 
-        func upload(pasteboardType: String?, data: Data?) -> Bool {
+        let results = NCCommunicationCommon.shared.getFileProperties(inUTI: pasteboardType as CFString)
+        guard !results.ext.isEmpty else { return false }
 
-            guard let data = data else { return false}
-            guard let pasteboardType = pasteboardType else { return false }
-
-            let results = NCCommunicationCommon.shared.getFileProperties(inUTI: pasteboardType as CFString)
-            if results.ext == "" { return false }
-
-            do {
-                let fileName = results.name + "_" + CCUtility.getIncrementalNumber() + "." + results.ext
-                let serverUrlFileName = serverUrl + "/" + fileName
-                let ocIdUpload = UUID().uuidString
-                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
-                try data.write(to: URL(fileURLWithPath: fileNameLocalPath))
-                let hud = JGProgressHUD()
-                
-                hud.indicatorView = JGProgressHUDRingIndicatorView()
-                if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-                    indicatorView.ringWidth = 1.5
-                }
-                hud.show(in: (appDelegate.window?.rootViewController?.view)!)
-                hud.textLabel.text = fileName
-
-                NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { _ in
-                } progressHandler: { progress in
-                    hud.progress = Float(progress.fractionCompleted)
-                } completionHandler: { account, ocId, etag, _, _, _, errorCode, errorDescription in
-                    if errorCode == 0 && etag != nil && ocId != nil {
-                        let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
-                        NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
-                        NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
-                        hud.indicatorView = JGProgressHUDSuccessIndicatorView()
-                        hud.textLabel.text = NSLocalizedString("_success_", comment: "")
-                    } else {
-                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                        hud.textLabel.text = NSLocalizedString(errorDescription, comment: "")
-                    }
-                    hud.dismiss(afterDelay: 1)
-                }
-            } catch {
-                return false
+        do {
+            let fileName = results.name + "_" + CCUtility.getIncrementalNumber() + "." + results.ext
+            let serverUrlFileName = serverUrl + "/" + fileName
+            let ocIdUpload = UUID().uuidString
+            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
+            try data.write(to: URL(fileURLWithPath: fileNameLocalPath))
+            let hud = JGProgressHUD()
+            
+            hud.indicatorView = JGProgressHUDRingIndicatorView()
+            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                indicatorView.ringWidth = 1.5
             }
-            return true
+            hud.show(in: (appDelegate.window?.rootViewController?.view)!)
+            hud.textLabel.text = fileName
+
+            NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { _ in
+            } progressHandler: { progress in
+                hud.progress = Float(progress.fractionCompleted)
+            } completionHandler: { account, ocId, etag, _, _, _, errorCode, errorDescription in
+                if errorCode == 0 && etag != nil && ocId != nil {
+                    let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
+                    NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
+                    NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
+                    hud.indicatorView = JGProgressHUDSuccessIndicatorView()
+                    hud.textLabel.text = NSLocalizedString("_success_", comment: "")
+                } else {
+                    hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                    hud.textLabel.text = NSLocalizedString(errorDescription, comment: "")
+                }
+                hud.dismiss(afterDelay: 1)
+            }
+        } catch {
+            return false
         }
+        return true
+    }
 
+    func pastePasteboard(serverUrl: String) {
         for (index, items) in UIPasteboard.general.items.enumerated() {
-
-            for item in items { pasteboardTypes.append(item.key) }
-
-            for typeIdentifier in pasteboardTypes {
-                let data = UIPasteboard.general.data(forPasteboardType: typeIdentifier, inItemSet: IndexSet([index]))?.first
-                if upload(pasteboardType: typeIdentifier, data: data) {
+            for item in items {
+                let data = UIPasteboard.general.data(forPasteboardType: item.key, inItemSet: IndexSet([index]))?.first
+                if upload(pasteboardType: item.key, data: data, to: serverUrl) {
                     continue
                 }
             }
