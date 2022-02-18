@@ -65,10 +65,10 @@ class ParallelWorker {
     /// Execute
     /// - Parameter task: The task to execute. Needs to call `completion()` when done so the next task can be executed.
     func execute(task: @escaping (_ completion: @escaping () -> Void) -> Void) {
+        completionGroup.enter()
         queue.async {
             self.semaphore.wait()
-            guard !self.isCancelled else { return }
-            self.completionGroup.enter()
+            guard !self.isCancelled else { return self.completionGroup.leave() }
             task {
                 self.completedTasks += 1
                 DispatchQueue.main.async {
@@ -79,8 +79,8 @@ class ParallelWorker {
                         self.hud?.textLabel.text?.append(NSLocalizedString("_files_", comment: ""))
                     }
                 }
-                self.completionGroup.leave()
                 self.semaphore.signal()
+                self.completionGroup.leave()
             }
         }
     }
