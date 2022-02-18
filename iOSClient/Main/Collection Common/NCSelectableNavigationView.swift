@@ -84,143 +84,152 @@ extension NCSelectableNavigationView where Self: UIViewController {
         //
         // SELECT ALL
         //
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_select_all_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "checkmark.circle.fill"),
-                action: { _ in
-                    self.collectionViewSelectAll()
-                }
-            )
-        )
-
-        if let trash = self as? NCTrash {
+        if selectOcId.count != selectableDataSource.count {
+        
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_trash_restore_selected_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "restore"),
+                    title: NSLocalizedString("_select_all_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "checkmark.circle.fill"),
                     action: { _ in
-                        self.selectOcId.forEach(trash.restoreItem)
+                        self.collectionViewSelectAll()
+                    }
+                )
+            )
+        }
+        
+        //
+        // SELECTED 
+        //
+        if !selectOcId.isEmpty {
+        
+            if let trash = self as? NCTrash {
+                actions.append(
+                    NCMenuAction(
+                        title: NSLocalizedString("_trash_restore_selected_", comment: ""),
+                        icon: NCUtility.shared.loadImage(named: "restore"),
+                        action: { _ in
+                            self.selectOcId.forEach(trash.restoreItem)
+                            self.tapSelect()
+                        }
+                    )
+                )
+                actions.append(
+                    NCMenuAction(
+                        title: NSLocalizedString("_trash_delete_selected_", comment: ""),
+                        icon: NCUtility.shared.loadImage(named: "trash"),
+                        action: { _ in
+                            let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
+                                self.selectOcId.forEach(trash.deleteItem)
+                                self.tapSelect()
+                            }))
+                            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in }))
+                            self.present(alert, animated: true, completion: nil)
+                        }
+                    )
+                )
+                return presentMenu(with: actions)
+            }
+
+            //
+            // OPEN IN
+            //
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_open_in_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
+                    action: { _ in
+                        NCFunctionCenter.shared.openActivityViewController(selectOcId: self.selectOcId)
                         self.tapSelect()
                     }
                 )
             )
+
+            //
+            // SAVE TO PHOTO GALLERY
+            //
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_trash_delete_selected_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "trash"),
+                    title: NSLocalizedString("_save_selected_files_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
                     action: { _ in
-                        let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
-                            self.selectOcId.forEach(trash.deleteItem)
-                            self.tapSelect()
-                        }))
-                        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in }))
-                        self.present(alert, animated: true, completion: nil)
-                    }
-                )
-            )
-            return presentMenu(with: actions)
-        }
-
-        //
-        // OPEN IN
-        //
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_open_in_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
-                action: { _ in
-                    NCFunctionCenter.shared.openActivityViewController(selectOcId: self.selectOcId)
-                    self.tapSelect()
-                }
-            )
-        )
-
-        //
-        // SAVE TO PHOTO GALLERY
-        //
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_save_selected_files_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
-                action: { _ in
-                    self.selectOcId
-                        .compactMap(NCManageDatabase.shared.getMetadataFromOcId)
-                        .filter({ $0.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || $0.classFile == NCCommunicationCommon.typeClassFile.video.rawValue })
-                        .forEach { metadata in
-                            if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                                NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
-                            } else {
-                                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                                    NCFunctionCenter.shared.saveAlbum(metadata: metadata)
+                        self.selectOcId
+                            .compactMap(NCManageDatabase.shared.getMetadataFromOcId)
+                            .filter({ $0.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || $0.classFile == NCCommunicationCommon.typeClassFile.video.rawValue })
+                            .forEach { metadata in
+                                if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+                                    NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
                                 } else {
-                                    NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
+                                    if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                                        NCFunctionCenter.shared.saveAlbum(metadata: metadata)
+                                    } else {
+                                        NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
+                                    }
                                 }
                             }
-                        }
-                    self.tapSelect()
-                }
-            )
-        )
-
-        //
-        // COPY - MOVE
-        //
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "arrow.up.right.square"),
-                action: { _ in
-                    let meradatasSelect = self.selectOcId.compactMap(NCManageDatabase.shared.getMetadataFromOcId)
-                    if !meradatasSelect.isEmpty {
-                        NCFunctionCenter.shared.openSelectView(items: meradatasSelect, viewController: self)
+                        self.tapSelect()
                     }
-                    self.tapSelect()
-                }
+                )
             )
-        )
 
-        //
-        // COPY
-        //
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_copy_file_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
-                action: { _ in
-                    self.appDelegate.pasteboardOcIds = self.selectOcId
-                    NCFunctionCenter.shared.copyPasteboard()
-                    self.tapSelect()
-                }
-            )
-        )
-
-        //
-        // DELETE
-        //
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_delete_selected_files_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "trash"),
-                action: { _ in
-                    let meradatasSelect = self.selectOcId.compactMap(NCManageDatabase.shared.getMetadataFromOcId)
-
-                    let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
-                        meradatasSelect.forEach({ NCOperationQueue.shared.delete(metadata: $0, onlyLocalCache: false) })
+            //
+            // COPY - MOVE
+            //
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "arrow.up.right.square"),
+                    action: { _ in
+                        let meradatasSelect = self.selectOcId.compactMap(NCManageDatabase.shared.getMetadataFromOcId)
+                        if !meradatasSelect.isEmpty {
+                            NCFunctionCenter.shared.openSelectView(items: meradatasSelect, viewController: self)
+                        }
                         self.tapSelect()
-                    })
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
-                        meradatasSelect.forEach({ NCOperationQueue.shared.delete(metadata: $0, onlyLocalCache: true) })
-                        self.tapSelect()
-                    })
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in })
-                    self.present(alertController, animated: true, completion: nil)
-                }
+                    }
+                )
             )
-        )
 
+            //
+            // COPY
+            //
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_copy_file_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
+                    action: { _ in
+                        self.appDelegate.pasteboardOcIds = self.selectOcId
+                        NCFunctionCenter.shared.copyPasteboard()
+                        self.tapSelect()
+                    }
+                )
+            )
+
+            //
+            // DELETE
+            //
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_delete_selected_files_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "trash"),
+                    action: { _ in
+                        let meradatasSelect = self.selectOcId.compactMap(NCManageDatabase.shared.getMetadataFromOcId)
+
+                        let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
+                            meradatasSelect.forEach({ NCOperationQueue.shared.delete(metadata: $0, onlyLocalCache: false) })
+                            self.tapSelect()
+                        })
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
+                            meradatasSelect.forEach({ NCOperationQueue.shared.delete(metadata: $0, onlyLocalCache: true) })
+                            self.tapSelect()
+                        })
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in })
+                        self.present(alertController, animated: true, completion: nil)
+                    }
+                )
+            )
+        }
+        
         presentMenu(with: actions)
     }
 }
