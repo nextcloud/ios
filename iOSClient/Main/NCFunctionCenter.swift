@@ -416,10 +416,7 @@ import JGProgressHUD
 
     func copyPasteboard(pasteboardOcIds: [String], hudView: UIView) {
         var items = [[String: Any]]()
-        var isCancelled = false
         let hud = JGProgressHUD()
-        let copyDispatchGroup = DispatchGroup()
-        let seamphore = DispatchSemaphore(value: 5)
         hud.textLabel.text = NSLocalizedString("_wait_", comment: "")
         hud.show(in: hudView)
 
@@ -432,94 +429,59 @@ import JGProgressHUD
                 else { downloadMetadatas.append(metadata) }
             }
 
-            if !downloadMetadatas.isEmpty {
-                DispatchQueue.main.async {
-                    hud.textLabel.text = NSLocalizedString("_status_downloading_", comment: "")
-                    hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
-                    hud.tapOnHUDViewBlock = { hud in
-                        isCancelled = true
-                        hud.dismiss()
-                    }
-                }
-            }
+            DispatchQueue.main.async(execute: hud.dismiss)
 
             // do 5 downloads in paralell to optimize efficiancy
-            for metadata in downloadMetadatas {
-                guard !isCancelled else { return }
-                copyDispatchGroup.enter()
-                NCNetworking.shared.download(metadata: metadata, selector: "") { _ in
-                    copyDispatchGroup.leave()
-                    seamphore.signal()
-                }
-                seamphore.wait()
-            }
+            let parallelizer = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadatas.count, hudView: hudView)
 
-            copyDispatchGroup.notify(queue: .main, execute: {
-                guard !isCancelled else { return }
-                hud.indicatorView = JGProgressHUDSuccessIndicatorView()
-                hud.textLabel.text = NSLocalizedString("_success_", comment: "")
-                hud.detailTextLabel.text = ""
-                hud.dismiss(afterDelay: 1)
+            for metadata in downloadMetadatas {
+                parallelizer.execute { completion in
+                    NCNetworking.shared.download(metadata: metadata, selector: "") { _ in completion() }
+                }
+            }
+            parallelizer.completeWork {
                 items.append(contentsOf: downloadMetadatas.compactMap({ $0.toPasteBoardItem() }))
                 UIPasteboard.general.setItems(items, options: [:])
-            })
+            }
         }
     }
 
-    func upload(pasteboardType: String?, data: Data?, to serverUrl: String) -> Bool {
-
-        guard let data = data, let pasteboardType = pasteboardType else { return false }
-
-        let results = NCCommunicationCommon.shared.getFileProperties(inUTI: pasteboardType as CFString)
-        guard !results.ext.isEmpty else { return false }
-
-        do {
-            let fileName = results.name + "_" + CCUtility.getIncrementalNumber() + "." + results.ext
-            let serverUrlFileName = serverUrl + "/" + fileName
-            let ocIdUpload = UUID().uuidString
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
-            try data.write(to: URL(fileURLWithPath: fileNameLocalPath))
-            let hud = JGProgressHUD()
-            
-            hud.indicatorView = JGProgressHUDRingIndicatorView()
-            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-                indicatorView.ringWidth = 1.5
+    func upload(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
+        NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { _ in
+        } progressHandler: { progress in
+        } completionHandler: { account, ocId, etag, _, _, _, errorCode, errorDescription in
+            if errorCode == 0 && etag != nil && ocId != nil {
+                let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
+                NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
+                NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
+            } else {
+                NCContentPresenter.shared.showError(description: errorDescription, errorCode: errorCode)
             }
-            hud.show(in: (appDelegate.window?.rootViewController?.view)!)
-            hud.textLabel.text = fileName
-
-            NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { _ in
-            } progressHandler: { progress in
-                hud.progress = Float(progress.fractionCompleted)
-            } completionHandler: { account, ocId, etag, _, _, _, errorCode, errorDescription in
-                if errorCode == 0 && etag != nil && ocId != nil {
-                    let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
-                    NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
-                    NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
-                    hud.indicatorView = JGProgressHUDSuccessIndicatorView()
-                    hud.textLabel.text = NSLocalizedString("_success_", comment: "")
-                } else {
-                    hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                    hud.textLabel.text = NSLocalizedString(errorDescription, comment: "")
-                }
-                hud.dismiss(afterDelay: 1)
-            }
-        } catch {
-            return false
+            completion()
         }
-        return true
     }
 
     func pastePasteboard(serverUrl: String) {
+        let parallelizer = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: appDelegate.window?.rootViewController?.view)
+
         for (index, items) in UIPasteboard.general.items.enumerated() {
             for item in items {
-                let data = UIPasteboard.general.data(forPasteboardType: item.key, inItemSet: IndexSet([index]))?.first
-                if upload(pasteboardType: item.key, data: data, to: serverUrl) {
-                    continue
+                let results = NCCommunicationCommon.shared.getFileProperties(inUTI: item.key as CFString)
+                guard !results.ext.isEmpty,
+                      let data = UIPasteboard.general.data(forPasteboardType: item.key, inItemSet: IndexSet([index]))?.first
+                else { continue }
+                let fileName = results.name + "_" + CCUtility.getIncrementalNumber() + "." + results.ext
+                let serverUrlFileName = serverUrl + "/" + fileName
+                let ocIdUpload = UUID().uuidString
+                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
+                do { try data.write(to: URL(fileURLWithPath: fileNameLocalPath)) } catch { continue }
+                parallelizer.execute { completion in
+                    self.upload(fileName: fileName, serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, serverUrl: serverUrl, completion: completion)
                 }
             }
         }
+        parallelizer.completeWork()
     }
 
     // MARK: -
