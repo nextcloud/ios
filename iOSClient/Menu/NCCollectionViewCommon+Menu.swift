@@ -252,7 +252,7 @@ extension NCCollectionViewCommon {
         // COPY
         //
         if !metadata.directory {
-            actions.append(.copyAction(selectOcId: [metadata.ocId]))
+            actions.append(.copyAction(selectOcId: [metadata.ocId], hudView: self.view))
         }
         
         /*

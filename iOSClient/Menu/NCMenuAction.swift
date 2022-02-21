@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class NCMenuAction {
     let title: String
@@ -37,7 +38,7 @@ class NCMenuAction {
     }
 }
 
-// MARK: - Actons
+// MARK: - Actions
 
 extension NCMenuAction {
 
@@ -51,12 +52,12 @@ extension NCMenuAction {
     }
 
     /// Copy files to pasteboard
-    static func copyAction(selectOcId: [String], completion: (() -> Void)? = nil) -> NCMenuAction {
+    static func copyAction(selectOcId: [String], hudView: UIView, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
             title: NSLocalizedString("_copy_file_", comment: ""),
             icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
             action: { _ in
-                NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: selectOcId)
+                NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: selectOcId, hudView: hudView)
                 completion?()
             }
         )
@@ -117,7 +118,7 @@ extension NCMenuAction {
         )
     }
 
-    /// Open "share view" (activity VC) to open files iin another app
+    /// Open "share view" (activity VC) to open files in another app
     static func openInAction(selectedMetadatas: [tableMetadata], viewController: UIViewController, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
             title: NSLocalizedString("_open_in_", comment: ""),
@@ -135,7 +136,7 @@ extension NCMenuAction {
         )
     }
 
-    /// Save selected files to user's prohot library
+    /// Save selected files to user's photo library
     static func saveMediaAction(selectedMediaMetadatas: [tableMetadata], completion: (() -> Void)? = nil) -> NCMenuAction {
         var title: String = NSLocalizedString("_save_selected_files_", comment: "")
         var icon = NCUtility.shared.loadImage(named: "square.and.arrow.down")
@@ -152,7 +153,7 @@ extension NCMenuAction {
                     if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                         NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
                     } else {
-                        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                        if CCUtility.fileProviderStorageExists(metadata) {
                             NCFunctionCenter.shared.saveAlbum(metadata: metadata)
                         } else {
                             NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)

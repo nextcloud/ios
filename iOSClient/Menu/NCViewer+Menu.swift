@@ -197,7 +197,7 @@ extension NCViewer {
         //
         // COPY
         //
-        actions.append(.copyAction(selectOcId: [metadata.ocId]))
+        actions.append(.copyAction(selectOcId: [metadata.ocId], hudView: viewController.view))
 
         //
         // VIEW IN FOLDER

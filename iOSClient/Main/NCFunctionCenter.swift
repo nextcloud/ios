@@ -230,7 +230,7 @@ import JGProgressHUD
 
         for metadata in selectedMetadata {
             guard !metadata.directory else { continue }
-            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            if !CCUtility.fileProviderStorageExists(metadata) {
                 let semaphore = Semaphore()
                 NCNetworking.shared.download(metadata: metadata, selector: "") { errorCode in
                     error = errorCode
@@ -427,7 +427,7 @@ import JGProgressHUD
 
             DispatchQueue.main.async(execute: hud.dismiss)
 
-            // do 5 downloads in paralell to optimize efficiancy
+            // do 5 downloads in parallel to optimize efficiency
             let parallelizer = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadatas.count, hudView: hudView)
 
             for metadata in downloadMetadatas {
