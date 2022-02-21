@@ -96,10 +96,6 @@ import JGProgressHUD
                             self.openDocumentController(metadata: metadata)
                         }
 
-                    case NCGlobal.shared.selectorLoadCopy:
-
-                        copyPasteboard()
-
                     case NCGlobal.shared.selectorLoadOffline:
 
                         NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: true)
@@ -130,7 +126,7 @@ import JGProgressHUD
                             metadata = metadataTMP
                         }
 
-                        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
+                        if CCUtility.fileProviderStorageExists(metadata) && CCUtility.fileProviderStorageExists(metadataMOV) {
                             saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV)
                         }
 
@@ -204,7 +200,7 @@ import JGProgressHUD
 
     func openDownload(metadata: tableMetadata, selector: String) {
 
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+        if CCUtility.fileProviderStorageExists(metadata) {
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": selector, "errorCode": 0, "errorDescription": "" ])
 
@@ -237,7 +233,7 @@ import JGProgressHUD
                 if metadata.directory {
                     continue
                 }
-                if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                if !CCUtility.fileProviderStorageExists(metadata) {
                     let semaphore = Semaphore()
                     NCNetworking.shared.download(metadata: metadata, selector: "") { errorCode in
                         error = errorCode
@@ -344,15 +340,15 @@ import JGProgressHUD
 
     func saveLivePhoto(metadata: tableMetadata, metadataMOV: tableMetadata) {
 
-        if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+        if !CCUtility.fileProviderStorageExists(metadata) {
             NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbumLivePhotoIMG)
         }
 
-        if !CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
+        if !CCUtility.fileProviderStorageExists(metadataMOV) {
             NCOperationQueue.shared.download(metadata: metadataMOV, selector: NCGlobal.shared.selectorSaveAlbumLivePhotoMOV)
         }
 
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) {
+        if CCUtility.fileProviderStorageExists(metadata) && CCUtility.fileProviderStorageExists(metadataMOV) {
             saveLivePhotoToDisk(metadata: metadata, metadataMov: metadataMOV)
         }
     }
@@ -418,100 +414,74 @@ import JGProgressHUD
 
     // MARK: - Copy & Paste
 
-    func copyPasteboard() {
-
-        var metadatas: [tableMetadata] = []
+    func copyPasteboard(pasteboardOcIds: [String], hudView: UIView) {
         var items = [[String: Any]]()
+        let hud = JGProgressHUD()
+        hud.textLabel.text = NSLocalizedString("_wait_", comment: "")
+        hud.show(in: hudView)
 
-        for ocId in appDelegate.pasteboardOcIds {
-            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                metadatas.append(metadata)
+        // getting file data can take some time and block the main queue
+        DispatchQueue.global(qos: .userInitiated).async {
+            var downloadMetadatas: [tableMetadata] = []
+            for ocid in pasteboardOcIds {
+                guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocid) else { continue }
+                if let pasteboardItem = metadata.toPasteBoardItem() { items.append(pasteboardItem) }
+                else { downloadMetadatas.append(metadata) }
             }
-        }
 
-        for metadata in metadatas {
+            DispatchQueue.main.async(execute: hud.dismiss)
 
-            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                do {
-                    // Get Data
-                    let data = try Data(contentsOf: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
-                    // Pasteboard item
-                    if let unmanagedFileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (metadata.fileNameView as NSString).pathExtension as CFString, nil) {
-                        let fileUTI = unmanagedFileUTI.takeRetainedValue() as String
-                        items.append([fileUTI: data])
-                    }
-                } catch {
-                    print("error")
+            // do 5 downloads in paralell to optimize efficiancy
+            let parallelizer = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadatas.count, hudView: hudView)
+
+            for metadata in downloadMetadatas {
+                parallelizer.execute { completion in
+                    NCNetworking.shared.download(metadata: metadata, selector: "") { _ in completion() }
                 }
-            } else {
-                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadCopy) { _ in }
+            }
+            parallelizer.completeWork {
+                items.append(contentsOf: downloadMetadatas.compactMap({ $0.toPasteBoardItem() }))
+                UIPasteboard.general.setItems(items, options: [:])
             }
         }
+    }
 
-        UIPasteboard.general.setItems(items, options: [:])
+    func upload(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
+        NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { _ in
+        } progressHandler: { progress in
+        } completionHandler: { account, ocId, etag, _, _, _, errorCode, errorDescription in
+            if errorCode == 0 && etag != nil && ocId != nil {
+                let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
+                NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
+                NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
+            } else {
+                NCContentPresenter.shared.showError(description: errorDescription, errorCode: errorCode)
+            }
+            completion()
+        }
     }
 
     func pastePasteboard(serverUrl: String) {
+        let parallelizer = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: appDelegate.window?.rootViewController?.view)
 
-        var pasteboardTypes: [String] = []
-
-        func upload(pasteboardType: String?, data: Data?) -> Bool {
-
-            guard let data = data else { return false}
-            guard let pasteboardType = pasteboardType else { return false }
-
-            let results = NCCommunicationCommon.shared.getFileProperties(inUTI: pasteboardType as CFString)
-            if results.ext == "" { return false }
-
-            do {
+        for (index, items) in UIPasteboard.general.items.enumerated() {
+            for item in items {
+                let results = NCCommunicationCommon.shared.getFileProperties(inUTI: item.key as CFString)
+                guard !results.ext.isEmpty,
+                      let data = UIPasteboard.general.data(forPasteboardType: item.key, inItemSet: IndexSet([index]))?.first
+                else { continue }
                 let fileName = results.name + "_" + CCUtility.getIncrementalNumber() + "." + results.ext
                 let serverUrlFileName = serverUrl + "/" + fileName
                 let ocIdUpload = UUID().uuidString
                 let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
-                try data.write(to: URL(fileURLWithPath: fileNameLocalPath))
-                let hud = JGProgressHUD()
-                
-                hud.indicatorView = JGProgressHUDRingIndicatorView()
-                if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-                    indicatorView.ringWidth = 1.5
-                }
-                hud.show(in: (appDelegate.window?.rootViewController?.view)!)
-                hud.textLabel.text = fileName
-
-                NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { _ in
-                } progressHandler: { progress in
-                    hud.progress = Float(progress.fractionCompleted)
-                } completionHandler: { account, ocId, etag, _, _, _, errorCode, errorDescription in
-                    if errorCode == 0 && etag != nil && ocId != nil {
-                        let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
-                        NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
-                        NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
-                        hud.indicatorView = JGProgressHUDSuccessIndicatorView()
-                        hud.textLabel.text = NSLocalizedString("_success_", comment: "")
-                    } else {
-                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                        hud.textLabel.text = NSLocalizedString(errorDescription, comment: "")
-                    }
-                    hud.dismiss(afterDelay: 1)
-                }
-            } catch {
-                return false
-            }
-            return true
-        }
-
-        for (index, items) in UIPasteboard.general.items.enumerated() {
-
-            for item in items { pasteboardTypes.append(item.key) }
-
-            for typeIdentifier in pasteboardTypes {
-                let data = UIPasteboard.general.data(forPasteboardType: typeIdentifier, inItemSet: IndexSet([index]))?.first
-                if upload(pasteboardType: typeIdentifier, data: data) {
-                    continue
+                do { try data.write(to: URL(fileURLWithPath: fileNameLocalPath)) } catch { continue }
+                parallelizer.execute { completion in
+                    self.upload(fileName: fileName, serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, serverUrl: serverUrl, completion: completion)
                 }
             }
         }
+        parallelizer.completeWork()
     }
 
     // MARK: -
@@ -658,8 +628,7 @@ import JGProgressHUD
         let titleOffline = isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: "")
 
         let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc")) { _ in
-            self.appDelegate.pasteboardOcIds = [metadata.ocId]
-            self.copyPasteboard()
+            self.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view)
         }
 
         let copyPath = UIAction(title: NSLocalizedString("_copy_path_", comment: ""), image: UIImage(systemName: "doc.on.clipboard")) { _ in
@@ -700,7 +669,7 @@ import JGProgressHUD
             if metadataMOV != nil {
                 self.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
             } else {
-                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                if CCUtility.fileProviderStorageExists(metadata) {
                     self.saveAlbum(metadata: metadata)
                 } else {
                     NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
@@ -709,7 +678,7 @@ import JGProgressHUD
         }
 
         let saveBackground = UIAction(title: NSLocalizedString("_use_as_background_", comment: ""), image: UIImage(systemName: "text.below.photo")) { _ in
-            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            if CCUtility.fileProviderStorageExists(metadata) {
                 self.saveBackground(metadata: metadata)
             } else {
                 NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveBackground)
@@ -831,5 +800,19 @@ import JGProgressHUD
 
         let submenu = UIMenu(title: "", options: .displayInline, children: children)
         return UIMenu(title: "", children: [detail, submenu])
+    }
+}
+
+fileprivate extension tableMetadata {
+    func toPasteBoardItem() -> [String: Any]? {
+        // Get Data
+        let fileUrl = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView))
+        guard CCUtility.fileProviderStorageExists(self),
+              let data = try? Data(contentsOf: fileUrl),
+              let unmanagedFileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension as CFString, nil)
+        else { return nil }
+        // Pasteboard item
+        let fileUTI = unmanagedFileUTI.takeRetainedValue() as String
+        return [fileUTI: data]
     }
 }

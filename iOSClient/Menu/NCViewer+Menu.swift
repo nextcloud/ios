@@ -95,7 +95,7 @@ extension NCViewer {
                     title: titleOffline,
                     icon: NCUtility.shared.loadImage(named: "tray.and.arrow.down"),
                     action: { _ in
-                        if (localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) && metadata.session == "" {
+                        if (localFile == nil || !CCUtility.fileProviderStorageExists(metadata)) && metadata.session == "" {
                             NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { _ in }
                         } else {
                             NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
@@ -257,8 +257,7 @@ extension NCViewer {
                 title: NSLocalizedString("_copy_file_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
                 action: { _ in
-                    self.appDelegate.pasteboardOcIds = [metadata.ocId]
-                    NCFunctionCenter.shared.copyPasteboard()
+                    NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view)
                 }
             )
         )
@@ -282,7 +281,7 @@ extension NCViewer {
         // DOWNLOAD IMAGE MAX RESOLUTION
         //
         if metadata.session == "" {
-            if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "" {
+            if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata) && metadata.session == "" {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_download_image_max_", comment: ""),

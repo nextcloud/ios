@@ -59,7 +59,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
     var networkingProcessUpload: NCNetworkingProcessUpload?
-    var pasteboardOcIds: [String] = []
     var shares: [tableShare] = []
     var timerErrorNetworking: Timer?
     
