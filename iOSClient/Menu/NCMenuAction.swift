@@ -85,19 +85,32 @@ extension NCMenuAction {
             }
         } // else: no metadata selected
 
+        var fileList = ""
+        for (ix, metadata) in selectedMetadatas.enumerated() {
+            guard ix < 3 else { fileList += "\n - ..."; break }
+            fileList += "\n - " + metadata.fileName
+        }
+
         return NCMenuAction(
             title: titleDelete,
             icon: NCUtility.shared.loadImage(named: "trash"),
             action: { _ in
-                let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
+                let alertController = UIAlertController(
+                    title: titleDelete,
+                    message: NSLocalizedString("_want_delete_", comment: "") + fileList,
+                    preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
                     selectedMetadatas.forEach({ NCOperationQueue.shared.delete(metadata: $0, onlyLocalCache: false) })
                     completion?()
                 })
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
-                    selectedMetadatas.forEach({ NCOperationQueue.shared.delete(metadata: $0, onlyLocalCache: true) })
-                    completion?()
-                })
+
+                // NCMedia removes image from collection view if removed from cache
+                if !(viewController is NCMedia) {
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
+                        selectedMetadatas.forEach({ NCOperationQueue.shared.delete(metadata: $0, onlyLocalCache: true) })
+                        completion?()
+                    })
+                }
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in })
                 viewController.present(alertController, animated: true, completion: nil)
             }
