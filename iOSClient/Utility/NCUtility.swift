@@ -440,7 +440,7 @@ class NCUtility: NSObject {
         let fileNamePathIcon = CCUtility.getDirectoryProviderStorageIconOcId(ocId, etag: etag)!
 
         if FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
-        if !CCUtility.fileProviderStorageExists(ocId, fileNameView: fileName) { return }
+        if CCUtility.fileProviderStorageSize(ocId, fileNameView: fileName) != 0 { return }
         if classFile != NCCommunicationCommon.typeClassFile.image.rawValue && classFile != NCCommunicationCommon.typeClassFile.video.rawValue { return }
 
         if classFile == NCCommunicationCommon.typeClassFile.image.rawValue {

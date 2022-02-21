@@ -413,6 +413,10 @@ class tableMetadata: Object, NCUserBaseUrl {
     }
 }
 
+extension tableMetadata {
+    var fileExtension: String { (fileNameView as NSString).pathExtension }
+}
+
 class tablePhotoLibrary: Object {
 
     @objc dynamic var account = ""

@@ -61,7 +61,7 @@ class NCTrashSectionHeaderMenu: UICollectionReusableView {
 
     func setStatusButton(datasource: [tableTrash]) {
 
-        if datasource.count == 0 {
+        if datasource.isEmpty {
             buttonSwitch.isEnabled = false
             buttonOrder.isEnabled = false
             buttonMore.isEnabled = false
@@ -128,9 +128,9 @@ class NCTrashSectionFooter: UICollectionReusableView {
             filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + CCUtility.transformedSize(size)
         }
 
-        if foldersText == "" {
+        if foldersText.isEmpty {
             labelFooter.text = filesText
-        } else if filesText == "" {
+        } else if filesText.isEmpty {
             labelFooter.text = foldersText
         } else {
             labelFooter.text = foldersText + ", " + filesText

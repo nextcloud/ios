@@ -376,7 +376,7 @@
 - (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey
 {
     NSMutableData *privateKeyData = [NSMutableData new];
-    NSString *privateKey;
+    NSString *privateKey = @"";
     
     // Key (data)
     NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH/8];
