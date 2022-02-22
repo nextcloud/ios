@@ -26,16 +26,6 @@ import UIKit
 @available(iOS 13.0, *)
 class NCScan: UIViewController, NCScanCellCellDelegate {
 
-    // Data Source for collectionViewSource
-    internal var itemsSource: [String] = []
-
-    // Data Source for collectionViewDestination
-    internal var imagesDestination: [UIImage] = []
-    internal var itemsDestination: [String] = []
-
-    internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-
-    // MARK: Outlets
     @IBOutlet weak var collectionViewSource: UICollectionView!
     @IBOutlet weak var collectionViewDestination: UICollectionView!
     @IBOutlet weak var cancel: UIBarButtonItem!
@@ -45,15 +35,21 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     @IBOutlet weak var labelTitlePDFzone: UILabel!
     @IBOutlet weak var segmentControlFilter: UISegmentedControl!
 
-    // filter
+    // Data Source for collectionViewSource
+    internal var itemsSource: [String] = []
+
+    // Data Source for collectionViewDestination
+    internal var imagesDestination: [UIImage] = []
+    internal var itemsDestination: [String] = []
+
+    internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+
     enum TypeFilter {
         case original
         case grayScale
         case bn
     }
     internal var filter: TypeFilter = TypeFilter.original
-
-    override var canBecomeFirstResponder: Bool { return true }
 
     // MARK: - View Life Cycle
 
@@ -106,6 +102,15 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         transferDown.setImage(UIImage(named: "transferDown")?.image(color: NCBrandColor.shared.label, size: 25), for: .normal)
     }
 
+    override var canBecomeFirstResponder: Bool { return true }
+
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(pasteImage) {
+            return true
+        }
+        return false
+    }
+
     @IBAction func cancelAction(sender: UIBarButtonItem) {
         self.dismiss(animated: true, completion: nil)
     }
@@ -120,10 +125,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
             for image in imagesDestination {
                 images.append(filter(image: image)!)
             }
-
-//            if let directory = CCUtility.getDirectoryScanDocuments() {
-//                serverUrl = directory
-//            }
 
             let formViewController = NCCreateFormUploadScanDocument(serverUrl: serverUrl, arrayImages: images)
             self.navigationController?.pushViewController(formViewController, animated: true)
@@ -319,13 +320,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         }
     }
 
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(pasteImage) {
-            return true
-        }
-        return false
-    }
-
     @objc func pasteImage() {
 
         let pasteboard = UIPasteboard.general
@@ -379,29 +373,5 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
             imagesDestination[imageIndex] = image
             cell.customImageView.image = image
         }
-    }
-}
-
-extension UIImage {
-    func rotate(radians: Float) -> UIImage? {
-        var newSize = CGRect(origin: CGPoint.zero, size: self.size).applying(CGAffineTransform(rotationAngle: CGFloat(radians))).size
-        // Trim off the extremely small float value to prevent core graphics from rounding it up
-        newSize.width = floor(newSize.width)
-        newSize.height = floor(newSize.height)
-
-        UIGraphicsBeginImageContextWithOptions(newSize, true, self.scale)
-        let context = UIGraphicsGetCurrentContext()!
-
-        // Move origin to middle
-        context.translateBy(x: newSize.width / 2, y: newSize.height / 2)
-        // Rotate around middle
-        context.rotate(by: CGFloat(radians))
-        // Draw the image at its center
-        self.draw(in: CGRect(x: -self.size.width / 2, y: -self.size.height / 2, width: self.size.width, height: self.size.height))
-
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-
-        return newImage
     }
 }
