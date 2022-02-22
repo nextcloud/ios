@@ -31,7 +31,7 @@ class NCScanCell: UICollectionViewCell {
     @IBOutlet weak var rotate: UIButton!
 
     weak var delegate: NCScanCellCellDelegate?
-    internal var index = 0
+    private var index = 0
 
     var imageIndex: Int {
         get {
