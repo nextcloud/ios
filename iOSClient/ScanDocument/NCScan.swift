@@ -144,8 +144,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
                 let fileNamePathAt = CCUtility.getDirectoryScan() + "/" + fileName
 
-                guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)) else { return }
-                guard let image = UIImage(data: data) else { return }
+                guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)), let image = UIImage(data: data) else { return }
 
                 imagesDestination.append(image)
                 itemsDestination.append(fileName)
@@ -280,12 +279,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
                     let fileName = (item.dragItem.localObject as? String)!
                     let fileNamePathAt = CCUtility.getDirectoryScan() + "/" + fileName
 
-                    guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)) else {
-                        return
-                    }
-                    guard let image = UIImage(data: data) else {
-                        return
-                    }
+                    guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)), let image = UIImage(data: data) else { return }
 
                     imagesDestination.insert(image, at: indexPath.row)
                     itemsDestination.insert(fileName, at: indexPath.row)
@@ -326,6 +320,8 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
         if pasteboard.hasImages {
 
+            guard let image = pasteboard.image?.fixedOrientation() else { return }
+
             let fileName = CCUtility.createFileName("scan.png", fileDate: Date(),
                                                     fileType: PHAssetMediaType.image,
                                                     keyFileName: NCGlobal.shared.keyFileNameMask,
@@ -333,10 +329,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
                                                     keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
                                                     forcedNewFileName: true)!
             let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
-
-            guard let image = pasteboard.image?.fixedOrientation() else {
-                return
-            }
 
             do {
                 try image.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
@@ -366,9 +358,9 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     func rotate(with imageIndex: Int, sender: Any) {
 
         let indexPath = IndexPath(row: imageIndex, section: 0)
-        if let cell = self.collectionViewDestination.cellForItem(at: indexPath) as? NCScanCell {
+        if let cell = collectionViewDestination.cellForItem(at: indexPath) as? NCScanCell {
 
-            var image = self.imagesDestination[imageIndex]
+            var image = imagesDestination[imageIndex]
             image = image.rotate(radians: .pi / 2)!
             imagesDestination[imageIndex] = image
             cell.customImageView.image = image

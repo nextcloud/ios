@@ -39,13 +39,7 @@ extension NCScan: UICollectionViewDataSource {
 
             let fileNamePath = CCUtility.getDirectoryScan() + "/" + itemsSource[indexPath.row]
 
-            guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePath)) else {
-                return cell
-            }
-
-            guard var image = UIImage(data: data) else {
-                return cell
-            }
+            guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePath)), var image = UIImage(data: data) else { return cell }
 
             let imageWidthInPixels = image.size.width * image.scale
             let imageHeightInPixels = image.size.height * image.scale
@@ -87,7 +81,7 @@ extension NCScan: UICollectionViewDataSource {
                 image = image.resizeImage(size: CGSize(width: 595, height: 842), isAspectRation: true) ?? image
             }
 
-            cell.customImageView?.image = self.filter(image: image)
+            cell.customImageView?.image = filter(image: image)
             cell.customLabel.text = NSLocalizedString("_scan_document_pdf_page_", comment: "") + " " + "\(indexPath.row + 1)"
 
             return cell
@@ -202,7 +196,7 @@ extension NCScan: UICollectionViewDropDelegate {
 
                 destinationIndexPath = IndexPath(row: row, section: section)
             }
-            self.reorderItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
+            reorderItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
 
         case .copy:
 
@@ -211,7 +205,7 @@ extension NCScan: UICollectionViewDropDelegate {
             let row = collectionView.numberOfItems(inSection: section)
 
             destinationIndexPath = IndexPath(row: row, section: section)
-            self.copyItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
+            copyItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
 
         default:
             return
