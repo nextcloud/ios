@@ -762,8 +762,8 @@ class NCCreateScanDocument: NSObject, VNDocumentCameraViewControllerDelegate {
         }
 
         controller.dismiss(animated: true) {
-            if self.viewController is NCScanCollectionView {
-                (self.viewController as! NCScanCollectionView).loadImage()
+            if self.viewController is NCScan {
+                (self.viewController as! NCScan).loadImage()
             } else {
                 let storyboard = UIStoryboard(name: "NCScan", bundle: nil)
                 let controller = storyboard.instantiateInitialViewController()!

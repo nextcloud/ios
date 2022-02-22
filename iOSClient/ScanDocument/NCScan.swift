@@ -1,5 +1,5 @@
 //
-//  NCScanCollectionView.swift
+//  NCScan.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 21/08/18.
@@ -24,16 +24,16 @@
 import UIKit
 
 @available(iOS 13.0, *)
-class NCScanCollectionView: UIViewController {
+class NCScan: UIViewController {
 
     // Data Source for collectionViewSource
-    private var itemsSource: [String] = []
+    internal var itemsSource: [String] = []
 
     // Data Source for collectionViewDestination
-    private var imagesDestination: [UIImage] = []
-    private var itemsDestination: [String] = []
+    internal var imagesDestination: [UIImage] = []
+    internal var itemsDestination: [String] = []
 
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     // MARK: Outlets
     @IBOutlet weak var collectionViewSource: UICollectionView!
@@ -51,7 +51,7 @@ class NCScanCollectionView: UIViewController {
         case grayScale
         case bn
     }
-    private var filter: TypeFilter = TypeFilter.original
+    internal var filter: TypeFilter = TypeFilter.original
 
     override var canBecomeFirstResponder: Bool { return true }
 
@@ -106,16 +106,13 @@ class NCScanCollectionView: UIViewController {
         transferDown.setImage(UIImage(named: "transferDown")?.image(color: NCBrandColor.shared.label, size: 25), for: .normal)
     }
 
-    // MARK: Button Action
-
     @IBAction func cancelAction(sender: UIBarButtonItem) {
-        
         self.dismiss(animated: true, completion: nil)
     }
 
     @IBAction func saveAction(sender: UIBarButtonItem) {
 
-        if imagesDestination.count > 0 {
+        if !imagesDestination.isEmpty {
 
             var images: [UIImage] = []
             let serverUrl = appDelegate.activeServerUrl
@@ -155,7 +152,7 @@ class NCScanCollectionView: UIViewController {
         }
 
         // Save button
-        if imagesDestination.count == 0 {
+        if imagesDestination.isEmpty {
             save.isEnabled = false
         } else {
             save.isEnabled = true
@@ -187,10 +184,8 @@ class NCScanCollectionView: UIViewController {
         do {
             let atPath = CCUtility.getDirectoryScan()!
             let directoryContents = try FileManager.default.contentsOfDirectory(atPath: atPath)
-            for fileName in directoryContents {
-                if fileName.first != "." {
-                    itemsSource.append(fileName)
-                }
+            for fileName in directoryContents where fileName.first != "." {
+                itemsSource.append(fileName)
             }
         } catch {
             print(error.localizedDescription)
@@ -201,14 +196,12 @@ class NCScanCollectionView: UIViewController {
         collectionViewSource.reloadData()
 
         // Save button
-        if imagesDestination.count == 0 {
+        if imagesDestination.isEmpty {
             save.isEnabled = false
         } else {
             save.isEnabled = true
         }
     }
-
-    // MARK: Private Methods
 
     func filter(image: UIImage) -> UIImage? {
 
@@ -235,14 +228,7 @@ class NCScanCollectionView: UIViewController {
         return image
     }
 
-    /// This method moves a cell from source indexPath to destination indexPath within the same collection view. It works for only 1 item. If multiple items selected, no reordering happens.
-    ///
-    /// - Parameters:
-    ///   - coordinator: coordinator obtained from performDropWith: UICollectionViewDropDelegate method
-    ///   - destinationIndexPath: indexpath of the collection view where the user drops the element
-    ///   - collectionView: collectionView in which reordering needs to be done.
-
-    private func reorderItems(coordinator: UICollectionViewDropCoordinator, destinationIndexPath: IndexPath, collectionView: UICollectionView) {
+    func reorderItems(coordinator: UICollectionViewDropCoordinator, destinationIndexPath: IndexPath, collectionView: UICollectionView) {
 
         let items = coordinator.items
 
@@ -279,14 +265,7 @@ class NCScanCollectionView: UIViewController {
         }
     }
 
-    /// This method copies a cell from source indexPath in 1st collection view to destination indexPath in 2nd collection view. It works for multiple items.
-    ///
-    /// - Parameters:
-    ///   - coordinator: coordinator obtained from performDropWith: UICollectionViewDropDelegate method
-    ///   - destinationIndexPath: indexpath of the collection view where the user drops the element
-    ///   - collectionView: collectionView in which reordering needs to be done.
-
-    private func copyItems(coordinator: UICollectionViewDropCoordinator, destinationIndexPath: IndexPath, collectionView: UICollectionView) {
+    func copyItems(coordinator: UICollectionViewDropCoordinator, destinationIndexPath: IndexPath, collectionView: UICollectionView) {
         collectionView.performBatchUpdates({
 
             var indexPaths: [IndexPath] = []
@@ -303,7 +282,7 @@ class NCScanCollectionView: UIViewController {
                     guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)) else {
                         return
                     }
-                    guard let image =  UIImage(data: data) else {
+                    guard let image = UIImage(data: data) else {
                         return
                     }
 
@@ -322,8 +301,6 @@ class NCScanCollectionView: UIViewController {
             collectionView.insertItems(at: indexPaths)
         })
     }
-
-    // MARK: - UIGestureRecognizerv - Paste
 
     @objc func handleLongPressGesture(recognizer: UIGestureRecognizer) {
 
@@ -378,108 +355,6 @@ class NCScanCollectionView: UIViewController {
     }
 }
 
-// MARK: -  Methods
-
-@available(iOS 13.0, *)
-extension NCScanCollectionView: UICollectionViewDataSource {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-
-        return collectionView == collectionViewSource ? itemsSource.count : imagesDestination.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
-        if collectionView == collectionViewSource {
-
-            let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as? NCScanCell)!
-
-            let fileNamePath = CCUtility.getDirectoryScan() + "/" + itemsSource[indexPath.row]
-
-            guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePath)) else {
-                return cell
-            }
-
-            guard var image = UIImage(data: data) else {
-                return cell
-            }
-
-            let imageWidthInPixels = image.size.width * image.scale
-            let imageHeightInPixels = image.size.height * image.scale
-
-            // 72 DPI
-            if imageWidthInPixels > 595 || imageHeightInPixels > 842 {
-                image = image.resizeImage(size: CGSize(width: 595, height: 842), isAspectRation: true) ?? image
-            }
-
-            cell.customImageView?.image = image
-            cell.delete.action(for: .touchUpInside) { sender in
-
-                let buttonPosition: CGPoint = (sender as? UIButton)!.convert(.zero, to: self.collectionViewSource)
-                if let indexPath = self.collectionViewSource.indexPathForItem(at: buttonPosition) {
-
-                    let fileNameAtPath = CCUtility.getDirectoryScan() + "/" + self.itemsSource[indexPath.row]
-                    CCUtility.removeFile(atPath: fileNameAtPath)
-                    self.itemsSource.remove(at: indexPath.row)
-
-                    self.collectionViewSource.deleteItems(at: [indexPath])
-                }
-            }
-
-            return cell
-
-        } else {
-
-            let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as? NCScanCell)!
-
-            var image = imagesDestination[indexPath.row]
-
-            let imageWidthInPixels = image.size.width * image.scale
-            let imageHeightInPixels = image.size.height * image.scale
-
-            // 72 DPI 
-            if imageWidthInPixels > 595 || imageHeightInPixels > 842 {
-                image = image.resizeImage(size: CGSize(width: 595, height: 842), isAspectRation: true) ?? image
-            }
-
-            cell.customImageView?.image = self.filter(image: image)
-            cell.customLabel.text = NSLocalizedString("_scan_document_pdf_page_", comment: "") + " " + "\(indexPath.row+1)"
-            cell.delete.action(for: .touchUpInside) { sender in
-
-                let buttonPosition: CGPoint = (sender as? UIButton)!.convert(.zero, to: self.collectionViewDestination)
-                if let indexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition) {
-
-                    self.imagesDestination.remove(at: indexPath.row)
-                    self.itemsDestination.remove(at: indexPath.row)
-                    
-                    self.collectionViewDestination.deleteItems(at: [indexPath])
-
-                    // Save button
-                    if self.imagesDestination.count == 0 {
-                        self.save.isEnabled = false
-                    } else {
-                        self.save.isEnabled = true
-                    }
-                }
-            }
-            cell.rotate.action(for: .touchUpInside) { sender in
-
-                let buttonPosition: CGPoint = (sender as? UIButton)!.convert(.zero, to: self.collectionViewDestination)
-                if let indexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition), let cell = self.collectionViewDestination.cellForItem(at: indexPath) as? NCScanCell {
-                    
-                    var image = self.imagesDestination[indexPath.row]
-                    image = image.rotate(radians: .pi/2)!
-                    self.imagesDestination[indexPath.row] = image
-                    
-                    cell.customImageView.image = image
-                }
-            }
-
-            return cell
-        }
-    }
-}
-
 extension UIImage {
     func rotate(radians: Float) -> UIImage? {
         var newSize = CGRect(origin: CGPoint.zero, size: self.size).applying(CGAffineTransform(rotationAngle: CGFloat(radians))).size
@@ -491,159 +366,15 @@ extension UIImage {
         let context = UIGraphicsGetCurrentContext()!
 
         // Move origin to middle
-        context.translateBy(x: newSize.width/2, y: newSize.height/2)
+        context.translateBy(x: newSize.width / 2, y: newSize.height / 2)
         // Rotate around middle
         context.rotate(by: CGFloat(radians))
         // Draw the image at its center
-        self.draw(in: CGRect(x: -self.size.width/2, y: -self.size.height/2, width: self.size.width, height: self.size.height))
+        self.draw(in: CGRect(x: -self.size.width / 2, y: -self.size.height / 2, width: self.size.width, height: self.size.height))
 
         let newImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
 
         return newImage
-    }
-}
-
-// MARK: -
-
-@available(iOS 13.0, *)
-extension NCScanCollectionView: UICollectionViewDragDelegate {
-    func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-
-        if collectionView == collectionViewSource {
-            let item = itemsSource[indexPath.row]
-            let itemProvider = NSItemProvider(object: item as NSString)
-            let dragItem = UIDragItem(itemProvider: itemProvider)
-
-            dragItem.localObject = item
-
-            return [dragItem]
-
-        } else {
-            let item = imagesDestination[indexPath.row]
-            let itemProvider = NSItemProvider(object: item as UIImage)
-            let dragItem = UIDragItem(itemProvider: itemProvider)
-
-            dragItem.localObject = item
-
-            return [dragItem]
-        }
-    }
-
-    func collectionView(_ collectionView: UICollectionView, itemsForAddingTo session: UIDragSession, at indexPath: IndexPath, point: CGPoint) -> [UIDragItem] {
-
-        if collectionView == collectionViewSource {
-            let item = itemsSource[indexPath.row]
-            let itemProvider = NSItemProvider(object: item as NSString)
-            let dragItem = UIDragItem(itemProvider: itemProvider)
-
-            dragItem.localObject = item
-
-            return [dragItem]
-
-        } else {
-            let item = imagesDestination[indexPath.row]
-            let itemProvider = NSItemProvider(object: item as UIImage)
-            let dragItem = UIDragItem(itemProvider: itemProvider)
-
-            dragItem.localObject = item
-
-            return [dragItem]
-        }
-    }
-
-    func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
-
-        let previewParameters = UIDragPreviewParameters()
-        if collectionView == collectionViewSource {
-            previewParameters.visiblePath = UIBezierPath(rect: CGRect(x: 20, y: 20, width: 100, height: 100))
-        } else {
-            previewParameters.visiblePath = UIBezierPath(rect: CGRect(x: 20, y: 20, width: 80, height: 80))
-        }
-
-        return previewParameters
-    }
-}
-
-// MARK: -
-
-@available(iOS 13.0, *)
-extension NCScanCollectionView: UICollectionViewDropDelegate {
-
-    func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
-
-        return true // session.canLoadObjects(ofClass: NSString.self)
-    }
-
-    func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
-
-        if collectionView == collectionViewSource {
-
-            if collectionView.hasActiveDrag {
-                return UICollectionViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
-            } else {
-                return UICollectionViewDropProposal(operation: .forbidden)
-            }
-
-        } else {
-
-            if collectionView.hasActiveDrag {
-                return UICollectionViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
-            } else {
-                return UICollectionViewDropProposal(operation: .copy, intent: .insertAtDestinationIndexPath)
-            }
-        }
-    }
-
-    func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
-
-        let destinationIndexPath: IndexPath
-
-        switch coordinator.proposal.operation {
-
-        case .move:
-
-            if let indexPath = coordinator.destinationIndexPath {
-
-                destinationIndexPath = indexPath
-
-            } else {
-
-                // Get last index path of table view.
-                let section = collectionView.numberOfSections - 1
-                let row = collectionView.numberOfItems(inSection: section)
-
-                destinationIndexPath = IndexPath(row: row, section: section)
-            }
-            self.reorderItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
-
-            break
-
-        case .copy:
-
-            // Get last index path of table view.
-            let section = collectionView.numberOfSections - 1
-            let row = collectionView.numberOfItems(inSection: section)
-
-            destinationIndexPath = IndexPath(row: row, section: section)
-            self.copyItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
-
-            break
-
-        default:
-            return
-        }
-    }
-
-    func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
-
-        collectionViewDestination.reloadData()
-
-        // Save button
-        if imagesDestination.count == 0 {
-            save.isEnabled = false
-        } else {
-            save.isEnabled = true
-        }
     }
 }
