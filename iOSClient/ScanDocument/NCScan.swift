@@ -24,7 +24,7 @@
 import UIKit
 
 @available(iOS 13.0, *)
-class NCScan: UIViewController {
+class NCScan: UIViewController, NCScanCellCellDelegate {
 
     // Data Source for collectionViewSource
     internal var itemsSource: [String] = []
@@ -351,6 +351,33 @@ class NCScan: UIViewController {
             }
 
             loadImage()
+        }
+    }
+
+    func delete(with imageIndex: Int, sender: Any) {
+
+        imagesDestination.remove(at: imageIndex)
+        itemsDestination.remove(at: imageIndex)
+
+        // Save button
+        if imagesDestination.isEmpty {
+            save.isEnabled = false
+        } else {
+            save.isEnabled = true
+        }
+
+        collectionViewDestination.reloadData()
+    }
+
+    func rotate(with imageIndex: Int, sender: Any) {
+
+        let indexPath = IndexPath(row: imageIndex, section: 0)
+        if let cell = self.collectionViewDestination.cellForItem(at: indexPath) as? NCScanCell {
+
+            var image = self.imagesDestination[imageIndex]
+            image = image.rotate(radians: .pi / 2)!
+            imagesDestination[imageIndex] = image
+            cell.customImageView.image = image
         }
     }
 }

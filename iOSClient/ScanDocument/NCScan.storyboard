@@ -105,6 +105,9 @@
                                                         <constraint firstAttribute="height" constant="23" id="QOj-Nj-nAA"/>
                                                     </constraints>
                                                     <state key="normal" image="deleteScan"/>
+                                                    <connections>
+                                                        <action selector="touchUpInsideDelete:" destination="Pph-tY-PGX" eventType="touchUpInside" id="KcT-WM-s1K"/>
+                                                    </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XEo-o0-dSF" userLabel="Rotate">
                                                     <rect key="frame" x="98" y="0.0" width="22" height="22"/>
@@ -113,6 +116,9 @@
                                                         <constraint firstAttribute="height" constant="22" id="fd5-QY-wlr"/>
                                                     </constraints>
                                                     <state key="normal" image="rotate"/>
+                                                    <connections>
+                                                        <action selector="touchUpInsideRotate:" destination="Pph-tY-PGX" eventType="touchUpInside" id="x5z-go-m4Y"/>
+                                                    </connections>
                                                 </button>
                                             </subviews>
                                         </view>

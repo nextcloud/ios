@@ -74,6 +74,8 @@ extension NCScan: UICollectionViewDataSource {
         } else {
 
             let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as? NCScanCell)!
+            cell.delegate = self
+            cell.imageIndex = indexPath.row
 
             var image = imagesDestination[indexPath.row]
 
@@ -87,34 +89,6 @@ extension NCScan: UICollectionViewDataSource {
 
             cell.customImageView?.image = self.filter(image: image)
             cell.customLabel.text = NSLocalizedString("_scan_document_pdf_page_", comment: "") + " " + "\(indexPath.row + 1)"
-            cell.delete.action(for: .touchUpInside) { sender in
-
-                let buttonPosition: CGPoint = (sender as? UIButton)!.convert(.zero, to: self.collectionViewDestination)
-                if let indexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition) {
-
-                    self.imagesDestination.remove(at: indexPath.row)
-                    self.itemsDestination.remove(at: indexPath.row)
-                    self.collectionViewDestination.deleteItems(at: [indexPath])
-
-                    // Save button
-                    if self.imagesDestination.isEmpty {
-                        self.save.isEnabled = false
-                    } else {
-                        self.save.isEnabled = true
-                    }
-                }
-            }
-            cell.rotate.action(for: .touchUpInside) { sender in
-
-                let buttonPosition: CGPoint = (sender as? UIButton)!.convert(.zero, to: self.collectionViewDestination)
-                if let indexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition), let cell = self.collectionViewDestination.cellForItem(at: indexPath) as? NCScanCell {
-
-                    var image = self.imagesDestination[indexPath.row]
-                    image = image.rotate(radians: .pi / 2)!
-                    self.imagesDestination[indexPath.row] = image
-                    cell.customImageView.image = image
-                }
-            }
 
             return cell
         }
