@@ -289,7 +289,7 @@ import SVGKit
         printInfo.outputType = metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue ? .photo : .general
         printController.printInfo = printInfo
         printController.showsNumberOfCopies = true
-        
+
         guard !UIPrintInteractionController.canPrint(fileNameURL) else {
             printController.printingItem = fileNameURL
             printController.present(animated: true)
@@ -297,8 +297,15 @@ import SVGKit
         }
 
         // can't print without data
-        guard let data = try? Data(contentsOf: fileNameURL), let text = String(data: data, encoding: .utf8) else { return }
+        guard let data = try? Data(contentsOf: fileNameURL) else { return }
 
+        if let svg = SVGKImage(data: data) {
+            printController.printingItem = svg.uiImage
+            printController.present(animated: true)
+            return
+        }
+
+        guard let text = String(data: data, encoding: .utf8) else { return }
         let textWithoutNewlines = text.replacingOccurrences(of: "\n", with: "<br />")
         let formatter = UIMarkupTextPrintFormatter(markupText: textWithoutNewlines)
         formatter.perPageContentInsets.top = 72

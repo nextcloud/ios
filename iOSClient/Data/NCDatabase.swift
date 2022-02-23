@@ -418,8 +418,7 @@ extension tableMetadata {
     var fileExtension: String { (fileNameView as NSString).pathExtension }
 
     var isPrintable: Bool {
-        return (classFile == NCCommunicationCommon.typeClassFile.image.rawValue && contentType != "image/svg+xml") ||
-        ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/")
+        classFile == NCCommunicationCommon.typeClassFile.image.rawValue || ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/")
     }
 }
 
