@@ -306,8 +306,13 @@ import SVGKit
         }
 
         guard let text = String(data: data, encoding: .utf8) else { return }
-        let textWithoutNewlines = text.replacingOccurrences(of: "\n", with: "<br />")
-        let formatter = UIMarkupTextPrintFormatter(markupText: textWithoutNewlines)
+        let formatter: UIPrintFormatter
+        if metadata.classFile == "text/html" {
+            let textWithoutNewlines = text.replacingOccurrences(of: "\n", with: "<br />")
+            formatter = UIMarkupTextPrintFormatter(markupText: textWithoutNewlines)
+        } else {
+            formatter = UISimpleTextPrintFormatter(text: text)
+        }
         formatter.perPageContentInsets.top = 72
         formatter.perPageContentInsets.bottom = 72
         formatter.perPageContentInsets.left = 72
