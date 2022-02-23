@@ -24,6 +24,7 @@
 
 import UIKit
 import RealmSwift
+import NCCommunication
 
 protocol DateCompareable {
     var dateKey: Date { get }
@@ -415,6 +416,11 @@ class tableMetadata: Object, NCUserBaseUrl {
 
 extension tableMetadata {
     var fileExtension: String { (fileNameView as NSString).pathExtension }
+
+    var isPrintable: Bool {
+        return (classFile == NCCommunicationCommon.typeClassFile.image.rawValue && contentType != "image/svg+xml") ||
+        ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/")
+    }
 }
 
 class tablePhotoLibrary: Object {

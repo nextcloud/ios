@@ -25,6 +25,7 @@ import UIKit
 import NCCommunication
 import Queuer
 import JGProgressHUD
+import SVGKit
 
 @objc class NCFunctionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
     @objc public static let shared: NCFunctionCenter = {
@@ -281,21 +282,31 @@ import JGProgressHUD
     // MARK: - Print
 
     func printDocument(metadata: tableMetadata) {
-
         let fileNameURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
-
-        if UIPrintInteractionController.canPrint(fileNameURL) {
-
-            let printInfo = UIPrintInfo(dictionary: nil)
-            printInfo.jobName = fileNameURL.lastPathComponent
-            printInfo.outputType = .photo
-
-            let printController = UIPrintInteractionController.shared
-            printController.printInfo = printInfo
-            printController.showsNumberOfCopies = true
+        let printController = UIPrintInteractionController.shared
+        let printInfo = UIPrintInfo(dictionary: nil)
+        printInfo.jobName = fileNameURL.lastPathComponent
+        printInfo.outputType = metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue ? .photo : .general
+        printController.printInfo = printInfo
+        printController.showsNumberOfCopies = true
+        
+        guard !UIPrintInteractionController.canPrint(fileNameURL) else {
             printController.printingItem = fileNameURL
-            printController.present(animated: true, completionHandler: nil)
+            printController.present(animated: true)
+            return
         }
+
+        // can't print without data
+        guard let data = try? Data(contentsOf: fileNameURL), let text = String(data: data, encoding: .utf8) else { return }
+
+        let textWithoutNewlines = text.replacingOccurrences(of: "\n", with: "<br />")
+        let formatter = UIMarkupTextPrintFormatter(markupText: textWithoutNewlines)
+        formatter.perPageContentInsets.top = 72
+        formatter.perPageContentInsets.bottom = 72
+        formatter.perPageContentInsets.left = 72
+        formatter.perPageContentInsets.right = 72
+        printController.printFormatter = formatter
+        printController.present(animated: true)
     }
 
     // MARK: - Save photo

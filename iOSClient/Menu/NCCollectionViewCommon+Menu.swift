@@ -181,16 +181,8 @@ extension NCCollectionViewCommon {
         //
         // PRINT
         //
-        if (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && metadata.contentType != "image/svg+xml") || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_print_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "printer"),
-                    action: { _ in
-                        NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorPrint)
-                    }
-                )
-            )
+        if metadata.isPrintable {
+            actions.append(.printAction(metadata: metadata))
         }
 
         //
