@@ -68,7 +68,7 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>GPS is used to detect new photos from camera roll. Continued use of GPS running in the background can dramatically decrease battery life.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>GPS is used to detect new photos from camera roll. It is useless to use GPS only while using the app.</string>
+	<string>GPS is used to detect new photos from camera roll on background. It is useless to use GPS only while using the app.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Microphone access is required to create voice notes.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
