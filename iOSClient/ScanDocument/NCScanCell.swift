@@ -31,16 +31,7 @@ class NCScanCell: UICollectionViewCell {
     @IBOutlet weak var rotate: UIButton!
 
     weak var delegate: NCScanCellCellDelegate?
-    private var index = 0
-
-    var imageIndex: Int {
-        get {
-            return index
-        }
-        set {
-            index = newValue
-        }
-    }
+    var index = 0
 
     @IBAction func touchUpInsideDelete(_ sender: Any) {
         delegate?.delete(with: index, sender: sender)

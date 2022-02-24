@@ -69,7 +69,7 @@ extension NCScan: UICollectionViewDataSource {
 
             let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as? NCScanCell)!
             cell.delegate = self
-            cell.imageIndex = indexPath.row
+            cell.index = indexPath.row
 
             var image = imagesDestination[indexPath.row]
 

@@ -228,6 +228,9 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         return image
     }
 
+    // destinationIndexPath: indexpath of the collection view where the user drops the element
+    // collectionView: collectionView in which reordering needs to be done.
+
     func reorderItems(coordinator: UICollectionViewDropCoordinator, destinationIndexPath: IndexPath, collectionView: UICollectionView) {
 
         let items = coordinator.items
