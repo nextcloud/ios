@@ -1,9 +1,0 @@
-NSCameraUsageDescription = "Camera access is required to scan documents and make photo and video.";
-NSFaceIDUsageDescription = "Face ID is required to authenticate using face recognition.";
-NSLocationAlwaysAndWhenInUseUsageDescription = "GPS is used to detect new photos from camera roll, continued use of GPS running in the background can dramatically decrease battery life."
-NSLocationAlwaysUsageDescription = "GPS is used to detect new photos from camera roll, continued use of GPS running in the background can dramatically decrease battery life.";
-NSLocationWhenInUseUsageDescription = "GPS is used to detect new photos from camera roll on background, the use of GPS only when the App is in use is useless.";
-NSMicrophoneUsageDescription = "Microphone access is required to create voice notes.";
-NSPhotoLibraryAddUsageDescription = "Photo library access is required to upload your photos and videos to your cloud.";
-NSPhotoLibraryUsageDescription = "Photo library access is required to upload your photos and videos to your cloud.";
-
