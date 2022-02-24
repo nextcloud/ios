@@ -35,15 +35,8 @@ extension NCViewer {
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
         if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
         let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-
-        var titleOffline = ""
-        if localFile == nil || localFile!.offline == false {
-            titleOffline = NSLocalizedString("_set_available_offline_", comment: "")
-        } else {
-            titleOffline = NSLocalizedString("_remove_available_offline_", comment: "")
-        }
-
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        let isOffline = localFile?.offline == true
 
         //
         // FAVORITE
@@ -81,19 +74,7 @@ extension NCViewer {
         // OFFLINE
         //
         if metadata.session == "" && !webView {
-            actions.append(
-                NCMenuAction(
-                    title: titleOffline,
-                    icon: NCUtility.shared.loadImage(named: "tray.and.arrow.down"),
-                    action: { _ in
-                        if (localFile == nil || !CCUtility.fileProviderStorageExists(metadata)) && metadata.session == "" {
-                            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { _ in }
-                        } else {
-                            NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
-                        }
-                    }
-                )
-            )
+            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: viewController))
         }
 
         //

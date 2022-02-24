@@ -42,10 +42,13 @@ protocol NCSelectableNavigationView: AnyObject {
     var titleCurrentFolder: String { get }
     var navigationItem: UINavigationItem { get }
 
+    var selectActions: [NCMenuAction] { get }
+
+    func reloadDataSource()
+    func setNavigationItem()
+
     func tapSelectMenu()
     func tapSelect()
-    func setNavigationItem()
-    var selectActions: [NCMenuAction] { get }
 }
 
 extension NCSelectableNavigationView {
@@ -91,6 +94,7 @@ extension NCSelectableNavigationView where Self: UIViewController {
         guard !selectOcId.isEmpty else { return actions }
         var selectedMetadatas: [tableMetadata] = []
         var selectedMediaMetadatas: [tableMetadata] = []
+        var isAnyOffline = false
 
         for ocId in selectOcId {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { continue }
@@ -98,6 +102,14 @@ extension NCSelectableNavigationView where Self: UIViewController {
             if [NCCommunicationCommon.typeClassFile.image.rawValue, NCCommunicationCommon.typeClassFile.video.rawValue].contains(metadata.classFile) {
                 selectedMediaMetadatas.append(metadata)
             }
+
+            guard !isAnyOffline else { continue }
+            if metadata.directory,
+               let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, metadata.serverUrl + "/" + metadata.fileName)) {
+                isAnyOffline = directory.offline
+            } else if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+                isAnyOffline = localFile.offline
+            } // else: file is not offline, continue
         }
 
         actions.append(.openInAction(selectedMetadatas: selectedMetadatas, viewController: self, completion: tapSelect))
@@ -105,6 +117,10 @@ extension NCSelectableNavigationView where Self: UIViewController {
         if !selectedMediaMetadatas.isEmpty {
             actions.append(.saveMediaAction(selectedMediaMetadatas: selectedMediaMetadatas, completion: tapSelect))
         }
+        actions.append(.setAvailableOfflineAction(selectedMetadatas: selectedMetadatas, isAnyOffline: isAnyOffline, viewController: self, completion: {
+            self.reloadDataSource()
+            self.tapSelect()
+        }))
 
         actions.append(.moveOrCopyAction(selectedMetadatas: selectedMetadatas, completion: tapSelect))
         actions.append(.copyAction(selectOcId: selectOcId, hudView: self.view, completion: tapSelect))

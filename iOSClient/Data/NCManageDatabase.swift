@@ -1131,7 +1131,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.safeWrite {
 
-                let addObject = tableLocalFile()
+                let addObject = getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) ?? tableLocalFile()
 
                 addObject.account = metadata.account
                 addObject.etag = metadata.etag

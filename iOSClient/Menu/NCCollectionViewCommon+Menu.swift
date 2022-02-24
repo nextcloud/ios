@@ -40,17 +40,13 @@ extension NCCollectionViewCommon {
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
-        var isOffline = false
+        let isOffline: Bool
 
-        if metadata.directory {
-            if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
-                isOffline = directory.offline
-            }
-        } else {
-            if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
-                isOffline = localFile.offline
-            }
-        }
+        if metadata.directory, let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
+            isOffline = directory.offline
+        } else if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+            isOffline = localFile.offline
+        } else { isOffline = false }
 
         let editors = NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType)
         let isRichDocument = NCUtility.shared.isRichDocument(metadata)
@@ -111,32 +107,7 @@ extension NCCollectionViewCommon {
         // OFFLINE
         //
         if !isFolderEncrypted {
-            actions.append(
-                NCMenuAction(
-                    title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "tray.and.arrow.down"),
-                    action: { _ in
-                        if isOffline {
-                            if metadata.directory {
-                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: false, account: self.appDelegate.account)
-                            } else {
-                                NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: false)
-                            }
-                        } else {
-                            if metadata.directory {
-                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: self.appDelegate.account)
-                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCGlobal.shared.selectorDownloadAllFile)
-                            } else {
-                                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { _ in }
-                                if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                                    NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCGlobal.shared.selectorLoadOffline) { _ in }
-                                }
-                            }
-                        }
-                        self.reloadDataSource()
-                    }
-                )
-            )
+            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, completion: self.reloadDataSource))
         }
 
         //

@@ -165,6 +165,31 @@ extension NCMenuAction {
         )
     }
 
+    /// Set (or remove) a file as *available offline*. Downloads the file if not downloaded already
+    static func setAvailableOfflineAction(selectedMetadatas: [tableMetadata], isAnyOffline: Bool, viewController: UIViewController, completion: (() -> Void)? = nil) -> NCMenuAction {
+        NCMenuAction(
+            title: isAnyOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
+            icon: NCUtility.shared.loadImage(named: "tray.and.arrow.down"),
+            action: { _ in
+                if !isAnyOffline, selectedMetadatas.count > 3 {
+                    let alert = UIAlertController(
+                        title: NSLocalizedString("_set_available_offline_", comment: ""),
+                        message: NSLocalizedString("_select_offline_warning_", comment: ""),
+                        preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default, handler: { _ in
+                        selectedMetadatas.forEach { NCFunctionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
+                        completion?()
+                    }))
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
+                    viewController.present(alert, animated: true)
+                } else {
+                    selectedMetadatas.forEach { NCFunctionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
+                    completion?()
+                }
+            }
+        )
+    }
+
     /// Open view that lets the user move or copy the files within Nextcloud
     static func moveOrCopyAction(selectedMetadatas: [tableMetadata], completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
