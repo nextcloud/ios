@@ -1,14 +1,8 @@
-/* 
-  InfoPlist.strings
-  Nextcloud
-
-  Created by Marino Faggiana on 24/02/22.
-  Copyright © 2022 Marino Faggiana. All rights reserved.
-*/
-
-NSCameraUsageDescription = "Camera is used in video calls";
-NSMicrophoneUsageDescription = "Microphone is used in voice and video calls";
-NSPhotoLibraryUsageDescription = "Photo Library access is needed to share pictures and videos from your device";
-NSContactsUsageDescription = "Contacts access is needed to match your address book contacts with contacts in your server";
-NSLocationWhenInUseUsageDescription = "It is needed to share your location with others";
-
+NSCameraUsageDescription = "Camera access is required to scan documents and make photo and video.";
+NSFaceIDUsageDescription = "Face ID is required to authenticate using face recognition.";
+NSLocationAlwaysAndWhenInUseUsageDescription = "GPS is used to detect new photos from camera roll, continued use of GPS running in the background can dramatically decrease battery life."
+NSLocationAlwaysUsageDescription = "GPS is used to detect new photos from camera roll, continued use of GPS running in the background can dramatically decrease battery life.";
+NSLocationWhenInUseUsageDescription = "GPS is used to detect new photos from camera roll on background, the use of GPS only when the App is in use is useless.";
+NSMicrophoneUsageDescription = "Microphone access is required to create voice notes.";
+NSPhotoLibraryAddUsageDescription = "Photo library access is required to upload your photos and videos to your cloud.";
+NSPhotoLibraryUsageDescription = "Photo library access is required to upload your photos and videos to your cloud.";
