@@ -219,42 +219,34 @@ import JGProgressHUD
     }
 
     func openActivityViewController(selectedMetadata: [tableMetadata]) {
-
-        NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
-
-        var error: Int = 0
-        var items: [Any] = []
+        let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: selectedMetadata.count, hudView: self.appDelegate.window?.rootViewController?.view)
+        var items: [URL] = []
 
         for metadata in selectedMetadata {
             guard !metadata.directory else { continue }
-            if !CCUtility.fileProviderStorageExists(metadata) {
-                let semaphore = Semaphore()
-                NCNetworking.shared.download(metadata: metadata, selector: "") { errorCode in
-                    error = errorCode
-                    semaphore.continue()
-                }
-                semaphore.wait()
-            }
-            if error != 0 {
-                break
-            }
             let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-            items.append(fileURL)
+            guard !CCUtility.fileProviderStorageExists(metadata) else {
+                items.append(fileURL)
+                continue
+            }
+            processor.execute { completion in
+                NCNetworking.shared.download(metadata: metadata, selector: "", completion: { _ in
+                    if CCUtility.fileProviderStorageExists(metadata) {
+                        items.append(fileURL)
+                    }
+                    completion()
+                })
+            }
         }
-        if error == 0 && items.count > 0 {
 
-            guard let mainTabBar = self.appDelegate.mainTabBar else { return }
-
+        processor.completeWork {
+            guard !items.isEmpty, let mainTabBar = self.appDelegate.mainTabBar else { return }
             let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
-
             activityViewController.popoverPresentationController?.permittedArrowDirections = .any
             activityViewController.popoverPresentationController?.sourceView = mainTabBar
             activityViewController.popoverPresentationController?.sourceRect = mainTabBar.menuRect
-
             self.appDelegate.window?.rootViewController?.present(activityViewController, animated: true)
-
         }
-        NCUtility.shared.stopActivityIndicator()
     }
 
     // MARK: - Save as scan
