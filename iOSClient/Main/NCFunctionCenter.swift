@@ -219,20 +219,21 @@ import JGProgressHUD
     }
 
     func openActivityViewController(selectedMetadata: [tableMetadata]) {
-        let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: selectedMetadata.count, hudView: self.appDelegate.window?.rootViewController?.view)
+        let metadatas = selectedMetadata.filter({ !$0.directory })
         var items: [URL] = []
+        var downloadMetadata: [(tableMetadata, URL)] = []
 
-        for metadata in selectedMetadata where !metadata.directory {
+        for metadata in metadatas {
             let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-            guard !CCUtility.fileProviderStorageExists(metadata) else {
-                items.append(fileURL)
-                continue
-            }
+            if CCUtility.fileProviderStorageExists(metadata) { items.append(fileURL) }
+            else { downloadMetadata.append((metadata, fileURL)) }
+        }
+
+        let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: self.appDelegate.window?.rootViewController?.view)
+        for (metadata, url) in downloadMetadata {
             processor.execute { completion in
                 NCNetworking.shared.download(metadata: metadata, selector: "", completion: { _ in
-                    if CCUtility.fileProviderStorageExists(metadata) {
-                        items.append(fileURL)
-                    }
+                    if CCUtility.fileProviderStorageExists(metadata) { items.append(url) }
                     completion()
                 })
             }
