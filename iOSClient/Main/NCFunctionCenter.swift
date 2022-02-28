@@ -222,8 +222,7 @@ import JGProgressHUD
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: selectedMetadata.count, hudView: self.appDelegate.window?.rootViewController?.view)
         var items: [URL] = []
 
-        for metadata in selectedMetadata {
-            guard !metadata.directory else { continue }
+        for metadata in selectedMetadata where !metadata.directory {
             let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
             guard !CCUtility.fileProviderStorageExists(metadata) else {
                 items.append(fileURL)
