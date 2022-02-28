@@ -201,4 +201,15 @@ extension NCMenuAction {
             }
         )
     }
+
+    /// Open AirPrint view to print a single file
+    static func printAction(metadata: tableMetadata) -> NCMenuAction {
+        NCMenuAction(
+            title: NSLocalizedString("_print_", comment: ""),
+            icon: NCUtility.shared.loadImage(named: "printer"),
+            action: { _ in
+                NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorPrint)
+            }
+        )
+    }
 }
