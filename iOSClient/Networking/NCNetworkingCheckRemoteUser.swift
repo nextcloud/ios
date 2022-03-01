@@ -32,7 +32,7 @@ import NCCommunication
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var checkRemoteUserInProgress = false
 
-    @objc func checkRemoteUser(account: String, errorCode: Int, errorDescription: String) {
+    @objc func checkRemoteUser(account: String, error: NCCError) {
 
         if self.checkRemoteUserInProgress {
             return
@@ -48,7 +48,7 @@ import NCCommunication
 
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
 
-            if errorCode == 401 {
+            if error.errorCode == 401 {
 
                 let token = CCUtility.getPassword(account)!
                 if token == "" {
@@ -56,19 +56,19 @@ import NCCommunication
                     return
                 }
 
-                NCCommunication.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token) { account, wipe, errorCode, _ in
+                NCCommunication.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token) { account, wipe, error in
 
                     if wipe {
 
                         self.appDelegate.deleteAccount(account, wipe: true)
                         NCContentPresenter.shared.messageNotification(tableAccount.user, description: "_wipe_account_", delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
-                        NCCommunication.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token) { _, _, _ in print("wipe") }
+                        NCCommunication.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token) { _, _ in print("wipe") }
 
                     } else {
 
                         if UIApplication.shared.applicationState == .active &&  NCCommunication.shared.isNetworkReachable() {
                             let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
-                            NCContentPresenter.shared.messageNotification("_error_", description: description, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: errorCode, priority: .max)
+                            NCContentPresenter.shared.messageNotification("_error_", description: description, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: error.errorCode, priority: .max)
                             CCUtility.setPassword(account, password: nil)
                         }
                     }
@@ -78,7 +78,7 @@ import NCCommunication
 
             } else {
 
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: errorCode, priority: .max)
+                NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: error.errorCode, priority: .max)
 
                 self.checkRemoteUserInProgress = false
             }
@@ -87,7 +87,7 @@ import NCCommunication
 
             if UIApplication.shared.applicationState == .active &&  NCCommunication.shared.isNetworkReachable() {
                 let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
-                NCContentPresenter.shared.messageNotification("_error_", description: description, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: errorCode, priority: .max)
+                NCContentPresenter.shared.messageNotification("_error_", description: description, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: error.errorCode, priority: .max)
                 CCUtility.setPassword(account, password: nil)
             }
 

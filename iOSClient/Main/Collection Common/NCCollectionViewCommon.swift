@@ -947,10 +947,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             isReloadDataSourceNetworkInProgress = true
             collectionView?.reloadData()
 
-            NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch!) { _, metadatas, errorCode, _ in
+            NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch!) { _, metadatas, error in
 
                 DispatchQueue.main.async {
-                    if self.searchController?.isActive ?? false && errorCode == 0 {
+                    if self.searchController?.isActive ?? false && error.errorCode == 0 {
                         self.metadatasSource = metadatas!
                     }
                     self.refreshControl.endRefreshing()
@@ -963,13 +963,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    @objc func networkReadFolder(forced: Bool, completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> Void) {
+    @objc func networkReadFolder(forced: Bool, completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ error: NCCError) -> Void) {
 
         var tableDirectory: tableDirectory?
 
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.account) { account, metadataFolder, errorCode, errorDescription in
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.account) { account, metadataFolder, error in
 
-            if errorCode == 0 {
+            if error.errorCode == 0 {
 
                 if let metadataFolder = metadataFolder {
                     tableDirectory = NCManageDatabase.shared.setDirectory(richWorkspace: metadataFolder.richWorkspace, serverUrl: self.serverUrl, account: account)
@@ -977,18 +977,18 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
                 if forced || tableDirectory?.etag != metadataFolder?.etag || metadataFolder?.e2eEncrypted ?? false {
 
-                    NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { account, metadataFolder, metadatas, metadatasUpdate, _, metadatasDelete, errorCode, errorDescription in
+                    NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { account, metadataFolder, metadatas, metadatasUpdate, _, metadatasDelete, error in
 
-                        if errorCode == 0 {
+                        if error.errorCode == 0 {
                             self.metadataFolder = metadataFolder
 
                             // E2EE
                             if let metadataFolder = metadataFolder {
                                 if metadataFolder.e2eEncrypted && CCUtility.isEnd(toEndEnabled: self.appDelegate.account) {
 
-                                    NCCommunication.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { account, e2eMetadata, errorCode, errorDescription in
+                                    NCCommunication.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { account, e2eMetadata, error in
 
-                                        if errorCode == 0 && e2eMetadata != nil {
+                                        if error.errorCode == 0 && e2eMetadata != nil {
 
                                             if !NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: self.serverUrl, account: account, urlBase: self.appDelegate.urlBase) {
 
@@ -997,28 +997,28 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                                 self.reloadDataSource()
                                             }
 
-                                        } else if errorCode != NCGlobal.shared.errorResourceNotFound {
+                                        } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
 
                                             NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorDecodeMetadata)
                                         }
 
-                                        completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
+                                        completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error)
                                     }
                                 } else {
-                                    completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
+                                    completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error)
                                 }
                             } else {
-                                completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
+                                completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error)
                             }
                         } else {
-                            completion(tableDirectory, nil, nil, nil, errorCode, errorDescription)
+                            completion(tableDirectory, nil, nil, nil, error)
                         }
                     }
                 } else {
-                    completion(tableDirectory, nil, nil, nil, 0, "")
+                    completion(tableDirectory, nil, nil, nil, .success)
                 }
             } else {
-               completion(nil, nil, nil, nil, errorCode, errorDescription)
+               completion(nil, nil, nil, nil, error)
             }
         }
     }

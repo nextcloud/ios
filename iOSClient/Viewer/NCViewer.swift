@@ -92,11 +92,11 @@ class NCViewer: NSObject {
                 if metadata.url == "" {
 
                     NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
-                    NCCommunication.shared.createUrlRichdocuments(fileID: metadata.fileId) { account, url, errorCode, errorDescription in
+                    NCCommunication.shared.createUrlRichdocuments(fileID: metadata.fileId) { account, url, error in
 
                         NCUtility.shared.stopActivityIndicator()
 
-                        if errorCode == 0 && account == self.appDelegate.account && url != nil {
+                        if error.errorCode == 0 && account == self.appDelegate.account && url != nil {
 
                             if let navigationController = viewController.navigationController {
 
@@ -109,9 +109,9 @@ class NCViewer: NSObject {
                                 navigationController.pushViewController(viewController, animated: true)
                             }
 
-                        } else if errorCode != 0 {
+                        } else if error.errorCode != 0 {
 
-                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                         }
                     }
 
@@ -157,11 +157,11 @@ class NCViewer: NSObject {
                         }
 
                         NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
-                        NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, customUserAgent: customUserAgent) { account, url, errorCode, errorMessage in
+                        NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, customUserAgent: customUserAgent) { account, url, error in
 
                             NCUtility.shared.stopActivityIndicator()
 
-                            if errorCode == 0 && account == self.appDelegate.account && url != nil {
+                            if error.errorCode == 0 && account == self.appDelegate.account && url != nil {
 
                                 if let navigationController = viewController.navigationController {
 
@@ -175,9 +175,9 @@ class NCViewer: NSObject {
                                     navigationController.pushViewController(viewController, animated: true)
                                 }
 
-                            } else if errorCode != 0 {
+                            } else if error.errorCode != 0 {
 
-                                NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                             }
                         }
 
@@ -222,17 +222,16 @@ extension NCViewer: NCSelectDelegate {
         if let serverUrl = serverUrl {
             let metadata = items[0] as! tableMetadata
             if move {
-                NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { errorCode, errorDescription in
-                    if errorCode != 0 {
-
-                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { error in
+                    if error.errorCode != 0 {
+                        NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                     }
                 }
             } else if copy {
-                NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { errorCode, errorDescription in
-                    if errorCode != 0 {
+                NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { error in
+                    if error.errorCode != 0 {
 
-                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                     }
                 }
             }

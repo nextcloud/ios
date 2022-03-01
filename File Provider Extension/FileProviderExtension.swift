@@ -218,7 +218,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
 
         }, progressHandler: { _ in
 
-        }) { _, etag, date, _, _, _, errorCode, errorDescription in
+        }) { _, etag, date, _, _, _, error in
 
             self.outstandingSessionTasks.removeValue(forKey: url)
             guard var metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(identifier) else {
@@ -227,7 +227,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             }
             metadata = tableMetadata.init(value: metadata)
 
-            if errorCode == 0 {
+            if error.errorCode == 0 {
 
                 metadata.status = NCGlobal.shared.metadataStatusNormal
                 metadata.date = date ?? NSDate()
@@ -238,7 +238,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
 
                 completionHandler(nil)
 
-            } else if errorCode == 200 {
+            } else if error.errorCode == 200 {
 
                 NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusNormal)
 
@@ -247,7 +247,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             } else {
 
                 metadata.status = NCGlobal.shared.metadataStatusDownloadError
-                metadata.sessionError = errorDescription
+                metadata.sessionError = error.errorDescription
                 NCManageDatabase.shared.addMetadata(metadata)
 
                 completionHandler(NSFileProviderError(.noSuchItem))
@@ -371,7 +371,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         }
     }
 
-    func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, task: URLSessionTask, errorCode: Int, errorDescription: String) {
+    func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, task: URLSessionTask, error: NCCError) {
 
         guard let ocIdTemp = description else { return }
         guard let metadataTemp = NCManageDatabase.shared.getMetadataFromOcId(ocIdTemp) else { return }
@@ -383,7 +383,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         }
         outstandingOcIdTemp[ocIdTemp] = ocId
 
-        if errorCode == 0 {
+        if error.errorCode == 0 {
 
             // New file
             if ocId != ocIdTemp {

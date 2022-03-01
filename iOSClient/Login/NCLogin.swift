@@ -213,20 +213,20 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         loginButton.isEnabled = false
 
-        NCCommunication.shared.getServerStatus(serverUrl: url) { _, _, versionMajor, _, _, _, errorCode, errorDescription in
+        NCCommunication.shared.getServerStatus(serverUrl: url) { _, _, versionMajor, _, _, _, error in
 
-            if errorCode == 0 {
+            if error.errorCode == 0 {
 
                 if let host = URL(string: url)?.host {
                     NCNetworking.shared.writeCertificate(host: host)
                 }
 
-                NCCommunication.shared.getLoginFlowV2(serverUrl: url) { token, endpoint, login, errorCode, _ in
+                NCCommunication.shared.getLoginFlowV2(serverUrl: url) { token, endpoint, login, error in
 
                     self.loginButton.isEnabled = true
 
                     // Login Flow V2
-                    if errorCode == 0 && NCBrandOptions.shared.use_loginflowv2 && token != nil && endpoint != nil && login != nil {
+                    if error.errorCode == 0 && NCBrandOptions.shared.use_loginflowv2 && token != nil && endpoint != nil && login != nil {
 
                         if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
 
@@ -264,7 +264,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                 self.loginButton.isEnabled = true
 
-                if errorCode == NSURLErrorServerCertificateUntrusted {
+                if error.errorCode == NSURLErrorServerCertificateUntrusted {
 
                     let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
 
@@ -290,7 +290,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                 } else {
 
-                    let alertController = UIAlertController(title: NSLocalizedString("_connection_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
+                    let alertController = UIAlertController(title: NSLocalizedString("_connection_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
 
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
 
@@ -322,18 +322,18 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                 loginButton.isEnabled = false
 
-                NCCommunication.shared.checkServer(serverUrl: serverUrl) { errorCode, errorDescription in
+                NCCommunication.shared.checkServer(serverUrl: serverUrl) { error in
 
                     self.loginButton.isEnabled = true
-                    self.standardLogin(url: urlBase, user: user, password: password, errorCode: errorCode, errorDescription: errorDescription)
+                    self.standardLogin(url: urlBase, user: user, password: password, error: error)
                 }
             }
         }
     }
 
-    func standardLogin(url: String, user: String, password: String, errorCode: Int, errorDescription: String) {
+    func standardLogin(url: String, user: String, password: String, error: NCCError) {
 
-        if errorCode == 0 {
+        if error.errorCode == 0 {
 
             if let host = URL(string: url)?.host {
                 NCNetworking.shared.writeCertificate(host: host)
@@ -376,7 +376,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 }
             }
 
-        } else if errorCode == NSURLErrorServerCertificateUntrusted {
+        } else if error.errorCode == NSURLErrorServerCertificateUntrusted {
 
             let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
 
@@ -398,7 +398,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         } else {
 
-            let message = NSLocalizedString("_not_possible_connect_to_server_", comment: "") + ".\n" + errorDescription
+            let message = NSLocalizedString("_not_possible_connect_to_server_", comment: "") + ".\n" + error.errorDescription
             let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
 
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))

@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import NCCommunication
 
 class NCGlobal: NSObject {
     @objc static let shared: NCGlobal = {
@@ -328,18 +329,18 @@ class NCGlobal: NSObject {
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
 
     let notificationCenterDownloadStartFile                     = "downloadStartFile"               // userInfo: ocId
-    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, selector, errorCode, errorDescription
+    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, selector, error
     let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId
 
     let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId
-    @objc let notificationCenterUploadedFile                    = "uploadedFile"                    // userInfo: ocId, ocIdTemp, errorCode, errorDescription
+    @objc let notificationCenterUploadedFile                    = "uploadedFile"                    // userInfo: ocId, ocIdTemp, error
     let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, serverUrl, account
 
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
 
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId
     let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: ocId, fileNameView, classFile, onlyLocalCache
-    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, errorCode, errorDescription
+    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, error
     let notificationCenterMoveFile                              = "moveFile"                        // userInfo: ocId, serverUrlTo
     let notificationCenterCopyFile                              = "copyFile"                        // userInfo: ocId, serverUrlFrom
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId
@@ -364,4 +365,10 @@ class NCGlobal: NSObject {
     // Tip
     //
     let tipNCViewerPDFThumbnail                                 = "tipncviewerpdfthumbnail"
+}
+
+extension NCCError {
+    static func `internal`(_ description: String) -> NCCError{
+        NCCError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: description)
+    }
 }

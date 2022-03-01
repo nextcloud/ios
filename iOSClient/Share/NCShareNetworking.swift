@@ -48,7 +48,7 @@ class NCShareNetworking: NSObject {
 
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
         let parameter = NCCShareParameter(path: filenamePath)
-        NCCommunication.shared.readShares(parameters: parameter) { account, shares, errorCode, errorDescription in
+        NCCommunication.shared.readShares(parameters: parameter) { account, shares, error in
             if showLoadingIndicator {
                 NCUtility.shared.stopActivityIndicator()
             }
@@ -57,7 +57,7 @@ class NCShareNetworking: NSObject {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: shares)
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             }
             self.delegate?.readShareCompleted()
         }
@@ -84,7 +84,7 @@ class NCShareNetworking: NSObject {
                     self.updateShare(option: option)
                 }
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             }
             self.delegate?.shareCompleted()
         }
@@ -92,13 +92,13 @@ class NCShareNetworking: NSObject {
 
     func unShare(idShare: Int) {
         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
-        NCCommunication.shared.deleteShare(idShare: idShare) { account, errorCode, errorDescription in
+        NCCommunication.shared.deleteShare(idShare: idShare) { account, error in
             NCUtility.shared.stopActivityIndicator()
-            if errorCode == 0 {
+            if error.errorCode == 0 {
                 NCManageDatabase.shared.deleteTableShare(account: account, idShare: idShare)
                 self.delegate?.unShareCompleted()
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             }
         }
     }
@@ -120,12 +120,12 @@ class NCShareNetworking: NSObject {
 
     func getSharees(searchString: String) {
         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
-        NCCommunication.shared.searchSharees(search: searchString) { _, sharees, errorCode, errorDescription in
+        NCCommunication.shared.searchSharees(search: searchString) { _, sharees, error in
             NCUtility.shared.stopActivityIndicator()
-            if errorCode == 0 {
+            if error.errorCode == 0 {
                 self.delegate?.getSharees(sharees: sharees)
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
                 self.delegate?.getSharees(sharees: nil)
             }
         }

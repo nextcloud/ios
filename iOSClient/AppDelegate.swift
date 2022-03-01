@@ -380,8 +380,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCCommunicationCommon.shared.writeLog("Start handler processing task [Synchronize Favorite & Offline]")
 
-        NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { _, _, errorCode, _ in
-            NCCommunicationCommon.shared.writeLog("Completition listing favorite with error: \(errorCode)")
+        NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { _, _, error in
+            NCCommunicationCommon.shared.writeLog("Completition listing favorite with error: \(error.errorCode)")
         }
 
         NCService.shared.synchronizeOffline(account: account)

@@ -221,8 +221,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     func tapRemove(with notification: NCCommunicationNotifications) {
 
-        NCCommunication.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification , method: "DELETE") { (account, errorCode, errorDescription) in
-            if errorCode == 0 && account == self.appDelegate.account {
+        NCCommunication.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification , method: "DELETE") { (account, error) in
+            if error.errorCode == 0 && account == self.appDelegate.account {
 
                 if let index = self.notifications
                     .firstIndex(where: { $0.idNotification == notification.idNotification })  {
@@ -231,8 +231,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
                 self.reloadDatasource()
 
-            } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            } else if error.errorCode != 0 {
+                NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
             } else {
                 print("[Error] The user has been changed during networking process.")
             }
@@ -256,17 +256,17 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 return
             }
 
-            NCCommunication.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { (account, errorCode, errorDescription) in
+            NCCommunication.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { (account, error) in
 
-                if errorCode == 0 && account == self.appDelegate.account {
+                if error.errorCode == 0 && account == self.appDelegate.account {
                     if let index = self.notifications.firstIndex(where: { $0.idNotification == notification.idNotification }) {
                         self.notifications.remove(at: index)
                     }
 
                     self.reloadDatasource()
 
-                } else if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                } else if error.errorCode != 0 {
+                    NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                 } else {
                     print("[Error] The user has been changed during networking process.")
                 }
@@ -280,9 +280,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
         NCUtility.shared.startActivityIndicator(backgroundView: self.navigationController?.view, blurEffect: true)
 
-        NCCommunication.shared.getNotifications { account, notifications, errorCode, _ in
+        NCCommunication.shared.getNotifications { account, notifications, error in
 
-            if errorCode == 0 && account == self.appDelegate.account {
+            if error.errorCode == 0 && account == self.appDelegate.account {
 
                 self.notifications.removeAll()
                 let sortedListOfNotifications = (notifications! as NSArray).sortedArray(using: [NSSortDescriptor(key: "date", ascending: false)])

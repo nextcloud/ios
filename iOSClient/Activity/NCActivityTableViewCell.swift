@@ -168,19 +168,19 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
 
             }, progressHandler: { _ in
 
-            }) { account, _, _, _, _, _, errorCode, _ in
+            }) { account, _, _, _, _, _, error in
 
-                if account == self.appDelegate.account && errorCode == 0 {
+                if account == self.appDelegate.account && error.errorCode == 0 {
 
                     let serverUrl = (serverUrlFileName as NSString).deletingLastPathComponent
                     let fileName = (serverUrlFileName as NSString).lastPathComponent
                     let serverUrlFileName = serverUrl + "/" + fileName
 
-                    NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: activityPreview.account) { account, metadata, errorCode, _ in
+                    NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: activityPreview.account) { account, metadata, error in
 
                         NCUtility.shared.stopActivityIndicator()
 
-                        if account == self.appDelegate.account && errorCode == 0 {
+                        if account == self.appDelegate.account && error.errorCode == 0 {
 
                             // move from id to oc:id + instanceid (ocId)
                             let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id
@@ -268,8 +268,8 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
                     } else {
 
-                        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, widthPreview: 0, heightPreview: 0, etag: nil, useInternalEndpoint: false) { _, imagePreview, _, _, _, errorCode, _ in
-                            if errorCode == 0 && imagePreview != nil {
+                        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, widthPreview: 0, heightPreview: 0, etag: nil, useInternalEndpoint: false) { _, imagePreview, _, _, _, error in
+                            if error.errorCode == 0 && imagePreview != nil {
                                 self.collectionView.reloadData()
                             }
                         }

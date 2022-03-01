@@ -230,9 +230,9 @@ class NCViewerMedia: UIViewController {
                 heightPreview: NCGlobal.shared.sizePreview,
                 fileNameIconLocalPath: fileNameIconLocalPath,
                 sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource,
-                queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, errorCode, _ in
+                queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, error in
 
-                    if errorCode == 0 && imageIcon != nil {
+                    if error.errorCode == 0 && imageIcon != nil {
                         NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
                     }
 

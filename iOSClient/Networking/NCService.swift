@@ -83,9 +83,9 @@ class NCService: NSObject {
 
         if appDelegate.account == "" { return }
 
-        NCCommunication.shared.getUserProfile(queue: NCCommunicationCommon.shared.backgroundQueue) { account, userProfile, errorCode, errorDescription in
+        NCCommunication.shared.getUserProfile(queue: NCCommunicationCommon.shared.backgroundQueue) { account, userProfile, error in
 
-            if errorCode == 0 && account == self.appDelegate.account {
+            if error.errorCode == 0 && account == self.appDelegate.account {
 
                 // Update User (+ userProfile.id) & active account & account network
                 guard let tableAccount = NCManageDatabase.shared.setAccountUserProfile(userProfile!) else {
@@ -96,7 +96,7 @@ class NCService: NSObject {
                 self.appDelegate.settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId, password: CCUtility.getPassword(tableAccount.account))
 
                 // Synchronize favorite
-                NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { _, _, _, _ in }
+                NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { _, _, _ in }
 
                 // Synchronize Offline
                 self.synchronizeOffline(account: tableAccount.account)
@@ -106,12 +106,12 @@ class NCService: NSObject {
                 let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
                 let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
-                NCCommunication.shared.downloadAvatar(user: tableAccount.userId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag, queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, _, etag, errorCode, _ in
+                NCCommunication.shared.downloadAvatar(user: tableAccount.userId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag, queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, _, etag, error in
 
-                    if let etag = etag, errorCode == 0 {
+                    if let etag = etag, error.errorCode == 0 {
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
-                    } else if errorCode == NCGlobal.shared.errorNotModified {
+                    } else if error.errorCode == NCGlobal.shared.errorNotModified {
 
                         NCManageDatabase.shared.setAvatarLoaded(fileName: fileName)
                     }
@@ -120,8 +120,8 @@ class NCService: NSObject {
 
             } else {
 
-                if errorCode == 401 || errorCode == 403 {
-                    NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account, errorCode: errorCode, errorDescription: errorDescription)
+                if error.errorCode == 401 || error.errorCode == 403 {
+                    NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account, error: error)
                 }
             }
         }
@@ -129,9 +129,9 @@ class NCService: NSObject {
 
     private func requestServerStatus() {
 
-        NCCommunication.shared.getServerStatus(serverUrl: appDelegate.urlBase, queue: NCCommunicationCommon.shared.backgroundQueue) { serverProductName, _, versionMajor, _, _, extendedSupport, errorCode, _ in
+        NCCommunication.shared.getServerStatus(serverUrl: appDelegate.urlBase, queue: NCCommunicationCommon.shared.backgroundQueue) { serverProductName, _, versionMajor, _, _, extendedSupport, error in
 
-            if errorCode == 0 && extendedSupport == false {
+            if error.errorCode == 0 && extendedSupport == false {
 
                 if serverProductName == "owncloud" {
                     NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
@@ -146,9 +146,9 @@ class NCService: NSObject {
 
         if appDelegate.account == "" { return }
 
-        NCCommunication.shared.getCapabilities(queue: NCCommunicationCommon.shared.backgroundQueue) { account, data, errorCode, errorDescription in
+        NCCommunication.shared.getCapabilities(queue: NCCommunicationCommon.shared.backgroundQueue) { account, data, error in
 
-            if errorCode == 0 && data != nil {
+            if error.errorCode == 0 && data != nil {
 
                 NCManageDatabase.shared.addCapabilitiesJSon(data!, account: account)
 
@@ -166,15 +166,15 @@ class NCService: NSObject {
                 // File Sharing
                 let isFilesSharingEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
                 if isFilesSharingEnabled {
-                    NCCommunication.shared.readShares(parameters: NCCShareParameter(), queue: NCCommunicationCommon.shared.backgroundQueue) { account, shares, errorCode, errorDescription in
-                        if errorCode == 0 {
+                    NCCommunication.shared.readShares(parameters: NCCShareParameter(), queue: NCCommunicationCommon.shared.backgroundQueue) { account, shares, error in
+                        if error.errorCode == 0 {
                             NCManageDatabase.shared.deleteTableShare(account: account)
                             if shares != nil {
                                 NCManageDatabase.shared.addShare(urlBase: self.appDelegate.urlBase, account: account, shares: shares!)
                             }
                             self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: account)
                         } else {
-                            NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                         }
                     }
                 }
@@ -190,8 +190,8 @@ class NCService: NSObject {
 
                 // Text direct editor detail
                 if serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
-                    NCCommunication.shared.NCTextObtainEditorDetails(queue: NCCommunicationCommon.shared.backgroundQueue) { account, editors, creators, errorCode, _ in
-                        if errorCode == 0 && account == self.appDelegate.account {
+                    NCCommunication.shared.NCTextObtainEditorDetails(queue: NCCommunicationCommon.shared.backgroundQueue) { account, editors, creators, error in
+                        if error.errorCode == 0 && account == self.appDelegate.account {
                             NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
                         }
                     }
@@ -200,8 +200,8 @@ class NCService: NSObject {
                 // External file Server
                 let isExternalSitesServerEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true)
                 if isExternalSitesServerEnabled {
-                    NCCommunication.shared.getExternalSite(queue: NCCommunicationCommon.shared.backgroundQueue) { account, externalSites, errorCode, _ in
-                        if errorCode == 0 && account == self.appDelegate.account {
+                    NCCommunication.shared.getExternalSite(queue: NCCommunicationCommon.shared.backgroundQueue) { account, externalSites, error in
+                        if error.errorCode == 0 && account == self.appDelegate.account {
                             NCManageDatabase.shared.deleteExternalSites(account: account)
                             for externalSite in externalSites {
                                 NCManageDatabase.shared.addExternalSites(externalSite, account: account)
@@ -216,8 +216,8 @@ class NCService: NSObject {
                 // User Status
                 let userStatus = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false)
                 if userStatus {
-                    NCCommunication.shared.getUserStatus(queue: NCCommunicationCommon.shared.backgroundQueue) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, errorCode, _ in
-                        if errorCode == 0 && account == self.appDelegate.account && userId == self.appDelegate.userId {
+                    NCCommunication.shared.getUserStatus(queue: NCCommunicationCommon.shared.backgroundQueue) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, error in
+                        if error.errorCode == 0 && account == self.appDelegate.account && userId == self.appDelegate.userId {
                             NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
                         }
                     }
@@ -243,12 +243,12 @@ class NCService: NSObject {
                 //                        self.requestHC()
                 //                    }
 
-            } else if errorCode != 0 {
+            } else if error.errorCode != 0 {
 
                 NCBrandColor.shared.settingThemingColor(account: account)
 
-                if errorCode == 401 || errorCode == 403 {
-                    NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account, errorCode: errorCode, errorDescription: errorDescription)
+                if error.errorCode == 401 || error.errorCode == 403 {
+                    NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account, error: error)
                 }
 
             } else {

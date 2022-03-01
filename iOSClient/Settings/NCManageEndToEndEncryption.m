@@ -371,11 +371,11 @@
 {
     [self deselectFormRow:sender];
     
-    [[NCCommunication shared] deleteE2EECertificateWithCustomUserAgent:nil addCustomHeaders:nil queue:dispatch_get_main_queue() completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
-       if (errorCode == 0 && [account isEqualToString:appDelegate.account]) {
+    [[NCCommunication shared] deleteE2EECertificateWithCustomUserAgent:nil addCustomHeaders:nil queue:dispatch_get_main_queue() completionHandler:^(NSString *account, NCCError *error) {
+       if (error.errorCode == 0 && [account isEqualToString:appDelegate.account]) {
             [[NCContentPresenter shared] messageNotification:@"E2E delete certificate" description:@"Success" delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeSuccess errorCode:NCGlobal.shared.errorInternalError];
         } else {
-            [[NCContentPresenter shared] messageNotification:@"E2E delete certificate" description:errorDescription  delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:errorCode];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete certificate" description:error.errorDescription  delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:error.errorCode];
         }
     }];
 }
@@ -384,11 +384,11 @@
 {
     [self deselectFormRow:sender];
     
-    [[NCCommunication shared] deleteE2EEPrivateKeyWithCustomUserAgent:nil addCustomHeaders:nil queue:dispatch_get_main_queue() completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
-        if (errorCode == 0 && [account isEqualToString:appDelegate.account]) {
+    [[NCCommunication shared] deleteE2EEPrivateKeyWithCustomUserAgent:nil addCustomHeaders:nil queue:dispatch_get_main_queue() completionHandler:^(NSString *account, NCCError *error) {
+        if (error.errorCode == 0 && [account isEqualToString:appDelegate.account]) {
             [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:@"Success" delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeSuccess errorCode:NCGlobal.shared.errorInternalError];
         } else {
-            [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:errorDescription delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:errorCode];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:error.errorDescription delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:error.errorCode];
         }
     }];
 }

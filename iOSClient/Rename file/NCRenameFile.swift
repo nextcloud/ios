@@ -231,17 +231,17 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
         NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
 
-        NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, viewController: self) { errorCode, errorDescription in
+        NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, viewController: self) { error in
 
             NCUtility.shared.stopActivityIndicator()
 
-            if errorCode == 0 {
+            if error.errorCode == 0 {
 
                 self.dismiss(animated: true)
 
             } else {
 
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
             }
         }
     }

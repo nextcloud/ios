@@ -109,7 +109,7 @@ class NCNetworkingProcessUpload: NSObject {
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata) {
                                     // start
-                                } completion: { _, _ in
+                                } completion: { _ in
                                     DispatchQueue.main.async {
                                         self.startTimer()
                                     }
@@ -125,7 +125,7 @@ class NCNetworkingProcessUpload: NSObject {
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata) {
                                     // start
-                                } completion: { _, _ in
+                                } completion: { _ in
                                     DispatchQueue.main.async {
                                         self.startTimer()
                                     }
@@ -140,7 +140,7 @@ class NCNetworkingProcessUpload: NSObject {
                         if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                             NCNetworking.shared.upload(metadata: metadata) {
                                 // start
-                            } completion: { _, _ in
+                            } completion: { _ in
                                 // completion
                             }
                         }

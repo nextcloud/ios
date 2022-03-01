@@ -76,14 +76,14 @@ class NCShares: NCCollectionViewCommon {
         collectionView?.reloadData()
 
         // Shares network
-        NCCommunication.shared.readShares(parameters: NCCShareParameter(), queue: NCCommunicationCommon.shared.backgroundQueue) { account, shares, errorCode, errorDescription in
+        NCCommunication.shared.readShares(parameters: NCCShareParameter(), queue: NCCommunicationCommon.shared.backgroundQueue) { account, shares, error in
 
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
             }
 
-            if errorCode == 0 {
+            if error.errorCode == 0 {
 
                 NCManageDatabase.shared.deleteTableShare(account: account)
                 if shares != nil {
@@ -96,7 +96,7 @@ class NCShares: NCCollectionViewCommon {
 
                 DispatchQueue.main.async {
                     self.collectionView?.reloadData()
-                    NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                 }
             }
         }

@@ -40,11 +40,11 @@ import NCCommunication
         NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
 
         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)!
-        NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "") { account, url, errorCode, errorMessage in
+        NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "") { account, url, error in
 
             NCUtility.shared.stopActivityIndicator()
 
-            if errorCode == 0 && account == self.appDelegate.account {
+            if error.errorCode == 0 && account == self.appDelegate.account {
 
                 if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
 
@@ -54,8 +54,8 @@ import NCCommunication
                     viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                 }
 
-            } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: errorCode)
+            } else if error.errorCode != 0 {
+                NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: error.errorCode)
             }
         }
     }
@@ -75,11 +75,11 @@ import NCCommunication
                 NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
 
                 let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)!
-                NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { account, url, errorCode, errorMessage in
+                NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { account, url, error in
 
                     NCUtility.shared.stopActivityIndicator()
 
-                    if errorCode == 0 && account == self.appDelegate.account {
+                    if error.errorCode == 0 && account == self.appDelegate.account {
 
                         if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
 
@@ -90,8 +90,8 @@ import NCCommunication
                             viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                         }
 
-                    } else if errorCode != 0 {
-                        NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: errorCode)
+                    } else if error.errorCode != 0 {
+                        NCContentPresenter.shared.messageNotification("_error_", description: error.description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: error.errorCode)
                     }
                 }
 

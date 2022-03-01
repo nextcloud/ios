@@ -128,9 +128,9 @@ class NCUtility: NSObject {
 
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
 
-            NCCommunication.shared.downloadContent(serverUrl: iconURL.absoluteString) { _, data, errorCode, _ in
+            NCCommunication.shared.downloadContent(serverUrl: iconURL.absoluteString) { _, data, error in
 
-                if errorCode == 0 && data != nil {
+                if error.errorCode == 0 && data != nil {
 
                     if let image = UIImage(data: data!) {
 

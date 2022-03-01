@@ -555,13 +555,13 @@ extension NCMedia {
         let height = self.tabBarController?.tabBar.frame.size.height ?? 0
         NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: height + 50, style: .gray)
 
-        NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 120) { account, files, errorCode, errorDescription in
+        NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 120) { account, files, error in
 
             self.oldInProgress = false
             NCUtility.shared.stopActivityIndicator()
             self.collectionView.reloadData()
 
-            if errorCode == 0 && account == self.appDelegate.account {
+            if error.errorCode == 0 && account == self.appDelegate.account {
                 if files.count > 0 {
                     NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: self.appDelegate.account) { _, _, metadatas in
                         let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
@@ -577,8 +577,8 @@ extension NCMedia {
                 } else {
                     self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: false)
                 }
-            } else if errorCode != 0 {
-                NCCommunicationCommon.shared.writeLog("Media search old media error code \(errorCode) " + errorDescription)
+            } else if error.errorCode != 0 {
+                NCCommunicationCommon.shared.writeLog("Media search old media error code \(error.errorCode) " + error.errorDescription)
             }
         }
     }
@@ -633,12 +633,12 @@ extension NCMedia {
 
         reloadDataThenPerform {
 
-            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 120) { account, files, errorCode, errorDescription in
+            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 120) { account, files, error in
 
                 self.newInProgress = false
                 self.mediaCommandView?.activityIndicator.stopAnimating()
 
-                if errorCode == 0 && account == self.appDelegate.account && files.count > 0 {
+                if error.errorCode == 0 && account == self.appDelegate.account && files.count > 0 {
                     NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, _, metadatas in
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.predicate!])
@@ -648,10 +648,10 @@ extension NCMedia {
                             self.reloadDataSourceWithCompletion { _ in }
                         }
                     }
-                } else if errorCode == 0 && files.count == 0 && self.metadatas.count == 0 {
+                } else if error.errorCode == 0 && files.count == 0 && self.metadatas.count == 0 {
                     self.searchOldMedia()
-                } else if errorCode != 0 {
-                    NCCommunicationCommon.shared.writeLog("Media search new media error code \(errorCode) " + errorDescription)
+                } else if error.errorCode != 0 {
+                    NCCommunicationCommon.shared.writeLog("Media search new media error code \(error.errorCode) " + error.errorDescription)
                 }
             }
         }

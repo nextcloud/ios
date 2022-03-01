@@ -439,14 +439,14 @@ import SVGKit
     func upload(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
         NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { _ in
         } progressHandler: { progress in
-        } completionHandler: { account, ocId, etag, _, _, _, errorCode, errorDescription in
-            if errorCode == 0 && etag != nil && ocId != nil {
+        } completionHandler: { account, ocId, etag, _, _, _, error in
+            if error.errorCode == 0 && etag != nil && ocId != nil {
                 let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
                 NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
                 NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
             } else {
-                NCContentPresenter.shared.showError(description: errorDescription, errorCode: errorCode)
+                NCContentPresenter.shared.showError(description: error.errorDescription, errorCode: error.errorCode)
             }
             completion()
         }
@@ -703,23 +703,23 @@ import SVGKit
 
         let favorite = UIAction(title: titleFavorite, image: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite)) { _ in
 
-            NCNetworking.shared.favoriteMetadata(metadata) { errorCode, errorDescription in
-                if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            NCNetworking.shared.favoriteMetadata(metadata) { error in
+                if error.errorCode != 0 {
+                    NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                 }
             }
         }
 
         let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile, image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { errorCode, errorDescription in
-                if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { error in
+                if error.errorCode != 0 {
+                    NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                 }
             }
         }
 
         let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true) { _, _ in
+            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true) { _ in
             }
         }
 

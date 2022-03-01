@@ -201,11 +201,11 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
                         }, progressHandler: { _ in
 
-                        }, completionHandler: { account, _, _, _, allHeaderFields, error, errorCode, errorDescription in
+                        }, completionHandler: { account, _, _, _, allHeaderFields, _, error in
 
                             NCUtility.shared.stopActivityIndicator()
 
-                            if errorCode == 0 && account == self.metadata.account {
+                            if error.errorCode == 0 && account == self.metadata.account {
 
                                 var item = fileNameLocalPath
 
@@ -235,7 +235,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                 }
                             } else {
 
-                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                             }
                         })
                     }
@@ -285,12 +285,12 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
             let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, account: metadata!.account)!
 
-            NCCommunication.shared.createAssetRichdocuments(path: path) { account, url, errorCode, errorDescription in
-                if errorCode == 0 && account == self.appDelegate.account {
+            NCCommunication.shared.createAssetRichdocuments(path: path) { account, url, error in
+                if error.errorCode == 0 && account == self.appDelegate.account {
                     let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
                     self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
-                } else if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                } else if error.errorCode != 0 {
+                    NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
                 } else {
                     print("[LOG] It has been changed user during networking process, error.")
                 }
@@ -302,12 +302,12 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, account: metadata!.account)!
 
-        NCCommunication.shared.createAssetRichdocuments(path: path) { account, url, errorCode, errorDescription in
-            if errorCode == 0 && account == self.appDelegate.account {
+        NCCommunication.shared.createAssetRichdocuments(path: path) { account, url, error in
+            if error.errorCode == 0 && account == self.appDelegate.account {
                 let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
                 self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
-            } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+            } else if error.errorCode != 0 {
+                NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }

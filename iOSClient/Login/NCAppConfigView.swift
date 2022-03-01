@@ -75,9 +75,9 @@ class NCAppConfigView: UIViewController {
             return
         }
 
-        NCCommunication.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password, userAgent: nil) { token, errorCode, errorDescription in
+        NCCommunication.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password, userAgent: nil) { token, error in
             DispatchQueue.main.async {
-                if errorCode == 0 && token != nil {
+                if error.errorCode == 0 && token != nil {
                     let account: String = "\(username) \(serverUrl)"
 
                     // NO account found, clear
@@ -98,7 +98,7 @@ class NCAppConfigView: UIViewController {
 
                     self.dismiss(animated: true) {}
                 } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                 }
             }
         }

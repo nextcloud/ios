@@ -45,8 +45,8 @@ extension FileProviderExtension {
                 let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
                 let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
 
-                NCCommunication.shared.getPreview(fileNamePath: fileNamePath, widthPreview: NCGlobal.shared.sizeIcon, heightPreview: NCGlobal.shared.sizeIcon) { _, data, errorCode, _ in
-                    if errorCode == 0 && data != nil {
+                NCCommunication.shared.getPreview(fileNamePath: fileNamePath, widthPreview: NCGlobal.shared.sizeIcon, heightPreview: NCGlobal.shared.sizeIcon) { _, data, error in
+                    if error.errorCode == 0 && data != nil {
                         do {
                             try data!.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
                         } catch { }
