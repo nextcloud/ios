@@ -220,42 +220,34 @@ import SVGKit
     }
 
     func openActivityViewController(selectedMetadata: [tableMetadata]) {
+        let metadatas = selectedMetadata.filter({ !$0.directory })
+        var items: [URL] = []
+        var downloadMetadata: [(tableMetadata, URL)] = []
 
-        NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
-
-        var error: Int = 0
-        var items: [Any] = []
-
-        for metadata in selectedMetadata {
-            guard !metadata.directory else { continue }
-            if !CCUtility.fileProviderStorageExists(metadata) {
-                let semaphore = Semaphore()
-                NCNetworking.shared.download(metadata: metadata, selector: "") { errorCode in
-                    error = errorCode
-                    semaphore.continue()
-                }
-                semaphore.wait()
-            }
-            if error != 0 {
-                break
-            }
+        for metadata in metadatas {
             let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-            items.append(fileURL)
+            if CCUtility.fileProviderStorageExists(metadata) { items.append(fileURL) }
+            else { downloadMetadata.append((metadata, fileURL)) }
         }
-        if error == 0 && items.count > 0 {
 
-            guard let mainTabBar = self.appDelegate.mainTabBar else { return }
+        let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: self.appDelegate.window?.rootViewController?.view)
+        for (metadata, url) in downloadMetadata {
+            processor.execute { completion in
+                NCNetworking.shared.download(metadata: metadata, selector: "", completion: { _ in
+                    if CCUtility.fileProviderStorageExists(metadata) { items.append(url) }
+                    completion()
+                })
+            }
+        }
 
+        processor.completeWork {
+            guard !items.isEmpty, let mainTabBar = self.appDelegate.mainTabBar else { return }
             let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
-
             activityViewController.popoverPresentationController?.permittedArrowDirections = .any
             activityViewController.popoverPresentationController?.sourceView = mainTabBar
             activityViewController.popoverPresentationController?.sourceRect = mainTabBar.menuRect
-
             self.appDelegate.window?.rootViewController?.present(activityViewController, animated: true)
-
         }
-        NCUtility.shared.stopActivityIndicator()
     }
 
     // MARK: - Save as scan
