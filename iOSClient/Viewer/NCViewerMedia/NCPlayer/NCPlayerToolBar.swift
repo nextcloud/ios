@@ -31,6 +31,7 @@ import MediaPlayer
 class NCPlayerToolBar: UIView {
 
     @IBOutlet weak var playerTopToolBarView: UIView!
+    @IBOutlet weak var playerToolBarView: UIView!
     @IBOutlet weak var pipButton: UIButton!
     @IBOutlet weak var muteButton: UIButton!
     @IBOutlet weak var playButton: UIButton!
@@ -60,19 +61,13 @@ class NCPlayerToolBar: UIView {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        // for disable gesture of UIPageViewController
-        let panRecognizer = UIPanGestureRecognizer(target: self, action: nil)
-        addGestureRecognizer(panRecognizer)
-        let singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
-        addGestureRecognizer(singleTapGestureRecognizer)
-
-        self.layer.cornerRadius = 15
-        self.layer.masksToBounds = true
+        playerToolBarView.layer.cornerRadius = 15
+        playerToolBarView.layer.masksToBounds = true
 
         let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         blurEffectView.frame = self.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        self.insertSubview(blurEffectView, at: 0)
+        playerToolBarView.insertSubview(blurEffectView, at: 0)
 
         playerTopToolBarView.layer.cornerRadius = 10
         playerTopToolBarView.layer.masksToBounds = true
@@ -280,10 +275,8 @@ class NCPlayerToolBar: UIView {
         
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 1
-            self.playerTopToolBarView.alpha = 1
         }, completion: { (_: Bool) in
             self.isHidden = false
-            self.playerTopToolBarView.isHidden = false
         })
 
         updateToolBar()
@@ -298,10 +291,8 @@ class NCPlayerToolBar: UIView {
 
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 0
-            self.playerTopToolBarView.alpha = 0
         }, completion: { (_: Bool) in
             self.isHidden = true
-            self.playerTopToolBarView.isHidden = true
         })
     }
 
@@ -402,10 +393,6 @@ class NCPlayerToolBar: UIView {
     }
 
     // MARK: - Action
-
-    @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
-        // nothing
-    }
 
     @IBAction func buttonPlayerToolBarTouchInside(_ sender: UIButton) {
         // nothing
