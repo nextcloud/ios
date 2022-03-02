@@ -30,9 +30,10 @@ import MediaPlayer
 
 class NCPlayerToolBar: UIView {
 
-    @IBOutlet weak var playerTopToolBarView: UIView!
+    @IBOutlet weak var playerTopToolBarView: UIStackView!
     @IBOutlet weak var playerToolBarView: UIView!
     @IBOutlet weak var pipButton: UIButton!
+    @IBOutlet weak var subtitleButton: UIButton!
     @IBOutlet weak var muteButton: UIButton!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var forwardButton: UIButton!
@@ -61,28 +62,32 @@ class NCPlayerToolBar: UIView {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        playerToolBarView.layer.cornerRadius = 15
-        playerToolBarView.layer.masksToBounds = true
-
         let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         blurEffectView.frame = self.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         playerToolBarView.insertSubview(blurEffectView, at: 0)
-
         playerTopToolBarView.layer.cornerRadius = 10
         playerTopToolBarView.layer.masksToBounds = true
+        playerTopToolBarView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapTopToolBarWith(gestureRecognizer:))))
 
         let blurEffectTopToolBarView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         blurEffectTopToolBarView.frame = playerTopToolBarView.bounds
         blurEffectTopToolBarView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         playerTopToolBarView.insertSubview(blurEffectTopToolBarView, at: 0)
+        playerToolBarView.layer.cornerRadius = 10
+        playerToolBarView.layer.masksToBounds = true
+        playerToolBarView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapToolBarWith(gestureRecognizer:))))
 
         pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .lightGray), for: .normal)
         pipButton.isEnabled = false
 
         muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .lightGray), for: .normal)
         muteButton.isEnabled = false
-
+        
+        subtitleButton.setImage(NCUtility.shared.loadImage(named: "captions.bubble", color: .lightGray), for: .normal)
+        subtitleButton.isEnabled = false
+        subtitleButton.isHidden = true
+        
         playbackSlider.value = 0
         playbackSlider.minimumValue = 0
         playbackSlider.maximumValue = 0
@@ -95,9 +100,13 @@ class NCPlayerToolBar: UIView {
         labelLeftTime.text = NCUtility.shared.stringFromTime(.zero)
         labelLeftTime.textColor = .lightGray
 
+        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .lightGray), for: .normal)
         backButton.isEnabled = false
+        
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray), for: .normal)
         playButton.isEnabled = false
+        
+        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .lightGray), for: .normal)
         forwardButton.isEnabled = false
 
         NotificationCenter.default.addObserver(self, selector: #selector(handleInterruption), name: AVAudioSession.interruptionNotification, object: nil)
@@ -394,15 +403,11 @@ class NCPlayerToolBar: UIView {
 
     // MARK: - Action
 
-    @IBAction func buttonPlayerToolBarTouchInside(_ sender: UIButton) {
-        // nothing
-    }
-
-    @IBAction func buttonPlayerTopToolBarTouchInside(_ sender: UIButton) {
-        // nothing
-    }
-
-    @IBAction func playerPause(_ sender: Any) {
+    @objc func tapTopToolBarWith(gestureRecognizer: UITapGestureRecognizer) { }
+    
+    @objc func tapToolBarWith(gestureRecognizer: UITapGestureRecognizer) { }
+    
+    @IBAction func tapPlayerPause(_ sender: Any) {
 
         if ncplayer?.player?.timeControlStatus == .playing {
             ncplayer?.playerPause()
@@ -428,7 +433,7 @@ class NCPlayerToolBar: UIView {
         }
     }
 
-    @IBAction func setMute(_ sender: Any) {
+    @IBAction func tapMute(_ sender: Any) {
 
         let mute = CCUtility.getAudioMute()
 
@@ -438,7 +443,7 @@ class NCPlayerToolBar: UIView {
         reStartTimerAutoHide()
     }
 
-    @IBAction func setPip(_ sender: Any) {
+    @IBAction func tapPip(_ sender: Any) {
 
         guard let videoLayer = ncplayer?.videoLayer else { return }
 
@@ -459,7 +464,7 @@ class NCPlayerToolBar: UIView {
         }
     }
 
-    @IBAction func forwardButtonSec(_ sender: Any) {
+    @IBAction func tapForward(_ sender: Any) {
 
         skip(seconds: 10)
 
@@ -472,7 +477,7 @@ class NCPlayerToolBar: UIView {
         */
     }
 
-    @IBAction func backButtonSec(_ sender: Any) {
+    @IBAction func tapBack(_ sender: Any) {
 
         skip(seconds: -10)
 
@@ -483,6 +488,10 @@ class NCPlayerToolBar: UIView {
             backward()
         }
         */
+    }
+    
+    @IBAction func tapSubtitle(_ sender: Any) {
+        
     }
     
     func forward() {
