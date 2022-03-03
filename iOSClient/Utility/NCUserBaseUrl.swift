@@ -26,6 +26,7 @@ import Foundation
 @objc public protocol NCUserBaseUrl {
     var user: String { get }
     var urlBase: String { get }
+    var account: String { get }
 }
 
 public extension NCUserBaseUrl {
