@@ -109,6 +109,10 @@
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dJP-ZX-iug">
                                                 <rect key="frame" x="15" y="150" width="384" height="222"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <connections>
+                                                    <outletCollection property="gestureRecognizers" destination="fvW-pC-4g1" appends="YES" id="gVL-xL-CmY"/>
+                                                </connections>
                                             </view>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="size" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WXS-Lw-DkI">
                                                 <rect key="frame" x="15" y="36" width="80" height="16"/>
@@ -443,6 +447,11 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fbE-Jv-mLH" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="fvW-pC-4g1">
+                    <connections>
+                        <action selector="touchLocation:" destination="P8R-4f-zAl" id="qyd-d2-RyB"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="4547.826086956522" y="776.9021739130435"/>
         </scene>

@@ -439,8 +439,13 @@ extension NCViewerMedia {
                 self.detailViewHeighConstraint.constant = 170
             }
             self.view.layoutIfNeeded()
-            
-            self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMediaPage?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel, ncplayer: self.ncplayer ,delegate: self)
+            self.detailView.show(
+                metadata: self.metadata,
+                image: self.image,
+                textColor: self.viewerMediaPage?.textColor,
+                mediaMetadata: (latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel),
+                ncplayer: self.ncplayer,
+                delegate: self)
                 
             if let image = self.imageVideoContainer.image {
                 let ratioW = self.imageVideoContainer.frame.width / image.size.width
@@ -487,7 +492,13 @@ extension NCViewerMedia {
 
         if self.detailView.isShow() {
             CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
-                self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMediaPage?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel, ncplayer: self.ncplayer ,delegate: self)
+                self.detailView.show(
+                    metadata: self.metadata,
+                    image: self.image,
+                    textColor: self.viewerMediaPage?.textColor,
+                    mediaMetadata: (latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel),
+                    ncplayer: self.ncplayer,
+                    delegate: self)
             }
         }
     }
