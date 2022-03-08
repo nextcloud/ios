@@ -545,7 +545,7 @@ import Queuer
         start()
 
         // Check file dim > 0
-        if NCUtilityFileSystem.shared.getFileSize(filePath: fileNameLocalPath) == 0 {
+        if NCUtilityFileSystem.shared.getFileSize(filePath: fileNameLocalPath) == 0 && metadata.size != 0 {
 
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
 
@@ -579,7 +579,7 @@ import Queuer
             let ocIdTemp = metadata.ocId
             var errorDescription = errorDescription
 
-            if errorCode == 0 && ocId != nil && size > 0 {
+            if errorCode == 0 && ocId != nil && size == metadata.size {
 
                 let metadata = tableMetadata.init(value: metadata)
 
@@ -659,7 +659,7 @@ import Queuer
             #endif
 
             // Delete
-            self.uploadMetadataInBackground[fileName+serverUrl] = nil
+            self.uploadMetadataInBackground[fileName + serverUrl] = nil
         }
     }
 
