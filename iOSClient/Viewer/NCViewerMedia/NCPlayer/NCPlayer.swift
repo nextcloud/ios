@@ -96,11 +96,10 @@ class NCPlayer: NSObject {
                 }
                 break
             case .failed:
-                let proxyStatusCode = NCKTVHTTPCache.shared.getDownloadStatusCode(metadata: self.metadata)
                 #if MFFFLIB
                 self.convertVideo(error: error)
                 #else
-                if self.isProxy && proxyStatusCode == 200 && error?.code != AVError.Code.fileFormatNotRecognized.rawValue {
+                if self.isProxy && NCKTVHTTPCache.shared.getDownloadStatusCode(metadata: self.metadata) == 200 && error?.code != AVError.Code.fileFormatNotRecognized.rawValue {
                     let alertController = UIAlertController(title: NSLocalizedString("_error_", value: "Error", comment: ""), message: NSLocalizedString("_video_not_streamed_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", value: "Yes", comment: ""), style: .default, handler: { action in
                         self.downloadVideo(metadata: self.metadata, view: self.viewController.view) { error in
