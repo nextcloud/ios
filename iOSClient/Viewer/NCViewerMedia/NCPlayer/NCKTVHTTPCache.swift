@@ -111,7 +111,7 @@ class NCKTVHTTPCache: NSObject {
 
     func getDownloadStatusCode(metadata: tableMetadata) -> Int {
 
-        let stringURL = (metadata.serverUrl + "/" + metadata.fileName)//.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return 0 }
+        guard let stringURL = (metadata.serverUrl + "/" + metadata.fileName).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return 0 }
         let url = URL(string: stringURL)
         return KTVHTTPCache.downloadStatusCode(url)
     }
