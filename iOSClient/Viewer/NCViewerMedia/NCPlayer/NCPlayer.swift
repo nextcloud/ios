@@ -26,6 +26,8 @@ import NCCommunication
 import UIKit
 import AVFoundation
 import MediaPlayer
+import JGProgressHUD
+import Alamofire
 
 class NCPlayer: NSObject {
    
@@ -33,6 +35,8 @@ class NCPlayer: NSObject {
     internal var url: URL
     internal var playerToolBar: NCPlayerToolBar?
     internal var viewController: UIViewController
+    internal var autoPlay: Bool
+    internal var isProxy: Bool
 
     private var imageVideoContainer: imageVideoContainerView
     private var detailView: NCViewerMediaDetailView?
@@ -46,9 +50,11 @@ class NCPlayer: NSObject {
 
     // MARK: - View Life Cycle
 
-    init(url: URL, autoPlay: Bool, imageVideoContainer: imageVideoContainerView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?, viewController: UIViewController) {
+    init(url: URL, autoPlay: Bool, isProxy: Bool, imageVideoContainer: imageVideoContainerView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?, viewController: UIViewController) {
         
         self.url = url
+        self.autoPlay = autoPlay
+        self.isProxy = isProxy
         self.imageVideoContainer = imageVideoContainer
         self.playerToolBar = playerToolBar
         self.metadata = metadata
@@ -65,6 +71,11 @@ class NCPlayer: NSObject {
             print(error)
         }
         
+        startSession()
+    }
+    
+    internal func startSession() {
+        
         #if MFFFLIB
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded) {
             self.url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
@@ -75,23 +86,43 @@ class NCPlayer: NSObject {
             MFFF.shared.dismissMessage()
         }
         #endif
-              
+        
         openAVPlayer() { status, error in
             
             switch status {
             case .loaded:
-                if autoPlay {
+                if self.autoPlay {
                     self.player?.play()
                 }
                 break
             case .failed:
+                let proxyStatusCode = NCKTVHTTPCache.shared.getDownloadStatusCode(metadata: self.metadata)
                 #if MFFFLIB
                 self.convertVideo(error: error)
                 #else
-                if let title = error?.localizedDescription, let description = error?.localizedFailureReason {
-                    NCContentPresenter.shared.messageNotification(title, description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
+                if self.isProxy && proxyStatusCode == 200 && error?.code != AVError.Code.fileFormatNotRecognized.rawValue {
+                    let alertController = UIAlertController(title: NSLocalizedString("_error_", value: "Error", comment: ""), message: NSLocalizedString("_video_not_streamed_", comment: ""), preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", value: "Yes", comment: ""), style: .default, handler: { action in
+                        self.downloadVideo(metadata: self.metadata, view: self.viewController.view) { error in
+                            let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: self.metadata)
+                            if error == nil, let url = urlVideo.url {
+                                self.url = url
+                                self.isProxy = urlVideo.isProxy
+                                self.startSession()
+                            }
+                        }
+                    }))
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", value: "No", comment: ""), style: .default, handler: { action in
+                        // nothing
+                    }))
+                    self.viewController.present(alertController, animated: true)
+                    self.playerToolBar?.hide()
                 } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
+                    if let title = error?.localizedDescription, let description = error?.localizedFailureReason {
+                        NCContentPresenter.shared.messageNotification(title, description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
+                    } else {
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
+                    }
                 }
                 #endif
                 break
@@ -154,6 +185,42 @@ class NCPlayer: NSObject {
                 completion(status, error)
             }
         })
+    }
+    
+    internal func downloadVideo(metadata: tableMetadata, view: UIView, completion: @escaping (_ error: AFError?)->()) {
+        
+        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let hud = JGProgressHUD()
+        var downloadRequest: DownloadRequest?
+        
+        
+        hud.indicatorView = JGProgressHUDRingIndicatorView()
+        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+            indicatorView.ringWidth = 1.5
+        }
+        hud.show(in: view)
+        hud.textLabel.text = NSLocalizedString(metadata.fileNameView, comment: "")
+        hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
+        hud.tapOnHUDViewBlock = { hud in
+            downloadRequest?.cancel()
+            hud.dismiss()
+        }
+        
+        NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { request in
+            downloadRequest = request
+        } taskHandler: { task in
+            // task
+        } progressHandler: { progress in
+            hud.progress = Float(progress.fractionCompleted)
+        } completionHandler: { account, etag, date, lenght, allHeaderFields, error, errorCode, _ in
+            if error == nil {
+                NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                CCUtility.setExif(metadata) { _, _, _, _, _ in }
+            }
+            hud.dismiss()
+            completion(error)
+        }
     }
 
     deinit {

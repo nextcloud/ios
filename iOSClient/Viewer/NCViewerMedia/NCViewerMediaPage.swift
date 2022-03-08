@@ -587,8 +587,10 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
 
                 AudioServicesPlaySystemSound(1519) // peek feedback
 
-                if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                    self.ncplayerLivePhoto = NCPlayer.init(url: url, autoPlay: true, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil, viewController: self)
+                let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata)
+                
+                if let url = urlVideo.url {
+                    self.ncplayerLivePhoto = NCPlayer.init(url: url, autoPlay: true, isProxy: urlVideo.isProxy, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil, viewController: self)
                 }
             }
 

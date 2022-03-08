@@ -31,17 +31,17 @@ class NCKTVHTTPCache: NSObject {
         return instance
     }()
 
-    func getVideoURL(metadata: tableMetadata) -> URL? {
+    func getVideoURL(metadata: tableMetadata) -> (url: URL?, isProxy: Bool) {
 
         if CCUtility.fileProviderStorageExists(metadata) {
 
-            return URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+            return (URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)), false)
 
         } else {
 
-            guard let stringURL = (metadata.serverUrl + "/" + metadata.fileName).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
+            guard let stringURL = (metadata.serverUrl + "/" + metadata.fileName).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return (nil, false) }
 
-            return NCKTVHTTPCache.shared.getProxyURL(stringURL: stringURL)
+            return (NCKTVHTTPCache.shared.getProxyURL(stringURL: stringURL), true)
         }
     }
 
@@ -107,6 +107,13 @@ class NCKTVHTTPCache: NSObject {
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
         }
+    }
+
+    func getDownloadStatusCode(metadata: tableMetadata) -> Int {
+
+        let stringURL = (metadata.serverUrl + "/" + metadata.fileName)//.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return 0 }
+        let url = URL(string: stringURL)
+        return KTVHTTPCache.downloadStatusCode(url)
     }
 
     private func setupHTTPCache() {

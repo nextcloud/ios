@@ -830,6 +830,7 @@
 "_certificates_"            = "Certificates";
 "_privacy_screen_"          = "Splash screen when app inactive";
 "_saving_"                  = "Saving …";
+"_video_not_streamed_"      = "The server does not allow video streaming, do you want to download it?";
 // Video
 "_video_processing_"        = "Video processing";
 "_video_being_processed_"   = "Video being processed …";

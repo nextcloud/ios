@@ -160,9 +160,10 @@ class NCViewerMedia: UIViewController {
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
 
             NCKTVHTTPCache.shared.restartProxy(user: appDelegate.user, password: appDelegate.password)
+            let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata)
 
-            if ncplayer == nil, let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self)
+            if ncplayer == nil, let url = urlVideo.url {
+                self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, isProxy: urlVideo.isProxy, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self)
             } else {
                 self.ncplayer?.activateObserver(playerToolBar: self.playerToolBar)
                 if detailView.isShow() == false && ncplayer?.isPlay() == false {
