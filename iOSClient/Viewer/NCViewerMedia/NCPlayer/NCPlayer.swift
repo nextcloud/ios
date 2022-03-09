@@ -101,19 +101,10 @@ class NCPlayer: NSObject {
                 #else
                 if self.isProxy && NCKTVHTTPCache.shared.getDownloadStatusCode(metadata: self.metadata) == 200 && error?.code != AVError.Code.fileFormatNotRecognized.rawValue {
                     let alertController = UIAlertController(title: NSLocalizedString("_error_", value: "Error", comment: ""), message: NSLocalizedString("_video_not_streamed_", comment: ""), preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", value: "Yes", comment: ""), style: .default, handler: { action in
-                        self.downloadVideo(metadata: self.metadata, view: self.viewController.view) { error in
-                            let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: self.metadata)
-                            if error == nil, let url = urlVideo.url {
-                                self.url = url
-                                self.isProxy = urlVideo.isProxy
-                                self.startSession()
-                            }
-                        }
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", value: "Yes", comment: ""), style: .default, handler: { _ in
+                        self.downloadVideo()
                     }))
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", value: "No", comment: ""), style: .default, handler: { action in
-                        // nothing
-                    }))
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", value: "No", comment: ""), style: .default, handler: { _ in }))
                     self.viewController.present(alertController, animated: true)
                     self.playerToolBar?.hide()
                 } else {
@@ -186,7 +177,7 @@ class NCPlayer: NSObject {
         })
     }
     
-    internal func downloadVideo(metadata: tableMetadata, view: UIView, completion: @escaping (_ error: AFError?)->()) {
+    internal func downloadVideo() {
         
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -198,12 +189,11 @@ class NCPlayer: NSObject {
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
             indicatorView.ringWidth = 1.5
         }
-        hud.show(in: view)
+        hud.show(in: self.viewController.view)
         hud.textLabel.text = NSLocalizedString(metadata.fileNameView, comment: "")
         hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
         hud.tapOnHUDViewBlock = { hud in
             downloadRequest?.cancel()
-            hud.dismiss()
         }
         
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { request in
@@ -212,13 +202,18 @@ class NCPlayer: NSObject {
             // task
         } progressHandler: { progress in
             hud.progress = Float(progress.fractionCompleted)
-        } completionHandler: { account, etag, date, lenght, allHeaderFields, error, errorCode, _ in
+        } completionHandler: { _, _, _, _, _, error, _, _ in
             if error == nil {
-                NCManageDatabase.shared.addLocalFile(metadata: metadata)
-                CCUtility.setExif(metadata) { _, _, _, _, _ in }
+                NCManageDatabase.shared.addLocalFile(metadata: self.metadata)
+                CCUtility.setExif(self.metadata) { _, _, _, _, _ in }
+                let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: self.metadata)
+                if let url = urlVideo.url {
+                    self.url = url
+                    self.isProxy = urlVideo.isProxy
+                    self.startSession()
+                }
             }
             hud.dismiss()
-            completion(error)
         }
     }
 
