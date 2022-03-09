@@ -1727,6 +1727,7 @@
             stringLatitude = [NSString stringWithFormat:@"+%.4f", latitude];
         } else {
             stringLatitude = [NSString stringWithFormat:@"-%.4f", latitude];
+            latitude *= -1;
         }
         
         // conversion 4 decimal +E -W
@@ -1736,10 +1737,10 @@
             stringLongitude = [NSString stringWithFormat:@"+%.4f", longitude];
         } else {
             stringLongitude = [NSString stringWithFormat:@"-%.4f", longitude];
+            longitude *= -1;
         }
         
         if (latitude == 0 || longitude == 0) {
-            
             stringLatitude = @"0";
             stringLongitude = @"0";
         }

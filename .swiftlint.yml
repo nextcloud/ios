@@ -130,7 +130,6 @@ excluded:
   - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayer.swift
   - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayerToolBar.swift
   - iOSClient/Viewer/NCViewerMedia/NCViewerMedia.swift
-  - iOSClient/Viewer/NCViewerMedia/NCViewerMediaDetailView.swift
   - iOSClient/Viewer/NCViewerMedia/NCViewerMediaPage.swift
   - iOSClient/Viewer/NCViewerNextcloudText/NCViewerNextcloudText.swift
   - iOSClient/Viewer/NCViewerPDF/NCViewerPDF.swift
