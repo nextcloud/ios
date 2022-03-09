@@ -132,6 +132,7 @@ class NCShareExtension: UIViewController {
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didCreateFolder(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateFolder), object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -216,10 +217,7 @@ class NCShareExtension: UIViewController {
             }
         }
 
-        let image = NCUtility.shared.loadUserImage(
-            for: activeAccount.user,
-               displayName: activeAccount.displayName,
-               userBaseUrl: activeAccount)
+        let image = NCUtility.shared.loadUserImage(for: activeAccount.user, displayName: activeAccount.displayName, userBaseUrl: activeAccount)
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
 
@@ -277,25 +275,11 @@ class NCShareExtension: UIViewController {
     }
 
     @objc func actionCreateFolder() {
-
-        let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: "", preferredStyle: .alert)
-
-        alertController.addTextField { textField in
-            textField.autocapitalizationType = UITextAutocapitalizationType.words
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: activeAccount) { errorCode, errorDescription in
+            guard errorCode != 0 else { return }
+            self.showAlert(title: "_error_createsubfolders_upload_", description: errorDescription)
         }
-
-        let actionSave = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default) { _ in
-            if let fileName = alertController.textFields?.first?.text {
-                self.createFolder(with: fileName)
-            }
-        }
-
-        let actionCancel = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel)
-
-        alertController.addAction(actionSave)
-        alertController.addAction(actionCancel)
-
-        self.present(alertController, animated: true, completion: nil)
+        self.present(alertController, animated: true)
     }
 }
 

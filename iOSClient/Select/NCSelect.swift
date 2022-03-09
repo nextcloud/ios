@@ -255,26 +255,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     func createFolderButtonPressed(_ sender: UIButton) {
-
-        let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: "", preferredStyle: .alert)
-
-        alertController.addTextField { textField in
-            textField.autocapitalizationType = UITextAutocapitalizationType.words
-        }
-
-        let actionSave = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default) { (_: UIAlertAction) in
-            if let fileName = alertController.textFields?.first?.text {
-                self.createFolder(with: fileName)
-            }
-        }
-
-        let actionCancel = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in
-            print("You've pressed cancel button")
-        }
-
-        alertController.addAction(actionSave)
-        alertController.addAction(actionCancel)
-
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: activeAccount)
         self.present(alertController, animated: true, completion: nil)
     }
 
@@ -707,16 +688,6 @@ extension NCSelect {
 
         DispatchQueue.main.async {
             self.collectionView.reloadData()
-        }
-    }
-
-    func createFolder(with fileName: String) {
-
-        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: activeAccount.account, urlBase: activeAccount.urlBase) { errorCode, errorDescription in
-
-            if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-            }
         }
     }
 
