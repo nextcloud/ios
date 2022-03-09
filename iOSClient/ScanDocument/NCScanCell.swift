@@ -1,5 +1,5 @@
 //
-//  ScanCell.swift
+//  NCScanCell.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 21/08/18.
@@ -23,10 +23,26 @@
 
 import UIKit
 
-class ScanCell: UICollectionViewCell {
+class NCScanCell: UICollectionViewCell {
 
     @IBOutlet weak var customImageView: UIImageView!
     @IBOutlet weak var customLabel: UILabel!
     @IBOutlet weak var delete: UIButton!
     @IBOutlet weak var rotate: UIButton!
+
+    weak var delegate: NCScanCellCellDelegate?
+    var index = 0
+
+    @IBAction func touchUpInsideDelete(_ sender: Any) {
+        delegate?.delete(with: index, sender: sender)
+    }
+
+    @IBAction func touchUpInsideRotate(_ sender: Any) {
+        delegate?.rotate(with: index, sender: sender)
+    }
+}
+
+protocol NCScanCellCellDelegate: AnyObject {
+    func delete(with index: Int, sender: Any)
+    func rotate(with index: Int, sender: Any)
 }

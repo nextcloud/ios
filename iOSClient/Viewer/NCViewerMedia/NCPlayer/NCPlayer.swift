@@ -32,10 +32,10 @@ class NCPlayer: NSObject {
     internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
     internal var url: URL
     internal var playerToolBar: NCPlayerToolBar?
-    
+    internal var viewController: UIViewController
+
     private var imageVideoContainer: imageVideoContainerView
     private var detailView: NCViewerMediaDetailView?
-    private var viewController: UIViewController
     private var observerAVPlayerItemDidPlayToEndTime: Any?
     private var observerAVPlayertTime: Any?
 
@@ -65,11 +65,17 @@ class NCPlayer: NSObject {
             print(error)
         }
         
-        // Exists the file video encoded
+        #if MFFFLIB
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded) {
             self.url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
         }
-
+        if MFFF.shared.existsMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))) {
+            return
+        } else {
+            MFFF.shared.dismissMessage()
+        }
+        #endif
+              
         openAVPlayer() { status, error in
             
             switch status {

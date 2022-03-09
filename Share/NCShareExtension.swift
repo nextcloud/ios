@@ -104,7 +104,7 @@ class NCShareExtension: UIViewController {
         createFolderView.addGestureRecognizer(createFolderGesture)
 
         uploadView.layer.cornerRadius = 10
-        
+
         // uploadImage.image = NCUtility.shared.loadImage(named: "square.and.arrow.up", color: NCBrandColor.shared.label)
         uploadLabel.text = NSLocalizedString("_upload_", comment: "")
         uploadLabel.textColor = .systemBlue
@@ -130,7 +130,7 @@ class NCShareExtension: UIViewController {
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
             indicatorView.ringWidth = 1.5
         }
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
     }
 
@@ -188,7 +188,7 @@ class NCShareExtension: UIViewController {
         guard let progress = notification.userInfo?["progress"] as? Float else { return }
         hud.progress = progress
     }
-    
+
     func setNavigationBar(navigationTitle: String) {
 
         navigationItem.title = navigationTitle
@@ -357,7 +357,7 @@ extension NCShareExtension {
         hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
         hud.progress = 0
         hud.show(in: self.view)
-        
+
         NCNetworking.shared.upload(metadata: metadata) { } completion: { errorCode, _ in
             if errorCode == 0 {
                 self.counterUploaded += 1

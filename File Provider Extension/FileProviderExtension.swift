@@ -197,7 +197,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         }
 
         let tableLocalFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && tableLocalFile?.etag == metadata.etag {
+        if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata) && tableLocalFile?.etag == metadata.etag {
             completionHandler(nil)
             return
         }

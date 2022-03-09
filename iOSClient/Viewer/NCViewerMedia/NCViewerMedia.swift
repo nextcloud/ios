@@ -164,12 +164,9 @@ class NCViewerMedia: UIViewController {
             }
             
             #if MFFFLIB
-            MFFF.shared.delegate = self.ncplayer
-//            if !MFFF.shared.existsMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))) {
-//                self.playerToolBar.hideMessage()
-//            }
+            MFFF.shared.setDelegate = self.ncplayer
             #endif
-
+            
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
 
             viewerMediaPage?.clearCommandCenter()
@@ -244,7 +241,7 @@ class NCViewerMedia: UIViewController {
             let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
             let ext = CCUtility.getExtension(metadata.fileNameView)
 
-            if (CCUtility.getAutomaticDownloadImage() || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "") {
+            if (CCUtility.getAutomaticDownloadImage() || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata) && metadata.session == "") {
 
                 NCNetworking.shared.download(metadata: metadata, selector: "") { _ in
 
@@ -268,7 +265,7 @@ class NCViewerMedia: UIViewController {
 
             let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
 
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !CCUtility.fileProviderStorageExists(metadata) {
 
                 NCNetworking.shared.download(metadata: metadata, selector: "") { _ in }
             }
@@ -304,7 +301,7 @@ class NCViewerMedia: UIViewController {
             let ext = CCUtility.getExtension(metadata.fileNameView)
             var image: UIImage?
 
-            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+            if CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
 
                 let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
                 let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!

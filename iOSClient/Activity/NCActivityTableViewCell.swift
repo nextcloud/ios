@@ -111,7 +111,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
             var responder: UIResponder? = collectionView
             while !(responder is UIViewController) {
                 responder = responder?.next
-                if nil == responder {
+                if responder == nil {
                     break
                 }
             }
