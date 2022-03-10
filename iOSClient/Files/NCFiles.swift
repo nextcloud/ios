@@ -69,9 +69,9 @@ class NCFiles: NCCollectionViewCommon {
 
     override func reloadDataSource() {
         super.reloadDataSource()
-        
+
         DispatchQueue.main.async {
-                        
+
             if !self.isSearching && self.appDelegate.account != "" && self.appDelegate.urlBase != "" {
                 self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
                 if self.metadataFolder == nil {

@@ -1026,9 +1026,9 @@ import Queuer
         NCCommunication.shared.createFolder(fileNameFolderUrl) { account, ocId, _, errorCode, errorDescription in
 
             if errorCode == 0 {
-                
+
                 self.readFile(serverUrlFileName: fileNameFolderUrl) { (account, metadataFolder, errorCode, errorDescription) in
-                    
+
                     if errorCode == 0 {
 
                         if let metadata = metadataFolder {

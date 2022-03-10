@@ -175,9 +175,9 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                     let serverUrl = (serverUrlFileName as NSString).deletingLastPathComponent
                     let fileName = (serverUrlFileName as NSString).lastPathComponent
                     let serverUrlFileName = serverUrl + "/" + fileName
-                    
-                    NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { (account, metadata, errorCode, errorDescription) in
-                        
+
+                    NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { account, metadata, errorCode, _ in
+
                         NCUtility.shared.stopActivityIndicator()
 
                         if account == self.appDelegate.account && errorCode == 0 {

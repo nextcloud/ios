@@ -668,9 +668,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Empty
 
     func emptyDataSetView(_ view: NCEmptyView) {
-                
+
         if isSearching {
-            view.emptyImage.image = UIImage.init(named: "search")?.image(color: .gray, size: UIScreen.main.bounds.width)
+            view.emptyImage.image = UIImage(named: "search")?.image(color: .gray, size: UIScreen.main.bounds.width)
             if isReloadDataSourceNetworkInProgress {
                 view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
             } else {
@@ -973,9 +973,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func networkReadFolder(forced: Bool, completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> Void) {
 
         var tableDirectory: tableDirectory?
-        
+
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { (account, metadataFolder, errorCode, errorDescription) in
-            
+
             if errorCode == 0 {
 
                 if let metadataFolder = metadataFolder {
