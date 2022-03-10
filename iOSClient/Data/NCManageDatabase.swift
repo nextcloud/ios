@@ -1722,7 +1722,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func addVideoCodec(metadata: tableMetadata, codecNameVideo: String?, codecNameAudio: String?, codecAudioChannelLayout: String?, codecAudioLanguage: String?, codecSubtitleLanguage: String?, codecMaxCompatibility: Bool, codecQuality: String?) {
+    func addVideoCodec(metadata: tableMetadata, codecNameVideo: String?, codecNameAudio: String?, codecAudioChannelLayout: String?, codecAudioLanguage: String?, tableSubtitles: RealmSwift.List<tableSubtitle>, codecMaxCompatibility: Bool, codecQuality: String?) {
 
         let realm = try! Realm()
 
@@ -1733,7 +1733,7 @@ class NCManageDatabase: NSObject {
                     if let codecNameAudio = codecNameAudio { result.codecNameAudio = codecNameAudio }
                     if let codecAudioChannelLayout = codecAudioChannelLayout { result.codecAudioChannelLayout = codecAudioChannelLayout }
                     if let codecAudioLanguage = codecAudioLanguage { result.codecAudioLanguage = codecAudioLanguage }
-                    if let codecSubtitleLanguage = codecSubtitleLanguage { result.codecSubtitleLanguage = codecSubtitleLanguage }
+                    result.tableSubtitles = tableSubtitles
                     result.codecMaxCompatibility = codecMaxCompatibility
                     if let codecQuality = codecQuality { result.codecQuality = codecQuality }
                     realm.add(result, update: .all)
@@ -1745,7 +1745,7 @@ class NCManageDatabase: NSObject {
                     addObject.codecNameAudio = codecNameAudio
                     addObject.codecAudioChannelLayout = codecAudioChannelLayout
                     addObject.codecAudioLanguage = codecAudioLanguage
-                    addObject.codecSubtitleLanguage = codecSubtitleLanguage
+                    addObject.tableSubtitles = tableSubtitles
                     addObject.codecMaxCompatibility = codecMaxCompatibility
                     addObject.codecQuality = codecQuality
                     realm.add(addObject, update: .all)

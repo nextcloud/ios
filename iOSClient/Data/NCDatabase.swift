@@ -529,6 +529,12 @@ class tableUserStatus: Object {
     @objc dynamic var userId: String?
 }
 
+class tableSubtitle: Object {
+    
+    @objc dynamic var codecIndex:Int64 = 0
+    @objc dynamic var language:String?
+}
+
 class tableVideo: Object {
 
     @objc dynamic var account = ""
@@ -539,7 +545,7 @@ class tableVideo: Object {
     @objc dynamic var codecNameAudio: String?
     @objc dynamic var codecAudioChannelLayout: String?
     @objc dynamic var codecAudioLanguage: String?
-    @objc dynamic var codecSubtitleLanguage: String?
+    var tableSubtitles = List<tableSubtitle>()
     @objc dynamic var codecMaxCompatibility: Bool = false
     @objc dynamic var codecQuality: String?
 
