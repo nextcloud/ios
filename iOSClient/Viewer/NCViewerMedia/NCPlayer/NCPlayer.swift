@@ -77,9 +77,6 @@ class NCPlayer: NSObject {
     internal func startSession() {
         
         #if MFFFLIB
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded) {
-            self.url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
-        }
         if MFFF.shared.existsMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))) {
             return
         } else {
@@ -96,10 +93,7 @@ class NCPlayer: NSObject {
                 }
                 break
             case .failed:
-                #if MFFFLIB
-                self.convertVideo(error: error)
-                #else
-                if self.isProxy && NCKTVHTTPCache.shared.getDownloadStatusCode(metadata: self.metadata) == 200 && error?.code != AVError.Code.fileFormatNotRecognized.rawValue {
+                if self.isProxy && NCKTVHTTPCache.shared.getDownloadStatusCode(metadata: self.metadata) == 200 {
                     let alertController = UIAlertController(title: NSLocalizedString("_error_", value: "Error", comment: ""), message: NSLocalizedString("_video_not_streamed_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", value: "Yes", comment: ""), style: .default, handler: { _ in
                         self.downloadVideo()
@@ -108,13 +102,18 @@ class NCPlayer: NSObject {
                     self.viewController.present(alertController, animated: true)
                     self.playerToolBar?.hide()
                 } else {
+                    #if MFFFLIB
+                    if error?.code == AVError.Code.fileFormatNotRecognized.rawValue {
+                        self.convertVideo()
+                    }
+                    #else
                     if let title = error?.localizedDescription, let description = error?.localizedFailureReason {
                         NCContentPresenter.shared.messageNotification(title, description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
                     } else {
                         NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
                     }
+                    #endif
                 }
-                #endif
                 break
             case .cancelled:
                 break
