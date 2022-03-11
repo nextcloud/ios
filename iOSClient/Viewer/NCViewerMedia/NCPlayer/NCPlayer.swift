@@ -93,6 +93,7 @@ class NCPlayer: NSObject {
                 }
                 break
             case .failed:
+                self.playerToolBar?.hide()
                 if self.isProxy && NCKTVHTTPCache.shared.getDownloadStatusCode(metadata: self.metadata) == 200 {
                     let alertController = UIAlertController(title: NSLocalizedString("_error_", value: "Error", comment: ""), message: NSLocalizedString("_video_not_streamed_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", value: "Yes", comment: ""), style: .default, handler: { _ in
@@ -100,7 +101,6 @@ class NCPlayer: NSObject {
                     }))
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", value: "No", comment: ""), style: .default, handler: { _ in }))
                     self.viewController.present(alertController, animated: true)
-                    self.playerToolBar?.hide()
                 } else {
                     #if MFFFLIB
                     if error?.code == AVError.Code.fileFormatNotRecognized.rawValue {
@@ -182,8 +182,7 @@ class NCPlayer: NSObject {
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let hud = JGProgressHUD()
         var downloadRequest: DownloadRequest?
-        
-        
+
         hud.indicatorView = JGProgressHUDRingIndicatorView()
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
             indicatorView.ringWidth = 1.5
