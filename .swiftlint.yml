@@ -135,7 +135,6 @@ excluded:
   - iOSClient/Viewer/NCViewerPDF/NCViewerPDF.swift
   - iOSClient/Viewer/NCViewerPDF/NCViewerPDFSearch.swift
   - iOSClient/Viewer/NCViewerProviderContextMenu.swift
-  - iOSClient/Viewer/NCViewerQuickLook/NCViewerQuickLook.swift
   - iOSClient/Viewer/NCViewerRichdocument/NCViewerRichdocument.swift
 
 

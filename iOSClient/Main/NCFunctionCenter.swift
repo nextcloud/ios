@@ -77,7 +77,7 @@ import SVGKit
                 editingMode = true
             }
 
-            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), editingMode: editingMode, metadata: metadata)
+            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: editingMode, metadata: metadata)
             self.appDelegate.window?.rootViewController?.present(viewerQuickLook, animated: true)
 
         case NCGlobal.shared.selectorLoadFileView:
