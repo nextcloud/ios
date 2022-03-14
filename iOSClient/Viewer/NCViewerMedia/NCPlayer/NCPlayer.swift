@@ -71,10 +71,10 @@ class NCPlayer: NSObject {
             print(error)
         }
         
-        startSession()
+        openAVPlayer()
     }
     
-    internal func startSession() {
+    internal func openAVPlayer() {
         
         #if MFFFLIB
         if MFFF.shared.existsMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))) {
@@ -83,52 +83,11 @@ class NCPlayer: NSObject {
             MFFF.shared.dismissMessage()
         }
         #endif
-        
-        openAVPlayer() { status, error in
-            
-            switch status {
-            case .loaded:
-                if self.autoPlay {
-                    self.player?.play()
-                }
-                break
-            case .failed:
-                self.playerToolBar?.hide()
-                if self.isProxy && NCKTVHTTPCache.shared.getDownloadStatusCode(metadata: self.metadata) == 200 {
-                    let alertController = UIAlertController(title: NSLocalizedString("_error_", value: "Error", comment: ""), message: NSLocalizedString("_video_not_streamed_", comment: ""), preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", value: "Yes", comment: ""), style: .default, handler: { _ in
-                        self.downloadVideo()
-                    }))
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", value: "No", comment: ""), style: .default, handler: { _ in }))
-                    self.viewController.present(alertController, animated: true)
-                } else {
-                    #if MFFFLIB
-                    if error?.code == AVError.Code.fileFormatNotRecognized.rawValue {
-                        self.convertVideo()
-                    }
-                    #else
-                    if let title = error?.localizedDescription, let description = error?.localizedFailureReason {
-                        NCContentPresenter.shared.messageNotification(title, description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
-                    } else {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
-                    }
-                    #endif
-                }
-                break
-            case .cancelled:
-                break
-            default:
-                break
-            }
-        }
-    }
-    
-    internal func openAVPlayer(completion: @escaping (_ status: AVKeyValueStatus, _ error: NSError?)->()) {
-        
+
         print("Play URL: \(self.url)")
         player = AVPlayer(url: self.url)
         playerToolBar?.setMetadata(self.metadata)
-        
+
         if metadata.livePhoto {
             player?.isMuted = false
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
@@ -141,41 +100,72 @@ class NCPlayer: NSObject {
         }
 
         player?.currentItem?.asset.loadValuesAsynchronously(forKeys: ["playable"], completionHandler: {
-            
+
             var error: NSError? = nil
             let status = self.player?.currentItem?.asset.statusOfValue(forKey: "playable", error: &error) ?? .unknown
-            
+
             DispatchQueue.main.async {
-                if status == .loaded {
+
+                switch status {
+                case .loaded:
                     self.durationTime = self.player?.currentItem?.asset.duration ?? .zero
                     NCManageDatabase.shared.addVideoTime(metadata: self.metadata, time: nil, durationTime: self.durationTime)
 
                     self.activateObserver(playerToolBar: self.playerToolBar)
-                    
+
                     self.videoLayer = AVPlayerLayer(player: self.player)
                     self.videoLayer!.frame = self.imageVideoContainer.bounds
                     self.videoLayer!.videoGravity = .resizeAspect
-                    
+
                     if self.metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-                    
+
                         self.imageVideoContainer.layer.addSublayer(self.videoLayer!)
                         self.imageVideoContainer.playerLayer = self.videoLayer
                         self.imageVideoContainer.metadata = self.metadata
                         self.imageVideoContainer.image = self.imageVideoContainer.image?.image(alpha: 0)
                     }
-                    
+
                     self.playerToolBar?.setBarPlayer(ncplayer: self)
                     self.generatorImagePreview()
                     if !(self.detailView?.isShow() ?? false) {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":self.metadata.ocId, "enableTimerAutoHide": false])
                     }
+                    if self.autoPlay {
+                        self.player?.play()
+                    }
+                    break
+                case .failed:
+                    self.playerToolBar?.hide()
+                    if self.isProxy && NCKTVHTTPCache.shared.getDownloadStatusCode(metadata: self.metadata) == 200 {
+                        let alertController = UIAlertController(title: NSLocalizedString("_error_", value: "Error", comment: ""), message: NSLocalizedString("_video_not_streamed_", comment: ""), preferredStyle: .alert)
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", value: "Yes", comment: ""), style: .default, handler: { _ in
+                            self.downloadVideo()
+                        }))
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", value: "No", comment: ""), style: .default, handler: { _ in }))
+                        self.viewController.present(alertController, animated: true)
+                    } else {
+                        #if MFFFLIB
+                        if error?.code == AVError.Code.fileFormatNotRecognized.rawValue {
+                            self.convertVideo()
+                        }
+                        #else
+                        if let title = error?.localizedDescription, let description = error?.localizedFailureReason {
+                            NCContentPresenter.shared.messageNotification(title, description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
+                        } else {
+                            NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
+                        }
+                        #endif
+                    }
+                    break
+                case .cancelled:
+                    break
+                default:
+                    break
                 }
-                
-                completion(status, error)
             }
         })
     }
-    
+
     internal func downloadVideo() {
         
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
@@ -208,7 +198,7 @@ class NCPlayer: NSObject {
                 if let url = urlVideo.url {
                     self.url = url
                     self.isProxy = urlVideo.isProxy
-                    self.startSession()
+                    self.openAVPlayer()
                 }
             }
             hud.dismiss()
