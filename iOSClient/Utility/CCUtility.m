@@ -1162,7 +1162,8 @@
     }
 
     unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
-    return fileSize == metadata.size;
+    if (fileSize > 0) return true;
+    else return false;
 }
 
 + (int64_t)fileProviderStorageSize:(NSString *)ocId fileNameView:(NSString *)fileNameView
