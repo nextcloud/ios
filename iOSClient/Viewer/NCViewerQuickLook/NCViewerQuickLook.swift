@@ -60,8 +60,6 @@ import NCCommunication
         self.dataSource = self
         self.delegate = self
         self.currentPreviewItemIndex = 0
-
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissPreviewController))
     }
 
     override func viewDidLoad() {
@@ -95,8 +93,8 @@ import NCCommunication
         }
     }
 
-    @objc func dismissPreviewController() {
-
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         if editingMode {
 
             let alertController = UIAlertController(title: NSLocalizedString("_save_", comment: ""), message: "", preferredStyle: .alert)
@@ -104,27 +102,19 @@ import NCCommunication
             if metadata?.livePhoto == false {
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_overwrite_original_", comment: ""), style: .default) { (_: UIAlertAction) in
                     self.saveMode = .overwrite
-                    self.dismiss(animated: true)
                 })
             }
 
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_save_as_copy_", comment: ""), style: .default) { (_: UIAlertAction) in
                 self.saveMode = .copy
-                self.dismiss(animated: true)
             })
 
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive) { (_: UIAlertAction) in
                 self.saveMode = .discard
-                self.dismiss(animated: true)
             })
 
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
 
-            self.present(alertController, animated: true)
-
-        } else {
-
-            self.dismiss(animated: true)
         }
     }
 }
