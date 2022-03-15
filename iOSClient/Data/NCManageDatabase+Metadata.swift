@@ -1,5 +1,5 @@
 //
-//  NCManageDatabse+Metadata.swift
+//  NCManageDatabase+Metadata.swift
 //  Nextcloud
 //
 //  Created by Henrik Storch on 30.11.21.
