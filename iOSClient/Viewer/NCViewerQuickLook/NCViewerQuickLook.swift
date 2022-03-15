@@ -4,8 +4,10 @@
 //
 //  Created by Marino Faggiana on 03/05/2020.
 //  Copyright © 2020 Marino Faggiana. All rights reserved.
+//  Copyright © 2022 Henrik Storch. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -64,29 +66,6 @@ import NCCommunication
         super.viewDidLoad()
         guard isEditingEnabled else { return }
 
-        if metadata?.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
-            Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { t in
-                if self.navigationItem.rightBarButtonItems?.count ?? 0 > 1 || !(self.navigationController?.isToolbarHidden ?? false) {
-                    if #available(iOS 14.0, *) {
-                        if self.navigationItem.rightBarButtonItems?.count ?? 0 > 1 {
-                            if let buttonItem = self.navigationItem.rightBarButtonItems?.last {
-                                _ = buttonItem.target?.perform(buttonItem.action, with: buttonItem)
-                            }
-                        } else {
-                            if let buttonItem = self.navigationItem.rightBarButtonItems?.first {
-                                _ = buttonItem.target?.perform(buttonItem.action, with: buttonItem)
-                            }
-                        }
-                    } else {
-                        if let buttonItem = self.navigationItem.rightBarButtonItems?.filter({$0.customView != nil}).first?.customView as? UIButton {
-                            buttonItem.sendActions(for: .touchUpInside)
-                        }
-                    }
-                    t.invalidate()
-                }
-            })
-        }
-
         if metadata?.livePhoto == true {
             NCContentPresenter.shared.messageNotification(
                 "", description: "_message_disable_overwrite_livephoto_",
@@ -98,6 +77,7 @@ import NCCommunication
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        // needs to be saved bc in didDisappear presentingVC is already nil
         self.parentVC = presentingViewController
     }
 
