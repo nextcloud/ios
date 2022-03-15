@@ -193,7 +193,6 @@ class NCPlayer: NSObject {
         } completionHandler: { _, _, _, _, _, error, _, _ in
             if error == nil {
                 NCManageDatabase.shared.addLocalFile(metadata: self.metadata)
-                CCUtility.setExif(self.metadata) { _, _, _, _, _ in }
                 let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: self.metadata)
                 if let url = urlVideo.url {
                     self.url = url
