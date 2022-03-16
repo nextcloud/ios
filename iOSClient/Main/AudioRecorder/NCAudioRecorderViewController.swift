@@ -188,8 +188,8 @@ open class NCAudioRecorder: NSObject {
 
     // MARK: - Initializers
 
-    public init(to: String) {
-        url = URL(fileURLWithPath: NCAudioRecorder.directory).appendingPathComponent(to)
+    public init(to fileName: String) {
+        url = URL(fileURLWithPath: NCAudioRecorder.directory).appendingPathComponent(fileName)
         super.init()
 
         do {
@@ -278,7 +278,6 @@ open class NCAudioRecorder: NSObject {
     }
 
     fileprivate func stopMetering() {
-
         link?.invalidate()
         link = nil
     }
