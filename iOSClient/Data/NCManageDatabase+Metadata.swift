@@ -807,4 +807,14 @@ extension NCManageDatabase {
         }
         return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
     }
+
+    func getSubtitles(account: String, serverUrl: String, fileName: String) -> [tableMetadata] {
+
+        let realm = try! Realm()
+        let nameOnly = (fileName as NSString).deletingPathExtension
+
+        let results = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName BEGINSWITH[c] %@ AND fileName ENDSWITH[c] '.srt'", account, serverUrl, nameOnly)
+
+        return Array(results.map { tableMetadata.init(value: $0) })
+    }
 }
