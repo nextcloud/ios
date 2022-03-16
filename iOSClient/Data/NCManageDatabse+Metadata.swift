@@ -166,6 +166,10 @@ extension NCManageDatabase {
         metadata.urlBase = urlBase
         metadata.user = user
         metadata.userId = userId
+        
+        if !metadata.urlBase.isEmpty, metadata.serverUrl.hasPrefix(metadata.urlBase) {
+            metadata.path = String(metadata.serverUrl.dropFirst(metadata.urlBase.count)) + "/"
+        }
 
         return metadata
     }
