@@ -50,9 +50,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
 
     var shares: (firstShareLink: tableShare?, share: [tableShare]?) = (nil, nil)
 
-    var shareLinkMenuView: NCShareLinkMenuView?
-    var shareUserMenuView: NCShareUserMenuView?
-    var shareMenuViewWindow: UIView?
     private var dropDown = DropDown()
     var networking: NCShareNetworking?
 
@@ -202,13 +199,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
         alertController.addAction(okAction)
 
         self.present(alertController, animated: true, completion: nil)
-    }
-
-    @objc func tapLinkMenuViewWindow(gesture: UITapGestureRecognizer) {
-        shareLinkMenuView?.unLoad()
-        shareLinkMenuView = nil
-        shareUserMenuView?.unLoad()
-        shareUserMenuView = nil
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {

@@ -37,24 +37,8 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
         let isFilesSharingPublicPasswordEnforced = NCManageDatabase.shared.getCapabilitiesServerBool(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesFileSharingPubPasswdEnforced, exists: false)
 
         if let tableShare = tableShare {
-            // open share menu
-            if tableShare.shareType == 3 {
-                let views = NCShareCommon.shared.openViewMenuShareLink(shareViewController: self, tableShare: tableShare, metadata: metadata)
-                shareLinkMenuView = views.shareLinkMenuView
-                shareMenuViewWindow = views.viewWindow
-
-                let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
-                tap.delegate = self
-                shareMenuViewWindow?.addGestureRecognizer(tap)
-            } else {
-                let views = NCShareCommon.shared.openViewMenuUser(shareViewController: self, tableShare: tableShare, metadata: metadata)
-                shareUserMenuView = views.shareUserMenuView
-                shareMenuViewWindow = views.viewWindow
-
-                let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
-                tap.delegate = self
-                shareMenuViewWindow?.addGestureRecognizer(tap)
-            }
+            // TODO: open share menu
+            
         } else if isFilesSharingPublicPasswordEnforced {
             // create share with pw
             let alertController = UIAlertController(title: NSLocalizedString("_enforce_password_protection_", comment: ""), message: "", preferredStyle: .alert)
