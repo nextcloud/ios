@@ -85,7 +85,7 @@ class NCShareAdvancePermission: UITableViewController {
         headerView.favorite.layoutIfNeeded()
         headerView.fileName.text = self.metadata?.fileNameView
         headerView.fileName.textColor = NCBrandColor.shared.label
-        headerView.favorite.addTarget(self, action: #selector(favoriteClicked), for: .touchUpInside)
+//        headerView.favorite.addTarget(self, action: #selector(favoriteClicked), for: .touchUpInside)
         if metadata.favorite {
             headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 24), for: .normal)
         } else {
@@ -120,19 +120,25 @@ class NCShareAdvancePermission: UITableViewController {
         guard let cell = shareConfig.cellFor(indexPath: indexPath) else { return UITableViewCell() }
         return cell
     }
-
-    @objc func favoriteClicked() {
-        
-    }
 }
 
 protocol ShareCellConfig {
     var title: String { get }
+    func getCell(for share: tableShare) -> UITableViewCell
+}
+
+protocol ToggleCellConfig: ShareCellConfig {
     func isOn(for share: tableShare) -> Bool
     func didChange(_ share: tableShare, to newValue: Bool)
 }
 
-protocol Permission: ShareCellConfig {
+extension ToggleCellConfig {
+    func getCell(for share: tableShare) -> UITableViewCell {
+        return ToggleCell(isOn: isOn(for: share))
+    }
+}
+
+protocol Permission: ToggleCellConfig {
     static var forDirectory: [Self] { get }
     static var forFile: [Self] { get }
 }
@@ -203,24 +209,34 @@ enum LinkPermission: Permission {
 }
 
 enum Advanced: CaseIterable, ShareCellConfig {
-    func didChange(_ share: tableShare, to newValue: Bool) {
-        
+    func getCell(for share: tableShare) -> UITableViewCell {
+        switch self {
+        case .hideDownload:
+            return ToggleCell(isOn: share.hideDownload)
+        case .expirationDate:
+            let cell = UITableViewCell(style: .value1, reuseIdentifier: "shareExpDate")
+            if let expDate = share.expirationDate {
+                cell.detailTextLabel?.text = DateFormatter.shareExpDate.string(from: expDate as Date)
+            }
+            return cell
+        case .password: return ToggleCell(isOn: !share.shareWith.isEmpty)
+        case .note:
+            let cell = UITableViewCell(style: .value1, reuseIdentifier: "shareNote")
+            cell.detailTextLabel?.text = share.note
+            cell.accessoryType = .disclosureIndicator
+            return cell
+        }
     }
 
-    func isOn(for share: tableShare) -> Bool {
-        switch self {
-        case .hideDownload: return share.hideDownload
-        case .expirationDate: return share.expirationDate != nil
-        case .password: return !share.shareWith.isEmpty
-        case .note: return false
-        }
+    func didChange(_ share: tableShare, to newValue: Bool) {
+        
     }
 
     var title: String {
         switch self {
         case .hideDownload: return NSLocalizedString("_share_hide_download_", comment: "")
         case .expirationDate: return NSLocalizedString("_share_expiration_date_", comment: "")
-        case .password: return NSLocalizedString("_share_password_", comment: "")
+        case .password: return NSLocalizedString("_share_password_protect_", comment: "")
         case .note: return NSLocalizedString("_share_note_recipient_", comment: "")
         }
     }
@@ -250,28 +266,32 @@ struct ShareConfig {
         } else if indexPath.section == 1, indexPath.row < advanced.count {
             cellConfig = advanced[indexPath.row]
         } else { return nil }
-        let cell = ToggleCell(isOn: cellConfig.isOn(for: share)) { newValue in
-            cellConfig.didChange(share, to: newValue)
-        }
+        let cell = cellConfig.getCell(for: share)
         cell.textLabel?.text = cellConfig.title
         return cell
     }
 }
 
 class ToggleCell: UITableViewCell {
-    let toggle = UISwitch()
-
-    init(isOn: Bool, didChange: @escaping (Bool) -> Void) {
+    init(isOn: Bool) {
         super.init(style: .default, reuseIdentifier: "toggleCell")
-        toggle.frame = .zero
-        toggle.isOn = isOn
-        toggle.action(for: .valueChanged) { _ in
-            didChange(self.toggle.isOn)
+        if isOn {
+            self.accessoryType = .checkmark
+        } else {
+            self.accessoryType = .none
         }
-        self.accessoryView = toggle
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
+
+extension DateFormatter {
+    static let shareExpDate: DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.formatterBehavior = .behavior10_4
+        dateFormatter.dateStyle = .medium
+        return dateFormatter
+    }()
 }
