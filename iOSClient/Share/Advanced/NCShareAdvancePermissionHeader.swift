@@ -15,7 +15,3 @@ class NCShareAdvancePermissionHeader: UIView {
     @IBOutlet weak var favorite: UIButton!
     @IBOutlet weak var fullWidthImageView: UIImageView!
 }
-
-protocol NCShareAdvancePermissionHeaderDelegate: AnyObject {
-    func favoriteClicked()
-}

@@ -20,7 +20,7 @@ class NCShareAdvancePermission: UITableViewController {
         super.viewDidLoad()
         self.shareConfig = ShareConfig(isDirectory: metadata.directory, share: share)
     }
-    
+
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         guard tableView.tableHeaderView == nil, tableView.tableFooterView == nil else { return }
@@ -120,11 +120,50 @@ class NCShareAdvancePermission: UITableViewController {
         guard let cell = shareConfig.cellFor(indexPath: indexPath) else { return UITableViewCell() }
         return cell
     }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        guard let cellConfig = shareConfig.config(for: indexPath) else { return }
+        if let cellConfig = cellConfig as? ToggleCellConfig {
+            cellConfig.didSelect(for: share)
+            tableView.reloadData()
+        } else if let cellConfig = cellConfig as? Advanced {
+            switch cellConfig {
+            case .hideDownload:
+                share.hideDownload.toggle()
+                tableView.reloadData()
+            case .expirationDate: tableView.cellForRow(at: indexPath)?.becomeFirstResponder()
+            case .password:
+                guard share.password.isEmpty else {
+                    share.password = ""
+                    tableView.reloadData()
+                    return
+                }
+                let alertController = UIAlertController(title: NSLocalizedString("_enforce_password_protection_", comment: ""), message: "", preferredStyle: .alert)
+                alertController.addTextField { textField in
+                    textField.isSecureTextEntry = true
+                }
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { _ in })
+                let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { _ in
+                    let password = alertController.textFields?.first?.text
+                    self.share.password = password ?? ""
+                    tableView.reloadData()
+                }
+
+                alertController.addAction(okAction)
+
+                self.present(alertController, animated: true)
+            case .note: break
+                // TODO: Pushnote VC
+            }
+        }  // else: unkown cell
+    }
 }
 
 protocol ShareCellConfig {
     var title: String { get }
     func getCell(for share: tableShare) -> UITableViewCell
+    func didSelect(for share: tableShare)
 }
 
 protocol ToggleCellConfig: ShareCellConfig {
@@ -135,6 +174,10 @@ protocol ToggleCellConfig: ShareCellConfig {
 extension ToggleCellConfig {
     func getCell(for share: tableShare) -> UITableViewCell {
         return ToggleCell(isOn: isOn(for: share))
+    }
+
+    func didSelect(for share: tableShare) {
+        didChange(share, to: isOn(for: share))
     }
 }
 
@@ -154,15 +197,6 @@ enum UserPermission: CaseIterable, Permission {
         case .edit: return CCUtility.isPermission(toCanChange: share.permissions)
         case .create: return CCUtility.isPermission(toCanCreate: share.permissions)
         case .delete: return CCUtility.isPermission(toCanDelete: share.permissions)
-        }
-    }
-
-    func handleAction(for tableShare: tableShare) {
-        switch self {
-        case .reshare: break
-        case .edit: break
-        case .create: break
-        case .delete: break
         }
     }
 
@@ -209,27 +243,28 @@ enum LinkPermission: Permission {
 }
 
 enum Advanced: CaseIterable, ShareCellConfig {
+    func didSelect(for share: tableShare) {
+        switch self {
+        case .hideDownload: share.hideDownload.toggle()
+        case .expirationDate: return
+        case .password: return
+        case .note: return
+        }
+    }
+
     func getCell(for share: tableShare) -> UITableViewCell {
         switch self {
         case .hideDownload:
             return ToggleCell(isOn: share.hideDownload)
         case .expirationDate:
-            let cell = UITableViewCell(style: .value1, reuseIdentifier: "shareExpDate")
-            if let expDate = share.expirationDate {
-                cell.detailTextLabel?.text = DateFormatter.shareExpDate.string(from: expDate as Date)
-            }
-            return cell
-        case .password: return ToggleCell(isOn: !share.shareWith.isEmpty)
+            return DatePickerTableViewCell(date: share.expirationDate)
+        case .password: return ToggleCell(isOn: !share.password.isEmpty)
         case .note:
             let cell = UITableViewCell(style: .value1, reuseIdentifier: "shareNote")
             cell.detailTextLabel?.text = share.note
             cell.accessoryType = .disclosureIndicator
             return cell
         }
-    }
-
-    func didChange(_ share: tableShare, to newValue: Bool) {
-        
     }
 
     var title: String {
@@ -260,15 +295,23 @@ struct ShareConfig {
     }
 
     func cellFor(indexPath: IndexPath) -> UITableViewCell? {
-        let cellConfig: ShareCellConfig
-        if indexPath.section == 0, indexPath.row < permissions.count {
-            cellConfig = permissions[indexPath.row]
-        } else if indexPath.section == 1, indexPath.row < advanced.count {
-            cellConfig = advanced[indexPath.row]
-        } else { return nil }
-        let cell = cellConfig.getCell(for: share)
-        cell.textLabel?.text = cellConfig.title
+        let cellConfig = config(for: indexPath)
+        let cell = cellConfig?.getCell(for: share)
+        cell?.textLabel?.text = cellConfig?.title
         return cell
+    }
+
+    func didSelectRow(at indexPath: IndexPath) {
+        let cellConfig = config(for: indexPath)
+        cellConfig?.didSelect(for: share)
+    }
+
+    func config(for indexPath: IndexPath) -> ShareCellConfig? {
+        if indexPath.section == 0, indexPath.row < permissions.count {
+            return  permissions[indexPath.row]
+        } else if indexPath.section == 1, indexPath.row < advanced.count {
+            return advanced[indexPath.row]
+        } else { return nil }
     }
 }
 
@@ -294,4 +337,39 @@ extension DateFormatter {
         dateFormatter.dateStyle = .medium
         return dateFormatter
     }()
+}
+
+open class DatePickerTableViewCell: UITableViewCell {
+    let picker = UIDatePicker()
+
+    open override func awakeFromNib() {
+        super.awakeFromNib()
+        picker.datePickerMode = .date
+        if #available(iOS 13.4, *) {
+            picker.preferredDatePickerStyle = .wheels
+        }
+    }
+
+    open override var canBecomeFirstResponder: Bool {
+        return true
+    }
+
+    open override var canResignFirstResponder: Bool {
+        return true
+    }
+
+    open override var inputView: UIView? {
+        return picker
+    }
+
+    init(date: NSDate?) {
+        super.init(style: .value1, reuseIdentifier: "shareExpDate")
+        if let expDate = date {
+            detailTextLabel?.text = DateFormatter.shareExpDate.string(from: expDate as Date)
+        }
+    }
+    
+    required public init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 }

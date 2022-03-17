@@ -9,7 +9,7 @@
 import Foundation
 
 extension NCShare {
-    func toggleShareMenu(for tableShare: tableShare) {
+    func toggleShareMenu(for share: tableShare) {
         
         var actions = [NCMenuAction]()
         
@@ -34,7 +34,7 @@ extension NCShare {
                     guard
                         let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
                         let navigationController = self.navigationController else { return }
-                    advancePermission.share = tableShare
+                    advancePermission.share = tableShare(value: share)
                     advancePermission.metadata = self.metadata
                     navigationController.pushViewController(advancePermission, animated: true)
                 }

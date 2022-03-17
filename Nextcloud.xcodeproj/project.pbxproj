@@ -1210,8 +1210,8 @@
 			children = (
 				F700510022DF63AC003A3356 /* NCShare.storyboard */,
 				F700510422DF6A89003A3356 /* NCShare.swift */,
-				AF93471327E235EB002537EE /* Advanced */,
 				AF730AF727834B1400B7520E /* NCShare+NCCellDelegate.swift */,
+				AF93471327E235EB002537EE /* Advanced */,
 				F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */,
 				F7E4D9C322ED929B003675FD /* NCShareCommentsCell.swift */,
 				F769454522E9F1B0000A798A /* NCShareCommon.swift */,
