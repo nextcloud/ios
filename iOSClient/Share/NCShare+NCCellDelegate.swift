@@ -37,8 +37,8 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
         let isFilesSharingPublicPasswordEnforced = NCManageDatabase.shared.getCapabilitiesServerBool(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesFileSharingPubPasswdEnforced, exists: false)
 
         if let tableShare = tableShare {
-            // TODO: open share menu
-            
+            // open share menu
+            self.toggleShareMenu(for: tableShare)
         } else if isFilesSharingPublicPasswordEnforced {
             // create share with pw
             let alertController = UIAlertController(title: NSLocalizedString("_enforce_password_protection_", comment: ""), message: "", preferredStyle: .alert)

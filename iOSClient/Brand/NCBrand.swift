@@ -215,6 +215,16 @@ class NCBrandColor: NSObject {
         }
     }
 
+    @objc public var secondaryLabel: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .secondaryLabel
+            } else {
+                return UIColor(red: 0.24, green: 0.24, blue: 0.26, alpha: 0.6)
+            }
+        }
+    }
+
     @objc public var separator: UIColor {
         get {
             if #available(iOS 13, *) {
