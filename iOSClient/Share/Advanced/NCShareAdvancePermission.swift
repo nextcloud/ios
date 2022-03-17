@@ -118,6 +118,9 @@ class NCShareAdvancePermission: UITableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = shareConfig.cellFor(indexPath: indexPath) else { return UITableViewCell() }
+        if let cell = cell as? DatePickerTableViewCell {
+            cell.onReload = tableView.reloadData
+        }
         return cell
     }
 
@@ -132,7 +135,9 @@ class NCShareAdvancePermission: UITableViewController {
             case .hideDownload:
                 share.hideDownload.toggle()
                 tableView.reloadData()
-            case .expirationDate: tableView.cellForRow(at: indexPath)?.becomeFirstResponder()
+            case .expirationDate:
+                let cell = tableView.cellForRow(at: indexPath) as? DatePickerTableViewCell
+                cell?.textField.becomeFirstResponder()
             case .password:
                 guard share.password.isEmpty else {
                     share.password = ""
@@ -257,7 +262,7 @@ enum Advanced: CaseIterable, ShareCellConfig {
         case .hideDownload:
             return ToggleCell(isOn: share.hideDownload)
         case .expirationDate:
-            return DatePickerTableViewCell(date: share.expirationDate)
+            return DatePickerTableViewCell(share: share)
         case .password: return ToggleCell(isOn: !share.password.isEmpty)
         case .note:
             let cell = UITableViewCell(style: .value1, reuseIdentifier: "shareNote")
@@ -341,30 +346,41 @@ extension DateFormatter {
 
 open class DatePickerTableViewCell: UITableViewCell {
     let picker = UIDatePicker()
+    let textField = UITextField()
 
-    open override func awakeFromNib() {
-        super.awakeFromNib()
+    var onReload: (() -> Void)?
+
+    init(share: tableShare) {
+        super.init(style: .value1, reuseIdentifier: "shareExpDate")
         picker.datePickerMode = .date
         if #available(iOS 13.4, *) {
             picker.preferredDatePickerStyle = .wheels
         }
-    }
+        picker.action(for: .valueChanged) { datePicker in
+            guard let datePicker = datePicker as? UIDatePicker else { return }
+            self.detailTextLabel?.text = DateFormatter.shareExpDate.string(from: datePicker.date)
+        }
+        accessoryView = textField
 
-    open override var canBecomeFirstResponder: Bool {
-        return true
-    }
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let doneButton = UIBarButtonItem(title: "_done_", style: .done) {
+            self.resignFirstResponder()
+            share.date = self.picker.date as NSDate
+            self.onReload?()
+        }
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let cancelButton = UIBarButtonItem(title: NSLocalizedString("_clear_", comment: ""), style: .plain) {
+            self.resignFirstResponder()
+            share.date = nil
+            self.onReload?()
+        }
+        toolbar.setItems([cancelButton, spaceButton, doneButton], animated: false)
 
-    open override var canResignFirstResponder: Bool {
-        return true
-    }
+        textField.inputAccessoryView = toolbar
+        textField.inputView = picker
 
-    open override var inputView: UIView? {
-        return picker
-    }
-
-    init(date: NSDate?) {
-        super.init(style: .value1, reuseIdentifier: "shareExpDate")
-        if let expDate = date {
+        if let expDate = share.date {
             detailTextLabel?.text = DateFormatter.shareExpDate.string(from: expDate as Date)
         }
     }
