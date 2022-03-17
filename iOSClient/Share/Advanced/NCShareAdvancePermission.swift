@@ -127,10 +127,7 @@ class NCShareAdvancePermission: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         guard let cellConfig = shareConfig.config(for: indexPath) else { return }
-        if let cellConfig = cellConfig as? ToggleCellConfig {
-            cellConfig.didSelect(for: share)
-            tableView.reloadData()
-        } else if let cellConfig = cellConfig as? Advanced {
+        if let cellConfig = cellConfig as? Advanced {
             switch cellConfig {
             case .hideDownload:
                 share.hideDownload.toggle()
@@ -161,7 +158,10 @@ class NCShareAdvancePermission: UITableViewController {
             case .note: break
                 // TODO: Pushnote VC
             }
-        }  // else: unkown cell
+        } else {
+            cellConfig.didSelect(for: share)
+            tableView.reloadData()
+        }
     }
 }
 
@@ -182,7 +182,7 @@ extension ToggleCellConfig {
     }
 
     func didSelect(for share: tableShare) {
-        didChange(share, to: isOn(for: share))
+        didChange(share, to: !isOn(for: share))
     }
 }
 
@@ -192,17 +192,21 @@ protocol Permission: ToggleCellConfig {
 }
 
 enum UserPermission: CaseIterable, Permission {
+    var permissionBitFlag: Int {
+        switch self {
+        case .reshare: return NCGlobal.shared.permissionShareShare
+        case .edit: return NCGlobal.shared.permissionUpdateShare
+        case .create: return NCGlobal.shared.permissionCreateShare
+        case .delete: return NCGlobal.shared.permissionDeleteShare
+        }
+    }
+
     func didChange(_ share: tableShare, to newValue: Bool) {
-        
+        share.permissions ^= permissionBitFlag
     }
 
     func isOn(for share: tableShare) -> Bool {
-        switch self {
-        case .reshare: return CCUtility.isPermission(toCanShare: share.permissions)
-        case .edit: return CCUtility.isPermission(toCanChange: share.permissions)
-        case .create: return CCUtility.isPermission(toCanCreate: share.permissions)
-        case .delete: return CCUtility.isPermission(toCanDelete: share.permissions)
-        }
+        return (share.permissions & permissionBitFlag) != 0
     }
 
     case reshare, edit, create, delete
@@ -221,7 +225,40 @@ enum UserPermission: CaseIterable, Permission {
 
 enum LinkPermission: Permission {
     func didChange(_ share: tableShare, to newValue: Bool) {
-        
+        guard self != .allowEdit else {
+            // file
+            share.permissions = CCUtility.getPermissionsValue(
+                byCanEdit: newValue,
+                andCanCreate: newValue,
+                andCanChange: newValue,
+                andCanDelete: newValue,
+                andCanShare: false,
+                andIsFolder: false)
+            return
+        }
+        // can't deselect, only change
+        guard newValue == true else { return }
+        switch self {
+        case .allowEdit: return
+        case .viewOnly:
+            share.permissions = CCUtility.getPermissionsValue(
+                byCanEdit: false,
+                andCanCreate: false,
+                andCanChange: false,
+                andCanDelete: false,
+                andCanShare: false,
+                andIsFolder: true)
+        case .uploadEdit:
+            share.permissions = CCUtility.getPermissionsValue(
+                byCanEdit: true,
+                andCanCreate: true,
+                andCanChange: true,
+                andCanDelete: true,
+                andCanShare: false,
+                andIsFolder: true)
+        case .fileDrop:
+            share.permissions = NCGlobal.shared.permissionCreateShare
+        }
     }
 
     func isOn(for share: tableShare) -> Bool {
@@ -384,7 +421,7 @@ open class DatePickerTableViewCell: UITableViewCell {
             detailTextLabel?.text = DateFormatter.shareExpDate.string(from: expDate as Date)
         }
     }
-    
+
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
