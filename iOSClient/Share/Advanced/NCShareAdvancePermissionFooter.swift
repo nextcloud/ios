@@ -16,8 +16,8 @@ class NCShareAdvancePermissionFooter: UIView {
     @IBOutlet weak var buttonCancel: UIButton!
     @IBOutlet weak var buttonNext: UIButton!
     weak var delegate: NCShareAdvanceFotterDelegate?
-    
-    func setupUI(with share: TableShareable, delegate: NCShareAdvanceFotterDelegate?) {
+
+    func setupUI(delegate: NCShareAdvanceFotterDelegate?) {
         self.delegate = delegate
 
         backgroundColor = .clear
@@ -27,13 +27,8 @@ class NCShareAdvancePermissionFooter: UIView {
         buttonCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
         buttonCancel.layer.cornerRadius = 10
         buttonCancel.layer.masksToBounds = true
-        buttonCancel.layer.borderWidth = 1
 
-        if NCManageDatabase.shared.getTableShare(account: share.account, idShare: share.idShare) == nil {
-            buttonNext.setTitle(NSLocalizedString("_next_", comment: ""), for: .normal)
-        } else {
-            buttonNext.setTitle(NSLocalizedString("_apply_changes_", comment: ""), for: .normal)
-        }
+        buttonNext.setTitle(NSLocalizedString("_save_", comment: ""), for: .normal)
         buttonNext.layer.cornerRadius = 10
         buttonNext.layer.masksToBounds = true
         buttonNext.backgroundColor = NCBrandColor.shared.brand

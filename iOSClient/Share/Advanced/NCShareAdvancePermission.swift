@@ -57,7 +57,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
 
     func setupFooterView() {
         guard let footerView = (Bundle.main.loadNibNamed("NCShareAdvancePermissionFooter", owner: self, options: nil)?.first as? NCShareAdvancePermissionFooter) else { return }
-        footerView.setupUI(with: share, delegate: self)
+        footerView.setupUI(delegate: self)
 
         footerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 100)
         tableView.tableFooterView = footerView
@@ -80,9 +80,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
     }
 
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if section == 0 { return NSLocalizedString("_advanced_", comment: "") }
-        else if section == 1 { return NSLocalizedString("_misc_", comment: "") }
-        else { return nil }
+        if section == 0 { return NSLocalizedString("_advanced_", comment: "") } else if section == 1 { return NSLocalizedString("_misc_", comment: "") } else { return nil }
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -90,9 +88,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 { return shareConfig.permissions.count }
-        else if section == 1 { return shareConfig.advanced.count }
-        else { return 0 }
+        if section == 0 { return shareConfig.permissions.count } else if section == 1 { return shareConfig.advanced.count } else { return 0 }
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -318,7 +314,6 @@ enum Advanced: CaseIterable, ShareCellConfig {
 }
 
 struct ShareConfig {
-
     let permissions: [Permission]
     let advanced: [Advanced]
     let share: TableShareable
@@ -399,7 +394,7 @@ open class DatePickerTableViewCell: UITableViewCell {
 
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
-        let doneButton = UIBarButtonItem(title: "_done_", style: .done) {
+        let doneButton = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: .done) {
             self.resignFirstResponder()
             share.expirationDate = self.picker.date as NSDate
             self.onReload?()

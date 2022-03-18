@@ -62,6 +62,7 @@
 "_beta_version_"            = "Beta version";
 "_function_in_testing_"     = "Function in testing, please send information about any problems you run into.";
 "_done_"                    = "Done";
+"_clear_"                   = "Clear";
 "_passcode_too_short_"      = "Passcode too short, at least 4 characters required";
 "_selected_"                = "Selected";
 "_scan_fingerprint_"        = "Scan fingerprint to authenticate";
@@ -144,6 +145,7 @@
 "_recent_"                  = "Recent";
 "_view_in_folder_"          = "View in folder";
 "_leave_share_"             = "Leave this share";
+"_misc_"                    = "Miscellaneous";
 
 /* Remove a file from a list, don't delete it entirely */
 "_remove_file_"             = "Remove file";
@@ -564,7 +566,7 @@
 "_error_download_photobrowser_" = "Error: Unable to download photo";
 "_share_link_"                  = "Share link";
 "_share_link_button_"           = "Send link to …";
-"_share_link_name_"                   = "Link name";
+"_share_link_name_"             = "Link name";
 "_password_"                    = "Password";
 "_share_password_"              = "Password protected link";
 "_share_expirationdate_"        = "Set expiration date for link";
@@ -591,6 +593,7 @@
 "_new_comment_"                 = "New comment …";
 "_edit_comment_"                = "Edit comment";
 "_delete_comment_"              = "Delete comment";
+"_share_advanced_permissions_"  = "Advanced permissions";
 "_share_allow_editing_"         = "Allow editing";
 "_share_read_only_"             = "View only";
 "_share_editing_"               = "Editing";
