@@ -10,9 +10,9 @@ import Foundation
 
 extension NCShare {
     func toggleShareMenu(for share: tableShare) {
-        
+
         var actions = [NCMenuAction]()
-        
+
 //        if !folder {
 //            actions.append(
 //                NCMenuAction(
@@ -24,23 +24,23 @@ extension NCShare {
 //                )
 //            )
 //        }
-        
+
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_advance_permissions_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "rename").imageColor(NCBrandColor.shared.brandElement),
                 action: { _ in
-                    // TODO: Open Advanced permissions modal view
                     guard
                         let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
                         let navigationController = self.navigationController else { return }
+                    // FIXME: Fatal - Object has been deleted or invalidated
                     advancePermission.share = tableShare(value: share)
                     advancePermission.metadata = self.metadata
                     navigationController.pushViewController(advancePermission, animated: true)
                 }
             )
         )
-        
+
 //        if sendMail {
 //            actions.append(
 //                NCMenuAction(
@@ -52,7 +52,7 @@ extension NCShare {
 //                )
 //            )
 //        }
-        
+
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_share_unshare_", comment: ""),

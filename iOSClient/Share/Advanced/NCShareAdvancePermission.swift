@@ -11,7 +11,13 @@ import NCCommunication
 import SVGKit
 import CloudKit
 
-class NCShareAdvancePermission: UITableViewController {
+class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDelegate {
+    func dismissShareAdvanceView(shouldSave: Bool) {
+        defer { navigationController?.popViewController(animated: true) }
+        guard shouldSave else { return }
+        // TODO: Save / Create
+    }
+    
     var share: tableShare!
     var metadata: tableMetadata!
     var shareConfig: ShareConfig!
@@ -27,38 +33,14 @@ class NCShareAdvancePermission: UITableViewController {
         setupHeaderView()
         setupFooterView()
     }
-    @objc func cancelClicked() {
-        navigationController?.popViewController(animated: true)
-    }
-
-    @objc func nextClicked() {
-    }
 
     func setupFooterView() {
         guard let footerView = (Bundle.main.loadNibNamed("NCShareAdvancePermissionFooter", owner: self, options: nil)?.first as? NCShareAdvancePermissionFooter) else { return }
-        footerView.backgroundColor = .clear
-        footerView.addShadow(location: .top)
-
-        footerView.buttonCancel.addTarget(self, action: #selector(cancelClicked), for: .touchUpInside)
-        footerView.buttonCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
-        footerView.buttonCancel.layer.cornerRadius = 10
-        footerView.buttonCancel.layer.masksToBounds = true
-        footerView.buttonCancel.layer.borderWidth = 1
-
-        if NCManageDatabase.shared.getTableShare(account: share.account, idShare: share.idShare) == nil {
-            footerView.buttonNext.setTitle(NSLocalizedString("_next_", comment: ""), for: .normal)
-        } else {
-            footerView.buttonNext.setTitle(NSLocalizedString("_apply_changes_", comment: ""), for: .normal)
-        }
-        footerView.buttonNext.layer.cornerRadius = 10
-        footerView.buttonNext.layer.masksToBounds = true
-        footerView.buttonNext.backgroundColor = NCBrandColor.shared.brand
-        footerView.buttonNext.addTarget(self, action: #selector(nextClicked), for: .touchUpInside)
+        footerView.setupUI(with: share, delegate: self)
 
         footerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 100)
         tableView.tableFooterView = footerView
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
-
         footerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         footerView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
         footerView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
@@ -67,32 +49,8 @@ class NCShareAdvancePermission: UITableViewController {
 
     func setupHeaderView() {
         guard let headerView = (Bundle.main.loadNibNamed("NCShareAdvancePermissionHeader", owner: self, options: nil)?.first as? NCShareAdvancePermissionHeader) else { return }
-//        headerView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
-        if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            headerView.fullWidthImageView.image = NCUtility.shared.getImageMetadata(metadata, for: headerView.frame.height)
-            headerView.fullWidthImageView.contentMode = .scaleAspectFill
-            headerView.imageView.isHidden = true
-        } else {
-            if metadata!.directory {
-                headerView.imageView.image = UIImage(named: "folder")
-            } else if !metadata.iconName.isEmpty {
-                headerView.imageView.image = UIImage(named: metadata.iconName)
-            } else {
-                headerView.imageView.image = UIImage(named: "file")
-            }
-        }
-        headerView.favorite.setNeedsUpdateConstraints()
-        headerView.favorite.layoutIfNeeded()
-        headerView.fileName.text = self.metadata?.fileNameView
-        headerView.fileName.textColor = NCBrandColor.shared.label
-//        headerView.favorite.addTarget(self, action: #selector(favoriteClicked), for: .touchUpInside)
-        if metadata.favorite {
-            headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 24), for: .normal)
-        } else {
-            headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.systemGray, size: 24), for: .normal)
-        }
-        headerView.info.textColor = NCBrandColor.shared.secondaryLabel
-        headerView.info.text = CCUtility.transformedSize(metadata.size) + ", " + CCUtility.dateDiff(metadata.date as Date)
+        headerView.setupUI(with: metadata)
+
         headerView.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 200)
         tableView.tableHeaderView = headerView
         headerView.translatesAutoresizingMaskIntoConstraints = false
@@ -155,8 +113,13 @@ class NCShareAdvancePermission: UITableViewController {
                 alertController.addAction(okAction)
 
                 self.present(alertController, animated: true)
-            case .note: break
-                // TODO: Pushnote VC
+            case .note:
+                let storyboard = UIStoryboard(name: "NCShare", bundle: nil)
+                guard let viewNewUserComment = storyboard.instantiateViewController(withIdentifier: "NCShareNewUserAddComment") as? NCShareNewUserAddComment else { return }
+                viewNewUserComment.metadata = self.metadata
+                viewNewUserComment.share = self.share
+                viewNewUserComment.onDismiss = tableView.reloadData
+                self.navigationController?.pushViewController(viewNewUserComment, animated: true)
             }
         } else {
             cellConfig.didSelect(for: share)

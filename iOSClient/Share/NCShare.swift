@@ -303,7 +303,7 @@ extension NCShare: UITableViewDataSource {
             cell.delegate = self
             if indexPath.row == 0 {
                 cell.isInternalLink = true
-            } else {
+            } else if shares.firstShareLink?.isInvalidated != true {
                 cell.tableShare = shares.firstShareLink
             }
             cell.setupCellUI()
