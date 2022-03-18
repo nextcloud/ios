@@ -11,12 +11,12 @@ import UIKit
 import NCCommunication
 import SVGKit
 
-class NCShareNewUserAddComment: UIViewController, UITextViewDelegate {
+class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareDetail {
     @IBOutlet weak var headerContainerView: UIView!
     @IBOutlet weak var sharingLabel: UILabel!
     @IBOutlet weak var sharingNote: UILabel!
     @IBOutlet weak var noteTextField: UITextView!
-    
+
     var onDismiss: (() -> Void)?
 
     public var share: tableShare!
@@ -24,6 +24,7 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.setNavigationTitle()
         guard let headerView = (Bundle.main.loadNibNamed("NCShareAdvancePermissionHeader", owner: self, options: nil)?.first as? NCShareAdvancePermissionHeader) else { return }
         headerContainerView.addSubview(headerView)
         headerView.frame = headerContainerView.frame
@@ -40,11 +41,6 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate {
 
         noteTextField.text = share.note
         noteTextField.delegate = self
-    }
-
-    func setTitle() {
-//        let defaultTitle = NSLocalizedString("_sharing_", comment: "")
-//        title = isUpdating ? (tableShare?.shareWith ?? defaultTitle) : (sharee?.shareWith ?? defaultTitle)
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {

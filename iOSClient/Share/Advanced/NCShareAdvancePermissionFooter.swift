@@ -39,11 +39,11 @@ class NCShareAdvancePermissionFooter: UIView {
         buttonNext.backgroundColor = NCBrandColor.shared.brand
         buttonNext.addTarget(self, action: #selector(nextClicked), for: .touchUpInside)
     }
-    
+
     @objc func cancelClicked() {
         delegate?.dismissShareAdvanceView(shouldSave: false)
     }
-    
+
     @objc func nextClicked() {
         delegate?.dismissShareAdvanceView(shouldSave: true)
     }

@@ -11,20 +11,46 @@ import NCCommunication
 import SVGKit
 import CloudKit
 
-class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDelegate {
+protocol NCShareDetail {
+    var share: tableShare! { get }
+}
+extension NCShareDetail where Self: UIViewController {
+    func setNavigationTitle() {
+        title = NSLocalizedString("_share_", comment: "") + "  – "
+        if share.shareType == 0 {
+            title! += share.shareWithDisplayname.isEmpty ? share.shareWith : share.shareWithDisplayname
+        } else {
+            title! += share.label.isEmpty ? NSLocalizedString("_share_link_", comment: "") : share.label
+        }
+    }
+}
+
+class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDelegate, NCShareDetail {
     func dismissShareAdvanceView(shouldSave: Bool) {
         defer { navigationController?.popViewController(animated: true) }
         guard shouldSave else { return }
-        // TODO: Save / Create
+        if NCManageDatabase.shared.getTableShare(account: share.account, idShare: share.idShare) == nil {
+            networking?.createShare(shareWith: share.shareWith, shareType: share.shareType, password: share.password, metadata: metadata)
+        } else {
+            var expirationDate: String?
+            if let date = share.expirationDate {
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "YYYY-MM-dd HH:mm:ss"
+                expirationDate = dateFormatter.string(from: date as Date)
+            }
+            networking?.updateShare(idShare: share.idShare, password: share.password, permissions: share.permissions, note: share.note, label: share.label, expirationDate: expirationDate, hideDownload: share.hideDownload)
+        }
     }
-    
+
     var share: tableShare!
     var metadata: tableMetadata!
     var shareConfig: ShareConfig!
+    var networking: NCShareNetworking?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.shareConfig = ShareConfig(isDirectory: metadata.directory, share: share)
+        self.setNavigationTitle()
     }
 
     override func viewWillLayoutSubviews() {
@@ -99,19 +125,13 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
                     tableView.reloadData()
                     return
                 }
-                let alertController = UIAlertController(title: NSLocalizedString("_enforce_password_protection_", comment: ""), message: "", preferredStyle: .alert)
-                alertController.addTextField { textField in
+                let alertController = UIAlertController.withTextField(titleKey: "_enforce_password_protection_") { textField in
+                    textField.placeholder = NSLocalizedString("_password_", comment: "")
                     textField.isSecureTextEntry = true
-                }
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { _ in })
-                let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { _ in
-                    let password = alertController.textFields?.first?.text
+                } completion: { password in
                     self.share.password = password ?? ""
                     tableView.reloadData()
                 }
-
-                alertController.addAction(okAction)
-
                 self.present(alertController, animated: true)
             case .note:
                 let storyboard = UIStoryboard(name: "NCShare", bundle: nil)
@@ -120,6 +140,16 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
                 viewNewUserComment.share = self.share
                 viewNewUserComment.onDismiss = tableView.reloadData
                 self.navigationController?.pushViewController(viewNewUserComment, animated: true)
+            case .label:
+                let alertController = UIAlertController.withTextField(titleKey: "_share_link_name_") { textField in
+                    textField.placeholder = cellConfig.title
+                    textField.text = self.share.label
+                } completion: { newValue in
+                    self.share.label = newValue ?? ""
+                    self.setNavigationTitle()
+                    tableView.reloadData()
+                }
+                self.present(alertController, animated: true)
             }
         } else {
             cellConfig.didSelect(for: share)
@@ -254,6 +284,7 @@ enum Advanced: CaseIterable, ShareCellConfig {
         case .expirationDate: return
         case .password: return
         case .note: return
+        case .label: return
         }
     }
 
@@ -263,11 +294,15 @@ enum Advanced: CaseIterable, ShareCellConfig {
             return ToggleCell(isOn: share.hideDownload)
         case .expirationDate:
             return DatePickerTableViewCell(share: share)
-        case .password: return ToggleCell(isOn: !share.password.isEmpty)
+        case .password: return ToggleCell(isOn: !share.password.isEmpty, customIcons: ("lock", "lock.open"))
         case .note:
             let cell = UITableViewCell(style: .value1, reuseIdentifier: "shareNote")
             cell.detailTextLabel?.text = share.note
             cell.accessoryType = .disclosureIndicator
+            return cell
+        case .label:
+            let cell = UITableViewCell(style: .value1, reuseIdentifier: "shareLabel")
+            cell.detailTextLabel?.text = share.label
             return cell
         }
     }
@@ -278,10 +313,11 @@ enum Advanced: CaseIterable, ShareCellConfig {
         case .expirationDate: return NSLocalizedString("_share_expiration_date_", comment: "")
         case .password: return NSLocalizedString("_share_password_protect_", comment: "")
         case .note: return NSLocalizedString("_share_note_recipient_", comment: "")
+        case .label: return NSLocalizedString("_share_link_name_", comment: "")
         }
     }
 
-    case hideDownload, expirationDate, password, note
+    case label, hideDownload, expirationDate, password, note
     static let forLink: [Advanced] = Advanced.allCases
     static let forUser: [Advanced] = [.expirationDate, .note]
 }
@@ -321,13 +357,16 @@ struct ShareConfig {
 }
 
 class ToggleCell: UITableViewCell {
-    init(isOn: Bool) {
+    typealias CustomToggleIcon = (onIconName: String?, offIconName: String?)
+    init(isOn: Bool, customIcons: CustomToggleIcon? = nil) {
         super.init(style: .default, reuseIdentifier: "toggleCell")
-        if isOn {
-            self.accessoryType = .checkmark
-        } else {
-            self.accessoryType = .none
+        guard let customIcons = customIcons,
+              let iconName = isOn ? customIcons.onIconName : customIcons.offIconName else {
+            self.accessoryType = isOn ? .checkmark : .none
+            return
         }
+        let image = NCUtility.shared.loadImage(named: iconName, color: NCBrandColor.shared.brandElement)
+        self.accessoryView = UIImageView(image: image)
     }
 
     required init?(coder: NSCoder) {
@@ -353,6 +392,7 @@ open class DatePickerTableViewCell: UITableViewCell {
     init(share: tableShare) {
         super.init(style: .value1, reuseIdentifier: "shareExpDate")
         picker.datePickerMode = .date
+        picker.minimumDate = Date()
         if #available(iOS 13.4, *) {
             picker.preferredDatePickerStyle = .wheels
         }
@@ -366,13 +406,13 @@ open class DatePickerTableViewCell: UITableViewCell {
         toolbar.sizeToFit()
         let doneButton = UIBarButtonItem(title: "_done_", style: .done) {
             self.resignFirstResponder()
-            share.date = self.picker.date as NSDate
+            share.expirationDate = self.picker.date as NSDate
             self.onReload?()
         }
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         let cancelButton = UIBarButtonItem(title: NSLocalizedString("_clear_", comment: ""), style: .plain) {
             self.resignFirstResponder()
-            share.date = nil
+            share.expirationDate = nil
             self.onReload?()
         }
         toolbar.setItems([cancelButton, spaceButton, doneButton], animated: false)
@@ -380,7 +420,7 @@ open class DatePickerTableViewCell: UITableViewCell {
         textField.inputAccessoryView = toolbar
         textField.inputView = picker
 
-        if let expDate = share.date {
+        if let expDate = share.expirationDate {
             detailTextLabel?.text = DateFormatter.shareExpDate.string(from: expDate as Date)
         }
     }
