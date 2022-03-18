@@ -11,13 +11,14 @@ import UIKit
 import NCCommunication
 import SVGKit
 
-class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareDetail {
+class NCShareNewUserAddComment: UIViewController, NCShareDetail {
 
     @IBOutlet weak var headerContainerView: UIView!
     @IBOutlet weak var sharingLabel: UILabel!
     @IBOutlet weak var sharingNote: UILabel!
     @IBOutlet weak var noteTextField: UITextView!
 
+    let contentInsets: CGFloat = 16
     var onDismiss: (() -> Void)?
 
     public var share: TableShareable!
@@ -40,13 +41,18 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareDet
         sharingLabel.text = NSLocalizedString("_sharing_", comment: "")
         sharingNote.text = NSLocalizedString("_share_note_recipient_", comment: "")
 
+        noteTextField.textContainerInset = UIEdgeInsets(top: contentInsets, left: contentInsets, bottom: contentInsets, right: contentInsets)
         noteTextField.text = share.note
-        noteTextField.delegate = self
-    }
+        let toolbar = UIToolbar.toolbar {
+            self.noteTextField.resignFirstResponder()
+            self.noteTextField.text = ""
+            self.share.note = ""
+        } completion: {
+            self.noteTextField.resignFirstResponder()
+            self.share.note = self.noteTextField.text
+        }
 
-    func textViewDidEndEditing(_ textView: UITextView) {
-        print(#function)
-//        share.note = noteTextField.text
+        noteTextField.inputAccessoryView = toolbar
     }
 
     override func viewWillDisappear(_ animated: Bool) {

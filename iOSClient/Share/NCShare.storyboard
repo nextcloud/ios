@@ -173,27 +173,22 @@
                                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hgf-O1-P97">
-                                        <rect key="frame" x="16" y="90.333333333333286" width="382" height="409.66666666666674"/>
-                                        <subviews>
-                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" canCancelContentTouches="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="VT0-1l-5HI">
-                                                <rect key="frame" x="16" y="16" width="350" height="377.66666666666669"/>
-                                                <color key="textColor" systemColor="labelColor"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                                                <connections>
-                                                    <outlet property="delegate" destination="VvU-6J-pzy" id="cAt-UZ-6KT"/>
-                                                </connections>
-                                            </textView>
-                                        </subviews>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstItem="VT0-1l-5HI" firstAttribute="top" secondItem="hgf-O1-P97" secondAttribute="top" constant="16" id="cc9-jI-nSo"/>
-                                            <constraint firstItem="VT0-1l-5HI" firstAttribute="centerX" secondItem="hgf-O1-P97" secondAttribute="centerX" id="cj9-1W-zVt"/>
-                                            <constraint firstItem="VT0-1l-5HI" firstAttribute="leading" secondItem="hgf-O1-P97" secondAttribute="leading" constant="16" id="gE6-6y-BzR"/>
-                                            <constraint firstItem="VT0-1l-5HI" firstAttribute="centerY" secondItem="hgf-O1-P97" secondAttribute="centerY" id="u80-BU-AcP"/>
-                                        </constraints>
-                                    </view>
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" canCancelContentTouches="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="VT0-1l-5HI">
+                                        <rect key="frame" x="16" y="106.33333333333329" width="382" height="377.66666666666674"/>
+                                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                                        <inset key="scrollIndicatorInsets" minX="0.0" minY="0.0" maxX="10" maxY="0.0"/>
+                                        <color key="textColor" systemColor="labelColor"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                <integer key="value" value="10"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <outlet property="delegate" destination="VvU-6J-pzy" id="cAt-UZ-6KT"/>
+                                        </connections>
+                                    </textView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sharing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vkm-Pe-6qd">
                                         <rect key="frame" x="16.000000000000004" y="24" width="61.333333333333343" height="20.333333333333329"/>
                                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
@@ -203,14 +198,14 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="hgf-O1-P97" secondAttribute="trailing" constant="16" id="3wR-ue-mj3"/>
                                     <constraint firstItem="3yF-lL-GwU" firstAttribute="leading" secondItem="YMG-hf-HEX" secondAttribute="leading" constant="16" id="3yQ-Gl-Co9"/>
                                     <constraint firstItem="vkm-Pe-6qd" firstAttribute="leading" secondItem="YMG-hf-HEX" secondAttribute="leading" constant="16" id="Auk-mC-Mie"/>
+                                    <constraint firstItem="VT0-1l-5HI" firstAttribute="top" secondItem="3yF-lL-GwU" secondAttribute="bottom" constant="31.999999999999972" id="EpF-os-G1u"/>
+                                    <constraint firstAttribute="bottom" secondItem="VT0-1l-5HI" secondAttribute="bottom" constant="52" id="FYk-Lv-5f6"/>
                                     <constraint firstItem="vkm-Pe-6qd" firstAttribute="top" secondItem="YMG-hf-HEX" secondAttribute="top" constant="24" id="L0w-Cz-uK2"/>
-                                    <constraint firstItem="hgf-O1-P97" firstAttribute="leading" secondItem="YMG-hf-HEX" secondAttribute="leading" constant="16" id="lWp-4v-Apf"/>
-                                    <constraint firstAttribute="bottom" secondItem="hgf-O1-P97" secondAttribute="bottom" constant="36" id="ozS-dU-DSE"/>
+                                    <constraint firstAttribute="trailing" secondItem="VT0-1l-5HI" secondAttribute="trailing" constant="16" id="TgX-1J-iTO"/>
+                                    <constraint firstItem="VT0-1l-5HI" firstAttribute="leading" secondItem="YMG-hf-HEX" secondAttribute="leading" constant="16" id="gEq-qv-UTR"/>
                                     <constraint firstItem="3yF-lL-GwU" firstAttribute="top" secondItem="vkm-Pe-6qd" secondAttribute="bottom" constant="12" id="qtk-si-To3"/>
-                                    <constraint firstItem="hgf-O1-P97" firstAttribute="top" secondItem="3yF-lL-GwU" secondAttribute="bottom" constant="16" id="wXC-X4-cnJ"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qVy-Qr-W7j">
@@ -283,6 +278,9 @@
         <image name="note.text" width="24" height="24"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="secondarySystemBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

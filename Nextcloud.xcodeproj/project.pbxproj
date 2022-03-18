@@ -65,7 +65,6 @@
 		AF93471D27E2361E002537EE /* NCShareAdvancePermissionFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF93471827E2361E002537EE /* NCShareAdvancePermissionFooter.swift */; };
 		AF93474C27E34120002537EE /* NCUtility+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF93474B27E34120002537EE /* NCUtility+Image.swift */; };
 		AF93474E27E3F212002537EE /* NCShareNewUserAddComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF93474D27E3F211002537EE /* NCShareNewUserAddComment.swift */; };
-		AF93475027E46B2E002537EE /* XibView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF93474F27E46B2E002537EE /* XibView.swift */; };
 		AF935067276B84E700BD078F /* NCMenu+FloatingPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF935066276B84E700BD078F /* NCMenu+FloatingPanel.swift */; };
 		AFA2AC8527849604008E1EA7 /* NCActivityCommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA2AC8427849604008E1EA7 /* NCActivityCommentView.swift */; };
 		AFD33240276A02C100F5AE02 /* UIApplication+Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD3323F276A02C000F5AE02 /* UIApplication+Orientation.swift */; };
@@ -520,7 +519,6 @@
 		AF93471827E2361E002537EE /* NCShareAdvancePermissionFooter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareAdvancePermissionFooter.swift; sourceTree = "<group>"; };
 		AF93474B27E34120002537EE /* NCUtility+Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCUtility+Image.swift"; sourceTree = "<group>"; };
 		AF93474D27E3F211002537EE /* NCShareNewUserAddComment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareNewUserAddComment.swift; sourceTree = "<group>"; };
-		AF93474F27E46B2E002537EE /* XibView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XibView.swift; sourceTree = "<group>"; };
 		AF935066276B84E700BD078F /* NCMenu+FloatingPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMenu+FloatingPanel.swift"; sourceTree = "<group>"; };
 		AFA2AC8427849604008E1EA7 /* NCActivityCommentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityCommentView.swift; sourceTree = "<group>"; };
 		AFD3323F276A02C000F5AE02 /* UIApplication+Orientation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIApplication+Orientation.swift"; sourceTree = "<group>"; };
@@ -1075,7 +1073,6 @@
 				AF93471427E2361E002537EE /* NCShareAdvancePermissionFooter.xib */,
 				AF93474D27E3F211002537EE /* NCShareNewUserAddComment.swift */,
 				AF93471527E2361E002537EE /* NCShareAdvancePermissionHeader.swift */,
-				AF93474F27E46B2E002537EE /* XibView.swift */,
 				AF93471727E2361E002537EE /* NCShareAdvancePermissionHeader.xib */,
 			);
 			path = Advanced;
@@ -2559,7 +2556,6 @@
 				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */,
 				AFA2AC8527849604008E1EA7 /* NCActivityCommentView.swift in Sources */,
 				F716B75F26F09DF600D37EFC /* NCKTVHTTPCache.swift in Sources */,
-				AF93475027E46B2E002537EE /* XibView.swift in Sources */,
 				AF36077127BFA4E8001A243D /* ParallelWorker.swift in Sources */,
 				F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				F758B460212C56A400515F55 /* NCScan.swift in Sources */,

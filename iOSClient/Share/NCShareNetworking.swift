@@ -62,23 +62,11 @@ class NCShareNetworking: NSObject {
             self.delegate?.readShareCompleted()
         }
     }
-
-    func createShareLink(password: String?) {
-        NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
-        let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
-        NCCommunication.shared.createShareLink(path: filenamePath, password: password) { account, share, errorCode, errorDescription in
-            NCUtility.shared.stopActivityIndicator()
-            if errorCode == 0 && share != nil {
-                NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share!])
-                self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
-            } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
-            }
-            self.delegate?.shareCompleted()
-        }
-    }
     
-    func createShare(option: TableShareable, metadata: tableMetadata) {
+    func createShare(option: TableShareable) {
+        // NOTE: Permissions don't work for file drop!
+        // https://github.com/nextcloud/server/issues/17504
+
         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
         let permission = max(1, metadata.sharePermissionsCollaborationServices & option.permissions)

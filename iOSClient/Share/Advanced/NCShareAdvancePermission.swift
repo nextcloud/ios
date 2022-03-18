@@ -31,7 +31,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         defer { navigationController?.popViewController(animated: true) }
         guard shouldSave else { return }
         if NCManageDatabase.shared.getTableShare(account: share.account, idShare: share.idShare) == nil {
-            networking?.createShare(option: share, metadata: metadata)
+            networking?.createShare(option: share)
         } else {
             networking?.updateShare(option: share)
         }
@@ -76,7 +76,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         tableView.tableHeaderView = headerView
         headerView.translatesAutoresizingMaskIntoConstraints = false
         headerView.heightAnchor.constraint(equalToConstant: 200).isActive = true
-        headerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        headerView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor).isActive = true
     }
 
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -392,20 +392,15 @@ open class DatePickerTableViewCell: UITableViewCell {
         }
         accessoryView = textField
 
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        let doneButton = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: .done) {
+        let toolbar = UIToolbar.toolbar {
+            self.resignFirstResponder()
+            share.expirationDate = nil
+            self.onReload?()
+        } completion: {
             self.resignFirstResponder()
             share.expirationDate = self.picker.date as NSDate
             self.onReload?()
         }
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let cancelButton = UIBarButtonItem(title: NSLocalizedString("_clear_", comment: ""), style: .plain) {
-            self.resignFirstResponder()
-            share.expirationDate = nil
-            self.onReload?()
-        }
-        toolbar.setItems([cancelButton, spaceButton, doneButton], animated: false)
 
         textField.inputAccessoryView = toolbar
         textField.inputView = picker
@@ -417,5 +412,27 @@ open class DatePickerTableViewCell: UITableViewCell {
 
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension UIToolbar {
+    static func toolbar(onClear: (() -> Void)?, completion: @escaping () -> Void) -> UIToolbar {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        var buttons: [UIBarButtonItem] = []
+        let doneButton = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: .done) {
+            completion()
+        }
+        buttons.append(doneButton)
+
+        if let onClear = onClear {
+            let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+            let clearButton = UIBarButtonItem(title: NSLocalizedString("_clear_", comment: ""), style: .plain) {
+                onClear()
+            }
+            buttons.append(contentsOf: [spaceButton, clearButton])
+        }
+        toolbar.setItems(buttons, animated: false)
+        return toolbar
     }
 }
