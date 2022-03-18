@@ -89,7 +89,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
 
         // changeTheming
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(changePermissions(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShareChangePermissions), object: nil)
 
         changeTheming()
     }
@@ -167,14 +166,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
 
     @objc func changeTheming() {
         tableView.reloadData()
-    }
-
-    @objc func changePermissions(_ notification: NSNotification) {
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let idShare = userInfo["idShare"] as? Int, let permissions = userInfo["permissions"] as? Int, let hideDownload = userInfo["hideDownload"] as? Bool {
-                networking?.updateShare(idShare: idShare, password: nil, permissions: permissions, note: nil, label: nil, expirationDate: nil, hideDownload: hideDownload)
-            }
-        }
     }
 
     // MARK: -

@@ -33,7 +33,6 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
     }
 
     func tapMenu(with tableShare: tableShare?, sender: Any) {
-        guard let metadata = self.metadata else { return }
         if let tableShare = tableShare {
             self.toggleShareMenu(for: tableShare)
         } else {
@@ -50,8 +49,6 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
         guard let tableShare = tableShare,
               let metadata = metadata,
               tableShare.shareType != NCGlobal.shared.permissionDefaultFileRemoteShareNoSupportShareOption else { return }
-
-        let quickStatusMenu = NCShareQuickStatusMenu()
-        quickStatusMenu.toggleMenu(viewController: self, directory: metadata.directory, tableShare: tableShare)
+        self.toggleMenu(isDirectory: metadata.directory, tableShare: tableShare)
     }
 }
