@@ -12,6 +12,7 @@ import NCCommunication
 import SVGKit
 
 class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareDetail {
+
     @IBOutlet weak var headerContainerView: UIView!
     @IBOutlet weak var sharingLabel: UILabel!
     @IBOutlet weak var sharingNote: UILabel!
@@ -19,7 +20,7 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareDet
 
     var onDismiss: (() -> Void)?
 
-    public var share: tableShare!
+    public var share: TableShareable!
     public var metadata: tableMetadata!
 
     override func viewDidLoad() {

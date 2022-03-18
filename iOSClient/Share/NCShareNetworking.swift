@@ -78,15 +78,12 @@ class NCShareNetworking: NSObject {
         }
     }
     
-    func createShare(shareWith: String, shareType: Int, password: String?, metadata: tableMetadata) {
+    func createShare(option: TableShareable, metadata: tableMetadata) {
         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
-        var permission: Int = NCManageDatabase.shared.getCapabilitiesServerInt(account: metadata.account, elements: ["ocs", "data", "capabilities", "files_sharing", "default_permissions"])
-        if permission <= 0 {
-            permission = metadata.directory ? NCGlobal.shared.permissionMaxFolderShare : NCGlobal.shared.permissionMaxFileShare
-        }
+        let permission = max(1, metadata.sharePermissionsCollaborationServices & option.permissions)
 
-        NCCommunication.shared.createShare(path: filenamePath, shareType: shareType, shareWith: shareWith, password: password, permissions: permission) { (account, share, errorCode, errorDescription) in
+        NCCommunication.shared.createShare(path: filenamePath, shareType: option.shareType, shareWith: option.shareWith, password: option.password, permissions: permission) { (account, share, errorCode, errorDescription) in
             NCUtility.shared.stopActivityIndicator()
             if errorCode == 0 && share != nil {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share!])
@@ -111,9 +108,9 @@ class NCShareNetworking: NSObject {
         }
     }
 
-    func updateShare(idShare: Int, password: String?, permissions: Int, note: String?, label: String?, expirationDate: String?, hideDownload: Bool) {
+    func updateShare(option: TableShareable) {
         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
-        NCCommunication.shared.updateShare(idShare: idShare, password: password, expireDate: expirationDate, permissions: permissions, note: note, label: label, hideDownload: hideDownload) { account, share, errorCode, errorDescription in
+        NCCommunication.shared.updateShare(idShare: option.idShare, password: option.password, expireDate: option.expDateString, permissions: option.permissions, note: option.note, label: option.label, hideDownload: option.hideDownload) { account, share, errorCode, errorDescription in
             NCUtility.shared.stopActivityIndicator()
             if errorCode == 0 && share != nil {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share!])
@@ -121,7 +118,7 @@ class NCShareNetworking: NSObject {
                 self.delegate?.readShareCompleted()
             } else {
                 NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
-                self.delegate?.updateShareWithError(idShare: idShare)
+                self.delegate?.updateShareWithError(idShare: option.idShare)
             }
         }
     }

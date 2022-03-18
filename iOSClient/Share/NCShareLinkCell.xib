@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -25,7 +25,7 @@
                         </constraints>
                     </imageView>
                     <stackView opaque="NO" contentMode="scaleToFill" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="OQv-Vf-bvD">
-                        <rect key="frame" x="500" y="35" width="70" height="20"/>
+                        <rect key="frame" x="520" y="35" width="70" height="20"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xaz-vY-Jzu" userLabel="ButtonCopy">
                                 <rect key="frame" x="0.0" y="0.0" width="20" height="20"/>
@@ -52,16 +52,16 @@
                         </subviews>
                     </stackView>
                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="Wxr-1B-Czy">
-                        <rect key="frame" x="53" y="12" width="432" height="66"/>
+                        <rect key="frame" x="53" y="12" width="452" height="66"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Share link" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="otH-mT-7Z4" userLabel="labelTitle">
-                                <rect key="frame" x="0.0" y="0.0" width="432" height="22"/>
+                                <rect key="frame" x="0.0" y="0.0" width="452" height="22"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalCompressionResistancePriority="245" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WJj-9P-3bn">
-                                <rect key="frame" x="0.0" y="26" width="432" height="40"/>
+                                <rect key="frame" x="0.0" y="26" width="452" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="Eo4-Rq-ETK"/>
                                 </constraints>
@@ -78,7 +78,7 @@
                     <constraint firstItem="OQv-Vf-bvD" firstAttribute="leading" secondItem="Wxr-1B-Czy" secondAttribute="trailing" constant="15" id="8QW-n0-4lO"/>
                     <constraint firstItem="qDs-UG-Mn7" firstAttribute="leading" secondItem="3Oe-gU-3Nk" secondAttribute="leading" constant="5" id="KOm-wo-CBa"/>
                     <constraint firstAttribute="bottom" secondItem="Wxr-1B-Czy" secondAttribute="bottom" constant="12" id="MM0-9i-BpF"/>
-                    <constraint firstAttribute="trailing" secondItem="OQv-Vf-bvD" secondAttribute="trailing" constant="30" id="W3b-ww-vbQ"/>
+                    <constraint firstAttribute="trailing" secondItem="OQv-Vf-bvD" secondAttribute="trailing" constant="10" id="W3b-ww-vbQ"/>
                     <constraint firstItem="qDs-UG-Mn7" firstAttribute="centerY" secondItem="3Oe-gU-3Nk" secondAttribute="centerY" id="ZrD-Aw-xkx"/>
                     <constraint firstItem="OQv-Vf-bvD" firstAttribute="centerY" secondItem="3Oe-gU-3Nk" secondAttribute="centerY" id="eLc-gk-xAr"/>
                     <constraint firstItem="Wxr-1B-Czy" firstAttribute="leading" secondItem="qDs-UG-Mn7" secondAttribute="trailing" constant="8" id="nXI-b3-EJM"/>
@@ -97,7 +97,7 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="circle" width="300" height="300"/>
+        <image name="circle" width="210" height="156"/>
         <image name="shareCopy" width="329" height="329"/>
         <image name="shareMenu" width="329" height="329"/>
         <systemColor name="secondaryLabelColor">

@@ -94,6 +94,19 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
         changeTheming()
     }
 
+    func makeNewLinkShare() {
+        guard
+            let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
+            let navigationController = self.navigationController,
+            let metadata = self.metadata else { return }
+        self.checkEnforcedPassword { password in
+            advancePermission.networking = self.networking
+            advancePermission.share = TableShareOptions.shareLink(metadata: metadata, password: password)
+            advancePermission.metadata = self.metadata
+            navigationController.pushViewController(advancePermission, animated: true)
+        }
+    }
+
     // Shared with you by ...
     func checkSharedWithYou() {
         guard let appDelegate = self.appDelegate, let metadata = metadata, !metadata.ownerId.isEmpty, metadata.ownerId != appDelegate.userId else { return }
@@ -157,7 +170,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
     }
 
     @objc func changePermissions(_ notification: NSNotification) {
-
         if let userInfo = notification.userInfo as NSDictionary? {
             if let idShare = userInfo["idShare"] as? Int, let permissions = userInfo["permissions"] as? Int, let hideDownload = userInfo["hideDownload"] as? Bool {
                 networking?.updateShare(idShare: idShare, password: nil, permissions: permissions, note: nil, label: nil, expirationDate: nil, hideDownload: hideDownload)
@@ -186,19 +198,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
               NCManageDatabase.shared.getCapabilitiesServerBool(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesFileSharingPubPasswdEnforced, exists: false)
         else { return callback(nil) }
 
-        let alertController = UIAlertController(title: NSLocalizedString("_enforce_password_protection_", comment: ""), message: "", preferredStyle: .alert)
-        alertController.addTextField { textField in
-            textField.isSecureTextEntry = true
-        }
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { _ in })
-        let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { _ in
-            let password = alertController.textFields?.first?.text
-            callback(password)
-        }
-
-        alertController.addAction(okAction)
-
-        self.present(alertController, animated: true, completion: nil)
+        self.present(UIAlertController.sharePassword(completion: callback), animated: true)
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
@@ -259,10 +259,15 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
 
         dropDown.selectionAction = { index, _ in
             let sharee = sharees[index]
-            self.checkEnforcedPassword { password in
-                guard let metadata = self.metadata else { return }
-                self.networking?.createShare(shareWith: sharee.shareWith, shareType: sharee.shareType, password: password, metadata: metadata)
-            }
+            guard
+                let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
+                let navigationController = self.navigationController,
+                let metadata = self.metadata else { return }
+            let shareOptions = TableShareOptions(sharee: sharee, metadata: metadata)
+            advancePermission.share = shareOptions
+            advancePermission.networking = self.networking
+            advancePermission.metadata = metadata
+            navigationController.pushViewController(advancePermission, animated: true)
         }
 
         dropDown.show()
@@ -333,5 +338,67 @@ extension NCShare: UITableViewDataSource {
         }
 
         return UITableViewCell()
+    }
+}
+
+extension tableShare: TableShareable { }
+protocol TableShareable: AnyObject {
+    var shareType: Int { get set }
+    var permissions: Int { get set }
+
+    var account: String { get }
+
+    var idShare: Int { get set }
+    var shareWith: String { get set }
+//    var publicUpload: Bool? = false
+    var hideDownload: Bool { get set }
+    var password: String { get set }
+    var label: String { get set }
+    var note: String { get set }
+    var expirationDate: NSDate? { get set }
+    var shareWithDisplayname: String { get set }
+}
+
+extension TableShareable {
+    var expDateString: String? {
+        guard let date = expirationDate else { return nil }
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "YYYY-MM-dd HH:mm:ss"
+        return dateFormatter.string(from: date as Date)
+    }
+}
+
+class TableShareOptions: TableShareable {
+    var shareType: Int
+    var permissions: Int
+
+    let account: String
+
+    var idShare: Int = 0
+    var shareWith: String = ""
+//    var publicUpload: Bool? = false
+    var hideDownload: Bool = false
+    var password: String = ""
+    var label: String = ""
+    var note: String = ""
+    var expirationDate: NSDate?
+    var shareWithDisplayname: String = ""
+
+    private init(shareType: Int, metadata: tableMetadata, password: String? = nil) {
+        self.permissions = NCManageDatabase.shared.getCapabilitiesServerInt(account: metadata.account, elements: ["ocs", "data", "capabilities", "files_sharing", "default_permissions"]) & metadata.sharePermissionsCollaborationServices
+        self.shareType = shareType
+        self.account = metadata.account
+        if let password = password {
+            self.password = password
+        }
+    }
+
+    convenience init(sharee: NCCommunicationSharee, metadata: tableMetadata) {
+        self.init(shareType: sharee.shareType, metadata: metadata)
+        self.shareWith = sharee.shareWith
+    }
+
+    static func shareLink(metadata: tableMetadata, password: String?) -> TableShareOptions {
+        return TableShareOptions(shareType: 3, metadata: metadata, password: password)
     }
 }

@@ -80,4 +80,12 @@ extension UIAlertController {
         alertController.addAction(okAction)
         return alertController
     }
+
+    static func sharePassword(completion: @escaping (String?) -> Void) -> UIAlertController {
+        return .withTextField(titleKey: "_enforce_password_protection_", textFieldConfiguration: { textField in
+            textField.isSecureTextEntry = true
+            textField.placeholder = NSLocalizedString("_password_", comment: "")
+        }, completion: completion)
+
+    }
 }

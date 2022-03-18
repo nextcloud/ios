@@ -12,8 +12,9 @@ import SVGKit
 import CloudKit
 
 protocol NCShareDetail {
-    var share: tableShare! { get }
+    var share: TableShareable! { get }
 }
+
 extension NCShareDetail where Self: UIViewController {
     func setNavigationTitle() {
         title = NSLocalizedString("_share_", comment: "") + "  – "
@@ -30,19 +31,13 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         defer { navigationController?.popViewController(animated: true) }
         guard shouldSave else { return }
         if NCManageDatabase.shared.getTableShare(account: share.account, idShare: share.idShare) == nil {
-            networking?.createShare(shareWith: share.shareWith, shareType: share.shareType, password: share.password, metadata: metadata)
+            networking?.createShare(option: share, metadata: metadata)
         } else {
-            var expirationDate: String?
-            if let date = share.expirationDate {
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "YYYY-MM-dd HH:mm:ss"
-                expirationDate = dateFormatter.string(from: date as Date)
-            }
-            networking?.updateShare(idShare: share.idShare, password: share.password, permissions: share.permissions, note: share.note, label: share.label, expirationDate: expirationDate, hideDownload: share.hideDownload)
+            networking?.updateShare(option: share)
         }
     }
 
-    var share: tableShare!
+    var share: TableShareable!
     var metadata: tableMetadata!
     var shareConfig: ShareConfig!
     var networking: NCShareNetworking?
@@ -160,21 +155,21 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
 
 protocol ShareCellConfig {
     var title: String { get }
-    func getCell(for share: tableShare) -> UITableViewCell
-    func didSelect(for share: tableShare)
+    func getCell(for share: TableShareable) -> UITableViewCell
+    func didSelect(for share: TableShareable)
 }
 
 protocol ToggleCellConfig: ShareCellConfig {
-    func isOn(for share: tableShare) -> Bool
-    func didChange(_ share: tableShare, to newValue: Bool)
+    func isOn(for share: TableShareable) -> Bool
+    func didChange(_ share: TableShareable, to newValue: Bool)
 }
 
 extension ToggleCellConfig {
-    func getCell(for share: tableShare) -> UITableViewCell {
+    func getCell(for share: TableShareable) -> UITableViewCell {
         return ToggleCell(isOn: isOn(for: share))
     }
 
-    func didSelect(for share: tableShare) {
+    func didSelect(for share: TableShareable) {
         didChange(share, to: !isOn(for: share))
     }
 }
@@ -194,11 +189,11 @@ enum UserPermission: CaseIterable, Permission {
         }
     }
 
-    func didChange(_ share: tableShare, to newValue: Bool) {
+    func didChange(_ share: TableShareable, to newValue: Bool) {
         share.permissions ^= permissionBitFlag
     }
 
-    func isOn(for share: tableShare) -> Bool {
+    func isOn(for share: TableShareable) -> Bool {
         return (share.permissions & permissionBitFlag) != 0
     }
 
@@ -217,7 +212,7 @@ enum UserPermission: CaseIterable, Permission {
 }
 
 enum LinkPermission: Permission {
-    func didChange(_ share: tableShare, to newValue: Bool) {
+    func didChange(_ share: TableShareable, to newValue: Bool) {
         guard self != .allowEdit else {
             // file
             share.permissions = CCUtility.getPermissionsValue(
@@ -254,7 +249,7 @@ enum LinkPermission: Permission {
         }
     }
 
-    func isOn(for share: tableShare) -> Bool {
+    func isOn(for share: TableShareable) -> Bool {
         switch self {
         case .allowEdit: return CCUtility.isAnyPermission(toEdit: share.permissions)
         case .viewOnly: return !CCUtility.isAnyPermission(toEdit: share.permissions) && share.permissions != NCGlobal.shared.permissionCreateShare
@@ -278,7 +273,7 @@ enum LinkPermission: Permission {
 }
 
 enum Advanced: CaseIterable, ShareCellConfig {
-    func didSelect(for share: tableShare) {
+    func didSelect(for share: TableShareable) {
         switch self {
         case .hideDownload: share.hideDownload.toggle()
         case .expirationDate: return
@@ -288,7 +283,7 @@ enum Advanced: CaseIterable, ShareCellConfig {
         }
     }
 
-    func getCell(for share: tableShare) -> UITableViewCell {
+    func getCell(for share: TableShareable) -> UITableViewCell {
         switch self {
         case .hideDownload:
             return ToggleCell(isOn: share.hideDownload)
@@ -326,9 +321,9 @@ struct ShareConfig {
 
     let permissions: [Permission]
     let advanced: [Advanced]
-    let share: tableShare
+    let share: TableShareable
 
-    init(isDirectory: Bool, share: tableShare) {
+    init(isDirectory: Bool, share: TableShareable) {
         self.share = share
         let type: Permission.Type = share.shareType == 3 ? LinkPermission.self : UserPermission.self
         self.permissions = isDirectory ? type.forDirectory : type.forFile
@@ -389,7 +384,7 @@ open class DatePickerTableViewCell: UITableViewCell {
 
     var onReload: (() -> Void)?
 
-    init(share: tableShare) {
+    init(share: TableShareable) {
         super.init(style: .value1, reuseIdentifier: "shareExpDate")
         picker.datePickerMode = .date
         picker.minimumDate = Date()

@@ -13,6 +13,17 @@ extension NCShare {
 
         var actions = [NCMenuAction]()
 
+        if share.shareType == 3 {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_share_add_link_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "rename").imageColor(NCBrandColor.shared.brandElement),
+                    action: { _ in
+                        self.makeNewLinkShare()
+                    }
+                )
+            )
+        }
 //        if !folder {
 //            actions.append(
 //                NCMenuAction(

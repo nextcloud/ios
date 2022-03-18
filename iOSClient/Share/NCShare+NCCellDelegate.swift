@@ -34,28 +34,10 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
 
     func tapMenu(with tableShare: tableShare?, sender: Any) {
         guard let metadata = self.metadata else { return }
-        let isFilesSharingPublicPasswordEnforced = NCManageDatabase.shared.getCapabilitiesServerBool(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesFileSharingPubPasswdEnforced, exists: false)
-
         if let tableShare = tableShare {
-            // open share menu
             self.toggleShareMenu(for: tableShare)
-        } else if isFilesSharingPublicPasswordEnforced {
-            // create share with pw
-            let alertController = UIAlertController(title: NSLocalizedString("_enforce_password_protection_", comment: ""), message: "", preferredStyle: .alert)
-            alertController.addTextField { textField in
-                textField.isSecureTextEntry = true
-            }
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { _ in })
-            let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { _ in
-                let password = alertController.textFields?.first?.text
-                self.networking?.createShareLink(password: password ?? "")
-            }
-
-            alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
         } else {
-            // create sahre without pw
-            networking?.createShareLink(password: "")
+            self.makeNewLinkShare()
         }
     }
 

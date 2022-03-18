@@ -17,7 +17,7 @@ class NCShareAdvancePermissionFooter: UIView {
     @IBOutlet weak var buttonNext: UIButton!
     weak var delegate: NCShareAdvanceFotterDelegate?
     
-    func setupUI(with share: tableShare, delegate: NCShareAdvanceFotterDelegate?) {
+    func setupUI(with share: TableShareable, delegate: NCShareAdvanceFotterDelegate?) {
         self.delegate = delegate
 
         backgroundColor = .clear
