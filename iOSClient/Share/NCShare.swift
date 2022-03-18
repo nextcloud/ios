@@ -206,7 +206,9 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
     }
 
-    func unShareCompleted() { }
+    func unShareCompleted() {
+        self.reloadData()
+    }
 
     func updateShareWithError(idShare: Int) {
         self.reloadData()

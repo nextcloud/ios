@@ -70,7 +70,7 @@ extension NCShare {
                 title: NSLocalizedString("_share_unshare_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "delete").imageColor(NCBrandColor.shared.brandElement),
                 action: { _ in
-                    // TODO: Unshare!
+                    self.networking?.unShare(idShare: share.idShare)
                 }
             )
         )
