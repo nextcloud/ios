@@ -41,7 +41,7 @@ class NCViewerMedia: UIViewController {
     private var _autoPlay: Bool = false
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var viewerMediaPage: NCViewerMediaPage?
+    weak var viewerMediaPage: NCViewerMediaPage?
     var ncplayer: NCPlayer?
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
