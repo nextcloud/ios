@@ -16,7 +16,6 @@ class NCShareAdvancePermissionHeader: UIView {
     @IBOutlet weak var fullWidthImageView: UIImageView!
 
     func setupUI(with metadata: tableMetadata) {
-        //        headerView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
         if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             fullWidthImageView.image = NCUtility.shared.getImageMetadata(metadata, for: frame.height)
             fullWidthImageView.contentMode = .scaleAspectFill

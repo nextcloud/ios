@@ -28,7 +28,7 @@ import DropDown
 import NCCommunication
 import MarqueeLabel
 
-class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingDelegate, NCSharePagingContent {
+class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent {
 
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var sharedWithYouByView: UIView!
@@ -192,10 +192,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
         self.present(UIAlertController.sharePassword(completion: callback), animated: true)
     }
 
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        return gestureRecognizer.view == touch.view
-    }
-
     // MARK: - NCShareNetworkingDelegate
 
     func readShareCompleted() {
@@ -311,7 +307,7 @@ extension NCShare: UITableViewDataSource {
         guard let appDelegate = appDelegate, let tableShare = shares.share?[indexPath.row] else { return UITableViewCell() }
 
         // LINK
-        if tableShare.shareType == 3 {
+        if tableShare.shareType == NCShareCommon.shared.SHARE_TYPE_LINK {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell {
                 cell.tableShare = tableShare
                 cell.delegate = self
@@ -319,7 +315,7 @@ extension NCShare: UITableViewDataSource {
                 return cell
             }
         } else {
-        // USER
+        // USER / GROUP etc.
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellUser", for: indexPath) as? NCShareUserCell {
                 cell.tableShare = tableShare
                 cell.delegate = self
@@ -331,67 +327,5 @@ extension NCShare: UITableViewDataSource {
         }
 
         return UITableViewCell()
-    }
-}
-
-extension tableShare: TableShareable { }
-protocol TableShareable: AnyObject {
-    var shareType: Int { get set }
-    var permissions: Int { get set }
-
-    var account: String { get }
-
-    var idShare: Int { get set }
-    var shareWith: String { get set }
-//    var publicUpload: Bool? = false
-    var hideDownload: Bool { get set }
-    var password: String { get set }
-    var label: String { get set }
-    var note: String { get set }
-    var expirationDate: NSDate? { get set }
-    var shareWithDisplayname: String { get set }
-}
-
-extension TableShareable {
-    var expDateString: String? {
-        guard let date = expirationDate else { return nil }
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "YYYY-MM-dd HH:mm:ss"
-        return dateFormatter.string(from: date as Date)
-    }
-}
-
-class TableShareOptions: TableShareable {
-    var shareType: Int
-    var permissions: Int
-
-    let account: String
-
-    var idShare: Int = 0
-    var shareWith: String = ""
-//    var publicUpload: Bool? = false
-    var hideDownload: Bool = false
-    var password: String = ""
-    var label: String = ""
-    var note: String = ""
-    var expirationDate: NSDate?
-    var shareWithDisplayname: String = ""
-
-    private init(shareType: Int, metadata: tableMetadata, password: String? = nil) {
-        self.permissions = NCManageDatabase.shared.getCapabilitiesServerInt(account: metadata.account, elements: ["ocs", "data", "capabilities", "files_sharing", "default_permissions"]) & metadata.sharePermissionsCollaborationServices
-        self.shareType = shareType
-        self.account = metadata.account
-        if let password = password {
-            self.password = password
-        }
-    }
-
-    convenience init(sharee: NCCommunicationSharee, metadata: tableMetadata) {
-        self.init(shareType: sharee.shareType, metadata: metadata)
-        self.shareWith = sharee.shareWith
-    }
-
-    static func shareLink(metadata: tableMetadata, password: String?) -> TableShareOptions {
-        return TableShareOptions(shareType: 3, metadata: metadata, password: password)
     }
 }

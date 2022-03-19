@@ -9,6 +9,7 @@
 import UIKit
 
 protocol NCShareAdvanceFotterDelegate: AnyObject {
+    var isNewShare: Bool { get }
     func dismissShareAdvanceView(shouldSave: Bool)
 }
 
@@ -28,7 +29,7 @@ class NCShareAdvancePermissionFooter: UIView {
         buttonCancel.layer.cornerRadius = 10
         buttonCancel.layer.masksToBounds = true
 
-        buttonNext.setTitle(NSLocalizedString("_save_", comment: ""), for: .normal)
+        buttonNext.setTitle(NSLocalizedString(delegate?.isNewShare == true ? "_share_" : "_save_", comment: ""), for: .normal)
         buttonNext.layer.cornerRadius = 10
         buttonNext.layer.masksToBounds = true
         buttonNext.backgroundColor = NCBrandColor.shared.brand

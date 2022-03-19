@@ -27,6 +27,10 @@ class NCShareNewUserAddComment: UIViewController, NCShareDetail {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setNavigationTitle()
+
+        NotificationCenter.default.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+
         guard let headerView = (Bundle.main.loadNibNamed("NCShareAdvancePermissionHeader", owner: self, options: nil)?.first as? NCShareAdvancePermissionHeader) else { return }
         headerContainerView.addSubview(headerView)
         headerView.frame = headerContainerView.frame
@@ -59,5 +63,21 @@ class NCShareNewUserAddComment: UIViewController, NCShareDetail {
         super.viewWillDisappear(animated)
         share.note = noteTextField.text
         onDismiss?()
+    }
+
+    @objc func adjustForKeyboard(notification: Notification) {
+        guard let keyboardValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue,
+              let globalTextViewFrame = noteTextField.superview?.convert(noteTextField.frame, to: nil) else { return }
+
+        let keyboardScreenEndFrame = keyboardValue.cgRectValue
+        let portionCovoredByLeyboard = globalTextViewFrame.maxY - keyboardScreenEndFrame.minY
+
+        if notification.name == UIResponder.keyboardWillHideNotification || portionCovoredByLeyboard < 0 {
+            noteTextField.contentInset = .zero
+        } else {
+            noteTextField.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: portionCovoredByLeyboard, right: 0)
+        }
+
+        noteTextField.scrollIndicatorInsets = noteTextField.contentInset
     }
 }

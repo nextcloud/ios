@@ -57,7 +57,6 @@ class NCShareLinkCell: UITableViewCell {
         } else {
             labelTitle.text = NSLocalizedString("_share_link_", comment: "")
             if let tableShare = tableShare {
-                // FIXME: FATAL - Object has been deleted or invalidated
                 if !tableShare.label.isEmpty {
                     labelTitle.text? += " (\(tableShare.label))"
                 }

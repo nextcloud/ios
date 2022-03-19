@@ -4,17 +4,18 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="NCShareAdvancePermissionFooter" customModule="Nextcloud" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="746" height="100"/>
+            <rect key="frame" x="0.0" y="0.0" width="750" height="296"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mg2-Ou-yoX">
-                    <rect key="frame" x="16" y="16" width="349" height="50"/>
+                    <rect key="frame" x="16" y="212" width="351" height="50"/>
                     <color key="backgroundColor" red="0.8862745098" green="0.0" blue="0.4549019608" alpha="1" colorSpace="calibratedRGB"/>
                     <state key="normal" title="Send share"/>
                     <state key="highlighted">
@@ -22,7 +23,7 @@
                     </state>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rCI-63-PtL">
-                    <rect key="frame" x="381" y="16" width="349" height="50"/>
+                    <rect key="frame" x="383" y="212" width="351" height="50"/>
                     <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="50" id="vdI-sH-cTb"/>
@@ -32,22 +33,23 @@
                     <state key="normal" title="Cancel"/>
                 </button>
             </subviews>
+            <viewLayoutGuide key="safeArea" id="sWQ-1v-CIt"/>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="rCI-63-PtL" firstAttribute="leading" secondItem="Mg2-Ou-yoX" secondAttribute="trailing" constant="16" id="4Px-cS-Hta"/>
-                <constraint firstItem="Mg2-Ou-yoX" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="16" id="53I-Ri-rEO"/>
-                <constraint firstItem="Mg2-Ou-yoX" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="16" id="Jdi-WJ-zVF"/>
+                <constraint firstItem="Mg2-Ou-yoX" firstAttribute="leading" secondItem="sWQ-1v-CIt" secondAttribute="leading" constant="16" id="Jdi-WJ-zVF"/>
+                <constraint firstItem="sWQ-1v-CIt" firstAttribute="bottom" secondItem="Mg2-Ou-yoX" secondAttribute="bottom" id="SzT-aI-aUz"/>
                 <constraint firstItem="Mg2-Ou-yoX" firstAttribute="height" secondItem="rCI-63-PtL" secondAttribute="height" id="bNp-Nf-uMw"/>
                 <constraint firstItem="Mg2-Ou-yoX" firstAttribute="width" secondItem="rCI-63-PtL" secondAttribute="width" id="dfu-GZ-P99"/>
                 <constraint firstItem="rCI-63-PtL" firstAttribute="centerY" secondItem="Mg2-Ou-yoX" secondAttribute="centerY" id="hEl-ij-sMX"/>
-                <constraint firstAttribute="trailing" secondItem="rCI-63-PtL" secondAttribute="trailing" constant="16" id="s9t-ud-ofw"/>
+                <constraint firstItem="sWQ-1v-CIt" firstAttribute="trailing" secondItem="rCI-63-PtL" secondAttribute="trailing" constant="16" id="s9t-ud-ofw"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
                 <outlet property="buttonCancel" destination="rCI-63-PtL" id="SoT-Ko-LL5"/>
                 <outlet property="buttonNext" destination="Mg2-Ou-yoX" id="F2d-L5-dHo"/>
             </connections>
-            <point key="canvasLocation" x="166.66666666666669" y="126.89732142857142"/>
+            <point key="canvasLocation" x="169.56521739130437" y="197.54464285714286"/>
         </view>
     </objects>
 </document>

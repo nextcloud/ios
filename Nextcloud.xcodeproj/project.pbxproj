@@ -67,6 +67,10 @@
 		AF93474E27E3F212002537EE /* NCShareNewUserAddComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF93474D27E3F211002537EE /* NCShareNewUserAddComment.swift */; };
 		AF935067276B84E700BD078F /* NCMenu+FloatingPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF935066276B84E700BD078F /* NCMenu+FloatingPanel.swift */; };
 		AFA2AC8527849604008E1EA7 /* NCActivityCommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA2AC8427849604008E1EA7 /* NCActivityCommentView.swift */; };
+		AFCE353327E4ED1900FEA6C2 /* UIToolbar+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE353227E4ED1900FEA6C2 /* UIToolbar+Extension.swift */; };
+		AFCE353527E4ED5900FEA6C2 /* DateFormatter+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE353427E4ED5900FEA6C2 /* DateFormatter+Extension.swift */; };
+		AFCE353727E4ED7B00FEA6C2 /* ShareCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE353627E4ED7B00FEA6C2 /* ShareCells.swift */; };
+		AFCE353927E5DE0500FEA6C2 /* NCShare+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE353827E5DE0400FEA6C2 /* NCShare+Helper.swift */; };
 		AFD33240276A02C100F5AE02 /* UIApplication+Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD3323F276A02C000F5AE02 /* UIApplication+Orientation.swift */; };
 		D575039F27146F93008DC9DC /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extensions.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
@@ -521,6 +525,10 @@
 		AF93474D27E3F211002537EE /* NCShareNewUserAddComment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareNewUserAddComment.swift; sourceTree = "<group>"; };
 		AF935066276B84E700BD078F /* NCMenu+FloatingPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMenu+FloatingPanel.swift"; sourceTree = "<group>"; };
 		AFA2AC8427849604008E1EA7 /* NCActivityCommentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityCommentView.swift; sourceTree = "<group>"; };
+		AFCE353227E4ED1900FEA6C2 /* UIToolbar+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIToolbar+Extension.swift"; sourceTree = "<group>"; };
+		AFCE353427E4ED5900FEA6C2 /* DateFormatter+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateFormatter+Extension.swift"; sourceTree = "<group>"; };
+		AFCE353627E4ED7B00FEA6C2 /* ShareCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCells.swift; sourceTree = "<group>"; };
+		AFCE353827E5DE0400FEA6C2 /* NCShare+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCShare+Helper.swift"; sourceTree = "<group>"; };
 		AFD3323F276A02C000F5AE02 /* UIApplication+Orientation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIApplication+Orientation.swift"; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
@@ -1069,6 +1077,7 @@
 			isa = PBXGroup;
 			children = (
 				AF93471627E2361E002537EE /* NCShareAdvancePermission.swift */,
+				AFCE353627E4ED7B00FEA6C2 /* ShareCells.swift */,
 				AF93471827E2361E002537EE /* NCShareAdvancePermissionFooter.swift */,
 				AF93471427E2361E002537EE /* NCShareAdvancePermissionFooter.xib */,
 				AF93474D27E3F211002537EE /* NCShareNewUserAddComment.swift */,
@@ -1211,6 +1220,7 @@
 			children = (
 				F700510022DF63AC003A3356 /* NCShare.storyboard */,
 				F700510422DF6A89003A3356 /* NCShare.swift */,
+				AFCE353827E5DE0400FEA6C2 /* NCShare+Helper.swift */,
 				AF730AF727834B1400B7520E /* NCShare+NCCellDelegate.swift */,
 				AF93471327E235EB002537EE /* Advanced */,
 				F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */,
@@ -1450,6 +1460,11 @@
 				AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */,
 				AFD3323F276A02C000F5AE02 /* UIApplication+Orientation.swift */,
 				F7F4F10D27ECDC3C008676F9 /* UIApplication+Orientation.swift */,
+				F70CEF5523E9C7E50007035B /* UIColor+Extensions.swift */,
+				F79B645F26CA661600838ACA /* UIControl+Extensions.swift */,
+				AFCE353227E4ED1900FEA6C2 /* UIToolbar+Extension.swift */,
+				AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */,
+				AFCE353427E4ED5900FEA6C2 /* DateFormatter+Extension.swift */,
 				AF7E504D27A2D8FF00B5E4AF /* UIBarButton+Extension.swift */,
 				F70CEF5523E9C7E50007035B /* UIColor+Extensions.swift */,
 				F79B645F26CA661600838ACA /* UIControl+Extensions.swift */,
@@ -2556,6 +2571,7 @@
 				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */,
 				AFA2AC8527849604008E1EA7 /* NCActivityCommentView.swift in Sources */,
 				F716B75F26F09DF600D37EFC /* NCKTVHTTPCache.swift in Sources */,
+				AFCE353727E4ED7B00FEA6C2 /* ShareCells.swift in Sources */,
 				AF36077127BFA4E8001A243D /* ParallelWorker.swift in Sources */,
 				F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				F758B460212C56A400515F55 /* NCScan.swift in Sources */,
@@ -2567,6 +2583,7 @@
 				F72928A0253B0937009CA4FD /* NCMainNavigationController.swift in Sources */,
 				F704B5E92430C0B800632F5F /* NCCreateFormUploadConflictCell.swift in Sources */,
 				F72D404923D2082500A97FD0 /* NCViewerNextcloudText.swift in Sources */,
+				AFCE353927E5DE0500FEA6C2 /* NCShare+Helper.swift in Sources */,
 				F700510522DF6A89003A3356 /* NCShare.swift in Sources */,
 				F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */,
 				F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */,
@@ -2593,6 +2610,7 @@
 				F74AF3A4247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
 				F7417DB3216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift in Sources */,
 				F7239871253D86B600257F49 /* NCEmptyDataSet.swift in Sources */,
+				AFCE353327E4ED1900FEA6C2 /* UIToolbar+Extension.swift in Sources */,
 				8491B1CD273BBA82001C8C5B /* UIViewController+Menu.swift in Sources */,
 				F702F2F725EE5CED008F8E80 /* NCLogin.swift in Sources */,
 				F7E98C1627E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
@@ -2610,6 +2628,7 @@
 				F7C1EEA525053A9C00866ACC /* NCDataSource.swift in Sources */,
 				F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */,
 				F749C10B23C4A5340027D966 /* NCIntroCollectionViewCell.swift in Sources */,
+				AFCE353527E4ED5900FEA6C2 /* DateFormatter+Extension.swift in Sources */,
 				F718C24E254D507B00C5C256 /* NCViewerMediaDetailView.swift in Sources */,
 				F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */,
 				F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,

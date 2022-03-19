@@ -44,7 +44,6 @@ extension NCShare {
                     guard
                         let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
                         let navigationController = self.navigationController, !share.isInvalidated else { return }
-                    // FIXME: Fatal - Object has been deleted or invalidated
                     advancePermission.networking = self.networking
                     advancePermission.share = tableShare(value: share)
                     advancePermission.metadata = self.metadata
