@@ -10,9 +10,13 @@ empty_count:
   severity: warning
 
 line_length:
-  # warning: 120
+  # warning: 120, error: 200
   warning: 250
   error: 250
+
+function_body_length:
+  # warning: 40
+  warning: 60
 
 type_body_length:
   # error: 350
@@ -106,12 +110,8 @@ excluded:
   - iOSClient/Select/NCSelect.swift
   - iOSClient/Settings/NCEndToEndInitialize.swift
   - iOSClient/Settings/NCManageAutoUploadFileName.swift
-  - iOSClient/Share/NCShareCommentsCell.swift
   - iOSClient/Share/NCShareCommon.swift
-  - iOSClient/Share/NCShareLinkMenuView.swift
   - iOSClient/Share/NCShareNetworking.swift
-  - iOSClient/Share/NCShareQuickStatusMenu.swift
-  - iOSClient/Share/NCShareUserMenuView.swift
   - iOSClient/Shares/NCShares.swift
   - iOSClient/Transfers/NCTransferCell.swift
   - iOSClient/Transfers/NCTransfers.swift

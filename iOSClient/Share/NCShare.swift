@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 17/07/2019.
 //  Copyright © 2019 Marino Faggiana. All rights reserved.
+//  Copyright © 2022 Henrik Storch. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //  Author Henrik Storch <henrik.storch@nextcloud.com>
@@ -100,7 +101,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let metadata = self.metadata else { return }
         self.checkEnforcedPassword { password in
             advancePermission.networking = self.networking
-            advancePermission.share = TableShareOptions.shareLink(metadata: metadata, password: password)
+            advancePermission.share = NCTableShareOptions.shareLink(metadata: metadata, password: password)
             advancePermission.metadata = self.metadata
             navigationController.pushViewController(advancePermission, animated: true)
         }
@@ -252,7 +253,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
                 let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
                 let navigationController = self.navigationController,
                 let metadata = self.metadata else { return }
-            let shareOptions = TableShareOptions(sharee: sharee, metadata: metadata)
+            let shareOptions = NCTableShareOptions(sharee: sharee, metadata: metadata)
             advancePermission.share = shareOptions
             advancePermission.networking = self.networking
             advancePermission.metadata = metadata

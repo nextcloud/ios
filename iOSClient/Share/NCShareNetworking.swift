@@ -63,7 +63,7 @@ class NCShareNetworking: NSObject {
         }
     }
     
-    func createShare(option: TableShareable) {
+    func createShare(option: NCTableShareable) {
         // NOTE: Permissions don't work for file drop!
         // https://github.com/nextcloud/server/issues/17504
 
@@ -96,7 +96,7 @@ class NCShareNetworking: NSObject {
         }
     }
 
-    func updateShare(option: TableShareable) {
+    func updateShare(option: NCTableShareable) {
         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
         NCCommunication.shared.updateShare(idShare: option.idShare, password: option.password, expireDate: option.expDateString, permissions: option.permissions, note: option.note, label: option.label, hideDownload: option.hideDownload) { account, share, errorCode, errorDescription in
             NCUtility.shared.stopActivityIndicator()

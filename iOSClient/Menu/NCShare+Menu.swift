@@ -38,7 +38,7 @@ extension NCShare {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_share_advanced_permissions_", comment: ""),
+                title: NSLocalizedString("_details_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "edit"),
                 action: { _ in
                     guard

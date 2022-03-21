@@ -3,38 +3,53 @@
 //  Nextcloud
 //
 //  Created by Henrik Storch on 18.03.22.
-//  Copyright © 2022 Marino Faggiana. All rights reserved.
+//  Copyright © 2022 Henrik Storch. All rights reserved.
+//
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
 import UIKit
 
-protocol ShareCellConfig {
+protocol NCShareCellConfig {
     var title: String { get }
-    func getCell(for share: TableShareable) -> UITableViewCell
-    func didSelect(for share: TableShareable)
+    func getCell(for share: NCTableShareable) -> UITableViewCell
+    func didSelect(for share: NCTableShareable)
 }
 
-protocol ToggleCellConfig: ShareCellConfig {
-    func isOn(for share: TableShareable) -> Bool
-    func didChange(_ share: TableShareable, to newValue: Bool)
+protocol NCToggleCellConfig: NCShareCellConfig {
+    func isOn(for share: NCTableShareable) -> Bool
+    func didChange(_ share: NCTableShareable, to newValue: Bool)
 }
 
-extension ToggleCellConfig {
-    func getCell(for share: TableShareable) -> UITableViewCell {
-        return ToggleCell(isOn: isOn(for: share))
+extension NCToggleCellConfig {
+    func getCell(for share: NCTableShareable) -> UITableViewCell {
+        return NCShareToggleCell(isOn: isOn(for: share))
     }
 
-    func didSelect(for share: TableShareable) {
+    func didSelect(for share: NCTableShareable) {
         didChange(share, to: !isOn(for: share))
     }
 }
 
-protocol Permission: ToggleCellConfig {
+protocol NCPermission: NCToggleCellConfig {
     static var forDirectory: [Self] { get }
     static var forFile: [Self] { get }
 }
 
-enum UserPermission: CaseIterable, Permission {
+enum NCUserPermission: CaseIterable, NCPermission {
     var permissionBitFlag: Int {
         switch self {
         case .reshare: return NCGlobal.shared.permissionShareShare
@@ -44,17 +59,17 @@ enum UserPermission: CaseIterable, Permission {
         }
     }
 
-    func didChange(_ share: TableShareable, to newValue: Bool) {
+    func didChange(_ share: NCTableShareable, to newValue: Bool) {
         share.permissions ^= permissionBitFlag
     }
 
-    func isOn(for share: TableShareable) -> Bool {
+    func isOn(for share: NCTableShareable) -> Bool {
         return (share.permissions & permissionBitFlag) != 0
     }
 
     case reshare, edit, create, delete
-    static let forDirectory: [UserPermission] = UserPermission.allCases
-    static let forFile: [UserPermission] = [.reshare, .edit]
+    static let forDirectory: [NCUserPermission] = NCUserPermission.allCases
+    static let forFile: [NCUserPermission] = [.reshare, .edit]
 
     var title: String {
         switch self {
@@ -66,8 +81,8 @@ enum UserPermission: CaseIterable, Permission {
     }
 }
 
-enum LinkPermission: Permission {
-    func didChange(_ share: TableShareable, to newValue: Bool) {
+enum NCLinkPermission: NCPermission {
+    func didChange(_ share: NCTableShareable, to newValue: Bool) {
         guard self != .allowEdit else {
             // file
             share.permissions = CCUtility.getPermissionsValue(
@@ -104,7 +119,7 @@ enum LinkPermission: Permission {
         }
     }
 
-    func isOn(for share: TableShareable) -> Bool {
+    func isOn(for share: NCTableShareable) -> Bool {
         switch self {
         case .allowEdit: return CCUtility.isAnyPermission(toEdit: share.permissions)
         case .viewOnly: return !CCUtility.isAnyPermission(toEdit: share.permissions) && share.permissions != NCGlobal.shared.permissionCreateShare
@@ -123,12 +138,12 @@ enum LinkPermission: Permission {
     }
 
     case allowEdit, viewOnly, uploadEdit, fileDrop
-    static let forDirectory: [LinkPermission] = [.viewOnly, .uploadEdit, .fileDrop]
-    static let forFile: [LinkPermission] = [.allowEdit]
+    static let forDirectory: [NCLinkPermission] = [.viewOnly, .uploadEdit, .fileDrop]
+    static let forFile: [NCLinkPermission] = [.allowEdit]
 }
 
-enum Advanced: CaseIterable, ShareCellConfig {
-    func didSelect(for share: TableShareable) {
+enum NCShareDetails: CaseIterable, NCShareCellConfig {
+    func didSelect(for share: NCTableShareable) {
         switch self {
         case .hideDownload: share.hideDownload.toggle()
         case .expirationDate: return
@@ -138,13 +153,13 @@ enum Advanced: CaseIterable, ShareCellConfig {
         }
     }
 
-    func getCell(for share: TableShareable) -> UITableViewCell {
+    func getCell(for share: NCTableShareable) -> UITableViewCell {
         switch self {
         case .hideDownload:
-            return ToggleCell(isOn: share.hideDownload)
+            return NCShareToggleCell(isOn: share.hideDownload)
         case .expirationDate:
-            return DatePickerTableViewCell(share: share)
-        case .password: return ToggleCell(isOn: !share.password.isEmpty, customIcons: ("lock", "lock.open"))
+            return NCShareDateCell(share: share)
+        case .password: return NCShareToggleCell(isOn: !share.password.isEmpty, customIcons: ("lock", "lock.open"))
         case .note:
             let cell = UITableViewCell(style: .value1, reuseIdentifier: "shareNote")
             cell.detailTextLabel?.text = share.note
@@ -168,20 +183,20 @@ enum Advanced: CaseIterable, ShareCellConfig {
     }
 
     case label, hideDownload, expirationDate, password, note
-    static let forLink: [Advanced] = Advanced.allCases
-    static let forUser: [Advanced] = [.expirationDate, .note]
+    static let forLink: [NCShareDetails] = NCShareDetails.allCases
+    static let forUser: [NCShareDetails] = [.expirationDate, .note]
 }
 
-struct ShareConfig {
-    let permissions: [Permission]
-    let advanced: [Advanced]
-    let share: TableShareable
+struct NCShareConfig {
+    let permissions: [NCPermission]
+    let advanced: [NCShareDetails]
+    let share: NCTableShareable
 
-    init(isDirectory: Bool, share: TableShareable) {
+    init(isDirectory: Bool, share: NCTableShareable) {
         self.share = share
-        let type: Permission.Type = share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK ? LinkPermission.self : UserPermission.self
+        let type: NCPermission.Type = share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK ? NCLinkPermission.self : NCUserPermission.self
         self.permissions = isDirectory ? type.forDirectory : type.forFile
-        self.advanced = share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK ? Advanced.forLink : Advanced.forUser
+        self.advanced = share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK ? NCShareDetails.forLink : NCShareDetails.forUser
     }
 
     func cellFor(indexPath: IndexPath) -> UITableViewCell? {
@@ -196,7 +211,7 @@ struct ShareConfig {
         cellConfig?.didSelect(for: share)
     }
 
-    func config(for indexPath: IndexPath) -> ShareCellConfig? {
+    func config(for indexPath: IndexPath) -> NCShareCellConfig? {
         if indexPath.section == 0, indexPath.row < permissions.count {
             return  permissions[indexPath.row]
         } else if indexPath.section == 1, indexPath.row < advanced.count {
@@ -205,7 +220,7 @@ struct ShareConfig {
     }
 }
 
-class ToggleCell: UITableViewCell {
+class NCShareToggleCell: UITableViewCell {
     typealias CustomToggleIcon = (onIconName: String?, offIconName: String?)
     init(isOn: Bool, customIcons: CustomToggleIcon? = nil) {
         super.init(style: .default, reuseIdentifier: "toggleCell")
@@ -223,13 +238,13 @@ class ToggleCell: UITableViewCell {
     }
 }
 
-open class DatePickerTableViewCell: UITableViewCell {
+open class NCShareDateCell: UITableViewCell {
     let picker = UIDatePicker()
     let textField = UITextField()
 
     var onReload: (() -> Void)?
 
-    init(share: TableShareable) {
+    init(share: NCTableShareable) {
         super.init(style: .value1, reuseIdentifier: "shareExpDate")
         picker.datePickerMode = .date
         picker.minimumDate = Date()

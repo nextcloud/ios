@@ -3,14 +3,29 @@
 //  Nextcloud
 //
 //  Created by Henrik Storch on 19.03.22.
-//  Copyright © 2022 Marino Faggiana. All rights reserved.
+//  Copyright © 2022 Henrik Storch. All rights reserved.
+//
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
 import UIKit
 import NCCommunication
 
-extension tableShare: TableShareable { }
-protocol TableShareable: AnyObject {
+extension tableShare: NCTableShareable { }
+protocol NCTableShareable: AnyObject {
     var shareType: Int { get set }
     var permissions: Int { get set }
 
@@ -27,7 +42,7 @@ protocol TableShareable: AnyObject {
     var shareWithDisplayname: String { get set }
 }
 
-extension TableShareable {
+extension NCTableShareable {
     var expDateString: String? {
         guard let date = expirationDate else { return nil }
         let dateFormatter = DateFormatter()
@@ -36,7 +51,7 @@ extension TableShareable {
     }
 }
 
-class TableShareOptions: TableShareable {
+class NCTableShareOptions: NCTableShareable {
     var shareType: Int
     var permissions: Int
 
@@ -66,13 +81,13 @@ class TableShareOptions: TableShareable {
         self.shareWith = sharee.shareWith
     }
 
-    static func shareLink(metadata: tableMetadata, password: String?) -> TableShareOptions {
-        return TableShareOptions(shareType: NCShareCommon.shared.SHARE_TYPE_LINK, metadata: metadata, password: password)
+    static func shareLink(metadata: tableMetadata, password: String?) -> NCTableShareOptions {
+        return NCTableShareOptions(shareType: NCShareCommon.shared.SHARE_TYPE_LINK, metadata: metadata, password: password)
     }
 }
 
 protocol NCShareDetail {
-    var share: TableShareable! { get }
+    var share: NCTableShareable! { get }
 }
 
 extension NCShareDetail where Self: UIViewController {
