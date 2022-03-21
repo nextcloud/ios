@@ -15,7 +15,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mg2-Ou-yoX">
-                    <rect key="frame" x="16" y="212" width="351" height="50"/>
+                    <rect key="frame" x="16" y="128" width="351" height="50"/>
                     <color key="backgroundColor" red="0.8862745098" green="0.0" blue="0.4549019608" alpha="1" colorSpace="calibratedRGB"/>
                     <state key="normal" title="Send share"/>
                     <state key="highlighted">
@@ -23,7 +23,7 @@
                     </state>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rCI-63-PtL">
-                    <rect key="frame" x="383" y="212" width="351" height="50"/>
+                    <rect key="frame" x="383" y="128" width="351" height="50"/>
                     <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="50" id="vdI-sH-cTb"/>
@@ -38,7 +38,7 @@
             <constraints>
                 <constraint firstItem="rCI-63-PtL" firstAttribute="leading" secondItem="Mg2-Ou-yoX" secondAttribute="trailing" constant="16" id="4Px-cS-Hta"/>
                 <constraint firstItem="Mg2-Ou-yoX" firstAttribute="leading" secondItem="sWQ-1v-CIt" secondAttribute="leading" constant="16" id="Jdi-WJ-zVF"/>
-                <constraint firstItem="sWQ-1v-CIt" firstAttribute="bottom" secondItem="Mg2-Ou-yoX" secondAttribute="bottom" id="SzT-aI-aUz"/>
+                <constraint firstItem="sWQ-1v-CIt" firstAttribute="centerY" secondItem="Mg2-Ou-yoX" secondAttribute="centerY" id="SzT-aI-aUz"/>
                 <constraint firstItem="Mg2-Ou-yoX" firstAttribute="height" secondItem="rCI-63-PtL" secondAttribute="height" id="bNp-Nf-uMw"/>
                 <constraint firstItem="Mg2-Ou-yoX" firstAttribute="width" secondItem="rCI-63-PtL" secondAttribute="width" id="dfu-GZ-P99"/>
                 <constraint firstItem="rCI-63-PtL" firstAttribute="centerY" secondItem="Mg2-Ou-yoX" secondAttribute="centerY" id="hEl-ij-sMX"/>

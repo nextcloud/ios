@@ -38,24 +38,16 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
     weak var delegate: NCShareCommentsCellDelegate?
 
     var filePreviewImageView: UIImageView? {
-        get {
-            return nil
-        }
+        return nil
     }
     var fileAvatarImageView: UIImageView? {
-        get {
-            return imageItem
-        }
+        return imageItem
     }
     var fileObjectId: String? {
-        get {
-            return nil
-        }
+        return nil
     }
     var fileUser: String? {
-        get {
-            return tableComments?.actorId
-        }
+        return tableComments?.actorId
     }
 
     override func awakeFromNib() {

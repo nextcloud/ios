@@ -64,12 +64,15 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         guard let footerView = (Bundle.main.loadNibNamed("NCShareAdvancePermissionFooter", owner: self, options: nil)?.first as? NCShareAdvancePermissionFooter) else { return }
         footerView.setupUI(delegate: self)
 
-        footerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 120)
-        tableView.tableFooterView = footerView
-        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 120, right: 0)
-        footerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        footerView.heightAnchor.constraint(equalToConstant: 120).isActive = true
-        footerView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor).isActive = true
+        // tableFooterView can't use auto layout directly
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 120))
+        container.backgroundColor = .blue
+        container.addSubview(footerView)
+        tableView.tableFooterView = container
+        footerView.translatesAutoresizingMaskIntoConstraints = false
+        footerView.bottomAnchor.constraint(equalTo: container.bottomAnchor).isActive = true
+        footerView.heightAnchor.constraint(equalTo: container.heightAnchor).isActive = true
+        footerView.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
     }
 
     func setupHeaderView() {
