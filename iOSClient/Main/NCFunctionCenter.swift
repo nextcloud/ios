@@ -77,11 +77,8 @@ import SVGKit
                 editingMode = true
             }
 
-            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), editingMode: editingMode, metadata: metadata)
-            let navigationController = UINavigationController(rootViewController: viewerQuickLook)
-            navigationController.modalPresentationStyle = .overFullScreen
-
-            self.appDelegate.window?.rootViewController?.present(navigationController, animated: true)
+            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: editingMode, metadata: metadata)
+            self.appDelegate.window?.rootViewController?.present(viewerQuickLook, animated: true)
 
         case NCGlobal.shared.selectorLoadFileView:
             guard UIApplication.shared.applicationState == UIApplication.State.active else { break }

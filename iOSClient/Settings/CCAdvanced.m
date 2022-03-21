@@ -173,8 +173,7 @@
         row.action.formBlock = ^(XLFormRowDescriptor * sender) {
                     
             [self deselectFormRow:sender];
-            
-            NCViewerQuickLook *viewerQuickLook = [[NCViewerQuickLook alloc] initWith:[NSURL fileURLWithPath:NCCommunicationCommon.shared.filenamePathLog] editingMode:false metadata:nil];
+            NCViewerQuickLook *viewerQuickLook = [[NCViewerQuickLook alloc] initWith:[NSURL fileURLWithPath:NCCommunicationCommon.shared.filenamePathLog] isEditingEnabled:false metadata:nil];
             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewerQuickLook];
             navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
             

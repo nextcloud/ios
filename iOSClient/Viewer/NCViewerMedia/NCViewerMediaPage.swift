@@ -104,9 +104,8 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-
+    deinit {
+        print("#deinit NCViewerMediaPage")
         // Clear
         if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
             ncplayer.playerPause()
@@ -117,11 +116,11 @@ class NCViewerMediaPage: UIViewController {
 
         metadatas.removeAll()
         ncplayerLivePhoto = nil
-        
+
         #if MFFFLIB
         MFFF.shared.dismissMessage()
         #endif
-        
+
         // Remove Observer
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
@@ -341,19 +340,19 @@ class NCViewerMediaPage: UIViewController {
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
 
             MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
-            skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
+            skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { [weak self] event in
 
                 let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
-                self.currentViewController.playerToolBar.skip(seconds: seconds)
-                return.success
+                self?.currentViewController.playerToolBar.skip(seconds: seconds)
+                return .success
             }
 
             MPRemoteCommandCenter.shared().skipBackwardCommand.isEnabled = true
-            skipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
+            skipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { [weak self] event in
 
                 let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
-                self.currentViewController.playerToolBar.skip(seconds: -seconds)
-                return.success
+                self?.currentViewController.playerToolBar.skip(seconds: -seconds)
+                return .success
             }
         }
 
@@ -474,15 +473,15 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
 
         if currentIndex == 0 { return nil }
 
-        let viewerMedia = getViewerMedia(index: currentIndex-1, metadata: metadatas[currentIndex-1])
+        let viewerMedia = getViewerMedia(index: currentIndex - 1, metadata: metadatas[currentIndex - 1])
         return viewerMedia
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
 
-        if currentIndex == metadatas.count-1 { return nil }
+        if currentIndex == metadatas.count - 1 { return nil }
 
-        let viewerMedia = getViewerMedia(index: currentIndex+1, metadata: metadatas[currentIndex+1])
+        let viewerMedia = getViewerMedia(index: currentIndex + 1, metadata: metadatas[currentIndex + 1])
         return viewerMedia
     }
 
