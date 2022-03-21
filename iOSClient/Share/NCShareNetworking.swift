@@ -67,6 +67,8 @@ class NCShareNetworking: NSObject {
         // NOTE: Permissions don't work for file drop!
         // https://github.com/nextcloud/server/issues/17504
 
+        // NOTE: Can't save label, expirationDate, and note, until library update
+        // https://github.com/nextcloud/ios-communication-library/pull/104
         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
         let permission = max(1, metadata.sharePermissionsCollaborationServices & option.permissions)

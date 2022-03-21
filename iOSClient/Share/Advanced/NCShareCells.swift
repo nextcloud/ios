@@ -1,5 +1,5 @@
 //
-//  ShareCells.swift
+//  NCShareCells.swift
 //  Nextcloud
 //
 //  Created by Henrik Storch on 18.03.22.

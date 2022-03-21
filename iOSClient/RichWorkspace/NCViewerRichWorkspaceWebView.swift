@@ -41,8 +41,8 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        guard let url = URL(string: url) else { return }
-        var request = URLRequest(url: url)
+
+        var request = URLRequest(url: URL(string: url)!)
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
         let language = NSLocale.preferredLanguages[0] as String
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
@@ -54,7 +54,7 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
     }
 
     @objc func keyboardDidShow(notification: Notification) {
-        let safeAreaInsetsBottom = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
+        let safeAreaInsetsBottom = UIApplication.shared.keyWindow!.safeAreaInsets.bottom
         guard let info = notification.userInfo else { return }
         guard let frameInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         let keyboardFrame = frameInfo.cgRectValue
@@ -73,8 +73,8 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
 
             if message.body as? String == "close" {
 
-                if #available(iOS 13.0, *), let presentationController = self.presentationController {
-                    self.presentationController?.delegate?.presentationControllerWillDismiss?(presentationController)
+                if #available(iOS 13.0, *) {
+                    self.presentationController?.delegate?.presentationControllerWillDismiss?(self.presentationController!)
                 }
 
                 dismiss(animated: true) {
@@ -83,8 +83,8 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
             }
 
             if message.body as? String == "share" {
-                if let metadata = metadata {
-                    NCFunctionCenter.shared.openShare(viewController: self, metadata: metadata, indexPage: .sharing)
+                if metadata != nil {
+                    NCFunctionCenter.shared.openShare(viewController: self, metadata: metadata!, indexPage: .sharing)
                 }
             }
 
