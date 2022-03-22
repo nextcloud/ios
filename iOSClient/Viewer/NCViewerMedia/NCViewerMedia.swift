@@ -194,12 +194,15 @@ class NCViewerMedia: UIViewController {
     // MARK: - Image
 
     func reloadImage() {
-        loadImage(metadata: metadata) { _, image in
-            self.image = image
-            // do not update if is present the videoLayer
-            let numSublayers = self.imageVideoContainer.layer.sublayers?.count
-            if numSublayers == nil {
-                self.imageVideoContainer.image = image
+        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
+            self.metadata = metadata
+            loadImage(metadata: metadata) { _, image in
+                self.image = image
+                // do not update if is present the videoLayer
+                let numSublayers = self.imageVideoContainer.layer.sublayers?.count
+                if numSublayers == nil {
+                    self.imageVideoContainer.image = image
+                }
             }
         }
     }
