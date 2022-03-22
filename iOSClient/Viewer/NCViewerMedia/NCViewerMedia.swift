@@ -112,6 +112,10 @@ class NCViewerMedia: UIViewController {
 
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue, let viewerMediaPage = self.viewerMediaPage {
             viewerMediaPage.currentScreenMode = viewerMediaPage.saveScreenModeImage
+            if viewerMediaPage.modifiedOcId.contains(metadata.ocId) {
+                viewerMediaPage.modifiedOcId.removeAll(where: { $0 == metadata.ocId })
+                reloadImage()
+            }
         }
 
         if viewerMediaPage?.currentScreenMode == .full {

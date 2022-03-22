@@ -44,6 +44,7 @@ class NCViewerMediaPage: UIViewController {
     }
 
     var metadatas: [tableMetadata] = []
+    var modifiedOcId: [String] = []
     var currentIndex = 0
     var nextIndex: Int?
     var ncplayerLivePhoto: NCPlayer?
@@ -130,6 +131,8 @@ class NCViewerMediaPage: UIViewController {
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
@@ -238,6 +241,8 @@ class NCViewerMediaPage: UIViewController {
                     metadatas[index] = metadata
                     if currentViewController.metadata.ocId == ocId {
                         currentViewController.reloadImage()
+                    } else {
+                        modifiedOcId.append(ocId)
                     }
                 }
             }
