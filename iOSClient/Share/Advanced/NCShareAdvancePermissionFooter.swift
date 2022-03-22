@@ -35,8 +35,7 @@ class NCShareAdvancePermissionFooter: UIView {
 
     func setupUI(delegate: NCShareAdvanceFotterDelegate?) {
         self.delegate = delegate
-
-        backgroundColor = .red
+        backgroundColor = .clear
 
         buttonCancel.addTarget(self, action: #selector(cancelClicked), for: .touchUpInside)
         buttonCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)

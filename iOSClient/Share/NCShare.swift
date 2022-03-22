@@ -185,12 +185,13 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         networking?.getSharees(searchString: searchString)
     }
 
-    func checkEnforcedPassword(callback: @escaping (String?) -> Void) {
+    func checkEnforcedPassword(shareType: Int? = nil, completion: @escaping (String?) -> Void) {
         guard let metadata = self.metadata,
-              NCManageDatabase.shared.getCapabilitiesServerBool(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesFileSharingPubPasswdEnforced, exists: false)
-        else { return callback(nil) }
+              NCManageDatabase.shared.getCapabilitiesServerBool(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesFileSharingPubPasswdEnforced, exists: false),
+              shareType == NCShareCommon.shared.SHARE_TYPE_USER || shareType == NCShareCommon.shared.SHARE_TYPE_EMAIL
+        else { return completion(nil) }
 
-        self.present(UIAlertController.sharePassword(completion: callback), animated: true)
+        self.present(UIAlertController.sharePassword(completion: completion), animated: true)
     }
 
     // MARK: - NCShareNetworkingDelegate
@@ -253,11 +254,14 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
                 let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
                 let navigationController = self.navigationController,
                 let metadata = self.metadata else { return }
-            let shareOptions = NCTableShareOptions(sharee: sharee, metadata: metadata)
-            advancePermission.share = shareOptions
-            advancePermission.networking = self.networking
-            advancePermission.metadata = metadata
-            navigationController.pushViewController(advancePermission, animated: true)
+            self.checkEnforcedPassword(shareType: sharee.shareType) { password in
+                let shareOptions = NCTableShareOptions(sharee: sharee, metadata: metadata)
+                if let password = password { shareOptions.password = password }
+                advancePermission.share = shareOptions
+                advancePermission.networking = self.networking
+                advancePermission.metadata = metadata
+                navigationController.pushViewController(advancePermission, animated: true)
+            }
         }
 
         dropDown.show()

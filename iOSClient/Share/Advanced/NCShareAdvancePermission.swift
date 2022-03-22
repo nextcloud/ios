@@ -66,7 +66,6 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
 
         // tableFooterView can't use auto layout directly
         let container = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 120))
-        container.backgroundColor = .blue
         container.addSubview(footerView)
         tableView.tableFooterView = container
         footerView.translatesAutoresizingMaskIntoConstraints = false
@@ -136,7 +135,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
                 tableView.reloadData()
                 return
             }
-            let alertController = UIAlertController.withTextField(titleKey: "_enforce_password_protection_") { textField in
+            let alertController = UIAlertController.withTextField(titleKey: "_share_password_") { textField in
                 textField.placeholder = NSLocalizedString("_password_", comment: "")
                 textField.isSecureTextEntry = true
             } completion: { password in
