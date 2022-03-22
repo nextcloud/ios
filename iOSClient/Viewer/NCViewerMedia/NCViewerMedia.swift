@@ -101,14 +101,7 @@ class NCViewerMedia: UIViewController {
         self.image = nil
         self.imageVideoContainer.image = nil
 
-        loadImage(metadata: metadata) { _, image in
-            self.image = image
-            // do not update if is present the videoLayer
-            let numSublayers = self.imageVideoContainer.layer.sublayers?.count
-            if numSublayers == nil {
-                self.imageVideoContainer.image = image
-            }
-        }
+        reloadImage()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -195,6 +188,17 @@ class NCViewerMedia: UIViewController {
     }
 
     // MARK: - Image
+
+    func reloadImage() {
+        loadImage(metadata: metadata) { _, image in
+            self.image = image
+            // do not update if is present the videoLayer
+            let numSublayers = self.imageVideoContainer.layer.sublayers?.count
+            if numSublayers == nil {
+                self.imageVideoContainer.image = image
+            }
+        }
+    }
 
     func loadImage(metadata: tableMetadata, completion: @escaping (_ ocId: String, _ image: UIImage?) -> Void) {
 
