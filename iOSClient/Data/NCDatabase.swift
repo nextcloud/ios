@@ -384,6 +384,10 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var ocId = ""
     @objc dynamic var ownerId = ""
     @objc dynamic var ownerDisplayName = ""
+    @objc public var lock = false
+    @objc public var lockOwner = ""
+    @objc public var lockOwnerDisplayName = ""
+    @objc public var lockTime: Date?
     @objc dynamic var path = ""
     @objc dynamic var permissions = ""
     @objc dynamic var quotaUsedBytes: Int64 = 0

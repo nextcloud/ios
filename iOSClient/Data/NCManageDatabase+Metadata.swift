@@ -64,6 +64,10 @@ extension NCManageDatabase {
         metadata.ocId = file.ocId
         metadata.ownerId = file.ownerId
         metadata.ownerDisplayName = file.ownerDisplayName
+        metadata.lock = file.lock
+        metadata.lockOwner = file.lockOwner
+        metadata.lockOwnerDisplayName = file.lockOwnerDisplayName
+        metadata.lockTime = file.lockTime
         metadata.path = file.path
         metadata.permissions = file.permissions
         metadata.quotaUsedBytes = file.quotaUsedBytes
@@ -323,6 +327,11 @@ extension NCManageDatabase {
                             ocIdsUdate.append(metadata.ocId)
                             realm.add(tableMetadata.init(value: metadata), update: .all)
                         } else if result.status == NCGlobal.shared.metadataStatusNormal && addCompareLivePhoto && result.livePhoto != metadata.livePhoto {
+                            ocIdsUdate.append(metadata.ocId)
+                            realm.add(tableMetadata.init(value: metadata), update: .all)
+                        } else if result.lock != metadata.lock {
+                            // FIXME: Etag should have changed!
+                            // https://github.com/nextcloud/files_lock/issues/57
                             ocIdsUdate.append(metadata.ocId)
                             realm.add(tableMetadata.init(value: metadata), update: .all)
                         }
