@@ -212,4 +212,24 @@ extension NCMenuAction {
             }
         )
     }
+
+    /// Lock or unlock a file using files_lock
+    static func lockUnlockFiles(shouldLock: Bool, metadatas: [tableMetadata], completion: (() -> Void)? = nil) -> NCMenuAction {
+        let titleKey = !shouldLock ? "_unlock_file_" : "_lock_file_"
+        let imageName = !shouldLock ? "_unlock_" : "_lock_"
+        return NCMenuAction(
+            title: NSLocalizedString(titleKey, comment: ""),
+            icon: NCUtility.shared.loadImage(named: imageName),
+            action: { _ in
+                let dispatchGroup = DispatchGroup()
+                for metadata in metadatas where metadata.lock != shouldLock {
+                    dispatchGroup.enter()
+                    NCNetworking.shared.lockUnlockFile(metadata, shoulLock: shouldLock) { _, _ in
+                        dispatchGroup.leave()
+                    }
+                }
+                dispatchGroup.notify(queue: .main, execute: completion ?? { })
+            }
+        )
+    }
 }

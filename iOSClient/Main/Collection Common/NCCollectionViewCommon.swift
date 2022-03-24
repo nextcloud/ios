@@ -791,7 +791,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
 
-        if namedButtonMore == NCGlobal.shared.buttonMoreMore {
+        if namedButtonMore == NCGlobal.shared.buttonMoreMore || namedButtonMore == NCGlobal.shared.buttonMoreLock {
             toggleMenu(metadata: metadata, imageIcon: image)
         } else if namedButtonMore == NCGlobal.shared.buttonMoreStop {
             NCNetworking.shared.cancelTransferMetadata(metadata) { }

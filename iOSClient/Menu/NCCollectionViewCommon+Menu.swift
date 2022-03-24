@@ -88,6 +88,10 @@ extension NCCollectionViewCommon {
             )
         )
 
+        if !metadata.directory {
+            actions.append(.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata], completion: self.reloadDataSource))
+        }
+
         //
         // DETAIL
         //
