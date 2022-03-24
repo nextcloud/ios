@@ -118,10 +118,7 @@ extension NCSelectableNavigationView where Self: UIViewController {
         actions.append(.openInAction(selectedMetadatas: selectedMetadatas, viewController: self, completion: tapSelect))
 
         if !isAnyFolder {
-            actions.append(.lockUnlockFiles(shouldLock: !isAnyLocked, metadatas: selectedMetadatas, completion: {
-                self.reloadDataSource()
-                self.tapSelect()
-            }))
+            actions.append(.lockUnlockFiles(shouldLock: !isAnyLocked, metadatas: selectedMetadatas, completion: tapSelect))
         }
 
         if !selectedMediaMetadatas.isEmpty {

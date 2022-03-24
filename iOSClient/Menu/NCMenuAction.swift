@@ -215,20 +215,21 @@ extension NCMenuAction {
 
     /// Lock or unlock a file using files_lock
     static func lockUnlockFiles(shouldLock: Bool, metadatas: [tableMetadata], completion: (() -> Void)? = nil) -> NCMenuAction {
-        let titleKey = !shouldLock ? "_unlock_file_" : "_lock_file_"
+        let titleKey: String
+        if metadatas.count == 1 {
+            titleKey = shouldLock ? "_lock_file_" : "_unlock_file_"
+        } else {
+            titleKey = shouldLock ? "_lock_selected_files_" : "_unlock_selected_files_"
+        }
         let imageName = !shouldLock ? "lock.open" : "lock"
         return NCMenuAction(
             title: NSLocalizedString(titleKey, comment: ""),
             icon: NCUtility.shared.loadImage(named: imageName),
             action: { _ in
-                let dispatchGroup = DispatchGroup()
                 for metadata in metadatas where metadata.lock != shouldLock {
-                    dispatchGroup.enter()
-                    NCNetworking.shared.lockUnlockFile(metadata, shoulLock: shouldLock) { _, _ in
-                        dispatchGroup.leave()
-                    }
+                    NCNetworking.shared.lockUnlockFile(metadata, shoulLock: shouldLock)
                 }
-                dispatchGroup.notify(queue: .main, execute: completion ?? { })
+                completion?()
             }
         )
     }

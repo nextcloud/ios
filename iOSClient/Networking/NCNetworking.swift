@@ -1171,17 +1171,16 @@ import Queuer
 
     // MARK: - Lock Files
 
-    @objc func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
+    @objc func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
         NCCommunication.shared.lockUnlockFile(shouldLock: shoulLock, fileId: metadata.fileId) { errorCode, errorDescription in
             guard errorCode == 0 else {
-                completion(errorCode, errorDescription)
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, priority: .max)
                 return
             }
             NCNetworking.shared.readFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, account: metadata.account) { account, metadata, errorCode, errorDescription in
-                completion(errorCode, errorDescription)
                 guard errorCode == 0, let metadata = metadata else { return }
                 NCManageDatabase.shared.addMetadata(metadata)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
             }
         }
     }

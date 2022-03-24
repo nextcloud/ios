@@ -148,8 +148,10 @@
 "_leave_share_"             = "Leave this share";
 
 /* Files lock */
-"_lock_"                    = "Lock";
-"_unlock_"                  = "Unock";
+"_lock_file_"                       = "Lock file";
+"_unlock_file_"                     = "Unock file";
+"_lock_selected_files_"             = "Lock files";
+"_unlock_selected_files_"           = "Unock files";
 
 /* Remove a file from a list, don't delete it entirely */
 "_remove_file_"             = "Remove file";
