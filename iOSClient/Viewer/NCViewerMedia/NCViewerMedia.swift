@@ -36,11 +36,11 @@ class NCViewerMedia: UIViewController {
     @IBOutlet weak var statusViewImage: UIImageView!
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var detailView: NCViewerMediaDetailView!
-    
+
     private var _autoPlay: Bool = false
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var viewerMediaPage: NCViewerMediaPage?
+    weak var viewerMediaPage: NCViewerMediaPage?
     var playerToolBar: NCPlayerToolBar?
     var ncplayer: NCPlayer?
     var image: UIImage?
@@ -112,14 +112,7 @@ class NCViewerMedia: UIViewController {
         self.image = nil
         self.imageVideoContainer.image = nil
 
-        loadImage(metadata: metadata) { _, image in
-            self.image = image
-            // do not update if is present the videoLayer
-            let numSublayers = self.imageVideoContainer.layer.sublayers?.count
-            if numSublayers == nil {
-                self.imageVideoContainer.image = image
-            }
-        }
+        reloadImage()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -130,6 +123,10 @@ class NCViewerMedia: UIViewController {
 
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue, let viewerMediaPage = self.viewerMediaPage {
             viewerMediaPage.currentScreenMode = viewerMediaPage.saveScreenModeImage
+            if viewerMediaPage.modifiedOcId.contains(metadata.ocId) {
+                viewerMediaPage.modifiedOcId.removeAll(where: { $0 == metadata.ocId })
+                reloadImage()
+            }
         }
 
         if viewerMediaPage?.currentScreenMode == .full {
@@ -207,6 +204,20 @@ class NCViewerMedia: UIViewController {
     }
 
     // MARK: - Image
+
+    func reloadImage() {
+        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
+            self.metadata = metadata
+            loadImage(metadata: metadata) { _, image in
+                self.image = image
+                // do not update if is present the videoLayer
+                let numSublayers = self.imageVideoContainer.layer.sublayers?.count
+                if numSublayers == nil {
+                    self.imageVideoContainer.image = image
+                }
+            }
+        }
+    }
 
     func loadImage(metadata: tableMetadata, completion: @escaping (_ ocId: String, _ image: UIImage?) -> Void) {
 
@@ -451,8 +462,13 @@ extension NCViewerMedia {
                 self.detailViewHeighConstraint.constant = 170
             }
             self.view.layoutIfNeeded()
-            
-            self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMediaPage?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel, ncplayer: self.ncplayer ,delegate: self)
+            self.detailView.show(
+                metadata: self.metadata,
+                image: self.image,
+                textColor: self.viewerMediaPage?.textColor,
+                mediaMetadata: (latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel),
+                ncplayer: self.ncplayer,
+                delegate: self)
                 
             if let image = self.imageVideoContainer.image {
                 let ratioW = self.imageVideoContainer.frame.width / image.size.width
@@ -499,7 +515,13 @@ extension NCViewerMedia {
 
         if self.detailView.isShow() {
             CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
-                self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMediaPage?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel, ncplayer: self.ncplayer ,delegate: self)
+                self.detailView.show(
+                    metadata: self.metadata,
+                    image: self.image,
+                    textColor: self.viewerMediaPage?.textColor,
+                    mediaMetadata: (latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel),
+                    ncplayer: self.ncplayer,
+                    delegate: self)
             }
         }
     }
