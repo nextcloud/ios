@@ -41,14 +41,14 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var playbackSlider: UISlider!
     @IBOutlet weak var labelLeftTime: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
-   
+
     enum sliderEventType {
         case began
         case ended
         case moved
     }
 
-    private var ncplayer: NCPlayer?
+    var ncplayer: NCPlayer?
     private var metadata: tableMetadata?
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
@@ -83,11 +83,11 @@ class NCPlayerToolBar: UIView {
 
         muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .lightGray), for: .normal)
         muteButton.isEnabled = false
-        
+
         subtitleButton.setImage(NCUtility.shared.loadImage(named: "captions.bubble", color: .lightGray), for: .normal)
         subtitleButton.isEnabled = false
         subtitleButton.isHidden = true
-        
+
         playbackSlider.value = 0
         playbackSlider.minimumValue = 0
         playbackSlider.maximumValue = 0
@@ -102,10 +102,10 @@ class NCPlayerToolBar: UIView {
 
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .lightGray), for: .normal)
         backButton.isEnabled = false
-        
+
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray), for: .normal)
         playButton.isEnabled = false
-        
+
         forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .lightGray), for: .normal)
         forwardButton.isEnabled = false
 
@@ -125,12 +125,12 @@ class NCPlayerToolBar: UIView {
     }
 
     // MARK: -
-    
+
     func setMetadata(_ metadata: tableMetadata) {
-        
+
         self.metadata = metadata
     }
-    
+
     func setBarPlayer(ncplayer: NCPlayer) {
 
         self.ncplayer = ncplayer
@@ -147,7 +147,7 @@ class NCPlayerToolBar: UIView {
     }
 
     public func updateToolBar() {
-        
+
         guard let ncplayer = self.ncplayer else { return }
 
         // MUTE
@@ -213,7 +213,7 @@ class NCPlayerToolBar: UIView {
     // MARK: Handle Notifications
 
     @objc func handleRouteChange(notification: Notification) {
-        
+
         guard let userInfo = notification.userInfo, let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt, let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else { return }
 
         switch reason {
@@ -275,13 +275,13 @@ class NCPlayerToolBar: UIView {
             return
         }
         #endif
-        
+
         timerAutoHide?.invalidate()
         if enableTimerAutoHide {
             startTimerAutoHide()
         }
         if !self.isHidden { return }
-        
+
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 1
         }, completion: { (_: Bool) in
@@ -369,7 +369,7 @@ class NCPlayerToolBar: UIView {
 
         timerAutoHide?.invalidate()
     }
-    
+
     // MARK: - Event / Gesture
 
     @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
@@ -404,9 +404,9 @@ class NCPlayerToolBar: UIView {
     // MARK: - Action
 
     @objc func tapTopToolBarWith(gestureRecognizer: UITapGestureRecognizer) { }
-    
+
     @objc func tapToolBarWith(gestureRecognizer: UITapGestureRecognizer) { }
-    
+
     @IBAction func tapPlayerPause(_ sender: Any) {
 
         if ncplayer?.player?.timeControlStatus == .playing {
@@ -469,12 +469,12 @@ class NCPlayerToolBar: UIView {
         skip(seconds: 10)
 
         /*
-        if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-            skip(seconds: 10)
-        } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-            forward()
-        }
-        */
+         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+         skip(seconds: 10)
+         } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+         forward()
+         }
+         */
     }
 
     @IBAction func tapBack(_ sender: Any) {
@@ -482,18 +482,18 @@ class NCPlayerToolBar: UIView {
         skip(seconds: -10)
 
         /*
-        if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-            skip(seconds: -10)
-        } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-            backward()
-        }
-        */
+         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+         skip(seconds: -10)
+         } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+         backward()
+         }
+         */
     }
-    
+
     @IBAction func tapSubtitle(_ sender: Any) {
-        
+        self.subtitleIconTapped()
     }
-    
+
     func forward() {
 
         var index: Int = 0

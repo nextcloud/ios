@@ -30,7 +30,7 @@ import JGProgressHUD
 import Alamofire
 
 class NCPlayer: NSObject {
-   
+
     internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
     internal var url: URL
     internal var playerToolBar: NCPlayerToolBar?
@@ -48,10 +48,17 @@ class NCPlayer: NSObject {
     public var metadata: tableMetadata
     public var videoLayer: AVPlayerLayer?
 
+    public var isSubtitleShowed: Bool = false{
+        didSet {
+            self.playerToolBar?.changeSubtitleIconTo(visible: isSubtitleShowed)
+        }
+    }
+    public var subtitleUrls: [URL] = []
+
     // MARK: - View Life Cycle
 
     init(url: URL, autoPlay: Bool, isProxy: Bool, imageVideoContainer: imageVideoContainerView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?, viewController: UIViewController) {
-        
+
         self.url = url
         self.autoPlay = autoPlay
         self.isProxy = isProxy
@@ -62,7 +69,7 @@ class NCPlayer: NSObject {
         self.viewController = viewController
 
         super.init()
-        
+
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback)
             try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.PortOverride.none)
@@ -70,19 +77,26 @@ class NCPlayer: NSObject {
         } catch {
             print(error)
         }
-        
+
         openAVPlayer()
     }
-    
+
     internal func openAVPlayer() {
-        
-        #if MFFFLIB
+
+#if MFFFLIB
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded) {
+            self.url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
+            self.isProxy = false
+        }
         if MFFF.shared.existsMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))) {
             return
         } else {
             MFFF.shared.dismissMessage()
         }
-        #endif
+#endif
+
+        self.setUpForSubtitle()
+        self.isSubtitleShowed = false
 
         print("Play URL: \(self.url)")
         player = AVPlayer(url: self.url)
@@ -144,17 +158,17 @@ class NCPlayer: NSObject {
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", value: "No", comment: ""), style: .default, handler: { _ in }))
                         self.viewController.present(alertController, animated: true)
                     } else {
-                        #if MFFFLIB
+#if MFFFLIB
                         if error?.code == AVError.Code.fileFormatNotRecognized.rawValue {
-                            self.convertVideo()
+                            self.convertVideo(withAlert: true)
+                            break
                         }
-                        #else
+#endif
                         if let title = error?.localizedDescription, let description = error?.localizedFailureReason {
                             NCContentPresenter.shared.messageNotification(title, description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
                         } else {
                             NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
                         }
-                        #endif
                     }
                     break
                 case .cancelled:
@@ -166,8 +180,8 @@ class NCPlayer: NSObject {
         })
     }
 
-    internal func downloadVideo() {
-        
+    internal func downloadVideo(requiredConvert: Bool = false) {
+
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let hud = JGProgressHUD()
@@ -183,7 +197,7 @@ class NCPlayer: NSObject {
         hud.tapOnHUDViewBlock = { hud in
             downloadRequest?.cancel()
         }
-        
+
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { request in
             downloadRequest = request
         } taskHandler: { task in
@@ -197,7 +211,13 @@ class NCPlayer: NSObject {
                 if let url = urlVideo.url {
                     self.url = url
                     self.isProxy = urlVideo.isProxy
-                    self.openAVPlayer()
+                    if requiredConvert {
+                        #if MFFFLIB
+                        self.convertVideo(withAlert: false)
+                        #endif
+                    } else {
+                        self.openAVPlayer()
+                    }
                 }
             }
             hud.dismiss()
@@ -217,15 +237,15 @@ class NCPlayer: NSObject {
         // At end go back to start & show toolbar
         observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { notification in
             if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
-                
+
                 NCKTVHTTPCache.shared.saveCache(metadata: self.metadata)
-                
+
                 self.videoSeek(time: .zero)
-               
+
                 if !(self.detailView?.isShow() ?? false) {
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": self.metadata.ocId, "enableTimerAutoHide": false])
                 }
-                
+
                 self.playerToolBar?.updateToolBar()
             }
         }
@@ -240,7 +260,7 @@ class NCPlayer: NSObject {
         NotificationCenter.default.addObserver(self, selector: #selector(generatorImagePreview), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(playerPause), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPauseMedia), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playerPlay), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayMedia), object: nil)
     }
@@ -266,7 +286,7 @@ class NCPlayer: NSObject {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
-        
+
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPauseMedia), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayMedia), object: nil)
     }
@@ -274,7 +294,7 @@ class NCPlayer: NSObject {
     // MARK: - NotificationCenter
 
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
-                
+
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue, let playerToolBar = self.playerToolBar {
             if !playerToolBar.isPictureInPictureActive() {
                 playerPause()
@@ -286,22 +306,22 @@ class NCPlayer: NSObject {
 
         playerToolBar?.updateToolBar()
     }
-    
+
     // MARK: -
 
     func isPlay() -> Bool {
 
         if player?.rate == 1 { return true } else { return false }
     }
-    
+
     @objc func playerPlay() {
-                
+
         player?.play()
         self.playerToolBar?.updateToolBar()
     }
-    
+
     @objc func playerPause() {
-        
+
         player?.pause()
         self.playerToolBar?.updateToolBar()
 
@@ -367,4 +387,3 @@ class NCPlayer: NSObject {
         }
     }
 }
-

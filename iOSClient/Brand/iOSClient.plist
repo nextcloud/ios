@@ -75,6 +75,16 @@
 	<string>Photo library access is required to upload your photos and videos to your cloud.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Photo library access is required to upload your photos and videos to your cloud.</string>
+    <key>UIAppFonts</key>
+    <array>
+        <string>Inconsolata-Light.ttf</string>
+        <string>Inconsolata-Regular.ttf</string>
+        <string>Inconsolata-ExtraLight.ttf</string>
+        <string>Inconsolata-Medium.ttf</string>
+        <string>Inconsolata-Bold.ttf</string>
+        <string>Inconsolata-ExtraBold.ttf</string>
+        <string>Inconsolata-Black.ttf</string>
+    </array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
