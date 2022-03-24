@@ -147,6 +147,10 @@
 "_view_in_folder_"          = "View in folder";
 "_leave_share_"             = "Leave this share";
 
+/* Files lock */
+"_lock_"                    = "Lock";
+"_unlock_"                  = "Unock";
+
 /* Remove a file from a list, don't delete it entirely */
 "_remove_file_"             = "Remove file";
 

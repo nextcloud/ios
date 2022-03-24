@@ -216,7 +216,7 @@ extension NCMenuAction {
     /// Lock or unlock a file using files_lock
     static func lockUnlockFiles(shouldLock: Bool, metadatas: [tableMetadata], completion: (() -> Void)? = nil) -> NCMenuAction {
         let titleKey = !shouldLock ? "_unlock_file_" : "_lock_file_"
-        let imageName = !shouldLock ? "_unlock_" : "_lock_"
+        let imageName = !shouldLock ? "lock.open" : "lock"
         return NCMenuAction(
             title: NSLocalizedString(titleKey, comment: ""),
             icon: NCUtility.shared.loadImage(named: imageName),
