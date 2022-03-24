@@ -63,9 +63,14 @@ class NCMenu: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let action = actions[indexPath.row]
+        guard action.title != NCMenuAction.seperatorIdentifier else {
+            let cell = UITableViewCell()
+            cell.backgroundColor = NCBrandColor.shared.separator
+            return cell
+        }
         let cell = tableView.dequeueReusableCell(withIdentifier: "menuActionCell", for: indexPath)
         cell.tintColor = NCBrandColor.shared.customer
-        let action = actions[indexPath.row]
         let actionIconView = cell.viewWithTag(1) as? UIImageView
         let actionNameLabel = cell.viewWithTag(2) as? UILabel
 
@@ -89,7 +94,7 @@ class NCMenu: UITableViewController {
     // MARK: - Tabel View Layout
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
+        actions[indexPath.row].title == NCMenuAction.seperatorIdentifier ? 3 : 60
     }
 }
 extension NCMenu: FloatingPanelControllerDelegate {

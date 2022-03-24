@@ -70,6 +70,21 @@ extension NCCollectionViewCommon {
                 action: nil
             )
         )
+        
+        if metadata.lock {
+            let lockOwnerName = metadata.lockOwnerDisplayName.isEmpty ? metadata.lockOwner : metadata.lockOwnerDisplayName
+            actions.append(
+                NCMenuAction(
+                    title: String(format: NSLocalizedString("_file_locked_by_", comment: ""), lockOwnerName),
+                    icon: NCUtility.shared.loadUserImage(
+                        for: metadata.lockOwner,
+                           displayName: lockOwnerName,
+                           userBaseUrl: metadata),
+                    action: nil)
+            )
+        }
+        
+        actions.append(.seperator)
 
         //
         // FAVORITE

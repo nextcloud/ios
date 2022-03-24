@@ -639,7 +639,7 @@ import SVGKit
             }
         }
         
-        let lockUnlock = UIAction(title: titleLock, image: NCUtility.shared.loadImage(named: iconLock)) { _ in
+        let lockUnlock = UIAction(title: titleLock, image: UIImage(systemName: iconLock)) { _ in
             NCNetworking.shared.lockUnlockFile(metadata, shoulLock: !metadata.lock)
         }
         let save = UIAction(title: titleSave, image: UIImage(systemName: "square.and.arrow.down")) { _ in

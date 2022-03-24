@@ -41,6 +41,12 @@ class NCMenuAction {
 // MARK: - Actions
 
 extension NCMenuAction {
+    static let seperatorIdentifier = "NCMenuAction.SEPERATOR"
+    
+    /// A static seperator, with no actions, text, or icons
+    static var seperator: NCMenuAction {
+        return NCMenuAction(title: seperatorIdentifier, icon: UIImage(), action: nil)
+    }
 
     /// Select all items
     static func selectAllAction(action: @escaping () -> Void) -> NCMenuAction {
