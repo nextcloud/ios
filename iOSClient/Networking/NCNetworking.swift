@@ -523,8 +523,9 @@ import Queuer
         }) { _, ocId, etag, date, size, _, _, errorCode, errorDescription in
 
             self.uploadRequest[fileNameLocalPath] = nil
-            self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: uploadTask!, errorCode: errorCode, errorDescription: errorDescription)
-
+            if let uploadTask = uploadTask {
+                self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: uploadTask, errorCode: errorCode, errorDescription: errorDescription)
+            }
             completion(errorCode, errorDescription)
         }
     }

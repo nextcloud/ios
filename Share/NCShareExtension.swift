@@ -343,16 +343,16 @@ extension NCShareExtension {
         hud.show(in: self.view)
 
         NCNetworking.shared.upload(metadata: metadata) { } completion: { errorCode, _ in
-            if errorCode == 0 {
-                self.counterUploaded += 1
-                self.upload()
-            } else {
+            if errorCode != 0 {
                 let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
                 NCUtilityFileSystem.shared.deleteFile(filePath: path)
                 self.uploadErrors.append(metadata)
             }
+
+            self.counterUploaded += 1
+            self.upload()
         }
     }
 
