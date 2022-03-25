@@ -58,9 +58,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
     public  var tableShareSelected: tableShare?
     private var shareeSelected: NCCommunicationSharee?
     
-    private var shareLinkMenuView: NCShareLinkMenuView?
-    private var shareUserMenuView: NCShareUserMenuView?
-    private var shareMenuViewWindow: UIView?
     private var dropDown = DropDown()
     private var networking: NCShareNetworking?
     
@@ -77,8 +74,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
         searchFieldTopConstraint.constant = 10
 
         searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
-
-//        shareLinkImage.image = NCShareCommon.shared.createLinkAvatar(imageName: "sharebylink", colorCircle: NCBrandColor.shared.brandElement)
         shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
         shareLinkLabel.textColor = NCBrandColor.shared.label
         buttonCopy.setImage(UIImage(named: "shareCopy")?.image(color: .gray, size: 50), for: .normal)
@@ -208,10 +203,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
         let shares = NCManageDatabase.shared.getTableShares(metadata: metadata!)
         if shares.firstShareLink == nil {
             buttonMenu.setImage(UIImage(named: "shareAdd")?.image(color: .gray, size: 50), for: .normal)
-            //buttonCopy.isHidden = true
         } else {
             buttonMenu.setImage(UIImage(named: "shareMenu")?.image(color: .gray, size: 50), for: .normal)
-            //buttonCopy.isHidden = false
 
             shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
             if shares.firstShareLink?.label.count ?? 0 > 0 {
@@ -293,12 +286,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
         }
     }
 
-    @objc func tapLinkMenuViewWindow(gesture: UITapGestureRecognizer) {
-        shareLinkMenuView?.unLoad()
-        shareLinkMenuView = nil
-        shareUserMenuView?.unLoad()
-        shareUserMenuView = nil
-    }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         return gestureRecognizer.view == touch.view
@@ -323,10 +310,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareNetworkingD
             alertController.addAction(okAction)
             
             present(alertController, animated: true, completion:nil)
-        } else if shares.firstShareLink == nil {
-            networking?.createShareLink(password: "")
         } else {
-//            tapMenu(with: shares.firstShareLink!, sender: sender, index: <#Int#>)
             networking?.createShareLink(password: "")
         }
         
@@ -598,17 +582,10 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
         let isFolder = metadata.directory
         
         if tableShare.shareType == 3 {
-            let shareMenu = NCShareMenu()
             let isFolder = metadata.directory
-            shareMenu.toggleMenu(viewController: self, sendMail: false, folder: isFolder)
-            let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
-            tap.delegate = self
+            toggleMenu(viewController: self, sendMail: false, folder: isFolder)
         } else {
-            let shareMenu = NCShareMenu()
-            shareMenu.toggleMenu(viewController: self, sendMail: true, folder: isFolder)
-            
-            let tap = UITapGestureRecognizer(target: self, action: #selector(tapLinkMenuViewWindow))
-            tap.delegate = self
+            toggleMenu(viewController: self, sendMail: true, folder: isFolder)
         }
     }
 

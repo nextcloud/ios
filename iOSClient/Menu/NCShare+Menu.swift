@@ -1,75 +1,61 @@
 //
-//  NCShareMenu.swift
+//  NCShare+Menu.swift
 //  Nextcloud
 //
-//  Created by T-systems on 29/06/21.
-//  Copyright © 2021 Marino Faggiana. All rights reserved.
+//  Created by A200020526 on 24/03/22.
+//  Copyright © 2022 Marino Faggiana. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
-class NCShareMenu: NSObject {
-    
+extension NCShare {
     func toggleMenu(viewController: UIViewController, sendMail: Bool, folder: Bool) {
-        
-        guard let menuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateInitialViewController() as? NCMenu else {
+        guard (UIStoryboard(name: "NCMenu", bundle: nil).instantiateInitialViewController() as? NCMenu) != nil else {
             return
         }
-        
+
         var actions = [NCMenuAction]()
-        
+
         if !folder {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_open_in_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "viewInFolder").imageColor(NCBrandColor.shared.brandElement),
-                    action: { menuAction in
+                    action: { _ in
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShareViewIn)
                     }
                 )
             )
         }
-        
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_advance_permissions_", comment: ""),
                 icon: NCUtility.shared.loadImage(named: "rename").imageColor(NCBrandColor.shared.brandElement),
-                action: { menuAction in
+                action: { _ in
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShareAdvancePermission)
                 }
             )
         )
-        
         if sendMail {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_send_new_email_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "email").imageColor(NCBrandColor.shared.brandElement),
-                    action: { menuAction in
+                    action: { _ in
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShareSendEmail)
                     }
                 )
             )
         }
-        
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_share_unshare_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "delete").imageColor(NCBrandColor.shared.brandElement),
-                action: { menuAction in
+                icon: NCUtility.shared.loadImage(named: "trash").imageColor(NCBrandColor.shared.brandElement),
+                action: { _ in
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShareUnshare)
                 }
             )
         )
-        
-        menuViewController.actions = actions
-        
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = viewController
-        menuPanelController.delegate = menuViewController
-        menuPanelController.set(contentViewController: menuViewController)
-        menuPanelController.track(scrollView: menuViewController.tableView)
-        
-        viewController.present(menuPanelController, animated: true, completion: nil)
+        presentMenu(with: actions)
     }
 }

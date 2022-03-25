@@ -14,7 +14,7 @@ enum VerticalLocation: String {
 }
 
 extension UIView {
-    func addShadow(location: VerticalLocation, height: CGFloat = 2, color: UIColor = NCBrandColor.shared.customerDarkGrey, opacity: Float = 0.4, radius: CGFloat = 2) {
+    func addShadow(location: VerticalLocation, height: CGFloat = 2, color: UIColor = NCBrandColor.shared.iconColor, opacity: Float = 0.4, radius: CGFloat = 2) {
         switch location {
         case .bottom:
              addShadow(offset: CGSize(width: 0, height: height), color: color, opacity: opacity, radius: radius)

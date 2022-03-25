@@ -60,7 +60,7 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
         if metadata!.favorite {
             self.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 24), for: .normal)
         } else {
-            self.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.textInfo, size: 24), for: .normal)
+            self.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.gray60, size: 24), for: .normal)
         }
         self.labelDescription.text = CCUtility.transformedSize(metadata!.size) + ", " + CCUtility.dateDiff(metadata!.date as Date)
         labelSharing.text = NSLocalizedString("_sharing_", comment: "")
@@ -126,8 +126,8 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
             return image
         }
         
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo && !metadata.hasPreview {
-            NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.typeFile)
+        if metadata.classFile == NCGlobal.shared.metadataTypeFileVideo && !metadata.hasPreview {
+            NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
         }
         
         if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
@@ -149,7 +149,7 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
                         self.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 24), for: .normal)
                         self.metadata?.favorite = true
                     } else {
-                        self.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.textInfo, size: 24), for: .normal)
+                        self.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.gray60, size: 24), for: .normal)
                         self.metadata?.favorite = false
                     }
                 } else {
@@ -165,14 +165,14 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
         let ext = CCUtility.getExtension(metadata.fileNameView)
         var image: UIImage?
         
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.classFile == NCGlobal.shared.metadataTypeFileImage {
             
             let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             
             if ext == "GIF" {
                 if !FileManager().fileExists(atPath: previewPath) {
-                    NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.typeFile)
+                    NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
                 }
                 image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
             } else if ext == "SVG" {
@@ -193,7 +193,7 @@ class NCShareNewUserAddComment: UIViewController, UITextViewDelegate, NCShareNet
                     return nil
                 }
             } else {
-                NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.typeFile)
+                NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
                 image = UIImage.init(contentsOfFile: imagePath)
             }
         }

@@ -27,7 +27,7 @@ class NCShareTextInputCell: XLFormBaseCell, UITextFieldDelegate {
         self.selectionStyle = .none
         self.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
         self.cellTextField.attributedPlaceholder = NSAttributedString(string: "",
-                                                               attributes: [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.fileFolderName])
+                                                               attributes: [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.gray60])
         self.cellTextField.textColor = NCBrandColor.shared.singleTitleColorButton
     }
     

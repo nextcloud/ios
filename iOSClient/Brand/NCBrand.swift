@@ -30,7 +30,6 @@ import UIKit
         let instance = NCBrandConfiguration()
         return instance
     }()
-
     @objc public let configuration_bundleId: String = "it.twsweb.Nextcloud"
     @objc public let configuration_serverUrl: String = "serverUrl"
     @objc public let configuration_username: String = "username"
@@ -44,7 +43,6 @@ import UIKit
         let instance = NCBrandOptions()
         return instance
     }()
-    
     @objc public var brand: String = "Nextcloud"
     // @objc public var mailMe:                            String = "ios@nextcloud.com"                              // Deprecated
     @objc public var textCopyrightNextcloudiOS: String = "Nextcloud Liquid for iOS %@ © 2021"
@@ -152,12 +150,7 @@ class NCBrandColor: NSObject {
     @objc public let gray:                  UIColor = UIColor(red: 104.0/255.0, green: 104.0/255.0, blue: 104.0/255.0, alpha: 1.0)
     @objc public let lightGray:             UIColor = UIColor(red: 229.0/255.0, green: 229.0/229.0, blue: 104.0/255.0, alpha: 1.0)
     @objc public let yellowFavorite:        UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
-    @objc public var fileFolderName:          UIColor = UIColor(displayP3Red: 102.0/255.0, green: 102.0/255.0, blue: 102.0/255.0, alpha: 1.0)
     @objc public var singleTitleColorButton:          UIColor = UIColor(red: 25.0/255.0, green: 25.0/255.0, blue: 25.0/255.0, alpha: 1.0)
-    @objc public let textInfo:              UIColor = UIColor(red: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 1.0)
-    @objc public let optionItem:            UIColor = UIColor(red: 178.0/255.0, green: 178.0/255.0, blue: 178.0/255.0, alpha: 1.0)
-    @objc public let customerDarkGrey:              UIColor = UIColor(red: 38.0/255.0, green: 38.0/255.0, blue: 38.0/255.0, alpha: 1.0)
-    
     
     public var userColors: [CGColor] = []
 

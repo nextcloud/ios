@@ -72,7 +72,7 @@ class NCShareAdvancePermission: XLFormViewController, NCSelectDelegate, NCShareA
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.typeFile = self.metadata?.typeFile
+        self.typeFile = self.metadata?.classFile
         
         self.metadata?.permissions = self.permissions
         if !newUser {
@@ -157,7 +157,7 @@ class NCShareAdvancePermission: XLFormViewController, NCSelectDelegate, NCShareA
         self.navigationController?.navigationBar.tintColor = NCBrandColor.shared.customer
         self.headerView.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
         self.headerView.fileName.textColor = NCBrandColor.shared.label
-        self.headerView.info.textColor = NCBrandColor.shared.textInfo
+        self.headerView.info.textColor = NCBrandColor.shared.systemGray
         self.footerView.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
         
         self.footerView.buttonCancel.setTitleColor(NCBrandColor.shared.label, for: .normal)
@@ -375,14 +375,14 @@ class NCShareAdvancePermission: XLFormViewController, NCSelectDelegate, NCShareA
         self.headerView.favorite.setNeedsUpdateConstraints()
         self.headerView.favorite.layoutIfNeeded()
         self.headerView.fileName.text = self.metadata?.fileNameView
-        self.headerView.fileName.textColor = NCBrandColor.shared.fileFolderName
+        self.headerView.fileName.textColor = NCBrandColor.shared.gray60
         self.headerView.favorite.addTarget(self, action: #selector(favoriteClicked), for: .touchUpInside)
         if metadata!.favorite {
             self.headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 24), for: .normal)
         } else {
-            self.headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.textInfo, size: 24), for: .normal)
+            self.headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.systemGray, size: 24), for: .normal)
         }
-        self.headerView.info.textColor = NCBrandColor.shared.optionItem
+        self.headerView.info.textColor = NCBrandColor.shared.gray60
         self.headerView.info.text = CCUtility.transformedSize(metadata!.size) + ", " + CCUtility.dateDiff(metadata!.date as Date)
         self.headerView.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 190)
         self.tableView.tableHeaderView = self.headerView
@@ -880,7 +880,7 @@ extension NCShareAdvancePermission {
                         self.headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 24), for: .normal)
                         self.metadata?.favorite = true
                     } else {
-                        self.headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.textInfo, size: 24), for: .normal)
+                        self.headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.systemGray, size: 24), for: .normal)
                         self.metadata?.favorite = false
                     }
                 } else {
@@ -920,8 +920,8 @@ extension NCShareAdvancePermission : NCShareNetworkingDelegate {
         if let image = getImage(metadata: metadata) {
             return image
         }
-        if metadata.typeFile == NCGlobal.shared.metadataTypeFileVideo && !metadata.hasPreview {
-            NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.typeFile)
+        if metadata.classFile == NCGlobal.shared.metadataTypeFileVideo && !metadata.hasPreview {
+            NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
         }
         if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
             if let imagePreviewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag) {
@@ -934,12 +934,12 @@ extension NCShareAdvancePermission : NCShareNetworkingDelegate {
     private func getImage(metadata: tableMetadata) -> UIImage? {
         let ext = CCUtility.getExtension(metadata.fileNameView)
         var image: UIImage?
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.typeFile == NCGlobal.shared.metadataTypeFileImage {
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.classFile == NCGlobal.shared.metadataTypeFileImage {
             let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             if ext == "GIF" {
                 if !FileManager().fileExists(atPath: previewPath) {
-                    NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.typeFile)
+                    NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
                 }
                 image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
             } else if ext == "SVG" {
@@ -960,7 +960,7 @@ extension NCShareAdvancePermission : NCShareNetworkingDelegate {
                     return nil
                 }
             } else {
-                NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.typeFile)
+                NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
                 image = UIImage(contentsOfFile: imagePath)
             }
         }
