@@ -235,14 +235,14 @@
     }
     
     // Web
-    if ([activeAccount.webpage length] > 0) {
+    if ([activeAccount.website length] > 0) {
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userweb" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_web_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[[UIImage imageNamed:@"network"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
-        row.value = activeAccount.webpage;
+        row.value = activeAccount.website;
         [section addFormRow:row];
     }
     
@@ -305,7 +305,7 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
         [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[[UIImage imageNamed:@"company"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
-        row.value = activeAccount.company;
+        row.value = activeAccount.organisation;
         [section addFormRow:row];
     
         if (activeAccount.hcIsTrial) {

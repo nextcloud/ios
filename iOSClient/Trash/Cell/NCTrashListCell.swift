@@ -4,7 +4,9 @@
 //
 //  Created by Marino Faggiana on 08/10/2018.
 //  Copyright © 2018 Marino Faggiana. All rights reserved.
+//  Copyright © 2022 Henrik Storch. All rights reserved.
 //
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
@@ -23,14 +25,14 @@
 
 import UIKit
 
-class NCTrashListCell: UICollectionViewCell {
+class NCTrashListCell: UICollectionViewCell, NCTrashCell {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageSelect: UIImageView!
 
     @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var labelInfo: UILabel!
+    @IBOutlet weak var labelInfo: UILabel?
 
     @IBOutlet weak var imageRestore: UIImageView!
     @IBOutlet weak var imageMore: UIImageView!
@@ -44,13 +46,12 @@ class NCTrashListCell: UICollectionViewCell {
     weak var delegate: NCTrashListCellDelegate?
 
     var objectId = ""
-    var indexPath = IndexPath()
 
     override func awakeFromNib() {
         super.awakeFromNib()
 
         imageRestore.image = NCBrandColor.cacheImages.buttonRestore
-        imageMore.image = NCBrandColor.cacheImages.buttonMore
+        imageMore.image = NCUtility.shared.loadImage(named: "trash")
 
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
@@ -80,18 +81,26 @@ class NCTrashListCell: UICollectionViewCell {
 
     func selected(_ status: Bool) {
         if status {
+            var blurEffect: UIVisualEffect?
+            var blurEffectView: UIView?
             imageSelect.image = NCBrandColor.cacheImages.checkedYes
-
-            let blurEffect = UIBlurEffect(style: .extraLight)
-            let blurEffectView = UIVisualEffectView(effect: blurEffect)
-            blurEffectView.frame = self.bounds
-            blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            blurEffectView.backgroundColor = NCBrandColor.shared.brandElement.withAlphaComponent(0.2)
+            if traitCollection.userInterfaceStyle == .dark {
+                blurEffect = UIBlurEffect(style: .dark)
+                blurEffectView = UIVisualEffectView(effect: blurEffect)
+                blurEffectView?.backgroundColor = .black
+            } else {
+                blurEffect = UIBlurEffect(style: .extraLight)
+                blurEffectView = UIVisualEffectView(effect: blurEffect)
+                blurEffectView?.backgroundColor = .lightGray
+            }
+            blurEffectView?.frame = self.bounds
+            blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             backgroundView = blurEffectView
-
+            separator.isHidden = true
         } else {
             imageSelect.image = NCBrandColor.cacheImages.checkedNo
             backgroundView = nil
+            separator.isHidden = false
         }
     }
 }
@@ -99,4 +108,29 @@ class NCTrashListCell: UICollectionViewCell {
 protocol NCTrashListCellDelegate: AnyObject {
     func tapRestoreListItem(with objectId: String, image: UIImage?, sender: Any)
     func tapMoreListItem(with objectId: String, image: UIImage?, sender: Any)
+}
+
+protocol NCTrashCell {
+    var objectId: String { get set }
+    var labelTitle: UILabel! { get set }
+    var labelInfo: UILabel? { get set }
+    var imageItem: UIImageView! { get set }
+
+    func selectMode(_ status: Bool)
+    func selected(_ status: Bool)
+}
+extension NCTrashCell {
+    mutating func setupCellUI(tableTrash: tableTrash, image: UIImage?) {
+        self.objectId = tableTrash.fileId
+        self.labelTitle.text = tableTrash.trashbinFileName
+        self.labelTitle.textColor = NCBrandColor.shared.label
+
+        if tableTrash.directory {
+            self.imageItem.image = NCBrandColor.cacheImages.folder
+            self.labelInfo?.text = CCUtility.dateDiff(tableTrash.date as Date)
+        } else {
+            self.imageItem.image = image
+            self.labelInfo?.text = CCUtility.dateDiff(tableTrash.date as Date) + ", " + CCUtility.transformedSize(tableTrash.size)
+        }
+    }
 }

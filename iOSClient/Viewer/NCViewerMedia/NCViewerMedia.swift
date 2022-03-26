@@ -41,7 +41,7 @@ class NCViewerMedia: UIViewController {
     private var _autoPlay: Bool = false
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var viewerMediaPage: NCViewerMediaPage?
+    weak var viewerMediaPage: NCViewerMediaPage?
     var ncplayer: NCPlayer?
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
@@ -101,14 +101,7 @@ class NCViewerMedia: UIViewController {
         self.image = nil
         self.imageVideoContainer.image = nil
 
-        loadImage(metadata: metadata) { _, image in
-            self.image = image
-            // do not update if is present the videoLayer
-            let numSublayers = self.imageVideoContainer.layer.sublayers?.count
-            if numSublayers == nil {
-                self.imageVideoContainer.image = image
-            }
-        }
+        reloadImage()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -119,6 +112,10 @@ class NCViewerMedia: UIViewController {
 
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue, let viewerMediaPage = self.viewerMediaPage {
             viewerMediaPage.currentScreenMode = viewerMediaPage.saveScreenModeImage
+            if viewerMediaPage.modifiedOcId.contains(metadata.ocId) {
+                viewerMediaPage.modifiedOcId.removeAll(where: { $0 == metadata.ocId })
+                reloadImage()
+            }
         }
 
         if viewerMediaPage?.currentScreenMode == .full {
@@ -164,12 +161,9 @@ class NCViewerMedia: UIViewController {
             }
             
             #if MFFFLIB
-            MFFF.shared.delegate = self.ncplayer
-//            if !MFFF.shared.existsMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))) {
-//                self.playerToolBar.hideMessage()
-//            }
+            MFFF.shared.setDelegate = self.ncplayer
             #endif
-
+            
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
 
             viewerMediaPage?.clearCommandCenter()
@@ -198,6 +192,20 @@ class NCViewerMedia: UIViewController {
     }
 
     // MARK: - Image
+
+    func reloadImage() {
+        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
+            self.metadata = metadata
+            loadImage(metadata: metadata) { _, image in
+                self.image = image
+                // do not update if is present the videoLayer
+                let numSublayers = self.imageVideoContainer.layer.sublayers?.count
+                if numSublayers == nil {
+                    self.imageVideoContainer.image = image
+                }
+            }
+        }
+    }
 
     func loadImage(metadata: tableMetadata, completion: @escaping (_ ocId: String, _ image: UIImage?) -> Void) {
         
@@ -274,6 +282,42 @@ class NCViewerMedia: UIViewController {
             if metadata.livePhoto { downloadFileLivePhoto(metadata: metadata) }
         }
 
+        // Download file max resolution
+        func downloadFile(metadata: tableMetadata) {
+
+            let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+            let ext = CCUtility.getExtension(metadata.fileNameView)
+
+            if (CCUtility.getAutomaticDownloadImage() || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata) && metadata.session == "") {
+
+                NCNetworking.shared.download(metadata: metadata, selector: "") { _ in
+
+                    DispatchQueue.main.async {
+                        let image = getImageMetadata(metadata)
+                        completion(metadata.ocId, image)
+                    }
+                }
+
+            } else {
+
+                DispatchQueue.main.async {
+                    let image = getImageMetadata(metadata)
+                    completion(metadata.ocId, image)
+                }
+            }
+        }
+
+        // Download Live Photo
+        func downloadFileLivePhoto(metadata: tableMetadata) {
+
+            let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
+
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !CCUtility.fileProviderStorageExists(metadata) {
+
+                NCNetworking.shared.download(metadata: metadata, selector: "") { _ in }
+            }
+        }
+
         func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
 
             if let image = getImage(metadata: metadata) {
@@ -304,7 +348,7 @@ class NCViewerMedia: UIViewController {
             let ext = CCUtility.getExtension(metadata.fileNameView)
             var image: UIImage?
 
-            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+            if CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
 
                 let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
                 let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -442,8 +486,13 @@ extension NCViewerMedia {
                 self.detailViewHeighConstraint.constant = 170
             }
             self.view.layoutIfNeeded()
-            
-            self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMediaPage?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel, ncplayer: self.ncplayer ,delegate: self)
+            self.detailView.show(
+                metadata: self.metadata,
+                image: self.image,
+                textColor: self.viewerMediaPage?.textColor,
+                mediaMetadata: (latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel),
+                ncplayer: self.ncplayer,
+                delegate: self)
                 
             if let image = self.imageVideoContainer.image {
                 let ratioW = self.imageVideoContainer.frame.width / image.size.width
@@ -490,7 +539,13 @@ extension NCViewerMedia {
 
         if self.detailView.isShow() {
             CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
-                self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMediaPage?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel, ncplayer: self.ncplayer ,delegate: self)
+                self.detailView.show(
+                    metadata: self.metadata,
+                    image: self.image,
+                    textColor: self.viewerMediaPage?.textColor,
+                    mediaMetadata: (latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel),
+                    ncplayer: self.ncplayer,
+                    delegate: self)
             }
         }
     }

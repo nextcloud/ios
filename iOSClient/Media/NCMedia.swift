@@ -133,6 +133,12 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         }
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        mediaCommandTitle()
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
@@ -719,10 +725,11 @@ class NCMediaCommandView: UIView {
         moreView.layer.masksToBounds = true
         controlButtonView.layer.cornerRadius = 20
         controlButtonView.layer.masksToBounds = true
+        controlButtonView.effect = UIBlurEffect(style: .dark)
         gradient.frame = bounds
-        gradient.startPoint = CGPoint(x: 0, y: 0.50)
-        gradient.endPoint = CGPoint(x: 0, y: 0.9)
-        gradient.colors = [UIColor.black.withAlphaComponent(0.4).cgColor, UIColor.clear.cgColor]
+        gradient.startPoint = CGPoint(x: 0, y: 0.5)
+        gradient.endPoint = CGPoint(x: 0, y: 1)
+        gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
         layer.insertSublayer(gradient, at: 0)
         moreButton.setImage(UIImage(named: "more")!.image(color: .white, size: 25), for: .normal)
         title.text = ""
@@ -737,7 +744,7 @@ class NCMediaCommandView: UIView {
             }
         } else {
             UIView.animate(withDuration: 0.3) {
-                self.moreView.effect = UIBlurEffect(style: .regular)
+                self.moreView.effect = UIBlurEffect(style: .dark)
                 self.gradient.isHidden = false
                 self.controlButtonView.isHidden = false
             }

@@ -459,6 +459,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCreationFile)
             return
         }
+        let fileUrl = URL(fileURLWithPath: fileNameGenerateExport)
 
         // Text Recognition TXT
         if fileType == "TXT" && self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
@@ -489,7 +490,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             }
 
             do {
-                try textFile.write(to: NSURL(fileURLWithPath: fileNameGenerateExport) as URL, atomically: true, encoding: .utf8)
+                try textFile.write(to: fileUrl, atomically: true, encoding: .utf8)
             } catch {
                 NCUtility.shared.stopActivityIndicator()
                 NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCreationFile)
@@ -562,7 +563,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             UIGraphicsEndPDFContext()
 
             do {
-                try pdfData.write(toFile: fileNameGenerateExport, options: .atomic)
+                try pdfData.write(to: fileUrl, options: .atomic)
             } catch {
                 print("error catched")
             }
@@ -579,13 +580,14 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             }
 
             do {
-                try data.write(to: NSURL.fileURL(withPath: fileNameGenerateExport), options: .atomic)
+                try data.write(to: fileUrl, options: .atomic)
             } catch {
                 NCUtility.shared.stopActivityIndicator()
                 NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCreationFile)
                 return
             }
         }
+        metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameGenerateExport)
 
         NCUtility.shared.stopActivityIndicator()
 
@@ -762,10 +764,10 @@ class NCCreateScanDocument: NSObject, VNDocumentCameraViewControllerDelegate {
         }
 
         controller.dismiss(animated: true) {
-            if self.viewController is DragDropViewController {
-                (self.viewController as! DragDropViewController).loadImage()
+            if let viewController = self.viewController as? NCScan {
+                viewController.loadImage()
             } else {
-                let storyboard = UIStoryboard(name: "Scan", bundle: nil)
+                let storyboard = UIStoryboard(name: "NCScan", bundle: nil)
                 let controller = storyboard.instantiateInitialViewController()!
 
                 controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet

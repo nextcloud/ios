@@ -302,6 +302,7 @@ extension NCManageDatabase {
                 result.language = userProfile.language
                 result.lastLogin = userProfile.lastLogin
                 result.locale = userProfile.locale
+                result.organisation = userProfile.organisation
                 result.phone = userProfile.phone
                 result.quota = userProfile.quota
                 result.quotaFree = userProfile.quotaFree
@@ -312,7 +313,7 @@ extension NCManageDatabase {
                 result.subadmin = userProfile.subadmin.joined(separator: ",")
                 result.twitter = userProfile.twitter
                 result.userId = userProfile.userId
-                result.webpage = userProfile.webpage
+                result.website = userProfile.website
 
                 returnAccount = result
             }
@@ -323,7 +324,7 @@ extension NCManageDatabase {
         return tableAccount.init(value: returnAccount)
     }
 
-    @objc func setAccountUserProfileHC(businessSize: String, businessType: String, city: String, company: String, country: String, role: String, zip: String) -> tableAccount? {
+    @objc func setAccountUserProfileHC(businessSize: String, businessType: String, city: String, organisation: String, country: String, role: String, zip: String) -> tableAccount? {
 
         let realm = try! Realm()
 
@@ -343,7 +344,7 @@ extension NCManageDatabase {
                 result.businessSize = businessSize
                 result.businessType = businessType
                 result.city = city
-                result.company = company
+                result.organisation =  organisation
                 result.country = country
                 result.role = role
                 result.zip = zip

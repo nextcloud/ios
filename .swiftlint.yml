@@ -11,7 +11,8 @@ empty_count:
 
 line_length:
   # warning: 120
-  warning: 200
+  warning: 250
+  error: 250
 
 type_body_length:
   # error: 350
@@ -117,9 +118,6 @@ excluded:
   - iOSClient/Shares/NCShares.swift
   - iOSClient/Transfers/NCTransferCell.swift
   - iOSClient/Transfers/NCTransfers.swift
-  - iOSClient/Trash/Cell/NCTrashListCell.swift
-  - iOSClient/Trash/NCTrash.swift
-  - iOSClient/Trash/Section/NCTrashSectionHeaderFooter.swift
   - iOSClient/UserStatus/NCUserStatus.swift
   - iOSClient/Utility/NCAskAuthorization.swift
   - iOSClient/Utility/NCContentPresenter.swift
@@ -132,13 +130,11 @@ excluded:
   - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayer.swift
   - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayerToolBar.swift
   - iOSClient/Viewer/NCViewerMedia/NCViewerMedia.swift
-  - iOSClient/Viewer/NCViewerMedia/NCViewerMediaDetailView.swift
   - iOSClient/Viewer/NCViewerMedia/NCViewerMediaPage.swift
   - iOSClient/Viewer/NCViewerNextcloudText/NCViewerNextcloudText.swift
   - iOSClient/Viewer/NCViewerPDF/NCViewerPDF.swift
   - iOSClient/Viewer/NCViewerPDF/NCViewerPDFSearch.swift
   - iOSClient/Viewer/NCViewerProviderContextMenu.swift
-  - iOSClient/Viewer/NCViewerQuickLook/NCViewerQuickLook.swift
   - iOSClient/Viewer/NCViewerRichdocument/NCViewerRichdocument.swift
 
 

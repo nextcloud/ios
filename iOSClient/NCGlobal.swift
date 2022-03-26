@@ -112,7 +112,7 @@ class NCGlobal: NSObject {
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 215
+    let databaseSchemaVersion: UInt64               = 216
 
     // Intro selector
     //
@@ -283,13 +283,13 @@ class NCGlobal: NSObject {
     let selectorListingFavorite                     = "listingFavorite"
     let selectorLoadFileView                        = "loadFileView"
     let selectorLoadFileQuickLook                   = "loadFileQuickLook"
-    let selectorLoadCopy                            = "loadCopy"
     let selectorLoadOffline                         = "loadOffline"
     let selectorOpenIn                              = "openIn"
     let selectorPrint                               = "print"
     let selectorUploadAutoUpload                    = "uploadAutoUpload"
     let selectorUploadAutoUploadAll                 = "uploadAutoUploadAll"
     let selectorUploadFile                          = "uploadFile"
+    let selectorUploadFileShareExtension            = "uploadFileShareExtension"
     let selectorSaveAlbum                           = "saveAlbum"
     let selectorSaveBackground                      = "saveBackground"
     let selectorSaveAlbumLivePhotoIMG               = "saveAlbumLivePhotoIMG"

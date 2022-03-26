@@ -37,7 +37,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
 
     open weak var delegate: NCAudioRecorderViewControllerDelegate?
     var recording: NCAudioRecorder!
-    var recordDuration: TimeInterval = 0
+    var startDate: Date = Date()
     var fileName: String = ""
 
     @IBOutlet weak var contentContainerView: UIView!
@@ -93,7 +93,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
 
         if recording.state == .record {
 
-            recordDuration = 0
+            startDate = Date()
             recording.stop()
             voiceRecordHUD.update(0.0)
 
@@ -103,7 +103,6 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
 
         } else {
 
-            recordDuration = 0
             do {
                 try recording.record()
                 startStopLabel.text = NSLocalizedString("_voice_memo_stop_", comment: "")
@@ -149,8 +148,11 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
 
         voiceRecordHUD.update(CGFloat(rate))
         voiceRecordHUD.fillColor = UIColor.green
-        recordDuration += 1
-        durationLabel.text =  String().formatSecondsToString(recordDuration/60)
+        
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.second]
+        formatter.unitsStyle = .full
+        durationLabel.text = formatter.string(from: startDate, to: Date())
     }
 }
 
@@ -186,8 +188,8 @@ open class NCAudioRecorder: NSObject {
 
     // MARK: - Initializers
 
-    public init(to: String) {
-        url = URL(fileURLWithPath: NCAudioRecorder.directory).appendingPathComponent(to)
+    public init(to fileName: String) {
+        url = URL(fileURLWithPath: NCAudioRecorder.directory).appendingPathComponent(fileName)
         super.init()
 
         do {
@@ -276,7 +278,6 @@ open class NCAudioRecorder: NSObject {
     }
 
     fileprivate func stopMetering() {
-
         link?.invalidate()
         link = nil
     }

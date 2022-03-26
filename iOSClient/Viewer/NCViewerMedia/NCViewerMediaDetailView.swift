@@ -25,6 +25,8 @@ import UIKit
 import MapKit
 import NCCommunication
 
+typealias NCImageMetadata = (latitude: Double, longitude: Double, location: String?, date: Date?, lensModel: String?)
+
 public protocol NCViewerMediaDetailViewDelegate: AnyObject {
     func downloadFullResolution()
 }
@@ -52,8 +54,8 @@ class NCViewerMediaDetailView: UIView {
     var metadata: tableMetadata?
     var mapView: MKMapView?
     var ncplayer: NCPlayer?
-    var delegate: NCViewerMediaDetailViewDelegate?
-        
+    weak var delegate: NCViewerMediaDetailViewDelegate?
+
     override func awakeFromNib() {
         super.awakeFromNib()
 
@@ -76,15 +78,15 @@ class NCViewerMediaDetailView: UIView {
         self.mapView?.removeFromSuperview()
         self.mapView = nil
     }
-    
-    func show(metadata: tableMetadata, image: UIImage?, textColor: UIColor?, latitude: Double, longitude: Double, location: String?, date: Date?, lensModel: String?, ncplayer: NCPlayer?, delegate: NCViewerMediaDetailViewDelegate?) {
-                        
+
+    func show(metadata: tableMetadata, image: UIImage?, textColor: UIColor?, mediaMetadata: NCImageMetadata, ncplayer: NCPlayer?, delegate: NCViewerMediaDetailViewDelegate?) {
+
         self.metadata = metadata
-        self.latitude = latitude
-        self.longitude = longitude
-        self.location = location
-        self.date = date
-        self.lensModel = lensModel
+        self.latitude = mediaMetadata.latitude
+        self.longitude = mediaMetadata.longitude
+        self.location = mediaMetadata.location
+        self.date = mediaMetadata.date
+        self.lensModel = mediaMetadata.lensModel
         self.ncplayer = ncplayer
         self.delegate = delegate
 
@@ -93,25 +95,24 @@ class NCViewerMediaDetailView: UIView {
             let annotation = MKPointAnnotation()
             annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
 
-            self.mapView = MKMapView()
-            if let mapView = self.mapView {
-                mapView.translatesAutoresizingMaskIntoConstraints = false
-                self.mapContainer.addSubview(mapView)
+            let mapView = MKMapView()
+            self.mapView = mapView
+            self.mapContainer.addSubview(mapView)
 
-                NSLayoutConstraint.activate([
-                    mapView.topAnchor.constraint(equalTo: self.mapContainer.topAnchor),
-                    mapView.bottomAnchor.constraint(equalTo: self.mapContainer.bottomAnchor),
-                    mapView.leadingAnchor.constraint(equalTo: self.mapContainer.leadingAnchor),
-                    mapView.trailingAnchor.constraint(equalTo: self.mapContainer.trailingAnchor)
-                ])
+            mapView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                mapView.topAnchor.constraint(equalTo: self.mapContainer.topAnchor),
+                mapView.bottomAnchor.constraint(equalTo: self.mapContainer.bottomAnchor),
+                mapView.leadingAnchor.constraint(equalTo: self.mapContainer.leadingAnchor),
+                mapView.trailingAnchor.constraint(equalTo: self.mapContainer.trailingAnchor)
+            ])
 
-                mapView.layer.cornerRadius = 6
-                mapView.isZoomEnabled = true
-                mapView.isScrollEnabled = false
-                mapView.isUserInteractionEnabled = false
-                mapView.addAnnotation(annotation)
-                mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
-            }
+            mapView.layer.cornerRadius = 6
+            mapView.isZoomEnabled = true
+            mapView.isScrollEnabled = false
+            mapView.isUserInteractionEnabled = false
+            mapView.addAnnotation(annotation)
+            mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
         }
 
         // Size
@@ -156,7 +157,7 @@ class NCViewerMediaDetailView: UIView {
         }
 
         // Message
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "" {
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata) && metadata.session.isEmpty {
             messageButton.setTitle(NSLocalizedString("_try_download_full_resolution_", comment: ""), for: .normal)
             messageButton.isHidden = false
         } else {
@@ -188,23 +189,22 @@ class NCViewerMediaDetailView: UIView {
 
     @IBAction func touchLocation(_ sender: Any) {
 
-        if latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0 {
+        guard latitude != -1, latitude != 0, longitude != -1, longitude != 0 else { return }
 
-            let latitude: CLLocationDegrees = self.latitude
-            let longitude: CLLocationDegrees = self.longitude
+        let latitude: CLLocationDegrees = self.latitude
+        let longitude: CLLocationDegrees = self.longitude
 
-            let regionDistance: CLLocationDistance = 10000
-            let coordinates = CLLocationCoordinate2DMake(latitude, longitude)
-            let regionSpan = MKCoordinateRegion(center: coordinates, latitudinalMeters: regionDistance, longitudinalMeters: regionDistance)
-            let options = [
-                MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: regionSpan.center),
-                MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan: regionSpan.span)
-            ]
-            let placemark = MKPlacemark(coordinate: coordinates, addressDictionary: nil)
-            let mapItem = MKMapItem(placemark: placemark)
-            mapItem.name = location
-            mapItem.openInMaps(launchOptions: options)
-        }
+        let regionDistance: CLLocationDistance = 10000
+        let coordinates = CLLocationCoordinate2DMake(latitude, longitude)
+        let regionSpan = MKCoordinateRegion(center: coordinates, latitudinalMeters: regionDistance, longitudinalMeters: regionDistance)
+        let options = [
+            MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: regionSpan.center),
+            MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan: regionSpan.span)
+        ]
+        let placemark = MKPlacemark(coordinate: coordinates, addressDictionary: nil)
+        let mapItem = MKMapItem(placemark: placemark)
+        mapItem.name = location
+        mapItem.openInMaps(launchOptions: options)
     }
 
     @IBAction func touchFavorite(_ sender: Any) {
@@ -212,12 +212,6 @@ class NCViewerMediaDetailView: UIView {
     }
 
     @IBAction func touchMessage(_ sender: Any) {
-
         delegate?.downloadFullResolution()
-    }
-
-    // MARK: -
-    func secondsToHoursMinutesSeconds (seconds: Int) -> (Int, Int, Int) {
-      return (seconds / 3600, (seconds % 3600) / 60, (seconds % 3600) % 60)
     }
 }

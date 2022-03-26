@@ -141,6 +141,8 @@ extension NCManageDatabase {
 
         let metadata = tableMetadata()
         let resultInternalType = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
+        
+        let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
 
         metadata.account = account
         metadata.chunk = false
@@ -164,6 +166,10 @@ extension NCManageDatabase {
         metadata.urlBase = urlBase
         metadata.user = user
         metadata.userId = userId
+        
+        if !metadata.urlBase.isEmpty, metadata.serverUrl.hasPrefix(metadata.urlBase) {
+            metadata.path = String(metadata.serverUrl.dropFirst(metadata.urlBase.count)) + "/"
+        }
 
         return metadata
     }

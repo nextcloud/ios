@@ -145,7 +145,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             item = NCCommunicationExternalSite()
             item.name = "_scanned_images_"
             item.icon = "doc.text.viewfinder"
-            item.url = "openStoryboardScan"
+            item.url = "openStoryboardNCScan"
             functionMenu.append(item)
         }
 

@@ -1135,6 +1135,8 @@
     NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorageOcId:ocId], fileNameView];
     
     // if do not exists create file 0 length
+    // causes files with lenth 0 to never be downloaded, because already exist
+    // also makes it impossible to delete any file with length 0 (from cache)
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath] == NO) {
         [[NSFileManager defaultManager] createFileAtPath:fileNamePath contents:nil attributes:nil];
     }
@@ -1152,14 +1154,15 @@
     return [NSString stringWithFormat:@"%@/%@.preview.%@", [self getDirectoryProviderStorageOcId:ocId], etag, [NCGlobal shared].extensionPreview];
 }
 
-+ (BOOL)fileProviderStorageExists:(NSString *)ocId fileNameView:(NSString *)fileNameView
++ (BOOL)fileProviderStorageExists:(tableMetadata *)metadata
 {
-    NSString *fileNamePath = [self getDirectoryProviderStorageOcId:ocId fileNameView:fileNameView];
-    
+    NSString *fileNamePath = [self getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) {
+        return false;
+    }
+
     unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
-    
-    if (fileSize > 0) return true;
-    else return false;
+    return fileSize == metadata.size;
 }
 
 + (int64_t)fileProviderStorageSize:(NSString *)ocId fileNameView:(NSString *)fileNameView
@@ -1652,9 +1655,9 @@
     long fileSize = 0;
     int pixelY = 0;
     int pixelX = 0;
-    NSString *lensModel;
+    NSString *lensModel = @"";
 
-    if (![metadata.classFile isEqualToString:@"image"] || ![CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
+    if (![metadata.classFile isEqualToString:@"image"] || ![CCUtility fileProviderStorageExists:metadata]) {
         completition(latitude, longitude, location, date, lensModel);
         return;
     }
@@ -1724,6 +1727,7 @@
             stringLatitude = [NSString stringWithFormat:@"+%.4f", latitude];
         } else {
             stringLatitude = [NSString stringWithFormat:@"-%.4f", latitude];
+            latitude *= -1;
         }
         
         // conversion 4 decimal +E -W
@@ -1733,10 +1737,10 @@
             stringLongitude = [NSString stringWithFormat:@"+%.4f", longitude];
         } else {
             stringLongitude = [NSString stringWithFormat:@"-%.4f", longitude];
+            longitude *= -1;
         }
         
         if (latitude == 0 || longitude == 0) {
-            
             stringLatitude = @"0";
             stringLongitude = @"0";
         }
