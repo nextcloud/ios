@@ -159,13 +159,8 @@ class NCViewerMedia: UIViewController {
             NCKTVHTTPCache.shared.restartProxy(user: appDelegate.user, password: appDelegate.password)
             let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata)
 
-            if ncplayer == nil, let url = urlVideo.url {
+            if let url = urlVideo.url {
                 self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, isProxy: urlVideo.isProxy, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self)
-            } else {
-                self.ncplayer?.activateObserver(playerToolBar: self.playerToolBar)
-                if detailView.isShow() == false && ncplayer?.isPlay() == false {
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": metadata.ocId, "enableTimerAutoHide": false])
-                }
             }
 
             if let ncplayer = self.ncplayer {
