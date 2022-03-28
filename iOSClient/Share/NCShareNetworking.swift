@@ -73,9 +73,8 @@ class NCShareNetworking: NSObject {
 
         NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
-        let permission = max(1, metadata.sharePermissionsCollaborationServices & option.permissions)
 
-        NCCommunication.shared.createShare(path: filenamePath, shareType: option.shareType, shareWith: option.shareWith, password: option.password, permissions: permission) { (account, share, errorCode, errorDescription) in
+        NCCommunication.shared.createShare(path: filenamePath, shareType: option.shareType, shareWith: option.shareWith, password: option.password, permissions: option.permissions) { (account, share, errorCode, errorDescription) in
             NCUtility.shared.stopActivityIndicator()
             if errorCode == 0, let share = share {
                 option.idShare = share.idShare
