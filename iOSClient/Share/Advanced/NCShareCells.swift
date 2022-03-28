@@ -213,7 +213,7 @@ struct NCShareConfig {
 
     func config(for indexPath: IndexPath) -> NCShareCellConfig? {
         if indexPath.section == 0, indexPath.row < permissions.count {
-            return  permissions[indexPath.row]
+            return permissions[indexPath.row]
         } else if indexPath.section == 1, indexPath.row < advanced.count {
             return advanced[indexPath.row]
         } else { return nil }

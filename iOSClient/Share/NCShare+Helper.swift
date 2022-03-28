@@ -67,7 +67,7 @@ class NCTableShareOptions: NCTableShareable {
     var expirationDate: NSDate?
     var shareWithDisplayname: String = ""
 
-    private init(shareType: Int, metadata: tableMetadata, password: String? = nil) {
+    private init(shareType: Int, metadata: tableMetadata, password: String?) {
         self.permissions = NCManageDatabase.shared.getCapabilitiesServerInt(account: metadata.account, elements: ["ocs", "data", "capabilities", "files_sharing", "default_permissions"]) & metadata.sharePermissionsCollaborationServices
         self.shareType = shareType
         self.account = metadata.account
@@ -76,8 +76,8 @@ class NCTableShareOptions: NCTableShareable {
         }
     }
 
-    convenience init(sharee: NCCommunicationSharee, metadata: tableMetadata) {
-        self.init(shareType: sharee.shareType, metadata: metadata)
+    convenience init(sharee: NCCommunicationSharee, metadata: tableMetadata, password: String?) {
+        self.init(shareType: sharee.shareType, metadata: metadata, password: password)
         self.shareWith = sharee.shareWith
     }
 

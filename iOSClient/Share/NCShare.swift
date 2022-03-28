@@ -99,7 +99,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
             let navigationController = self.navigationController,
             let metadata = self.metadata else { return }
-        self.checkEnforcedPassword { password in
+        self.checkEnforcedPassword(shareType: NCShareCommon.shared.SHARE_TYPE_LINK) { password in
             advancePermission.networking = self.networking
             advancePermission.share = NCTableShareOptions.shareLink(metadata: metadata, password: password)
             advancePermission.metadata = self.metadata
@@ -185,10 +185,10 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         networking?.getSharees(searchString: searchString)
     }
 
-    func checkEnforcedPassword(shareType: Int? = nil, completion: @escaping (String?) -> Void) {
+    func checkEnforcedPassword(shareType: Int, completion: @escaping (String?) -> Void) {
         guard let metadata = self.metadata,
               NCManageDatabase.shared.getCapabilitiesServerBool(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesFileSharingPubPasswdEnforced, exists: false),
-              shareType == NCShareCommon.shared.SHARE_TYPE_USER || shareType == NCShareCommon.shared.SHARE_TYPE_EMAIL
+              shareType == NCShareCommon.shared.SHARE_TYPE_LINK || shareType == NCShareCommon.shared.SHARE_TYPE_EMAIL
         else { return completion(nil) }
 
         self.present(UIAlertController.sharePassword(completion: completion), animated: true)
@@ -255,8 +255,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
                 let navigationController = self.navigationController,
                 let metadata = self.metadata else { return }
             self.checkEnforcedPassword(shareType: sharee.shareType) { password in
-                let shareOptions = NCTableShareOptions(sharee: sharee, metadata: metadata)
-                if let password = password { shareOptions.password = password }
+                let shareOptions = NCTableShareOptions(sharee: sharee, metadata: metadata, password: password)
                 advancePermission.share = shareOptions
                 advancePermission.networking = self.networking
                 advancePermission.metadata = metadata
