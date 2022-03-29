@@ -202,11 +202,11 @@ struct NCShareConfig {
     let permissions: [NCPermission]
     let advanced: [NCShareDetails]
     let share: NCTableShareable
-    let parentPermission: Int
+    let resharePermission: Int
 
     init(parentMetadata: tableMetadata, share: NCTableShareable) {
         self.share = share
-        self.parentPermission = parentMetadata.sharePermissionsCollaborationServices
+        self.resharePermission = parentMetadata.sharePermissionsCollaborationServices
         let type: NCPermission.Type = share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK ? NCLinkPermission.self : NCUserPermission.self
         self.permissions = parentMetadata.directory ? type.forDirectory : type.forFile
         self.advanced = share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK ? NCShareDetails.forLink : NCShareDetails.forUser
@@ -216,7 +216,7 @@ struct NCShareConfig {
         let cellConfig = config(for: indexPath)
         let cell = cellConfig?.getCell(for: share)
         cell?.textLabel?.text = cellConfig?.title
-        if let cellConfig = cellConfig as? NCPermission, !cellConfig.hasResharePermission(for: parentPermission) {
+        if let cellConfig = cellConfig as? NCPermission, !cellConfig.hasResharePermission(for: resharePermission) {
             cell?.isUserInteractionEnabled = false
             cell?.textLabel?.isEnabled = false
         }
