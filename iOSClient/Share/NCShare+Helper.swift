@@ -92,7 +92,7 @@ protocol NCShareDetail {
 
 extension NCShareDetail where Self: UIViewController {
     func setNavigationTitle() {
-        title = NSLocalizedString("_share_", comment: "") + "  – "
+        title = NSLocalizedString("_share_", comment: "") + " – "
         if share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK {
             title! += share.label.isEmpty ? NSLocalizedString("_share_link_", comment: "") : share.label
         } else {
