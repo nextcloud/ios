@@ -47,9 +47,14 @@ extension NCToggleCellConfig {
 protocol NCPermission: NCToggleCellConfig {
     static var forDirectory: [Self] { get }
     static var forFile: [Self] { get }
+    func hasResharePermission(for parentPermission: Int) -> Bool
 }
 
 enum NCUserPermission: CaseIterable, NCPermission {
+    func hasResharePermission(for parentPermission: Int) -> Bool {
+        return ((permissionBitFlag & parentPermission) != 0)
+    }
+
     var permissionBitFlag: Int {
         switch self {
         case .reshare: return NCGlobal.shared.permissionShareShare
@@ -83,23 +88,29 @@ enum NCUserPermission: CaseIterable, NCPermission {
 
 enum NCLinkPermission: NCPermission {
     func didChange(_ share: NCTableShareable, to newValue: Bool) {
-        guard self != .allowEdit else {
-            // file
-            share.permissions = CCUtility.getPermissionsValue(
-                byCanEdit: newValue,
-                andCanCreate: newValue,
-                andCanChange: newValue,
-                andCanDelete: newValue,
-                andCanShare: false,
-                andIsFolder: false)
+        guard self != .allowEdit || newValue else {
+            share.permissions = NCGlobal.shared.permissionReadShare
             return
         }
-        // can't deselect, only change
-        guard newValue == true else { return }
+        share.permissions = permissionValue
+    }
+
+    func hasResharePermission(for parentPermission: Int) -> Bool {
+        permissionValue & parentPermission == permissionValue
+    }
+
+    var permissionValue: Int {
         switch self {
-        case .allowEdit: return
+        case .allowEdit:
+            return CCUtility.getPermissionsValue(
+                byCanEdit: true,
+                andCanCreate: true,
+                andCanChange: true,
+                andCanDelete: true,
+                andCanShare: false,
+                andIsFolder: false)
         case .viewOnly:
-            share.permissions = CCUtility.getPermissionsValue(
+            return CCUtility.getPermissionsValue(
                 byCanEdit: false,
                 andCanCreate: false,
                 andCanChange: false,
@@ -107,7 +118,7 @@ enum NCLinkPermission: NCPermission {
                 andCanShare: false,
                 andIsFolder: true)
         case .uploadEdit:
-            share.permissions = CCUtility.getPermissionsValue(
+            return CCUtility.getPermissionsValue(
                 byCanEdit: true,
                 andCanCreate: true,
                 andCanChange: true,
@@ -115,7 +126,7 @@ enum NCLinkPermission: NCPermission {
                 andCanShare: false,
                 andIsFolder: true)
         case .fileDrop:
-            share.permissions = NCGlobal.shared.permissionCreateShare
+            return NCGlobal.shared.permissionCreateShare
         }
     }
 
@@ -191,11 +202,13 @@ struct NCShareConfig {
     let permissions: [NCPermission]
     let advanced: [NCShareDetails]
     let share: NCTableShareable
+    let parentPermission: Int
 
-    init(isDirectory: Bool, share: NCTableShareable) {
+    init(parentMetadata: tableMetadata, share: NCTableShareable) {
         self.share = share
+        self.parentPermission = parentMetadata.sharePermissionsCollaborationServices
         let type: NCPermission.Type = share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK ? NCLinkPermission.self : NCUserPermission.self
-        self.permissions = isDirectory ? type.forDirectory : type.forFile
+        self.permissions = parentMetadata.directory ? type.forDirectory : type.forFile
         self.advanced = share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK ? NCShareDetails.forLink : NCShareDetails.forUser
     }
 
@@ -203,6 +216,10 @@ struct NCShareConfig {
         let cellConfig = config(for: indexPath)
         let cell = cellConfig?.getCell(for: share)
         cell?.textLabel?.text = cellConfig?.title
+        if let cellConfig = cellConfig as? NCPermission, !cellConfig.hasResharePermission(for: parentPermission) {
+            cell?.isUserInteractionEnabled = false
+            cell?.textLabel?.isEnabled = false
+        }
         return cell
     }
 

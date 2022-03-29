@@ -45,7 +45,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.shareConfig = NCShareConfig(isDirectory: metadata.directory, share: share)
+        self.shareConfig = NCShareConfig(parentMetadata: metadata, share: share)
         self.setNavigationTitle()
         if #available(iOS 13.0, *) {
             // disbale pull to dimiss
@@ -99,17 +99,21 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-            return shareConfig.permissions.count
+            return shareConfig.parentPermission != 31 ? shareConfig.permissions.count + 1 : shareConfig.permissions.count
         } else if section == 1 {
             return shareConfig.advanced.count
         } else { return 0 }
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = shareConfig.cellFor(indexPath: indexPath) else { return UITableViewCell() }
-        if let cell = cell as? NCShareDateCell {
-            cell.onReload = tableView.reloadData
+        guard let cell = shareConfig.cellFor(indexPath: indexPath) else {
+            let noteCell = UITableViewCell(style: .subtitle, reuseIdentifier: "noteCell")
+            noteCell.detailTextLabel?.text = "Reshare permissions restricted"
+            noteCell.detailTextLabel?.isEnabled = false
+            noteCell.isUserInteractionEnabled = false
+            return noteCell
         }
+        if let cell = cell as? NCShareDateCell { cell.onReload = tableView.reloadData }
         return cell
     }
 
