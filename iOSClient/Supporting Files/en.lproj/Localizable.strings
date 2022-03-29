@@ -611,6 +611,9 @@
 "_share_unshare_"               = "Unshare";
 "_share_internal_link_"         = "Internal link";
 "_share_internal_link_des_"     = "Only works for users with access to this folder";
+"_share_reshare_disabled_"      = "You are not allowed to reshare this file / folder";
+"_share_reshare_restricted_"    = "Note: You only have limited prmission to reshare this file / folder";
+
 "_no_transfer_"                     = "No transfers yet";
 "_no_transfer_sub_"                 = "Uploads and downloads from this device will show up here";
 "_no_activity_"                     = "No activity yet";

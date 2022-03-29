@@ -28,7 +28,7 @@ extension NCShare {
 
         var actions = [NCMenuAction]()
 
-        if share.shareType == 3 {
+        if share.shareType == 3, canReshare {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_share_add_sharelink_", comment: ""),

@@ -99,7 +99,9 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-            return shareConfig.parentPermission != 31 ? shareConfig.permissions.count + 1 : shareConfig.permissions.count
+            // check reshare permission, if restricted add note
+            let maxPermission = metadata.directory ? NCGlobal.shared.permissionMaxFolderShare : NCGlobal.shared.permissionMaxFileShare
+            return shareConfig.parentPermission != maxPermission ? shareConfig.permissions.count + 1 : shareConfig.permissions.count
         } else if section == 1 {
             return shareConfig.advanced.count
         } else { return 0 }
@@ -108,7 +110,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = shareConfig.cellFor(indexPath: indexPath) else {
             let noteCell = UITableViewCell(style: .subtitle, reuseIdentifier: "noteCell")
-            noteCell.detailTextLabel?.text = "Reshare permissions restricted"
+            noteCell.detailTextLabel?.text = NSLocalizedString("_share_reshare_restricted_", comment: "")
             noteCell.detailTextLabel?.isEnabled = false
             noteCell.isUserInteractionEnabled = false
             return noteCell

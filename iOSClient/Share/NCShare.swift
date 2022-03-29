@@ -49,6 +49,11 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     public var sharingEnabled = true
     public var height: CGFloat = 0
 
+    var canReshare: Bool {
+        guard let metadata = metadata else { return true }
+        return ((metadata.sharePermissionsCollaborationServices & NCGlobal.shared.permissionShareShare) != 0)
+    }
+
     var shares: (firstShareLink: tableShare?, share: [tableShare]?) = (nil, nil)
 
     private var dropDown = DropDown()
@@ -111,13 +116,18 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     func checkSharedWithYou() {
         guard let appDelegate = self.appDelegate, let metadata = metadata, !metadata.ownerId.isEmpty, metadata.ownerId != appDelegate.userId else { return }
 
+        if !canReshare {
+            searchField.isEnabled = false
+            searchField.placeholder = NSLocalizedString("_share_reshare_disabled_", comment: "")
+        }
+
         searchFieldTopConstraint.constant = 65
         sharedWithYouByView.isHidden = false
         sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName
         sharedWithYouByImage.image = NCUtility.shared.loadUserImage(
             for: metadata.ownerId,
-               displayName: metadata.ownerDisplayName,
-               userBaseUrl: appDelegate)
+            displayName: metadata.ownerDisplayName,
+            userBaseUrl: appDelegate)
         let shareAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
         sharedWithYouByImage.addGestureRecognizer(shareAction)
         let shareLabelAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
@@ -289,7 +299,8 @@ extension NCShare: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard section != 0 else { return 2 }
+        // don't allow link creation if reshare is disabled
+        guard section != 0 else { return shares.firstShareLink != nil || canReshare ? 2 : 1 }
         return shares.share?.count ?? 0
     }
 
