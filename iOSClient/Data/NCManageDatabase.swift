@@ -1809,6 +1809,13 @@ class NCManageDatabase: NSObject {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
+    
+    func setPermission(value: Int, tableShare: tableShare) {
+        let realm = try! Realm()
+        try! realm.write {
+            tableShare.permissions = value
+        }
+    }
 }
 
 // MARK: -

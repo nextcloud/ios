@@ -914,8 +914,7 @@ extension NCShareAdvancePermission : NCShareNetworkingDelegate {
     
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
     }
-    
-    //MARK: - Image
+// MARK: - Image
     func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
         if let image = getImage(metadata: metadata) {
             return image
@@ -930,11 +929,10 @@ extension NCShareAdvancePermission : NCShareNetworkingDelegate {
         }
         return nil
     }
-    
     private func getImage(metadata: tableMetadata) -> UIImage? {
         let ext = CCUtility.getExtension(metadata.fileNameView)
         var image: UIImage?
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.classFile == NCGlobal.shared.metadataTypeFileImage {
+        if CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NCGlobal.shared.metadataTypeFileImage {
             let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             if ext == "GIF" {

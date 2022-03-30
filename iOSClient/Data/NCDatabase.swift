@@ -482,10 +482,7 @@ class tableShare: Object {
     }
     
     func setPermission(value: Int) {
-        let realm = try! Realm()
-        try! realm.write {
-            permissions = value
-        }
+        NCManageDatabase.shared.setPermission(value: value, tableShare: self)
     }
 }
 
