@@ -1410,6 +1410,22 @@
                     metadata.ext = @"jpg";
                 }
                 
+                if ([extensionAsset isEqualToString:@"DNG"]) {
+                    if ([CCUtility getFormatCompatibility]) {
+                        NSString *fileNameJPEG = [[metadata.fileName lastPathComponent] stringByDeletingPathExtension];
+                        fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
+                        metadata.contentType = @"image/jpeg";
+                        metadata.ext = @"jpg";
+                    } else {
+                        NSArray *resources = [PHAssetResource assetResourcesForAsset:asset];
+                        if (resources.count > 0) {
+                            PHAssetResource *assetResource = resources[0];
+                            NSURL *fileURL = [assetResource valueForKey:@"privateFileURL"];
+                            imageData = [NSData dataWithContentsOfURL:fileURL];
+                        }
+                    }
+                }
+                
                 NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:fileName];
                 
                 [[NSFileManager defaultManager]removeItemAtPath:fileNamePath error:nil];
