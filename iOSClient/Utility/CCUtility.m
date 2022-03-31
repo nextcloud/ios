@@ -1392,13 +1392,19 @@
                 }
             };
             
+            NSString *extensionAsset = [[[asset valueForKey:@"filename"] pathExtension] uppercaseString];
+            
+            //raw image will always ignore any edits made to the photo if compatibility is false
+            if ([extensionAsset isEqualToString:@"DNG"]) {
+                options.version = PHImageRequestOptionsVersionOriginal;
+            }
+            
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 
                 NSError *error = nil;
-                NSString *extensionAsset = [[[asset valueForKey:@"filename"] pathExtension] uppercaseString];
                 NSString *fileName = metadata.fileNameView;
 
-                if ([extensionAsset isEqualToString:@"HEIC"] && [CCUtility getFormatCompatibility]) {
+                if (([extensionAsset isEqualToString:@"HEIC"] || [extensionAsset isEqualToString:@"DNG"]) && [CCUtility getFormatCompatibility]) {
                     
                     CIImage *ciImage = [CIImage imageWithData:imageData];
                     CIContext *context = [CIContext context];
@@ -1408,22 +1414,6 @@
                     fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
                     metadata.contentType = @"image/jpeg";
                     metadata.ext = @"jpg";
-                }
-                
-                if ([extensionAsset isEqualToString:@"DNG"]) {
-                    if ([CCUtility getFormatCompatibility]) {
-                        NSString *fileNameJPEG = [[metadata.fileName lastPathComponent] stringByDeletingPathExtension];
-                        fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
-                        metadata.contentType = @"image/jpeg";
-                        metadata.ext = @"jpg";
-                    } else {
-                        NSArray *resources = [PHAssetResource assetResourcesForAsset:asset];
-                        if (resources.count > 0) {
-                            PHAssetResource *assetResource = resources[0];
-                            NSURL *fileURL = [assetResource valueForKey:@"privateFileURL"];
-                            imageData = [NSData dataWithContentsOfURL:fileURL];
-                        }
-                    }
                 }
                 
                 NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:fileName];
