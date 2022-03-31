@@ -44,79 +44,76 @@ class NCOffline: NCCollectionViewCommon {
     override func reloadDataSource() {
         super.reloadDataSource()
 
-        DispatchQueue.global().async {
+        var ocIds: [String] = []
 
-            var ocIds: [String] = []
-
-            if !self.isSearching {
-
-                if self.serverUrl == "" {
-
-                    if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", self.appDelegate.account), sorted: "serverUrl", ascending: true) {
-                        for directory: tableDirectory in directories {
-                            ocIds.append(directory.ocId)
-                        }
+        if !self.isSearching {
+            if self.serverUrl.isEmpty {
+                if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", self.appDelegate.account), sorted: "serverUrl", ascending: true) {
+                    for directory: tableDirectory in directories {
+                        ocIds.append(directory.ocId)
                     }
-
-                    let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", self.appDelegate.account), sorted: "fileName", ascending: true)
-                    for file: tableLocalFile in files {
-                        ocIds.append(file.ocId)
-                    }
-
-                    self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", self.appDelegate.account, ocIds))
-
-                } else {
-
-                    self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
                 }
-            }
 
-            self.dataSource = NCDataSource(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+                let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", self.appDelegate.account), sorted: "fileName", ascending: true)
+                for file in files {
+                    ocIds.append(file.ocId)
+                }
 
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
+                self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", self.appDelegate.account, ocIds))
+            } else {
+                self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
             }
+        }
+
+        self.dataSource = NCDataSource(
+            metadatasSource: self.metadatasSource,
+            sort: self.layoutForView?.sort,
+            ascending: self.layoutForView?.ascending,
+            directoryOnTop: self.layoutForView?.directoryOnTop,
+            favoriteOnTop: true,
+            filterLivePhoto: true)
+
+        DispatchQueue.main.async {
+            self.refreshControl.endRefreshing()
+            self.collectionView.reloadData()
         }
     }
 
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
 
-        if isSearching {
+        guard !isSearching else {
             networkSearch()
             return
         }
 
-        if serverUrl == "" {
-
+        guard !serverUrl.isEmpty else {
             self.reloadDataSource()
+            return
+        }
 
-        } else {
+        isReloadDataSourceNetworkInProgress = true
+        collectionView?.reloadData()
 
-            isReloadDataSourceNetworkInProgress = true
-            collectionView?.reloadData()
-
-            networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, _ in
-                if errorCode == 0 {
-                    for metadata in metadatas ?? [] {
-                        if !metadata.directory {
-                            if NCManageDatabase.shared.isDownloadMetadata(metadata, download: true) {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
-                            }
+        networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, _ in
+            if errorCode == 0 {
+                for metadata in metadatas ?? [] {
+                    if !metadata.directory {
+                        if NCManageDatabase.shared.isDownloadMetadata(metadata, download: true) {
+                            NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
                         }
                     }
                 }
+            }
 
-                DispatchQueue.main.async {
-                    self.refreshControl.endRefreshing()
-                    self.isReloadDataSourceNetworkInProgress = false
-                    self.richWorkspaceText = tableDirectory?.richWorkspace
-                    if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
-                        self.reloadDataSource()
-                    } else {
-                        self.collectionView?.reloadData()
-                    }
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.isReloadDataSourceNetworkInProgress = false
+                self.richWorkspaceText = tableDirectory?.richWorkspace
+                if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
+                    self.reloadDataSource()
+                } else {
+                    self.collectionView?.reloadData()
                 }
             }
         }

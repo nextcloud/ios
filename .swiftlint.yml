@@ -58,9 +58,7 @@ excluded:
   - iOSClient/EmptyView/NCEmptyDataSet.swift
   - iOSClient/Extensions/UIColor+Extensions.swift
   - iOSClient/Extensions/UIImage+Extensions.swift
-  - iOSClient/Favorites/NCFavorite.swift
   - iOSClient/FileViewInFolder/NCFileViewInFolder.swift
-  - iOSClient/Files/NCFiles.swift
   - iOSClient/Login/NCAppConfigView.swift
   - iOSClient/Login/NCLogin.swift
   - iOSClient/Login/NCLoginWeb.swift
@@ -99,7 +97,6 @@ excluded:
   - iOSClient/Networking/NCOperationQueue.swift
   - iOSClient/Networking/NCService.swift
   - iOSClient/Notification/NCNotification.swift
-  - iOSClient/Offline/NCOffline.swift
   - iOSClient/Recent/NCRecent.swift
   - iOSClient/Rename file/NCRenameFile.swift
   - iOSClient/RichWorkspace/NCRichWorkspaceCommon.swift
