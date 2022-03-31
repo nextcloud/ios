@@ -189,8 +189,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // L' applicazione entrerà in primo piano (attivo sempre)
     func applicationDidBecomeActive(_ application: UIApplication) {
         
-        // Privacy
-        hidePrivacyProtectionWindow()
+        if !NCAskAuthorization.shared.isRequesting {
+            // Privacy
+            hidePrivacyProtectionWindow()
+        }
         
         NCSettingsBundleHelper.setVersionAndBuildNumber()
         
@@ -693,7 +695,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Passcode
     
-    func presentPasscode(completion: @escaping ()->()) {
+    func presentPasscode(completion: @escaping () -> ()) {
 
         let laContext = LAContext()
         var error: NSError?
@@ -787,8 +789,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         privacyProtectionWindow?.makeKeyAndVisible()
     }
 
-    private func hidePrivacyProtectionWindow() {
-        
+    func hidePrivacyProtectionWindow() {
         privacyProtectionWindow?.isHidden = true
         privacyProtectionWindow = nil
     }
