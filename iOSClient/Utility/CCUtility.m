@@ -1392,13 +1392,19 @@
                 }
             };
             
+            NSString *extensionAsset = [[[asset valueForKey:@"filename"] pathExtension] uppercaseString];
+            
+            //raw image will always ignore any edits made to the photo if compatibility is false
+            if ([extensionAsset isEqualToString:@"DNG"]) {
+                options.version = PHImageRequestOptionsVersionOriginal;
+            }
+            
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 
                 NSError *error = nil;
-                NSString *extensionAsset = [[[asset valueForKey:@"filename"] pathExtension] uppercaseString];
                 NSString *fileName = metadata.fileNameView;
 
-                if ([extensionAsset isEqualToString:@"HEIC"] && [CCUtility getFormatCompatibility]) {
+                if (([extensionAsset isEqualToString:@"HEIC"] || [extensionAsset isEqualToString:@"DNG"]) && [CCUtility getFormatCompatibility]) {
                     
                     CIImage *ciImage = [CIImage imageWithData:imageData];
                     CIContext *context = [CIContext context];
