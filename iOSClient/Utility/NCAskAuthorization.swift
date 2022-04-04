@@ -67,7 +67,7 @@ class NCAskAuthorization: NSObject {
         }
     }
 
-    func askAuthorizationPhotoLibrary(viewController: UIViewController?, completion: @escaping (_ hasPermission: Bool) -> Void) {
+    @objc func askAuthorizationPhotoLibrary(viewController: UIViewController?, completion: @escaping (_ hasPermission: Bool) -> Void) {
 
         switch PHPhotoLibrary.authorizationStatus() {
         case PHAuthorizationStatus.authorized:
