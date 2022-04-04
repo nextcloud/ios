@@ -201,7 +201,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
               shareType == NCShareCommon.shared.SHARE_TYPE_LINK || shareType == NCShareCommon.shared.SHARE_TYPE_EMAIL
         else { return completion(nil) }
 
-        self.present(UIAlertController.sharePassword(completion: completion), animated: true)
+        self.present(UIAlertController.password(titleKey: "_enforce_password_protection_", completion: completion), animated: true)
     }
 
     // MARK: - NCShareNetworkingDelegate

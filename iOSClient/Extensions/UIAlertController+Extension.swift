@@ -81,8 +81,8 @@ extension UIAlertController {
         return alertController
     }
 
-    static func sharePassword(completion: @escaping (String?) -> Void) -> UIAlertController {
-        return .withTextField(titleKey: "_enforce_password_protection_", textFieldConfiguration: { textField in
+    static func password(titleKey: String, completion: @escaping (String?) -> Void) -> UIAlertController {
+        return .withTextField(titleKey: titleKey, textFieldConfiguration: { textField in
             textField.isSecureTextEntry = true
             textField.placeholder = NSLocalizedString("_password_", comment: "")
         }, completion: completion)

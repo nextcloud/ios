@@ -141,10 +141,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
                 tableView.reloadData()
                 return
             }
-            let alertController = UIAlertController.withTextField(titleKey: "_share_password_") { textField in
-                textField.placeholder = NSLocalizedString("_password_", comment: "")
-                textField.isSecureTextEntry = true
-            } completion: { password in
+            let alertController = UIAlertController.password(titleKey: "_share_password_") { password in
                 self.share.password = password ?? ""
                 tableView.reloadData()
             }

@@ -255,7 +255,7 @@ class NCShareToggleCell: UITableViewCell {
     }
 }
 
-open class NCShareDateCell: UITableViewCell {
+class NCShareDateCell: UITableViewCell {
     let picker = UIDatePicker()
     let textField = UITextField()
 

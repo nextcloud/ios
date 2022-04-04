@@ -45,17 +45,6 @@ class NCShareNewUserAddComment: UIViewController, NCShareDetail {
         NotificationCenter.default.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
 
-        guard let headerView = (Bundle.main.loadNibNamed("NCShareAdvancePermissionHeader", owner: self, options: nil)?.first as? NCShareAdvancePermissionHeader) else { return }
-        headerContainerView.addSubview(headerView)
-        headerView.frame = headerContainerView.frame
-        headerView.translatesAutoresizingMaskIntoConstraints = false
-        headerView.topAnchor.constraint(equalTo: headerContainerView.topAnchor).isActive = true
-        headerView.bottomAnchor.constraint(equalTo: headerContainerView.bottomAnchor).isActive = true
-        headerView.leftAnchor.constraint(equalTo: headerContainerView.leftAnchor).isActive = true
-        headerView.rightAnchor.constraint(equalTo: headerContainerView.rightAnchor).isActive = true
-
-        headerView.setupUI(with: metadata)
-
         sharingLabel.text = NSLocalizedString("_sharing_", comment: "")
         sharingNote.text = NSLocalizedString("_share_note_recipient_", comment: "")
 
@@ -71,6 +60,17 @@ class NCShareNewUserAddComment: UIViewController, NCShareDetail {
         }
 
         noteTextField.inputAccessoryView = toolbar
+        
+        guard let headerView = (Bundle.main.loadNibNamed("NCShareAdvancePermissionHeader", owner: self, options: nil)?.first as? NCShareAdvancePermissionHeader) else { return }
+        headerContainerView.addSubview(headerView)
+        headerView.frame = headerContainerView.frame
+        headerView.translatesAutoresizingMaskIntoConstraints = false
+        headerView.topAnchor.constraint(equalTo: headerContainerView.topAnchor).isActive = true
+        headerView.bottomAnchor.constraint(equalTo: headerContainerView.bottomAnchor).isActive = true
+        headerView.leftAnchor.constraint(equalTo: headerContainerView.leftAnchor).isActive = true
+        headerView.rightAnchor.constraint(equalTo: headerContainerView.rightAnchor).isActive = true
+
+        headerView.setupUI(with: metadata)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
