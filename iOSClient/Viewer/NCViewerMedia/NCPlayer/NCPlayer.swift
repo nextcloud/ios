@@ -182,6 +182,7 @@ class NCPlayer: NSObject {
 
     internal func downloadVideo(requiredConvert: Bool = false) {
 
+        guard let view = appDelegate.window?.rootViewController?.view else { return }
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let hud = JGProgressHUD()
@@ -191,7 +192,7 @@ class NCPlayer: NSObject {
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
             indicatorView.ringWidth = 1.5
         }
-        hud.show(in: self.viewController.view)
+        hud.show(in: view)
         hud.textLabel.text = NSLocalizedString(metadata.fileNameView, comment: "")
         hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
         hud.tapOnHUDViewBlock = { hud in
