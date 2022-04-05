@@ -421,6 +421,8 @@ class NCPlayerToolBar: UIView {
             if let reason = ncplayer?.player?.reasonForWaitingToPlay {
                 switch reason {
                 case .evaluatingBufferingRate:
+                    // TODO: need to be test
+                    self.ncplayer?.player?.playImmediately(atRate: 1)
                     print("reasonForWaitingToPlay.evaluatingBufferingRate")
                 case .toMinimizeStalls:
                     print("reasonForWaitingToPlay.toMinimizeStalls")

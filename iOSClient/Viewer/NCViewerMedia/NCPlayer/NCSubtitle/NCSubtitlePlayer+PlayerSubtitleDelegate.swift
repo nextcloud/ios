@@ -65,27 +65,19 @@ extension NCPlayer: PlayerSubtitleDelegate {
 
                 if NCUtilityFileSystem.shared.getFileSize(filePath: url.path) > 0 {
 
-                    do {
-                        try self.open(fileFromLocal: url)
+                    self.open(fileFromLocal: url)
+                    if let viewController = viewController {
                         self.addSubtitlesTo(viewController, self.playerToolBar)
                         self.isSubtitleShowed = true
                         self.showSubtitle()
-                    } catch {
-                        print(error)
                     }
-
-                    /*
-                    self.open(fileFromRemote: url)
-                    self.showSubtitle()
-                    self.isSubtitleShowed = true
-                    */
 
                 } else {
 
                     let alertError = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_subtitle_not_found_", comment: ""), preferredStyle: .alert)
                     alertError.addAction(UIKit.UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: nil))
 
-                    viewController.present(alertError, animated: true, completion: nil)
+                    viewController?.present(alertError, animated: true, completion: nil)
                     self.isSubtitleShowed = false
                 }
 
@@ -96,8 +88,8 @@ extension NCPlayer: PlayerSubtitleDelegate {
             self.isSubtitleShowed = false
         }))
 
-        alert.popoverPresentationController?.sourceView = self.viewController.view
+        alert.popoverPresentationController?.sourceView = self.viewController?.view
 
-        self.viewController.present(alert, animated: true, completion: nil)
+        self.viewController?.present(alert, animated: true, completion: nil)
     }
 }

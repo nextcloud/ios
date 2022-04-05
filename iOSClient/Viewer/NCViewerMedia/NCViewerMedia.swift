@@ -167,10 +167,6 @@ class NCViewerMedia: UIViewController {
                 self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
             }
             
-            #if MFFFLIB
-            MFFF.shared.setDelegate = self.ncplayer
-            #endif
-            
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
 
             viewerMediaPage?.clearCommandCenter()
