@@ -164,7 +164,7 @@ extension NCPlayer {
     }
 
     func open(fileFromLocal filePath: URL) {
-        print("Subtitle filePath \(filePath)")
+
         subtitleLabel?.text = ""
 
         self.loadText(filePath: filePath) { contents in

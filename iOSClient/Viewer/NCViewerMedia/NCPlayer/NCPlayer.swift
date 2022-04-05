@@ -87,17 +87,19 @@ class NCPlayer: NSObject {
         deactivateObserver()
     }
 
-    internal func openAVPlayer() {
+    func openAVPlayer() {
 
 #if MFFFLIB
+        MFFF.shared.setDelegate = self
+        MFFF.shared.dismissMessage()
+        NotificationCenter.default.addObserver(self, selector: #selector(convertVideoDidFinish(_:)), name: NSNotification.Name(rawValue: self.metadata.ocId), object: nil)
+
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded) {
             self.url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
             self.isProxy = false
         }
         if MFFF.shared.existsMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))) {
             return
-        } else {
-            MFFF.shared.dismissMessage()
         }
 #endif
 
