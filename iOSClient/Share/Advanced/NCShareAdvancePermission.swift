@@ -78,11 +78,13 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         guard let headerView = (Bundle.main.loadNibNamed("NCShareAdvancePermissionHeader", owner: self, options: nil)?.first as? NCShareAdvancePermissionHeader) else { return }
         headerView.setupUI(with: metadata)
 
-        headerView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 200)
-        tableView.tableHeaderView = headerView
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 220))
+        container.addSubview(headerView)
+        tableView.tableHeaderView = container
         headerView.translatesAutoresizingMaskIntoConstraints = false
-        headerView.heightAnchor.constraint(equalToConstant: 200).isActive = true
-        headerView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor).isActive = true
+        headerView.topAnchor.constraint(equalTo: container.topAnchor).isActive = true
+        headerView.heightAnchor.constraint(equalTo: container.heightAnchor).isActive = true
+        headerView.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
     }
 
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {

@@ -170,7 +170,7 @@ enum NCShareDetails: CaseIterable, NCShareCellConfig {
             return NCShareToggleCell(isOn: share.hideDownload)
         case .expirationDate:
             return NCShareDateCell(share: share)
-        case .password: return NCShareToggleCell(isOn: !share.password.isEmpty, customIcons: ("lock", "lock.open"))
+        case .password: return NCShareToggleCell(isOn: !share.password.isEmpty, customIcons: ("lock", "lock_open"))
         case .note:
             let cell = UITableViewCell(style: .value1, reuseIdentifier: "shareNote")
             cell.detailTextLabel?.text = share.note
@@ -246,7 +246,7 @@ class NCShareToggleCell: UITableViewCell {
             self.accessoryType = isOn ? .checkmark : .none
             return
         }
-        let image = NCUtility.shared.loadImage(named: iconName, color: NCBrandColor.shared.brandElement)
+        let image = NCUtility.shared.loadImage(named: iconName, color: NCBrandColor.shared.brandElement, size: self.frame.height - 26)
         self.accessoryView = UIImageView(image: image)
     }
 
