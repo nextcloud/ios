@@ -48,6 +48,7 @@ class NCPlayer: NSObject {
     public var durationTime: CMTime = .zero
     public var metadata: tableMetadata
     public var videoLayer: AVPlayerLayer?
+    public var isOpenPlayer: Bool
 
     public var isSubtitleShowed: Bool = false{
         didSet {
@@ -63,6 +64,7 @@ class NCPlayer: NSObject {
         self.url = url
         self.autoPlay = autoPlay
         self.isProxy = isProxy
+        self.isOpenPlayer = false
         self.imageVideoContainer = imageVideoContainer
         self.playerToolBar = playerToolBar
         self.metadata = metadata
@@ -78,8 +80,6 @@ class NCPlayer: NSObject {
         } catch {
             print(error)
         }
-
-        openAVPlayer()
     }
 
     deinit {
@@ -180,6 +180,7 @@ class NCPlayer: NSObject {
                     if self.autoPlay {
                         self.player?.play()
                     }
+                    self.isOpenPlayer = true
                     break
                 case .failed:
                     self.playerToolBar?.hide()

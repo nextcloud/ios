@@ -94,6 +94,7 @@ class NCViewerMedia: UIViewController {
         }
         
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+
             playerToolBar = Bundle.main.loadNibNamed("NCPlayerToolBar", owner: self, options: nil)?.first as? NCPlayerToolBar
             if let playerToolBar = playerToolBar {
                 view.addSubview(playerToolBar)
@@ -103,6 +104,11 @@ class NCViewerMedia: UIViewController {
                 playerToolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
                 playerToolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
                 playerToolBar.viewerMediaPage = viewerMediaPage
+            }
+
+            let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata)
+            if let url = urlVideo.url {
+                self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, isProxy: urlVideo.isProxy, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self)
             }
         }
         
@@ -156,13 +162,10 @@ class NCViewerMedia: UIViewController {
 
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
 
-            let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata)
-
-            if let url = urlVideo.url {
-                self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, isProxy: urlVideo.isProxy, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self)
-            }
-
             if let ncplayer = self.ncplayer {
+                if !ncplayer.isOpenPlayer {
+                    ncplayer.openAVPlayer()
+                }
                 self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
             }
             
