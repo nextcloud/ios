@@ -147,6 +147,10 @@ class NCViewerMediaPage: UIViewController {
         }
     }
 
+    override var prefersHomeIndicatorAutoHidden: Bool {
+        return currentScreenMode == .full
+    }
+
     // MARK: -
     
     func getViewerMedia(index: Int, metadata: tableMetadata) -> NCViewerMedia {
@@ -205,6 +209,7 @@ class NCViewerMediaPage: UIViewController {
         }
 
         setNeedsStatusBarAppearanceUpdate()
+        setNeedsUpdateOfHomeIndicatorAutoHidden()
         currentViewController.reloadDetail()
     }
 

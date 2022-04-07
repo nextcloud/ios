@@ -362,7 +362,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
-                NCCommunicationCommon.shared.writeLog("Completition handler refresh task with %lu uploads [Auto upload]")
+                NCCommunicationCommon.shared.writeLog("Completition handler refresh task with [Auto upload]")
                 task.setTaskCompleted(success: true)
             }
         }
