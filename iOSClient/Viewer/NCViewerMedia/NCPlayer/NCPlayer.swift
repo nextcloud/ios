@@ -42,6 +42,7 @@ class NCPlayer: NSObject {
     private weak var detailView: NCViewerMediaDetailView?
     private var observerAVPlayerItemDidPlayToEndTime: Any?
     private var observerAVPlayertTime: Any?
+    private var observerAVPlayertStatus: Any?
 
     public var player: AVPlayer?
     public var durationTime: CMTime = .zero
@@ -121,6 +122,32 @@ class NCPlayer: NSObject {
                 player?.seek(to: time)
             }
         }
+
+        observerAVPlayertStatus = player?.currentItem?.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
+    }
+
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        switch keyPath {
+        case "status":
+            if let playerItem = self.player?.currentItem,
+               let object = object as? AVPlayerItem,
+               playerItem === object{
+
+                if (playerItem.status == .readyToPlay || playerItem.status == .failed) {
+                    print("player ready")
+                    self.startPlayer()
+                } else {
+                    print("player not ready")
+                }
+
+            }
+            break
+        default:
+            ()
+        }
+    }
+
+    func startPlayer() {
 
         player?.currentItem?.asset.loadValuesAsynchronously(forKeys: ["playable"], completionHandler: {
 
@@ -252,10 +279,15 @@ class NCPlayer: NSObject {
         }
         self.observerAVPlayerItemDidPlayToEndTime = nil
 
-        if  let observerAVPlayertTime = self.observerAVPlayertTime {
+        if let observerAVPlayertTime = self.observerAVPlayertTime {
             player?.removeTimeObserver(observerAVPlayertTime)
         }
         self.observerAVPlayertTime = nil
+
+        if observerAVPlayertStatus != nil {
+            player?.currentItem?.removeObserver(self, forKeyPath: "status")
+        }
+        self.observerAVPlayertStatus = nil
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
@@ -364,6 +396,7 @@ class NCPlayer: NSObject {
                     try data.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
                 }
             } catch let error as NSError {
+                print("GeneratorImagePreview localized error:")
                 print(error.localizedDescription)
             }
         }
