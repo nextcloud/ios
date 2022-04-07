@@ -109,7 +109,11 @@ class NCViewerMediaPage: UIViewController {
 
     deinit {
         print("#deinit NCViewerMediaPage")
-        // Clear
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
         if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
             ncplayer.playerPause()
             ncplayer.saveCurrentTime()
