@@ -37,6 +37,7 @@ class NCPlayer: NSObject {
     internal weak var viewController: UIViewController?
     internal var autoPlay: Bool
     internal var isProxy: Bool
+    internal var isStartPlayer: Bool
 
     private weak var imageVideoContainer: imageVideoContainerView?
     private weak var detailView: NCViewerMediaDetailView?
@@ -48,7 +49,6 @@ class NCPlayer: NSObject {
     public var durationTime: CMTime = .zero
     public var metadata: tableMetadata
     public var videoLayer: AVPlayerLayer?
-    public var isOpenPlayer: Bool
 
     public var isSubtitleShowed: Bool = false{
         didSet {
@@ -64,7 +64,7 @@ class NCPlayer: NSObject {
         self.url = url
         self.autoPlay = autoPlay
         self.isProxy = isProxy
-        self.isOpenPlayer = false
+        self.isStartPlayer = false
         self.imageVideoContainer = imageVideoContainer
         self.playerToolBar = playerToolBar
         self.metadata = metadata
@@ -103,6 +103,9 @@ class NCPlayer: NSObject {
             return
         }
 #endif
+
+        // Check already started
+        if self.isStartPlayer { return }
 
         self.playerToolBar?.show()
         self.setUpForSubtitle()
@@ -180,7 +183,7 @@ class NCPlayer: NSObject {
                     if self.autoPlay {
                         self.player?.play()
                     }
-                    self.isOpenPlayer = true
+                    self.isStartPlayer = true
                     break
                 case .failed:
                     self.playerToolBar?.hide()

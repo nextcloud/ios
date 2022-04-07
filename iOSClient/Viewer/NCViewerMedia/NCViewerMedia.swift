@@ -163,9 +163,7 @@ class NCViewerMedia: UIViewController {
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
 
             if let ncplayer = self.ncplayer {
-                if !ncplayer.isOpenPlayer {
-                    ncplayer.openAVPlayer()
-                }
+                ncplayer.openAVPlayer()
                 self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
             }
             
