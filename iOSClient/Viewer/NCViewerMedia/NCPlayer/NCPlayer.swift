@@ -130,20 +130,18 @@ class NCPlayer: NSObject {
         switch keyPath {
         case "status":
             if let playerItem = self.player?.currentItem,
-               let object = object as? AVPlayerItem,
-               playerItem === object{
-
+                let object = object as? AVPlayerItem,
+                playerItem === object{
                 if (playerItem.status == .readyToPlay || playerItem.status == .failed) {
                     print("player ready")
                     self.startPlayer()
                 } else {
                     print("player not ready")
                 }
-
             }
             break
         default:
-            ()
+            break
         }
     }
 
