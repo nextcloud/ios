@@ -103,7 +103,11 @@ class NCPlayerToolBar: UIView {
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .lightGray), for: .normal)
         backButton.isEnabled = false
 
-        playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray), for: .normal)
+        if #available(iOS 13.0, *) {
+            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
+        } else {
+            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray, size: 30), for: .normal)
+        }
         playButton.isEnabled = false
 
         forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .lightGray), for: .normal)
