@@ -606,6 +606,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if serverVersionMajor > 0 {
             NCCommunicationCommon.shared.setup(nextcloudVersion: serverVersionMajor)
         }
+        NCKTVHTTPCache.shared.restartProxy(user: user, password: password)
     }
 
     @objc func deleteAccount(_ account: String, wipe: Bool) {

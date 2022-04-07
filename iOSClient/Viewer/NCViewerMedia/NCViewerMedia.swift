@@ -156,7 +156,6 @@ class NCViewerMedia: UIViewController {
 
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
 
-            NCKTVHTTPCache.shared.restartProxy(user: appDelegate.user, password: appDelegate.password)
             let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata)
 
             if let url = urlVideo.url {

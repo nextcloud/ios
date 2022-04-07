@@ -429,7 +429,7 @@ class NCPlayer: NSObject {
             if error == nil {
                 NCManageDatabase.shared.addLocalFile(metadata: self.metadata)
                 let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: self.metadata)
-                if let url = urlVideo.url, self.metadata.ocId == self.detailView?.metadata?.ocId {
+                if let url = urlVideo.url {
                     self.url = url
                     self.isProxy = urlVideo.isProxy
                     if requiredConvert {
