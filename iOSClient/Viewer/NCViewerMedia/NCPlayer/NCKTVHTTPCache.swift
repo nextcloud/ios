@@ -92,6 +92,11 @@ class NCKTVHTTPCache: NSObject {
         KTVHTTPCache.cacheDelete(with: videoURL)
     }
 
+    @objc func deleteAllCache() {
+
+        KTVHTTPCache.cacheDeleteAllCaches()
+    }
+
     func saveCache(metadata: tableMetadata) {
 
         if !CCUtility.fileProviderStorageExists(metadata) {
