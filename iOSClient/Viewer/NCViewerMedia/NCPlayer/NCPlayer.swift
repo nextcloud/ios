@@ -106,7 +106,7 @@ class NCPlayer: NSObject {
 
         // Check already started
         if isStartPlayer {
-            activateObserver(playerToolBar: playerToolBar)
+            activateObserver()
             return
         }
 
