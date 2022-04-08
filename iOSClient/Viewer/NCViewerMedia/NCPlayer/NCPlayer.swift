@@ -163,8 +163,6 @@ class NCPlayer: NSObject {
                     self.durationTime = self.player?.currentItem?.asset.duration ?? .zero
                     NCManageDatabase.shared.addVideoTime(metadata: self.metadata, time: nil, durationTime: self.durationTime)
 
-                    self.activateObserver(playerToolBar: self.playerToolBar)
-
                     self.videoLayer = AVPlayerLayer(player: self.player)
                     self.videoLayer!.frame = self.imageVideoContainer?.bounds ?? .zero
                     self.videoLayer!.videoGravity = .resizeAspect
@@ -181,6 +179,7 @@ class NCPlayer: NSObject {
                     if !(self.detailView?.isShow() ?? false) {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":self.metadata.ocId, "enableTimerAutoHide": false])
                     }
+                    self.activateObserver()
                     if self.autoPlay {
                         self.player?.play()
                     }
@@ -222,9 +221,7 @@ class NCPlayer: NSObject {
         })
     }
 
-    func activateObserver(playerToolBar: NCPlayerToolBar?) {
-
-        self.playerToolBar = playerToolBar
+    func activateObserver() {
 
         // At end go back to start & show toolbar
         observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) {  [weak self] notification in
@@ -278,8 +275,6 @@ class NCPlayer: NSObject {
         if isPlay() {
             playerPause()
         }
-
-        self.playerToolBar = nil
 
         if let observerAVPlayerItemDidPlayToEndTime = self.observerAVPlayerItemDidPlayToEndTime {
             NotificationCenter.default.removeObserver(observerAVPlayerItemDidPlayToEndTime)
