@@ -616,6 +616,7 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
                 
                 if let url = urlVideo.url {
                     self.ncplayerLivePhoto = NCPlayer.init(url: url, autoPlay: true, isProxy: urlVideo.isProxy, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil, viewController: self)
+                    self.ncplayerLivePhoto?.openAVPlayer()
                 }
             }
 
