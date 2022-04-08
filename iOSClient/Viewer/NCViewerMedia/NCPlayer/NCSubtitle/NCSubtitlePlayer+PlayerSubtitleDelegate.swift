@@ -80,7 +80,6 @@ extension NCPlayer: PlayerSubtitleDelegate {
                     viewController?.present(alertError, animated: true, completion: nil)
                     self.isSubtitleShowed = false
                 }
-
             }))
         }
 

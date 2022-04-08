@@ -159,6 +159,7 @@ class NCPlayer: NSObject {
 
                 switch status {
                 case .loaded:
+
                     self.durationTime = self.player?.currentItem?.asset.duration ?? .zero
                     NCManageDatabase.shared.addVideoTime(metadata: self.metadata, time: nil, durationTime: self.durationTime)
 
@@ -185,7 +186,9 @@ class NCPlayer: NSObject {
                     }
                     self.isStartPlayer = true
                     break
+
                 case .failed:
+
                     self.playerToolBar?.hide()
                     if self.isProxy && NCKTVHTTPCache.shared.getDownloadStatusCode(metadata: self.metadata) == 200 {
                         let alertController = UIAlertController(title: NSLocalizedString("_error_", value: "Error", comment: ""), message: NSLocalizedString("_video_not_streamed_", comment: ""), preferredStyle: .alert)
@@ -208,8 +211,10 @@ class NCPlayer: NSObject {
                         }
                     }
                     break
+
                 case .cancelled:
                     break
+
                 default:
                     break
                 }
