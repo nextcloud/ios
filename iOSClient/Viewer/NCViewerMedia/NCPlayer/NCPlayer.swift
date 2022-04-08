@@ -105,11 +105,14 @@ class NCPlayer: NSObject {
 #endif
 
         // Check already started
-        if self.isStartPlayer { return }
+        if isStartPlayer {
+            activateObserver(playerToolBar: playerToolBar)
+            return
+        }
 
-        self.playerToolBar?.show()
-        self.setUpForSubtitle()
-        self.isSubtitleShowed = false
+        playerToolBar?.show()
+        setUpForSubtitle()
+        isSubtitleShowed = false
 
         print("Play URL: \(self.url)")
         player = AVPlayer(url: self.url)
@@ -279,17 +282,17 @@ class NCPlayer: NSObject {
         if let observerAVPlayerItemDidPlayToEndTime = self.observerAVPlayerItemDidPlayToEndTime {
             NotificationCenter.default.removeObserver(observerAVPlayerItemDidPlayToEndTime)
         }
-        self.observerAVPlayerItemDidPlayToEndTime = nil
+        observerAVPlayerItemDidPlayToEndTime = nil
 
         if let observerAVPlayertTime = self.observerAVPlayertTime {
             player?.removeTimeObserver(observerAVPlayertTime)
         }
-        self.observerAVPlayertTime = nil
+        observerAVPlayertTime = nil
 
         if observerAVPlayertStatus != nil {
             player?.currentItem?.removeObserver(self, forKeyPath: "status")
         }
-        self.observerAVPlayertStatus = nil
+        observerAVPlayertStatus = nil
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
@@ -327,19 +330,19 @@ class NCPlayer: NSObject {
     @objc func playerStalled() {
 
         print("current player \(String(describing: player)) stalled.\nCalling playerPlay()")
-        self.playerPlay()
+        playerPlay()
     }
 
     @objc func playerPlay() {
 
         player?.play()
-        self.playerToolBar?.updateToolBar()
+        playerToolBar?.updateToolBar()
     }
 
     @objc func playerPause() {
 
         player?.pause()
-        self.playerToolBar?.updateToolBar()
+        playerToolBar?.updateToolBar()
 
         if let playerToolBar = self.playerToolBar, playerToolBar.isPictureInPictureActive() {
             playerToolBar.pictureInPictureController?.stopPictureInPicture()
@@ -349,7 +352,7 @@ class NCPlayer: NSObject {
     func videoSeek(time: CMTime) {
 
         player?.seek(to: time)
-        self.saveTime(time)
+        saveTime(time)
     }
 
     func saveTime(_ time: CMTime) {
