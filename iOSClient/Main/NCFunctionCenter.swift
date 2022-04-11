@@ -742,9 +742,9 @@ import SVGKit
 
         // DIR
 
-        if metadata.directory {
-
+        guard !metadata.directory else {
             let submenu = UIMenu(title: "", options: .displayInline, children: [favorite, offline, rename, moveCopy, copyPath, delete])
+            guard appDelegate.disableSharesView == false else { return submenu }
             return UIMenu(title: "", children: [detail, submenu])
         }
 
@@ -781,6 +781,7 @@ import SVGKit
         }
 
         let submenu = UIMenu(title: "", options: .displayInline, children: children)
+        guard appDelegate.disableSharesView == false else { return submenu }
         return UIMenu(title: "", children: [detail, submenu])
     }
 }
