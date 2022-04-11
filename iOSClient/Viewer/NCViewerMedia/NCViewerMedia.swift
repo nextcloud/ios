@@ -99,10 +99,10 @@ class NCViewerMedia: UIViewController {
             if let playerToolBar = playerToolBar {
                 view.addSubview(playerToolBar)
                 playerToolBar.translatesAutoresizingMaskIntoConstraints = false
-                playerToolBar.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-                playerToolBar.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
-                playerToolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-                playerToolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+                playerToolBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0).isActive = true
+                playerToolBar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
+                playerToolBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
+                playerToolBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 0).isActive = true
                 playerToolBar.viewerMediaPage = viewerMediaPage
             }
 
