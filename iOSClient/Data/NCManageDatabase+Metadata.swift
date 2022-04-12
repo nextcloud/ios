@@ -1,9 +1,24 @@
 //
-//  NCManageDatabse+Metadata.swift
+//  NCManageDatabase+Metadata.swift
 //  Nextcloud
 //
 //  Created by Henrik Storch on 30.11.21.
 //  Copyright © 2021 Marino Faggiana. All rights reserved.
+//
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
 import Foundation
@@ -791,5 +806,24 @@ extension NCManageDatabase {
             fileNameConflict = fileNameWithoutExtension + ".jpg"
         }
         return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
+    }
+
+    func getSubtitles(account: String, serverUrl: String, fileName: String, exists: Bool) -> [tableMetadata] {
+
+        let realm = try! Realm()
+        let nameOnly = (fileName as NSString).deletingPathExtension + "."
+        var metadatas: [tableMetadata] = []
+
+        let results = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName BEGINSWITH[c] %@ AND fileName ENDSWITH[c] '.srt'", account, serverUrl, nameOnly)
+        if exists {
+            for result in results {
+                if CCUtility.fileProviderStorageExists(result) {
+                    metadatas.append(result)
+                }
+            }
+            return Array(metadatas.map { tableMetadata.init(value: $0) })
+        } else {
+            return Array(results.map { tableMetadata.init(value: $0) })
+        }
     }
 }

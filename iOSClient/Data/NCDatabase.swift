@@ -539,7 +539,6 @@ class tableVideo: Object {
     @objc dynamic var codecNameAudio: String?
     @objc dynamic var codecAudioChannelLayout: String?
     @objc dynamic var codecAudioLanguage: String?
-    @objc dynamic var codecSubtitleLanguage: String?
     @objc dynamic var codecMaxCompatibility: Bool = false
     @objc dynamic var codecQuality: String?
 

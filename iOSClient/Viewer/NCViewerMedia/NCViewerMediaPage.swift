@@ -109,20 +109,20 @@ class NCViewerMediaPage: UIViewController {
 
     deinit {
         print("#deinit NCViewerMediaPage")
-        // Clear
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
         if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
             ncplayer.playerPause()
             ncplayer.saveCurrentTime()
         }
-        currentViewController.playerToolBar.stopTimerAutoHide()
+        currentViewController.playerToolBar?.stopTimerAutoHide()
         clearCommandCenter()
 
         metadatas.removeAll()
         ncplayerLivePhoto = nil
-
-        #if MFFFLIB
-        MFFF.shared.dismissMessage()
-        #endif
 
         // Remove Observer
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
@@ -149,6 +149,10 @@ class NCViewerMediaPage: UIViewController {
         } else {
             return .lightContent
         }
+    }
+
+    override var prefersHomeIndicatorAutoHidden: Bool {
+        return currentScreenMode == .full
     }
 
     // MARK: -
@@ -184,7 +188,7 @@ class NCViewerMediaPage: UIViewController {
             progressView.isHidden = false
 
             if !currentViewController.detailView.isShow() {
-                currentViewController.playerToolBar.show(enableTimerAutoHide: enableTimerAutoHide)
+                currentViewController.playerToolBar?.show(enableTimerAutoHide: enableTimerAutoHide)
             }
 
             NCUtility.shared.colorNavigationController(navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil, withoutShadow: false)
@@ -196,7 +200,7 @@ class NCViewerMediaPage: UIViewController {
             navigationController?.setNavigationBarHidden(true, animated: true)
             progressView.isHidden = true
 
-            currentViewController.playerToolBar.hide()
+            currentViewController.playerToolBar?.hide()
 
             view.backgroundColor = .black
             textColor = .white
@@ -209,6 +213,7 @@ class NCViewerMediaPage: UIViewController {
         }
 
         setNeedsStatusBarAppearanceUpdate()
+        setNeedsUpdateOfHomeIndicatorAutoHidden()
         currentViewController.reloadDetail()
     }
 
@@ -361,19 +366,19 @@ class NCViewerMediaPage: UIViewController {
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
 
             MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
-            skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { [weak self] event in
+            skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
 
                 let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
-                self?.currentViewController.playerToolBar.skip(seconds: seconds)
-                return .success
+                self.currentViewController.playerToolBar?.skip(seconds: seconds)
+                return.success
             }
 
             MPRemoteCommandCenter.shared().skipBackwardCommand.isEnabled = true
-            skipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { [weak self] event in
+            skipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
 
                 let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
-                self?.currentViewController.playerToolBar.skip(seconds: -seconds)
-                return .success
+                self.currentViewController.playerToolBar?.skip(seconds: -seconds)
+                return.success
             }
         }
 
@@ -607,8 +612,11 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
 
                 AudioServicesPlaySystemSound(1519) // peek feedback
 
-                if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                    self.ncplayerLivePhoto = NCPlayer.init(url: url, autoPlay: true, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil, viewController: self)
+                let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata)
+                
+                if let url = urlVideo.url {
+                    self.ncplayerLivePhoto = NCPlayer.init(url: url, autoPlay: true, isProxy: urlVideo.isProxy, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil, viewController: self)
+                    self.ncplayerLivePhoto?.openAVPlayer()
                 }
             }
 

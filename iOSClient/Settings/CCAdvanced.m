@@ -415,9 +415,11 @@
     
     [CCUtility removeGroupDirectoryProviderStorage];
     [CCUtility removeGroupLibraryDirectory];
-    
+
     [CCUtility removeDocumentsDirectory];
     [CCUtility removeTemporaryDirectory];
+
+    [[NCKTVHTTPCache shared] deleteAllCache];
     
     [CCUtility createDirectoryStandard];
 

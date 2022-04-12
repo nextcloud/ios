@@ -830,7 +830,9 @@
 "_certificates_"            = "Certificates";
 "_privacy_screen_"          = "Splash screen when app inactive";
 "_saving_"                  = "Saving …";
+"_video_not_streamed_"      = "The server does not allow video streaming, do you want to download it?";
 // Video
+"_select_trace_"            = "Select the trace";
 "_video_processing_"        = "Video processing";
 "_video_being_processed_"   = "Video being processed …";
 "_downloading_"             = "Downloading";
@@ -841,4 +843,7 @@
 "_stay_app_foreground_"     = "Keep the app in the foreground …";
 "_conversion_available_"    = "The conversion is always available on menu";
 "_video_format_not_recognized_"     = "This video needs to be processed to be played, do you want to do it now?";
+"_video_must_download_"             = "This video needs to be downloaded and processed to be played, do you want to do it now?";
 "_conversion_max_compatibility_"    = "Max compatibility, the conversion can take much longer";
+"_video_tap_for_close_"     = "A slight pressure to close the processing";
+"_subtitle_not_found_"      = "Subtitle not found";

@@ -799,6 +799,76 @@ class NCUtility: NSObject {
             }
         }
     }
+
+    func getEncondingDataType(data: Data) -> String.Encoding? {
+        if let _ = String(data: data, encoding: .utf8) {
+            return .utf8
+        }
+        if let _ = String(data: data, encoding: .ascii) {
+            return .ascii
+        }
+        if let _ = String(data: data, encoding: .isoLatin1) {
+            return .isoLatin1
+        }
+        if let _ = String(data: data, encoding: .isoLatin2) {
+            return .isoLatin2
+        }
+        if let _ = String(data: data, encoding: .windowsCP1250) {
+            return .windowsCP1250
+        }
+        if let _ = String(data: data, encoding: .windowsCP1251) {
+            return .windowsCP1251
+        }
+        if let _ = String(data: data, encoding: .windowsCP1252) {
+            return .windowsCP1252
+        }
+        if let _ = String(data: data, encoding: .windowsCP1253) {
+            return .windowsCP1253
+        }
+        if let _ = String(data: data, encoding: .windowsCP1254) {
+            return .windowsCP1254
+        }
+        if let _ = String(data: data, encoding: .macOSRoman) {
+            return .macOSRoman
+        }
+        if let _ = String(data: data, encoding: .japaneseEUC) {
+            return .japaneseEUC
+        }
+        if let _ = String(data: data, encoding: .nextstep) {
+            return .nextstep
+        }
+        if let _ = String(data: data, encoding: .nonLossyASCII) {
+            return .nonLossyASCII
+        }
+        if let _ = String(data: data, encoding: .shiftJIS) {
+            return .shiftJIS
+        }
+        if let _ = String(data: data, encoding: .symbol) {
+            return .symbol
+        }
+        if let _ = String(data: data, encoding: .unicode) {
+            return .unicode
+        }
+        if let _ = String(data: data, encoding: .utf16) {
+            return .utf16
+        }
+        if let _ = String(data: data, encoding: .utf16BigEndian) {
+            return .utf16BigEndian
+        }
+        if let _ = String(data: data, encoding: .utf16LittleEndian) {
+            return .utf16LittleEndian
+        }
+        if let _ = String(data: data, encoding: .utf32) {
+            return .utf32
+        }
+        if let _ = String(data: data, encoding: .utf32BigEndian) {
+            return .utf32BigEndian
+        }
+        if let _ = String(data: data, encoding: .utf32LittleEndian) {
+            return .utf32LittleEndian
+        }
+        return nil
+    }
 }
 
 // MARK: -
