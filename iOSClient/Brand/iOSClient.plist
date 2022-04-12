@@ -64,27 +64,27 @@
 	<key>NSFaceIDUsageDescription</key>
 	<string>Face ID is required to authenticate using face recognition.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>GPS is used to detect new photos from camera roll, continued use of GPS running in the background can dramatically decrease battery life.</string>
+	<string>GPS is used to detect new photos from camera roll. Continued use of GPS running in the background can dramatically decrease battery life.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>GPS is used to detect new photos from camera roll, continued use of GPS running in the background can dramatically decrease battery life.</string>
+	<string>GPS is used to detect new photos from camera roll. Continued use of GPS running in the background can dramatically decrease battery life.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>GPS is used to detect new photos from camera roll on background, the use of GPS only when the App is in use is useless.</string>
+	<string>GPS is used to detect new photos from camera roll on background. It is useless to use GPS only while using the app.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Microphone access is required to create voice notes.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Photo library access is required to upload your photos and videos to your cloud.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Photo library access is required to upload your photos and videos to your cloud.</string>
-    <key>UIAppFonts</key>
-    <array>
-        <string>Inconsolata-Light.ttf</string>
-        <string>Inconsolata-Regular.ttf</string>
-        <string>Inconsolata-ExtraLight.ttf</string>
-        <string>Inconsolata-Medium.ttf</string>
-        <string>Inconsolata-Bold.ttf</string>
-        <string>Inconsolata-ExtraBold.ttf</string>
-        <string>Inconsolata-Black.ttf</string>
-    </array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Inconsolata-Light.ttf</string>
+		<string>Inconsolata-Regular.ttf</string>
+		<string>Inconsolata-ExtraLight.ttf</string>
+		<string>Inconsolata-Medium.ttf</string>
+		<string>Inconsolata-Bold.ttf</string>
+		<string>Inconsolata-ExtraBold.ttf</string>
+		<string>Inconsolata-Black.ttf</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

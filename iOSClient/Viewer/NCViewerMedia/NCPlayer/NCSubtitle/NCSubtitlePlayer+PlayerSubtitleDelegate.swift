@@ -1,5 +1,5 @@
 //
-//  NCPlayer+PlayerSubtitleDelegate.swift
+//  NCSubtitlePlayer+PlayerSubtitleDelegate.swift
 //  Nextcloud
 //
 //  Created by Federico Malagoni on 11/03/22.

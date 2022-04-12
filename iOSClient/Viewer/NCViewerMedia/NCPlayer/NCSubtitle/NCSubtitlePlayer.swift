@@ -1,5 +1,5 @@
 //
-//  AVPlayer+Extensions.swift
+//  NCSubtitlePlayer.swift
 //  Nextcloud
 //
 //  Created by Federico Malagoni on 18/02/22.
