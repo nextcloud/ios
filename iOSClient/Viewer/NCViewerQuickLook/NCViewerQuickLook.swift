@@ -88,8 +88,8 @@ import NCCommunication
         guard isEditingEnabled, hasChanges else { return }
 
         let alertController = UIAlertController(title: NSLocalizedString("_save_", comment: ""), message: "", preferredStyle: .alert)
-
-        if metadata?.livePhoto == false {
+        let userId = (UIApplication.shared.delegate as? AppDelegate)?.userId ?? ""
+        if metadata?.livePhoto == false, metadata?.canUnlock(as: userId) != false {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_overwrite_original_", comment: ""), style: .default) { _ in
                 self.saveModifiedFile(override: true)
             })

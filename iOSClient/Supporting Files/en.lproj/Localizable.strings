@@ -152,7 +152,7 @@
 "_unlock_file_"                     = "Unock file";
 "_lock_selected_files_"             = "Lock files";
 "_unlock_selected_files_"           = "Unock files";
-"_file_locked_by_"                  = "File locked by %@";
+"_file_locked_by_at_"                  = "File locked by %@ at %@";
 
 /* Remove a file from a list, don't delete it entirely */
 "_remove_file_"             = "Remove file";

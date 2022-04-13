@@ -146,7 +146,7 @@ extension NCViewer {
         //
         // RENAME
         //
-        if !webView {
+        if !webView, metadata.canUnlock(as: appDelegate.userId) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),

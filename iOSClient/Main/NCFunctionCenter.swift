@@ -745,7 +745,15 @@ import SVGKit
 
         // FILE
 
-        var children: [UIMenuElement] = [favorite, lockUnlock, offline, openIn, rename, moveCopy, copy, copyPath, delete]
+        var children: [UIMenuElement] = [favorite, offline, openIn, moveCopy, copy, copyPath]
+        
+        if metadata.canUnlock(as: appDelegate.userId) {
+            children.insert(rename, at: 3)
+            children.insert(lockUnlock, at: 2)
+            children.append(delete)
+        } else if enableDeleteLocal {
+            children.append(deleteConfirmLocal)
+        }
 
         if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue) {
             children.insert(save, at: 2)

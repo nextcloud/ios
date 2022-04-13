@@ -41,6 +41,7 @@ extension NCCollectionViewCommon {
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
         let isOffline: Bool
+        let canUnlock = metadata.canUnlock(as: appDelegate.userId)
 
         if metadata.directory, let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
             isOffline = directory.offline
@@ -73,9 +74,10 @@ extension NCCollectionViewCommon {
         
         if metadata.lock {
             let lockOwnerName = metadata.lockOwnerDisplayName.isEmpty ? metadata.lockOwner : metadata.lockOwnerDisplayName
+            let lockTime = DateFormatter.localizedString(from: metadata.lockTime ?? Date(), dateStyle: .short, timeStyle: .short)
             actions.append(
                 NCMenuAction(
-                    title: String(format: NSLocalizedString("_file_locked_by_", comment: ""), lockOwnerName),
+                    title: String(format: NSLocalizedString("_file_locked_by_at_", comment: ""), lockOwnerName, lockTime),
                     icon: NCUtility.shared.loadUserImage(
                         for: metadata.lockOwner,
                            displayName: lockOwnerName,
@@ -103,7 +105,7 @@ extension NCCollectionViewCommon {
             )
         )
 
-        if !metadata.directory {
+        if !metadata.directory, canUnlock {
             actions.append(.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata]))
         }
 
@@ -202,7 +204,7 @@ extension NCCollectionViewCommon {
         //
         // RENAME
         //
-        if !(isFolderEncrypted && metadata.serverUrl == serverUrlHome) {
+        if !(isFolderEncrypted && metadata.serverUrl == serverUrlHome), canUnlock {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),

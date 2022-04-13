@@ -42,7 +42,7 @@ class NCMenuAction {
 
 extension NCMenuAction {
     static let seperatorIdentifier = "NCMenuAction.SEPERATOR"
-    
+
     /// A static seperator, with no actions, text, or icons
     static var seperator: NCMenuAction {
         return NCMenuAction(title: seperatorIdentifier, icon: UIImage(), action: nil)
@@ -92,6 +92,8 @@ extension NCMenuAction {
             }
         } // else: no metadata selected
 
+        let canDeleteServer = selectedMetadatas.contains(
+            where: { $0.canUnlock(as: (UIApplication.shared.delegate as? AppDelegate)?.userId ?? "") })
         var fileList = ""
         for (ix, metadata) in selectedMetadatas.enumerated() {
             guard ix < 3 else { fileList += "\n - ..."; break }
@@ -106,10 +108,12 @@ extension NCMenuAction {
                     title: titleDelete,
                     message: NSLocalizedString("_want_delete_", comment: "") + fileList,
                     preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
-                    selectedMetadatas.forEach({ NCOperationQueue.shared.delete(metadata: $0, onlyLocalCache: false) })
-                    completion?()
-                })
+                if canDeleteServer {
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
+                        selectedMetadatas.forEach({ NCOperationQueue.shared.delete(metadata: $0, onlyLocalCache: false) })
+                        completion?()
+                    })
+                }
 
                 // NCMedia removes image from collection view if removed from cache
                 if !(viewController is NCMedia) {

@@ -424,6 +424,11 @@ extension tableMetadata {
     var isPrintable: Bool {
         classFile == NCCommunicationCommon.typeClassFile.image.rawValue || ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/")
     }
+
+    /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
+    func canUnlock(as user: String) -> Bool {
+        return !lock || lockOwner == user
+    }
 }
 
 class tablePhotoLibrary: Object {
