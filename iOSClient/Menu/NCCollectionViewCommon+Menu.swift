@@ -77,7 +77,7 @@ extension NCCollectionViewCommon {
             let lockTime = DateFormatter.localizedString(from: metadata.lockTime ?? Date(), dateStyle: .short, timeStyle: .short)
             actions.append(
                 NCMenuAction(
-                    title: String(format: NSLocalizedString("_file_locked_by_at_", comment: ""), lockOwnerName, lockTime),
+                    title: String(format: NSLocalizedString("_locked_by_at_", comment: ""), lockOwnerName, lockTime),
                     icon: NCUtility.shared.loadUserImage(
                         for: metadata.lockOwner,
                            displayName: lockOwnerName,

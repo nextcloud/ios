@@ -18,6 +18,7 @@ class NCMenuAction {
     var selected: Bool = false
     var isOn: Bool = false
     var action: ((_ menuAction: NCMenuAction) -> Void)?
+    var rowHeight: CGFloat { self.title == NCMenuAction.seperatorIdentifier ? 3 : 60 }
 
     init(title: String, icon: UIImage, action: ((_ menuAction: NCMenuAction) -> Void)?) {
         self.title = title

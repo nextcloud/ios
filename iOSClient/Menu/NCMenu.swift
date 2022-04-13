@@ -28,6 +28,10 @@
 import UIKit
 import FloatingPanel
 
+extension Array where Element == NCMenuAction {
+    var listHeight: CGFloat { reduce(0, { $0 + $1.rowHeight }) }
+}
+
 class NCMenu: UITableViewController {
 
     var actions = [NCMenuAction]()
@@ -94,17 +98,17 @@ class NCMenu: UITableViewController {
     // MARK: - Tabel View Layout
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        actions[indexPath.row].title == NCMenuAction.seperatorIdentifier ? 3 : 60
+        actions[indexPath.row].rowHeight
     }
 }
 extension NCMenu: FloatingPanelControllerDelegate {
 
     func floatingPanel(_ fpc: FloatingPanelController, layoutFor size: CGSize) -> FloatingPanelLayout {
-        return NCMenuFloatingPanelLayout(numberOfActions: self.actions.count)
+        return NCMenuFloatingPanelLayout(actionsHeight: self.actions.listHeight)
     }
 
     func floatingPanel(_ fpc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout {
-        return NCMenuFloatingPanelLayout(numberOfActions: self.actions.count)
+        return NCMenuFloatingPanelLayout(actionsHeight: self.actions.listHeight)
     }
 
     func floatingPanel(_ fpc: FloatingPanelController, animatorForDismissingWith velocity: CGVector) -> UIViewPropertyAnimator {
